@@ -34,7 +34,7 @@ test("document preview shows both old and new values without interpreting text a
  assert(html.includes('data-merge-key="aim"'));
  assert(html.includes('data-merge-key="mathSelected"'));
  assert(html.includes('data-action="merge-apply"'));
- assert(html.includes("My actual"));
+ assert(html.includes("completed mathematics"));
  assert(html.includes("will NOT be replaced"));
 });
 test("unresolved teacher guidance is visible during review without claiming approval",()=>{
@@ -57,7 +57,7 @@ test("direct handover lets students edit current purpose and course before ackno
  assert(html.includes("Current beneficiary"));
  assert(html.includes("Mathematics course"));
  assert(html.includes("I have reviewed these details"));
- assert(html.includes("not permission"));
+ assert(html.includes("does not confirm consent"));
 });
 test("a handover confirmation is invalidated by revised maths or a changed beneficiary",()=>{
  const s=createProjectState();
