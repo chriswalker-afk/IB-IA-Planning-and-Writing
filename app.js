@@ -4,13 +4,19 @@ import {createHandoverViews} from "./src/ui/handover-views.js";
 import { planningMove, planAutoAdvance, planningBack, planningEdit, applyPlanningField, toggleMath, syncPlanningToProject, setPlanCurrent, planningFlags } from "./src/planning/engine.js";
 import { createPlanningViews } from "./src/ui/planning-views.js";
 import { createStudioViews } from "./src/ui/studio-views.js";
+import {createCompletingViews} from "./src/completing/views.js";
+import {
+ setCompletionNode,moveCompletionRoute,completionBack,markCompletionStage,
+ setCompletionField,addAccuracyDecision,completionSuggestions,sectionForNode,targetForSection,
+ completeEntry,latestRealResult
+} from "./src/completing/engine.js";
+
 import { createProjectViews } from "./src/ui/project-views.js";
 import { createProjectState as newState, normalizeProjectState as normalise, persistProjectState, STORAGE_KEY as KEY } from "./src/core/project-state.js";
 import { readRecordValue, updateRecordValue } from "./src/core/record-access.js";
 import { icon, escapeHtml, cleanUrl, button } from "./src/ui/primitives.js";
 import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
-/* IA Pathfinder — interactive design prototype
-   Student-authored notes only; branching examples are illustrative, not the complete IA flowchart engine. */
+/* IA Pathfinder — Phase 4 Completing workflow. Student-authored results only. */
 (() => {
   "use strict";
   const $ = (s, root = document) => root.querySelector(s);
@@ -61,6 +67,9 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       const before=getPath(path),ok=applyPlanningField(state,path.slice("planning.fields.".length),value);
       if(ok&&before!==value&&state.handover?.confirmedAt){state.handover.confirmedAt="";state.handover.needsReview=true;}
       return ok;
+    }
+    if(path.startsWith("completion.fields.")){
+      return setCompletionField(state,path.slice("completion.fields.".length),value);
     }
     const changed=putPath(path,value);
     if(changed&&state.handover?.confirmedAt&&(path.startsWith("planning.fields.")||path.startsWith("project."))){
@@ -138,7 +147,8 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     overline, sheetTitle, demoFlag, hasPlan, hasStudio, planTitles, studioSections,
     referenceNodeForPrototypeStep, tabletNav:()=>tabletNav() };
   const {viewPlanning}=createPlanningViews(viewDependencies);
-  const {viewCompleting,mathDefault,currentMath,suggestions}=createStudioViews(viewDependencies);
+  const {mathDefault,currentMath,suggestions}=createStudioViews(viewDependencies);
+  const {viewCompleting}=createCompletingViews(viewDependencies);
   const {viewHome,viewPath,viewReport,tabletNav}=createProjectViews(viewDependencies);
   function sideMilestones() {
     const items=[
@@ -163,9 +173,14 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     if(!result?.ok){toast(result?.error||"Please review this answer.");return;}
     syncPlanningToProject(state);
     if(result.route?.to==="C00"||result.completePlanning===true&&result.route?.to==="C00"){
-      nav("completing",{section:"overview"});return;
+      setCompletionNode(state,"C00");nav("completing");return;
     }
     nav("planning");
+  }
+  function handleCompletionResult(result){
+    if(!result?.ok){toast(result?.error||"Please review this mathematical decision.");return;}
+    if(result.targetRoute==="planning"){nav("planning");return;}
+    nav("completing");
   }
   function render(opts={}) {
     const map={home:viewHome,planning:viewPlanning,completing:viewCompleting,path:viewPath,report:viewReport};
@@ -177,7 +192,10 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   }
   function nav(route,opts={}) {
     state.route=route;
-    if(opts.section)state.ui.studioSection=opts.section;
+    if(route==="completing"&&opts.section) {
+      const target=targetForSection(opts.section);
+      setCompletionNode(state,target,{reason:"stage-navigation"});
+    }
     state.ui.helpKey="";state.ui.openCue="";
     save();render({top:true});
   }
@@ -189,7 +207,9 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   }
   function editMath(index) {
     if(!state.entries[index])return;
-    state.ui.mathIndex=index;state.ui.mathPhase="work";nav("completing",{section:"math"});
+    state.ui.mathIndex=index;state.completion.activeEntryIndex=index;state.ui.mathPhase="work";
+    setCompletionNode(state,state.entries[index].phase==="first"?"C33":"C40");
+    nav("completing");
   }
   function demo(kind) {
     const next=newState();
@@ -231,7 +251,8 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     }else{
       applyPlanningField(next,"theoreticalCase","Illustrative small-number cases");
     }
-    next.entries=[st];next.ui.mathIndex=0;
+    next.entries=[st];next.ui.mathIndex=0;next.completion.activeEntryIndex=0;
+    setCompletionNode(next,"C34B",{history:false,reason:"fictional-example"});
     state=next;save();closeDrawer();render({top:true});toast("Sample loaded — every result is clearly labelled as illustrative.");
   }
   function openDrawer(panel) {
@@ -419,7 +440,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     if(action==="go-report")return nav("report");
     if(action==="open-files")return openDrawer("files");
     if(action==="open-demos")return openDrawer("demos");
-    if(action==="open-stuck")return openDrawer("stuck");
+    if(action==="open-stuck"){setCompletionNode(state,"C95");return nav("completing");}
     if(["studio-overview","studio-intro","studio-data","studio-math","studio-conclusion","studio-review"].includes(action))return nav("completing",{section:action.slice(7)});
     return false;
   }
@@ -452,6 +473,24 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         save();break;
       }
       case "studio-tab":nav("completing",{section:el.dataset.section});break;
+      case "completion-route":handleCompletionResult(moveCompletionRoute(state,el.dataset.condition));break;
+      case "completion-open":handleCompletionResult(setCompletionNode(state,el.dataset.node,{reason:"student-revisit"}));break;
+      case "completion-back":handleCompletionResult(completionBack(state));break;
+      case "completion-mark":{
+        if(!markCompletionStage(state,el.dataset.stage,el.dataset.status)){toast("Unknown stage status.");break;}
+        save();render();toast("Your own stage status was recorded.");break;
+      }
+      case "completion-record-accuracy":{
+        const result=addAccuracyDecision(state);
+        if(!result.ok){toast(result.error);break;}
+        save();render();toast("Quantity and precision decision recorded.");break;
+      }
+      case "completion-edit-entry":editMath(Number(el.dataset.index));break;
+      case "completion-suggest":{
+        const item=completionSuggestions(state)[Number(el.dataset.index)];
+        if(item){setCompletionField(state,"nextQuestion",item[0]);save();render();}
+        break;
+      }
       case "math-add": addMath();break;
       case "edit-step":editMath(Number(el.dataset.index));break;
       case "math-phase": state.ui.mathPhase=el.dataset.phase;save();render();break;
@@ -521,7 +560,9 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       const numeric=["project.readiness","project.ease"].includes(path);
       if(path.startsWith("planning.fields.")){
         applyPlanningField(state,path.slice("planning.fields.".length),choice.dataset.value);
-      } else {
+      }else if(path.startsWith("completion.fields.")){
+        setCompletionField(state,path.slice("completion.fields.".length),choice.dataset.value);
+      }else{
         putPath(path,numeric?Number(choice.dataset.value):choice.dataset.value);
       }
       if(path.endsWith(".status")&&path.startsWith("entries.")&&previous!==choice.dataset.value){state.ui.helpKey="";}
