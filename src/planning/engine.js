@@ -15,7 +15,7 @@ export const PROGRESS_GROUPS = Object.freeze([
 const val = x => String(x??"").trim();
 const now = () => new Date().toISOString();
 export const PLANNING_FIELD_DEFAULTS = Object.freeze({
- ideaStatus:"",idea:"",interest:"",otherIdea1:"",otherIdea2:"",ideaSelected:"",ideaAccess:"",ideaValue:"",
+ ideaStatus:"",idea:"",originalIdea:"",interest:"",otherIdea1:"",otherIdea2:"",ideaSelected:"",ideaAccess:"",ideaValue:"",
  aim:"",motivation:"",beneficiaryType:"",beneficiary:"",intendedUse:"",
  kind:"",statisticsContext:"",dataSource:"",primaryWhat:"",primaryWhen:"",primaryWhere:"",
  primaryPopulation:"",primaryHow:"",primaryEquipment:"",primaryStatus:"",primarySampling:"",
@@ -159,6 +159,11 @@ export function applyPlanningField(state,key,value){
   // Old branches remain in the plan history; their source is not asserted as appropriate for the new route.
   state.planning.notices=["You changed the investigation type. Check earlier source and mathematics choices."];
  }
+ if(key==="ideaSelected"){
+  const selected = f[key]==="other1"?f.otherIdea1:f[key]==="other2"?f.otherIdea2:f.originalIdea||f.idea;
+  if(selected)f.idea=selected;
+ }
+ if(key==="idea"&&!f.originalIdea)f.originalIdea=f.idea;
  if(key==="predictionId"){
   const match=PLANNING_CATALOG.predictions.find(p=>p.id===f[key]);
   if(match&&match.id!=="X01"&&match.id!=="X02")f.prediction=match.question;
@@ -244,18 +249,18 @@ export function planAutoAdvance(state){
  const n=state.planning.current,f=state.planning.fields;
  const go=s=>planningMove(state,s);
  switch(n){
-  case "N00":return go(f.ideaStatus==="no"?"No":f.ideaStatus==="unsure"?"Optional: compare more than one idea":"Yes");
+  case "N00":if(!f.ideaStatus)return{ok:false,error:"Choose whether you have an idea, or select the option to explore."};return go(f.ideaStatus==="no"?"No":f.ideaStatus==="unsure"?"Optional: compare more than one idea":"Yes");
   case "N00B":return go("Ready with one idea");
-  case "N00C":return go(f.ideaSelected==="original"?"Keep original idea":"Selected one idea");
+  case "N00C":if(!f.ideaSelected)return{ok:false,error:"Choose which idea you want to develop."};return go(f.ideaSelected==="original"?"Keep original idea":"Selected one idea");
   case "N01":return go("Continue");
-  case "N01V":return go(state.planning.returnToPrediction?"Return to prediction after editing beneficiary":
+  case "N01V":if(!f.beneficiaryType&&!state.planning.returnToPrediction)return{ok:false,error:"Choose who could benefit, including Not sure yet."};return go(state.planning.returnToPrediction?"Return to prediction after editing beneficiary":
    f.beneficiaryType==="others"?"I could offer advice to someone else":
    f.beneficiaryType==="both"?"Both personal benefit and advice":
    f.beneficiaryType==="unsure"?"I'm not sure yet":"The results could help me directly");
-  case "N02":return go(f.kind==="statistics"?"Statistics":f.kind==="modelling"?"Modelling":f.kind==="unsure"?"Unsure":"No data");
+  case "N02":if(!f.kind)return{ok:false,error:"Choose an investigation route, including Not sure yet."};return go(f.kind==="statistics"?"Statistics":f.kind==="modelling"?"Modelling":f.kind==="unsure"?"Unsure":"No data");
   case "N02U":return go("Return");
   case "N02T":return go("Continue with provisional plan");
-  case "N03":return go(f.dataSource==="secondary"?"Secondary":f.dataSource==="both"?"Both":"Primary");
+  case "N03":if(!f.dataSource)return{ok:false,error:"Choose primary, secondary or both data sources."};return go(f.dataSource==="secondary"?"Secondary":f.dataSource==="both"?"Both":"Primary");
   case "N03B":return go(state.planning.sourceBranches.primary&&state.planning.sourceBranches.secondary?"Both data sources complete":
    !state.planning.sourceBranches.primary?"Primary questions":"Secondary questions");
   case "N03P":case "N03S":return go("Complete");
@@ -266,7 +271,7 @@ export function planAutoAdvance(state){
   case "N03F":return go("Feasibility questions answered");
   case "N03G":return go("Practical plan is workable");
   case "N03H":return go("Milestones recorded or pending");
-  case "N04":return go(["AI SL","AA SL"].includes(f.course)?"AI SL / AA SL":"Other / AA HL");
+  case "N04":if(!f.course)return{ok:false,error:"Choose your course, or select Another course / unsure."};return go(["AI SL","AA SL"].includes(f.course)?"AI SL / AA SL":"Other / AA HL");
   case "N04T":return go("Record tentative maths and teacher question");
   case "N04S":return go("Techniques selected or unsure");
   case "N01P":return go("Prediction made or 'not sure'");
