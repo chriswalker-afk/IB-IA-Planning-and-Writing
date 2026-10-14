@@ -123,7 +123,12 @@ export function modelFromEnvelope(envelope){
     row("Safe next action while awaiting advice",f.teacherSafeAction)
   ],"Teacher advice is recommended where relevant. A document export is not confirmation of approval.")
  ].filter(Boolean);
- const flagsOut=flags.length?flags:[];
+ const flagsOut=[...flags];
+ if(payload.teacher.pendingReview&&!flagsOut.length){
+  flagsOut.push({id:"pending-teacher",title:"Teacher discussion may still be outstanding",
+   note:"The original project recorded an unresolved teacher-review status. Confirm directly with your teacher; the document is not approval.",
+   needsApproval:false});
+ }
  return {
   title:"My IB Mathematics IA Plan",
   strapline:"IA PATHFINDER · PERSONAL PLANNING RECORD",
