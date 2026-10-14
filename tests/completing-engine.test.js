@@ -200,7 +200,12 @@ test("unexpected results can be left unresolved, without forcing new mathematics
  assert.equal(entry.observation,"unexpected");
  assert.equal(s.completion.fields.surpriseReason,"One observation is unusual.");
 });
-test("source route to planning question and back do not invent teacher approval",()=>{
+test("source route to Planning check-in never invents teacher permission",()=>{
  const s=state();place(s,"C03");
- move(s,"Return to update planning answers","C03"); // intentional test expects N06 route
+ const r=moveCompletionRoute(s,"Return to update planning answers");
+ assert.equal(r.ok,true);
+ assert.equal(r.targetRoute,"planning");
+ assert.equal(s.planning.current,"N06");
+ assert.equal(s.teacher.pendingApproval,false);
+ assert.equal(s.completion.transitions.at(-1).to,"N06");
 });
