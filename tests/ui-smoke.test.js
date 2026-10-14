@@ -238,7 +238,8 @@ test("Phase 5 writing advice respects student control instead of launching a que
  assert.equal(h.saved.writingLedger[match[2]].location,"Introduction, second paragraph");
  assert(!h.html.includes("Useful writing moment")); // no instant replacement with another cue
  h.action("guidance-more");
- assert(h.html.includes("Useful writing moment")||h.html.includes("Review optional writing guidance"));
+ assert(!h.html.includes("Useful writing moment")); // no additional relevance from the same node
+ assert.equal(h.saved.writingLedger[match[2]].status,"already-covered");
 });
 test("Phase 5 optional limitations never auto-record source possibilities as real weaknesses",()=>{
  const h=createHarness();
