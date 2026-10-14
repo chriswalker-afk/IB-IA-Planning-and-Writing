@@ -15,4 +15,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: npm test
+      - name: Install pinned dependencies
+        run: npm install --no-audit --no-fund
+      - name: Test project and document round trips
+        run: npm test
+      - name: Build browser distribution
+        run: npm run build
