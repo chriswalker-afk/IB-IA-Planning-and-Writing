@@ -83,3 +83,44 @@ test("conclusion and source-fit tips never state a grade, teacher approval or un
  assert(html.includes("consent"));
  assert(html.includes("not")==true);
 });
+
+test("reopened mathematical sections refer to their actual preceding finding, never to their own result",()=>{
+ const {state,view}=fixture();
+ state.entries=[
+  {id:"first",phase:"first",status:"completed",kind:"scatter",title:"First scatter",
+    result:"The actual plotted points curve",localTakeaway:"The pattern is curved"},
+  {id:"second",phase:"substantial",fromEntryId:"first",status:"completed",
+    title:"Test a quadratic",purpose:"Fit an appropriate model",result:"Model y=2x squared",
+    previousTakeaway:"The pattern is curved"}
+ ];
+ state.completion.activeEntryIndex=1;
+ setCompletionNode(state,"C40");
+ const html=view.viewCompleting();
+ assert(html.includes("Earlier finding this section was based on"));
+ assert(html.includes("The pattern is curved"));
+ assert(!html.includes("<p>Model y=2x squared</p>"));
+});
+test("dependency review appears only for maths that needs its logical connection checked",()=>{
+ const {state,view}=fixture();
+ state.entries=[
+  {id:"first",phase:"first",status:"completed",result:"A revised first result",localTakeaway:"Updated result"},
+  {id:"second",phase:"substantial",fromEntryId:"first",status:"completed",result:"A later actual result",
+   reviewNeeded:"yes",reviewReason:"An earlier finding changed. Check the link."}
+ ];
+ state.completion.activeEntryIndex=1;setCompletionNode(state,"C40");
+ let html=view.viewCompleting();
+ assert(html.includes("Check a mathematical connection"));
+ assert(html.includes("An earlier finding changed"));
+ assert(html.includes('data-action="completion-entry-reviewed"'));
+ state.entries[1].reviewNeeded="";
+ html=view.viewCompleting();
+ assert(!html.includes('data-action="completion-entry-reviewed"'));
+});
+test("first figure is not displayed as the active substantial-mathematics section",()=>{
+ const {state,view}=fixture();
+ state.entries=[{id:"first",phase:"first",title:"Plot actual values",status:"completed",result:"Scatter produced"}];
+ state.completion.activeEntryIndex=0;setCompletionNode(state,"C40");
+ const html=view.viewCompleting();
+ assert(html.includes("Return to the first exploration"));
+ assert(!html.includes("Mathematical technique actually intended or used"));
+});
