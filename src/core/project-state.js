@@ -67,7 +67,8 @@ export function createProjectState() {
     },
     writingLedger:{},
     changeLog:[],
-    planning:createPlanningState()
+    planning:createPlanningState(),
+    handover:{confirmedAt:"",lastExportAt:"",lastImportAt:"",lastImportSource:"",needsReview:false}
   };
 }
 function legacyAnswers(p) {
@@ -130,6 +131,12 @@ export function normalizeProjectState(value) {
   const migrated = normalizePlanningState(value.planning,next.project);
   if(!value.planning && next.journey.currentNodeId?.startsWith("N"))migrated.current=next.journey.currentNodeId;
   next.planning=migrated;
+  const h=plain(value.handover)?value.handover:{};
+  next.handover={
+    confirmedAt:str(h.confirmedAt),lastExportAt:str(h.lastExportAt),
+    lastImportAt:str(h.lastImportAt),lastImportSource:str(h.lastImportSource),
+    needsReview:h.needsReview===true
+  };
   return next;
 }
 export function persistProjectState(state,storage) {
