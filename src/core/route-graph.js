@@ -59,7 +59,7 @@ export function reachableNodeIds(routes,start,max=500){
   }
   return [...visited];
 }
-export async function loadFlowGraph(baseUrl="./data/flow/"){
+export async function loadFlowGraph(baseUrl=new URL("../../data/flow/",import.meta.url)){
   const [nodes,routes]=await Promise.all(["nodes.json","routes.json"].map(async file=>{
     const response=await fetch(new URL(file,baseUrl));
     if(!response.ok)throw new Error("Unable to load "+file+": "+response.status);
