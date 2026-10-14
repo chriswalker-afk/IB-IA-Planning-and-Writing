@@ -1,0 +1,258 @@
+{
+  "schemaVersion": 1,
+  "sourceSheet": "Overview",
+  "sourceBounds": {
+    "rows": 86,
+    "columns": 22
+  },
+  "rowCount": 26,
+  "nonemptyCellCount": 31,
+  "rows": [
+    {
+      "row": 2,
+      "cells": [
+        "",
+        "IA PATHFINDER  |  TWO PARTS"
+      ]
+    },
+    {
+      "row": 5,
+      "cells": [
+        "",
+        "Students plan a feasible investigation first, then move to completing it."
+      ]
+    },
+    {
+      "row": 7,
+      "cells": [
+        "",
+        "PROJECT STRUCTURE"
+      ]
+    },
+    {
+      "row": 9,
+      "cells": [
+        "",
+        "1  ·  PLANNING THE IA  ↗",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "2  ·  COMPLETING THE IA  ↗"
+      ]
+    },
+    {
+      "row": 10,
+      "cells": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "→"
+      ]
+    },
+    {
+      "row": 13,
+      "cells": [
+        "",
+        "PLANNING FLOWCHART\nChoose aim → Who is this for? (personal benefit or advice) → IA type/data and feasibility → Maths → Type-specific prediction → WHY? → IF TRUE, what would that mean for this person? (Edit beneficiary) → Revisit mathematics → Review → Personalised planning document.",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "COMPLETING THE IA  |  REFLECTION THROUGHOUT, SYNTHESIS AT THE END\nStudents evaluate method choices and mathematical findings AS THEY HAPPEN, including their effect on results, limits and new mathematical direction. The conclusion must NOT repeat graphs/calculations or become a belated evaluation section; it answers the aim, draws together the key evidence, explains meaningful implications for the beneficiary, and proposes relevant future directions (or an unresolved question) without overstating evidence."
+      ]
+    },
+    {
+      "row": 21,
+      "cells": [
+        "",
+        "AGREED PURPOSE LOOP\nDuring prediction, students revisit the aim and beneficiary, explain the possible impact IF TRUE, and can edit 'Who is it for?' without restarting. The planning PDF/Word retains the latest purpose and hypothetical implication for Completing the IA."
+      ]
+    },
+    {
+      "row": 26,
+      "cells": [
+        "",
+        "EDIT THE STRUCTURE"
+      ]
+    },
+    {
+      "row": 28,
+      "cells": [
+        "",
+        "View or edit nodes  ↗",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "View or edit routes  ↗"
+      ]
+    },
+    {
+      "row": 30,
+      "cells": [
+        "",
+        "Teacher check-in questions  ↗",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Planning report specification  ↗"
+      ]
+    },
+    {
+      "row": 32,
+      "cells": [
+        "",
+        "LIMITATION EXAMPLES — RIGHT TIME, RIGHT CONTEXT\nData Collection offers only actual sampling, source and measurement limitations. PMCC, regression, model assumptions or optimisation weaknesses are offered later, when students are using those techniques. Conclusions revisit only limitations the student confirmed."
+      ]
+    },
+    {
+      "row": 35,
+      "cells": [
+        "",
+        "Prediction nudge library  ↗",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Course maths options  ↗"
+      ]
+    },
+    {
+      "row": 37,
+      "cells": [
+        "",
+        "SOURCE PLANNING DOCUMENT  |  https://docs.google.com/document/d/1tfGJVyF8wvJmrctRVf1xh9Uf9RvzdRTbm0x1r0zKHOI/edit"
+      ]
+    },
+    {
+      "row": 40,
+      "cells": [
+        "",
+        "Data Collection: sampling, modelling, limitations, accuracy and definitions  ↗"
+      ]
+    },
+    {
+      "row": 43,
+      "cells": [
+        "",
+        "Limitation Examples library — contextual suggestions from students' previous choices  ↗"
+      ]
+    },
+    {
+      "row": 46,
+      "cells": [
+        "",
+        "Initial Representation / Calculations: tailored first steps + full diagram checklist  ↗"
+      ]
+    },
+    {
+      "row": 49,
+      "cells": [
+        "",
+        "After the Diagram / Calculation: context-specific interpretation and unexpected-result prompts  ↗"
+      ]
+    },
+    {
+      "row": 52,
+      "cells": [
+        "",
+        "Conclusion & Reflection: ongoing evaluation, concise synthesis and evidence-based future mathematics  ↗"
+      ]
+    },
+    {
+      "row": 55,
+      "cells": [
+        "",
+        "Mathematical Communication: equation notation, technology use and understood maths  ↗"
+      ]
+    },
+    {
+      "row": 57,
+      "cells": [
+        "",
+        "Bivariate Decisions: four observed scatter patterns and what to do next  ↗"
+      ]
+    },
+    {
+      "row": 59,
+      "cells": [
+        "",
+        "Teacher Draft and Final: source-aligned IA submission checks  ↗"
+      ]
+    },
+    {
+      "row": 62,
+      "cells": [
+        "",
+        "Getting Unstuck: no data, alternative sources and other common IA obstacles  ↗"
+      ]
+    },
+    {
+      "row": 66,
+      "cells": [
+        "",
+        "NEW • Writing Moments: relevant choice → precise IA placement → optional confirmation  ↗"
+      ]
+    },
+    {
+      "row": 70,
+      "cells": [
+        "",
+        "Next Logical Mathematical Step: repeatable maths sections with conditional PMCC results  ↗"
+      ]
+    },
+    {
+      "row": 74,
+      "cells": [
+        "",
+        "NEW · Apply earlier accuracy and link each meaningful result to the IA aim  ↗"
+      ]
+    },
+    {
+      "row": 79,
+      "cells": [
+        "",
+        "NEW · On-syllabus mathematics vs independently learned / beyond-syllabus mathematics  ↗"
+      ]
+    }
+  ]
+}
