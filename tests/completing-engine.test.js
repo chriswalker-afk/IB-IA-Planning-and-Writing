@@ -6,7 +6,8 @@ import {
  C_NODE_IDS,C_MAJOR_STAGES,C_STAGE_STATUS,createCompletionState,normalizeCompletionState,
  setCompletionNode,moveCompletionRoute,completionBack,markCompletionStage,setCompletionField,
  startFirstRepresentation,startNextMathematics,addAccuracyDecision,actualPmccExists,actualScatterExists,
- latestRealResult,completionSuggestions,routesAt,completionFlags
+ latestRealResult,sourceResultForNext,observedFeatureForNext,scatterForNext,canViewPmccFollowup,canViewScatterFollowup,
+ flagDependentMathematics,acknowledgeMathReview,completionSuggestions,routesAt,completionFlags
 } from "../src/completing/engine.js";
 import {applyPlanningField} from "../src/planning/engine.js";
 
@@ -208,4 +209,86 @@ test("source route to Planning check-in never invents teacher permission",()=>{
  assert.equal(s.planning.current,"N06");
  assert.equal(s.teacher.pendingApproval,false);
  assert.equal(s.completion.transitions.at(-1).to,"N06");
+});
+
+test("Pearson advice is linked to the actual plot behind that coefficient, not a stale global scatter choice",()=>{
+ const s=state();
+ s.entries=[
+  {id:"plot-1",phase:"first",status:"completed",kind:"scatter",title:"Paired data scatter",technique:"Scatter graph",result:"Graph curves upward",observation:"curved",localTakeaway:"Curved relationship"},
+  {id:"pmcc-1",phase:"substantial",fromEntryId:"plot-1",status:"completed",kind:"other",technique:"Pearson PMCC",title:"Linear correlation",result:"r = 0.08",interpretation:"Weak linear association"}
+ ];
+ s.completion.activeEntryIndex=1;
+ place(s,"C35");
+ assert.equal(sourceResultForNext(s).id,"pmcc-1");
+ assert(canViewPmccFollowup(s));
+ assert(canViewScatterFollowup(s));
+ assert.equal(scatterForNext(s).id,"plot-1");
+ assert.equal(observedFeatureForNext(s),"curved");
+ move(s,"Pearson r was ACTUALLY calculated: contextual next-step ideas","C35P");
+ assert(completionSuggestions(s).some(([label])=>/nonlinear/i.test(label)));
+ // Subsequent unrelated maths does not inherit the earlier correlation or shape.
+ s.entries.push({id:"algebra",phase:"substantial",fromEntryId:"pmcc-1",status:"completed",
+  kind:"theory",technique:"Algebraic reasoning",title:"A different mathematical result",result:"A separate inequality",observation:"",interpretation:"The expression is positive"});
+ place(s,"C04");place(s,"C35");
+ assert.equal(sourceResultForNext(s).id,"algebra");
+ assert.equal(canViewPmccFollowup(s),false);
+ assert.equal(canViewScatterFollowup(s),false);
+ assert(!completionSuggestions(s).some(([label])=>/curved function|nonlinear model/i.test(label)));
+});
+test("Pearson coefficient alone never presumes that the scatter was linear",()=>{
+ const s=state();
+ s.entries=[{id:"pmcc",phase:"substantial",status:"completed",kind:"other",
+   technique:"Pearson product-moment correlation",title:"PMCC",result:"r = 0.7"}];
+ place(s,"C35");move(s,"Pearson r was ACTUALLY calculated: contextual next-step ideas","C35P");
+ const suggestions=completionSuggestions(s);
+ assert(suggestions.some(([label])=>/actual scatter graph/i.test(label)));
+ assert(!suggestions.some(([label])=>/regression line/i.test(label)));
+});
+test("student may explicitly resume a previously interpreted finding rather than blindly using the latest one",()=>{
+ const s=state();
+ s.entries=[
+  {id:"first",phase:"first",status:"completed",kind:"scatter",result:"An actual curved scatter",observation:"curved",localTakeaway:"Curvature"},
+  {id:"later",phase:"substantial",fromEntryId:"first",status:"completed",result:"A fitted quadratic",interpretation:"A partial model"}
+ ];
+ s.completion.activeEntryIndex=0;
+ place(s,"C34B");move(s,"Consistent with prediction, or no prediction, or sufficiently explained","C35");
+ assert.equal(sourceResultForNext(s).id,"first");
+ setCompletionField(s,"nextQuestion","What accounts for the curvature?");
+ setCompletionField(s,"nextReason","The original scatter graph bends.");
+ move(s,"Begin ANOTHER meaningful mathematical section","C50");
+ assert.equal(s.entries.at(-1).fromEntryId,"first");
+ // Return to dashboard and resume generally: the most recent actual result is used instead.
+ place(s,"C04");place(s,"C35");
+ assert.equal(sourceResultForNext(s).id,"later");
+});
+test("editing an earlier result flags every dependent mathematical section without erasing actual findings",()=>{
+ const s=state();
+ s.entries=[
+  {id:"first",phase:"first",status:"completed",result:"Initial value",interpretation:"Earlier conclusion",localTakeaway:"An upward trend"},
+  {id:"second",phase:"substantial",fromEntryId:"first",status:"completed",result:"Regression model",interpretation:"Further interpretation",previousTakeaway:"An upward trend",reviewNeeded:""},
+  {id:"third",phase:"substantial",fromEntryId:"second",status:"planned",purpose:"Validate the model",previousTakeaway:"Further interpretation"}
+ ];
+ s.completion.stages.C40="complete";s.completion.stages.C60="complete";
+ const changed=flagDependentMathematics(s,0,"result","Initial value","Recalculated value");
+ assert.deepEqual(changed,[1,2]);
+ assert.equal(s.entries[0].reviewNeeded,"yes");
+ assert.equal(s.entries[1].reviewNeeded,"yes");
+ assert.equal(s.entries[2].reviewNeeded,"yes");
+ assert.equal(s.entries[1].result,"Regression model");
+ assert.equal(s.entries[2].purpose,"Validate the model");
+ assert.equal(s.completion.stages.C40,"needs-review");
+ assert.equal(s.completion.stages.C60,"needs-review");
+ const restored=normalizeProjectState(JSON.parse(JSON.stringify(s)));
+ assert.equal(restored.entries[2].reviewNeeded,"yes");
+ assert(acknowledgeMathReview(restored,1));
+ assert.equal(restored.entries[1].reviewNeeded,"");
+ assert.equal(restored.entries[1].previousTakeaway,"An upward trend");
+ assert.equal(restored.entries[2].reviewNeeded,"yes");
+});
+test("a student self-confirmation does not silently clear pre-existing teacher approval questions",()=>{
+ const s=state();
+ s.teacher.pendingApproval=true;
+ setCompletionField(s,"permissionStatus","confirmed");
+ assert.equal(s.teacher.pendingApproval,true);
+ assert(completionFlags(s).some(x=>/teacher\/consent concern/i.test(x)));
 });
