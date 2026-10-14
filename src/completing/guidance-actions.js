@@ -43,6 +43,7 @@ export function actOnWritingCue(state,{id,key,action}){
  state.writingLedger[key]=updated;
  // Dismissing one should never unleash an unwanted queue of other messages.
  ui.quietNode=node;
+ ui.quietId=cue.id;ui.quietScope=cue.scope;ui.quietSignature=cue.fingerprint;
  ui.writeKey="";ui.coveredKey="";ui.exampleKey="";
  if(["save-note","written","covered"].includes(action)){ui.locationDraft="";ui.noteDraft="";}
  return{ok:true,record:updated};
@@ -53,7 +54,11 @@ export function writingCueStatus(state,key){
  return item;
 }
 export function quietAutoWritingCue(state,node=state.completion.current){
- return state.completion.guidanceUi.quietNode===node;
+ const ui=state.completion.guidanceUi;
+ if(ui.quietNode!==node||!ui.quietId)return false;
+ const original=eligibleWritingCues(state,node,{includingAcknowledged:true})
+  .find(x=>x.id===ui.quietId&&x.scope===ui.quietScope);
+ return !!original&&original.fingerprint===ui.quietSignature;
 }
 export function writingStatusSummary(state){
  const list=Object.values(state.writingLedger||{}).filter(x=>x&&savedStatus.has(x.status));
