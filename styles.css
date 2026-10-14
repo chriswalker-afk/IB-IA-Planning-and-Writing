@@ -204,3 +204,71 @@ h1,h2,h3,h4,p {margin-top:0} h1,h2,h3,h4 {font-family:Manrope, 'DM Sans', sans-s
 @media(prefers-reduced-motion:reduce){
  .completion-stage-card,.completion-status-options button{transition:none}
 }
+
+
+/* Phase 5 — deliberate, unobtrusive contextual mathematics and writing support. */
+.guidance-writing{border:1px solid #cfe3d8;background:linear-gradient(160deg,#f6fbf8,#fff 78%);border-radius:17px;margin:26px 0 14px;padding:17px 19px;box-shadow:0 7px 26px #234a3926}
+.guidance-heading{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:11px}
+.guidance-heading strong{display:flex;gap:8px;align-items:center;color:var(--teal-dark);font:750 12px/1.35 Manrope,sans-serif}
+.guidance-heading .icon{width:17px;height:17px}
+.guidance-heading>span{font-size:10px;line-height:1.4;color:var(--muted)}
+.guidance-where{display:flex;align-items:center;gap:7px;flex-wrap:wrap;font-size:10px;color:var(--teal-dark);margin-bottom:9px}
+.guidance-where .icon{width:14px;height:14px}
+.guidance-where>span{font-weight:780;letter-spacing:.07em}
+.guidance-where>strong{font-size:11px;font-weight:700;color:var(--muted)}
+.guidance-message{font-size:13.5px;line-height:1.7;color:var(--ink);margin:8px 0 16px}
+.guidance-actions{display:flex;align-items:center;gap:5px 16px;flex-wrap:wrap}
+.guidance-link{border:0;background:transparent;color:var(--teal-dark);font-size:12px;font-weight:760;padding:8px 1px;text-decoration:underline;text-decoration-color:transparent;text-underline-offset:3px;cursor:pointer;text-align:left}
+.guidance-link:hover{text-decoration-color:currentColor}
+.guidance-link:focus-visible{outline:3px solid #b8863b;outline-offset:3px}
+.guidance-actions>.guidance-link:first-child{padding:8px 14px;background:var(--teal);color:white;border-radius:10px;text-decoration:none}
+.guidance-actions>.guidance-link:first-child:hover{background:var(--teal-dark)}
+.guidance-more{margin-top:13px;padding-top:10px;border-top:1px solid var(--line)}
+.guidance-other{margin:9px 0 0;display:flex;flex-direction:column;gap:5px}
+.guidance-other-button{display:flex;flex-direction:column;gap:3px;text-align:left;border:1px solid var(--line);border-radius:10px;background:white;padding:10px 12px;cursor:pointer}
+.guidance-other-button:hover{background:var(--surface-soft);border-color:#c3dbcd}
+.guidance-other-button strong{color:var(--teal-dark);font-size:11px}
+.guidance-other-button span{color:var(--ink);font-size:12px;line-height:1.5}
+.guidance-note-editor,.guidance-example{padding:13px 14px;margin-top:14px;background:white;border:1px solid var(--line);border-radius:12px}
+.guidance-note-editor .field{margin-bottom:13px}
+.guidance-example p{font-size:12px;line-height:1.6;margin-bottom:7px}
+.guidance-small{font-size:11px!important;line-height:1.55!important;color:var(--muted)!important;margin:6px 0 10px!important}
+.guidance-quiet{display:flex;justify-content:flex-end;margin:18px 0 10px}
+.guidance-quiet>.guidance-link{font-size:11px;font-weight:650}
+.guidance-optional{margin:15px 0;border-top:1px solid var(--line);padding-top:7px}
+.guidance-optional>.guidance-link{font-size:12px}
+.guidance-maths-questions{margin:6px 0 12px;padding:11px 14px;background:var(--surface-soft);border-radius:13px}
+.guidance-maths-questions>div{padding:7px 0}
+.guidance-maths-questions>div:not(:last-of-type){border-bottom:1px solid #d6e6da}
+.guidance-maths-questions>div>p{font-size:12px;line-height:1.58;margin:0 0 6px}
+.guidance-limit-body{background:#f8faf8;border:1px solid var(--line);border-radius:13px;padding:13px;margin:7px 0}
+.guidance-limit-option{padding:13px 0;border-top:1px solid var(--line)}
+.guidance-limit-option>strong{font-size:12.5px;font-weight:760;line-height:1.45;display:block}
+.guidance-limit-option>p:not(.guidance-small){font-size:12px;margin:6px 0;line-height:1.55;color:var(--ink)}
+.guidance-limit-controls{display:flex;flex-wrap:wrap;gap:3px 14px;border-top:1px solid var(--line);padding-top:9px}
+.guidance-limit-draft{margin-top:15px;border-radius:12px;padding:14px;background:white;border:1px solid #bcd9cb}
+.guidance-limit-draft>strong{font-size:12px}
+.guidance-limit-draft .field{margin-top:10px;margin-bottom:12px}
+.guidance-bivariate{background:var(--surface-soft);border:1px solid #d5e7dc;border-radius:13px;padding:16px;margin:20px 0}
+.guidance-bivariate h3{font-size:15px;margin-bottom:8px}
+.guidance-bivariate .choice-grid{margin:9px 0 14px}
+.guidance-bivariate-details{display:grid;grid-template-columns:1fr;gap:10px;margin:14px 0}
+.guidance-bivariate-idea{border-top:1px solid #d4e2d8;padding:13px 0 10px}
+.guidance-bivariate-idea>p{font-size:12.5px;margin:0 0 6px;line-height:1.55}
+.guidance-bivariate-idea>.guidance-link{font-size:11px}
+.guidance-conclusion-limits{border:1px solid #d2e2d8;border-radius:12px;padding:13px;margin:14px 0;background:#f7faf7}
+.guidance-conclusion-limits>strong{font-size:12px;color:var(--teal-dark)}
+.guidance-conclusion-limits>div>p{font-size:12px;line-height:1.6;border-top:1px solid var(--line);padding:8px 0;margin:0}
+.guidance-insight{border:1px solid var(--line);border-radius:12px;padding:12px;margin:15px 0;background:#f8faf8}
+.guidance-insight summary{font-size:12px;font-weight:690;color:var(--teal-dark);cursor:pointer}
+.guidance-insight .field{margin-top:12px}
+.guidance-accuracy-select{margin:12px 0 14px}
+@media(max-width:760px){
+ .guidance-writing{padding:13px;margin:20px 0 12px}
+ .guidance-heading{align-items:start}
+ .guidance-actions{gap:4px 10px}
+ .guidance-actions>.guidance-link:first-child{width:100%;text-align:center}
+ .guidance-limit-body,.guidance-bivariate{padding:12px}
+ .guidance-limit-controls{flex-direction:column;align-items:flex-start}
+}
+@media(prefers-reduced-motion:reduce){.guidance-writing,.guidance-other-button{transition:none!important}}
