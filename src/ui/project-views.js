@@ -1,3 +1,4 @@
+import {WRITING_MOMENTS} from "../completing/guidance-catalog.js";
 import {PLANNING_CATALOG} from "../planning/catalog.js";
 import {planningFlags,selectedMaths} from "../planning/engine.js";
 /** Home, student journey map and working-record views. */
@@ -160,6 +161,31 @@ export function createProjectViews(ctx){
       ["How I could adapt",pfields.changeAdaptation],
       ["Credible evidence fallback",pfields.fallbackEvidence]
     ]);
+    const accuracySection=state.completion?.accuracyDecisions?.length?
+      '<h2 style="margin-top:32px">My accuracy and unit decisions</h2>'+
+      state.completion.accuracyDecisions.map(x=>'<div class="summary-block">'+
+        '<strong>'+e(x.quantity)+(x.unit?' ('+e(x.unit)+')':'')+'</strong>'+
+        summary("Source resolution",x.resolution)+summary("Reasonable result accuracy",x.policy)+
+        summary("Why",x.reason)+'</div>').join(""):"";
+    const actualLimitations=state.completion?.confirmedLimitations||[];
+    const limitsSection=actualLimitations.length?
+      '<h2 style="margin-top:32px">Limitations I identified from my actual method or mathematics</h2>'+
+      actualLimitations.map(x=>'<div class="summary-block">'+
+        '<strong>'+e(x.explanation)+'</strong>'+
+        summary("Mathematical consequence",x.consequence)+summary("Check or mitigation",x.mitigation)+
+        summary("Location in my IA (student-entered)",x.location)+'</div>').join(""):"";
+    const ledger=Object.values(state.writingLedger||{}).filter(x=>x&&
+      ["noted","written","already-covered"].includes(x.status));
+    const writingMoments=ledger.length?
+      '<h2 style="margin-top:32px">My saved writing guidance decisions</h2>'+
+      '<p class="text-muted text-small">Private notes are NOT written into your Word or Google Doc. Locations and completion statuses here are the student’s own declarations.</p>'+
+      ledger.slice(-50).map(x=>{
+        const ref=WRITING_MOMENTS.find(w=>w.id===x.id);
+        const status=x.status==="noted"?"Idea saved only in Pathfinder":
+          x.status==="written"?"Student confirmed they updated their IA":"Student said this was already covered";
+        return '<div class="summary-block"><strong>'+e(ref?.location||"Writing location")+'</strong>'+
+          summary("Status",status)+summary("My own location",x.location)+summary("My own note",x.note)+'</div>';
+      }).join(""):"";
     const flagSection=flags.length?'<h2 style="margin-top:32px">Points not yet confirmed</h2>'+
       flags.map(x=>'<div class="summary-block"><strong>'+e(x.title)+'</strong><p>'+e(x.note)+'</p></div>').join("")+
       '<p class="text-muted text-small">These flags are not teacher responses or formal approval decisions.</p>':"";
@@ -179,7 +205,11 @@ export function createProjectViews(ctx){
        '<p class="text-xs text-muted">Status: '+(st.status==="completed"&&filled(st.result)?"Actual result recorded":"Only planned / no actual result recorded")+'</p>'+
        summary("Purpose",st.purpose)+summary("Mathematics",st.technique)+summary("Real result (if completed)",st.status==="completed"&&filled(st.result)?st.result:"No actual result recorded")+
        summary("Interpretation",st.status==="completed"&&filled(st.result)?st.interpretation:"Not yet appropriate")+
-       summary("Limitation",st.limitations)+summary("Next question",st.nextQuestion)+'</div>').join(""):'<p class="text-muted">No mathematics recorded yet.</p>')+
+       summary("Limitation",st.limitations)+summary("What I learned mathematically (optional)",st.mathsInsight)+
+       summary("Beyond-course mathematical idea (only if genuinely used)",["outside","mixed"].includes(st.knowledge)?st.knowledgeNotes:"")+
+       summary("Earlier-result link awaiting review",st.reviewNeeded==="yes"?st.reviewReason:"")+
+       summary("Next question",st.nextQuestion)+'</div>').join(""):'<p class="text-muted">No mathematics recorded yet.</p>')+
+      accuracySection+limitsSection+writingMoments+
       '<h2 style="margin-top:35px">My writing notes</h2>'+summary("Introduction",state.scratch.introduction)+summary("Data & methods",state.scratch.dataNotes)+summary("Conclusion",state.scratch.conclusion)+summary("Revisions",state.scratch.finalReview)+
       '<p class="text-xs text-muted">Student-entered Planning and mathematical notes. This working record is not a mark prediction, approval or formal IA submission.</p></div></div>';
   }
