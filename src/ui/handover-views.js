@@ -74,7 +74,7 @@ export function createHandoverViews(ctx){
    field("planning.fields.prediction","Original prediction (still provisional)","What did you initially expect?",{type:"textarea",rows:2,drawer:true})+
    field("planning.fields.firstAction","First mathematical action in your plan","What might you do first?",{type:"textarea",rows:2,drawer:true})+
    '<div class="handover-warning"><strong>Teacher discussion and permissions</strong>'+
-   (flags.length?'<ul>'+flags.map(x=>'<li>'+e(x.title)+'</li>').join("")+'</ul>':
+   ((flags.length||s.teacher.concerns?.length)?'<ul>'+[...flags.map(x=>x.title),...(s.teacher.concerns||[])].map(x=>'<li>'+e(x)+'</li>').join("")+'</ul>':
     '<p>No additional planning flags are identified. That is not evidence of teacher approval.</p>')+
    '<p>Confirmation records that you reviewed these starting details. It does not confirm consent, source access or syllabus suitability.</p></div>'+
    '<div class="panel-list">'+button("I have reviewed these details","handover-confirm","btn-primary")+
