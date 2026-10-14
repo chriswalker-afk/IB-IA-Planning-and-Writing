@@ -24,7 +24,7 @@ const limitationRelevant=(id,x)=>{
   case "L09":return empirical&&matches(f.dataCleaning,/exclud|remov|filter|missing|imput|omit/);
   case "L10":return empirical&&["secondary","both"].includes(sourceType)&&
    matches(f.actualSource+" "+f.sourceCitation+" "+f.secondaryScope,/merged|combined|multiple.year|different.year|different.source|period/);
-  case "L11":return real&&includes(method,"pmcc")&&matches(f.modelEvidence+" "+tech,/aggregate|group.mean|group.average/);
+  case "L11":return real&&(includes(method,"pmcc")||includes(method,"linear-regression")||includes(method,"spearman"))&&matches(f.modelEvidence+" "+tech,/aggregate|group.mean|group.average/);
   case "L12":return real&&includes(method,"pmcc");
   case "L13":return real&&includes(method,"linear-regression");
   case "L14":return real&&(includes(method,"pmcc")||includes(method,"fitted-model"))&&
@@ -38,7 +38,7 @@ const limitationRelevant=(id,x)=>{
   case "L21":return real&&includes(method,"probability");
   case "L22":return measurementHas(x,/stopwatch|manual.timing|hand.tim/);
   case "L23":return measurementHas(x,/video|frame.rate|frames.per.second|camera/);
-  case "L24":return real&&includes(method,"geometric-model")&&accuracy.length>0&&!theoretical;
+  case "L24":return real&&includes(method,"geometric-model")&&accuracy.some(x=>matches(x.quantity,/length|width|height|radius|diameter|distance|depth|side/))&&!theoretical;
   case "L25":return real&&includes(method,"exponential");
   case "L26":return real&&includes(method,"quadratic-fit")&&empirical;
   case "L27":return real&&includes(method,"sinusoidal");
