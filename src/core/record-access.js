@@ -1,5 +1,5 @@
 /** Minimal, restricted record access for the existing prototype input bindings. */
-const allowed=new Set(["project","scratch","entries","ui","cueNotes","cueLocations"]);
+const allowed=new Set(["project","scratch","entries","ui","cueNotes","cueLocations","planning"]);
 export function readRecordValue(state,path){
   if(typeof path!=="string")return undefined;
   return path.split(".").reduce((o,key)=>o==null?undefined:o[key],state);
@@ -16,6 +16,7 @@ export function updateRecordValue(state,path,value){
   }
   if(target===null||typeof target!=="object")return false;
   const last=segments[segments.length-1];
+  // Planning responses use a fixed predeclared field registry; never allow arbitrary state mutation.
   if(!Object.prototype.hasOwnProperty.call(target,last) &&
      !["cueNotes","cueLocations"].includes(segments[0]))return false;
   target[last]=value;
