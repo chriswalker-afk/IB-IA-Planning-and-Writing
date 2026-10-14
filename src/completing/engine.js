@@ -38,7 +38,7 @@ export const C_FIELD_DEFAULTS=Object.freeze({
  accuracyForResult:"",aimLinkedResult:"",predictionComparison:"",
  benefitFinding:"",surpriseReason:"",surpriseCheck:"",
  nextQuestion:"",nextMethod:"",nextReason:"",nextLocation:"",
- scatterPattern:"",pmccMeaning:"",pmccInterpretation:"",
+ scatterPattern:"",scatterDetail:"",pairedDataType:"",pmccSignal:"",pmccMeaning:"",pmccInterpretation:"",
  technologyTool:"",technologyInput:"",technologyOutcome:"",
  technologyInterpretation:"",courseLevel:"",courseWhy:"",
  researchedMethod:"",researchedUnderstanding:"",mathsLearning:"",
@@ -58,7 +58,11 @@ export function createCompletionState(){
  return {
   current:"C00",history:[],visited:[],transitions:[],fields:{...C_FIELD_DEFAULTS},
   stages:Object.fromEntries(C_MAJOR_STAGES.map(x=>[x.id,"not-started"])),
-  activeEntryIndex:-1,nextFromEntryId:"",scatterPatternForEntryId:"",returnTo:"",latestMeaningfulNode:"",
+  activeEntryIndex:-1,nextFromEntryId:"",scatterPatternForEntryId:"",scatterDetailForEntryId:"",returnTo:"",latestMeaningfulNode:"",
+  guidanceUi:{writeKey:"",exampleKey:"",expanded:false,mathsExpanded:false,limitPage:0,limitDraftVisible:false,
+   limitNoneKey:"",locationDraft:"",noteDraft:""},
+  limitationDraft:{id:"",entryId:"",explanation:"",consequence:"",mitigation:"",location:""},
+  confirmedLimitations:[],
   sourceVersion:"2026-10-14",helpersExpanded:false,stageExpanded:false,
   accuracyDecisions:[],confirmedCurrentAimAt:"",notices:[]
  };
@@ -81,10 +85,26 @@ export function normalizeCompletionState(data,project={}){
   history:ids(v.history),visited:ids(v.visited),transitions,
   fields,stages:states,accuracyDecisions:accuracy,
   activeEntryIndex:Number.isInteger(v.activeEntryIndex)?Math.max(-1,Math.min(119,v.activeEntryIndex)):-1,
-  nextFromEntryId:str(v.nextFromEntryId).slice(0,160),scatterPatternForEntryId:str(v.scatterPatternForEntryId).slice(0,160),
+  nextFromEntryId:str(v.nextFromEntryId).slice(0,160),scatterPatternForEntryId:str(v.scatterPatternForEntryId).slice(0,160),scatterDetailForEntryId:str(v.scatterDetailForEntryId).slice(0,160),
   returnTo:validNode(v.returnTo)?v.returnTo:"",
   latestMeaningfulNode:validNode(v.latestMeaningfulNode)?v.latestMeaningfulNode:"",
   confirmedCurrentAimAt:str(v.confirmedCurrentAimAt),
+  guidanceUi:{
+   ...base.guidanceUi,
+   ...Object.fromEntries(Object.keys(base.guidanceUi).filter(k=>typeof v.guidanceUi?.[k]===typeof base.guidanceUi[k])
+    .map(k=>[k,typeof base.guidanceUi[k]==="string"?v.guidanceUi[k].slice(0,3000):v.guidanceUi[k]]))
+  },
+  limitationDraft:{
+   ...base.limitationDraft,
+   ...Object.fromEntries(Object.keys(base.limitationDraft).filter(k=>typeof v.limitationDraft?.[k]==="string")
+    .map(k=>[k,v.limitationDraft[k].slice(0,4000)]))
+  },
+  confirmedLimitations:Array.isArray(v.confirmedLimitations)?v.confirmedLimitations.filter(x=>x&&typeof x==="object")
+   .slice(0,100).map(x=>({id:str(x.id).slice(0,30),sourceId:str(x.sourceId).slice(0,30),
+    stage:str(x.stage).slice(0,30),entryId:str(x.entryId).slice(0,160),
+    explanation:str(x.explanation).slice(0,5000),consequence:str(x.consequence).slice(0,5000),
+    mitigation:str(x.mitigation).slice(0,3000),location:str(x.location).slice(0,500),
+    at:str(x.at).slice(0,80)})):[],
   sourceVersion:"2026-10-14",notices:[]};
 }
 export function completionStage(id,state=null){
@@ -125,7 +145,7 @@ export function latestRealResult(state){
 const genuinelyDone=entry=>entry?.status==="completed"&&str(entry.result).trim();
 export const isPearsonResult=entry=>!!(genuinelyDone(entry)&&
  /(?:\bpmcc\b|\bpearson(?:'s)?\b|product.moment correlation)/i.test(
-  str(entry.technique)+" "+str(entry.title)));
+  str(entry.technique)+" "+str(entry.title)+" "+str(entry.methodId)));
 export const isScatterResult=entry=>!!(genuinelyDone(entry)&&
  (entry.kind==="scatter"||/\bscatter\b/i.test(str(entry.technique)+" "+str(entry.title))));
 /** The chosen real result to build upon, or the latest one on general entry. */
@@ -182,6 +202,9 @@ export function setCompletionField(state,key,value){
  c.fields[key]=str(value).slice(0,20000);
  if(key==="scatterPattern"){
   c.scatterPatternForEntryId=scatterForNext(state)?.id||"";
+ }
+ if(key==="scatterDetail"){
+  c.scatterDetailForEntryId=scatterForNext(state)?.id||"";
  }
  const stage=completionStage(c.current,state);
  if(stage&&c.stages[stage]==="complete"&&previous!==c.fields[key])
