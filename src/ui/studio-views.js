@@ -1,6 +1,6 @@
 /** Completing/Studio views. UI remains familiar while Phase 4 replaces the illustrative C-node prompts. */
 export function createStudioViews(ctx){
-  const {icon,e,choose,field,note,summary,button,cue,panelCard,studioSections,sheetTitle,tabletNav}=ctx;
+  const {icon,e,choose,field,note,summary,button,cue,filled,panelCard,studioSections,sheetTitle,tabletNav}=ctx;
   function tabButtons() {
     const state = ctx.getState();
     return '<div class="segment" role="group" aria-label="IA Studio stages">'+
