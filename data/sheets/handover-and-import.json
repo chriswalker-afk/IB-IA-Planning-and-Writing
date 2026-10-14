@@ -1,0 +1,2700 @@
+{
+  "schemaVersion": 1,
+  "sourceSheet": "Handover & Import",
+  "sourceBounds": {
+    "rows": 280,
+    "columns": 9
+  },
+  "rowCount": 208,
+  "nonemptyCellCount": 1648,
+  "rows": [
+    {
+      "row": 1,
+      "cells": [
+        "HANDOVER & REIMPORT  |  Planning → Completing"
+      ]
+    },
+    {
+      "row": 2,
+      "cells": [
+        "Direct handover and reuploaded PDFs/DOCX must also restore the intended beneficiary and meaningful use of the findings, not just an aim and the mathematics."
+      ]
+    },
+    {
+      "row": 3,
+      "cells": [
+        "Imported personal-benefit/advice fields are editable. In Completing, revisit them in the introduction and conclusion against actual findings; never presume a promised recommendation is justified."
+      ]
+    },
+    {
+      "row": 4,
+      "cells": [
+        "Generated documents need a versioned resume payload plus readable labels; arbitrary/scanned documents get partial/manual recovery."
+      ]
+    },
+    {
+      "row": 5,
+      "cells": [
+        "Teacher flags carry forward. The planning ratings are snapshots, not IB grades or fresh assessments."
+      ]
+    },
+    {
+      "row": 6,
+      "cells": [
+        "SPECIFICATION ONLY — document parsing, progress saving and upload screens have not been implemented yet."
+      ]
+    },
+    {
+      "row": 8,
+      "cells": [
+        "Field key",
+        "Planning information",
+        "Planning source",
+        "Where used in Completing",
+        "Prepopulation policy",
+        "On import / update",
+        "If missing",
+        "Safeguard / special note",
+        "Status"
+      ]
+    },
+    {
+      "row": 9,
+      "cells": [
+        "plan.title",
+        "Working IA title / investigation aim",
+        "N01",
+        "C02, C03, C10, C60",
+        "Prefill editable",
+        "Confirm changes since planning",
+        "Ask student to enter aim",
+        "Never generate an introduction automatically",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 10,
+      "cells": [
+        "plan.motivation",
+        "Personal relevance and possible usefulness",
+        "N01, N01P",
+        "C10, C60",
+        "Prefill editable",
+        "Keep student's own language",
+        "Optional, show 'To confirm'",
+        "Do not invent personal engagement",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 11,
+      "cells": [
+        "plan.course",
+        "IB Maths course",
+        "N04, N04T",
+        "C02, C03, C40, C90",
+        "Prefill editable",
+        "Confirm AA SL, AI SL or other",
+        "Ask once if absent",
+        "Do not apply wrong-course suitability rules",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 12,
+      "cells": [
+        "plan.route",
+        "Statistics / modelling / no-data / unsure",
+        "N02",
+        "C02, C04, C20, C40",
+        "Prefill editable",
+        "Allow route to evolve when evidence changes",
+        "Ask route when needed",
+        "No-data ideas remain teacher-reviewed",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 13,
+      "cells": [
+        "plan.prediction",
+        "Predicted pattern/result or conjecture",
+        "N01P, N08",
+        "C10, C30, C40, C60",
+        "Prefill editable",
+        "Ask whether actual results agree",
+        "Optional, 'Not sure' allowed",
+        "Prediction is NOT a finding",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 14,
+      "cells": [
+        "plan.predictionWhy",
+        "Student's reasons for prediction",
+        "N01P",
+        "C10, C30, C60",
+        "Prefill editable",
+        "Keep exact explanation, allow updates",
+        "Optional",
+        "Do not fabricate reasoning",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 15,
+      "cells": [
+        "plan.dataMode",
+        "Primary / secondary / both",
+        "N03",
+        "C02, C20",
+        "Prefill editable",
+        "Confirm still applies",
+        "Optional for theoretical route",
+        "No irrelevant data prompts on no-data route",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 16,
+      "cells": [
+        "plan.variables",
+        "Measurements, variables, units, population",
+        "N03P, N03S",
+        "C20, C30, C40",
+        "C20 / C25, C30, C40, C70",
+        "Review current variables, symbols and units. Prefer meaningful names such as h for height and t for time; do not auto-label every quantity x or y.",
+        "Prompt when relevant",
+        "Never import identifiable participant records",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 17,
+      "cells": [
+        "plan.primaryMethod",
+        "Where/when/how/equipment/sampling",
+        "N03P, N03J",
+        "C20, C30",
+        "Prefill editable",
+        "Compare planned primary collection with actual method, sampling/census rationale, precision and limits. Never infer data were collected merely because a plan was imported.",
+        "Relevant primary routes only",
+        "Respect consent, safeguarding and approvals",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 18,
+      "cells": [
+        "plan.secondarySource",
+        "Original dataset URL, publisher, subset",
+        "N03S",
+        "C20, C70",
+        "Prefill editable",
+        "Retain clickable provenance, recheck links",
+        "Relevant secondary routes only",
+        "Do not embed entire raw datasets in report/import",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 19,
+      "cells": [
+        "plan.methodChoice",
+        "Reason for selected method and limitations",
+        "N03J",
+        "C20, C40, C60",
+        "Prefill editable",
+        "Carry Planning's alternative method/source rationale into C22, but distinguish what was considered from what was ACTUALLY done.",
+        "Optional",
+        "Student's rationale, not a fixed template",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 20,
+      "cells": [
+        "plan.initialMaths",
+        "Final student-selected techniques (incl. Other)",
+        "N04S, N04R",
+        "C02, C40, C50",
+        "Prefill editable",
+        "Reopen and revise maths as investigation develops",
+        "Offer course-appropriate choices, Other",
+        "Distinguish student selections from suggestion list",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 21,
+      "cells": [
+        "plan.firstRepresentation",
+        "Proposed initial graph/table/diagram/simple case",
+        "N05V",
+        "C30",
+        "Prefill editable",
+        "Confirm what was actually produced",
+        "Optional",
+        "Planned ≠ completed",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 22,
+      "cells": [
+        "plan.firstMathsAction",
+        "First meaningful calculation/analysis",
+        "N05",
+        "C40, C50",
+        "Prefill editable",
+        "Check whether completed and what was learnt",
+        "'To decide' valid",
+        "Do not auto-write mathematics",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 23,
+      "cells": [
+        "plan.dataTiming",
+        "First usable / complete dataset target dates",
+        "N03D",
+        "C02, C20, C80",
+        "Prefill editable",
+        "Mark scheduled dates as historical until confirmed",
+        "N/A for no-data route",
+        "Never treat planned date as actual completion",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 24,
+      "cells": [
+        "plan.milestones",
+        "School deadlines and self-planned checkpoints",
+        "N03H",
+        "C02, C04, C80, C90",
+        "Prefill editable",
+        "Confirm dates / recompute progress reminders",
+        "School date unknown → To confirm",
+        "No invented school deadlines",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 25,
+      "cells": [
+        "plan.risks",
+        "Important data/sampling/operational limitations",
+        "N03E, N03F, N03G",
+        "C03, C20, C50, C60",
+        "C02, C03, C20–C26, C50, C60",
+        "Import earlier risk notes, then store limitations/mitigation and justified acceptability from actual data collection separately in the completion progress record.",
+        "Optional",
+        "Do not flood student with generic warnings",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 26,
+      "cells": [
+        "plan.scores",
+        "Data-readiness /5 and completion ease /5",
+        "N03E, N03G",
+        "C02 (past snapshot), C03",
+        "Reference-only dated scores",
+        "Show 'As assessed during planning'; do not re-score silently",
+        "N/A / Not yet assessed",
+        "Never present as an IA mark or topic approval",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 27,
+      "cells": [
+        "plan.teacherFlags",
+        "Permission, consent, no-data, course-method flags",
+        "N02T, N04T, N08",
+        "C02, C03; persistent contextual banner",
+        "Carry forward unresolved flags",
+        "Resolve only with explicitly entered update/confirmation",
+        "If ambiguous → 'Review needed'",
+        "Cannot infer consent or teacher approval from upload",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 28,
+      "cells": [
+        "plan.teacherQuestions",
+        "Student's questions / intended check-in",
+        "N06T, N08",
+        "C03, C80",
+        "Prefill editable",
+        "Use prior questions as starting point",
+        "Optional",
+        "Do not assume teacher has responded",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 29,
+      "cells": [
+        "plan.nextStep",
+        "Immediate student-selected next action",
+        "N05, N06",
+        "C04, C30, C40",
+        "Prefill editable",
+        "Offer continue here, not automatic task completion",
+        "Ask what they want to do next",
+        "Keep student commitments distinct from site suggestions",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 30,
+      "cells": [
+        "plan.adaptations",
+        "Expected adjustments/alternative methods",
+        "N06E",
+        "C03, C50, C60",
+        "Reference with editable update",
+        "Compare original and current direction",
+        "Optional",
+        "Project can evolve while recording why",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 31,
+      "cells": [
+        "plan.topicOptions",
+        "Previously considered alternative ideas",
+        "N00C",
+        "C02 reference panel (collapsed)",
+        "Reference-only (optional)",
+        "Do not compete with current aim",
+        "Omit if none",
+        "Avoid asking to re-evaluate discarded topics",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 32,
+      "cells": [
+        "plan.identifier",
+        "Optional plan label / student-selected code",
+        "N07 output",
+        "C00, C02, C91",
+        "Opt-in only",
+        "Use for identifying own versions if chosen",
+        "Use 'My IA' default",
+        "No automatic collection of participant/personal details",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 33,
+      "cells": [
+        "meta.schema",
+        "Schema and source document version/date",
+        "N07 output",
+        "C01, C02, C91 (system)",
+        "Required when Pathfinder export",
+        "Validate source and migration; never treat as teacher approval",
+        "Try human-readable fallback",
+        "Preserve source date and provenance",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 34,
+      "cells": [
+        "plan.benefitType",
+        "Personal benefit, advice to someone else, both or not yet decided",
+        "N01V",
+        "C02, C10, C60, C90",
+        "Prefill editable",
+        "Confirm chosen purpose as the investigation develops",
+        "To confirm with teacher / Not yet decided",
+        "Never require students to promise a positive result or contrived external impact",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 35,
+      "cells": [
+        "plan.beneficiary",
+        "Who could benefit: student themself, role/group, or both",
+        "N01V",
+        "C02, C10, C60",
+        "Prefill editable",
+        "When beneficiary is edited during prediction, overwrite the same confirmed field, not a duplicate; preserve previous student work and review any implication that may now be stale.",
+        "Optional: Me / To decide",
+        "Only the role/group is needed, not identifiable participant details",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 36,
+      "cells": [
+        "plan.intendedUse",
+        "What the result might help someone decide, improve or understand; why that matters",
+        "N01V",
+        "C02, C10, C60, C90",
+        "Prefill editable",
+        "Update as needed after revisiting the beneficiary and predicted implications; later, compare projected use with actual evidence rather than claiming the prediction came true.",
+        "To be confirmed; offer a teacher question",
+        "Cautious or inconclusive findings can still be meaningful; do not fabricate recommendations",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 37,
+      "cells": [
+        "plan.predictionImplication",
+        "Student's answer: IF the prediction were true, what it would mean for the chosen beneficiary, and what choice or advice might follow",
+        "N01P (P06), N01V",
+        "C02, C10, C30, C60, C90",
+        "Prefill editable; preserve student wording and hypothetical status",
+        "Re-evaluate after beneficiary edits; compare anticipated implication with observed evidence in Completing",
+        "'Not sure yet' or 'To be confirmed' rather than an invented consequence",
+        "Never call a prediction a result or imply that its expected advice is proven; use latest confirmed beneficiary, not an older value",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 38,
+      "cells": [
+        "REUPLOAD / RESUME BEHAVIOUR  |  Acceptance criteria and important fallbacks"
+      ]
+    },
+    {
+      "row": 41,
+      "cells": [
+        "Rule ID",
+        "Scenario / trigger",
+        "Student experience",
+        "Technical target",
+        "Fallback / edge case",
+        "What must be retained",
+        "Privacy or safety",
+        "Planning status",
+        "Notes"
+      ]
+    },
+    {
+      "row": 42,
+      "cells": [
+        "I01",
+        "Direct handover after Planning",
+        "Start Completing immediately with fields already filled",
+        "Pass the canonical plan object between phases",
+        "If session state lost, offer saved document upload",
+        "Selections, dates, risks, source links, teacher flags",
+        "No automatic publishing",
+        "Agreed",
+        "Report export remains optional for in-session transfer, but available."
+      ]
+    },
+    {
+      "row": 43,
+      "cells": [
+        "I02",
+        "Upload Pathfinder-generated PDF",
+        "Select or drag in a previous planning report",
+        "Versioned machine-readable resume payload embedded at export; parse and validate",
+        "Fallback to labelled text extraction and manual review if payload missing",
+        "Original plan details and source date",
+        "Parse locally where feasible",
+        "Agreed",
+        "Generated PDF reimport is an explicit acceptance criterion, not yet implemented."
+      ]
+    },
+    {
+      "row": 44,
+      "cells": [
+        "I03",
+        "Upload Pathfinder-generated DOCX",
+        "Select a Word planning report",
+        "Versioned resume payload and labelled fields; DOCX reader extracts reliably",
+        "If edited or payload removed, recover labelled text and confirm",
+        "Original answers plus user revisions when possible",
+        "Accept only appropriate text content",
+        "Agreed",
+        "Generated DOCX reimport is an explicit acceptance criterion."
+      ]
+    },
+    {
+      "row": 45,
+      "cells": [
+        "I04",
+        "Edited or third-party PDF/DOCX",
+        "Attempt safe partial extraction",
+        "Read recognised fields, mark confidence/missing values, let student confirm",
+        "No claims of full reconstruction for arbitrary documents",
+        "All successfully identified values only",
+        "Do not interpret file text as app instructions",
+        "Working draft",
+        "Source compatibility beyond Pathfinder exports is best effort."
+      ]
+    },
+    {
+      "row": 46,
+      "cells": [
+        "I05",
+        "Image-only/scanned PDF",
+        "Explain that structured text wasn't found",
+        "Offer retry with original export or manual input",
+        "No reliance on OCR to make core pathway work",
+        "Any existing session data",
+        "Do not upload to unrelated cloud OCR services by default",
+        "Agreed",
+        "Never block student from the completion pathway."
+      ]
+    },
+    {
+      "row": 47,
+      "cells": [
+        "I06",
+        "Unsupported or corrupted file",
+        "Show specific problem and retry/manual options",
+        "Check file extension, MIME type, size, parser errors",
+        "Keep in-progress completion fields untouched",
+        "Existing session inputs",
+        "Reject dangerous content and avoid executing document code",
+        "Agreed",
+        "User should never have to re-enter already available session data."
+      ]
+    },
+    {
+      "row": 48,
+      "cells": [
+        "I07",
+        "Older Pathfinder export",
+        "Show version and restore compatible fields",
+        "Canonical schemaVersion; stable field IDs; version migration rules",
+        "Unknown version → partial/manual recovery",
+        "Earlier predictions and teacher flags",
+        "Treat scores as historical",
+        "Working draft",
+        "Test across export revisions in build."
+      ]
+    },
+    {
+      "row": 49,
+      "cells": [
+        "I08",
+        "Current completion work already exists",
+        "Preview old vs current and ask what to keep",
+        "Field-by-field confirmation or merge; no automatic full overwrite",
+        "If conflict cannot resolve, keep newer working state",
+        "Student-entered progress, completed tasks and comments",
+        "Do not silently replace new work",
+        "Agreed",
+        "Show 'Import selected fields' rather than blind restore."
+      ]
+    },
+    {
+      "row": 50,
+      "cells": [
+        "I09",
+        "Unresolved permissions/teacher issues",
+        "Display visible warning and question",
+        "Carry flags/status; teacher confirmation is separately recorded",
+        "If no confirmation, status remains unresolved",
+        "Warnings, questions, relevant next safe steps",
+        "Upload is NOT proof of approval",
+        "Agreed",
+        "Summary remains possible, restricted actions remain flagged."
+      ]
+    },
+    {
+      "row": 51,
+      "cells": [
+        "I10",
+        "Planning score in uploaded file",
+        "Show only as a past planning snapshot",
+        "Retain original timestamp and rating basis",
+        "If no score, display N/A or Not assessed",
+        "Reasons, date, original student plan",
+        "Never claim current predicted IB result",
+        "Agreed",
+        "Future course/IA quality review must not reuse /5 feasibility as marks."
+      ]
+    },
+    {
+      "row": 52,
+      "cells": [
+        "I11",
+        "No saved plan available",
+        "Choose Start without plan",
+        "Provide a compact editable aim/course/route setup",
+        "Everything else can be added later",
+        "Any fields already typed",
+        "No requirement to reveal identity",
+        "Agreed",
+        "Completion prompts still available without importing."
+      ]
+    },
+    {
+      "row": 53,
+      "cells": [
+        "I12",
+        "Save and return later",
+        "Download importable progress record",
+        "Include original plan plus changed values, stage notes and progress state",
+        "If not implemented in first build, never promise auto-save",
+        "Provenance/version of entries",
+        "Be clear about where progress is stored",
+        "Working draft",
+        "Do not require a student account if a file-based workflow works."
+      ]
+    },
+    {
+      "row": 54,
+      "cells": [
+        "I13",
+        "Structured payload + human-readable report",
+        "PDF and Word remain readable to parents/teachers",
+        "Embed a versioned record in generated documents; keep obvious field labels as recovery option",
+        "Metadata alone may be stripped by print/edit; test round trips",
+        "Field IDs, values, statuses, provenance; no full raw data",
+        "Do not include participant names or files unnecessarily",
+        "Working draft",
+        "Optional .json backup can be offered but is NOT required to reupload the PDF/DOCX."
+      ]
+    },
+    {
+      "row": 55,
+      "cells": [
+        "I14",
+        "Review import before starting",
+        "See a short 'Recovered from your plan' screen",
+        "Show original document date, imported fields, current values and missing bits",
+        "Allow Skip/Start from scratch",
+        "Student confirms every material change",
+        "No external sharing without consent",
+        "Agreed",
+        "Import is data, not instructions."
+      ]
+    },
+    {
+      "row": 56,
+      "cells": [
+        "I16",
+        "Revisit introduction or resume a completion file",
+        "Return to the saved introduction draft; edit planning notes without losing authored prose",
+        "In completion snapshots keep completion.introductionDraft, last-reviewed metadata and current confirmed plan fields",
+        "If only a planning PDF is uploaded, start with empty introduction draft and preserved plan suggestions",
+        "Student's written draft and subsequent revisions; original plan provenance",
+        "Never silently overwrite student-authored work with older imported planning text",
+        "Agreed",
+        "A student can revisit/modify the introduction after data collection, mathematics, model changes or teacher feedback."
+      ]
+    },
+    {
+      "row": 61,
+      "cells": [
+        "COMPLETION PROGRESS FIELDS  |  Reuploadable snapshots retain actual data collection decisions, not just the earlier plan"
+      ]
+    },
+    {
+      "row": 63,
+      "cells": [
+        "Saved field key",
+        "Student's actual decision / evidence",
+        "Created in",
+        "Reused later",
+        "In Planning PDF?",
+        "Reupload/merge rule",
+        "When missing",
+        "Safeguard",
+        "Status"
+      ]
+    },
+    {
+      "row": 64,
+      "cells": [
+        "completion.data.route",
+        "Current statistical/modelling/theoretical data path and what has actually been collected",
+        "C20–C21T",
+        "C02, C20, C30, C40",
+        "No — completion snapshot only",
+        "Keep the most recent student-confirmed route and actual status",
+        "Unconfirmed / To be reviewed",
+        "Planned ≠ collected",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 65,
+      "cells": [
+        "completion.data.methodsConsidered",
+        "Realistic alternative methods or source datasets with context-specific pros/cons",
+        "C22",
+        "C30, C40, C60",
+        "No — completion snapshot only",
+        "Keep original alternatives and later revisions with dates if available",
+        "Still to compare",
+        "Don't fabricate a method the student never considered",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 66,
+      "cells": [
+        "completion.data.chosenWhy",
+        "What method/source was actually used and why it best suits the aim",
+        "C22",
+        "C30, C40, C60",
+        "No — completion snapshot only",
+        "Never silently overwrite student explanations with the older plan",
+        "Still to confirm",
+        "Link choice to meaningful aim and audience",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 67,
+      "cells": [
+        "completion.data.sampleCensus",
+        "Target population, census/sampling options, chosen selection method, scale and bias",
+        "C21S",
+        "C30, C40, C60",
+        "No — completion snapshot only",
+        "Only statistics/empirically sampled route; preserve selected labels and reasoning",
+        "Not applicable when no population or sample",
+        "Don't claim simple random sampling for convenience data",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 68,
+      "cells": [
+        "completion.data.modelInputs",
+        "Model parameters, evidence sources, assumptions, domain and validation plan",
+        "C21M",
+        "C30, C40, C50, C60",
+        "No — completion snapshot only",
+        "Preserve original parameters/assumptions and later accepted changes",
+        "Not applicable unless modelling",
+        "A model can use theoretical values; no fake measurements",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 69,
+      "cells": [
+        "completion.data.limitations",
+        "Mathematical limitations of actual method/data/model, effects on results or inferences, mitigation attempted, and justified scope of conclusions",
+        "C23",
+        "C30, C40, C50, C60, C90",
+        "No — completion snapshot only",
+        "Store confirmed collection-stage limitations with source method, consequences and applicability. Calculations/test-specific limitations are stored separately at C40/C50 when the student actually uses those techniques, never prefilled from proposed course maths.",
+        "Awaiting real collection",
+        "Examples depend on plan.route, plan.initialMaths and plan.prediction plus confirmed sampling, source, assumptions, model type and measurement resolution. No selection implies a limitation actually exists.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 70,
+      "cells": [
+        "completion.data.accuracyInputs",
+        "Per-quantity source/measurement record: symbol, meaning, units, actual resolution or stated uncertainty, provenance, and any reliability qualifier. Don't infer uncertainty solely from displayed decimals.",
+        "C24",
+        "C30, C40, C50, C60, C70, C90",
+        "No — completion snapshot only",
+        "Persist original source values and recorded resolution; re-check only if measurement/source/units change, then flag affected later figures/results.",
+        "No quantitative input / Pending",
+        "Do not guess instrument accuracy or confuse resolution with bias",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 71,
+      "cells": [
+        "completion.data.accuracyPolicy",
+        "Student-justified input accuracy and working-versus-reported precision policy; carry forward as context, not a hard number-of-decimals rule for all derived quantities.",
+        "C24",
+        "C30, C40, C50, C60, C70, C90",
+        "No — completion snapshot only",
+        "Reuse in relevant figure/calculation prompts; never override a student's later context-specific precision justification silently.",
+        "No measurement yet / To decide",
+        "Keep extra internal precision, round presentation appropriately",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 72,
+      "cells": [
+        "completion.data.variables",
+        "Chosen meaningful symbols, precise meaning and units for important data variables",
+        "C25",
+        "C30, C40, C50, C70, C90",
+        "No — completion snapshot only",
+        "Use stable symbols across future content, review conflicts",
+        "Define when introduced",
+        "Do not auto-label x/y; clear conventional notation is allowed",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 73,
+      "cells": [
+        "completion.data.terms",
+        "Specialist non-mathematical terms needed for collection, plus when introduced",
+        "C25",
+        "C10, C20, C30, C40, C70",
+        "No — completion snapshot only",
+        "Update definitions as used; do not replace existing wording without review",
+        "None required / Later at first use",
+        "Mathematical terminology arising later is just-in-time",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 74,
+      "cells": [
+        "completion.data.processingSources",
+        "Data exclusions/cleaning, source URLs, permissions and original method description",
+        "C20–C26",
+        "C30, C40, C60, C70",
+        "No — completion snapshot only",
+        "Keep provenance; do not overwrite later collection changes",
+        "Missing source / Pending permissions",
+        "Never import identifiable participant records as plan metadata",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 75,
+      "cells": [
+        "completion.data.aimLink",
+        "Why the evidence collected can address the student's aim and intended beneficiary",
+        "C26",
+        "C30, C40, C60, C90",
+        "No — completion snapshot only",
+        "Review if intended audience, method or aim changes",
+        "To be confirmed",
+        "Do not promise a result the data cannot justify",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 76,
+      "cells": [
+        "completion.data.methodTags",
+        "Optional confirmed method/data descriptors (e.g. sampling:voluntary; measurement:video; source:secondary) for relevant example matching",
+        "C20–C23",
+        "C23, C24, C40, C50",
+        "No — completion snapshot only",
+        "Store only tags the student explicitly selected or confirmed; update if data/method changes",
+        "Leave blank and show an on-demand general guide",
+        "Do not infer detailed sampling/measurement design from vague free text",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 77,
+      "cells": [
+        "completion.data.limitationReview",
+        "Stage-tagged optional example IDs the student confirmed or dismissed, actual mathematical consequences, checks and justified scope (separate collection and analysis records)",
+        "C23 (collection) and C40/C50 (active mathematics)",
+        "C24, C30, C40, C50, C60, C91",
+        "No — completion snapshot only",
+        "Store chosen ID, current stage, active method at the time, applicability decision and student explanation. On stage changes, show only appropriate NEW suggestions; recall previous confirmed limits as context rather than resuggesting them.",
+        "None selected is permitted",
+        "Never infer an active mathematical technique from Planning selections alone. Never force a prior example into student writing or surface it in the wrong section.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 79,
+      "cells": [
+        "IMPORTANT: A saved Planning PDF/DOCX can restore planned methods and estimates, but C20–C26 captures what was ACTUALLY collected, which alternatives were considered and the student's current precision rationale. Only a later completion progress snapshot can restore these new fields. All imported values are editable; don't silently replace newer work."
+      ]
+    },
+    {
+      "row": 83,
+      "cells": [
+        "STAGE-SPECIFIC LIMITATION MATCHING  |  Actual current work, not proposed maths"
+      ]
+    },
+    {
+      "row": 85,
+      "cells": [
+        "Saved field key",
+        "Current student state",
+        "Set/updated at",
+        "Used at",
+        "From Planning?",
+        "Matching behaviour",
+        "If absent",
+        "Safeguard",
+        "Status"
+      ]
+    },
+    {
+      "row": 86,
+      "cells": [
+        "completion.currentStage",
+        "The active section: collection C20–C26; first representation C30; mathematical exploration C40/C50; or conclusion C60",
+        "C04, C20, C30, C40, C50, C60",
+        "Optional suggestions only within their permitted stage",
+        "No — derived from current student navigation",
+        "First filter Limitation Examples!K9:K46 by the currently active section, before any maths/data relevance checks",
+        "No limitation examples until stage known",
+        "'Show more' uses the SAME stage filter; no cross-section leak",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 87,
+      "cells": [
+        "completion.math.activeTechnique",
+        "Actual technique/test/model now being performed or interpreted, distinguished from course mathematics merely proposed during Planning",
+        "C40, C50",
+        "C40–C50 limitation matching",
+        "NO: plan.initialMaths is a proposal, not an activation signal",
+        "After stage filter, match known current calculation to relevant maths IDs + the specific prerequisite in Limitation Examples!L9:L46",
+        "No technique-specific suggestions when mathematics has not started",
+        "Don't infer active PMCC from a linear prediction or a tentative maths selection",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 88,
+      "cells": [
+        "completion.limitations.stageLedger",
+        "Student-confirmed/dismissed example IDs with stage, underlying method/technique, rationale, mathematical consequence and review state",
+        "C23, C24, C40, C50",
+        "C60 revisits only confirmed effects; C91 resumes this state",
+        "No — created during Completing",
+        "Retain confirmations. On method changes, mark previous context for optional review, but do not insert or suggest automatically",
+        "None apply is valid; student may write their own",
+        "Don't turn an example into an IA paragraph or resurface mismatched suggestions",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 92,
+      "cells": [
+        "FIRST EXPLORATION HANDOVER  |  Preserve selected diagram, reasoning, observations and next steps"
+      ]
+    },
+    {
+      "row": 94,
+      "cells": [
+        "Saved field key",
+        "What the student actually entered",
+        "Set/updated at",
+        "Used later",
+        "From Planning?",
+        "Resume/merge rule",
+        "Missing state",
+        "Guardrail",
+        "Status"
+      ]
+    },
+    {
+      "row": 95,
+      "cells": [
+        "completion.initial.startChoice",
+        "Student-selected first graph / concise calculation / small example / None or Not ready",
+        "C31",
+        "C32, C33, C34, C35, C91",
+        "Planning suggestion may be prefilled, but actual choice unconfirmed",
+        "Keep latest confirmed option, preserve Earlier plan suggestion separately",
+        "Not yet chosen; blank or None valid",
+        "No diagram is compulsory; never claim a proposed figure was made",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 96,
+      "cells": [
+        "completion.initial.reason",
+        "Student's own short explanation of WHY this figure/calculation advances the aim",
+        "C32",
+        "C33, C34, C40, C91",
+        "Aim, who benefits, planned first representation",
+        "Update editable text; preserve if aim changes, flag for review",
+        "To decide",
+        "Avoid copied course-level how-to or auto-generated prose",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 97,
+      "cells": [
+        "completion.initial.variables",
+        "Symbols, meaning, units and specialist terms defined BEFORE first figure/calculation",
+        "C32",
+        "C33, C40, C50, C70",
+        "C25 variables and data definitions if already confirmed",
+        "Keep consistent definitions, ask confirmation if changed",
+        "Define when introduced",
+        "Prefer meaningful symbols, never x/y by default",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 98,
+      "cells": [
+        "completion.initial.figureReference",
+        "Optional image/figure number, its location, description and actual source, or reference to concise calculation",
+        "C33",
+        "C34, C35, C40, C70",
+        "No actual finished figure from Planning",
+        "Save student description/link if supplied; actual file may need separate safe attachment support",
+        "No figure yet / skipped",
+        "Progress file cannot guarantee embedded figure recovery until built; no silent assumption it exists",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 99,
+      "cells": [
+        "completion.initial.figureChecks",
+        "Relevant diagram checklist responses, including axes/units, accuracy, single-page print, appearance, duplicates and table-length rule",
+        "C33",
+        "C35, C70, C90",
+        "Accuracy notes from C24; symbols from C25",
+        "Only ask diagram checks when diagram exists; retain confirmed checks",
+        "Not assessed",
+        "Do not force axis checks onto purely symbolic calculations",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 100,
+      "cells": [
+        "completion.initial.observation",
+        "What the student ACTUALLY notices from first representation/calculation, compared with prediction",
+        "C34",
+        "C35, C40, C50, C60",
+        "Aim, prediction, actual data; not a pre-written finding",
+        "Save genuine observation; allow later revision when interpretation changes",
+        "No evidence/Not started",
+        "Never fill from prediction alone or infer causation automatically",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 101,
+      "cells": [
+        "completion.initial.nextQuestion",
+        "Student's explanation of the logical NEXT mathematical step and why it follows from the evidence",
+        "C35",
+        "C40, C50, C60, C91",
+        "Current chosen maths and actual observed feature",
+        "Preserve student's action, update if method changes",
+        "To be confirmed",
+        "No automatic launch of unstarted PMCC/model; limits activate only when technique is in use",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 102,
+      "cells": [
+        "completion.initial.figureReuse",
+        "Figure purpose, optional side-by-side comparison and reuse/omission decision",
+        "C33, C35",
+        "C40, C50, C70, C90",
+        "None",
+        "Refer back to existing figures; record deliberate comparisons without copying the figure repeatedly",
+        "Not applicable if no figure",
+        "No long tables even in appendix, no duplicated graphs except useful direct comparison",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 103,
+      "cells": [
+        "completion.initial.status",
+        "Not started / working / complete / needs review, set explicitly by the student",
+        "C31-C35",
+        "C04, C91",
+        "Planning milestones are NOT stage completion",
+        "Restore current draft/checkbox status; don't mark done on import",
+        "Not started",
+        "No progress claim without student confirmation",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 106,
+      "cells": [
+        "Reupload: a planning PDF/DOCX restores candidate first steps; a saved Completing progress document restores the student's actual figures (when supported), reasoning, observations, checklist and next step. A saved text reference is not itself an uploaded image. Do not overwrite a newer draft."
+      ]
+    },
+    {
+      "row": 109,
+      "cells": [
+        "RESULT-BY-RESULT REFLECTION  |  Reuse for first diagram AND later calculations"
+      ]
+    },
+    {
+      "row": 111,
+      "cells": [
+        "Saved field",
+        "Student-owned meaning",
+        "Created/updated",
+        "Used later",
+        "Earlier answers",
+        "Resume/merge rule",
+        "When missing",
+        "Important guardrail",
+        "Status"
+      ]
+    },
+    {
+      "row": 112,
+      "cells": [
+        "completion.reflections[].resultRef",
+        "Stable ID and reference to THIS figure/calculation and stage",
+        "C34; reused C40/C50",
+        "C34A, C34B, C34U, C35, C60, C91",
+        "Student's actual figure/calc; Planning action only a proposal",
+        "Maintain one record per meaningful result; revisiting updates it rather than duplicating",
+        "Not yet recorded",
+        "No automatic image recovery implied by a text reference",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 113,
+      "cells": [
+        "completion.reflections[].observation",
+        "Student-confirmed pattern, value, comparison or no clear finding; optional observed-feature tag",
+        "C34",
+        "C34B, C34U, C35H, C40, C50, C60",
+        "ACTUAL figure/calculation, not predicted pattern",
+        "Save own words; only confirmed observed feature triggers personalised guidance",
+        "Not sure / no clear finding",
+        "Never infer linearity, shape or result from Planning prediction",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 114,
+      "cells": [
+        "completion.reflections[].accuracyStatus",
+        "Already applied earlier policy / New consequential effect explained / Review needed / Not applicable; link C24 policy and resultRef with earlier paragraph ref if appropriate.",
+        "C34A if needed",
+        "C34B, C35, C40, C50, C70, C90",
+        "C23/C24 source resolution/precision and C33 diagram checks",
+        "Keep per-result application separate from original C24 policy. Reuse previous explanation when adequate; changes to source/operation may require a fresh explanation.",
+        "Covered earlier when justified",
+        "No premature PMCC or test-specific limitations",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 115,
+      "cells": [
+        "completion.reflections[].aimAndUse",
+        "Student-authored interpretation of what THIS actual result means for current aim and intended audience, including limitations only if they change that meaning.",
+        "C34B",
+        "C35, C40, C50, C60",
+        "Original/current aim, intended beneficiary and real observation",
+        "If aim changes, flag previous interpretation for review, never silently rewrite",
+        "Unclear / limited conclusion",
+        "No invented advice or stronger conclusion than evidence supports",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 116,
+      "cells": [
+        "completion.reflections[].predictionComparison",
+        "Supports / Challenges / Unclear / No prediction, plus brief WHY",
+        "C34B",
+        "C34U, C35, C40, C60",
+        "Original dated prediction, reasons and anticipated implication",
+        "Keep comparison separate from original prediction; preserve history when revised",
+        "Unclear / N/A",
+        "One graph may not prove or disprove a statistical hypothesis",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 117,
+      "cells": [
+        "completion.reflections[].unexpectedFollowup",
+        "Discrepancy, plausible alternate explanation, worthwhile check, and considered-versus-actually-tested",
+        "C34U conditionally",
+        "C35, C40, C50, C60",
+        "Original prediction, actual observation and current data/maths",
+        "Preserve surprising finding and the difference between a suggested check and one performed",
+        "Not applicable / unresolved",
+        "Do not force a fabricated reason or quietly move on",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 118,
+      "cells": [
+        "completion.reflections[].nextStep",
+        "Student's mathematical question/method, link to actual evidence and rationale; optional suggestion ID",
+        "C35; optionally C35H",
+        "C40, C50, C60, C91",
+        "Confirmed observed feature, course, original maths plans as context",
+        "Suggested action is not automatically started; record later changes and rationale",
+        "Not chosen / Save and return",
+        "PMCC limitations only when PMCC actually starts, not on first scatter",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 119,
+      "cells": [
+        "completion.reflections[].reviewStatus",
+        "Student-set progress and whether changed plan or new evidence requires reinterpretation",
+        "C34-C35; repeat later",
+        "C04, C40, C50, C91",
+        "Current active stage and student work",
+        "Resume same work without auto-marking completion",
+        "Working / to revisit",
+        "No need for prediction to be correct to progress",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 122,
+      "cells": [
+        "Only a student's actual work can fill a result reflection. An imported Planning document can supply aims and predictions, but NOT observations. Preserve each output's real observation, appropriate accuracy review, purpose, prediction comparison, surprise/check and evidence-led next step across resume."
+      ]
+    },
+    {
+      "row": 124,
+      "cells": [
+        "CONCLUSION HANDOVER  |  Real synthesis and future questions, built from earlier student-owned reflections"
+      ]
+    },
+    {
+      "row": 126,
+      "cells": [
+        "Saved field",
+        "Student-authored content",
+        "Created at",
+        "Reused later",
+        "Earlier information",
+        "Reupload/merge rule",
+        "Missing state",
+        "Safeguard",
+        "Status"
+      ]
+    },
+    {
+      "row": 127,
+      "cells": [
+        "completion.conclusion.answer",
+        "Student's concise overall mathematical answer to the aim, including honest uncertainty/partial answer",
+        "C61",
+        "C62, C63, C64, C90, C91",
+        "Original/current aim and earlier genuine results",
+        "Save student's words; flag for re-review after changes to underlying results",
+        "No justified result yet",
+        "Never auto-generate an answer from predicted result",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 128,
+      "cells": [
+        "completion.conclusion.keyResultIds",
+        "Selected one to three meaningful existing calculation/figure identifiers that together support the answer",
+        "C61",
+        "C62, C64, C70, C90",
+        "completion.reflections[] with interpretation; no new figures",
+        "Save IDs and existing references, do not paste earlier descriptions/figures into new conclusion",
+        "No result references; allow provisional draft",
+        "Don't simply list all figures or methods",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 129,
+      "cells": [
+        "completion.conclusion.meaningForBeneficiary",
+        "Evidence-supported meaning, takeaway or advice for the chosen audience; may be purely mathematical insight",
+        "C62",
+        "C64, C90, C91",
+        "plan.beneficiary, plan.intendedUse, actual main answer",
+        "When beneficiary/aim changes, flag for student review, preserve draft otherwise",
+        "Uncertain / to be confirmed",
+        "No invented impact or unverified causal recommendation",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 130,
+      "cells": [
+        "completion.conclusion.essentialScope",
+        "Only the essential evidence/scope boundary needed to interpret the overall finding, when relevant",
+        "C62",
+        "C64, C90",
+        "Previously confirmed C23/C24 and technique-specific limitation notes",
+        "Reference already explained limits without copying paragraphs",
+        "Not needed / already adequately described",
+        "Do not generate new generic critique in conclusion",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 131,
+      "cells": [
+        "completion.conclusion.remainingQuestion",
+        "Specific unresolved mathematical question (if any), separated from original findings",
+        "C63",
+        "C64, C91",
+        "Actual unanswered aspects in result ledger and initial aim",
+        "Keep None/Not sure valid",
+        "No remaining question is acceptable",
+        "Avoid manufacturing uncertainty or a flaw",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 132,
+      "cells": [
+        "completion.conclusion.possibleNextSteps",
+        "One or two future mathematical investigations grounded in actual findings, plus what would be learned and why",
+        "C63",
+        "C64, C90, C91",
+        "Observed results, confirmed issues and course-suitable approaches",
+        "Store as FUTURE suggestions, not current tasks or completed mathematics",
+        "None/not yet determined accepted",
+        "Do not claim proposal already executed or encourage generic 'more data'",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 133,
+      "cells": [
+        "completion.conclusion.studentDraft",
+        "Latest student-authored concluding prose, including synthesis, meaning and possible future direction",
+        "C60–C64",
+        "C64, C70, C90, C91",
+        "Earlier aim/beneficiary and student's actual evidence; no automatic prose",
+        "Keep versioned draft without silent overwrite from imported plan or edited fields",
+        "Blank / provisional draft",
+        "No fixed headings or guaranteed length; do not repeat maths/graphs",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 134,
+      "cells": [
+        "completion.conclusion.repetitionAndReflectionReview",
+        "Student's optional check that reflection is placed with earlier results and conclusion doesn't duplicate work",
+        "C64",
+        "C70, C90, C91",
+        "C20, C34, C40, C50 and actual written conclusion",
+        "Preserve status and the specific earlier section to revisit if needed",
+        "Not yet checked; no save gate",
+        "Do not equate repetitive reflection with higher marks",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 138,
+      "cells": [
+        "CONCLUSION IMPORT RULE: Planning document imports only initial aims, predictions, beneficiary and proposed methods. Actual results, reflection entries, a concluding answer, future directions and final prose must come from student work. Keep the latest editable draft, not a template."
+      ]
+    },
+    {
+      "row": 140,
+      "cells": [
+        "ALIGNMENT HANDOVER  |  Mathematical understanding, observed scatter, and separate draft/final reviews"
+      ]
+    },
+    {
+      "row": 142,
+      "cells": [
+        "Saved field",
+        "Student-authored meaning",
+        "Created at",
+        "Reused later",
+        "Earlier data",
+        "Resume/merge rule",
+        "Missing state",
+        "Guardrail",
+        "Status"
+      ]
+    },
+    {
+      "row": 143,
+      "cells": [
+        "completion.maths.activeMethods",
+        "Mathematical methods CURRENTLY used, separate from planned maths; relevant course/scope",
+        "C40/C50",
+        "C40D, C70N, C90F",
+        "plan.initialMaths (context only)",
+        "Preserve actual method history when student changes methods",
+        "None active yet",
+        "Do not mark a planned method as performed",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 144,
+      "cells": [
+        "completion.maths.technologyUse",
+        "Software/GDC/spreadsheet/code ACTUALLY used for a result, and purpose/inputs",
+        "C40T",
+        "C34, C70N, C80D/C90F",
+        "Current result and tool",
+        "Version each used computation/meaningful result; not a click log",
+        "No tech used",
+        "Never fabricate a technology output",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 145,
+      "cells": [
+        "completion.maths.technologyInterpretation",
+        "Student's own mathematical explanation of actual tool-generated result",
+        "C40T",
+        "C34B/C35, C70, C90F",
+        "Actual reported values and aim",
+        "Revisions preserve student's words and actual output reference",
+        "Needs explanation",
+        "No generated IA prose or invented coefficient",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 146,
+      "cells": [
+        "completion.maths.notationAccuracy",
+        "Status of typeset equations, defined symbols/units, '=' vs '≈', precision decisions",
+        "C70N",
+        "C80D/C90F",
+        "C24, C25, existing maths",
+        "Track checks and specific remaining items, not global automatic Pass",
+        "Not reviewed",
+        "A style checklist doesn't grade maths",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 147,
+      "cells": [
+        "completion.maths.levelUnderstanding",
+        "Student's actual course-suitability and understanding review; teacher flag if unresolved",
+        "C40D",
+        "C80D/C90F",
+        "Student course and active techniques",
+        "Keep unresolved status across resume; no numeric IA grade",
+        "Needs review",
+        "Don't reject outside-course maths automatically",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 148,
+      "cells": [
+        "completion.bivariate.actualPattern",
+        "Student-confirmed paired numerical scatter outcome: clear line / rough line / curved / no clear pattern / unsure",
+        "C35B",
+        "C35, C40, C50",
+        "ACTUAL figure and prior prediction separately",
+        "Keep observation, original prediction and later edits distinct",
+        "Not plotted / Not sure",
+        "Don't infer outcome from prior prediction or graph filename",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 149,
+      "cells": [
+        "completion.bivariate.nextStepReason",
+        "Student's own evidence-linked next action after optional bivariate suggestions",
+        "C35B/C35",
+        "C40/C50, C60",
+        "Current aim, intended beneficiary and course",
+        "Preserve selected maths vs suggested options; no auto-calculation",
+        "Not decided",
+        "No compulsory PMCC/fit/Spearman",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 150,
+      "cells": [
+        "completion.review.draftCriteriaEvidence",
+        "Student's optional A–E evidence references and draft complete/partial status",
+        "C80D",
+        "C80, C90F",
+        "Actual IA draft, not planning report",
+        "Restore student review status but require confirmation after edits",
+        "Working / Not started",
+        "Not a predicted /20 assessment",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 151,
+      "cells": [
+        "completion.review.teacherWrittenFeedback",
+        "One permitted written feedback round state, verbal notes and actual student revisions",
+        "C80/C80D",
+        "C90F",
+        "Teacher feedback and school deadlines if known",
+        "Preserve actual history; do not auto-claim feedback obtained or second written round available",
+        "Not received / Unknown",
+        "No school submission via tool",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 152,
+      "cells": [
+        "completion.review.finalCriteriaEvidence",
+        "Second A–E self-check of final student-authored IA after corrections",
+        "C90F",
+        "C91",
+        "Actual final draft, previous feedback",
+        "Recheck after changes; version status and source file date if known",
+        "Not reviewed",
+        "Never auto-award IA marks",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 153,
+      "cells": [
+        "completion.review.printReadability",
+        "Print/PDF legibility, proofread, page numbering, references and optional peer readability notes",
+        "C80D/C90F",
+        "C91",
+        "Existing figures/sources and student draft",
+        "Record actual checks only and remaining fixes",
+        "Not checked",
+        "Don't assume preview occurred without student confirmation",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 154,
+      "cells": [
+        "completion.review.currentRequirements",
+        "Confirmed school deadline, citation style, title/identifier, recommended length and spacing instructions",
+        "C80D/C90F",
+        "C91",
+        "Student/teacher-provided current requirements",
+        "Do not overwrite newer school rules with JIS 2025 default recommendations",
+        "Unconfirmed",
+        "12–20 pages suggested, not universal IB hard limit",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 157,
+      "cells": [
+        "Existing IA Pathfinder PDF/DOCX Save/Resume is still only a design requirement. The student-facing parser/generator and automatic maths checks have not yet been built."
+      ]
+    },
+    {
+      "row": 159,
+      "cells": [
+        "UNSTUCK / DATA-ACCESS HANDOVER  |  Keep the obstacle, alternatives and next useful step across Save/Resume"
+      ]
+    },
+    {
+      "row": 161,
+      "cells": [
+        "Saved field key",
+        "Meaning",
+        "Created/updated",
+        "Reused in",
+        "From earlier",
+        "Resume / merge rule",
+        "Missing state",
+        "Safeguard",
+        "Status"
+      ]
+    },
+    {
+      "row": 162,
+      "cells": [
+        "completion.unstuck.issueType",
+        "Current student-selected blocker category, not a judgement on IA quality",
+        "C95",
+        "C95D/C95A/C95L/C95Q/C95N/C91",
+        "Current stage and prior issue",
+        "Preserve issue, allow No issue/Other, do not force a resolution",
+        "Not entered",
+        "No automatic missing-work/mark warning",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 163,
+      "cells": [
+        "completion.unstuck.problemNote",
+        "Optional short description of what actually prevents progress",
+        "C95",
+        "C95Q/C95N/C91",
+        "Student's own words",
+        "Keep latest note until student changes it",
+        "Blank acceptable",
+        "Don't solicit personal respondent identities or unnecessary sensitive details",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 164,
+      "cells": [
+        "completion.unstuck.originStage",
+        "Exact node/section and unsaved draft pointer for return after help",
+        "C95",
+        "C95N/C04/C91",
+        "Current completion stage",
+        "Restore previous stage and text on Help dismissal or resume",
+        "Current dashboard fallback",
+        "No forced return to start or cleared data",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 165,
+      "cells": [
+        "completion.unstuck.dataStatus",
+        "No data / Pending / Partial / Source candidate / Verified usable / Not applicable",
+        "C95D/C95L",
+        "C20/C31/C40/C91",
+        "Actual collection and source status, not planned",
+        "Never elevate pending source to collected based on import",
+        "Unknown / Not confirmed",
+        "No fake results, labels or charts",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 166,
+      "cells": [
+        "completion.unstuck.waitingFor",
+        "Unresolved data supplier/access/response/consent dependency, without sensitive participant data",
+        "C95D/C95A",
+        "C03/C20/C91",
+        "Earlier dependencies/teacher flags",
+        "Keep flags unresolved until explicitly confirmed; update only by student",
+        "Nothing pending / Not stated",
+        "Do not bypass permission or imply teacher approval",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 167,
+      "cells": [
+        "completion.unstuck.alternateSourceCandidates",
+        "Student-entered candidate secondary/primary source links and methods with candid status",
+        "C95A",
+        "C20/C95N/C91",
+        "Aim, course, target population/quantities",
+        "Keep candidate separate from selected/actually used source; retain change history",
+        "None found yet",
+        "No automatic source search or scraped data implied",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 168,
+      "cells": [
+        "completion.unstuck.sourceFitNotes",
+        "Student's consideration of variable/units, population/time, provenance, accuracy, consent and usefulness",
+        "C95A",
+        "C20/C95L/C02/C91",
+        "Original method/aim and candidate source details",
+        "Keep draft checks separate from confirmed validity; flag if source changes",
+        "Not checked",
+        "Source not deemed suitable by presence of URL",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 169,
+      "cells": [
+        "completion.unstuck.nextAction",
+        "ONE personally chosen safe action with destination stage",
+        "C95N",
+        "C04/C10/C20/C02/C91",
+        "Actual blocker and current saved progress",
+        "Retain chosen next step without auto-executing",
+        "Not chosen",
+        "No mandatory deadline or task completion claim",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 170,
+      "cells": [
+        "completion.unstuck.actionStatus",
+        "Not started / Trying / Done / Still waiting / Not applicable",
+        "C95N",
+        "C04/C91",
+        "Student's update",
+        "Only the student marks completed; allow unresolved progress",
+        "Not started",
+        "No inferred completion from saved plan",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 171,
+      "cells": [
+        "completion.unstuck.planChangeReview",
+        "Whether a new data source or changed aims/scope needs confirmation, teacher review or mathematical rethink",
+        "C95A/C95L",
+        "C02/C03/C20/C40D/C91",
+        "Original aim, beneficiary, prediction and source",
+        "Preserve previous aim and prediction, note reason for revised plan",
+        "Not needed / Uncertain",
+        "No silent substitution or lost history",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 172,
+      "cells": [
+        "completion.unstuck.optionalFollowup",
+        "Optional student-selected date/next check for unresolved dependencies; no automatic reminder",
+        "C95N",
+        "C91/C04",
+        "Actual school milestone if known",
+        "Only store if student enters; otherwise blank",
+        "Blank allowed",
+        "Never invent deadlines or claim background alerts are active",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 176,
+      "cells": [
+        "Preserve unresolved access/permissions and any alternative-source notes when reuploading a future progress document. A planning PDF is not evidence that data arrived; student must confirm actual status. File import and progress-file generation remain design features, not an implemented app."
+      ]
+    },
+    {
+      "row": 179,
+      "cells": [
+        "WRITING MOMENT STATUS / RESUME  |  A note isn't a paragraph in the IA; preserve context, placement and student's own status"
+      ]
+    },
+    {
+      "row": 181,
+      "cells": [
+        "Field key",
+        "Student-owned meaning",
+        "Captured",
+        "Later used",
+        "Existing context",
+        "Merge / resume logic",
+        "If missing",
+        "Important safeguard",
+        "Status"
+      ]
+    },
+    {
+      "row": 182,
+      "cells": [
+        "completion.writingCues[].cueId",
+        "Stable Writing Moments ID W01–W37, one record for each relevant real method/result (not every page view)",
+        "C96 or inline C10/C20/C34/C40/C50",
+        "Inline prompts and Save/Resume",
+        "Writing Moments!A9:A45; actual cue at stage",
+        "Keep one cue record per cue ID + real method/resultRef; no duplication on revisit",
+        "Not seen",
+        "Prompt definitions are not the student's written work",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 183,
+      "cells": [
+        "completion.writingCues[].context",
+        "Actual stage, course, aim version, active source/method, resultRef and observed feature that TRIGGERED cue",
+        "At matching stage",
+        "Determine relevance and whether to show again",
+        "Real selected choices and result ledger, not predicted work",
+        "Version/fingerprint only meaningful conditions; re-review affected cues after change",
+        "Not established",
+        "Never infer a result or method solely from Planning",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 184,
+      "cells": [
+        "completion.writingCues[].location",
+        "Exact intended IA placement: intro/method, just before figure, after result, before method, beside active calculation or conclusion",
+        "When relevant cue shown",
+        "Show 'Write it here' and return to that stage",
+        "Current IA figure/method/result reference",
+        "Store as intent, not proof text was inserted",
+        "Not selected",
+        "Project notes distinguished from IA prose",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 185,
+      "cells": [
+        "completion.writingCues[].status",
+        "not_seen / relevant / prompted / noted / written_in_IA / already_covered / not_relevant / deferred",
+        "Student choice at cue",
+        "Suppress duplicates; show once again on substantive change",
+        "Previous cue state and context",
+        "Student confirmation required for written_in_IA or already_covered; 'noted' remains not written",
+        "not_seen",
+        "Do not auto-mark completed when student merely reads an example or saves",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 186,
+      "cells": [
+        "completion.writingCues[].writtenRef",
+        "Optional student's OWN paragraph/section/page/figure/calculation pointer to text already written",
+        "When student marks written_in_IA or already_covered",
+        "Revisit exact existing passage, not rewrite it",
+        "IA location the student enters; resultRef where applicable",
+        "Preserve and show ref when cue would otherwise repeat",
+        "Blank allowed",
+        "A pointer is not proof a document was inspected or automatically edited",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 187,
+      "cells": [
+        "completion.writingCues[].studentNote",
+        "Optional private note with idea or question, separate from actual IA prose",
+        "When student marks noted/deferred",
+        "Resume next small action",
+        "Aim/method/data context and C95 if blocked",
+        "Retain pending writing ideas without claiming a paragraph exists",
+        "Blank allowed",
+        "No auto-generated IA passage or unnecessary data copied",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 188,
+      "cells": [
+        "completion.writingCues[].actualResultRef",
+        "Reference to actual figure/calculation or current mathematical technique, if applicable",
+        "C32/C34/C40/C50",
+        "Display right-timed result explanation and preserve linkage",
+        "completion.reflections[].resultRef; active maths IDs",
+        "Reuse per-result record, no new duplicate for the same output",
+        "Not applicable for Introduction/method-only",
+        "No guessed observation from proposed technique",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 189,
+      "cells": [
+        "completion.writingCues[].relevanceDecision",
+        "Student accepted cue, said Not relevant, requested example or deferred for current context",
+        "When cue offered",
+        "Show/hide cue without grading pressure",
+        "Confirmed stage/choice; student controls",
+        "Respect dismissals until actual method/source/aim/result substantively changes",
+        "No decision",
+        "No mandatory explanation of why a cue is irrelevant",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 190,
+      "cells": [
+        "completion.writingCues[].priorCoverage",
+        "Link to earlier C23/C24 explanation or result reflection that already covers accuracy/method purpose",
+        "As student confirms Already covered",
+        "Prevent repeating caveats and definitions",
+        "Existing precision, definitions and figures",
+        "Do not re-prompt unchanged content; display earlier ref on demand",
+        "None recorded",
+        "A later derived calculation may have genuinely NEW implications; allow targeted cue",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 191,
+      "cells": [
+        "completion.writingCues[].changeFlag",
+        "Reason for optional re-review after source, method, aim, beneficiary or REAL result changes",
+        "Whenever student revises earlier work",
+        "Only affected cues reappear; student decides action",
+        "Original/updated plans and actual work",
+        "Preserve prior prose and signed-off status; mark needs_review rather than deleting",
+        "No change",
+        "No global reset or silent replacement of writing",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 192,
+      "cells": [
+        "completion.writingCues[].timingCategory",
+        "Write now in IA / Planning note only / Improve existing figure / Review existing section",
+        "On rendering current cue",
+        "Choose exact UI wording and options",
+        "Writing Moments!F + real evidence status",
+        "Stay tied to confirmed context; planning-only can later become write-in-IA when source actually used",
+        "Unresolved",
+        "Access delays/feedback/rubric notes never auto-migrate into IA",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 193,
+      "cells": [
+        "completion.writingCues[].lastStudentReview",
+        "Optional student-confirmed review status for this cue version (no invented timestamp)",
+        "When student uses a cue action",
+        "On resume/stage entry",
+        "Stored status and source/result context",
+        "Read-only to system unless student acts; no background automation implied",
+        "Not confirmed",
+        "Never claim student wrote a paragraph from clicking 'Show example'",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 197,
+      "cells": [
+        "On import, keep older Planning fields but NEVER infer that a cue was written, a dataset obtained or feedback acted upon. Context-specific cue records, exact student-selected location and suppression state restore only from confirmed Completing progress."
+      ]
+    },
+    {
+      "row": 200,
+      "cells": [
+        "ITERATIVE MATHEMATICAL SECTIONS  |  Link each real local result to the next mathematical question and chosen technique"
+      ]
+    },
+    {
+      "row": 202,
+      "cells": [
+        "Saved field key",
+        "Student-owned meaning",
+        "Captured",
+        "Later used",
+        "Earlier evidence",
+        "Resume/merge rule",
+        "If missing",
+        "Guardrail",
+        "Status"
+      ]
+    },
+    {
+      "row": 203,
+      "cells": [
+        "completion.sections[].sectionId",
+        "Stable ID for each substantive maths section; no fixed number of sections",
+        "C30/C40/C50",
+        "C34, C35, Save/Resume",
+        "Actual first figure or later mathematics result ledger",
+        "Keep chronological but editable list; create on meaningful section only",
+        "Not started",
+        "No mandatory additional calculations",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 204,
+      "cells": [
+        "completion.sections[].previousResultRef",
+        "Stable reference to the prior section's ACTUAL figure/calculation/result",
+        "C35",
+        "Explain logical next step",
+        "completion.reflections[].resultRef",
+        "Preserve original result history and flag downstream explanation if changed",
+        "Not yet linked",
+        "Never infer evidence from planned/imagined outputs",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 205,
+      "cells": [
+        "completion.sections[].previousTakeaway",
+        "Short student-authored local conclusion from preceding mathematical section",
+        "C34B/C35",
+        "Next open question and writing bridge",
+        "Real observed outcome, aim and prediction",
+        "Version takeaway, link to specific resultRef without copying previous workings",
+        "Not yet interpreted",
+        "Not the overall IA conclusion",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 206,
+      "cells": [
+        "completion.sections[].openQuestion",
+        "One worthwhile unanswered mathematical question, or Enough/Not sure",
+        "C35",
+        "Select technique or move to conclusion",
+        "Actual previous takeaway and student's aim/beneficiary",
+        "Keep None/Enough as legitimate; no forced question",
+        "None needed",
+        "Avoid artificial extra complexity",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 207,
+      "cells": [
+        "completion.sections[].chosenTechnique",
+        "Next proposed mathematical method, separate from method ACTUALLY performed",
+        "C35",
+        "C40/C50 or teacher suitability check",
+        "Course, latest finding and available evidence",
+        "Keep suggested / chosen / performed distinct",
+        "Undecided",
+        "No automatic PMCC, regression or fabricated output",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 208,
+      "cells": [
+        "completion.sections[].choiceReason",
+        "Student's explanation WHY this specific maths answers current question",
+        "C35",
+        "Write transition BEFORE new method",
+        "Observed feature, prior local conclusion, current aim",
+        "Preserve authorship and suppression of writing cue W20/W21",
+        "Not yet written",
+        "No ready-made IA paragraph to copy",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 209,
+      "cells": [
+        "completion.sections[].bridgeWriting",
+        "Write-now/Already covered/Defer status and student's own location between sections",
+        "C35/C96",
+        "Resume at exact transition",
+        "completion.writingCues[] and previous resultRef",
+        "Only student can mark written, store optional paragraph reference",
+        "Not written",
+        "No claim the program edited a Word document",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 210,
+      "cells": [
+        "completion.sections[].methodStatus",
+        "proposed / started / output obtained / interpreted / changed / not needed",
+        "C40/C50",
+        "Choose result-based next step",
+        "Actual calculation and student confirmation",
+        "Never treat chosen or proposed as completed",
+        "proposed only",
+        "Post-PMCC branch only when actual r exists",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 211,
+      "cells": [
+        "completion.sections[].actualOutputRef",
+        "ID of actual computed statistic, fitted model, proof/case or mathematical graph",
+        "C40/C50",
+        "C34 reflection and final synthesis",
+        "Real computation/output, no automatic placeholder",
+        "Reference output once; no repeated chart copying",
+        "No output yet",
+        "No invented r, regression line or p-value",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 212,
+      "cells": [
+        "completion.sections[].resultLocalTakeaway",
+        "What this section ACTUALLY established or failed to establish for the aim",
+        "C34/C34B",
+        "Most recent takeaway at next C35, conclusion evidence links",
+        "Actual observed result and limitations when relevant",
+        "Honest inconclusive answer is valid; prior results kept",
+        "Not interpreted",
+        "A mini-conclusion is not repeated full working",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 213,
+      "cells": [
+        "completion.sections[].resultValidity",
+        "New accuracy/uncertainty or technique-validity consequence for this ACTIVE method/output, linked to previously established C24 decisions if applicable.",
+        "C34A/C40/C50",
+        "Scoped interpretation and advice",
+        "Method actually used; existing data accuracy records",
+        "Refer to earlier input/source precision notes rather than duplicate them; a new operation, revised source or material uncertainty can require a new result-specific judgement.",
+        "Already covered / N/A",
+        "No premature PMCC/model-weakness cues",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 214,
+      "cells": [
+        "completion.sections[].nextDecision",
+        "Next question / revisit method / more evidence / conclude / save / unsure",
+        "C35",
+        "Repeat maths cycle or C60",
+        "Latest actual local takeaway and evidence depth",
+        "Allow no additional method if question sufficiently answered",
+        "Undecided",
+        "No fixed number of sections/grade prediction",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 215,
+      "cells": [
+        "completion.sections[].nextSectionId",
+        "Pointer to a newly started next mathematical section, where there is one",
+        "C35→C40/C50",
+        "Render linked investigation story",
+        "Prior resultRef and selected question/method",
+        "Flag relevant later sections if original result changes",
+        "None",
+        "Do not fabricate a next section just because card exists",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 216,
+      "cells": [
+        "completion.sections[].needsReview",
+        "Review flag if result, aim, source, mathematical method or course requirements change materially",
+        "After student revisions",
+        "Update bridge/context only where affected",
+        "Previous and new mathematical evidence",
+        "Keep student prose unchanged until reviewed; no global wipe",
+        "No change",
+        "Historical prediction/result remains traceable",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 217,
+      "cells": [
+        "completion.sections[].pmccBranch",
+        "Actual r, named paired variables, real scatter shape and meaningful optional follow-up",
+        "C35P AFTER real coefficient",
+        "Tailor optional best-fit/alternative/stop ideas",
+        "Actual PMCC resultRef, aim and course",
+        "Retain observed r separate from proposed regression/alternative",
+        "Not calculated / N/A",
+        "Small r is not proof of no relationship, avoid p-hacking",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 221,
+      "cells": [
+        "An IA can contain multiple substantial mathematical sections, or finish sooner when its question is adequately answered. Each new section must follow from a real previous result and add purposeful mathematics. Save planned methods separately from computed results; preserve original student writing."
+      ]
+    },
+    {
+      "row": 224,
+      "cells": [
+        "ACCURACY APPLICATION LEDGER  |  C24 input policy is the source of truth; apply it to actual later outputs"
+      ]
+    },
+    {
+      "row": 226,
+      "cells": [
+        "Saved field key",
+        "Meaning / student-owned evidence",
+        "Created",
+        "Used again",
+        "Earlier record",
+        "Import/merge policy",
+        "If missing",
+        "Safeguard",
+        "Status"
+      ]
+    },
+    {
+      "row": 227,
+      "cells": [
+        "completion.accuracyUses[].resultRef",
+        "Stable ID of the actual figure, calculation, estimate or model prediction using this accuracy check",
+        "C33/C34/C40/C50",
+        "C34A and final review",
+        "Real figure/output ID, not an expected pattern",
+        "Revisit the SAME result rather than creating duplicate records",
+        "No actual result",
+        "Do not infer calculation from planning",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 228,
+      "cells": [
+        "completion.accuracyUses[].inputQuantityRefs",
+        "Which existing C24 input/measurement/source records affect THIS output",
+        "At actual output or figure",
+        "Trigger specific previous-policy recall",
+        "completion.data.accuracyInputs and source provenance",
+        "Preserve links even if C24 record is revised; flag affected results",
+        "No measured inputs / N/A",
+        "Do not force this in pure theoretical work",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 229,
+      "cells": [
+        "completion.accuracyUses[].baselineVersion",
+        "The version/source/units/resolution of C24 record recalled for this calculation",
+        "At current precision reminder",
+        "Detect material source or units changes",
+        "Original source and accepted input precision",
+        "Recheck only affected outputs when baseline changes",
+        "Not yet confirmed",
+        "No global reset or copied input digits as output rule",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 230,
+      "cells": [
+        "completion.accuracyUses[].operation",
+        "The actual operation/model/figure that maps recorded inputs to the new value or visual",
+        "C33/C40/C50",
+        "Reason about output-specific accuracy",
+        "Actual calculation and model, resultRef",
+        "Only set after real work",
+        "Unspecified",
+        "No general 'multiply = same d.p.' formula",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 231,
+      "cells": [
+        "completion.accuracyUses[].workingPrecision",
+        "Student's decision to retain sufficient precision during intermediate mathematical working",
+        "C40/C50",
+        "Audit final numerical results and approximation signs",
+        "Actual calculation and original inputs",
+        "Preserve method decision; update if later numerical approach changes",
+        "Not assessed",
+        "Don't round away important information prematurely",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 232,
+      "cells": [
+        "completion.accuracyUses[].reportedValueAndUnits",
+        "Student-confirmed displayed output, correct units (or dimensionless) and whether exact or approximate",
+        "C34/C40/C50",
+        "Check interpretation at the actual result",
+        "Real computed output and unit definitions",
+        "Update only after real value changes; preserve prior prose",
+        "Not computed",
+        "No generated numbers or false exact equality",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 233,
+      "cells": [
+        "completion.accuracyUses[].reportingRationale",
+        "Reason for THIS output's displayed significant figures/d.p./uncertainty, considering calculation and evidence",
+        "C34A/C40/C50",
+        "Reapply or revise at later relevant result",
+        "Input accuracy plus actual operation and meaningful aim",
+        "Student may choose different derived reporting precision than inputs",
+        "Not reviewed",
+        "No fixed universal decimals or fabricated ± bounds",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 234,
+      "cells": [
+        "completion.accuracyUses[].accuracyImpact",
+        "Only NEW material consequence for the precision, reliability, scope or interpretation of this result",
+        "C34A or active maths reflection",
+        "Prompt targeted writing beside relevant output",
+        "Previously described limitations and active technique",
+        "If already adequately written, keep reference and suppress repetition",
+        "None / Not relevant",
+        "Never force caveats merely because an input was rounded",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 235,
+      "cells": [
+        "completion.accuracyUses[].priorExplanationRef",
+        "Student-selected paragraph/section/figure referring to the original C24 justification or earlier consequence",
+        "When Already covered selected",
+        "Avoid repeated methods/limitations paragraphs",
+        "Student-written IA location and writing cue ledger",
+        "Reuse pointer after resume; recheck if original writing changes",
+        "Blank allowed",
+        "System must not claim it inspected Word/PDF content",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 236,
+      "cells": [
+        "completion.accuracyUses[].applicationStatus",
+        "Not checked / Applied / New impact explained / Already covered / Not relevant / Needs review",
+        "On action at relevant calculation or diagram",
+        "Show/suppress concise cue, save progress",
+        "Current resultRef and input-source record version",
+        "Status belongs to THIS output, not whole IA",
+        "Not checked",
+        "Reading a cue is not proof that a document was updated",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 237,
+      "cells": [
+        "completion.accuracyUses[].changeReview",
+        "Which later outputs are affected if the earlier source/resolution/unit or active technique changes",
+        "After meaningful edit",
+        "Targeted recheck of only dependent figures/results",
+        "Source version, inputRefs, calculation outputRef",
+        "Flag affected outputs, never silently revise student text",
+        "No change",
+        "Do not erase original values or trigger all prompts again",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 238,
+      "cells": [
+        "completion.reflections[].aimSpecificity",
+        "Own-voice statement of how THIS result relates to current aim and intended beneficiary, or that it is inconclusive",
+        "C34/C34B each meaningful result",
+        "Next section's local conclusion and final synthesis",
+        "Current aim, actual outputRef, original prediction",
+        "Store per result; re-review when aim/result changes",
+        "Not yet written",
+        "Not a formulaic repeated line after every algebra step",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 239,
+      "cells": [
+        "completion.reflections[].limitationTiming",
+        "Confirmed relevant limitation ID/active method and where its actual consequence was explained, or N/A",
+        "C20-C26 for real source; C34/C40/C50 for actual technique",
+        "Avoid stage-inappropriate limitations and duplicated evaluation",
+        "Earlier source notes and active method outputs",
+        "Keep collection-stage vs calculation-stage consequences separate",
+        "No limitation relevant",
+        "Practical access difficulty is not a generic maths limitation",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 240,
+      "cells": [
+        "completion.sections[].methodJustificationStatus",
+        "Student's reason and writing location for current technique that follows from previous result",
+        "C35 before C40/C50",
+        "Contextual next-step prompt, suppress if already written",
+        "Previous local takeaway, chosen active method and aim",
+        "Student confirms Noted / Written / Already covered / Not relevant",
+        "Not yet justified",
+        "Do not count technique selection alone as mathematical justification",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 241,
+      "cells": [
+        "completion.review.accuracyConsistencyCheck",
+        "Student review of whether later figures/results/model predictions applied prior C24 decisions appropriately",
+        "C70/C90",
+        "Revision tasks and Save/Resume",
+        "All relevant input/accuracyUse result links",
+        "Record checked/needs fixes; do not mark automatically",
+        "Not checked",
+        "Review original locations, no final limitation dump",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 244,
+      "cells": [
+        "SAVE/RESUME RULE: the existing C24 input/source accuracy decision remains canonical. Later applications store result-specific reporting/meaning. If an input changes, prompt review only for affected work—not a new limitations paragraph everywhere."
+      ]
+    },
+    {
+      "row": 246,
+      "cells": [
+        "MATHEMATICAL LEARNING & UNDERSTANDING  |  Retain course-specific context, real research and first-use explanations"
+      ]
+    },
+    {
+      "row": 248,
+      "cells": [
+        "Saved field key",
+        "Meaning / student-owned context",
+        "Captured",
+        "Used later",
+        "Previous evidence",
+        "Resume or merge rule",
+        "If missing",
+        "Guardrail",
+        "Status"
+      ]
+    },
+    {
+      "row": 249,
+      "cells": [
+        "completion.mathLearning[].techniqueId",
+        "Stable ID for substantial mathematical technique (first or later), separate from a guessed method",
+        "C35/C40/C50",
+        "Course/understanding cue and writing location",
+        "Actual active method and linked sectionId",
+        "Preserve per technique; don't duplicate each page or every routine algebra step",
+        "No active method",
+        "Planned technique is not necessarily used",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 250,
+      "cells": [
+        "completion.mathLearning[].courseSelected",
+        "Student's chosen actual IB Maths programme (AA SL/AI SL/other), not assumed by tool",
+        "C40D",
+        "Classification and appropriate writing advice",
+        "Student-confirmed course and reference/version",
+        "If programme changes, flag affected technique assessments for review",
+        "Not selected",
+        "Never assume all IB courses have identical topics",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 251,
+      "cells": [
+        "completion.mathLearning[].courseVerification",
+        "Student/teacher-confirmed coverage reference and any pending teacher suitability check",
+        "C40D/C40L",
+        "Display verified vs unsure state at first use",
+        "Current selected course, syllabus/topic source and teacher advice if given",
+        "Keep teacher status pending unless confirmed; no automatic syllabus verdict",
+        "Unverified",
+        "An idea being on the internet does not establish syllabus status",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 252,
+      "cells": [
+        "completion.mathLearning[].syllabusStatus",
+        "Within / Partly beyond / Beyond / Unsure for THIS method",
+        "C35/C40D",
+        "Decide whether conceptual explanation belongs in IA",
+        "Technique ID and confirmed course; possible teacher review",
+        "Save most recent student-confirmed classification; preserve earlier version if changed",
+        "Unsure",
+        "No automatic advanced-maths advantage or course classification",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 253,
+      "cells": [
+        "completion.mathLearning[].newComponent",
+        "Exactly what mathematical principle or component is NEW beyond the student's course",
+        "C40L",
+        "Scope the necessary explanation to unfamiliar part",
+        "Actual mathematical step and known course prerequisites",
+        "Don't duplicate standard syllabus derivations",
+        "None",
+        "Don't invent a novel aspect if maths is already taught",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 254,
+      "cells": [
+        "completion.mathLearning[].independentResearch",
+        "Did student actually seek out additional mathematics to understand method? Separate from syllabus status",
+        "C40L",
+        "Optional genuine research/learning cue",
+        "Student's description, resource and actual technique",
+        "Retain independent research even if method later confirmed on syllabus",
+        "No research",
+        "Research ≠ automatically beyond syllabus or an IA paragraph",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 255,
+      "cells": [
+        "completion.mathLearning[].sources",
+        "Student-provided source titles/links/bibliographic details for newly learned maths actually used",
+        "C40L",
+        "Source attribution near relevant mathematics and bibliography",
+        "Real source consulted; technique/concept",
+        "Preserve links and citation status when revising",
+        "None yet",
+        "Do not invent sources or paste copyrighted derivations",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 256,
+      "cells": [
+        "completion.mathLearning[].understandingNote",
+        "Student's private own-voice description of NEW concept, its meaning/conditions and how it works here",
+        "C40L",
+        "Prepare an appropriate explanation beside first use",
+        "Actual formula/model/proof and student comprehension",
+        "Private draft note not automatically inserted into IA",
+        "Not yet explained",
+        "No ghostwritten paragraph, do not claim comprehension from a click",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 257,
+      "cells": [
+        "completion.mathLearning[].mathsDemonstrationRef",
+        "Optional actual short derivation/check/example/parameter explanation demonstrating new maths",
+        "C40/C50/C40L",
+        "Support explanation without copied textbook treatment",
+        "Actual mathematical working or checked special case",
+        "Only claim demonstrated when student confirms actual own work",
+        "No proof of understanding yet",
+        "Unexplained computer result alone is insufficient",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 258,
+      "cells": [
+        "completion.mathLearning[].firstUseRef",
+        "Where relevant technique or beyond-course extension FIRST appears in student's IA",
+        "C40/C50",
+        "Place explanation precisely there",
+        "Actual sectionId and paragraph/figure/equation marker",
+        "Preserve original location and flag if sequence changes",
+        "Not yet located",
+        "Don't append technical tutorial to conclusion",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 259,
+      "cells": [
+        "completion.mathLearning[].explanationStatus",
+        "not_seen / noted / written_in_IA / already_covered / not_relevant / deferred / needs_review",
+        "C40L/C96",
+        "Suppress repeat cues and resume at exact passage",
+        "Current course/technique and own paragraph ref",
+        "Student-confirmed; 'noted' is not written",
+        "not_seen",
+        "Never auto-mark an IA document edited",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 260,
+      "cells": [
+        "completion.mathLearning[].teacherFlag",
+        "Teacher suitability or understanding-check question, only when uncertain/outside",
+        "C40D/C40L",
+        "Help decide appropriate technique and depth",
+        "Current course, method and student explanation",
+        "Keep pending/confirmed explicit; no auto-approval",
+        "Not needed",
+        "Advanced maths not necessarily higher Criterion E",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 261,
+      "cells": [
+        "completion.mathLearning[].resultInsight",
+        "Optional authentic statement of NEW mathematical understanding arising from a real result",
+        "C34B after C40/C50",
+        "Prompt appropriate local reflection if genuinely relevant",
+        "Actual resultRef and previous student understanding",
+        "Separate from essential result-to-aim interpretation and from private research notes",
+        "No insight to report",
+        "No compulsory 'I learned' filler",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 262,
+      "cells": [
+        "completion.mathLearning[].insightResultRef",
+        "Real mathematical result that prompted conceptual discovery or change of understanding",
+        "C34B",
+        "Show/refind where the insight belongs",
+        "Actual output, current aim and student-authored observation",
+        "Keep source result link across revisions",
+        "No result yet",
+        "Predicted outcome is not a mathematical discovery",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 263,
+      "cells": [
+        "completion.mathLearning[].insightWritingStatus",
+        "Noted / Written in IA / Already covered / None / Needs review; optional location",
+        "C34B/C96",
+        "Avoid repeated learning reflection prompts",
+        "Actual result and existing writing ledger",
+        "Only student confirms written, suppress unchanged context",
+        "None",
+        "Don't demand one insight per calculation",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 264,
+      "cells": [
+        "completion.mathLearning[].reviewFlag",
+        "Only relevant changes in course, method, first-use explanation/source or result",
+        "At revisions/import",
+        "Targeted recheck of affected passage",
+        "Versioned course status/technique/first-use and insight refs",
+        "Preserve student prose and historical working; no global reset",
+        "No change",
+        "Don't silently insert a new explanation or rewrite conclusions",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 267,
+      "cells": [
+        "REUPLOAD RULE: a mathematical technique's syllabus status and independent research are separate. Restore the student's own first-use explanation and any genuine insight by stable technique/result refs; never treat saved notes as prose inserted into Word/PDF."
+      ]
+    }
+  ]
+}
