@@ -39,13 +39,25 @@ export function createProjectViews(ctx){
       '<div class="button-row">'+button("Revisit planning","go-planning","btn-light","", "compass")+'</div></div>'+
       '<div class="content-card" style="margin-top:17px"><div class="section-eyebrow">PART 2 · COMPLETING</div>'+
       '<div class="path-roadmap">'+
-      pathNode("Introduction",state.scratch.introduction||"Set the investigation in context",filled(state.scratch.introduction)?"done":"current","studio-intro")+
-      pathNode("Data and methods",state.scratch.dataNotes||"Confirm real sources, variables and methods",filled(state.scratch.dataNotes)?"done":"current","studio-data")+
+      [["C10","Introduction",state.scratch.introduction||"Short, personal and revisitable"],
+       ["C20","Sources and methods",state.completion.fields.actualSource||"Actual sources, variables and method"],
+       ["C30","First purposeful exploration",state.entries.find(x=>x.phase==="first")?.title||"First graph, calculation or theoretical case"]]
+       .map(([id,title,desc])=>pathNode(title,desc,
+         state.completion.stages[id]==="complete"?"done":state.completion.stages[id]==="working"||state.completion.stages[id]==="needs-review"?"current":"pending",
+         "completion-open",'data-node="'+id+'"')).join("")+
       mathsNodes+
-      pathNode("Draw conclusions",state.scratch.conclusion||"Synthesize the mathematics when ready",filled(state.scratch.conclusion)?"done":"pending","studio-conclusion")+
-      pathNode("Review the draft",state.scratch.finalReview||"Communication, understanding and checking",filled(state.scratch.finalReview)?"done":"pending","studio-review")+
-      '</div><div class="button-row">'+button("Add mathematical step","math-add","btn-primary","", "arrow-right")+button("Open IA Studio","go-studio","btn-secondary")+'</div></div>'+
-      '<p class="small-callout">The map grows as you work. A recorded plan is not the same as a confirmed mathematical result. No number of steps is required.</p></div>';
+      [["C60","Conclusion",state.completion.fields.mainConclusion||state.scratch.conclusion||"Synthesis of actual results"],
+       ["C70","Mathematical communication",state.completion.fields.notationIssue||"Notation, figures, units and references"],
+       ["C80","Teacher draft and feedback",state.completion.fields.feedbackAction||"School's permitted feedback process"],
+       ["C90","Final checks",state.completion.fields.finalProofread||"Self-review, accuracy and proofread"]]
+       .map(([id,title,desc])=>pathNode(title,desc,
+         state.completion.stages[id]==="complete"?"done":state.completion.stages[id]==="working"||state.completion.stages[id]==="needs-review"?"current":"pending",
+         "completion-open",'data-node="'+id+'"')).join("")+
+      '</div><div class="button-row">'+
+      button(state.entries.length?"Decide what mathematics follows":"Start first exploration",
+        state.entries.length?"completion-next-from-map":"completion-first-from-map","btn-primary","", "arrow-right")+
+      button("Open IA Studio","go-studio","btn-secondary")+'</div></div>'+
+      '<p class="small-callout">The map reflects the stages you have chosen to review and your actual mathematical record. A stage marked complete is your own self-check, not an IA grade. There is no required number of calculations.</p></div>';
   }
   function viewHome() {
     const state = ctx.getState();
@@ -72,7 +84,7 @@ export function createProjectViews(ctx){
       feature("pencil","Write with purpose","Get timely prompts for interpretation, accuracy and reflection—not a wall of advice.")+'</div>'+
       '<div class="home-actions button-row">'+(resume?button("Try another sample","open-demos","btn-light","", "sparkles"):button("Try a sample investigation","open-demos","btn-light","", "sparkles"))+
       button("Backups & reports","open-files","btn-secondary","", "download")+'</div>'+
-      '<div class="notice-strip">'+icon("shield")+'<div><strong>Your mathematics. Your words.</strong> Pathfinder is a planning and writing companion, not an IA generator or grading tool. This is an interactive design prototype with illustrative branches; it does not yet implement every flowchart route. Work is saved in this browser only.</div></div></div>';
+      '<div class="notice-strip">'+icon("shield")+'<div><strong>Your mathematics. Your words.</strong> Pathfinder is a planning and writing companion, not an IA generator or grading tool. Planning, document handover and Completing pathways are available. The finer contextual guidance and final assessment self-review are still being refined. Work is saved in this browser only.</div></div></div>';
   }
   function feature(ic,title,text) {
     const state = ctx.getState();return '<div class="feature-card"><span class="feature-icon">'+icon(ic)+'</span><h3>'+e(title)+'</h3><p>'+e(text)+'</p></div>';}
