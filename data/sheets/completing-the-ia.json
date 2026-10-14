@@ -1,0 +1,2168 @@
+{
+  "schemaVersion": 1,
+  "sourceSheet": "Completing the IA",
+  "sourceBounds": {
+    "rows": 440,
+    "columns": 21
+  },
+  "rowCount": 139,
+  "nonemptyCellCount": 272,
+  "rows": [
+    {
+      "row": 2,
+      "cells": [
+        null,
+        "PART 2  |  COMPLETING THE IA"
+      ]
+    },
+    {
+      "row": 4,
+      "cells": [
+        null,
+        "Start from your personalised planning document; confirm what has changed, then work flexibly through the IA stages. This is a flowchart specification, not yet the student website."
+      ]
+    },
+    {
+      "row": 7,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Begin / resume Completing the IA"
+      ]
+    },
+    {
+      "row": 10,
+      "cells": [
+        null,
+        "CONTINUE CURRENT PLAN ↓",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "UPLOAD SAVED DOCUMENT ↓",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "START WITHOUT PLAN ↓"
+      ]
+    },
+    {
+      "row": 11,
+      "cells": [
+        null,
+        "Carry across Planning answers automatically, without an upload.",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Upload planning document / import",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Begin with editable blank fields; the file is helpful but not required."
+      ]
+    },
+    {
+      "row": 14,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↓  ALL THREE ROUTES JOIN"
+      ]
+    },
+    {
+      "row": 16,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Review prepopulated project details",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Restore aim, course, prediction and WHY, sources, proposed maths, dates and teacher concerns. Confirm and edit everything."
+      ]
+    },
+    {
+      "row": 19,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↓"
+      ]
+    },
+    {
+      "row": 20,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Check current idea and permissions",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "An uploaded document never means a teacher has approved the idea or that restricted data collection is permitted."
+      ]
+    },
+    {
+      "row": 23,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↓"
+      ]
+    },
+    {
+      "row": 24,
+      "cells": [
+        null,
+        "Choose any IA stage. Optional 'Where should I write this?' (C96) offers ONE relevant cue: before a figure, after a real result, with the chosen method, or in the conclusion. No fixed writing order.",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Where are you in the IA?",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Already covered / Not relevant / Show an example / Defer remain available. Pending data? Write the introduction or prediction now, but keep unverified sources as planning notes."
+      ]
+    },
+    {
+      "row": 27,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↓  CHOOSE ANY RELEVANT STAGE"
+      ]
+    },
+    {
+      "row": 29,
+      "cells": [
+        null,
+        "KEEP IT BRIEF\nA few short paragraphs, ideally around half a page and comfortably under one page.\n'I noticed…' · 'I want to find out…'\nYou can come back and revise this whenever your project changes.",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Introduction · short, personal, revisitable",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "SUGGESTIONS FROM YOUR PLAN\nAim • personal motivation • who benefits • optional prediction and WHY\nUse / Edit / Skip any item.\nWrite it in your own first-person voice; nothing is inserted as a ready-made paragraph."
+      ]
+    },
+    {
+      "row": 32,
+      "cells": [
+        null,
+        "STATISTICAL DATA",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↓",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "MODELLING DATA"
+      ]
+    },
+    {
+      "row": 33,
+      "cells": [
+        null,
+        "STATISTICS\nDefine the population → consider sampling or a census → discuss bias, representativeness and why your choice fits the aim.",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Data collection · methods, sampling, accuracy",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "MODELLING\nIdentify inputs and how to obtain them → justify measurement/sources → state assumptions, accuracy and how to check the model."
+      ]
+    },
+    {
+      "row": 36,
+      "cells": [
+        null,
+        "Shared: justify limits to accuracy, bias, assumptions or valid conclusions—not logistical difficulties",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↓",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Theoretical route: assumptions and definitions instead"
+      ]
+    },
+    {
+      "row": 37,
+      "cells": [
+        null,
+        "Before any figure or brief calculation:\nWHY here? Define terms/variables/units BEFORE display. Avoid explaining routine plotting methods.",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "First purposeful diagram or brief calculation",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "After: what does the real pattern or value show?\nWhat mathematical question follows? Accuracy and intended beneficiary matter."
+      ]
+    },
+    {
+      "row": 40,
+      "cells": [
+        null,
+        "First Exploration Guide  ↗",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↓",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "No figure needed? Use a brief meaningful calculation or skip."
+      ]
+    },
+    {
+      "row": 41,
+      "cells": [
+        null,
+        "MATHEMATICAL WORK: use an equation editor for clear algebra; explain WHY each active calculation helps the aim. If a calculator, software or spreadsheet produced an answer, explain its mathematical meaning—not the clicks.",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "First substantial mathematics",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Be accurate about units and rounding: '=' for exact equality, '≈' for approximation. Keep sensible working precision. Check ACTUAL maths is understood and relevant to AI SL/AA SL."
+      ]
+    },
+    {
+      "row": 44,
+      "cells": [
+        null,
+        "Mathematical limitations: only for methods you are USING  ↗",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↓",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Only when applying PMCC, regression, optimisation or another active technique."
+      ]
+    },
+    {
+      "row": 45,
+      "cells": [
+        null,
+        "Reflect DURING the investigation: after each substantial mathematical finding, explain its significance and any change of direction.",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Further mathematics · reflect as you go",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Evaluation is ongoing. Concluding doesn't mean pasting method-by-method criticisms here."
+      ]
+    },
+    {
+      "row": 48,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↓"
+      ]
+    },
+    {
+      "row": 49,
+      "cells": [
+        null,
+        "FINAL PURPOSE: Draw the key findings together into an answer; don't redo the mathematics or repeat all earlier reflection.",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Conclusion · synthesis and what next",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "LOOK AHEAD: What one or two mathematically meaningful questions or extensions would follow from the actual results?"
+      ]
+    },
+    {
+      "row": 52,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↓"
+      ]
+    },
+    {
+      "row": 53,
+      "cells": [
+        null,
+        "COMMUNICATION CHECK: equation notation and ≈/=; defined variables; interpreted software results; readable figures, concise bibliography and traceable sources. Optional checklist, not extra writing.",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Clarity, presentation and referencing"
+      ]
+    },
+    {
+      "row": 56,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↓"
+      ]
+    },
+    {
+      "row": 57,
+      "cells": [
+        null,
+        "TEACHER DRAFT: a genuinely completed IA, student self-review A–E and print-read. One permitted written teacher-feedback round; record other verbal advice and act on revisions.",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Draft, teacher feedback and revisions"
+      ]
+    },
+    {
+      "row": 60,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↓"
+      ]
+    },
+    {
+      "row": 61,
+      "cells": [
+        null,
+        "FINAL REVIEW: after feedback and corrections, check A/4, B/4, C/3, D/3 and E/6 evidence, mathematics, citations, readability and current school submission requirements. No auto-grading.",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Final self-check and readiness"
+      ]
+    },
+    {
+      "row": 64,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↓"
+      ]
+    },
+    {
+      "row": 65,
+      "cells": [
+        null,
+        "Include updated plan and progress notes when saving, not just the original answers.",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Save a progress snapshot / resume",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "A progress record can also be reuploaded later; a planning PDF/DOCX remains importable."
+      ]
+    },
+    {
+      "row": 71,
+      "cells": [
+        null,
+        "RESUME DESIGN  ·  Same-session handover, PDF/DOCX reupload, editable fields, safe missing-data fallback and no silent overwrite. See Handover & Import."
+      ]
+    },
+    {
+      "row": 76,
+      "cells": [
+        null,
+        "A flexible guide to an IA, not a compulsory writing template or automatic essay generator. Students do their own mathematics and reasoning."
+      ]
+    },
+    {
+      "row": 80,
+      "cells": [
+        null,
+        "Handover & Import  ↗",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Completion Prompts  ↗",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Planning flowchart  ↗"
+      ]
+    },
+    {
+      "row": 85,
+      "cells": [
+        null,
+        "SOURCE  ·  JIS SL Maths IA Guide 2025: https://docs.google.com/presentation/d/1BesCf9vTKGLm588jx5SUIdLyz-x5HUyYb2LqG_BACKg/edit"
+      ]
+    },
+    {
+      "row": 89,
+      "cells": [
+        null,
+        "STATUS  ·  Design only. Upload parsing, session saving, resume payloads and working student screens have not yet been implemented."
+      ]
+    },
+    {
+      "row": 93,
+      "cells": [
+        null,
+        "DATA COLLECTION: CONTEXTUAL ROUTES  |  Flowchart detail for C20–C26"
+      ]
+    },
+    {
+      "row": 96,
+      "cells": [
+        null,
+        "Statistics · population and sampling",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Modelling · inputs, measurements and testing",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Theoretical / other route"
+      ]
+    },
+    {
+      "row": 99,
+      "cells": [
+        null,
+        "↓ Statistics-specific prompts",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↓ Modelling-specific prompts",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↓ Skip irrelevant sample questions"
+      ]
+    },
+    {
+      "row": 101,
+      "cells": [
+        null,
+        "JOIN WHEN RELEVANT  ·  Compare methods → justify evidence for the aim → identify mathematical limitations and their effects → mitigate or restrict conclusions"
+      ]
+    },
+    {
+      "row": 104,
+      "cells": [
+        null,
+        "MEASUREMENT / SOURCE PRECISION  →  Justify d.p./significant figures across the investigation  →  Define meaningful variables and specialist terms at first use"
+      ]
+    },
+    {
+      "row": 107,
+      "cells": [
+        null,
+        "Data Collection Guide  ↗",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Completion Prompts  ↗",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Saved Progress Fields  ↗"
+      ]
+    },
+    {
+      "row": 110,
+      "cells": [
+        null,
+        "Collection-stage examples: sampling, source and measurement ONLY  ↗"
+      ]
+    },
+    {
+      "row": 111,
+      "cells": [
+        null,
+        "C20–C26: sample, source and measurement concerns. C40–C50: PMCC, regression, optimisation and other CURRENTLY USED mathematical techniques. C60: reflect on confirmed limitations."
+      ]
+    },
+    {
+      "row": 115,
+      "cells": [
+        null,
+        "INITIAL REPRESENTATION / CALCULATION  |  Microflow within C30 — optional and revisitable"
+      ]
+    },
+    {
+      "row": 118,
+      "cells": [
+        null,
+        "STATISTICS:\nScatter, distribution, side-by-side group comparison, concise categories—based on existing data and the predicted pattern.",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Choose a purposeful FIRST move",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "MODELLING / THEORY:\nOne labelled sketch, meaningful first calculation or simple case. No diagram if it adds nothing."
+      ]
+    },
+    {
+      "row": 121,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↓"
+      ]
+    },
+    {
+      "row": 122,
+      "cells": [
+        null,
+        "BEFORE: What is the reason for this display or calculation? How will it help answer the aim?",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Before it: purpose and definitions",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Define h, t, other symbols, units and specialist terms BEFORE they appear on the diagram."
+      ]
+    },
+    {
+      "row": 125,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↓"
+      ]
+    },
+    {
+      "row": 126,
+      "cells": [
+        null,
+        "DIAGRAM CHECKLIST:\nDescriptive title, labelled axes, sensible scales, readable/attractive layout, one printed page, accuracy and no repetition.",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Create + presentation check",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "CALCULATION ALTERNATIVE:\nConcise setup, meaningful variables, correct units, justified precision. No bar-chart how-to."
+      ]
+    },
+    {
+      "row": 129,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↓"
+      ]
+    },
+    {
+      "row": 130,
+      "cells": [
+        null,
+        "AFTER: What do you ACTUALLY notice? If accuracy is already covered, don't repeat it. Connect your finding to the aim and prediction.",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "After it: what do you SEE?",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "If unexpected: don't quietly move on. Explore a relevant reason or alternate view first, without forcing the predicted result."
+      ]
+    },
+    {
+      "row": 133,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↓"
+      ]
+    },
+    {
+      "row": 134,
+      "cells": [
+        null,
+        "NEXT LOGICAL MATHEMATICAL STEP: From the FIRST actual graph/calculation's short takeaway, ask what important question remains. Choose a mathematical method for a REASON; write the bridge BEFORE working.",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Next logical mathematical step · repeat",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "This stage repeats AFTER every substantial calculation. Only a calculated Pearson r can trigger the additional post-PMCC branch; plotted scatter alone has different guidance."
+      ]
+    },
+    {
+      "row": 138,
+      "cells": [
+        null,
+        "19 tailored initial moves  ↗",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Diagram checklist (24 checks)  ↗",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Save / resume these notes  ↗"
+      ]
+    },
+    {
+      "row": 142,
+      "cells": [
+        null,
+        "PRINT / STORY RULES: No long tables anywhere (including appendix), no split figures, no duplicated plots without a genuine direct comparison. Introduce a display BEFORE showing it, then explain its actual message and the logical next mathematical step. A simple well-used graph beats a complicated decorative one."
+      ]
+    },
+    {
+      "row": 147,
+      "cells": [
+        null,
+        "AFTER THE FIGURE OR CALCULATION  |  What it shows → accuracy if needed → original aim/prediction → unexpected? → next maths"
+      ]
+    },
+    {
+      "row": 150,
+      "cells": [
+        null,
+        "What do I actually SEE? Name an observed pattern or numerical result; uncertainty is acceptable.",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "After it: what do you SEE?",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Student confirms the observed feature. A prediction isn't evidence, and no automatic visual diagnosis is assumed."
+      ]
+    },
+    {
+      "row": 153,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↓ check confidence only if new"
+      ]
+    },
+    {
+      "row": 154,
+      "cells": [
+        null,
+        "If input precision/scope was already discussed properly, refer to it. Only add a new explanation when useful.",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Accuracy of THIS result · if needed",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "If the effect is smaller than meaningful accuracy, explain what can or cannot be inferred."
+      ]
+    },
+    {
+      "row": 157,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↓ return to purpose"
+      ]
+    },
+    {
+      "row": 158,
+      "cells": [
+        null,
+        "Display ORIGINAL aim, prediction, and WHY. Did evidence support, challenge or leave the prediction unclear?",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Reconnect with aim and prediction",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "What does this really mean for the person who might benefit? Do not manufacture advice or certainty."
+      ]
+    },
+    {
+      "row": 161,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↓ only if surprising / unclear"
+      ]
+    },
+    {
+      "row": 162,
+      "cells": [
+        null,
+        "Unexpected? What exactly differs? Is there a reason to check inputs, a group comparison, model assumption or counterexample?",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Unexpected or unclear? Investigate, don't skip",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Keep original prediction, record alternate explanation as UNTESTED until actually checked. Not sure remains valid."
+      ]
+    },
+    {
+      "row": 165,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↓ choose deliberate next step"
+      ]
+    },
+    {
+      "row": 166,
+      "cells": [
+        null,
+        "Optional help only: e.g. a scatter appears roughly linear → consider PMCC next to quantify linear association.",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Optional next-step ideas from actual finding",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Not a PMCC calculation yet. Technique-specific PMCC limitations appear only when the student actually performs it."
+      ]
+    },
+    {
+      "row": 169,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↓ student decides WHY"
+      ]
+    },
+    {
+      "row": 170,
+      "cells": [
+        null,
+        "AFTER a real result and short local conclusion, select a worthwhile mathematical question, then explain WHY the next method follows. It may be a 2nd, 3rd or later section.",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Next logical mathematical step · repeat",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Go to another mathematical section, inspect another angle, return to data, save, or conclude when enough. No prescribed number of methods and no pressure to find a positive relationship."
+      ]
+    },
+    {
+      "row": 174,
+      "cells": [
+        null,
+        "Context-specific examples  ↗",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "First exploration guide  ↗",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Resume reflection notes  ↗"
+      ]
+    },
+    {
+      "row": 177,
+      "cells": [
+        null,
+        "STAGE RULE: Accuracy checks are conditional; surprising-result exploration only appears when relevant; personalised hints are on demand. The same reflection cycle applies after later calculations, without repeatedly displaying the same figure or giving irrelevant mathematical help."
+      ]
+    },
+    {
+      "row": 182,
+      "cells": [
+        null,
+        "REFLECTION BELONGS WITH THE WORK: Data methods → first representation → calculations/models → mathematical changes. The conclusion draws on these existing insights rather than starting evaluation for the first time."
+      ]
+    },
+    {
+      "row": 185,
+      "cells": [
+        null,
+        "CONCLUSION  |  Synthesise the answer • Explain its significance • Look forward • Don't repeat"
+      ]
+    },
+    {
+      "row": 188,
+      "cells": [
+        null,
+        "Use your earlier reflection records. Show a concise ANSWER to the aim—not a chapter-by-chapter recap.",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Conclusion · synthesis and what next",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "The original prediction and intended beneficiary are useful context. The actual evidence must determine the answer."
+      ]
+    },
+    {
+      "row": 191,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↓"
+      ]
+    },
+    {
+      "row": 192,
+      "cells": [
+        null,
+        "Draw together the two or three key mathematical findings. Refer to earlier results rather than recalculating them.",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Draw together the essential answer",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "If the overall answer is incomplete or inconclusive, state that honestly. It can still be mathematically meaningful."
+      ]
+    },
+    {
+      "row": 195,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↓"
+      ]
+    },
+    {
+      "row": 196,
+      "cells": [
+        null,
+        "What do the findings mean for you, the intended beneficiary, or the original mathematical question?",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Meaning for the intended beneficiary",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Use only important, previously justified restrictions to qualify any decision/advice. No new generic limitations list."
+      ]
+    },
+    {
+      "row": 199,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↓"
+      ]
+    },
+    {
+      "row": 200,
+      "cells": [
+        null,
+        "One or two specific FUTURE mathematical questions may follow from real findings, with why they'd add value.",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "What would you investigate next?",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "A specific new comparison, tested assumption or generalisation—not vague 'more research'. None is valid if no meaningful extension."
+      ]
+    },
+    {
+      "row": 203,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↓"
+      ]
+    },
+    {
+      "row": 204,
+      "cells": [
+        null,
+        "Trim repeated figures, formulas and method descriptions. An earlier missing reflection belongs beside the actual work.",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Keep the conclusion focused",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Students can return to C34/C50 without losing the conclusion draft; Save/Resume always stays available."
+      ]
+    },
+    {
+      "row": 208,
+      "cells": [
+        null,
+        "Conclusion & Reflection guide  ↗",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Student conclusion prompts  ↗",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Conclusion Save / Resume fields  ↗"
+      ]
+    },
+    {
+      "row": 212,
+      "cells": [
+        null,
+        "KEY RULE: Reflect as mathematical decisions and evidence develop. The conclusion should be a satisfying, concise mathematical ending—what the findings mean together and which worthwhile questions could follow. It must not duplicate graphs, calculations, data-method discussion or a catalogue of limitations."
+      ]
+    },
+    {
+      "row": 217,
+      "cells": [
+        null,
+        "SOURCE ALIGNMENT ADDITIONS  |  Use only what the current student stage needs"
+      ]
+    },
+    {
+      "row": 221,
+      "cells": [
+        null,
+        "ACTUAL MATHEMATICS\nCorrect notation, ≈/=, justified precision, explained technology and course-appropriate understanding.",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "ACTUAL BIVARIATE EVIDENCE\nClearly linear / roughly linear / curved / no clear pattern. Choose next maths for a reason.",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "DRAFT → FINAL\nComplete teacher draft, one written feedback round, student revisions and final A–E self-check."
+      ]
+    },
+    {
+      "row": 226,
+      "cells": [
+        null,
+        "Maths & Technology guide  ↗",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Bivariate Decisions guide  ↗",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Draft & Final Review guide  ↗"
+      ]
+    },
+    {
+      "row": 231,
+      "cells": [
+        null,
+        "LOW FRICTION: One purpose-linked prompt at a time; no compulsory algorithm for every IA. Deeper help and mini-examples are available on request. No data collection screen should present limitations of techniques not yet used. Appendix guidance is an editorial preference, not an IB prohibition."
+      ]
+    },
+    {
+      "row": 236,
+      "cells": [
+        null,
+        "IF SOMETHING STOPS YOU  |  Optional help that keeps the investigation moving"
+      ]
+    },
+    {
+      "row": 239,
+      "cells": [
+        null,
+        "No data yet? Write the short introduction or tentative prediction, plan methods, or research suitable secondary sources.",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "I'm stuck — what is blocking me?",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Available from ANY stage: 'I'm stuck'. Short choices and up to three contextual suggestions, only if asked."
+      ]
+    },
+    {
+      "row": 242,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↓  CHOOSE THE CURRENT PROBLEM"
+      ]
+    },
+    {
+      "row": 243,
+      "cells": [
+        null,
+        "No data yet: make progress anyway",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Find and check alternative data sources",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Some data, but incomplete or poor quality"
+      ]
+    },
+    {
+      "row": 246,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↓  OR CHOOSE ANOTHER ISSUE"
+      ]
+    },
+    {
+      "row": 247,
+      "cells": [
+        null,
+        "Other hiccough: targeted support",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "One helpful next action",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Choose ONE safe next action, return to your work or Save. Pending data do not block progress; actual results are never invented."
+      ]
+    },
+    {
+      "row": 251,
+      "cells": [
+        null,
+        "Getting Unstuck guide  ↗",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Data & Source guidance  ↗",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Save / Resume design  ↗"
+      ]
+    },
+    {
+      "row": 254,
+      "cells": [
+        null,
+        "PRACTICAL DELAY ≠ MATHEMATICAL LIMITATION. Preserve source status, original aim and prediction, unresolved permissions and the student's next task. A switched data source must genuinely support the aim."
+      ]
+    },
+    {
+      "row": 257,
+      "cells": [
+        null,
+        "WRITING AT THE RIGHT TIME  |  Your real choice or result → one small cue → the right place in your IA"
+      ]
+    },
+    {
+      "row": 260,
+      "cells": [
+        null,
+        "Check what's ACTUALLY happening: chosen sampling, real source, observed graph, active method or new meaningful result.",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Where should I write this?",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Show one cue based on current aim, beneficiary, course, REAL choice/result and what has already been written."
+      ]
+    },
+    {
+      "row": 263,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↓ choose the relevant moment, or Skip"
+      ]
+    },
+    {
+      "row": 265,
+      "cells": [
+        null,
+        "BEFORE the output: introduce WHY this graph or method helps answer the aim; define new quantities and symbols.",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "AFTER the output: say what you SEE and MEAN, compare with prediction, explain a justified mathematical next step.",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "WITH the chosen data/method: justify collection/source, real accuracy and inferential scope. In conclusion: SYNTHESISE only."
+      ]
+    },
+    {
+      "row": 268,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↓ student decides, without interruptions"
+      ]
+    },
+    {
+      "row": 270,
+      "cells": [
+        null,
+        "WRITE NOW: show precise IA location; student's own words, not generated final prose.",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "ALREADY COVERED: save own paragraph/figure reference; don't ask again on unchanged work.",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "NOT RELEVANT / SHOW AN EXAMPLE / DEFER: student controls depth and timing."
+      ]
+    },
+    {
+      "row": 274,
+      "cells": [
+        null,
+        "PLANNING NOTE ≠ WRITTEN IA: If the source is only a candidate or data are pending, the prompt says what can be written now (intro/prediction) and what remains private planning. Active PMCC/model assumptions are discussed only once the technique is actually used."
+      ]
+    },
+    {
+      "row": 278,
+      "cells": [
+        null,
+        "Writing Moments: 37 conditional cues  ↗",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Integrated stage prompts  ↗",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Saved writing state / resume  ↗"
+      ]
+    },
+    {
+      "row": 283,
+      "cells": [
+        null,
+        "Only offer a fresh writing reminder at the point of a confirmed new choice or meaningful result. Remember what the student said was written, where it lives, and when changed evidence makes re-review worthwhile. Student-authored paragraphs remain their own work."
+      ]
+    },
+    {
+      "row": 297,
+      "cells": [
+        null,
+        "REPEATABLE MATHEMATICAL INVESTIGATION  |  Each section answers one question and creates the reason for the next"
+      ]
+    },
+    {
+      "row": 300,
+      "cells": [
+        null,
+        "1. An ACTUAL figure, calculation or mathematical case produces a finding.",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "After it: what do you SEE?",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Immediately AFTER the result: brief interpretation and a LOCAL takeaway—what was established and what remains open?"
+      ]
+    },
+    {
+      "row": 303,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↓ now choose whether maths should continue"
+      ]
+    },
+    {
+      "row": 305,
+      "cells": [
+        null,
+        "Next logical mathematical step · repeat",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "2. Name the next mathematical question; select a suitable method because it follows from the last result.",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "WRITE the transition at the END of the previous section and BEFORE using new maths. 'Already covered' is allowed."
+      ]
+    },
+    {
+      "row": 308,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↓ if a worthwhile question remains"
+      ]
+    },
+    {
+      "row": 310,
+      "cells": [
+        null,
+        "First substantial mathematics",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "FIRST substantial mathematics  /  OR",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Further mathematics · reflect as you go"
+      ]
+    },
+    {
+      "row": 313,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↓ calculate, interpret, and make another local conclusion"
+      ]
+    },
+    {
+      "row": 315,
+      "cells": [
+        null,
+        "Next actual substantial result → C34, then C34B: what does this section show for [aim]?",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "After it: what do you SEE?",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Return to C35 after meaningful results, not after routine algebra. Keep a result-specific interpretation beside the working."
+      ]
+    },
+    {
+      "row": 318,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↓ repeat C35, or stop when the answer is adequate"
+      ]
+    },
+    {
+      "row": 320,
+      "cells": [
+        null,
+        "Repeat only if another question genuinely advances the investigation.",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Next logical mathematical step · repeat",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "OR the student chooses C60: conclude with an evidence-qualified synthesis. No fixed section count."
+      ]
+    },
+    {
+      "row": 325,
+      "cells": [
+        null,
+        "PMCC FOLLOW-UP  |  Only after Pearson's r has ACTUALLY been calculated and interpreted"
+      ]
+    },
+    {
+      "row": 328,
+      "cells": [
+        null,
+        "r and scatter indicate useful LINEAR association: a line of best fit MAY help answer a predictive question.",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "After PMCC: which mathematical step follows?",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Small sample |r|: assess REAL scatter for curve/group/range or accept a weak linear finding. No correlation hunting."
+      ]
+    },
+    {
+      "row": 332,
+      "cells": [
+        null,
+        "High |r| does not prove causation or prediction quality; low |r| does not prove there is no nonlinear relationship. Check the data, question and course suitability before selecting more mathematics."
+      ]
+    },
+    {
+      "row": 335,
+      "cells": [
+        null,
+        "Next Mathematical Step guide  ↗",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Right-time writing guidance  ↗",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Linked section Save/Resume fields  ↗"
+      ]
+    },
+    {
+      "row": 340,
+      "cells": [
+        null,
+        "Implementation requirement: Every new section stores previousResultRef, student local conclusion, still-open question, selected method and WHY, actual output and next decision. Never silently overwrite student-authored text when a previous result changes."
+      ]
+    },
+    {
+      "row": 344,
+      "cells": [
+        null,
+        "ACCURACY & AIM FOLLOW THROUGH  |  Reuse the student's earlier decisions at the moment they matter"
+      ]
+    },
+    {
+      "row": 348,
+      "cells": [
+        null,
+        "Measurement accuracy → reported precision",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Create + presentation check",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "C40/C50 · Active mathematical sections: bring forward relevant input/source precision when setting up a NEW numerical method."
+      ]
+    },
+    {
+      "row": 352,
+      "cells": [
+        null,
+        "Capture per-variable units, source resolution and any justified uncertainty ONCE. Distinguish input precision from output accuracy.",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Before showing a graph: scales, data labels, units and displayed precision should respect C24. Fix the graph rather than add another paragraph.",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Do the mathematics using sensible working precision; don't round at each step. At the result, report appropriately derived digits and units."
+      ]
+    },
+    {
+      "row": 356,
+      "cells": [
+        null,
+        "↓  AFTER EACH genuinely meaningful figure or calculation — not after routine algebra"
+      ]
+    },
+    {
+      "row": 358,
+      "cells": [
+        null,
+        "After it: what do you SEE?",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Reconnect with aim and prediction",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Accuracy of THIS result · if needed"
+      ]
+    },
+    {
+      "row": 363,
+      "cells": [
+        null,
+        "Write immediately AFTER the ACTUAL result: what does it SHOW ABOUT MY AIM and beneficiary? Is my original prediction supported?",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "One short LOCAL takeaway. Explicitly link finding to purpose rather than just describing a plot or number.",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Recall C24 if this result is affected. If a NEW method-specific limitation changes the claim, explain it HERE; otherwise Already covered / Not relevant."
+      ]
+    },
+    {
+      "row": 367,
+      "cells": [
+        null,
+        "↓  Every worthwhile new mathematical section then returns to C35, with justified reasoning for the NEXT step"
+      ]
+    },
+    {
+      "row": 369,
+      "cells": [
+        null,
+        "Writing Moments · aim & precision cues  ↗",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Next Mathematical Step · accuracy examples  ↗",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Accuracy source/result Save & Resume  ↗"
+      ]
+    },
+    {
+      "row": 373,
+      "cells": [
+        null,
+        "SPECIAL CASES: Derived results need their own defensible reporting accuracy—not mechanically the same decimal places as inputs. Pearson r is dimensionless and its d.p. aren't inherited from measurements. Exact theoretical results don't need empirical uncertainty. Practical delays aren't mathematical limitations."
+      ]
+    },
+    {
+      "row": 387,
+      "cells": [
+        null,
+        "MATHEMATICAL LEARNING AT THE RIGHT TIME  |  USE taught mathematics; EXPLAIN only genuinely new mathematics"
+      ]
+    },
+    {
+      "row": 390,
+      "cells": [
+        null,
+        "1. After the previous REAL finding, choose a worthwhile mathematical technique for the aim. The method's relevance still needs a reason.",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Assess ACTUAL mathematical relevance and depth",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Check actual course: ON syllabus / PARTLY beyond / BEYOND / UNSURE. Independent research is a separate question."
+      ]
+    },
+    {
+      "row": 393,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↓ different guidance, depending on verified course coverage"
+      ]
+    },
+    {
+      "row": 395,
+      "cells": [
+        null,
+        "ON SYLLABUS: do the mathematics, show the necessary working, justify WHY used and interpret the result. NO explanation of how to perform it.",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Explain new mathematics · only when relevant",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "BEYOND SYLLABUS: at FIRST use, explain the essential mathematical IDEA, conditions and an own step/check; cite research. Partly beyond: explain the new part ONLY."
+      ]
+    },
+    {
+      "row": 398,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↓ a learning source does not automatically mean 'beyond syllabus'"
+      ]
+    },
+    {
+      "row": 400,
+      "cells": [
+        null,
+        "INDEPENDENT RESEARCH: keep a source and an authentic understanding note. If method is within course, still no method tutorial.",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "UNSURE? Check course/syllabus or ask teacher; preserve the work and an unresolved flag.",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "If beyond-course maths can't be explained accurately, reconsider whether a more familiar, appropriate method would better serve the aim."
+      ]
+    },
+    {
+      "row": 403,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↓ apply maths, then interpret REAL result before further steps"
+      ]
+    },
+    {
+      "row": 405,
+      "cells": [
+        null,
+        "Carry out the chosen mathematical work. Any novel explanation goes next to the method's first use, not at the end of the IA.",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Reconnect with aim and prediction",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "AFTER result: explain meaning for [aim] FIRST. Only IF the student genuinely learnt a new mathematical relationship, principle or condition, add a SHORT insight HERE."
+      ]
+    },
+    {
+      "row": 410,
+      "cells": [
+        null,
+        "↓ return to C35 for the next purposeful mathematical question, or proceed to conclusion when justified"
+      ]
+    },
+    {
+      "row": 412,
+      "cells": [
+        null,
+        "Maths & Technology · level and examples  ↗",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Writing Moments · first-use vs insight  ↗",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Save understanding, sources and insight  ↗"
+      ]
+    },
+    {
+      "row": 416,
+      "cells": [
+        null,
+        "No method tutorials for confirmed syllabus mathematics. A new beyond-course idea must be mathematically understood, succinctly explained in the student's own words, and referenced where used—not simply named or pasted. An optional genuine learning insight belongs alongside the result that produced it. Do not manufacture engagement, equate advanced maths with higher grades, or promise automatic syllabus checks."
+      ]
+    }
+  ]
+}
