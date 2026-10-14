@@ -38,7 +38,7 @@ export const C_FIELD_DEFAULTS=Object.freeze({
  accuracyForResult:"",aimLinkedResult:"",predictionComparison:"",
  benefitFinding:"",surpriseReason:"",surpriseCheck:"",
  nextQuestion:"",nextMethod:"",nextReason:"",nextLocation:"",
- scatterPattern:"",scatterDetail:"",pairedDataType:"",pmccSignal:"",pmccMeaning:"",pmccInterpretation:"",
+ scatterPattern:"",scatterDetail:"",pairedDataType:"",scatterAimRelevance:"",pmccSignal:"",pmccMeaning:"",pmccInterpretation:"",
  technologyTool:"",technologyInput:"",technologyOutcome:"",
  technologyInterpretation:"",courseLevel:"",courseWhy:"",
  researchedMethod:"",researchedUnderstanding:"",mathsLearning:"",
