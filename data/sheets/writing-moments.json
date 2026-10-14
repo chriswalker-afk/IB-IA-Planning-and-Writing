@@ -1,0 +1,1974 @@
+{
+  "schemaVersion": 1,
+  "sourceSheet": "Writing Moments",
+  "sourceBounds": {
+    "rows": 190,
+    "columns": 11
+  },
+  "rowCount": 151,
+  "nonemptyCellCount": 1207,
+  "rows": [
+    {
+      "row": 1,
+      "cells": [
+        "WRITING MOMENTS  |  Relevant choice → brief advice → right place in the IA"
+      ]
+    },
+    {
+      "row": 2,
+      "cells": [
+        "Student view: one small cue, never a full checklist. Controls: Write now / Already covered / Not relevant / Show an example. Save changes without ghostwriting."
+      ]
+    },
+    {
+      "row": 3,
+      "cells": [
+        "Decide relevance using ACTUAL method/result, course, aim, beneficiary, source and earlier writing status. Planned mathematics and expected patterns are NOT evidence."
+      ]
+    },
+    {
+      "row": 4,
+      "cells": [
+        "Location is essential: data justification with method, figure purpose BEFORE, observation/interpretation AFTER, method limitation WHEN USED, synthesis in CONCLUSION."
+      ]
+    },
+    {
+      "row": 5,
+      "cells": [
+        "Already covered saves the student's own section/figure reference and suppresses repetition until substantive work changes. Not relevant hides that cue for the present context."
+      ]
+    },
+    {
+      "row": 6,
+      "cells": [
+        "Practical delays, teacher feedback, rubric checks, future work and potential data sources are project notes unless they lead to actual mathematical decisions in the IA."
+      ]
+    },
+    {
+      "row": 8,
+      "cells": [
+        "ID",
+        "Node(s)",
+        "Actual prerequisite",
+        "Use earlier answer(s)",
+        "Student-facing WRITE cue",
+        "Where in IA",
+        "Amount/action",
+        "Trigger timing",
+        "Suppress / avoid",
+        "Progress state",
+        "Spec status"
+      ]
+    },
+    {
+      "row": 9,
+      "cells": [
+        "W01",
+        "C10",
+        "Aim and motivation confirmed",
+        "Aim; motivation; beneficiary",
+        "Write a brief first-person introduction explaining what you want to find out and why it matters to [beneficiary].",
+        "Opening introduction",
+        "Few short paragraphs",
+        "When introduction first written or revisited",
+        "No invented motivation or findings; prior prose reused",
+        "introductionDraft; cue status",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 10,
+      "cells": [
+        "W02",
+        "C10",
+        "A useful tentative prediction exists",
+        "Original prediction; WHY; IF TRUE implication",
+        "If useful, briefly explain your starting expectation and why—clearly as a prediction.",
+        "Introduction, after aim",
+        "One conditional sentence; optional",
+        "When intro written, including before data",
+        "No compulsory prediction for theoretical routes",
+        "prediction inclusion; location",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 11,
+      "cells": [
+        "W03",
+        "C21S/C22",
+        "Actual statistical sample design chosen",
+        "Target population; selected and alternative methods",
+        "When describing your sample, justify [chosen method] for [aim] compared with [realistic alternative].",
+        "Where sample and selection are first described",
+        "Short rationale and actual procedure",
+        "Only when chosen/used, not imaginary collection",
+        "Don't recite all sampling methods",
+        "method/source linked cue",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 12,
+      "cells": [
+        "W04",
+        "C20/C23",
+        "Volunteer/opportunity sampling confirmed",
+        "Target population; actual respondents",
+        "Here, explain why this accessible group helps your aim, and what population you can legitimately describe.",
+        "Immediately beside actual sampling method",
+        "Selection effect on inference",
+        "After actual respondents/design known",
+        "Not 'getting volunteers was hard' as a mathematical limitation",
+        "sampling tag; L01",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 13,
+      "cells": [
+        "W05",
+        "C20/C23",
+        "Real simple random sampling",
+        "Selection frame; random procedure",
+        "Explain how the random selection actually worked and whether the list covers your intended population.",
+        "Data-method description",
+        "One reproducible explanation",
+        "When selection is used",
+        "No invented random selection or presumed frame bias",
+        "frame/procedure ref",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 14,
+      "cells": [
+        "W06",
+        "C20/C23",
+        "Real stratified sampling",
+        "Strata; selection fractions; aim",
+        "Explain why these groups were separated and whether their proportions suit your comparison.",
+        "With sampling description",
+        "Purpose and qualified overall inference",
+        "If actual strata exist",
+        "No weighting discussion if irrelevant",
+        "strata and write status",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 15,
+      "cells": [
+        "W07",
+        "C20/C23",
+        "Actual census of a defined group",
+        "Population; actual coverage/response",
+        "State why a census of [defined group] is useful, and whether every member was actually observed.",
+        "With first population description",
+        "Short valid scope statement",
+        "After coverage verified",
+        "Don't call a small club a whole-school census",
+        "coverage; status",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 16,
+      "cells": [
+        "W08",
+        "C20",
+        "Verified secondary data actually used",
+        "Source/date; variables; population; aim",
+        "As you introduce [source], cite it and justify why these variables, dates and population answer [aim].",
+        "First dataset/source mention",
+        "Brief attribution and source suitability",
+        "When source verified AND used",
+        "Candidate URL alone is not collected evidence",
+        "sourceRef; cue location",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 17,
+      "cells": [
+        "W09",
+        "C20/C24",
+        "Measurements actually made",
+        "Actual method and alternative; resolution",
+        "Alongside your method, explain why [method] produces suitable measurements and how their precision affects calculations.",
+        "Where measurement first described",
+        "Short mathematical comparison",
+        "After real method chosen/used",
+        "No generic equipment difficulty paragraph",
+        "method; precision policy",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 18,
+      "cells": [
+        "W10",
+        "C21T/C21M",
+        "Theory/model first using assumptions",
+        "Variables; constraints; aim",
+        "State necessary assumptions and constraints JUST BEFORE they enter your model, with reasons.",
+        "Before mathematical model begins",
+        "Brief valid scope and definitions",
+        "At first model construction",
+        "No forced data/sampling or up-front generic critique",
+        "assumption use reference",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 19,
+      "cells": [
+        "W11",
+        "C23/C26",
+        "Confirmed relevant collection-stage limitation",
+        "Actual source choice; bias/resolution; aim",
+        "With the method, explain how [real limitation] affects precision, coverage or inference, and what remains defensible.",
+        "Immediately with data/method explanation",
+        "One cause→consequence→bound",
+        "Only when genuinely applicable",
+        "Don't claim it is acceptable if it undermines aim",
+        "L-ID; already-explained ref",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 20,
+      "cells": [
+        "W12",
+        "C25/C32",
+        "New symbol or specialist term first appears",
+        "Student's symbol; quantity/units; domain",
+        "Define [symbol/term] briefly before using it; use a meaningful symbol when helpful.",
+        "Directly BEFORE first occurrence",
+        "One inline definition",
+        "First use only",
+        "No repeated glossary or default x/y",
+        "term-first-use location",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 21,
+      "cells": [
+        "W13",
+        "C95D",
+        "No actual data yet",
+        "Aim; motivation; tentative prediction",
+        "You can write the introduction and tentative prediction now. Keep data/source choices as PLANS, not results.",
+        "Introduction NOW; source plans in Pathfinder notes",
+        "Private plans or short student prose",
+        "When waiting or help requested",
+        "No fabricated results, charts or past-tense data claims",
+        "data Pending; note status",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 22,
+      "cells": [
+        "W14",
+        "C32",
+        "Meaningful diagram/calculation is ready",
+        "Aim; actual result; current variables",
+        "JUST BEFORE this output, introduce what it may reveal and why it matters to [aim].",
+        "Immediately before figure/calculation",
+        "One purpose sentence; missing definitions",
+        "Before inserting the output",
+        "Do not explain how to draw a bar chart",
+        "resultRef; purpose cue",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 23,
+      "cells": [
+        "W15",
+        "C33",
+        "Actual figure is being inserted",
+        "Axis names/units; precision; scale",
+        "Check title, readable axes/scales, defensible accuracy, source and that the entire figure fits on one printed page.",
+        "On the figure itself",
+        "Adjust figure, not extra prose",
+        "When figure created",
+        "No decorative or repeated plots",
+        "figureChecks; not paragraph",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 24,
+      "cells": [
+        "W16",
+        "C34",
+        "Actual NEW meaningful result exists",
+        "Observed shape/value; output ref",
+        "IMMEDIATELY AFTER this result, describe what you actually see, not how you created it.",
+        "Immediately below this figure/calculation",
+        "One or two evidence-backed sentences",
+        "After each meaningful finding, including later ones",
+        "Skip routine algebra; no predicted 'observation'",
+        "resultRef; writing status",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 25,
+      "cells": [
+        "W17",
+        "C34A",
+        "NEW relevant accuracy question is unresolved",
+        "C23/C24 precision; actual result",
+        "If this result introduces a new accuracy issue, explain its effect here; otherwise refer to earlier discussion.",
+        "Beside affected result",
+        "One qualifier, or cite prior note",
+        "After output only when relevant",
+        "Already explained suppresses duplicate text",
+        "precision status; prior ref",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 26,
+      "cells": [
+        "W18",
+        "C34B",
+        "Actual meaningful observation and aim",
+        "Aim; original prediction/WHY; beneficiary",
+        "After the observation, connect it to [aim] and say whether the evidence supports, challenges or leaves [prediction] unclear.",
+        "Right after the same result",
+        "Short interpretation in own words",
+        "After ACTUAL evidence, not planned analysis",
+        "No proof/causality claims from one chart",
+        "resultRef; aim cue",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 27,
+      "cells": [
+        "W19",
+        "C34U",
+        "Result actually surprises or confuses student",
+        "Actual difference; expectation",
+        "Here, say what differed, why it matters and what alternative or check could help; distinguish considered from tested.",
+        "After unexpected result, before next technique",
+        "One honest discrepancy + next question",
+        "Only when unexpected/unclear",
+        "Do not erase original prediction",
+        "unexpected check status",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 28,
+      "cells": [
+        "W20",
+        "C35",
+        "Next mathematical step genuinely selected",
+        "Actual observed feature; new method; aim",
+        "At the END of this discussion, explain why [next technique] follows from [observed result] and what it could clarify.",
+        "Between the result and next method",
+        "One mathematical bridge sentence",
+        "When a purpose-driven next technique chosen",
+        "No PMCC just because it was planned",
+        "resultRef; nextStep reason",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 29,
+      "cells": [
+        "W21",
+        "C40/C50",
+        "Substantial technique ACTUALLY begins",
+        "Actual method; preceding evidence; aim",
+        "BEFORE using [method], state why it is suited to the question that emerged from your results.",
+        "At first use of method",
+        "One/two reasons; not textbook walkthrough",
+        "Before genuine new substantive method",
+        "Skip repeated routine technique",
+        "activeMethod; first-use",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 30,
+      "cells": [
+        "W22",
+        "C40T",
+        "Software/calculator really produced output",
+        "Tool; actual method; input; actual output",
+        "BESIDE the computed output, say WHAT was calculated, WHY and what it means for your variables/aim.",
+        "With its calculated output",
+        "Brief purpose + interpretation",
+        "At actual technology use only",
+        "No button-click tutorial or pasted result alone",
+        "technologyOutputRef",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 31,
+      "cells": [
+        "W23",
+        "C40/C50",
+        "Student ACTUALLY calculated PMCC",
+        "Actual r; paired quantities; observed plot",
+        "JUST AFTER the PMCC result, interpret sign/size in context; consider linearity/outliers/causation only if relevant.",
+        "Immediately after actual r",
+        "Coefficient interpretation + applicable scope",
+        "Not at data collection or first scatter",
+        "No invented r or automatic limitations",
+        "PMCC ref; limitation ID",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 32,
+      "cells": [
+        "W24",
+        "C40/C50",
+        "Real fitted model used",
+        "Equation; parameters; range; actual fit",
+        "Introduce WHY this model was chosen before fitting; AFTER using it, interpret parameters, fit and valid prediction range as relevant.",
+        "Before model then beside its result",
+        "Short two-part justification/evaluation",
+        "When model fitted or tested",
+        "No forced model or premature residual critique",
+        "model ref; status",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 33,
+      "cells": [
+        "W25",
+        "C40/C50",
+        "Measured inputs affect derived value",
+        "Precision records; actual equation/result",
+        "When the input uncertainty materially affects this calculation, explain how much you can rely on its output.",
+        "With affected derived result",
+        "One contextual effect; justified digits",
+        "Only once calculation exists",
+        "No invented ± values or general apparatus story",
+        "accuracy source; resultRef",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 34,
+      "cells": [
+        "W26",
+        "C50",
+        "New SUBSTANTIVE later result/case",
+        "Current resultRef; prior observation; aim",
+        "RIGHT AFTER this meaningful result, say what it means, whether it changes your thinking and why another step may follow.",
+        "Immediately after meaningful later finding",
+        "One to three reflection sentences",
+        "Automatic brief nudge after substantive work",
+        "Do not prompt after every algebra line",
+        "per-result cue state",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 35,
+      "cells": [
+        "W27",
+        "C40/C50",
+        "Technique changed because of real evidence",
+        "Original vs revised method; result",
+        "WHERE your approach changes, explain why the earlier method became less suitable and what the new one investigates.",
+        "Transition between methods",
+        "One evidence-led reason",
+        "At actual change of direction",
+        "Don't rewrite original plan/prediction",
+        "decision history; location",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 36,
+      "cells": [
+        "W28",
+        "C40/C50",
+        "Real theoretical proof/counterexample",
+        "Claim; actual case; valid constraints",
+        "After the counterexample or key proof, clarify exactly what was established and what case or generalisation follows.",
+        "After exact mathematical finding",
+        "Correct mathematical scope",
+        "Only when actual proof/case exists",
+        "Several examples aren't a proof",
+        "caseRef; revision status",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 37,
+      "cells": [
+        "W29",
+        "C60",
+        "Enough actual findings to answer or be inconclusive",
+        "Aim; key results; beneficiary; unresolved issue",
+        "In your CONCLUSION, draw the key results together, explain what they mean and identify one useful future question if one exists.",
+        "Conclusion only",
+        "Concise synthesis and next step",
+        "When conclusion drafted/revised",
+        "No replayed calculations/limits",
+        "conclusionDraft; result IDs",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 38,
+      "cells": [
+        "W30",
+        "C70",
+        "Student reviewing written work",
+        "Already written maths; units; source; figures",
+        "Correct an issue WHERE the relevant equation, graph or citation already appears—not by adding a new final paragraph.",
+        "Original location in IA",
+        "Local editorial change",
+        "At presentation review",
+        "No generic limitations section",
+        "edit location; status",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 39,
+      "cells": [
+        "W31",
+        "C80",
+        "Real permitted teacher feedback arrived",
+        "Teacher comment; affected work",
+        "Keep teacher feedback as a PRIVATE action note, then make your own correction at the relevant point in the IA.",
+        "Project notes; edited original section",
+        "One correction",
+        "When feedback actually given",
+        "No paste-in teacher comments or 2nd written draft",
+        "feedback action ref",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 40,
+      "cells": [
+        "W32",
+        "C90",
+        "Review of draft/final against A–E",
+        "Real criterion evidence; written IA",
+        "Use the self-check to find a WEAK section, then edit it THERE. Do not paste the checklist into the IA.",
+        "Project review notes; affected sections",
+        "Targeted edit not new stock prose",
+        "Teacher draft and final only",
+        "No numerical grade prediction",
+        "criteria check status",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 41,
+      "cells": [
+        "W33",
+        "C95A",
+        "Alternative data still a CANDIDATE",
+        "Candidate source; aim; missing data",
+        "Keep your source search as PLANNING notes. Write about the new dataset only if it becomes your actual verified source.",
+        "Project notes; later C20 if used",
+        "Link and suitability note",
+        "While finding data",
+        "Don't claim candidate is used/collected",
+        "candidate status",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 42,
+      "cells": [
+        "W34",
+        "C31",
+        "Student decides figure isn't useful",
+        "Aim; chosen alternative calculation",
+        "Skip the diagram; introduce the meaningful calculation instead and explain its purpose.",
+        "Before alternative calculation",
+        "One short lead-in if helpful",
+        "When figure isn't needed",
+        "No decorative charts to gain marks",
+        "skip decision",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 43,
+      "cells": [
+        "W35",
+        "C21M/C40",
+        "Assumption first made then later tested",
+        "Assumption; model; result",
+        "State assumption WHEN model introduced; explain its consequence LATER if active maths reveals a relevant restriction.",
+        "Before model; with affected result",
+        "Separate rationale/evaluation",
+        "Two distinct moments",
+        "No regression weakness before model exists",
+        "assumption stage/ref",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 44,
+      "cells": [
+        "W36",
+        "C20/C40",
+        "Model ALSO uses statistical sample",
+        "Sample details; fitted model",
+        "Discuss sampling scope with DATA; interpret model parameters/fit with LATER maths.",
+        "Methods section versus mathematical result",
+        "Two separate meaningful passages",
+        "When both aspects actually occur",
+        "Never frontload PMCC/fitting limitations",
+        "separate cue statuses",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 45,
+      "cells": [
+        "W37",
+        "C04",
+        "Student returns to earlier work",
+        "Current stage; saved cue states",
+        "Only show a new relevant cue if the work changed; otherwise continue without interruption.",
+        "Inline optional hint only",
+        "No writing if no new reason",
+        "At stage entry/resume",
+        "Already covered/Not relevant suppresses repeat",
+        "cue ledger version",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 49,
+      "cells": [
+        "RELEVANCE FIRST: a planned method is NOT an applied technique; a guessed pattern is NOT an observed finding. Show short writing prompts only if actual student state supports them."
+      ]
+    },
+    {
+      "row": 51,
+      "cells": [
+        "METHOD-SPECIFIC JUSTIFICATIONS  |  Different student choices should produce different advice, at the point where that choice enters the IA"
+      ]
+    },
+    {
+      "row": 53,
+      "cells": [
+        "ID",
+        "Confirmed earlier choice",
+        "Exact writing moment",
+        "Tailored optional cue",
+        "Placement",
+        "What matters mathematically",
+        "Wrong advice to avoid",
+        "Spec status"
+      ]
+    },
+    {
+      "row": 54,
+      "cells": [
+        "J01",
+        "Volunteer/opportunity sample confirmed",
+        "When describing participants",
+        "You used [actual respondent group], rather than a fully random sample. Explain what question that group CAN answer and why.",
+        "Method/data passage; scope beside method",
+        "Student compares to one feasible alternative and acknowledges representativeness.",
+        "Don't turn practical recruitment frustration into limitation.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 55,
+      "cells": [
+        "J02",
+        "Actual random sampling from list",
+        "When describing selection",
+        "Explain HOW you selected randomly and why the list corresponds to the target population.",
+        "Sampling method passage",
+        "If frame incomplete, note mathematical consequence; otherwise don't fabricate bias.",
+        "No generic warning that randomness itself creates bias.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 56,
+      "cells": [
+        "J03",
+        "Stratified sampling used",
+        "When the strata and selection are explained",
+        "Why were [groups] important for your comparison, and are selection proportions suitable for an overall estimate?",
+        "Beside chosen sampling method",
+        "Student notes if weights/proportions influence inference.",
+        "No weighting essay when fractions don't matter.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 57,
+      "cells": [
+        "J04",
+        "Census attempted",
+        "When defining surveyed population",
+        "If you aimed to observe EVERY member of [group], explain why and state whether you reached everyone.",
+        "Beside group definition",
+        "Actual scope and nonresponse where it occurred.",
+        "Don't infer results for a larger group.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 58,
+      "cells": [
+        "J05",
+        "Secondary dataset verified and used",
+        "When data first introduced",
+        "You selected [real source] for [actual variables]. Explain why its population, definitions and reporting period match your aim.",
+        "First data-source reference, with citation",
+        "Defensible scope and useful link to intended beneficiary.",
+        "No paragraph listing failed websites.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 59,
+      "cells": [
+        "J06",
+        "Stopwatch timings actually measured",
+        "When measurements are first described",
+        "Why did [manual timings] suit this investigation, and how does timing resolution or observed variation affect later results?",
+        "Data/measurement method, before timed-data analysis",
+        "Real resolution, not invented ± value.",
+        "Avoid complaining that it was fiddly to use.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 60,
+      "cells": [
+        "J07",
+        "Video frame timings actually used",
+        "When measurements first introduced",
+        "Why was frame analysis appropriate, and what does its actual frame rate/calibration imply for the measurements?",
+        "Beside video-based method",
+        "Precision and relevant error source.",
+        "No generic technology discussion before collecting.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 61,
+      "cells": [
+        "J08",
+        "Theoretical optimisation model chosen",
+        "Just as variables and constraints are introduced",
+        "Explain what [constraint] represents and why the model's simplification still serves [decision].",
+        "Before equations/optimisation",
+        "Genuine physical/mathematical restrictions, checked again at optimum.",
+        "No irrelevant sample-size question.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 62,
+      "cells": [
+        "J09",
+        "Genuine sample also calibrates model",
+        "First when data described, later when model fitted",
+        "Discuss sampling with collection; analyse parameter meaning and fit when the maths is performed.",
+        "Two relevant locations",
+        "Separate coverage versus fit/assumption effects.",
+        "No single early list of all PMCC/regression flaws.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 63,
+      "cells": [
+        "J10",
+        "Paired scatter roughly linear, no PMCC yet",
+        "Immediately after ACTUAL scatter",
+        "Explain why apparent linearity could make PMCC a useful NEXT check if quantification helps the aim.",
+        "After scatter, before PMCC",
+        "Student's actual observation and intended purpose.",
+        "Don't write PMCC assumptions/results yet.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 64,
+      "cells": [
+        "J11",
+        "Paired scatter curved, original prediction linear",
+        "Immediately after ACTUAL scatter",
+        "Describe curvature, why it changes the proposed linear approach and what more suitable investigation might follow.",
+        "After figure, before new maths",
+        "Student can consider modelling curve or suitable rank idea if taught.",
+        "No PMCC automatically or invented correlation.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 65,
+      "cells": [
+        "J12",
+        "No clear relationship seen in paired scatter",
+        "Immediately after ACTUAL scatter",
+        "Describe absence of a clear pattern and what that does or doesn't tell the intended beneficiary.",
+        "After figure, before further decisions",
+        "Honest inconclusive observation or relevant alternate question.",
+        "No 'keep graphing until significance'.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 66,
+      "cells": [
+        "J13",
+        "PMCC ACTUALLY calculated",
+        "Immediately after r displayed",
+        "Interpret sign and strength for your named variables; comment on relevant linearity/outliers/causation only now.",
+        "Beside actual PMCC calculation",
+        "Explain what r does and doesn't support for aim.",
+        "No r invented from sight or premature technique limits.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 67,
+      "cells": [
+        "J14",
+        "Fitted model ACTUALLY computed by software",
+        "Immediately after model output",
+        "Explain the meaning of the fitted parameters and real domain, WHY the tool was used, and what the fit says.",
+        "Beside fitted equation/graph",
+        "Student understanding instead of screenshots or button clicks.",
+        "No unnecessary hand-work tutorial.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 68,
+      "cells": [
+        "J15",
+        "Observed result contradicts prediction",
+        "As soon as result is interpreted",
+        "Say WHAT differs from original expectation, why this matters and which test/view would genuinely help.",
+        "After surprising result",
+        "Keep initial prediction, mark alternative as tested or untested.",
+        "No revisionist rewriting at conclusion.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 69,
+      "cells": [
+        "J16",
+        "No data yet; student finds secondary candidate",
+        "While still finding accessible data",
+        "Draft intro and tentative prediction. Check candidates privately; once a source is VERIFIED and USED, describe it in IA.",
+        "Introduction and Pathfinder notes, later Data section",
+        "Clear distinction of current work versus plan.",
+        "No fabricated evidence or future-tense methods presented as complete.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 70,
+      "cells": [
+        "J17",
+        "Theoretical cases suggest a conjecture",
+        "Immediately after exact examples",
+        "State what the examples suggest, what they cannot establish, and how proof/counterexample work follows.",
+        "After cases and before general statement",
+        "Student can narrow claim or test case.",
+        "Do not count checked examples as proof.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 71,
+      "cells": [
+        "J18",
+        "Student already explained accuracy well",
+        "At another graph using same resolution",
+        "Refer back briefly to earlier justified precision instead of repeating the same caveat.",
+        "Local link/reference if needed",
+        "No fresh paragraph unless a genuinely new effect arises.",
+        "Do not demand limitations after every chart.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 75,
+      "cells": [
+        "CUE DELIVERY RULE  |  A single nudge is useful only if relevant, timely, and not already addressed"
+      ]
+    },
+    {
+      "row": 77,
+      "cells": [
+        "Rule ID",
+        "Rule",
+        "Decision input",
+        "Expected UI behaviour",
+        "Key safeguard",
+        "Spec status"
+      ]
+    },
+    {
+      "row": 78,
+      "cells": [
+        "R01",
+        "trigger",
+        "current node + route + active method + source status + actual resultRef + observed feature",
+        "Mandatory factual prerequisites; never infer a result from prediction/plan.",
+        "No cue if missing evidence; optional 'What are you working on?' instead.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 79,
+      "cells": [
+        "R02",
+        "content",
+        "Re-use aim, intended beneficiary, source, selected method, variable names, actual observation and prior writing references.",
+        "Show a short pointed question in student's OWN context; not pre-written IA prose.",
+        "Student writes their answer, not the system.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 80,
+      "cells": [
+        "R03",
+        "where",
+        "Each cue explicitly says 'in your IA', 'before this graph', 'directly after this calculation' etc.",
+        "Project admin notes are labelled 'Pathfinder notes — not IA prose'.",
+        "No prompts to paste logistical difficulties into IA.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 81,
+      "cells": [
+        "R04",
+        "priority",
+        "One visible cue only; select the most consequential NEW writing need, with optional Show more.",
+        "Prefer missing purpose/observation/interpretation over minor style issues.",
+        "No long checklists by default.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 82,
+      "cells": [
+        "R05",
+        "choices",
+        "Write now / Already covered / Not relevant / Show an example / Dismiss for now.",
+        "All controls reversible; allow no writing to proceed.",
+        "Already covered may link a student's own section/figure/page reference.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 83,
+      "cells": [
+        "R06",
+        "status",
+        "not_seen → relevant → prompted → noted → written_in_IA | already_covered | not_relevant | defer",
+        "Do not equate noted with written; student's confirmation required.",
+        "No automated claim a PDF/Word was edited.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 84,
+      "cells": [
+        "R07",
+        "relevance change",
+        "When aim/source/method/result really changes, mark only affected cues for review.",
+        "Preserve earlier notes and original plan; not a global reset.",
+        "A previously dismissed cue remains suppressed unless underlying rationale changes.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 85,
+      "cells": [
+        "R08",
+        "meaningful result",
+        "When C40/C50 produces a substantive new calculation, output or case, offer the brief C34 reflection cycle.",
+        "Skip algebraic intermediates, repeated outputs and already-interpreted results.",
+        "Use the SAME resultRef so its observation and next-step rationale stay together.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 86,
+      "cells": [
+        "R09",
+        "accuracy",
+        "C23/C24 input/source accuracy before subsequent diagrams; PMCC/model/test limitations only when active technique is used.",
+        "Match limitation example stage and actual method; no leakage of planned-technique weaknesses.",
+        "If previously well covered, refer rather than duplicate.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 87,
+      "cells": [
+        "R10",
+        "not-for-IA",
+        "Unconfirmed source, access delay, equipment frustration, teacher feedback and criteria check remain private progress notes.",
+        "Only confirmed methodology/implication is written into IA at appropriate stage.",
+        "No filler retrospective evaluation.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 88,
+      "cells": [
+        "R11",
+        "go back",
+        "Return from optional Help/Show example to exact node and student's unsaved draft.",
+        "Never overwrite student prose; edits to prior plan prompt review where relevant.",
+        "Save/resume per cue ID + linked result/method ID.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 92,
+      "cells": [
+        "SCENARIO TESTS  |  Must be verified against the student-facing site when built; not claimed as implemented"
+      ]
+    },
+    {
+      "row": 94,
+      "cells": [
+        "Test ID",
+        "Student journey/earlier choice",
+        "Expected at the right time",
+        "Must NOT happen",
+        "QA status"
+      ]
+    },
+    {
+      "row": 95,
+      "cells": [
+        "T01",
+        "Voluntary sample chosen",
+        "At C20 show contextual selection justification and optional actual selection bias, with write location.",
+        "No random-sample text, no unchosen method limitations.",
+        "To test"
+      ]
+    },
+    {
+      "row": 96,
+      "cells": [
+        "T02",
+        "Stratified sample with known fractions",
+        "At C20 explain reason for groups; only show weighting issue if genuinely relevant.",
+        "No sample-type one-size-fits-all copy.",
+        "To test"
+      ]
+    },
+    {
+      "row": 97,
+      "cells": [
+        "T03",
+        "Secondary source merely considered",
+        "Private candidate/source-fit note; no completed data-method writing cue.",
+        "No 'I used this dataset' before verified use.",
+        "To test"
+      ]
+    },
+    {
+      "row": 98,
+      "cells": [
+        "T04",
+        "Student waiting for data",
+        "Show introduction/prediction NOW and private source planning.",
+        "No invented graph, results or completed collection.",
+        "To test"
+      ]
+    },
+    {
+      "row": 99,
+      "cells": [
+        "T05",
+        "Paired scatter actually curved",
+        "After the real diagram ask observation and relevant next method rationale.",
+        "No PMCC advice just because it was planned.",
+        "To test"
+      ]
+    },
+    {
+      "row": 100,
+      "cells": [
+        "T06",
+        "Student calculates r later",
+        "Immediately AFTER r show interpret result and current PMCC limitations when needed.",
+        "No PMCC limitations during C20.",
+        "To test"
+      ]
+    },
+    {
+      "row": 101,
+      "cells": [
+        "T07",
+        "Student begins fitted model",
+        "Method purpose BEFORE, fit evaluation AFTER active model.",
+        "No residual weakness before model exists.",
+        "To test"
+      ]
+    },
+    {
+      "row": 102,
+      "cells": [
+        "T08",
+        "Result contradicts prediction",
+        "Immediately after result ask discrepancy and mathematical check.",
+        "No rewriting old prediction or deferring reflection to conclusion.",
+        "To test"
+      ]
+    },
+    {
+      "row": 103,
+      "cells": [
+        "T09",
+        "Meaningful later calculation",
+        "Brief reflection offered after actual meaningful C50 output.",
+        "No prompt for routine intermediate algebra.",
+        "To test"
+      ]
+    },
+    {
+      "row": 104,
+      "cells": [
+        "T10",
+        "Student chooses Already covered",
+        "Save own paragraph/figure location, suppress same cue on revisit.",
+        "No repeated nagging on unchanged work.",
+        "To test"
+      ]
+    },
+    {
+      "row": 105,
+      "cells": [
+        "T11",
+        "Student chooses Not relevant",
+        "Keep hidden for same choice; reevaluate only on material change.",
+        "No mandatory explanation or grade penalty.",
+        "To test"
+      ]
+    },
+    {
+      "row": 106,
+      "cells": [
+        "T12",
+        "Student marks Noted but hasn't written",
+        "Offer later resume at exact writing place; not treated as written.",
+        "No false completion in progress report.",
+        "To test"
+      ]
+    },
+    {
+      "row": 107,
+      "cells": [
+        "T13",
+        "Student changes aim/source after writing",
+        "Flag only affected written cues for optional review.",
+        "No silent overwrite or erase earlier writing.",
+        "To test"
+      ]
+    },
+    {
+      "row": 108,
+      "cells": [
+        "T14",
+        "Student completes conclusion",
+        "Synthesis of actual key findings/beneficiary and optional future maths.",
+        "No repeated graph/technique evaluation paragraphs.",
+        "To test"
+      ]
+    },
+    {
+      "row": 109,
+      "cells": [
+        "T15",
+        "Teacher feedback names an error",
+        "Save private feedback, lead student back to original relevant maths.",
+        "No teacher feedback pasted as an IA section.",
+        "To test"
+      ]
+    },
+    {
+      "row": 110,
+      "cells": [
+        "T16",
+        "Pure theoretical project with no measurements",
+        "Context-appropriate definitions, cases, proof and reflection.",
+        "No sampling/census or fake data prompts.",
+        "To test"
+      ]
+    },
+    {
+      "row": 111,
+      "cells": [
+        "T17",
+        "Student merely planned PMCC",
+        "Allow plan and mathematics-suitability discussion; no in-IA PMCC weakness yet.",
+        "No unstarted-technique limitations.",
+        "To test"
+      ]
+    },
+    {
+      "row": 115,
+      "cells": [
+        "IMPLEMENTATION NOTE: This sheet defines client-side conditional prompts, provenance/status rules and expected writing locations. It does not itself generate student text, inspect their actual Word document, or run a website."
+      ]
+    },
+    {
+      "row": 117,
+      "cells": [
+        "ACTUAL TECHNIQUES  |  Extra examples appear ONLY when the student has used that mathematics, not simply selected it during Planning"
+      ]
+    },
+    {
+      "row": 119,
+      "cells": [
+        "ID",
+        "ACTUAL student technique",
+        "At-the-moment advice",
+        "Where it belongs",
+        "Confirmed earlier work",
+        "Do NOT",
+        "Related limitation stage / ID",
+        "Spec status"
+      ]
+    },
+    {
+      "row": 120,
+      "cells": [
+        "X01",
+        "Normal distribution model ACTUALLY applied",
+        "JUST AFTER your probability calculation, explain what this estimated probability means in context and why a normal model was suitable.",
+        "Beside actual probability/model result",
+        "Actual distribution, parameters, relevant data",
+        "No normality claim based on prediction or a bell curve alone",
+        "L16; C40/C50",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 121,
+      "cells": [
+        "X02",
+        "Two-sample t-test ACTUALLY performed",
+        "AFTER the result, interpret evidence about the named groups, with the meaning of the test and any relevant assumptions.",
+        "Beside test calculation/output",
+        "Actual groups, data and test statistic/p-value if used",
+        "Do not call p-value probability that hypothesis is true or force an AI-only technique on AA SL",
+        "L17; C40/C50",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 122,
+      "cells": [
+        "X03",
+        "Chi-squared independence ACTUALLY performed",
+        "WITH the contingency/test output, explain what association between [actual categories] is or isn't supported and why the method fits these counts.",
+        "At chi-squared result",
+        "Actual observed/expected frequencies and named categories",
+        "No interpretation based on source categories before test; check expected frequencies where relevant",
+        "L18; C40/C50",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 123,
+      "cells": [
+        "X04",
+        "Chi-squared goodness-of-fit ACTUALLY performed",
+        "Beside the test, explain how actual category frequencies compare with [justified expected distribution] and what this means for the aim.",
+        "Beside computed test and conclusion",
+        "Real counts and justified expected pattern",
+        "No inventing theoretical proportions after seeing desired outcome",
+        "L19; C40/C50",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 124,
+      "cells": [
+        "X05",
+        "Binomial model ACTUALLY used",
+        "State why fixed trial count, two outcomes, stable probability and independence fit the situation WHEN applying the model; interpret the result afterwards.",
+        "Assumptions before use; probability after",
+        "Real trials, model inputs and computed probability",
+        "No automatic independence assumption or model weakness during unrelated data collection",
+        "L20; C40/C50",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 125,
+      "cells": [
+        "X06",
+        "Spearman coefficient ACTUALLY calculated",
+        "AFTER the rank correlation, explain the monotonic relationship for your quantities and how ties/non-monotonic behaviour may matter.",
+        "Directly after real rank statistic",
+        "Real ranked data, coefficient and course confirmation",
+        "Do not use Spearman automatically for any curve; no unstarted coefficient",
+        "L15; C40/C50",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 126,
+      "cells": [
+        "X07",
+        "Exponential model ACTUALLY fitted",
+        "Explain parameters and why proportional change suits observed evidence when first fitting; interpret prediction and valid time domain after.",
+        "Before fit + after model output",
+        "Actual percentage change/ratios, parameters and time period",
+        "No model extrapolation or fixed growth assumption from initial guess alone",
+        "L25; C40/C50",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 127,
+      "cells": [
+        "X08",
+        "Differentiation optimisation ACTUALLY completed",
+        "With the candidate stationary point, explain domain/constraints and how you verified a valid minimum or maximum, including endpoints if relevant.",
+        "Immediately after optimum working",
+        "Real objective, constraints and actual stationary point",
+        "Don't claim derivative zero always proves global optimum",
+        "L28; C40/C50",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 128,
+      "cells": [
+        "X09",
+        "Voronoi or nearest-location analysis ACTUALLY used",
+        "As the completed regions inform advice, explain how your chosen distance measure affects the allocation and decision.",
+        "After actual Voronoi/distance result",
+        "Locations, intended decision, distance metric",
+        "Don't treat straight-line distance as always best travel time",
+        "L30; C40/C50",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 129,
+      "cells": [
+        "X10",
+        "Trapezoidal rule/numerical integration ACTUALLY used",
+        "Right after estimated integral/area, interpret the estimate and only relevant consequences of interval width/curvature.",
+        "Beside numerical area/total result",
+        "Real intervals, calculation and aim",
+        "No generic integration explanation or accuracy claim beyond input evidence",
+        "L32; C40/C50",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 130,
+      "cells": [
+        "X11",
+        "Rates derived from noisy readings ACTUALLY calculated",
+        "Explain what the estimated rate means for the context and how data resolution affects its reliability.",
+        "Beside rate-of-change calculation",
+        "Actual measured differences/time intervals",
+        "Do not present numerical differentiation accuracy limits during sampling stage",
+        "L31; C40/C50",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 131,
+      "cells": [
+        "X12",
+        "A power/polynomial/periodic model ACTUALLY fitted",
+        "Give mathematical/contextual reason for chosen function before use; AFTER fitting explain coefficients and observed deviations where they affect aim.",
+        "Model first use and result interpretation",
+        "Real pattern, current function, parameters, fit and relevant domain",
+        "No 'the curve looks nice' justification or model issues before fitting",
+        "L26/L27/L29; C40/C50",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 133,
+      "cells": [
+        "These examples refine the matched W21–W28 cues, not add compulsory screens. Course suitability and teacher flags stay in force; only the actual current mathematical work can trigger technique-specific reflection."
+      ]
+    },
+    {
+      "row": 136,
+      "cells": [
+        "REPEATED MATHEMATICAL SECTIONS  |  New writing moments that join one real section to the next"
+      ]
+    },
+    {
+      "row": 138,
+      "cells": [
+        "Cue ID",
+        "Node",
+        "Actual prerequisite",
+        "Use earlier confirmed answers",
+        "Student-facing writing moment",
+        "Precise place in IA",
+        "Amount",
+        "When it appears",
+        "Suppress / avoid",
+        "Saved status",
+        "Spec status"
+      ]
+    },
+    {
+      "row": 139,
+      "cells": [
+        "W38",
+        "C34/C34B",
+        "Previous actual section produced a meaningful result",
+        "real resultRef, aim, student's interpretation",
+        "Directly AFTER this mathematical section, say what it has established or left unanswered for your aim.",
+        "Beside preceding result, after interpretation",
+        "One or two honest takeaway sentences",
+        "After meaningful output, repeated each actual section",
+        "Skip routine algebra or Already covered; do not repeat full calculation",
+        "localTakeaway ref / writing status",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 140,
+      "cells": [
+        "W39",
+        "C35 before C40/C50",
+        "Open question and useful next method chosen from previous REAL finding",
+        "previous resultRef/localTakeaway, current aim, chosen method",
+        "At the END of the previous section and BEFORE the next maths, explain why [technique] follows from [actual result] and what question it will clarify.",
+        "Transition paragraph immediately before next calculation",
+        "One short student-authored bridge",
+        "Every NEW substantive technique, never a fixed quota",
+        "Already covered suppresses; no predetermined answer or automatic method",
+        "sectionId, nextSectionId, bridgeWriting",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 141,
+      "cells": [
+        "W40",
+        "C35P→C35",
+        "Actual PMCC computed, roughly linear sample and meaningful prediction aim",
+        "real r, confirmed scatter shape, named variables and aim",
+        "If a LINE OF BEST FIT would help [aim], explain why the observed sample linear association motivates fitting one NEXT.",
+        "End of actual r discussion, before line fit",
+        "One optional evidence-based rationale",
+        "Only AFTER calculated r, when student elects line fitting",
+        "Strong r doesn't prove causation/fit, and regression isn't compulsory",
+        "pmccBranch; new sectionId",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 142,
+      "cells": [
+        "W41",
+        "C35P→C35",
+        "Actual small |r| plus REAL curved/clustered pattern",
+        "real r, student-confirmed shape, course, aim",
+        "Explain why little LINEAR association doesn't settle your question and why [observed curved/cluster feature] motivates a justified alternative.",
+        "After r interpretation, before new method",
+        "One observed pattern and purposeful check",
+        "Only if actual data show a feature worth investigating",
+        "No generic search for alternative 'strong correlation'",
+        "real PMCC ref; change-reason",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 143,
+      "cells": [
+        "W42",
+        "C35P→C35",
+        "Actual small |r| and no justified other pattern",
+        "r, scatter, target population, original question",
+        "You may explain what this sample does NOT support and why an honest limited answer may be more useful than another unrelated calculation.",
+        "After PMCC result, or in concise conclusion if stopping",
+        "Short scoped local takeaway, then possible synthesis",
+        "When student confirms no worthwhile next maths",
+        "Don't claim absolutely no relationship or force repeated testing",
+        "pmccBranch; nextDecision",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 144,
+      "cells": [
+        "W43",
+        "C40/C50→C34→C35",
+        "Actual fitted model or optimisation result creates new question",
+        "real model/optimum, relevant scope, predictions or residuals",
+        "After interpreting the actual model/optimum, state what remains to CHECK (fit/domain/endpoints/assumptions) and why that check advances the original aim.",
+        "Immediately after section's result, before any meaningful new test",
+        "Short local takeaway and next mathematical question",
+        "Only if new mathematical question is substantive",
+        "Don't discuss residuals before fit or repeat routine results",
+        "actualResultRef; section links",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 145,
+      "cells": [
+        "W44",
+        "C35→C60",
+        "Current investigation already has adequate relevant mathematical evidence",
+        "result-ledger links, aim, understood maths and beneficiary",
+        "If another method wouldn't meaningfully improve the answer, move to your conclusion and draw the existing findings together.",
+        "Conclusion only after enough evidence",
+        "Synthesis, not another technique",
+        "When student makes student-owned end decision",
+        "No compulsory number of sections or calculated r",
+        "nextDecision=conclude, WritingCue status",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 146,
+      "cells": [
+        "W45",
+        "C35/C50",
+        "Student actually revises technique after surprising or unhelpful result",
+        "previous chosen method, real finding, new approach",
+        "At the point where your mathematical direction CHANGES, explain why the earlier technique no longer answers the next question and why the new one may do better.",
+        "Transition BETWEEN mathematical sections",
+        "One honest reason, preserve earlier attempt",
+        "After real evidence motivates the change",
+        "Never silently erase original plan or present new technique as always intended",
+        "change history; bridgeWriting",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 149,
+      "cells": [
+        "These extend W20–W28; only one cue relevant to the CURRENT result is shown, with Already covered / Not relevant / Show an example. Section links are saved separately from predictions."
+      ]
+    },
+    {
+      "row": 151,
+      "cells": [
+        "AIM, JUSTIFICATION & ACCURACY CARRY-FORWARD  |  At the relevant moment, apply earlier precision; don't restate it"
+      ]
+    },
+    {
+      "row": 152,
+      "cells": [
+        "Cue ID",
+        "Stage / node",
+        "Actual prerequisite",
+        "Previous confirmed context",
+        "Context-specific cue",
+        "Precise writing place",
+        "How much",
+        "When triggered",
+        "Avoid / suppress",
+        "Saved evidence",
+        "Status"
+      ]
+    },
+    {
+      "row": 153,
+      "cells": [
+        "W46",
+        "C24/C20",
+        "Real quantitative source or measurement and its resolution/precision are known",
+        "actual quantity, unit, source, resolution/stated uncertainty and intended mathematical use",
+        "As you first introduce [quantity/source], say what was measured or reported, the units, and its justified resolution/accuracy if this affects the investigation.",
+        "With data/source method, at first use",
+        "One concise description and a saved baseline for later calculations",
+        "Only actual data/measurements; before relying on precision",
+        "Do not invent an uncertainty from a number's displayed d.p. or assume resolution equals total error",
+        "completion.data.accuracyInputs",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 154,
+      "cells": [
+        "W47",
+        "C33",
+        "A figure actually uses data with an existing C24 precision/source record",
+        "relevant quantity symbols, C24 units/resolution, actual plotted data and labels",
+        "Before finalising this graph, recall [recorded C24 units/source precision]. Are labels, scales and reported graph values consistent with the evidence?",
+        "Change the figure itself before displaying it",
+        "One quick figure check, not an explanatory paragraph by default",
+        "When plotting quantities affected by known precision or rounding",
+        "A smooth-looking graph cannot make rounded/source values more exact; no fixed decimals on every axis",
+        "figureRef + accuracy input IDs + cue state",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 155,
+      "cells": [
+        "W48",
+        "C34/C34B",
+        "An actual NEW meaningful figure/calculation has been interpreted",
+        "current aim, beneficiary, actual resultRef and student's observed feature",
+        "Directly AFTER the result, tell your reader what [actual value/pattern] means for [your aim], not just what it looks like. Does it support or qualify what you expected?",
+        "Beside current result, before next mathematical section",
+        "One or two own-voice sentences that connect finding to purpose",
+        "For each substantive result/case, not each rearrangement",
+        "If interpretation already written, use Already covered; no conclusion-only evaluation dump",
+        "resultRef + aimLink/status",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 156,
+      "cells": [
+        "W49",
+        "C34A",
+        "This output genuinely depends on an earlier C24 measurement/source accuracy decision",
+        "C24 per-input precision, source/units, active mathematical operation and any earlier written explanation",
+        "You previously recorded [input precision/source]. Does applying [this calculation] change how precisely you can interpret [current result]? If yes, explain the NEW effect here.",
+        "Alongside derived result or figure, immediately after interpretation",
+        "Apply an earlier rule; only new consequence needs writing",
+        "If accuracy materially affects numeric claim or conclusion",
+        "Don't repeat same limitation paragraph or automatically copy input decimal places to a derived value",
+        "resultRef + accuracyUse record + earlierRef",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 157,
+      "cells": [
+        "W50",
+        "C40/C50",
+        "New substantive method uses actual evidence and has a genuine aim-linked question",
+        "prior local takeaway, chosen method and relevant C24 quantity records",
+        "Before this technique, explain WHY it is appropriate for [aim]. If it uses [recorded input quantity], keep its units/precision in mind when setting up the work.",
+        "Immediately before method and first calculation",
+        "One reason and an input-precision reminder; notation accurate",
+        "At new substantial technique, if precision affects inputs",
+        "Routine algebra needs no essay; don't repeat previous method rationale",
+        "sectionId + choiceReason + inputRefs",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 158,
+      "cells": [
+        "W51",
+        "C40/C50→C34",
+        "A numerical RESULT has ACTUALLY been obtained from data with known precision",
+        "actual output, operation, input units/resolution, current aim, prior derived precision decisions",
+        "When reporting [computed result], keep working values sufficiently accurate, then choose defensible final units/digits. Say what that result MEANS for [aim].",
+        "Immediately after actual calculated result",
+        "An aim-linked interpretation and reported precision, with explanation only if new/important",
+        "For significant numeric results and estimates, not every line",
+        "No false exact equality, ungrounded ± bounds or copying input decimal count mechanically",
+        "actualOutputRef + reportPolicy + aimLink",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 159,
+      "cells": [
+        "W52",
+        "C40/C50",
+        "Actual model has been fitted or its prediction has been calculated",
+        "real fitted model, actual input limitations, domain, observed fit, aim",
+        "Does the previously stated data accuracy or a genuine model assumption limit the prediction or advice you can now support? Mention ONLY the material consequence.",
+        "Beside active model result or prediction",
+        "Short qualified interpretation if the limit changes the claim",
+        "Only when model actually used and limit matters",
+        "No pre-fit residual discussion or generic 'models are never perfect' paragraph",
+        "modelRef + relevant limitation/accuracy IDs",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 160,
+      "cells": [
+        "W53",
+        "C40/C50",
+        "An actual Pearson r or other dimensionless statistic has been computed",
+        "real r/statistic, paired source data, sample coverage and observed pattern",
+        "Explain what [actual statistic] means for [aim]. Does measurement quality, sampling or an active method assumption affect your inference? Report sensible numerical precision for THIS statistic.",
+        "Immediately after coefficient, test or result",
+        "One contextual interpretation; relevant limitation only",
+        "After actual statistical calculation, not at data collection planning",
+        "The statistic does NOT inherit the raw measurements' d.p.; avoid causal claims, invented significance",
+        "statisticRef + accuracyContext + cue status",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 161,
+      "cells": [
+        "W54",
+        "C35",
+        "A relevant accuracy/scope boundary from real prior work influences the next mathematical choice",
+        "prior result/local takeaway, C24 source accuracy and actual method-related scope",
+        "Given what [previous result] can reliably show, what mathematical question would genuinely advance [aim] next, and WHY would [chosen method] help?",
+        "At transition between sections, BEFORE new maths",
+        "Justified next-step choice in student's voice",
+        "Only when earlier accuracy/scope genuinely changes what maths is sensible",
+        "Do not restate the entire earlier limitation or prescribe another calculation",
+        "sectionId + priorAccuracyRef + nextReason",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 162,
+      "cells": [
+        "W55",
+        "C70/C90",
+        "Existing completed IA includes results with earlier reported accuracy decisions",
+        "C24 baseline, relevant graph and result references, units and student revisions",
+        "Review whether figures, computed results and predictions consistently apply their earlier precision decisions. Correct each issue WHERE it occurs.",
+        "At the existing graph, equation or interpretation—not a new final paragraph",
+        "Targeted editing checklist",
+        "At draft/final review, optionally on request",
+        "Avoid a generic final accuracy essay or automatic rounding rule",
+        "reviewed resultRefs + local edit statuses",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 163,
+      "cells": [
+        "W56",
+        "C40/C50",
+        "An exact theoretical result or symbolic derivation needs no empirical uncertainty",
+        "exact mathematical quantities or proven relationships, current goal",
+        "If the result is exact, keep exact notation. Use an approximation only when it genuinely helps interpretation, and mark it with ≈.",
+        "Alongside the exact/approximate result",
+        "Clear equality/approximation and justified form",
+        "Only for actual exact vs approximate calculations",
+        "Don't force sampling accuracy or measurement uncertainty onto a purely theoretical proof",
+        "resultRef + exact/approx flag",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 164,
+      "cells": [
+        "W57",
+        "C24/C34A",
+        "Student revises earlier source, units or measurement resolution",
+        "old and current C24 records; outputRefs/figures relying on source",
+        "You changed the earlier accuracy/source information. Which later graph or calculation actually depends on it, and should its displayed result or interpretation be reviewed?",
+        "Private check, then correct original affected IA passages",
+        "Review affected results only; preserve student-authored text",
+        "On material change to source/method/units/recorded uncertainty",
+        "No global rewrite or silent alteration to earlier conclusions",
+        "accuracySourceVersion + affectedRefs",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 165,
+      "cells": [
+        "RULE: Show one relevant cue per substantial result or new method. 'Already covered' retains the student’s earlier explanation reference. A reminder to APPLY an accuracy rule is not a requirement to REWRITE that limitation."
+      ]
+    },
+    {
+      "row": 167,
+      "cells": [
+        "MATHEMATICAL UNDERSTANDING AT FIRST USE  |  On syllabus: USE; beyond syllabus: explain the NEW mathematics; after real results: optional mathematical insight"
+      ]
+    },
+    {
+      "row": 169,
+      "cells": [
+        "Cue ID",
+        "Stage / node",
+        "Actual trigger",
+        "Confirmed context",
+        "Student-facing cue",
+        "Precise writing moment",
+        "Amount/action",
+        "When to show",
+        "Avoid / suppress",
+        "Saved status",
+        "Spec status"
+      ]
+    },
+    {
+      "row": 170,
+      "cells": [
+        "W58",
+        "C35/C40D",
+        "A new substantial technique has been selected",
+        "Student's ACTUAL programme, new technique, previous mathematical question",
+        "Before writing about this technique, check whether it is within your syllabus, partly beyond, outside it or uncertain.",
+        "Private first-use/course decision; not IA prose",
+        "One classification and possible teacher check",
+        "On new method selection; never all the time",
+        "Don't claim syllabus coverage without programme/teacher verification",
+        "techniqueId + courseMatch/teacherFlag",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 171,
+      "cells": [
+        "W59",
+        "C40/C50",
+        "Actual method is VERIFIED within the student's syllabus",
+        "Confirmed course, technique and why it fits latest result/aim",
+        "This is syllabus mathematics: USE [technique] correctly and show what it tells you about [aim]. You do not need to explain how to carry out the technique.",
+        "Normal mathematical working with a short purpose before and result interpretation after",
+        "No textbook tutorial; actual maths remains visible",
+        "At first or further substantive in-course method use",
+        "Researching it independently does not turn it into beyond-course; suppress how-to prose",
+        "techniqueId + status: within + firstUseRef",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 172,
+      "cells": [
+        "W60",
+        "C40L/C40/C50",
+        "Actual method is CONFIRMED outside syllabus and student genuinely uses it",
+        "Verified course, NEW mathematical idea, own steps and research source",
+        "At FIRST use of [new technique], explain briefly in your OWN words what its key mathematical idea means and show a step/check illustrating your understanding; cite the source.",
+        "Immediately BEFORE / beside the first unfamiliar mathematical step",
+        "Brief core explanation, relevant conditions and genuine application",
+        "Only at first use of beyond-course maths, not at initial data collection",
+        "No pasted theory, unexplained advanced formula or compulsory long derivation",
+        "techniqueId + explanation/status + source + ref",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 173,
+      "cells": [
+        "W61",
+        "C40L/C40/C50",
+        "Technique mixes familiar course maths with unfamiliar extension",
+        "Actual known method, specific new extension, verified course and source",
+        "Explain ONLY the unfamiliar part of [technique] that goes beyond your course, in enough mathematical detail to show understanding.",
+        "Beside FIRST appearance of the new component",
+        "Short definition, relevant step/assumption and application",
+        "When new component first appears",
+        "Don't teach the ordinary in-course prerequisites again",
+        "newComponent + firstUseRef + cue status",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 174,
+      "cells": [
+        "W62",
+        "C40D/C40L",
+        "Syllabus status of actual method remains UNSURE",
+        "Student's course choice and exact technique; unconfirmed verification",
+        "Is this part of [my course]? Check the syllabus or ask your teacher before choosing whether an explanation is necessary.",
+        "Pathfinder note / teacher question, NOT automatic IA prose",
+        "One uncertainty flag; option to save and keep working",
+        "When unsure, not every stage revisit",
+        "No guessed course decision, promised marks or forced beyond-course explanation",
+        "courseMatch=unsure + teacherFlag",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 175,
+      "cells": [
+        "W63",
+        "C40L",
+        "Student genuinely researched mathematics and has now applied it",
+        "Real source reference, confirmed active method and syllabus match",
+        "What mathematics did you understand from [source] that helped you use [technique]? Cite what you actually relied on; explain its central new concept only if beyond your course.",
+        "Private learning note; if beyond, concise explanation at first use",
+        "Actual learned idea with relevant source, not source summary",
+        "After research becomes an ACTUAL mathematical application",
+        "Independently learnt ≠ beyond syllabus; no bibliography-only evidence of understanding",
+        "independentResearch + source + status",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 176,
+      "cells": [
+        "W64",
+        "C34B/C40L",
+        "A MEANINGFUL real result led to a genuine new mathematical insight",
+        "Actual resultRef, aim-linked takeaway and student's previous mathematical expectation/understanding",
+        "After saying what this result means for [aim], did you learn anything new MATHEMATICALLY about this method, its pattern, proof or conditions? Include it here only if genuine.",
+        "Immediately AFTER the relevant mathematical result; optional",
+        "One precise own-voice insight, not a whole reflection section",
+        "When confirmed new mathematical learning occurred",
+        "No invented engagement, routine 'I learned to use the formula', or repeated first-use explanation",
+        "insightResultRef + insightWritingStatus",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 177,
+      "cells": [
+        "W65",
+        "C40T/C40L",
+        "Real technology-produced result uses an unfamiliar advanced method",
+        "Verified course, actual algorithm, mathematical inputs and software result",
+        "If [software method] is beyond your course, explain the mathematical idea that the technology actually used and show you understand it; otherwise interpret the result without a software tutorial.",
+        "At new algorithm first use, plus interpretation at actual output",
+        "Maths meaning + appropriate checked step where needed",
+        "Only when unfamiliar mathematical algorithm ACTUALLY used",
+        "No button sequence, copied code-as-proof or black-box claim",
+        "toolRef + techniqueId + explanationRef",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 178,
+      "cells": [
+        "W66",
+        "C70/C90",
+        "Student reviews completed mathematics for first-use exposition",
+        "Verified course classification, student source and first-use passage, result/insight refs",
+        "In your IA, remove unnecessary explanations of taught syllabus techniques; check that any genuinely beyond-course method is understood, explained in your own words, referenced and appropriately used.",
+        "Edit precise existing mathematical passage (not conclusion)",
+        "Targeted revisions; no extra compulsory section",
+        "Draft or final review, not after each algebra line",
+        "No ghostwriting, automatic syllabus marks, artificial reflection",
+        "courseReview + editRefs + written status",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 181,
+      "cells": [
+        "The course/syllabus decision is separate from independent research. Familiar mathematics needs correct application, purpose and interpretation—not a tutorial. An original mathematical insight can be noted where it emerges, but only when genuine."
+      ]
+    }
+  ]
+}
