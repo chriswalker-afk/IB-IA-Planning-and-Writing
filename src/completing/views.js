@@ -92,7 +92,7 @@ export function createCompletingViews(ctx){
    items.map((st,i)=>'<button type="button" data-action="completion-edit-entry" data-index="'+i+'" class="'+
     (i===state.completion.activeEntryIndex?"current":"")+'"><span>'+(i+1)+'. '+e(st.title||"A mathematical step")+'</span>'+
     '<span class="status-tag '+(st.status==="completed"&&filled(st.result)?"":"pending")+'">'+
-    (st.status==="completed"&&filled(st.result)?"Actual result":"Planned")+'</span></button>').join("")+'</div>';
+    (st.reviewNeeded==="yes"?"Review link":st.status==="completed"&&filled(st.result)?"Actual result":"Planned")+'</span></button>').join("")+'</div>';
  };
  const contextualPrompt=(node)=>{
   const entries=C_PROMPTS.filter(p=>p.node===node);
@@ -106,6 +106,18 @@ export function createCompletingViews(ctx){
   const s=getState(),records=s.completion.accuracyDecisions;
   const existing=records.length?records.map(x=>x.quantity+(x.unit?" ("+x.unit+")":"")+": "+x.policy).join("; "):s.planning.fields.firstAccuracy||s.project.precision;
   return existing?info("Previously recorded accuracy decisions",existing+". Apply only where those measurements affect this result; exact symbolic work does not require arbitrary rounding."):"";
+ };
+ const entryReviewAlert=()=>{
+  const s=getState(),i=s.completion.activeEntryIndex,entry=completeEntry(s);
+  if(entry?.reviewNeeded!=="yes")return"";
+  const parent=entry.fromEntryId?s.entries.find(x=>x.id===entry.fromEntryId):null;
+  const previous=parent&&(parent.localTakeaway||parent.interpretation||parent.observationText||parent.result);
+  return '<div class="completion-recheck" role="status"><strong>'+icon("alert-circle")+
+    ' Check a mathematical connection</strong><p>'+e(entry.reviewReason||
+    "Earlier mathematics changed. Check that this step still follows logically.")+'</p>'+
+    (previous?'<p class="completion-recheck-reference"><strong>Updated earlier finding:</strong> '+e(previous)+'</p>':"")+
+    '<p>This preserves your result and writing. Review the purpose, calculations and interpretation in your IA before confirming.</p>'+
+    '<button type="button" class="btn btn-secondary" data-action="completion-entry-reviewed" data-index="'+i+'">I have checked this connection</button></div>';
  };
  const actualRecord=()=>{
   const st=completeEntry(getState());
@@ -276,7 +288,7 @@ export function createCompletingViews(ctx){
     accuracyNote()
   };
   case "C33":return{intro:"Create the actual figure or short calculation in your IA document. Describe what you did here without copying an invented result.",
-   html:actualRecord()+
+   html:entryReviewAlert()+actualRecord()+
     entryChoice("status",[
      {value:"planned",title:"Still planned",icon:"clock"},
      {value:"completed",title:"I have actually produced the figure or calculation",icon:"check-circle"}])+
@@ -308,7 +320,7 @@ export function createCompletingViews(ctx){
     info("Avoid repeated precision essays","Once justified, apply the decision again only where relevant. Revisit C24 if the underlying source changes.")
   };
   case "C34B":return{intro:"Relate this actual result to your aim, your earlier prediction and its intended benefit.",
-   html:actualRecord()+smallSummary("Your current aim",currentAim())+
+   html:entryReviewAlert()+actualRecord()+smallSummary("Your current aim",currentAim())+
     smallSummary("Original prediction (tentative)",plannedPrediction())+
     smallSummary("Possible beneficiary",currentBenefit())+
     entryField("interpretation","What does this actual result mean for my aim?","An honest local conclusion based on mathematics I have done",{type:"textarea",rows:4})+
@@ -360,7 +372,7 @@ export function createCompletingViews(ctx){
   case "C40":case "C50":{
    const entry=completeEntry(s);
    return{intro:n==="C40"?"Your first substantial technique should have a reason tied to a previous real finding.":"Further mathematics should follow the investigation's own mathematical questions, not a quota.",
-    html:bridgeFromPrior()+
+    html:entryReviewAlert()+bridgeFromPrior()+
      (entry?'<div class="completion-active-step">'+
        entryField("title","Mathematical question this section addresses","Meaningful and focussed")+
        entryField("purpose","Why this technique belongs here, BEFORE the work","Link to the previous result and aim",{type:"textarea",rows:3})+
