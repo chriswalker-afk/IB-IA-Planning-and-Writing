@@ -280,7 +280,8 @@ export function createPlanningViews(ctx){
       (f.beneficiary?summary("Who benefits / intended use",f.beneficiary+(f.intendedUse?" — "+f.intendedUse:"")):"")+
       '<div class="field-group"><label class="field-label">Some possible predictions for this type of investigation</label>'+
       choice("predictionId",choices.map(x=>({value:x.id,title:x.question,desc:x.id==="X02"?"You can explore before deciding.":""})),{stack:true,tight:true})+'</div>'+
-      F("prediction","My tentative prediction or conjecture","In my own words; Not sure yet is fine",{type:"textarea",rows:2})+
+      F("prediction","My tentative prediction or conjecture","Use your own words. A suggestion above is a question, not a written prediction.",{type:"textarea",rows:2})+
+      (f.predictionPrior?summary("Earlier prediction saved as a note (not current)",f.predictionPrior):"")+
       F("predictionWhy","WHY do I expect this?","Experience, observation, small mathematical case or uncertainty",{type:"textarea",rows:3})+
       F("predictionImplication","IF it were true, what could it mean for my purpose?","A possible implication—not advice backed by results yet",{type:"textarea",rows:3})+
       (f.predictionId==="X02"?F("predictionExploration","What initial example might help you form a prediction?","A simple graph, sample or mathematical case",{type:"textarea",rows:2}):"")+
@@ -360,7 +361,7 @@ export function createPlanningViews(ctx){
     summary("Course and mathematical direction",(f.course||"Not confirmed")+" · "+(selectedMaths(state).map(x=>x.label).join("; ")||f.otherMaths||f.otherCourseMaths||"Still to decide"))+edit("N04","Edit maths")+
     summary("Evidence plan",f.kind==="theoretical"?(f.theoreticalCase||"Theoretical cases to confirm"):
       (f.dataSource||"No source chosen")+" · "+(f.primaryWhat||f.secondaryPublisher||"source details to confirm"))+
-    summary("Prediction (provisional)",f.prediction)+summary("Why I predicted it",f.predictionWhy)+
+    summary("Prediction (provisional)",f.prediction|| (f.predictionId==="X02"?"Not sure yet":""))+summary("Why I predicted it",f.predictionWhy)+
     summary("What it might mean IF TRUE",f.predictionImplication)+
     summary("First mathematical action",f.firstAction||f.figureOther||f.figureType)+
     summary("Data readiness /5",f.kind==="theoretical"?"Not applicable":f.dataReadiness)+
