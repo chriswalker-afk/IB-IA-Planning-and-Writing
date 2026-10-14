@@ -2,7 +2,7 @@
 import {eligibleWritingCues} from "./writing-guidance.js";
 import {quietAutoWritingCue,writingStatusSummary} from "./guidance-actions.js";
 import {relevantMathsGuidance} from "./maths-guidance.js";
-import {relevantLimitations,confirmedLimitationsForConclusion} from "./limitation-guidance.js";
+import {relevantLimitations,confirmedLimitationsForConclusion,limitationContextKey} from "./limitation-guidance.js";
 import {relevantBivariateOptions} from "./bivariate-guidance.js";
 import {guidanceContext,SCATTER_DETAILS,readable} from "./guidance-context.js";
 
@@ -69,9 +69,7 @@ export function createGuidanceViews(ctx){
  function limitsHelp(node){
   const state=getState(),ui=state.completion.guidanceUi,matching=relevantLimitations(state,node);
   if(!matching.length&& !["C23","C40","C50"].includes(node))return"";
-  const context=guidanceContext(state,node);
-  const noneKey=node+"|"+(context.entry?.id||"")+
-    "|"+(context.entry?.methodId||context.entry?.technique||"")+"|"+context.sourceStatus;
+  const noneKey=limitationContextKey(state,node);
   const suppressed=ui.limitNoneKey===noneKey&&!ui.limitsExpanded;
   if(suppressed)return '<div class="guidance-quiet">'+trigger("guidance-limit-toggle","Review limitations if circumstances changed")+'</div>';
   const show=ui.limitsExpanded,page=Math.max(0,Number(ui.limitPage)||0),
