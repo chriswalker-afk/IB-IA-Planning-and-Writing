@@ -149,6 +149,7 @@ export function scatterForNext(state){
 export function observedFeatureForNext(state){
  const prior=sourceResultForNext(state),scatter=scatterForNext(state);
  if(!prior)return"";
+ if(!isScatterResult(prior)&&!isPearsonResult(prior))return str(prior.observation);
  if(scatter && state.completion.scatterPatternForEntryId===scatter.id &&
   ["linear","curved","unclear","unexpected","unsure"].includes(state.completion.fields.scatterPattern))
   return state.completion.fields.scatterPattern;
@@ -157,7 +158,7 @@ export function observedFeatureForNext(state){
  return str(prior.observation);
 }
 export const canViewPmccFollowup=state=>isPearsonResult(sourceResultForNext(state));
-export const canViewScatterFollowup=state=>!!scatterForNext(state);
+export const canViewScatterFollowup=state=>!!scatterForNext(state)&&(isScatterResult(sourceResultForNext(state))||isPearsonResult(sourceResultForNext(state)));
 
 export function actualPmccExists(state){return state.entries.some(isPearsonResult);}
 export function actualScatterExists(state){return state.entries.some(isScatterResult);}
