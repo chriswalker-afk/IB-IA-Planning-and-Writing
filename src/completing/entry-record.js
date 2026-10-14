@@ -1,7 +1,7 @@
 /** Canonical single mathematical-step shape, including pre-Phase-4 records. */
 export const ENTRY_BASE=Object.freeze({
  id:"",phase:"legacy",fromEntryId:"",previousTakeaway:"",
- title:"",purpose:"",technique:"",knowledge:"unsure",knowledgeNotes:"",
+ title:"",purpose:"",technique:"",methodId:"",knowledge:"unsure",knowledgeNotes:"",unfamiliarComponent:"",researchSource:"",understandingExample:"",mathsInsight:"",
  kind:"",status:"planned",result:"",resultRef:"",observation:"",observationText:"",
  interpretation:"",localTakeaway:"",limitations:"",nextQuestion:"",nextWhy:"",
  bridge:"",accuracyRef:"",reviewNeeded:"",reviewReason:"",reviewCheckedAt:"",createdAt:""
@@ -14,7 +14,7 @@ export function normalizeEntry(raw){
  }
  for(const key of ["status","knowledge","phase"]){
   const choices=key==="status"?["planned","completed"]:
-   key==="knowledge"?["syllabus","outside","unsure"]:
+   key==="knowledge"?["syllabus","mixed","outside","unsure"]:
    ["first","substantial","legacy"];
   if(!choices.includes(out[key]))out[key]=ENTRY_BASE[key];
  }
