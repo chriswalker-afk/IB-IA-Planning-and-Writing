@@ -18,7 +18,7 @@ export function actOnWritingCue(state,{id,key,action}){
  }
  if(action==="covered-start"){
   ui.coveredKey=ui.coveredKey===key?"":key;
-  ui.writeKey="";ui.coveredKey="";ui.exampleKey="";
+  ui.writeKey="";ui.exampleKey="";
   ui.locationDraft=str(base.location);
   return{ok:true,action};
  }
@@ -43,7 +43,7 @@ export function actOnWritingCue(state,{id,key,action}){
  state.writingLedger[key]=updated;
  // Dismissing one should never unleash an unwanted queue of other messages.
  ui.quietNode=node;
- ui.writeKey="";ui.exampleKey="";
+ ui.writeKey="";ui.coveredKey="";ui.exampleKey="";
  if(["save-note","written","covered"].includes(action)){ui.locationDraft="";ui.noteDraft="";}
  return{ok:true,record:updated};
 }
