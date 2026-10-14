@@ -11,6 +11,11 @@ export function createStudioViews(ctx){
   function studioOverview() {
     const state = ctx.getState();
     return '<div class="callout" style="margin-bottom:23px"><div class="eyebrow" style="margin:0 0 10px">YOUR MATHEMATICAL STORY</div><h3>Your investigation can change direction.</h3><p>Start wherever you are. The mathematical path will grow from the work you actually do, not from a predetermined list of calculations.</p></div>'+
+      '<div class="context-card" style="margin:0 0 22px">'+icon("route")+'<div><strong>YOUR STARTING PLAN</strong>'+
+      '<p>'+(state.handover?.confirmedAt?"You have reviewed the starting details. You can revisit them as your project evolves.":
+      "Bring an earlier Pathfinder PDF/Word plan or confirm your starting details. This does not block mathematical exploration.")+'</p>'+
+      '<div class="button-row">'+button("Review or update my plan","open-handover","btn-secondary","", "check-circle")+
+      button("Import a planning document","import-report","btn-light","", "upload")+'</div></div></div>'+
       '<div class="studio-grid">'+studioSections.map(s=>{
         let extra=s.id==="math" ? '<span class="status-tag">'+state.entries.length+' step'+(state.entries.length===1?"":"s")+' recorded</span>' :
           filled(state.scratch[s.id==="intro"?"introduction":s.id==="data"?"dataNotes":s.id==="review"?"finalReview":"conclusion"]) ? '<span class="status-tag">Notes recorded</span>' : '<span class="status-tag pending">Open when ready</span>';
@@ -220,7 +225,11 @@ export function createStudioViews(ctx){
     const state = ctx.getState();
     const section=state.ui.studioSection;
     const body=section==="overview"?studioOverview():section==="intro"?studioIntro():section==="data"?studioData():section==="math"?studioMath():section==="conclusion"?studioConclusion():studioReview();
+    const handoverHint=state.handover?.confirmedAt?
+      '<div class="small-callout">Starting details last confirmed on '+e(state.handover.confirmedAt.slice(0,10))+'. This is not teacher approval.</div>':
+      '<div class="small-callout">Your planned aim and mathematics are editable. Reviewing them does not mean you have collected data or completed a calculation.</div>';
     return '<div class="page narrow">'+tabletNav()+
+      handoverHint+
       sheetTitle("PART 2 · COMPLETING","Your IA Studio","Your writing companion, from the first exploration to the final reflection.")+
       (state.project.aim?'<div class="context-card" style="margin-bottom:18px">'+icon("target")+'<div><strong>YOUR INVESTIGATION AIM</strong><p>'+e(state.project.aim)+'</p></div><button class="btn btn-sm btn-quiet" data-action="open-panel" data-panel="project">Edit</button></div>':"")+
       tabButtons()+body+'</div>';
