@@ -34,6 +34,7 @@ function createHarness(savedValue){
     document,window,localStorage:storage,console,clearTimeout(){},setTimeout(){return 1;},
     createProjectState,normalizeProjectState,persistProjectState,
     newState:createProjectState,normalise:normalizeProjectState,
+    KEY:"ia-pathfinder-prototype-v1",
     readRecordValue,updateRecordValue,icon,escapeHtml,cleanUrl,button,
     referenceNodeForPrototypeStep,createPlanningViews,createStudioViews,createProjectViews
   };
