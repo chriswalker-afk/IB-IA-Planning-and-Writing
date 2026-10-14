@@ -224,7 +224,8 @@
       };
       case 6: return {
         title:"What mathematics might help?",intro:"Choose a direction that could answer your aim. More mathematics is not automatically better.",
-        html:choose("project.mathsArea",[
+        html:field("project.course","Your IB Mathematics course","Choose a course",{type:"select",options:[["","Select a course"],["AA SL","Mathematics AA SL"],["AI SL","Mathematics AI SL"],["AA HL","Mathematics AA HL"],["AI HL","Mathematics AI HL"]]})+
+        choose("project.mathsArea",[
           {value:"relationships",title:"Explore relationships",desc:"Graphs, correlation, patterns or transformations.",icon:"chart"},
           {value:"models",title:"Build or compare models",desc:"Functions, parameters and model quality.",icon:"flask"},
           {value:"optimisation",title:"Investigate change or an optimum",desc:"Calculus, rates or constrained choices.",icon:"calculator"},
