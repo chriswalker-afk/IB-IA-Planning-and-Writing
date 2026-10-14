@@ -18,6 +18,7 @@ export function modelFromEnvelope(envelope){
  const flags=payload.teacher.openFlags;
  const main=[
   section("01 · The question and its purpose",[
+    row("Optional plan label",f.planIdentifier),
     row("My investigation aim",f.aim,{required:true}),
     row("Why I chose it",f.motivation),
     row("Intended beneficiary",f.beneficiary||f.beneficiaryType,{required:true}),
