@@ -254,7 +254,7 @@
       };
       case 9: return {
         title:"Your first path is taking shape.",intro:"You've created a provisional plan. Your question can still develop as you start doing mathematics.",
-        html:'<div class="success-moment"><span class="feature-icon">'+icon("sparkles")+'</span><div><strong>You've got a direction.</strong><p>Take your plan into IA Studio, then let your actual mathematical findings guide what follows.</p></div></div>'+
+        html:'<div class="success-moment"><span class="feature-icon">'+icon("sparkles")+'</span><div><strong>You have a direction.</strong><p>Take your plan into IA Studio, then let your actual mathematical findings guide what follows.</p></div></div>'+
           summary("Your aim",p.aim)+summary("Why it matters",p.beneficiary)+summary("Planned mathematics",readableArea(p.mathsArea)+(p.mathsCustom?" · "+p.mathsCustom:""))+
           (p.permissions==="pending"?note("You have unresolved permission questions. Check these before any affected data collection.",true):"")+
           '<div class="button-row" style="margin-top:20px">'+button("Open IA Studio","go-studio","btn-primary","", "arrow-right")+button("View planning report","go-report")+'</div>',
@@ -669,7 +669,7 @@
         note("Loading a sample replaces your current local project. Download a backup first if needed.",true);
     }else if(panel==="stuck"){
       const noData=state.project.dataStatus==="not-started";
-      body='<section><p>You don't need to invent results or force a technique. Choose one small, useful action.</p><div class="panel-list">'+
+      body='<section><p>You do not need to invent results or force a technique. Choose one small, useful action.</p><div class="panel-list">'+
         '<button class="panel-link" data-action="studio-intro"><span>Write or refine a short introduction</span>'+icon("arrow-right")+'</button>'+
         '<button class="panel-link" data-action="studio-data"><span>Check what evidence or assumptions are available</span>'+icon("arrow-right")+'</button>'+
         '<button class="panel-link" data-action="go-planning"><span>Revisit my aim or planned method</span>'+icon("arrow-right")+'</button>'+
@@ -705,7 +705,7 @@
     if(action==="open-files")return openDrawer("files");
     if(action==="open-demos")return openDrawer("demos");
     if(action==="open-stuck")return openDrawer("stuck");
-    if(action.startsWith("studio-"))return nav("completing",{section:action.slice(7)});
+    if(["studio-overview","studio-intro","studio-data","studio-math","studio-conclusion","studio-review"].includes(action))return nav("completing",{section:action.slice(7)});
     return false;
   }
   function clickAction(el) {
