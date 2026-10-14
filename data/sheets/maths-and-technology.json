@@ -1,0 +1,1015 @@
+{
+  "schemaVersion": 1,
+  "sourceSheet": "Maths & Technology",
+  "sourceBounds": {
+    "rows": 110,
+    "columns": 10
+  },
+  "rowCount": 85,
+  "nonemptyCellCount": 578,
+  "rows": [
+    {
+      "row": 1,
+      "cells": [
+        "MATHEMATICS & TECHNOLOGY  |  Explain WHY, show understanding, communicate precisely"
+      ]
+    },
+    {
+      "row": 2,
+      "cells": [
+        "This is not an extra compulsory section of an IA. Ask ONE purposeful question when a mathematical technique or software calculation is actually used; offer the full checklist at review."
+      ]
+    },
+    {
+      "row": 3,
+      "cells": [
+        "Course-specific mathematical depth matters: AI SL and AA SL can both use modelling/statistics, but the student must show understanding, relevance and suitable depth. A few techniques well-used often beats a long list."
+      ]
+    },
+    {
+      "row": 4,
+      "cells": [
+        "When a calculator, spreadsheet, regression tool or code produces an answer, briefly name the method, give its purpose, explain what was entered if needed, and interpret the output. No click-by-click instructions."
+      ]
+    },
+    {
+      "row": 5,
+      "cells": [
+        "Typeset equations cleanly (equation editor/maths tools). Use '=' for exact equality and '≈' for rounded estimates. Define symbols and units on first appearance. Report defensible precision."
+      ]
+    },
+    {
+      "row": 6,
+      "cells": [
+        "Give extra explanation when a method is outside the familiar course; do not write a textbook guide to routine arithmetic/plotting. If unfamiliar or mismatched mathematics is central, consult a teacher."
+      ]
+    },
+    {
+      "row": 8,
+      "cells": [
+        "ID",
+        "Stage / timing",
+        "Trigger",
+        "Student-facing question",
+        "What to capture",
+        "Earlier context",
+        "Course / meaning",
+        "Avoid",
+        "Source",
+        "Status"
+      ]
+    },
+    {
+      "row": 9,
+      "cells": [
+        "M01",
+        "C40/C50 · begin method",
+        "An actual substantial calculation is about to be shown",
+        "Why does this method answer the question raised by the previous result?",
+        "Short own reason connecting to aim; identify genuine alternatives only if relevant",
+        "Use actual observation, current goal and active technique",
+        "Both AI SL/AA SL; methods aren't rewarded for complexity alone",
+        "Don't insert routine maths without purpose or recite how to draw charts",
+        "JIS Guide slides 27–28",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 10,
+      "cells": [
+        "M02",
+        "C40/C50 · notation",
+        "Student writing displayed mathematical expressions",
+        "Could a reader understand this equation in conventional mathematical notation?",
+        "Use an equation editor or properly typeset mathematical expressions; set out derivations logically",
+        "Existing variable meanings and mathematical relations",
+        "All courses; equation editor is presentation guidance, not an automatic score",
+        "Avoid raw calculator syntax such as x^2/3 in place of a clearly typeset fraction when clarity matters",
+        "JIS Guide slide 28; Checklist Criterion B",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 11,
+      "cells": [
+        "M03",
+        "C40/C50 · exact vs estimate",
+        "Student has rounded a numerical result or calculated an approximation",
+        "Is this an exact equality or an approximation?",
+        "Use '≈' for rounded/truncated results, '=' for exact mathematical identities",
+        "Measured inputs, calculation precision, reported values",
+        "All courses; significant figures chosen by evidence, not arbitrary fixed rule",
+        "Avoid writing 2/3 = 0.67; write 2/3 ≈ 0.67",
+        "IA Lesson Starters slide 5",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 12,
+      "cells": [
+        "M04",
+        "C40/C50 · meaningful variables",
+        "A new symbol, parameter or relationship first appears",
+        "Have I defined each new symbol and unit BEFORE using it?",
+        "Prefer h for height, t for time when helpful; name the variable in context",
+        "C25 definitions, actual quantity and units",
+        "All courses; common x/y not forbidden, but meaningless by default",
+        "Don't create a glossary of all possible future variables",
+        "JIS Guide slide 27; Checklist B",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 13,
+      "cells": [
+        "M05",
+        "C40/C50 · significant accuracy",
+        "Calculation uses measured/estimated/secondary values",
+        "Does the precision of my FINAL answer reflect data uncertainty and mathematical sensitivity?",
+        "Retain working precision then justify reported digits/units",
+        "Earlier C24 input resolution and actual model sensitivity",
+        "Both; precision depends on operation and context",
+        "Don't round every intermediate step to source decimal places or invent measurement error",
+        "IA Lesson Starters slide 5",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 14,
+      "cells": [
+        "M06",
+        "C40T · technology used",
+        "Actual GDC/calculator/regression/spreadsheet/code computation completed",
+        "What did I ask the technology to calculate, and WHY?",
+        "Name technique and essential inputs; explain usefulness to the aim",
+        "Active tool and mathematical method, actual data type",
+        "Use only when technology is ACTUALLY used",
+        "Do not describe a long sequence of menu clicks or substitute a screenshot for reasoning",
+        "JIS Guide slide 28",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 15,
+      "cells": [
+        "M07",
+        "C40T · interpret output",
+        "Actual software output is being inserted",
+        "What does the numerical output or graph mean mathematically and in my context?",
+        "State interpretation, units, domain and connection to aim; check plausibility",
+        "Actual result rather than Planning prediction",
+        "Especially essential where software performs the entire operation",
+        "A generated coefficient alone does not demonstrate understanding",
+        "IA Criterion Explained slides 9, 15–17",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 16,
+      "cells": [
+        "M08",
+        "C40T · check validity",
+        "Output depends on fitting/testing/assumptions",
+        "What would tell me if the tool's result is trustworthy or not applicable?",
+        "Check assumptions, valid input range, residuals or alternative when method makes these relevant",
+        "Active fitted technique, real inputs and limitations",
+        "Technique-specific concerns only after technique is active",
+        "No automated list of PMCC issues while only collecting data",
+        "JIS Guide slides 27–32",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 17,
+      "cells": [
+        "M09",
+        "C40D · level",
+        "Student begins a substantial mathematical method",
+        "Is this particular technique within my actual IB Mathematics course, partly an extension, outside it, or am I unsure? Does it advance my aim?",
+        "Within / Partly outside / Outside / Unsure; teacher confirmation when needed; attach current technique ID",
+        "Student's confirmed course (AA SL, AI SL, etc.), actual selected method, stated novelty, previous result and aim",
+        "AI SL / AA SL specific; other/HL = teacher review",
+        "Independent research does NOT automatically mean beyond syllabus. Don't classify by a generic list or award marks for complexity.",
+        "JIS Guide slide 27; Criterion E",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 18,
+      "cells": [
+        "M10",
+        "C40D · demonstrated grasp",
+        "Student relies heavily on software or repeats formulas",
+        "Could I demonstrate that I understand the mathematics actually used, especially any unfamiliar technique or computer-generated method? What does it MEAN for this investigation?",
+        "If beyond course, give own concise principle/important step and why valid; if within, apply without procedural tutorial",
+        "Verified course and actual method status, software output, source if independently researched",
+        "Relevant mathematics must be UNDERSTOOD, not just performed",
+        "No generic textbook explanation of syllabus mathematics; don't substitute unexplained copied formula, source or screenshot.",
+        "IA Criterion Explained slides 15–17",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 19,
+      "cells": [
+        "M11",
+        "C40D · economy",
+        "Students choose many mathematical techniques",
+        "Does each technique contribute something NEW to answering the aim?",
+        "Consider dropping decorative/duplicated methods; fewer well-connected methods can be stronger",
+        "Already completed techniques and actual findings",
+        "Both; quantity is not sophistication",
+        "Don't add harder maths merely to appear impressive",
+        "IA Criterion Explained slides 9, 15–17",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 20,
+      "cells": [
+        "M12",
+        "C40D · prior learning",
+        "Substantial content consists of elementary prior-learning-only work",
+        "Is there genuinely course-level mathematical exploration beyond routine pre-course skills?",
+        "Optional teacher flag and a purpose-driven next question",
+        "Actual mathematics and course topics",
+        "Both; suitability determined in context by teacher",
+        "Don't assume that drawing a chart or evaluating a mean alone forms strong Criterion E work",
+        "JIS Guide slide 27; Criterion E",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 21,
+      "cells": [
+        "M13",
+        "C40D · beyond syllabus",
+        "Current active method is unfamiliar or outside course",
+        "If I have independently learned mathematics outside my syllabus, can I briefly explain the essential new idea, its relevant conditions and HOW I applied it correctly?",
+        "Student's own compact explanation/justifying step near first use; cite learning sources; optional teacher suitability check",
+        "Actual technique, student's verified course, independently studied concept, worked steps/source, aim",
+        "Teacher review, not automatic rejection or praise",
+        "No automatic extra marks for outside maths; don't paste a textbook/tutorial or present advanced mathematics not understood.",
+        "JIS Guide slide 27; Criterion E",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 22,
+      "cells": [
+        "M14",
+        "C40/C50 · method options",
+        "Actual student considered another technique",
+        "Why is the chosen method preferable FOR THIS AIM and this evidence?",
+        "One relevant comparison of strengths/assumptions; optional when obvious",
+        "Student's real alternatives and data",
+        "AI/AA course choice and actual context",
+        "Don't demand arbitrary comparison for every simple equation",
+        "JIS Guide slides 27, 30, 32",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 23,
+      "cells": [
+        "M15",
+        "C40/C50 · graphical results",
+        "Model's graph, fitted line or area is actually being used",
+        "Are domain, range, important parameters, intercepts or turning points meaningful HERE?",
+        "Interpret only relevant properties and limitations in context",
+        "Actual figure/formula, valid physical/social constraints",
+        "Modelling where a fitted/derived function ACTUALLY exists",
+        "Don't apply domain/extrapolation boilerplate to an unused model",
+        "IB IA Tips per topic; IA Lesson Starters",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 24,
+      "cells": [
+        "M16",
+        "C40/C50 · statistics",
+        "An actual statistical coefficient/test/distribution is used",
+        "What does this statistic measure, and what can or cannot be inferred?",
+        "Explain quantity, units if any, uncertainty, association versus causation where relevant",
+        "Observed data and actively used method",
+        "AI/AA depending on syllabus; choose suitable interpretation",
+        "Never infer cause from correlation or claim a hypothesis is proven by a single result",
+        "JIS Guide Criterion E; bivariate mini project",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 25,
+      "cells": [
+        "M17",
+        "C40/C50 · no technology",
+        "Student does exact, theoretical or hand calculations",
+        "Are the mathematical steps clear enough for this reader? Explain unfamiliar beyond-course ideas at their first use, but do not teach routine syllabus techniques.",
+        "Concise work, defined variables/conditions, genuine understanding of new concept only when needed",
+        "Student-confirmed course, actual symbolic work and any new/unfamiliar term",
+        "No technology prompt if none used",
+        "No mandatory method explanation merely because the work is done by hand; preserve mathematical reasoning and interpretation.",
+        "JIS Guide slides 27–28",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 26,
+      "cells": [
+        "M18",
+        "C70N · editorial check",
+        "Student reviews mathematics already written",
+        "Is notation, units, rounding, explanation and figure placement consistent?",
+        "Quick checklist; targeted return to incorrect expression or output",
+        "Results and existing symbols, C24 accuracy",
+        "All; do this at review rather than every sentence",
+        "Don't make a writing tutorial or replace own mathematical voice",
+        "IB IA Checklist Criterion B",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 30,
+      "cells": [
+        "OPTIONAL BEFORE/AFTER MINI-EXAMPLES  |  Illustrative and fictional; not students' own results or ready-to-paste prose"
+      ]
+    },
+    {
+      "row": 32,
+      "cells": [
+        "ID",
+        "Problem",
+        "Less helpful wording",
+        "More useful direction (illustrative only)",
+        "Why it improves",
+        "When to show",
+        "Boundary",
+        "Type",
+        "Status"
+      ]
+    },
+    {
+      "row": 33,
+      "cells": [
+        "Q01",
+        "Incorrect equals sign",
+        "2/3 = 0.67",
+        "2/3 ≈ 0.67",
+        "Because 0.67 is a rounded representation, not the exact rational number.",
+        "No new question; show only when rounded calculations use '='.",
+        "Do not force a particular number of decimal places.",
+        "Communication",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 34,
+      "cells": [
+        "Q02",
+        "Unexplained technology",
+        "The calculator said r = 0.823746.",
+        "In a hypothetical dataset, Pearson's r ≈ 0.824 would indicate a fairly strong positive linear association; the actual explanation must link to the student's variables.",
+        "A numerical button press isn't sufficient; purpose, meaning and scope are needed.",
+        "Only after PMCC ACTUALLY computed, if student asks for example.",
+        "Value is invented illustration, not an actual IA result.",
+        "Technology",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 35,
+      "cells": [
+        "Q03",
+        "Mechanical regression",
+        "I clicked Trendline and copied the formula.",
+        "For a student's real fitted line, explain what the slope/intercept mean, why fitting helps the aim, and its valid range.",
+        "Mathematical interpretation matters more than a menu-click account.",
+        "Only after fitting a line, not after first scatter.",
+        "Do not invent fit quality or model validity.",
+        "Technology",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 36,
+      "cells": [
+        "Q04",
+        "Unnecessary complexity",
+        "I will add six advanced techniques to get more marks.",
+        "Use the smallest set of relevant mathematical tools which you understand and can justify.",
+        "Criterion E values appropriate, correct, understood mathematics rather than decorative difficulty.",
+        "When too many techniques are selected or little maths is demonstrated.",
+        "Teacher evaluates borderline mathematical depth.",
+        "Course appropriateness",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 40,
+      "cells": [
+        "QUICK-REVIEW PROMPTS  |  Show only the ONE check that a student's current mathematical work actually needs"
+      ]
+    },
+    {
+      "row": 42,
+      "cells": [
+        "ID",
+        "One student-facing question",
+        "Only when",
+        "Suggested action",
+        "Display mode",
+        "Status"
+      ]
+    },
+    {
+      "row": 43,
+      "cells": [
+        "A",
+        "Is this an EXACT equation or a rounded ESTIMATE?",
+        "Show only if student writes a rounded number with '='",
+        "Correct ≈/= locally; do not demand rewriting the whole document.",
+        "Conditional",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 44,
+      "cells": [
+        "B",
+        "What did the software actually calculate and why was it chosen?",
+        "Only when a real software-based calculation is provided",
+        "A method+interpretation in the student's words; no click walkthrough.",
+        "Conditional",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 45,
+      "cells": [
+        "C",
+        "Is this mathematical technique at an appropriate level and understood?",
+        "When actual method appears below-course, outside-course or unsupported by explanation",
+        "One improvement action or teacher referral, not a numeric score.",
+        "Conditional",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 46,
+      "cells": [
+        "D",
+        "Are symbols, labels, units and reported precision defensible?",
+        "On visible communication error or student-requested review",
+        "Fix local expression/diagram and refer to earlier definitions.",
+        "Conditional",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 50,
+      "cells": [
+        "SOURCE ALIGNMENT: JIS SL Maths IA Guide 2025 slides 27–28, 43–47; IB IA Checklist B/E; IB IA Lesson Starters slide 5. This is guidance to design the future student site, not an implemented checker."
+      ]
+    },
+    {
+      "row": 53,
+      "cells": [
+        "SYLLABUS OR NEW MATHEMATICS?  |  Explain only genuinely unfamiliar concepts, at their first meaningful use"
+      ]
+    },
+    {
+      "row": 55,
+      "cells": [
+        "At the FIRST use of each substantial technique: verify the student's actual course. Within course → USE; partly/new beyond course → demonstrate your OWN understanding of new material; unsure → teacher check. Reflection on learning is OPTIONAL after a real discovery."
+      ]
+    },
+    {
+      "row": 57,
+      "cells": [
+        "ID",
+        "Stage / timing",
+        "Actual trigger",
+        "Contextual student-facing question",
+        "What to capture",
+        "Previously known context",
+        "Where it belongs",
+        "Suppress / avoid",
+        "Basis",
+        "Status"
+      ]
+    },
+    {
+      "row": 58,
+      "cells": [
+        "M19",
+        "C35/C40D · method selected",
+        "A new substantial technique is chosen for a REAL next question",
+        "Is [technique] within [my selected maths course], partly an extension, outside it, or am I unsure?",
+        "Within / Partly beyond / Beyond / Unsure / Change method; record evidence or teacher confirmation",
+        "Selected course and syllabus/version; technique ID; prior mathematical question",
+        "Private method setup; not automatic IA prose",
+        "Never decide solely from topic name or claim research automatically makes it beyond syllabus",
+        "JIS IA Guide Criterion E; teacher check",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 59,
+      "cells": [
+        "M20",
+        "C40/C50 · within syllabus",
+        "Student/teacher confirms this active method belongs to their course",
+        "This method is already part of my course. Can I apply it correctly, showing the essential working and what the result means for [aim], without explaining how to do it?",
+        "Use method directly; justify its choice and interpret output, no method tutorial",
+        "Verified course status, active method, prior result, meaningful variable symbols",
+        "Purpose before use; normal maths; interpretation after result",
+        "Do not explain steps for calculating PMCC, drawing routine plots or basic differentiation as if teaching a class",
+        "JIS IA Guide Criterion E/communication",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 60,
+      "cells": [
+        "M21",
+        "C40/C50 · beyond syllabus",
+        "Confirmed technique or component is outside the course AND actually needed for aim",
+        "What does [unfamiliar technique] mean? What is the key idea/condition that makes it work here, and how did I apply it in this investigation?",
+        "Student's own compact idea + relevant mathematical step/derivation/check + application + source",
+        "Confirmed novelty, actual method/working, teacher suitability, research source, aim",
+        "Immediately BEFORE/AT FIRST substantial use, alongside maths",
+        "No copied tutorial, unexplained equation, or complexity for its own sake",
+        "JIS IA Guide B/E; independent sources",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 61,
+      "cells": [
+        "M22",
+        "C40/C50 · partly beyond syllabus",
+        "Ordinary syllabus technique is extended by one unfamiliar new idea",
+        "Which exact part is NEW to me or beyond my course? Can I explain JUST this extension sufficiently for a reader to follow its use?",
+        "Explain new component/assumption/derivation only; standard steps remain concise",
+        "Course context, known base technique, actual extension and research source",
+        "Immediately before new extension appears",
+        "Don't re-teach all prerequisite syllabus mathematics",
+        "JIS IA Guide B/E",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 62,
+      "cells": [
+        "M23",
+        "C40D · uncertain syllabus status",
+        "Student hasn't verified whether active method is inside their course",
+        "Can I check my actual course guide or ask my teacher whether [technique] is in the syllabus and suitable before deciding how much explanation is necessary?",
+        "Mark Unsure; teacher review; carry tentative explanation only as a draft option",
+        "Current course and actual technique/learning notes",
+        "Private next action; allow maths work/save if appropriate",
+        "No automatic invented syllabus classification or forced advanced method",
+        "Verified syllabus/teacher review",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 63,
+      "cells": [
+        "M24",
+        "C40L · independently researched mathematics",
+        "Student genuinely consulted a source to understand a method they now USE",
+        "What mathematics did I understand from [actual source] that I can apply here? What made it useful for [aim]?",
+        "Brief private learning note; if beyond course, explain necessary new idea at first use and cite source",
+        "Source/book/video/reference, learned principle, chosen technique, student's own working",
+        "Private research log first; IA at technique when genuinely used",
+        "Researching an in-syllabus technique does NOT trigger an extra tutorial",
+        "Learning source plus IA bibliography",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 64,
+      "cells": [
+        "M25",
+        "C40L · show understanding",
+        "Unfamiliar beyond-course method was actually introduced",
+        "Could I demonstrate the essential mathematical reasoning—e.g. one relevant step, a short derivation, a checked simple case or meaning of parameters—rather than merely copy a formula?",
+        "One accurate own explanation and verified application; definitions/assumptions as needed",
+        "Actual formula/approach, current model, course status and citation",
+        "Next to first use of unfamiliar method",
+        "No full textbook lecture, copied proof or unexplained button-press result",
+        "JIS IA Guide B/E",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 65,
+      "cells": [
+        "M26",
+        "C40T/C40L · technology & learning",
+        "Software uses algorithm/technique that is unfamiliar or beyond course",
+        "Do I understand WHAT mathematical method the tool used and WHY it gives useful results here? If this algorithm is beyond my course, what essentials must I explain?",
+        "Own core maths, interpretation and a relevant check; optional research citation",
+        "Real tool output, course status, input data, chosen algorithm",
+        "At first mathematical use / beside output; no software tutorial",
+        "No black-box formula, screenshot-only maths or click instructions",
+        "JIS IA Guide B/E; student source",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 66,
+      "cells": [
+        "M27",
+        "C34B · genuine mathematical insight",
+        "After a MEANINGFUL actual result, student confirms a new conceptual discovery or independently acquired maths",
+        "Beyond what the result says about [aim], did I actually learn something new MATHEMATICALLY—about a relationship, proof, method or its conditions? Did it change my next step?",
+        "Optional brief real insight connected to current resultRef; None / Already covered accepted",
+        "Actual resultRef and existing aim-linked explanation; authentic learning and previous understanding",
+        "Immediately beside result, AFTER the essential aim-link",
+        "Do not invent a 'what I learned' paragraph or repeat unrelated generic reflection",
+        "JIS IA Guide reflection/engagement context",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 67,
+      "cells": [
+        "M28",
+        "C34B · within-course insight",
+        "Student discovers a genuinely new CONNECTION while correctly using familiar course mathematics",
+        "Did the actual result show me something new about how [two familiar concepts] connect, or when a known method does or doesn't apply?",
+        "If genuinely insightful, one concise student-authored mathematical observation",
+        "Real maths and prior course knowledge, observed result and aim",
+        "After mathematical result, when relevant",
+        "Still no tutorial for syllabus method; no artificial claims of discovery",
+        "JIS IA Guide reflection context",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 68,
+      "cells": [
+        "M29",
+        "C40D/C40L · cannot explain",
+        "Beyond-course technique is used but student cannot account for its core meaning",
+        "If I cannot explain this mathematical idea to a reader, would a better-understood in-course approach answer the aim more reliably?",
+        "Ask teacher, research meaning and test understanding, or choose simpler suitable maths",
+        "Proposed/actual technique, current syllabus, evidence, teacher review flag",
+        "Private choice before use, not mandatory IA confession",
+        "Don't reject beyond-course maths categorically or reward complexity without comprehension",
+        "JIS IA Guide Criterion E",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 69,
+      "cells": [
+        "M30",
+        "C70/C80/C90 · local review",
+        "Student reviews a written first-use explanation and later mathematical insights",
+        "Did I unnecessarily teach syllabus methods? Did I explain and reference ONLY the new mathematics, in my own words, at its first use? Is any learning insight genuine and relevant?",
+        "Targeted fix at first use or result; Already covered status",
+        "Actual course classification, explanations, citations, current maths and resultRefs",
+        "Edit original passage, not extra conclusion paragraph",
+        "No automatic rewording of student's IA or stock personal engagement sentences",
+        "JIS IA Guide B/C/D/E; student owns prose",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 72,
+      "cells": [
+        "EXAMPLE DISTINCTIONS  |  What a student should write depends on their ACTUAL course and the maths they used"
+      ]
+    },
+    {
+      "row": 74,
+      "cells": [
+        "ID",
+        "Situation",
+        "Illustrative technique/context",
+        "Useful mathematical writing",
+        "Avoid",
+        "Exact moment",
+        "Context check",
+        "Status"
+      ]
+    },
+    {
+      "row": 75,
+      "cells": [
+        "E01",
+        "Confirmed in syllabus",
+        "Pearson's r, IF listed for this particular student's course",
+        "Show actual data/coefficient and interpret for aim; justify why a linear association measure answers the question.",
+        "NO derivation of Pearson formula, no GDC menu tutorial.",
+        "Before use: brief purpose. After: result interpretation.",
+        "Must verify actual course rather than assuming all IB streams match.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 76,
+      "cells": [
+        "E02",
+        "Confirmed in syllabus",
+        "Differentiation/optimisation, IF included in actual course",
+        "Do the differentiation and justify the candidate optimum, constraints and what it means for decision.",
+        "No explanation of 'what differentiation is' or routine chain-rule lesson.",
+        "Working and result where used.",
+        "Explanation of why this method was chosen is still valuable.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 77,
+      "cells": [
+        "E03",
+        "Beyond student's syllabus",
+        "Research-derived method not covered by student's verified course",
+        "Define essential unfamiliar mathematical idea and assumption, show one intelligible step/check, apply it, cite source.",
+        "No massive theoretical background or copied formula without understanding.",
+        "At FIRST use of the unfamiliar method.",
+        "Teacher suitability check; course-dependent.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 78,
+      "cells": [
+        "E04",
+        "Partly novel extension",
+        "Syllabus regression extended by a genuine new algorithm",
+        "Explain ONLY new algorithm/assumption and how it relates to the familiar regression; evaluate it when actually used.",
+        "No re-teaching standard regression or plotting commands.",
+        "Where new extension first enters the maths.",
+        "Must be a real, understood, useful extension.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 79,
+      "cells": [
+        "E05",
+        "Independent research, but on syllabus",
+        "Student read extra materials to understand a familiar course technique",
+        "Use method directly in IA and interpret meaning. Source can be cited if specific material is drawn upon.",
+        "Don't demand a 'I researched how to...' paragraph or derivation.",
+        "At application; private research note if helpful.",
+        "Independently learned ≠ outside syllabus.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 80,
+      "cells": [
+        "E06",
+        "Software implementation",
+        "Actual software provides unfamiliar algorithm or fitted curve",
+        "Explain mathematical principle if beyond course, and demonstrate critical grasp; then interpret the REAL output.",
+        "No pasted code/output as substitute for maths or list of button clicks.",
+        "At unfamiliar method first use; interpretation by output.",
+        "C40T + C40L linked; never claim understanding without evidence.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 81,
+      "cells": [
+        "E07",
+        "Real mathematical discovery",
+        "Student notices a genuine pattern that changed how they think about method or proof",
+        "After actual result, briefly describe what was understood mathematically and how it affects the next question.",
+        "Not a generic 'I learned maths is interesting' paragraph or final recap.",
+        "Immediately AFTER relevant result, alongside aim-link.",
+        "Optional when genuine; don't prompt each routine line.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 84,
+      "cells": [
+        "CONTEXTUAL DECISION RULES  |  Never ask every student every question"
+      ]
+    },
+    {
+      "row": 86,
+      "cells": [
+        "ID",
+        "Decision",
+        "Data/logic",
+        "Writing moment or behaviour",
+        "Status"
+      ]
+    },
+    {
+      "row": 87,
+      "cells": [
+        "D01",
+        "Course identity",
+        "Read student's ACTUAL AA SL/AI SL/other programme and applicable topic coverage; teacher-confirm if unclear.",
+        "On method selection and first use; no automatic topic classification.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 88,
+      "cells": [
+        "D02",
+        "Knowledge != syllabus",
+        "Ask independently researched? separately from beyond-syllabus status; students can learn familiar maths independently.",
+        "Use two independent flags, not one implied from the other.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 89,
+      "cells": [
+        "D03",
+        "Within-syllabus use",
+        "Show concise purpose, necessary working and result-in-context; NO explanatory tutorial.",
+        "All substantial in-course uses, unless the student requests help privately.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 90,
+      "cells": [
+        "D04",
+        "Beyond-syllabus learning",
+        "Need own conceptual explanation at FIRST use: central idea, relevant conditions and intelligible application/step.",
+        "Only if actual new technique is useful and understood; link citation.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 91,
+      "cells": [
+        "D05",
+        "Partly unfamiliar",
+        "Explain only mathematical novelty, not prerequisite taught syllabus methods.",
+        "At exact unfamiliar step, before it is relied on.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 92,
+      "cells": [
+        "D06",
+        "Meaningful result",
+        "Prompt learning insight only if student genuinely discovered or independently learnt something mathematical.",
+        "After aim-linked interpretation of ACTUAL result; optional, not compulsory.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 93,
+      "cells": [
+        "D07",
+        "Teacher flag",
+        "Outside/uncertain methods deserve suitability discussion, never an automatic verdict or promised IA marks.",
+        "Persist teacher check as pending and allow Save/Resume.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 94,
+      "cells": [
+        "D08",
+        "Student ownership",
+        "Research source link plus student-authored explanation; no copied textbook, auto-generated paragraphs or menu-step account.",
+        "If not understood, revisit maths or choose better-understood technique.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 95,
+      "cells": [
+        "D09",
+        "Suppress repeated advice",
+        "Store first-use explanation and optional genuine insight per technique/result; Already covered hides repeat.",
+        "Recheck only after material technique/course change.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 98,
+      "cells": [
+        "ACCEPTANCE TESTS  |  Implementation scenarios for the future student site, not checks of written IAs"
+      ]
+    },
+    {
+      "row": 100,
+      "cells": [
+        "Test ID",
+        "Actual case",
+        "Expected contextual advice",
+        "Must NOT happen",
+        "QA status"
+      ]
+    },
+    {
+      "row": 101,
+      "cells": [
+        "T01",
+        "Student uses technique confirmed on their syllabus",
+        "Prompt reason for method, real maths and interpretation; NO tutorial on how to calculate.",
+        "No 'Explain how PMCC works' if confirmed part of course.",
+        "To test"
+      ]
+    },
+    {
+      "row": 102,
+      "cells": [
+        "T02",
+        "Student independently read about an IN-syllabus technique",
+        "Remember genuine research privately; no additional IA explanation beyond working and purpose.",
+        "Research does not falsely trigger beyond-course help.",
+        "To test"
+      ]
+    },
+    {
+      "row": 103,
+      "cells": [
+        "T03",
+        "Student uses technique verified outside syllabus",
+        "Before first use offer student's OWN concise concept/condition/step and source citation.",
+        "No copied derivation or encouragement without understanding.",
+        "To test"
+      ]
+    },
+    {
+      "row": 104,
+      "cells": [
+        "T04",
+        "Technique only partly outside course",
+        "Explain novel extension only at exact first-use point.",
+        "No repeat derivation of already-taught components.",
+        "To test"
+      ]
+    },
+    {
+      "row": 105,
+      "cells": [
+        "T05",
+        "Course status uncertain",
+        "Offer teacher/course verification, preserve work and pending flag.",
+        "No invented course coverage or auto-rejection.",
+        "To test"
+      ]
+    },
+    {
+      "row": 106,
+      "cells": [
+        "T06",
+        "Student pastes unexplained formula from a website",
+        "Prompt mathematical meaning, relevant justification/check and appropriate citation.",
+        "No automated ghostwriting or accepting formula as understanding.",
+        "To test"
+      ]
+    },
+    {
+      "row": 107,
+      "cells": [
+        "T07",
+        "Student has REAL new insight after result",
+        "After aim-linked interpretation offer optional learning reflection right there.",
+        "No fabricated personal engagement or compulsory 'what I learned' every step.",
+        "To test"
+      ]
+    },
+    {
+      "row": 108,
+      "cells": [
+        "T08",
+        "Student learns from error/failed mathematical model",
+        "If genuine, explain what limitation/assumption was understood and how it shaped next method.",
+        "No pretending failed prediction never existed.",
+        "To test"
+      ]
+    },
+    {
+      "row": 109,
+      "cells": [
+        "T09",
+        "Student chooses Already covered and returns later",
+        "Save first-use location or resultRef; only reoffer if technique or explanation genuinely changes.",
+        "No repetitive tutorials and no hidden forced gate.",
+        "To test"
+      ]
+    },
+    {
+      "row": 110,
+      "cells": [
+        "T10",
+        "Technique handled by software",
+        "If math within course, explain result/purpose only; beyond-course algorithm requires own understanding.",
+        "No button sequence, no copied code as mathematical demonstration.",
+        "To test"
+      ]
+    }
+  ]
+}
