@@ -79,7 +79,7 @@ export function normalizeCompletionState(data,project={}){
   resolution:str(x.resolution),policy:str(x.policy),reason:str(x.reason)})):[];
  return {...base,current:validNode(v.current)?v.current:(project.aim?"C04":"C00"),
   history:ids(v.history),visited:ids(v.visited),transitions,
-  fields,stages,accuracyDecisions:accuracy,
+  fields,stages:states,accuracyDecisions:accuracy,
   activeEntryIndex:Number.isInteger(v.activeEntryIndex)?Math.max(-1,Math.min(119,v.activeEntryIndex)):-1,
   returnTo:validNode(v.returnTo)?v.returnTo:"",
   latestMeaningfulNode:validNode(v.latestMeaningfulNode)?v.latestMeaningfulNode:"",
