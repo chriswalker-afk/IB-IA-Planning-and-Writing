@@ -128,7 +128,16 @@ export function createCompletingViews(ctx){
  };
  const accuracyNote=()=>{
   const state=getState(),accuracy=state.completion.accuracyDecisions,entry=completeEntry(state);
-  if(!accuracy.length)return"";
+  if(!accuracy.length){
+    const earlier=state.planning?.fields?.firstAccuracy;
+    if(earlier&&state.completion.current==="C24")
+      return info("An earlier planned accuracy decision to confirm",earlier+
+        ". This was from Planning: check the actual data source, unit and original resolution before applying it to real calculations.");
+    if(earlier&&entry?.phase==="first"&&state.completion.current==="C32")
+      return info("Earlier intended accuracy",earlier+
+        ". Confirm it against your actual source before choosing graph scales or reporting digits.");
+    return"";
+  }
   const relevant=accuracy.find(x=>x.id===entry?.accuracyRef||
    x.quantity===entry?.accuracyRef);
   if(relevant)return info("Accuracy from your earlier measurement/source decision",
@@ -453,9 +462,12 @@ export function createCompletingViews(ctx){
   };
   case "C40D":return{intro:"Check whether the mathematics you ACTUALLY use is appropriate and understood.",
    html:actualRecord()+
-    choice("courseLevel",[["within","I recognise it on my course"],
-     ["outside","Partly or wholly beyond my syllabus"],
-     ["unsure","I need teacher advice"]])+
+    (f.courseLevel&&st?.knowledge==="unsure"?smallSummary("Earlier broad course check to review",f.courseLevel):"")+
+    (st?entryChoice("knowledge",[
+      {value:"syllabus",title:"Verified within my own IB course",icon:"check-circle"},
+      {value:"mixed",title:"Main technique is familiar, but one extension is outside/uncertain",icon:"book"},
+      {value:"outside",title:"Verified outside my own course",icon:"book"},
+      {value:"unsure",title:"I need to check my course or ask a teacher",icon:"lightbulb"}]):"")+
     F("courseWhy","What mathematical question does this technique answer?","Why it is genuinely suitable for this investigation",{type:"textarea",rows:3})+
     '<details class="guidance-insight"><summary>Check course-level mathematical depth (optional)</summary>'+
       entryChoice("priorLearningOnly",[
