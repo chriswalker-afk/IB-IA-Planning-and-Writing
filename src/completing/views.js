@@ -586,7 +586,7 @@ export function createCompletingViews(ctx){
  function render(){
   const s=getState(),c=s.completion||{current:"C00",stages:{}},node=c.current;
   const label=titleMap.get(node)||"IA Studio";
-  const screen=startOptions(node),stage=completionStage(node);
+  const screen=startOptions(node),stage=completionStage(node,s);
   const progress=stage&&s.completion.stages[stage];
   const warning=completionFlags(s);
   const topWarnings=warning.length&&["C00","C02","C03","C04","C20"].includes(node)?
