@@ -96,8 +96,8 @@ export function syncPlanningToProject(state) {
  p.dataStatus=f.kind==="theoretical"?"theoretical":f.dataAvailability==="in-hand"?"ready":f.dataAvailability==="some"?"partial":"not-started";
  p.permissions=f.permissionNeed==="no"?"clear":f.permissionNeed==="yes"?"pending":"unknown";
  const parts=[];
- if(["primary","both"].includes(f.dataSource))parts.push("Primary: "+(f.primaryWhat||"To confirm")+"; "+(f.primaryHow||"method not confirmed"));
- if(["secondary","both"].includes(f.dataSource))parts.push("Secondary: "+(f.secondaryPublisher||f.secondaryUrl||"Source to confirm")+"; "+(f.secondaryVariables||"variables to confirm"));
+ if(f.kind!=="theoretical"&&["primary","both"].includes(f.dataSource))parts.push("Primary: "+(f.primaryWhat||"To confirm")+"; "+(f.primaryHow||"method not confirmed"));
+ if(f.kind!=="theoretical"&&["secondary","both"].includes(f.dataSource))parts.push("Secondary: "+(f.secondaryPublisher||f.secondaryUrl||"Source to confirm")+"; "+(f.secondaryVariables||"variables to confirm"));
  if(f.kind==="theoretical")parts.push(f.theoreticalCase||"Mathematical conjecture or examples still being planned");
  p.dataDetails=parts.join("\n");
  const selected=selectedMaths(state);
@@ -158,6 +158,10 @@ export function applyPlanningField(state,key,value){
   state.planning.completed=false;
   state.planning.notices=["Your planning choices changed. Review the updated provisional plan before using it."];
  }
+ if(key==="dataSource"&&before!==f[key]){
+  state.planning.sourceBranches={primary:false,secondary:false};
+  state.planning.notices=["Your evidence route changed. Earlier details are retained, but review each relevant source plan again."];
+ }
  if(key==="course"&&before!==f[key])state.planning.mathsReviewVersion++;
  if(key==="kind"&&before!==f[key]){
   // Old branches remain in the plan history; their source is not asserted as appropriate for the new route.
@@ -181,6 +185,7 @@ export function toggleMath(state,id){
  const f=state.planning.fields;
  if(item.course!==f.course)return false;
  const ids=state.planning.mathSelected,i=ids.indexOf(id);
+ if(state.planning.completed){state.planning.completed=false;state.planning.notices=["Your mathematics selections changed. Review the provisional plan again."];}
  if(i>=0)ids.splice(i,1);else ids.push(id);
  syncPlanningToProject(state);return true;
 }
@@ -270,7 +275,7 @@ export function planAutoAdvance(state){
   case "N03P":case "N03S":return go("Complete");
   case "N03J":return go("Method justification or 'not sure'");
   case "N03D":return go("Continue");
-  case "N03E":return go("Continue");
+  case "N03E":if(Number(f.dataReadiness)===5&&f.dataAvailability!=="in-hand")return{ok:false,error:"A readiness rating of 5 means usable data are already in hand. Please adjust the rating or confirm the evidence is available."};return go("Continue");
   case "N03R":return go("Retry");
   case "N03F":return go("Feasibility questions answered");
   case "N03G":return go("Practical plan is workable");
