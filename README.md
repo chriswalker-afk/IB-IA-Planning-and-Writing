@@ -8,7 +8,7 @@ Once GitHub Pages has deployed this repository, open:
 
 **https://chriswalker-afk.github.io/IB-IA-Planning-and-Writing/**
 
-If the link is not live yet, check [Actions](https://github.com/chriswalker-afk/IB-IA-Planning-and-Writing/actions) or [Settings → Pages](https://github.com/chriswalker-afk/IB-IA-Planning-and-Writing/settings/pages). This repository includes a Pages deployment workflow; GitHub may require repository Pages settings to be enabled by the owner.
+If the link is not live yet, check [Actions](https://github.com/chriswalker-afk/IB-IA-Planning-and-Writing/actions) or [Settings → Pages](https://github.com/chriswalker-afk/IB-IA-Planning-and-Writing/settings/pages). This repository includes a Pages deployment workflow. **One-time setup:** the repository owner needs to open **Settings → Pages**, set **Build and deployment → Source** to **GitHub Actions**, and save. Then rerun the failed deployment from **Actions** (or push another commit). The connected GitHub integration cannot enable Pages on your behalf.
 
 To run it locally, open \`index.html\` in a browser or serve the repository directory with a small local HTTP server. There is no build process and no dependency installation.
 
