@@ -332,6 +332,65 @@ export function moveCompletionRoute(state,condition){
  addTransition(state,route);
  return setCompletionNode(state,route.to,{reason:"source-route"});
 }
+/**
+ * Revising a genuine earlier finding does not delete later work.
+ * Instead, explicitly flag every downstream step that relied on it.
+ * This keeps the student's actual maths and writing intact, while making
+ * the logical chain's assumptions visible for rechecking.
+ */
+export function flagDependentMathematics(state,index,key,before,after){
+ const parent=state.entries[index];
+ if(!parent||before===after||
+  !["result","status","interpretation","localTakeaway","observation","observationText","purpose","technique"].includes(key))
+  return [];
+ // Preserve the initial input workflow: don't nag while a first result is being typed.
+ const substantive=key==="status"||String(before??"").trim().length>0;
+ if(!substantive)return[];
+ if(["result","status","technique","observation"].includes(key)&&
+  (parent.interpretation||parent.localTakeaway)){
+  parent.reviewNeeded="yes";
+  parent.reviewReason="Recheck this step's earlier interpretation against the revised mathematics.";
+ }
+ if(!parent.id)return [];
+ const updated=new Set([parent.id]),flagged=[];
+ let changed=true;
+ while(changed){
+  changed=false;
+  for(let i=index+1;i<state.entries.length;i++){
+   const child=state.entries[i];
+   if(!child?.fromEntryId||!updated.has(child.fromEntryId)||updated.has(child.id))continue;
+   updated.add(child.id);changed=true;
+   child.reviewNeeded="yes";
+   child.reviewReason="An earlier mathematical result or interpretation changed. Recheck why this step follows and whether its own conclusion still holds.";
+   flagged.push(i);
+  }
+ }
+ if(flagged.length){
+  for(const stage of ["C40","C60"]){
+   if(state.completion.stages[stage]==="complete")state.completion.stages[stage]="needs-review";
+  }
+ }
+ if(parent.reviewNeeded==="yes"){
+  const stage=parent.phase==="first"?"C30":"C40";
+  if(state.completion.stages[stage]==="complete")state.completion.stages[stage]="needs-review";
+ }
+ return flagged;
+}
+/** Explicit student action after inspecting the mathematical connection. */
+export function acknowledgeMathReview(state,index){
+ const record=state.entries[index];
+ if(!record||record.reviewNeeded!=="yes")return false;
+ record.reviewNeeded="";
+ record.reviewReason="";
+ record.reviewCheckedAt=new Date().toISOString();
+ // Rebase only the *recorded original takeaway*, not student-written justifications.
+ if(record.fromEntryId){
+  const parent=state.entries.find(x=>x.id===record.fromEntryId);
+  if(genuinelyDone(parent))
+   record.previousTakeaway=parent.localTakeaway||parent.interpretation||parent.observationText||parent.result;
+ }
+ return true;
+}
 export function addAccuracyDecision(state){
  const f=state.completion.fields;
  if(!f.accuracyQuantity.trim()||!f.accuracyPolicy.trim())
