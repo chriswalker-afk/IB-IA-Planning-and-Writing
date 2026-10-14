@@ -17,7 +17,7 @@ const text = value => String(value ?? "");
 const fields = Object.keys(PLANNING_FIELD_DEFAULTS);
 
 export const FIELD_GROUPS = Object.freeze({
- "Your question and its meaning": ["idea","interest","aim","motivation","beneficiaryType","beneficiary","intendedUse"],
+ "Your question and its meaning": ["planIdentifier","idea","interest","aim","motivation","beneficiaryType","beneficiary","intendedUse"],
  "Investigation and sources": ["kind","dataSource","statisticsContext","primaryWhat","primaryWhen","primaryWhere","primaryPopulation","primaryHow","primaryEquipment","primarySampling","primaryStatus","secondaryUrl","secondaryPublisher","secondaryVariables","secondaryScope","secondaryVerified","secondaryStatus","alternativeMethod","methodReason","methodLimitation","methodMitigation","sourceFirstDate","sourceFullDate","dataAvailability"],
  "Readiness, practicality and permissions": ["dataReadiness","readinessImprovement","dependencies","unsecured","permissionNeed","permissionDetails","softwareReady","workloadHours","cleaningBurden","externalRisks","minimumVersion","backupMethod","pilotReady","costIssue","sourceRights","dataSufficiency","negativeResultViable","presentationManageable","practicalEase","easeImprovement"],
  "Mathematics and prediction": ["course","mathsOutside","otherMaths","mathsWhy","predictionId","prediction","predictionWhy","predictionImplication","predictionExploration","courseSuitability","suitabilityWhy","mathsRevisedWhy","figureType","figureOther","figurePurpose","firstAction","firstAccuracy","theoreticalAim","theoreticalCase","theoreticalPrediction","theoreticalWhy","otherCourseMaths"],
@@ -26,7 +26,7 @@ export const FIELD_GROUPS = Object.freeze({
  "Optional idea comparison": ["originalIdea","otherIdea1","otherIdea2","ideaSelected","ideaAccess","ideaValue","ideaStatus"]
 });
 export const FIELD_LABELS = Object.freeze({
- idea:"Working idea", interest:"Interest", aim:"Investigation aim", motivation:"Why this interests me",
+ planIdentifier:"Student-selected plan label", idea:"Working idea", interest:"Interest", aim:"Investigation aim", motivation:"Why this interests me",
  beneficiaryType:"Intended type of benefit", beneficiary:"Who could benefit", intendedUse:"Possible use of the findings",
  course:"IB Mathematics course",kind:"Investigation type",dataSource:"Source route",statisticsContext:"Data context",
  primaryWhat:"Primary variables / units", primaryWhen:"Collection target",primaryWhere:"Collection setting",
@@ -90,6 +90,14 @@ export function createPlanningEnvelope(state,{exportedAt=new Date().toISOString(
   completed:!!p.completed,sourceSnapshot:p.sourceSnapshot
  };
  const flags=planningFlags({...state,planning:p});
+ const carried=(Array.isArray(state.teacher?.concerns)?state.teacher.concerns:[])
+   .filter(x=>typeof x==="string"&&x.trim()).slice(0,20);
+ for(const [index,note] of carried.entries()){
+  if(!flags.some(flag=>flag.note===note)){
+   flags.push({id:"carried-"+index,title:"Unresolved teacher discussion note",
+    note:note.slice(0,600),needsApproval:false});
+  }
+ }
  const envelope={
   kind:REPORT_KIND,schemaVersion:REPORT_SCHEMA,exportedAt,
   source:{app:"IA Pathfinder",stateVersion:state.version??2,snapshot:p.sourceSnapshot,format:"planning-only"},
@@ -144,6 +152,15 @@ export function getFieldDiff(current,envelope){
   changes.push({key,label:FIELD_LABELS[key]||key,old,next,group:Object.keys(FIELD_GROUPS).find(g=>FIELD_GROUPS[g].includes(key)),
    recommended:!old.trim()});
  }
+ const unresolved=incoming.teacher.openFlags
+   .map(flag=>flag.title+": "+flag.note).filter(x=>x.trim());
+ const prior=Array.isArray(current.teacher?.concerns)?current.teacher.concerns:[];
+ const newTeacher=unresolved.filter(x=>!prior.includes(x));
+ if(newTeacher.length){
+  changes.push({key:"teacherConcerns",label:"Unresolved teacher discussion notes",
+   group:"Teacher conversation",old:prior.join("; "),next:newTeacher.join("; "),
+   recommended:!prior.length});
+ }
  const newSelected=incoming.planning.mathSelected;
  const oldSelected=current.planning?.mathSelected||[];
  if(JSON.stringify(newSelected)!==JSON.stringify(oldSelected)&&newSelected.length){
@@ -159,9 +176,15 @@ export function mergePlanningEnvelope(current,envelope,selectedKeys=[],{origin="
  const requested=new Set(selectedKeys.filter(x=>typeof x==="string"&&allow.has(x)));
  const state=structuredClone(current),existingPending=!!current.teacher?.pendingApproval;
  const applied=[];
+ let incomingTeacherNeedsApproval=false;
  for(const key of requested){
   if(key==="mathSelected"){
    state.planning.mathSelected=[...imported.planning.mathSelected];
+  }else if(key==="teacherConcerns"){
+   const notes=imported.teacher.openFlags.map(x=>x.title+": "+x.note);
+   const present=new Set(state.teacher.concerns||[]);
+   state.teacher.concerns=[...present,...notes.filter(x=>!present.has(x))].slice(0,100);
+   incomingTeacherNeedsApproval=imported.teacher.openFlags.some(x=>x.needsApproval);
   }else{
    state.planning.fields[key]=imported.planning.fields[key];
   }
@@ -175,7 +198,7 @@ export function mergePlanningEnvelope(current,envelope,selectedKeys=[],{origin="
   state.journey.history.push({from:"handover",to:"planning",condition:"Confirmed field-level merge",count:applied.length,exportedAt:imported.exportedAt});
   state.teacher.pendingApproval=existingPending;
   syncPlanningToProject(state);
-  state.teacher.pendingApproval=existingPending||state.teacher.pendingApproval;
+  state.teacher.pendingApproval=existingPending||incomingTeacherNeedsApproval||state.teacher.pendingApproval;
   const changeLog=Array.isArray(state.changeLog)?state.changeLog:[];
   changeLog.push({kind:"planning-import",at:new Date().toISOString(),source:origin,snapshotDate:imported.exportedAt,
    fields:applied,teacherStatus:"unchanged"});
