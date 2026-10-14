@@ -1,0 +1,780 @@
+{
+  "schemaVersion": 1,
+  "sourceSheet": "Data Collection Guide",
+  "sourceBounds": {
+    "rows": 120,
+    "columns": 9
+  },
+  "rowCount": 60,
+  "nonemptyCellCount": 461,
+  "rows": [
+    {
+      "row": 1,
+      "cells": [
+        "DATA COLLECTION GUIDE  |  Tailor by Statistics, Modelling or Theoretical/Other"
+      ]
+    },
+    {
+      "row": 2,
+      "cells": [
+        "LIMITATIONS THAT MATTER MATHEMATICALLY  |  Compare methods → justify choice → identify effects on accuracy, bias, assumptions, validity or conclusions → mitigate or narrow the claim."
+      ]
+    },
+    {
+      "row": 3,
+      "cells": [
+        "Data Collection guidance: identify SAMPLING, SOURCE, MEASUREMENT and INPUT limitations only. Do not show PMCC, regression, optimisation or other technique-specific weaknesses until that mathematics is being used in C40–C50."
+      ]
+    },
+    {
+      "row": 4,
+      "cells": [
+        "Stage gate before matching: C20–C26 shows collection/source limitations only; C30 uses confirmed data notes but does not propose maths-technique weaknesses; C40–C50 can offer technique-specific examples. C60 revisits CONFIRMED limitations, no new catalogue."
+      ]
+    },
+    {
+      "row": 5,
+      "cells": [
+        "Useful: 'A 0.1 s timing resolution and human reaction-time variation limit defensible precision in calculated speeds.' Not useful alone: 'The stopwatch was difficult to operate.' Do not invent error sizes."
+      ]
+    },
+    {
+      "row": 6,
+      "cells": [
+        "If a limitation seriously undermines the intended inference, revise the method, aim or population instead of calling it acceptable. Define data-collection jargon and meaningful symbols only where needed."
+      ]
+    },
+    {
+      "row": 8,
+      "cells": [
+        "ID",
+        "Path / category",
+        "When to show",
+        "Student-facing prompt",
+        "Answer form",
+        "Contextual guidance / example",
+        "Quality check and impact on interpretation",
+        "Progress field",
+        "Status"
+      ]
+    },
+    {
+      "row": 9,
+      "cells": [
+        "S01",
+        "Statistics",
+        "Population or observational data",
+        "Who or what is your intended population, and what is one observation?",
+        "Short description: target population, unit, scope",
+        "Target population ≠ the convenient people you can reach; distinguish sampling frame.",
+        "State which population the conclusions can reasonably apply to.",
+        "completion.stat.population",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 10,
+      "cells": [
+        "S02",
+        "Statistics",
+        "When population is countable and potentially accessible",
+        "Could you include everyone (a census), rather than take a sample? What would that involve?",
+        "Census / sample / unsure + reason",
+        "A census may make sense for a small school club; it need not be appropriate for all school students.",
+        "Judge the scope of the inference: census coverage, nonresponse and target-population mismatch matter mathematically; collection time by itself is a feasibility issue.",
+        "completion.stat.census",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 11,
+      "cells": [
+        "S03",
+        "Statistics",
+        "If selecting a sample",
+        "Which feasible methods could you use: simple random, stratified, systematic, cluster, opportunity/convenience or another?",
+        "Choose several to compare; optional Other",
+        "Show short definitions only when unfamiliar; don't overwhelm with method names.",
+        "Compare representativeness, coverage and potential bias for these methods; cost or convenience matters only if it changes what can reasonably be inferred.",
+        "completion.stat.sampleAlternatives",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 12,
+      "cells": [
+        "S04",
+        "Statistics",
+        "If sampling method chosen",
+        "How will people/observations actually be selected?",
+        "Short practical steps",
+        "If claiming random selection, describe an implementable random procedure; avoid saying 'random' when volunteers opt in.",
+        "Explain how the chosen procedure affects selection bias and reproducibility.",
+        "completion.stat.samplingImplementation",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 13,
+      "cells": [
+        "S05",
+        "Statistics",
+        "If using a sample or census",
+        "Why is your sample size or accessible population adequate for what you want to compare?",
+        "Estimate number and explain",
+        "More data can help, but size alone doesn't eliminate bias. Consider balanced groups and what is achievable.",
+        "Discuss effect of sample size on stability of estimates and comparisons, and distinguish small samples from selection bias. Do not make blanket claims about adequate size.",
+        "completion.stat.sampleScope",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 14,
+      "cells": [
+        "S06",
+        "Statistics",
+        "Surveys or human response data",
+        "Who might not respond, and what kind of bias could this introduce?",
+        "Optional short answer",
+        "Volunteer responses and nonresponse may systematically differ from those who did not answer.",
+        "Explain how you'll reduce bias, or limit the conclusions to the respondents.",
+        "completion.stat.responseBias",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 15,
+      "cells": [
+        "S07",
+        "Statistics",
+        "Surveys, subjective ratings or questionnaires",
+        "Are questions neutral, clear and measurable? Have you tested them with a small pilot?",
+        "Short pilot check; examples when requested",
+        "Define what rating scales represent; don't treat '5/5 happiness' as a physical measurement to arbitrary precision.",
+        "Prioritise response bias, the validity of scales and what may be inferred from scores; piloting matters when it improves measurement validity, not as a logistical story.",
+        "completion.stat.surveyQuality",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 16,
+      "cells": [
+        "S08",
+        "Statistics",
+        "Two numerical quantities measured per subject",
+        "Are the measurements paired correctly, using the same observation and compatible units?",
+        "Paired-data check",
+        "Record height and reaction time for each person as a pair, not unmatched lists.",
+        "Assess measurement repeatability and whether potential confounding variables matter.",
+        "completion.stat.pairing",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 17,
+      "cells": [
+        "S09",
+        "Statistics",
+        "Comparing two or more groups",
+        "How were groups defined, and are measurement conditions reasonably comparable?",
+        "Short answer",
+        "Different times, tools or ages may affect results as well as the factor being compared.",
+        "Justify fair comparison and explain important confounders/unequal group sizes.",
+        "completion.stat.comparisonFairness",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 18,
+      "cells": [
+        "S10",
+        "Statistics",
+        "Using secondary statistical datasets",
+        "How was the original dataset sampled or measured, who produced it, and which population does it represent?",
+        "Source + provenance notes",
+        "You can choose a dataset, not retroactively choose its original sampling design.",
+        "Evaluate fit for the aim and cite sampling/method limitations honestly.",
+        "completion.stat.secondaryProvenance",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 19,
+      "cells": [
+        "S11",
+        "Statistics",
+        "If data have missing values, filtering or outliers",
+        "What will you include/exclude, and how could that choice change your conclusions?",
+        "Short transparent cleaning policy",
+        "Don't discard inconvenient observations just to create the predicted correlation.",
+        "Justify filtering, record missing data and test sensitivity where feasible.",
+        "completion.stat.selectionPolicy",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 20,
+      "cells": [
+        "S12",
+        "Statistics",
+        "If data change with location, date or season",
+        "Could the timing/location of collection distort the apparent pattern?",
+        "Short optional note",
+        "A lunchtime survey might not describe morning behaviour; one season may not represent the year.",
+        "Justify scope and when it is reasonable to generalise.",
+        "completion.stat.scopeLimit",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 21,
+      "cells": [
+        "M01",
+        "Modelling",
+        "At start of modelling route",
+        "Is your model based on collected measurements, existing published values, theoretical assumptions or a combination?",
+        "Multi-select + short context",
+        "Not every model needs a statistical sample. A theoretical optimisation may need dimensions and constraints instead.",
+        "Only ask collection/sampling questions that apply to actual sources.",
+        "completion.model.evidenceType",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 22,
+      "cells": [
+        "M02",
+        "Modelling",
+        "When model has inputs or parameters",
+        "Which inputs, parameters, constraints and units does your model need, and where will they come from?",
+        "Parameter list: symbol/meaning/unit/source",
+        "For a storage-box model: L, w, h and volume V; note dimensions and constraints.",
+        "Justify how each important value relates to the real situation and intended use.",
+        "completion.model.inputs",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 23,
+      "cells": [
+        "M03",
+        "Modelling",
+        "When measurements are needed",
+        "What feasible ways could you measure or estimate these inputs? Why prefer your chosen tool/source?",
+        "Compare methods briefly",
+        "Compare phone-video timing and a handheld stopwatch in terms of time resolution, reaction-time variation, repeatability and possible systematic bias; equipment inconvenience alone is not a mathematical limitation.",
+        "Explain how the method affects estimated parameters, numerical accuracy and model fit. Mention practical effort only briefly when it changes the quality or amount of evidence.",
+        "completion.model.measurementAlternatives",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 24,
+      "cells": [
+        "M04",
+        "Modelling",
+        "When repeated empirical readings are feasible",
+        "Can readings be repeated, conditions controlled or instruments checked?",
+        "Short procedure + optional repeats",
+        "Repeat measurements can reveal variation, but repeated readings do not fix a systematic error.",
+        "Explain the likely dominant error and what can be controlled.",
+        "completion.model.repeatability",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 25,
+      "cells": [
+        "M05",
+        "Modelling",
+        "When simplifying a real-world process",
+        "Which assumptions make the model manageable, and are they acceptable for its intended purpose?",
+        "Assumptions + context",
+        "Ignoring air resistance might work for a short low-speed example, but not all trajectories.",
+        "Explain which assumptions affect the mathematical validity of the model and over what range. A convenient simplification is acceptable only if the consequence for results is limited and justified.",
+        "completion.model.assumptions",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 26,
+      "cells": [
+        "M06",
+        "Modelling",
+        "Using estimated or published model parameters",
+        "Are the units, definitions, coverage and original measurement context of each source suitable?",
+        "Citation + comparability check",
+        "Published constants/measurements may apply only within particular environments or scales.",
+        "Attribute sources; explain context differences and uncertainty where known.",
+        "completion.model.sourceFit",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 27,
+      "cells": [
+        "M07",
+        "Modelling",
+        "For models that can be tested against observations",
+        "How will you check the model on real observations, ideally not exactly those used to fit its parameters?",
+        "Validation plan / not feasible + reason",
+        "A separate test or held-out observations is helpful when there are enough data, but isn't mandatory in every IA.",
+        "Distinguish a model fitting its original data from an independent check; a lack of validation limits confidence in model predictions, not just project logistics.",
+        "completion.model.validationPlan",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 28,
+      "cells": [
+        "M08",
+        "Modelling",
+        "If deciding between different model forms",
+        "What other model could plausibly describe the situation, and how might you choose?",
+        "Short alternative model note",
+        "Linear vs exponential growth; compare context and residual behaviour rather than expected trend alone.",
+        "Justify a sensible fit and interpretable parameters.",
+        "completion.model.alternativeModel",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 29,
+      "cells": [
+        "M09",
+        "Modelling",
+        "If model is useful only over a limited domain",
+        "What range of input values/conditions is your model intended for?",
+        "Domain/constraint description",
+        "An empirical model may not justify extrapolation far beyond measured inputs.",
+        "Outside the observed/input range, conclusions may be extrapolations that the mathematics cannot justify; restrict the domain or explicitly qualify the result.",
+        "completion.model.domain",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 30,
+      "cells": [
+        "M10",
+        "Modelling",
+        "When parameters are estimated or measurements uncertain",
+        "If a key measurement/parameter changes slightly, how much does the result change?",
+        "Optional simple sensitivity test",
+        "Small changes in measured radius may affect calculated volume noticeably.",
+        "Use reasonable sensitivity/uncertainty rather than fabricated precision.",
+        "completion.model.sensitivity",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 31,
+      "cells": [
+        "M11",
+        "Modelling",
+        "If a modelling investigation also uses survey/sample observations",
+        "Are the input observations sampled? Would a census or a different sampling method improve the model's relevance?",
+        "Open statistics route when applicable",
+        "Fitting a model to sampled data requires understanding sample bias and scope.",
+        "Avoid treating modelling and statistics as mutually exclusive.",
+        "completion.model.sampleUse",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 32,
+      "cells": [
+        "M12",
+        "Modelling",
+        "If model has little/no collected data",
+        "What simple theoretical case or constraint demonstrates that the model is worth investigating?",
+        "Optional diagram/simple case",
+        "For constrained optimisation, a diagram with correctly named lengths can be more useful than arbitrary collected data.",
+        "Explain assumptions without inventing a dataset or a sampling plan.",
+        "completion.model.simpleCase",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 33,
+      "cells": [
+        "T01",
+        "Theoretical/other",
+        "No-data investigation",
+        "What mathematical object, claim, condition or simplified case are you investigating?",
+        "Short conjecture/example",
+        "No requirement for a population or sampling procedure.",
+        "Give a meaningful definition and explain why the approach is suitable.",
+        "completion.theory.case",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 34,
+      "cells": [
+        "T02",
+        "Theoretical/other",
+        "If applying ideas to a special context",
+        "Which assumptions, specialist terms, restrictions and notational choices must the reader understand?",
+        "Short assumption/definition notes",
+        "Define the mathematical object precisely; introduce deeper techniques at first use.",
+        "State which conclusions follow from the assumptions or special cases. The fact that a proof/problem was time-consuming is not a mathematical limitation.",
+        "completion.theory.assumptions",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 35,
+      "cells": [
+        "T03",
+        "Theoretical/other",
+        "Unusual method or different course route",
+        "What aspect would you like to confirm with your teacher before relying on this method?",
+        "Optional question",
+        "Keep the teacher-check-in branch and summary available.",
+        "Do not mark the mathematical approach as approved automatically.",
+        "completion.theory.teacherQuestion",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 36,
+      "cells": [
+        "X01",
+        "Shared · methods",
+        "For any data-based route",
+        "What TWO or more plausible approaches could have produced useful evidence?",
+        "Short comparison table: option/advantage/drawback",
+        "Only compare realistic choices the student could genuinely carry out; include sample/census or available datasets.",
+        "Evaluate methods primarily by their mathematical consequences: quality of measurements, representativeness, bias, assumptions and validity of conclusions.",
+        "completion.methods.considered",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 37,
+      "cells": [
+        "X02",
+        "Shared · methods",
+        "After methods compared",
+        "Which approach did you actually choose, and WHY is it preferable for your investigation?",
+        "Chosen method + own justification",
+        "'It was easier' is not a sufficient mathematical justification. Explain why the chosen method produces evidence suitable for the aim, with acceptable error and inferential scope.",
+        "Practical feasibility may explain the selection of a method, but the discussion of limitations must focus on how the choice affects numerical results or conclusions.",
+        "completion.methods.chosenWhy",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 38,
+      "cells": [
+        "X03",
+        "Shared · limitations",
+        "For chosen method",
+        "Which limitation most affects the accuracy, validity or interpretation of your mathematics? What result or conclusion might it change?",
+        "Limitation + consequence",
+        "Optional examples here come ONLY from Limitation Examples rows tagged C20-C26, and only for methods/measurements the student actually used. Ignore selected future techniques such as PMCC, regression and optimisation.",
+        "Student checks: Did our sampling/source/measurement affect quality, precision or representativeness? If so, what is the consequence for what can later be concluded? Save confirmed limitations, not a borrowed paragraph.",
+        "completion.methods.limitations",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 39,
+      "cells": [
+        "X04",
+        "Shared · limitations",
+        "When a limitation exists",
+        "How have you reduced this mathematical limitation, or checked how strongly it affects the result?",
+        "Mitigation short answer",
+        "Collection-stage checks: inspect sampling coverage, response/missingness, source metadata, repeat-measurement variability or instrument resolution. Residuals, PMCC outliers, goodness-of-fit and optimisation constraints are for later mathematics.",
+        "Do NOT offer technique-specific checks while collecting data, even when a technique was selected during Planning. Route those examples to mathematical exploration once the student uses the relevant maths.",
+        "completion.methods.mitigation",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 40,
+      "cells": [
+        "X05",
+        "Shared · limitations",
+        "After limitation/mitigation",
+        "Why is the remaining limitation acceptable for your investigation's aim, and exactly what does it stop you concluding?",
+        "Justified acceptability + boundary",
+        "E.g., an opportunity sample may support a cautious description of the participating club but not a claim about all teenagers; a model may be defensible only inside its measured range.",
+        "Do not automatically declare limitations acceptable. If they invalidate the aim, revisit the data or method or narrow the investigation focus; avoid outdated 'research question' template language.",
+        "completion.methods.acceptability",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 41,
+      "cells": [
+        "X06",
+        "Shared · accuracy",
+        "When quantitative inputs or sourced rounded values exist",
+        "What instrument/source resolution and uncertainty can you actually justify?",
+        "Per-variable precision record",
+        "A timer reading to 0.1 s does not prove ±0.1 s accuracy; separate instrument resolution, repeat variability and bias.",
+        "Name evidence for recording precision rather than inventing uncertainty values.",
+        "completion.accuracy.inputs",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 42,
+      "cells": [
+        "X07",
+        "Shared · accuracy",
+        "When making calculations/graphs from measured data",
+        "How many digits or decimal places should your results reasonably report, given the accuracy of the input data?",
+        "Precision policy + justification",
+        "Retain guard digits for computation; round final reported values sensibly and apply consistently across tables, graphs and conclusions.",
+        "Measurement limitations affect defensible reporting; propagation may depend on the calculation.",
+        "completion.accuracy.reporting",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 43,
+      "cells": [
+        "X08",
+        "Shared · accuracy",
+        "If categorical, ranking or subjective ratings",
+        "Are these really numerical measurements, or categories/ordered responses?",
+        "Data-type check",
+        "A 1–5 agreement scale is not a physical quantity measured to 0.01 units.",
+        "Avoid spurious precision or invalid averaging/inference assumptions.",
+        "completion.accuracy.dataType",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 44,
+      "cells": [
+        "X09",
+        "Shared · definitions",
+        "Whenever data variables first appear",
+        "What symbol, meaning and units will you use for each important quantity?",
+        "Small table: symbol/meaning/unit",
+        "Prefer h for height, t for time, L for length rather than x or y by default; conventional x/y are acceptable if clearly defined and helpful.",
+        "Use the symbols consistently in first graph and subsequent maths.",
+        "completion.definitions.variables",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 45,
+      "cells": [
+        "X10",
+        "Shared · definitions",
+        "At first non-mathematical specialist term",
+        "Would a reader outside the field understand this term without a brief explanation?",
+        "Term + short explanation",
+        "Define 'resting heart rate' or 'peak-hour traffic' before using measurements dependent on the definition.",
+        "Avoid a lengthy upfront dictionary; define at point of first use.",
+        "completion.definitions.specialist",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 46,
+      "cells": [
+        "X11",
+        "Shared · definitions",
+        "When a new mathematical technique appears later",
+        "Have you defined any new mathematical term or symbol just before it is introduced?",
+        "Just-in-time prompt at C40/C50",
+        "If a new parameter is introduced in a later regression step, define it there, not in the introduction.",
+        "This rule carries beyond data collection and should not be a compulsory initial glossary.",
+        "completion.definitions.mathLater",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 47,
+      "cells": [
+        "X12",
+        "Shared · source & ethics",
+        "If data involve people, third-party sources or facilities",
+        "Do you have required permission/consent, and can a reader trace the source or procedure without identifying participants?",
+        "Check + source/procedure description",
+        "Link public dataset; anonymise participant-level data; respect unresolved permissions.",
+        "Teacher flag cannot be cleared by uploading a saved plan; no affected collection before approval.",
+        "completion.sources.ethics",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 48,
+      "cells": [
+        "X13",
+        "Shared · data handling",
+        "If cleaning, calculating or discarding values",
+        "Which entries were missing, corrected, rounded, combined or excluded, and why?",
+        "Data-handling notes",
+        "Do not change values to make a pattern cleaner; keep an original record when possible.",
+        "A reader should understand any decision affecting the result.",
+        "completion.data.processing",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 49,
+      "cells": [
+        "X14",
+        "Shared · presentation",
+        "Once first data are available",
+        "What summary or initial graph would show what you collected without dumping all raw data into the IA?",
+        "Choose relevant small display",
+        "Present only relevant short summaries in the main body. A traceable source is preferred; school guidance allows justified appendix data, although Pathfinder discourages long tables.",
+        "Use labels, units and chosen symbols; match displayed precision to measurement reality.",
+        "completion.data.summary",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 50,
+      "cells": [
+        "X15",
+        "Shared · link to aim",
+        "Before marking method description ready",
+        "Why does this method generate evidence capable of answering your aim for the person who might benefit?",
+        "One context-linked sentence",
+        "Ask what decision the evidence might reasonably inform, not 'what maths can I do with it?'",
+        "A limitation is useful here only if it affects whether the evidence supports an answer or advice. If serious, revise the question or method rather than justify unsupported conclusions.",
+        "completion.data.aimLink",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 51,
+      "cells": [
+        "X16",
+        "Shared · progress",
+        "If data are not yet collected",
+        "If your data have not arrived, which safe useful step could you do NOW: write the introduction, record a tentative prediction and WHY, define variables, compare methods, or check possible secondary sources?",
+        "Choose ONE now / I'm stuck → C95D / Source search → C95A / Save",
+        "Use the planned aim, motivation, beneficiary, data route and source choices. Candidate sources need checks of population, definitions, units, accuracy, provenance and permission before actual use.",
+        "Do not require data to work on the introduction/prediction, and don't imply a provisional model, planned graph or hypothetical dataset is evidence. Persist Pending status and return later.",
+        "completion.data.pending",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 60,
+      "cells": [
+        "CONTEXTUAL EXAMPLES  |  Show only if the student asks for help; never hand them an entire paragraph to copy."
+      ]
+    },
+    {
+      "row": 62,
+      "cells": [
+        "ID",
+        "Route",
+        "Focus",
+        "Illustrative first-person thought",
+        "Reasoning",
+        "Appropriate boundary / action",
+        "Pitfall",
+        null,
+        "Status"
+      ]
+    },
+    {
+      "row": 63,
+      "cells": [
+        "E01",
+        "Statistics",
+        "Sampling/census reasoning",
+        "I considered a census of all 24 members of our club instead of selecting a few volunteers.",
+        "A census could reduce selection bias within the club if most members respond; using only volunteers may systematically overrepresent engaged members.",
+        "This supports cautious statements about the club, not about the entire year group; nonresponse still matters.",
+        "The main limitation is possible bias in the estimates, not how long it took to collect answers.",
+        null,
+        "Example"
+      ]
+    },
+    {
+      "row": 64,
+      "cells": [
+        "E02",
+        "Statistics",
+        "Acceptable limitation",
+        "My data came only from volunteers who responded to our club survey.",
+        "Selection bias could distort the estimated proportions or correlations, so I cannot automatically generalise to students who did not volunteer.",
+        "The sample might still allow a useful exploratory analysis of respondents; wider advice would require better coverage or a narrower aim.",
+        "'Responses were difficult to get' is not an evaluation unless it explains an effect on bias, sample size or inference.",
+        null,
+        "Example"
+      ]
+    },
+    {
+      "row": 65,
+      "cells": [
+        "E03",
+        "Modelling",
+        "Measurement-method choice",
+        "I compared timing motion manually with estimating time from video frames.",
+        "Hand timing can introduce reaction-time variation; video timing has frame-rate and viewing constraints that can affect parameter estimates.",
+        "For a rough trend the resulting precision may be enough, but a precise acceleration estimate may need better evidence or uncertainty analysis.",
+        "The equipment being awkward is not itself mathematical; explain any effect on the data.",
+        null,
+        "Example"
+      ]
+    },
+    {
+      "row": 66,
+      "cells": [
+        "E04",
+        "Accuracy",
+        "Precision carrying through",
+        "Time was recorded to the nearest 0.1 s, so displaying model predictions to six decimal places would suggest unwarranted precision.",
+        "Retain full precision while calculating, then justify the reported accuracy from measurements and model sensitivity.",
+        "Recorded resolution is not itself proof of true accuracy.",
+        "Cite a verified actual instrument or data-source resolution.",
+        null,
+        "Example"
+      ]
+    },
+    {
+      "row": 67,
+      "cells": [
+        "E05",
+        "Variables",
+        "Meaningful symbols and units",
+        "I use h for height (m), t for time (s) and v for speed (m/s).",
+        "Define symbols once where they first appear, then remain consistent in tables, equations and graphs.",
+        "New mathematical terms may be defined later just before they are needed.",
+        "Don't auto-assign x and y for every IA.",
+        null,
+        "Example"
+      ]
+    },
+    {
+      "row": 68,
+      "cells": [
+        "E06",
+        "No-data/theoretical",
+        "No compulsory collection",
+        "My investigation studies a geometrical constraint without taking measurements from a population.",
+        "Describe mathematical objects, assumptions and a simple case instead of inventing a census.",
+        "Teacher consultation still available for unusual scope.",
+        "Do not call theoretical examples a sampled dataset.",
+        null,
+        "Example"
+      ]
+    },
+    {
+      "row": 77,
+      "cells": [
+        "REFERENCE / SCOPE  ·  JIS SL Maths IA Guide (2025), especially slides 21–23 (method alternatives, limitations and sampling) and 27–28 (notation, definitions and numerical accuracy): https://docs.google.com/presentation/d/1BesCf9vTKGLm588jx5SUIdLyz-x5HUyYb2LqG_BACKg/edit\nThese prompts support clear justification, reflection and communication; no particular data-collection technique guarantees marks. The student describes their own genuine decisions and evidence."
+      ]
+    },
+    {
+      "row": 81,
+      "cells": [
+        "Collection-only limitations (C20–C26), matched to actual methods  ↗"
+      ]
+    }
+  ]
+}
