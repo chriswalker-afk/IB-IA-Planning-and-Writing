@@ -448,7 +448,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   function changeNavAction(action,el) {
     if(action==="go-home")return nav("home");
     if(action==="go-planning")return nav("planning");
-    if(action==="go-studio")return nav("completing",{section:"overview"});
+    if(action==="go-studio")return nav("completing"); // Resume the saved C-stage; "Studio overview" remains a separate action.
     if(action==="go-path")return nav("path");
     if(action==="go-report")return nav("report");
     if(action==="open-files")return openDrawer("files");
