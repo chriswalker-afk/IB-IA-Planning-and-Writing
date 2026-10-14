@@ -6,7 +6,7 @@ function triggered(m,x){
  const {node,entry,real,method,plannedMethod,f,course,accuracy,theoretical}=x;
  const active=!!(str(entry?.technique)||str(entry?.methodId));
  const maths=["C40","C50","C40D","C40L","C40T","C34B","C35"].includes(node);
- const actualTechnology=str(f.technologyTool)&&str(f.technologyOutcome)&&x.actualResults.length>0;
+ const actualTechnology=str(f.technologyTool)&&str(f.technologyOutcome)&&real&&f.technologyForEntryId===entry?.id;
  switch(m.id){
   case "M01":return active&&!!str(entry?.purpose)&&["C40","C50"].includes(node);
   case "M02":return real&&maths&&matches(entry?.result,/=|\^|sqrt|integral|sum|frac/);
