@@ -9,6 +9,8 @@ import {referenceNodeForPrototypeStep} from "../src/core/prototype-bridge.js";
 import {createPlanningViews} from "../src/ui/planning-views.js";
 import {planningMove,planAutoAdvance,planningBack,planningEdit,applyPlanningField,toggleMath,syncPlanningToProject,setPlanCurrent,planningFlags} from "../src/planning/engine.js";
 import {createStudioViews} from "../src/ui/studio-views.js";
+import {createCompletingViews} from "../src/completing/views.js";
+import {setCompletionNode,moveCompletionRoute,completionBack,markCompletionStage,setCompletionField,addAccuracyDecision,completionSuggestions,sectionForNode,targetForSection,completeEntry,latestRealResult} from "../src/completing/engine.js";
 import {createProjectViews} from "../src/ui/project-views.js";
 import {createHandoverViews} from "../src/ui/handover-views.js";
 import {createPlanningEnvelope,getFieldDiff,mergePlanningEnvelope} from "../src/handover/schema.js";
@@ -40,7 +42,8 @@ function createHarness(savedValue){
     newState:createProjectState,normalise:normalizeProjectState,
     KEY:"ia-pathfinder-prototype-v1",
     readRecordValue,updateRecordValue,icon,escapeHtml,cleanUrl,button,
-    referenceNodeForPrototypeStep,createPlanningViews,createStudioViews,createProjectViews,
+    referenceNodeForPrototypeStep,createPlanningViews,createStudioViews,createCompletingViews,createProjectViews,
+    setCompletionNode,moveCompletionRoute,completionBack,markCompletionStage,setCompletionField,addAccuracyDecision,completionSuggestions,sectionForNode,targetForSection,completeEntry,latestRealResult,
     createHandoverViews,createPlanningEnvelope,getFieldDiff,mergePlanningEnvelope,modelFromEnvelope,suggestedFilename,
     planningMove,planAutoAdvance,planningBack,planningEdit,applyPlanningField,toggleMath,syncPlanningToProject,setPlanCurrent,planningFlags
   };
@@ -126,24 +129,51 @@ test("new Phase 3 handover panel and report export actions remain reachable",()=
  assert(h.drawer.includes("Import planning PDF or Word"));
  h.nav("report");assert(h.html.includes("Download structured PDF"));
 });
-test("maths can remain planned without inventing interpretation, then actual work can be recorded",()=>{
+test("Phase 4 follows genuine Completing routes and never interprets planned mathematics",()=>{
  const h=createHarness();
- h.nav("completing");h.action("studio-math");h.action("math-add");
- assert(h.html.includes("Only planned so far"));
- assert(h.html.includes("Interpret result"));
- h.choose("entries.0.status","completed");h.choose("entries.0.kind","scatter");
- h.write("entries.0.result","Real graph shows a curved pattern");
- h.action("math-interpret");
- assert(h.html.includes("What does your mathematics tell you?"));
+ h.nav("completing");assert(h.html.includes('data-source-node="C00"'));
+ h.action("completion-route",{condition:"Start without a saved plan"});
+ assert(h.html.includes('data-source-node="C02"'));
+ h.write("planning.fields.aim","What does the actual evidence tell me?");
+ h.action("completion-route",{condition:"Confirm or update carried-forward information"});
+ assert(h.html.includes('data-source-node="C03"'));
+ h.action("completion-route",{condition:"Idea and permissions reviewed"});
+ assert(h.html.includes('data-source-node="C04"'));
+ h.action("completion-route",{condition:"Prepare first representation"});
+ assert(h.html.includes('data-source-node="C30"'));
+ h.action("completion-route",{condition:"Begin purposeful initial exploration"});
+ assert(h.html.includes('data-source-node="C31"'));
+ h.choose("completion.fields.firstType","scatter");
+ h.write("completion.fields.firstPurpose","See whether an observed relationship is straight or curved.");
+ h.action("completion-route",{condition:"Chosen useful initial representation or calculation"});
+ assert(h.html.includes('data-source-node="C32"'));
+ assert.equal(h.saved.entries.length,1);
+ assert.equal(h.saved.entries[0].status,"planned");
+ h.action("completion-route",{condition:"Purpose and symbols defined"});
+ assert(h.html.includes('data-source-node="C33"'));
+ h.action("completion-route",{condition:"Figure or brief calculation checked"});
+ assert(h.html.includes('data-source-node="C33"')); // blocked: no real result
+ h.choose("entries.0.status","completed");
+ h.choose("entries.0.kind","scatter");
+ h.write("entries.0.result","Real observations show a curved pattern");
+ h.action("completion-route",{condition:"Figure or brief calculation checked"});
+ assert(h.html.includes('data-source-node="C34"'));
  h.choose("entries.0.observation","curved");
- h.write("entries.0.interpretation","A curved model might be appropriate.");
- h.action("math-next");
- assert(h.html.includes("Where does your investigation go next?"));
- h.action("suggest-next",{index:"0",suggestion:"0"});
- h.action("math-add-next");
+ h.write("entries.0.observationText","A curved pattern appears in the scatter.");
+ h.action("completion-route",{condition:"Observation made; check accuracy where new, then reconnect to aim/prediction"});
+ assert(h.html.includes('data-source-node="C34B"'));
+ h.write("entries.0.interpretation","A curved model may fit the data better than a straight line.");
+ h.write("entries.0.localTakeaway","A straight line may be inadequate.");
+ h.action("completion-route",{condition:"Consistent with prediction, or no prediction, or sufficiently explained"});
+ assert(h.html.includes('data-source-node="C35"'));
+ h.write("completion.fields.nextQuestion","Which curved model is mathematically justified?");
+ h.write("completion.fields.nextReason","The observed shape is not close to a straight line.");
+ h.action("completion-route",{condition:"Begin FIRST justified mathematical section (or the next appropriate method)"});
+ assert(h.html.includes('data-source-node="C40"'));
  assert.equal(h.saved.entries.length,2);
- assert.equal(h.saved.entries[0].status,"completed");
  assert.equal(h.saved.entries[1].status,"planned");
+ assert(h.saved.entries[1].purpose.includes("observed shape"));
+ assert.equal(h.saved.entries[0].status,"completed");
 });
 test("map, report and sample discovery still render after refactoring",()=>{
  const h=createHarness();
