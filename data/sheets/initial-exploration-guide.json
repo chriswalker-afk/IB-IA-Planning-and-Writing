@@ -1,0 +1,982 @@
+{
+  "schemaVersion": 1,
+  "sourceSheet": "Initial Exploration Guide",
+  "sourceBounds": {
+    "rows": 140,
+    "columns": 10
+  },
+  "rowCount": 76,
+  "nonemptyCellCount": 590,
+  "rows": [
+    {
+      "row": 1,
+      "cells": [
+        "FIRST EXPLORATION  |  Make the diagram or calculation earn its place"
+      ]
+    },
+    {
+      "row": 2,
+      "cells": [
+        "Core rule: BEFORE—why show it and define terms; DURING—present clearly; AFTER—interpret evidence and say WHAT MATHEMATICS COMES NEXT."
+      ]
+    },
+    {
+      "row": 3,
+      "cells": [
+        "Personalise 1–3 optional suggestions from aim, IA route, beneficiary, prediction, data readiness, variable types, course maths and the student's first-action plan."
+      ]
+    },
+    {
+      "row": 4,
+      "cells": [
+        "Don't teach below-course procedures in the IA (how to draw a bar chart, how to plot a scatter diagram). Explain WHY this choice is useful and what it reveals."
+      ]
+    },
+    {
+      "row": 5,
+      "cells": [
+        "Every figure should fit on ONE printed page. Pathfinder editorial preference: avoid lengthy raw-data tables even in appendices; the JIS guide allows justified appendix data when needed, so this is not an IB prohibition. Don't repeat redundant figures."
+      ]
+    },
+    {
+      "row": 6,
+      "cells": [
+        "If no figure advances the story, select a short first calculation or case, or skip. Suggestions are not evidence, automatic calculations or teacher approval."
+      ]
+    },
+    {
+      "row": 8,
+      "cells": [
+        "ID",
+        "IA route / situation",
+        "Previous answers that trigger option",
+        "First diagram, short calculation or case",
+        "Why it helps the IA story",
+        "Before showing",
+        "What to inspect (NOT assumed result)",
+        "Possible NEXT mathematics",
+        "Avoid / important constraint",
+        "Status"
+      ]
+    },
+    {
+      "row": 9,
+      "cells": [
+        "F01",
+        "Statistics · paired numerical",
+        "Two numerical variables; linear/positive/negative/unknown relationship predicted",
+        "A clear labelled scatter diagram of ACTUAL paired observations",
+        "See whether a relationship looks broadly linear, curved, clustered or absent, so the next analysis follows the evidence.",
+        "Introduce the two defined quantities and units first; state why seeing association matters to the aim.",
+        "Observed direction/shape, unusual points or lack of a clear trend—not a result promised in advance.",
+        "If ACTUALLY roughly linear, consider if PMCC would add useful quantification; if unmistakably straight, PMCC may add little. If curved or no pattern, select a more suitable evidence-led next question. Student decides.",
+        "Do not explain HOW to plot points at length; PMCC-specific weaknesses only if PMCC is later used.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 10,
+      "cells": [
+        "F02",
+        "Statistics · paired numerical",
+        "Curved/nonlinear prediction; variables already paired",
+        "One scatter diagram showing the whole relevant range",
+        "Distinguish possible curve, monotonic trend or distinct groups from a straight-line assumption.",
+        "Define and label each numerical variable before plotting; cite source if secondary.",
+        "Genuine curvature or change in slope if supported by the data.",
+        "Choose a mathematically suitable nonlinear relationship, or for genuinely monotonic data a course-appropriate rank measure if needed; don't assume every curved pattern needs Spearman or a specific model.",
+        "Do not present multiple near-identical scatter diagrams just to illustrate different tentative explanations.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 11,
+      "cells": [
+        "F03",
+        "Statistics · one numerical variable",
+        "Distribution, normal, skew or cluster prediction",
+        "A readable histogram OR compact distribution summary if a graph adds value",
+        "See overall shape, skewness, possible peaks and spread before choosing a model or summary statistic.",
+        "Define measured quantity/unit and explain why its distribution informs the aim.",
+        "Actual skew, spread or unusual clusters if present.",
+        "Choose appropriate descriptive measures or investigate whether a particular distribution model is reasonable later.",
+        "Don't assume normality; avoid overly fine bins implying false measurement accuracy.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 12,
+      "cells": [
+        "F04",
+        "Statistics · compare groups",
+        "Two+ groups with the same quantitative variable; predicted difference in average/spread",
+        "Side-by-side box plots, dot plots or other suitable common-scale comparison",
+        "Make a single fair comparison of location, spread and unusual values.",
+        "Define variable/unit and group labels before figure; describe how groups were formed.",
+        "Whether any group difference or variability is actually visible.",
+        "Consider numerical comparison of means/medians/spread; a statistical test only if taught, appropriate and now needed.",
+        "Do NOT use separated repeated figures with mismatched scales; keep comparison side by side.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 13,
+      "cells": [
+        "F05",
+        "Statistics · categories",
+        "Two categorical variables or group proportions",
+        "Small two-way frequency/relative-frequency summary OR a useful proportion bar comparison",
+        "See whether category proportions differ before choosing any inferential method.",
+        "Define categories and denominators; identify population/subgroups.",
+        "Differences in relative proportions, if supported by adequate counts.",
+        "Compute meaningful conditional proportions; later consider an appropriate chi-squared test ONLY if relevant/available.",
+        "No long raw response table; short contingency tables allowed when essential. Don't disguise small category counts.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 14,
+      "cells": [
+        "F06",
+        "Statistics · repeated trials",
+        "Counts of success across fixed trials; binomial considered",
+        "Short observed success-count frequency summary or one small chart",
+        "Visualise observed outcome distribution before testing whether a model might suit.",
+        "Define success, number of trials and units for counted outcomes.",
+        "Actual frequency shape and range across trials.",
+        "Consider whether a binomial model is sensible when calculating probabilities later.",
+        "Don't invent trial frequencies or force a plot if a simple calculation is clearer.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 15,
+      "cells": [
+        "F07",
+        "Statistics · time series",
+        "Time-ordered data, seasonal pattern or trend suspected",
+        "Single labelled line/scatter time plot, using observed times",
+        "Distinguish change over time from variation or apparent cycles.",
+        "Define t or other meaningful symbol, time units and what one reading represents.",
+        "Rate changes, outliers or repeating behaviour if actually seen.",
+        "Compare candidate trend/seasonal descriptions, then choose relevant maths.",
+        "Only join points if time sequence and interpolation justify it; no repetitive versions.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 16,
+      "cells": [
+        "F08",
+        "Statistics · secondary source",
+        "Large published dataset or subset chosen",
+        "A carefully selected short summary and ONE meaningful chart",
+        "Show the most relevant structure from the source without burying the IA in raw data.",
+        "State source/citation, variables, units, scope and selection criteria BEFORE chart.",
+        "Observed distribution, relationship or group contrast within selected subset.",
+        "Select the first mathematical question supported by the source.",
+        "Prefer a traceable lawful source instead of a huge reproduced table. Pathfinder discourages long appendices; if evidence/reproducibility genuinely requires one, refer to school/teacher guidance rather than claiming IB forbids it.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 17,
+      "cells": [
+        "F09",
+        "Modelling · linear / rate",
+        "Constant rate or linear relationship expected; paired observations or parameters available",
+        "Short representative rate/difference calculation OR scatter diagram",
+        "See whether roughly equal changes over equal intervals support a linear model.",
+        "Define variables such as t=time and d=distance with units and meaningful physical domain.",
+        "Differences or trend in real readings, not guaranteed constant rate.",
+        "Construct or assess a linear function only if meaningful given evidence.",
+        "No derivation of how to draw a scatter plot; no unwarranted decimal precision.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 18,
+      "cells": [
+        "F10",
+        "Modelling · growth/decay",
+        "Fixed percentage change or exponential growth suspected",
+        "Time plot OR calculation comparing percentage changes over a few relevant intervals",
+        "Test whether absolute vs relative change seems more stable, so the model form is motivated.",
+        "Explain meaning and units of measured quantity and time intervals.",
+        "Actual ratios/percentage changes where meaningful.",
+        "Decide whether exponential vs linear behaviour warrants exploration.",
+        "Don't assert exponential growth solely from prediction; avoid long arithmetic demonstrations.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 19,
+      "cells": [
+        "F11",
+        "Modelling · optimisation",
+        "Box/cost/geometry optimisation with real constraints",
+        "One neat labelled sketch and first relationship between dimensions/constraints",
+        "Make clear what is fixed, what can vary, and which quantity may be optimised.",
+        "Define L,w,h or equally meaningful symbols and their units BEFORE the drawing.",
+        "Geometry and constraints rather than a fabricated optimum.",
+        "Form a suitable area/volume/cost expression, then investigate maxima/minima in substantive mathematics.",
+        "A decorative repeated drawing adds nothing; don't explain how to sketch a rectangle.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 20,
+      "cells": [
+        "F12",
+        "Modelling · periodic",
+        "A repeating process/time-based pattern predicted",
+        "One measured time-series plot covering as much meaningful cycle evidence as available",
+        "See whether periodicity is plausible and what period/amplitude might require investigation.",
+        "Define time and dependent quantity with units and source.",
+        "Observed cycles or too little evidence; either is informative.",
+        "If appropriate, test a periodic model and estimate relevant parameters.",
+        "Don't label a partial wave as definitely sinusoidal; no unneeded repeated plots.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 21,
+      "cells": [
+        "F13",
+        "Modelling · measured motion",
+        "Positions/times or distances measured in an experiment",
+        "One labelled time-position diagram OR short representative differences calculation",
+        "Reveal trend and choose between a model for position, speed or change.",
+        "Define t and d/s consistently; measurement resolution must inform scale and digits.",
+        "Whether changes per interval appear stable or variable.",
+        "Select rate-of-change analysis when there is actually enough evidence.",
+        "No calculation of acceleration from fabricated or improperly precise readings.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 22,
+      "cells": [
+        "F14",
+        "Modelling · measured dimensions",
+        "Geometry and measurements needed for area, volume or material models",
+        "Single labelled object/scale sketch showing only important dimensions",
+        "Explain geometry, dimensional assumptions and which values calculations will use.",
+        "Define h=height, r=radius etc. with correct units before use.",
+        "Clear constraints or what must be calculated.",
+        "Build appropriate dimensional/volume relationship, then check accuracy and assumptions later.",
+        "Don't clutter sketch with every unnecessary detail, or show duplicate perspectives without benefit.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 23,
+      "cells": [
+        "F15",
+        "Modelling · spatial allocation",
+        "Voronoi or nearest-location context selected",
+        "Simple accurately labelled map/point plot of actual locations",
+        "Help reader see why distance regions might help answer the decision problem.",
+        "Define place locations, coordinate units and what 'nearest' is supposed to mean.",
+        "Spatial arrangement and plausible boundary questions.",
+        "Investigate partitions/distances in substantive mathematics, checking relevance of metric.",
+        "No decorative map or one that obscures scale; a full Voronoi analysis needn't be done in the introduction.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 24,
+      "cells": [
+        "F16",
+        "Theoretical · conjecture",
+        "No-data mathematical pattern, examples or proof route",
+        "One small labelled example, counterexample or short exact calculation",
+        "Make the conjecture concrete before attempting general mathematics.",
+        "Define mathematical objects, conditions and symbols BEFORE the example.",
+        "What the example illustrates—and crucially what it does NOT prove.",
+        "Formulate a precise claim and pursue proof/counterexample or extend valid cases.",
+        "No invented dataset, no requirement for a statistical plot. Examples alone aren't a general proof.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 25,
+      "cells": [
+        "F17",
+        "Theoretical · geometric",
+        "Pure geometry or algebra uses a meaningful configuration",
+        "One clean labelled diagram OR a minimal worked special case",
+        "Make the relationships or constraints clear so the next deduction is motivated.",
+        "Define meaningful variables and relevant theorems only when first needed.",
+        "Relationships or cases that suggest a next mathematical question.",
+        "Derive a useful formula/relation or check scope of a conjecture.",
+        "Don't require a figure when a concise symbolic example is clearer.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 26,
+      "cells": [
+        "F18",
+        "Any route · incomplete data",
+        "Data not yet obtained, permission pending, or only a plan exists",
+        "Choose a permitted simple prototype/illustrative case, OR choose 'Not ready'",
+        "Find a safe first mathematical move without pretending actual data already exist.",
+        "Clearly label any illustrative values as hypothetical; note pending permissions.",
+        "What a method might reveal, not a claim about actual results.",
+        "Return to data collection when appropriate or work on a justified abstract case.",
+        "Never invent collected data or label the stage complete solely from Planning.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 27,
+      "cells": [
+        "F19",
+        "Any route · no useful chart",
+        "Existing data or mathematical context where a picture adds little",
+        "One short meaningful calculation or precise statement, with no figure",
+        "Move the mathematics forward with less clutter than a decorative chart.",
+        "Define symbols, state aim-linked purpose and write the essential calculation concisely.",
+        "Result and its limitations if calculable.",
+        "Explain the next question this result raises.",
+        "Skip diagram-specific checks; no penalty for choosing none.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 30,
+      "cells": [
+        "DIAGRAM CHECKLIST  |  Show diagram-only checks only when a diagram exists"
+      ]
+    },
+    {
+      "row": 32,
+      "cells": [
+        "ID",
+        "Applies to",
+        "When",
+        "Student's yes/no checklist question",
+        "Evidence of meeting it",
+        "If not, what to fix",
+        "Reuse earlier answer/data",
+        "Purpose of check",
+        "No unintended requirement",
+        "Status"
+      ]
+    },
+    {
+      "row": 33,
+      "cells": [
+        "G01",
+        "Every figure",
+        "Before",
+        "Have I told the reader WHY this figure is being included before they see it?",
+        "One sentence linking figure to aim or decision",
+        "Add a short introduction first",
+        "Aim and beneficiary",
+        "Evidence of usefulness",
+        "Avoid unexplained charts",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 34,
+      "cells": [
+        "G02",
+        "Every figure",
+        "Before",
+        "Are all variables and specialist words defined before their FIRST appearance in this diagram?",
+        "Symbols such as h=height (m), t=time (s) introduced in text",
+        "Define symbols/terms before figure, not only in a glossary after it",
+        "C25 variable and terminology record",
+        "Clear notation",
+        "Don't automatically use x and y",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 35,
+      "cells": [
+        "G03",
+        "Every figure",
+        "Check diagram",
+        "Is there a specific, descriptive title or numbered caption saying WHAT the figure is?",
+        "Title/caption reflects data, not 'Graph 1' alone",
+        "Provide figure label and explanatory caption",
+        "Actual data/variables",
+        "Figure identifiable",
+        "Can reference a figure later without repeating it",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 36,
+      "cells": [
+        "G04",
+        "Axes present",
+        "Check diagram",
+        "Does every axis have a meaningful quantity name (not just x or y)?",
+        "Height, Time, Distance etc. where appropriate",
+        "Rename axes using defined variables/quantities",
+        "Variable definitions",
+        "Correct interpretation",
+        "No axis check for unscaled schematic diagram",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 37,
+      "cells": [
+        "G05",
+        "Numeric axes",
+        "Check diagram",
+        "Are axes' units included and consistent with the data and calculations?",
+        "Time (s), height (cm), cost (BND), as relevant",
+        "Put units on labels and check conversions",
+        "C25 variables, C24 units",
+        "Dimensions clear",
+        "Do not assume all quantities have units",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 38,
+      "cells": [
+        "G06",
+        "Numeric axes",
+        "Check diagram",
+        "Is the scale sensible, easy to read and not misleading?",
+        "Useful intervals, equal increments as appropriate, no odd gaps",
+        "Rechoose limits/ticks without distorting patterns",
+        "Observed range and precision",
+        "Fair visual reading",
+        "Zero baseline matters for bar lengths; scatter scales need context, not always zero",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 39,
+      "cells": [
+        "G07",
+        "Comparisons",
+        "Check diagram",
+        "Are like-for-like quantities compared on SAME scales and units?",
+        "Side-by-side plots or one carefully keyed combined graph",
+        "Align axes or explicitly explain why different scales cannot match",
+        "Group variables and units",
+        "Valid comparisons",
+        "Prefer direct juxtaposition to duplicate figures scattered through IA",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 40,
+      "cells": [
+        "G08",
+        "Every figure",
+        "Check diagram",
+        "Will the ENTIRE figure fit on a SINGLE printed sheet/page?",
+        "Print/PDF preview shows figure + essential caption together, no split",
+        "Resize/reposition sensibly; never split a diagram across pages",
+        "Expected printed layout",
+        "Paper-ready",
+        "Do not shrink labels to unreadable size just to fit",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 41,
+      "cells": [
+        "G09",
+        "Every figure",
+        "Check diagram",
+        "Is the figure large enough to read comfortably when printed?",
+        "Text, ticks, points/lines/legend legible at page scale",
+        "Increase legibility or simplify graphic",
+        "Output size and page layout",
+        "Readable",
+        "A massive almost-empty chart isn't better than a well-sized one",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 42,
+      "cells": [
+        "G10",
+        "Every figure",
+        "Check diagram",
+        "Does it look good: clean, aligned and visually balanced?",
+        "No clipped text, messy annotations, awkward whitespace or crowding",
+        "Remove clutter, harmonise sizes and placement",
+        "Existing layout",
+        "Professional appearance",
+        "'Looks good' is backed by concrete readability checks, not decoration",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 43,
+      "cells": [
+        "G11",
+        "Every figure",
+        "Check diagram",
+        "Are colours/markers clear and necessary, including in greyscale if printed?",
+        "Contrast sufficient; not colour alone for distinction",
+        "Use legible marks/line patterns/legend",
+        "Comparison intent",
+        "Accessible print",
+        "Avoid gratuitous 3D effects and rainbow palettes",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 44,
+      "cells": [
+        "G12",
+        "Several series/categories",
+        "Check diagram",
+        "Is there a clear, non-redundant key/legend where needed?",
+        "Labels identify all series/groups",
+        "Label on plot or add compact legend",
+        "Actual groups and categories",
+        "Correct reader interpretation",
+        "Don't add a redundant legend for a single unambiguous series",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 45,
+      "cells": [
+        "G13",
+        "Every figure",
+        "Check diagram",
+        "Does plotted precision match actual data resolution/uncertainty?",
+        "Tick labels and annotations don't claim impossible decimals; plotted positions meaningful",
+        "Adjust labels/annotation precision; keep internal calculation guard digits",
+        "C24 reported precision and source accuracy",
+        "No spurious precision",
+        "Graph cannot magically improve weak measurement data",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 46,
+      "cells": [
+        "G14",
+        "Measured data",
+        "Check diagram",
+        "Are points, lines or interpolation shown in a way the data justify?",
+        "Line connections represent meaningful sequence/assumed continuity",
+        "Separate observations or clarify fitted trend",
+        "Actual design and data type",
+        "Faithful representation",
+        "Do not connect unrelated categories with a smooth curve",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 47,
+      "cells": [
+        "G15",
+        "Bars/histograms",
+        "Check diagram",
+        "Are the representation conventions appropriate to the data?",
+        "Categorical bar lengths from zero; sensible intervals for numerical histograms",
+        "Correct bar baseline or bins; if unequal histogram widths, use suitable frequency-density approach",
+        "Categorical vs numerical data and course techniques",
+        "Non-misleading picture",
+        "Don't confuse bar charts with histograms",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 48,
+      "cells": [
+        "G16",
+        "Every figure",
+        "Check diagram",
+        "Is the source/provenance shown if it isn't the student's own data?",
+        "A concise data-source citation and relevant date/selection info",
+        "Add short citation close to display",
+        "C20 source/collection notes",
+        "Traceable evidence",
+        "Don't print private participant records",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 49,
+      "cells": [
+        "G17",
+        "Every figure",
+        "Check story",
+        "Does it answer a question or motivate a NEW one?",
+        "Student can point to one meaningful thing figure adds",
+        "Remove it or change approach if it contributes nothing",
+        "Aim, original prediction",
+        "Narrative value",
+        "Decoration is not mathematical communication",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 50,
+      "cells": [
+        "G18",
+        "Repeated figure",
+        "Check story",
+        "Am I showing nearly the same diagram more than once?",
+        "One figure already presents same data and point",
+        "Reference earlier figure number instead",
+        "Previously used diagrams",
+        "Avoid unnecessary repetition",
+        "Exception: meaningful direct side-by-side comparison with compatible scales",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 51,
+      "cells": [
+        "G19",
+        "Side-by-side comparison",
+        "Check story",
+        "If repeated/alternative versions are necessary, are they shown together for a specific comparison?",
+        "Same page, aligned/same units and scales where appropriate",
+        "Put matched versions next to each other and state what differs",
+        "Figure variants",
+        "Explicit comparison",
+        "Do not reinsert duplicate separated charts",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 52,
+      "cells": [
+        "G20",
+        "Tables",
+        "Check story",
+        "Have I avoided lengthy raw-data tables in the main body and (as a Pathfinder presentation preference) the appendix?",
+        "Use a concise selection/summary plus a traceable source where possible; if additional data genuinely aid reproducibility, consult current teacher guidance.",
+        "Replace rows of raw data with concise summary; cite appropriate accessible source/dataset separately",
+        "Data source, privacy constraints",
+        "Readable, focused IA",
+        "Not an IB rule: JIS Guide 2025 permits justified large data appendices. Pathfinder discourages clutter, not necessary evidence.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 53,
+      "cells": [
+        "G21",
+        "Every figure",
+        "After",
+        "Have I written WHAT I actually observe and explained how this relates to my aim and original prediction?",
+        "One or two evidence-linked observations, with honest Supports/Challenges/Unclear where applicable",
+        "If surprising, say exactly what differs and what could be checked; do not quietly move on",
+        "Actual result, original aim/prediction, intended beneficiary",
+        "Interpretation rather than tutorial",
+        "Don't spend paragraphs teaching bar-chart/scatter construction",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 54,
+      "cells": [
+        "G22",
+        "Every figure",
+        "After",
+        "Is the conclusion as accurate/reliable as I suggest, or has this already been justified earlier?",
+        "Refer to previous source/resolution note when adequate; explain only a NEW issue",
+        "Avoid repeated limitations and invented uncertainties; qualify the inference when needed",
+        "C24 accuracy, C23 confirmed limits",
+        "Defensible meaning",
+        "PMCC/test weaknesses wait until that method is actually used",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 55,
+      "cells": [
+        "G23",
+        "Every figure",
+        "After",
+        "Does the actual observation lead to a clear NEXT mathematical question, and have I explained WHY?",
+        "A justified next action, ideally from the observed feature rather than merely planned maths",
+        "A surprising result deserves an alternative/check before blindly proceeding",
+        "Student's observation and mathematics choices",
+        "Logical progression",
+        "No unexplained leap into disconnected mathematics",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 56,
+      "cells": [
+        "G24",
+        "Every figure",
+        "Final",
+        "Would the reader lose anything important if I removed this figure?",
+        "If no, the diagram may be superfluous",
+        "Remove or replace it with a sentence/short calculation",
+        "Aim, story, evidence",
+        "High signal, no repetition",
+        "Do not treat diagram count as marks",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 59,
+      "cells": [
+        "SHORT INITIAL CALCULATIONS  |  Use instead of a diagram when more useful"
+      ]
+    },
+    {
+      "row": 61,
+      "cells": [
+        "ID",
+        "When",
+        "Student-facing check",
+        "Concrete student action",
+        "From earlier steps",
+        "Avoid / caveat",
+        "Status"
+      ]
+    },
+    {
+      "row": 62,
+      "cells": [
+        "K01",
+        "Before",
+        "Is a brief calculation actually more useful than a diagram here?",
+        "Choose short calculation or simple case instead of forcing a chart.",
+        "None required if no figure",
+        "No compulsory graphic",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 63,
+      "cells": [
+        "K02",
+        "Before",
+        "Have I stated what question this calculation helps answer?",
+        "One sentence linking to the investigation aim/prediction and next step.",
+        "Aim, planned first action",
+        "Explain relevance, not a recipe",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 64,
+      "cells": [
+        "K03",
+        "Before",
+        "Are symbols and units defined before use?",
+        "Use h for height etc., with meaning and units.",
+        "C25",
+        "Do not default to unnamed x/y",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 65,
+      "cells": [
+        "K04",
+        "During",
+        "Is the calculation presented clearly and accurately without unnecessary elementary steps?",
+        "Show key setup/substitution/result; routine arithmetic does not need several paragraphs.",
+        "Course context",
+        "If a technique is beyond the course, explain appropriately when introduced later",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 66,
+      "cells": [
+        "K05",
+        "During",
+        "Does the reported accuracy follow available measurement/source precision?",
+        "Keep working precision; sensible final decimal places/significant figures.",
+        "C24, actual values",
+        "No invented uncertainty",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 67,
+      "cells": [
+        "K06",
+        "During",
+        "Can I avoid repeating this routine calculation for many observations?",
+        "Show one meaningful example if needed; concise summary of other values.",
+        "Dataset structure",
+        "Pathfinder preference: avoid lengthy tabulations; refer to traceable source or justified evidence appendix when needed. Not an IB prohibition.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 68,
+      "cells": [
+        "K07",
+        "After",
+        "What does the computed result show for the original aim and prediction? Does NEW uncertainty affect its meaning?",
+        "Interpret context and units. Refer back to earlier accuracy work unless an important new issue arises.",
+        "Aim, beneficiary and prior prediction",
+        "Don't overclaim based on an example",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 69,
+      "cells": [
+        "K08",
+        "After",
+        "What mathematical question follows from this actual result, and WHY? Is an unexpected outcome worth testing first?",
+        "One evidence-led next question or warranted alternative, not simply the next planned syllabus method.",
+        "Observed result and actually available maths",
+        "Do not auto-launch an unstarted technique",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 73,
+      "cells": [
+        "MATCHING AND LAYOUT ACCEPTANCE TESTS  |  Required behaviour for the eventual student interface"
+      ]
+    },
+    {
+      "row": 75,
+      "cells": [
+        "Test ID",
+        "Prior student context",
+        "What should appear",
+        "What must NOT appear",
+        "Story / accuracy check",
+        "Status"
+      ]
+    },
+    {
+      "row": 76,
+      "cells": [
+        "T01",
+        "Statistics + paired values + linear prediction",
+        "Offer labelled scatter (F01) and/or concise comparison; ask whether observations actually look linear.",
+        "Do NOT automatically fit regression, calculate PMCC or show its outlier limitation at this first stage.",
+        "After graph: 'What does its shape suggest I should investigate mathematically?'",
+        "To test"
+      ]
+    },
+    {
+      "row": 77,
+      "cells": [
+        "T02",
+        "Statistics + two groups",
+        "Offer common-scale side-by-side box/dot plots (F04), not repeated separated charts.",
+        "Do not force 2 long data tables, one per group.",
+        "Prompt next: compare centres/spreads with actual evidence.",
+        "To test"
+      ]
+    },
+    {
+      "row": 78,
+      "cells": [
+        "T03",
+        "Stats + secondary large dataset",
+        "Offer one relevant chart/short summary (F08); link original public source if allowed.",
+        "No long raw tables in main body OR appendices; no student-identifying source publication.",
+        "Require variable/units, source and selection explanation.",
+        "To test"
+      ]
+    },
+    {
+      "row": 79,
+      "cells": [
+        "T04",
+        "Modelling + box volume optimisation",
+        "Offer labelled dimension sketch and first expression (F11), not a bar chart.",
+        "Don't require plot axes for a non-coordinate sketch; don't immediately show optimiser limitations until method used.",
+        "After sketch: explicit objective/constraint leads to function to optimise.",
+        "To test"
+      ]
+    },
+    {
+      "row": 80,
+      "cells": [
+        "T05",
+        "No empirical data",
+        "Offer small exact case (F16/F17), or no diagram.",
+        "No fabricated data or sampling checklist.",
+        "Define terms first, use example to motivate proof or counterexample.",
+        "To test"
+      ]
+    },
+    {
+      "row": 81,
+      "cells": [
+        "T06",
+        "Student chooses no diagram",
+        "Apply brief calculation checklist, not axes/title/page checks.",
+        "No penalty, do not compel a decorative figure.",
+        "Require why calculation, meaning and next step.",
+        "To test"
+      ]
+    },
+    {
+      "row": 82,
+      "cells": [
+        "T07",
+        "Student has already shown a scatter diagram",
+        "Reference original figure; new copy only if a meaningful side-by-side comparison is planned.",
+        "No duplicate figure scattered across IA.",
+        "Compare on same axis/scale and describe why repeat is necessary.",
+        "To test"
+      ]
+    },
+    {
+      "row": 83,
+      "cells": [
+        "T08",
+        "Graph cannot fit on printed page",
+        "Fail checklist; student must reflow/reformat one entire legible chart on a page.",
+        "Never split figure across two pages or shrink text beyond legibility.",
+        "Print/PDF preview confirms the result.",
+        "To test"
+      ]
+    },
+    {
+      "row": 84,
+      "cells": [
+        "T09",
+        "Data measured to a stated precision",
+        "Ensure axis labels/reporting don't imply unsupported significant digits.",
+        "Don't manufacture extra decimals or instrument tolerances.",
+        "Link back to C24 and later results.",
+        "To test"
+      ]
+    },
+    {
+      "row": 85,
+      "cells": [
+        "T10",
+        "Prediction differs from actual plotted pattern",
+        "Record finding honestly; suggest reconsidering planned next maths.",
+        "Never force predicted normal/linear method based solely on the earlier choice.",
+        "Update investigation story, but preserve original predictions.",
+        "To test"
+      ]
+    },
+    {
+      "row": 89,
+      "cells": [
+        "SOURCE / HANDOVER  ·  Use the student's confirmed Planning answers and current Data Collection notes. 'Initial exploration' is not a fixed IA writing section, nor an automatic chart generator."
+      ]
+    },
+    {
+      "row": 92,
+      "cells": [
+        "After the diagram / calculation: interpretations, unexpected results and next moves  ↗"
+      ]
+    }
+  ]
+}
