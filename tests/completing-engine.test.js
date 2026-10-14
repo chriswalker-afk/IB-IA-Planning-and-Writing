@@ -311,3 +311,17 @@ test("first-figure interpretation is tracked under First Exploration; later refl
  move(s,"Actual later mathematical result warrants reinterpretation","C34");
  assert.equal(completionStage("C34",s),"C40");
 });
+
+test("general next-step help never introduces Pearson regression for unconfirmed or unpaired observations",()=>{
+ const s=state(),first=realScatter(s,"linear");
+ first.kind="scatter";s.completion.nextFromEntryId=first.id;
+ place(s,"C35H");
+ let ideas=completionSuggestions(s).map(x=>x.join(" ")).join(" ");
+ assert(!/Pearson's r or a fitted line|Pearson's r address/i.test(ideas));
+ setCompletionField(s,"pairedDataType","unpaired");
+ ideas=completionSuggestions(s).map(x=>x.join(" ")).join(" ");
+ assert(!/Pearson's r or a fitted line|Pearson's r address/i.test(ideas));
+ setCompletionField(s,"pairedDataType","paired-numerical");
+ ideas=completionSuggestions(s).map(x=>x.join(" ")).join(" ");
+ assert(/Pearson/.test(ideas));
+});
