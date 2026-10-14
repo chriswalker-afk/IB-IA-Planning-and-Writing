@@ -4,6 +4,8 @@
  * navigate freely and mark stage completion explicitly; a visit is not completion.
  */
 import {C_NODES,C_PROMPTS} from "./catalog.js";
+import {createGuidanceViews} from "./guidance-views.js";
+import {METHOD_OPTIONS,COURSE_OPTIONS} from "./guidance-context.js";
 import {
  C_MAJOR_STAGES,C_STAGE_STATUS,routesAt,completionStage,completionFlags,
  completeEntry,latestRealResult,sourceResultForNext,scatterForNext,canViewPmccFollowup,canViewScatterFollowup,completionSuggestions
@@ -13,6 +15,7 @@ export function createCompletingViews(ctx){
  const {getState,e,icon,field,choose,button,summary,sheetTitle,tabletNav,filled}=ctx;
  const titleMap=new Map(C_NODES.map(x=>[x.id,x.label]));
  const F=(key,label,placeholder="",opts={})=>field("completion.fields."+key,label,placeholder,opts);
+ const guides=createGuidanceViews(ctx);
  const entryField=(key,label,placeholder="",opts={})=>{
   const state=getState(),i=state.completion.activeEntryIndex;
   return i>=0&&i<state.entries.length?field("entries."+i+"."+key,label,placeholder,opts):"";
@@ -114,10 +117,26 @@ export function createCompletingViews(ctx){
  const currentAim=()=>getState().planning.fields.aim||getState().project.aim||"Still to decide";
  const currentBenefit=()=>getState().planning.fields.beneficiary||getState().project.beneficiary;
  const plannedPrediction=()=>getState().planning.fields.prediction||getState().project.prediction;
+ const accuracySelector=()=>{
+  const state=getState(),accuracy=state.completion.accuracyDecisions,entry=completeEntry(state);
+  if(!accuracy.length||!entry||entry.kind==="theory")return"";
+  const options=[["","Not relevant to this calculation"],
+   ...accuracy.map(x=>[x.id,x.quantity+(x.unit?" ("+x.unit+")":"")])];
+  return '<div class="guidance-accuracy-select">'+
+    entryField("accuracyRef","Which previously justified input-accuracy decision affects THIS result, if any?","",
+      {type:"select",options})+'</div>';
+ };
  const accuracyNote=()=>{
-  const s=getState(),records=s.completion.accuracyDecisions;
-  const existing=records.length?records.map(x=>x.quantity+(x.unit?" ("+x.unit+")":"")+": "+x.policy).join("; "):s.planning.fields.firstAccuracy||s.project.precision;
-  return existing?info("Previously recorded accuracy decisions",existing+". Apply only where those measurements affect this result; exact symbolic work does not require arbitrary rounding."):"";
+  const state=getState(),accuracy=state.completion.accuracyDecisions,entry=completeEntry(state);
+  if(!accuracy.length)return"";
+  const relevant=accuracy.find(x=>x.id===entry?.accuracyRef||
+   x.quantity===entry?.accuracyRef);
+  if(relevant)return info("Accuracy from your earlier measurement/source decision",
+    relevant.quantity+(relevant.unit?" ("+relevant.unit+")":"")+": "+
+    relevant.policy+(relevant.resolution?". Original resolution: "+relevant.resolution:"")+
+    ". Apply only if this input limits the meaning of the actual result; avoid rounding each intermediate step.");
+  // No automatic reminder about all quantities on every mathematical screen.
+  return "";
  };
  const entryReviewAlert=()=>{
   const s=getState(),i=s.completion.activeEntryIndex,entry=completeEntry(s);
@@ -311,6 +330,7 @@ export function createCompletingViews(ctx){
      {value:"other",title:"Other genuine mathematics",icon:"sparkles"}])+
     entryField("result","What did you actually plot, calculate or find?","Enter only a genuine output, or keep this as planned",{type:"textarea",rows:4})+
     entryField("resultRef","Where is the figure/equation in my own IA?","Figure 1; Equation 2; page 4")+
+    accuracySelector()+
     F("firstPresentation","Check title, labels, axes, units, source and readable precision","Anything you need to fix in the real IA",{type:"textarea",rows:2})+
     accuracyNote()
   };
@@ -327,7 +347,7 @@ export function createCompletingViews(ctx){
   };
   case "C34A":return{intro:"Accuracy matters here only if it affects what this particular result can responsibly mean.",
    html:actualRecord()+accuracyNote()+
-    entryField("accuracyRef","Which recorded accuracy decision applies, if any?","Relevant quantity, resolution or exact/approximate value")+
+    accuracySelector()+
     F("accuracyForResult","Is the display defensible?","A context-based explanation, not arbitrary decimal places",{type:"textarea",rows:3})+
     info("Avoid repeated precision essays","Once justified, apply the decision again only where relevant. Revisit C24 if the underlying source changes.")
   };
@@ -338,7 +358,10 @@ export function createCompletingViews(ctx){
     entryField("interpretation","What does this actual result mean for my aim?","An honest local conclusion based on mathematics I have done",{type:"textarea",rows:4})+
     entryField("localTakeaway","One sentence: what has this section established?","What do I know now, and what remains unanswered?",{type:"textarea",rows:2})+
     F("predictionComparison","Does the result support, contradict or complicate the prediction?","A comparison, not a requirement for the prediction to be correct",{type:"textarea",rows:2})+
-    F("benefitFinding","What might this mean for the intended beneficiary?","Only if supported by evidence",{type:"textarea",rows:2})
+    F("benefitFinding","What might this mean for the intended beneficiary?","Only if supported by evidence",{type:"textarea",rows:2})+
+    '<details class="guidance-insight"><summary>Did this result teach me something new mathematically? (optional)</summary>'+
+      entryField("mathsInsight","My genuine new mathematical insight","About the method, proof, connection or conditions—not a routine formula",{type:"textarea",rows:3})+
+      '</details>'
   };
   case "C34U":return{intro:"Surprising, unclear or contradictory findings are valuable. Check possibilities without changing observations to fit a prediction.",
    html:actualRecord()+
@@ -370,7 +393,8 @@ export function createCompletingViews(ctx){
      ["unclear","No clear association"],
      ["unexpected","An unusual point or cluster"],
      ["unsure","Not sure — inspect the graph again"]])+
-    info("Pearson's r has a specific purpose","It measures linear association between paired numerical variables. A small r does not establish that there is no relationship of any form.")
+    info("Pearson's r has a specific purpose","It measures linear association between paired numerical variables. A small r does not establish that there is no relationship of any form.")+
+    guides.bivariateHelp(n)
   };
   case "C35P":return{intro:"Use this only after you have actually calculated Pearson's correlation coefficient.",
    html:bridgeFromPrior()+
@@ -379,7 +403,8 @@ export function createCompletingViews(ctx){
     suggestionCards()+
     F("nextQuestion","My next question, if another is needed","A model, outlier check, different explanation, or no further calculation",{type:"textarea",rows:2})+
     F("nextReason","Why would that next step help the aim?","The actual r and graph—not a planned coefficient—drive the choice",{type:"textarea",rows:2})+
-    info("Association is not causation","Even a strong coefficient does not show that one variable caused another. Avoid forcing a straight-line regression on a curved pattern.")
+    info("Association is not causation","Even a strong coefficient does not show that one variable caused another. Avoid forcing a straight-line regression on a curved pattern.")+
+    guides.bivariateHelp(n)
   };
   case "C40":case "C50":{
    const active=completeEntry(s);
@@ -390,18 +415,30 @@ export function createCompletingViews(ctx){
        entryField("title","Mathematical question this section addresses","Meaningful and focussed")+
        entryField("purpose","Why this technique belongs here, BEFORE the work","Link to the previous result and aim",{type:"textarea",rows:3})+
        entryField("technique","Mathematical technique actually intended or used","e.g. differentiation, regression, algebraic argument")+
+       entryField("methodId","Identify the method for relevant help (optional)","",{type:"select",options:METHOD_OPTIONS})+
        entryChoice("status",[
          {value:"planned",title:"Only planned",icon:"clock"},
          {value:"completed",title:"Actual mathematics completed",icon:"check-circle"}])+
        entryField("result","What did you ACTUALLY establish?","A genuine value, equation, model, property or finding",{type:"textarea",rows:4})+
        entryField("resultRef","Where is the full mathematics in my IA?","Equation number, figure, section or page")+
+       accuracySelector()+
        entryChoice("knowledge",[
-         {value:"syllabus",title:"Routine maths within my syllabus",icon:"check-circle"},
-         {value:"outside",title:"I independently researched new maths",icon:"book"},
-         {value:"unsure",title:"Course alignment not yet clear",icon:"lightbulb"}])+
-       (entry.knowledge==="outside"?entryField("knowledgeNotes","What new mathematics do I genuinely understand?","Explain the unfamiliar technique at its first use",{type:"textarea",rows:3}):
-        entry.knowledge==="unsure"?info("Course check may help","If the technique is beyond or unclear within your syllabus, ask your teacher and explain independently researched mathematics."): "")+
-       entryField("limitations","Important limitation of THIS actual method (optional)","Only if it changes interpretation",{type:"textarea",rows:2})+'</div>':
+         {value:"syllabus",title:"Verified within my course — use it without a textbook explanation",icon:"check-circle"},
+         {value:"mixed",title:"A familiar technique with one new/out-of-course idea",icon:"book"},
+         {value:"outside",title:"Verified beyond my syllabus — explain the new mathematics",icon:"book"},
+         {value:"unsure",title:"I'm not yet sure whether it is within my course",icon:"lightbulb"}])+
+       (["outside","mixed"].includes(entry.knowledge)?
+        entryField("unfamiliarComponent","Which precise mathematical concept is unfamiliar?","Identify only the new part")+
+        entryField("knowledgeNotes","What do I genuinely understand about the unfamiliar mathematics?","State definitions, conditions and why it works here",{type:"textarea",rows:3})+
+        entryField("understandingExample","One relevant step or check that demonstrates understanding (optional)","A real small derivation, worked step or checked case",{type:"textarea",rows:3})+
+        entryField("researchSource","Source I actually learned this from (if applicable)","Book, link or chapter used"):
+        entry.knowledge==="unsure"?info("Course check first","Check your precise IB course guide or ask your teacher. Independent research alone does not make a taught technique beyond syllabus."):
+        info("Syllabus method","Use it correctly and interpret what it shows. You do not need to teach a standard technique."))+
+       '<details class="guidance-insight"><summary>Did the actual result change my mathematical approach? (optional)</summary>'+
+        entryField("methodChangeReason","Why I changed technique after a genuine result","Which previous limitation or observation motivated the change?",{type:"textarea",rows:2})+
+       '</details>'+
+       entryField("limitations","Important limitation of THIS actual method (optional)","Only if it changes interpretation",{type:"textarea",rows:2})+
+       (entry.mathsInsight?smallSummary("Mathematical insight I recorded earlier",entry.mathsInsight):"")+'</div>':
        info("Start with actual exploration","Select the first purposeful representation or a real earlier calculation, then justify the mathematical step that follows.",true))+
      accuracyNote()+miniList()+
      (entry?.status==="completed"&&filled(entry.result)?
@@ -424,7 +461,9 @@ export function createCompletingViews(ctx){
     info("Advanced ≠ better","Explain independently researched mathematics you understand when necessary; routine syllabus methods do not need textbook-style tutorials.")
   };
   case "C40L":return{intro:"Explain newly researched mathematics only when first genuinely needed, in your own understanding.",
-   html:F("researchedMethod","Which new mathematical idea did I use?","Technique or theorem, and how you found it")+
+   html:(st&&st.knowledge==="syllabus"?info("Routine syllabus mathematics","Apply the technique and interpret it; detailed exposition is unnecessary."):"")+
+    (st?entryField("researchSource","Mathematics source I actually used (if any)","Reference to a book/article or teacher-approved resource")+entryField("unfamiliarComponent","Exactly what part was new/outside my course?","Do not label routine course techniques advanced without checking")+entryField("understandingExample","A real mathematical explanation or step showing my own understanding","Relevant only if this idea is genuinely unfamiliar",{type:"textarea",rows:3}):"")+
+    F("researchedMethod","Which new mathematical idea did I use?","Technique or theorem, and how you found it")+
     F("researchedUnderstanding","What have I learned about how it works?","Definitions, assumptions, a demonstration or small explanation",{type:"textarea",rows:4})+
     F("mathsLearning","What did learning this change about my investigation?","A genuine mathematical insight",{type:"textarea",rows:2})+
     info("Use regular course techniques directly","If your technique is on your course, there is usually no need to teach it to the reader.")
@@ -432,10 +471,11 @@ export function createCompletingViews(ctx){
   case "C60":return{intro:"Synthesize the mathematics you actually completed and give the best-supported answer to your aim.",
     html:actualList()+smallSummary("Current aim",currentAim())+
     smallSummary("Intended beneficiary",currentBenefit())+
+    guides.conclusionLimitations()+
     field("scratch.conclusion","My own conclusion notes","State the best-supported answer and limits, in my own words",{type:"textarea",rows:6})
   };
   case "C61":return{intro:"What essential answer have your actual results established? An uncertain or negative finding is still legitimate.",
-   html:actualList()+
+   html:actualList()+guides.conclusionLimitations()+
     F("mainConclusion","The strongest answer I can support","Bring key results together without repeating all calculations",{type:"textarea",rows:4})+
     F("conclusionEvidence","Which two or three actual results support that answer?","Reference genuine figures/equations or earlier local takeaways",{type:"textarea",rows:3})+
     F("conclusionUncertainty","What important uncertainty remains?","Only limitations that materially restrict the answer",{type:"textarea",rows:2})
@@ -607,6 +647,7 @@ export function createCompletingViews(ctx){
     e(stage?C_MAJOR_STAGES.find(x=>x.id===stage)?.name||"Completing":"MY MATHEMATICAL JOURNEY")+'</div>'+
     '<h2>'+e(label)+'</h2><p class="task-intro">'+e(screen.intro)+'</p>'+
     screen.html+(screen.extra||"")+
+    guides.writingMoment(node)+guides.mathsHelp(node)+guides.limitsHelp(node)+
     contextualPrompt(node)+statusControls+
     allButtons(node,primaryByNode[node]||[])+'</div>'+
     '<p class="small-callout">Only actual mathematics supports a mathematical conclusion. Your planning, predictions and teacher questions remain separate from real findings. No compulsory number of calculations or IA grade.</p>'+
