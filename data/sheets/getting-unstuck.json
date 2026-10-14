@@ -1,0 +1,920 @@
+{
+  "schemaVersion": 1,
+  "sourceSheet": "Getting Unstuck",
+  "sourceBounds": {
+    "rows": 115,
+    "columns": 10
+  },
+  "rowCount": 75,
+  "nonemptyCellCount": 533,
+  "rows": [
+    {
+      "row": 1,
+      "cells": [
+        "GETTING UNSTUCK  |  A short, optional way forward when the IA stalls"
+      ]
+    },
+    {
+      "row": 2,
+      "cells": [
+        "An unobtrusive 'I'm stuck' link should be available throughout Completing. The help panel never interrupts the student or blocks saving their draft."
+      ]
+    },
+    {
+      "row": 3,
+      "cells": [
+        "Choose the CURRENT problem; show one immediate action and at most two more possibilities. The student can choose Other, Not sure, Save or Return to where they were."
+      ]
+    },
+    {
+      "row": 4,
+      "cells": [
+        "Practical barriers (late data, permissions, equipment or response delays) are reasons to adjust the PROJECT PLAN—not generic mathematical limitations to write in the IA."
+      ]
+    },
+    {
+      "row": 5,
+      "cells": [
+        "Never manufacture a result, say a prediction was proved, imply consent has been obtained, or silently switch an aim/method/dataset. Keep original plan and the real status of data."
+      ]
+    },
+    {
+      "row": 6,
+      "cells": [
+        "Original data unavailable? Students can still write a concise introduction, record tentative predictions and WHY, define terms, compare collection methods, research secondary sources, and plan the next purposeful maths."
+      ]
+    },
+    {
+      "row": 8,
+      "cells": [
+        "ID",
+        "Situation",
+        "Useful action",
+        "Student-facing nudge",
+        "What can be completed now",
+        "Return to",
+        "Use earlier answers",
+        "When to show",
+        "Important boundary",
+        "Status"
+      ]
+    },
+    {
+      "row": 9,
+      "cells": [
+        "D01",
+        "No data yet",
+        "Write a concise introduction",
+        "Use existing aim, genuine motivation and who benefits; edit if needed.",
+        "Student writes own prose; no results or graph claims.",
+        "C10",
+        "Aim + motivation + beneficiary",
+        "Only if intro is unfinished or worth revisiting.",
+        "A brief introduction does not require collected data.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 10,
+      "cells": [
+        "D02",
+        "No data yet",
+        "Write/revise your prediction and WHY",
+        "What pattern/result do you think might occur, why, and what would it mean to the beneficiary IF true?",
+        "Tentative prediction with Not sure option; never prefill it as a finding.",
+        "C02",
+        "Original prediction/WHY and intended usefulness",
+        "Only when useful or missing, not compulsory for theoretical route.",
+        "Preserve first expectation if prediction later changes.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 11,
+      "cells": [
+        "D03",
+        "No data yet",
+        "Define quantities and specialist terms",
+        "List intended variables, units, target population or model parameters; define unfamiliar terms before first use.",
+        "Short planning notes, not a mandatory glossary or completed analysis.",
+        "C20",
+        "Planned variable names, units, sampling context",
+        "Match statistical, modelling or theory route.",
+        "Meaningful symbols; not generic x/y by default.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 12,
+      "cells": [
+        "D04",
+        "No data yet",
+        "Prepare a defensible method",
+        "Compare sampling versus census where relevant, measurement methods, sources and permissions; why chosen for this aim?",
+        "Planned alternatives + rationale labelled PLAN, not executed methods.",
+        "C20",
+        "Route, course, aim, available access",
+        "Only route-relevant methods; no unstarted PMCC warnings.",
+        "Recheck justification after actual collection.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 13,
+      "cells": [
+        "D05",
+        "No data yet",
+        "Find possible secondary data",
+        "Look for public official tables, research datasets, reputable institutional sources or published measurements.",
+        "Candidate link/citation and variables; source NOT yet verified until checked.",
+        "C95A",
+        "Variables, population, place, time period",
+        "Offer search strategy only; no claims of automatic retrieval.",
+        "Secondary sources require provenance, comparability and citation.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 14,
+      "cells": [
+        "D06",
+        "No data yet",
+        "Try a different permitted data collection approach",
+        "Could a smaller legitimate group, alternative measurement, approved school dataset or different time interval answer the question?",
+        "One possible method with scope/permission check.",
+        "C95A",
+        "Dependencies, consent flags, teacher questions",
+        "Never suggest evading permission or sampling secretly.",
+        "Targeted feasible scope may change what can be concluded.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 15,
+      "cells": [
+        "D07",
+        "No data yet",
+        "Make a PROVISIONAL plan for first representation",
+        "What first figure or calculation might reveal a meaningful question, when real evidence exists?",
+        "Planned representation, not a generated chart or observed pattern.",
+        "C31",
+        "Aim, prediction and anticipated evidence type",
+        "Don't pretend planned data exist; graph isn't required.",
+        "A small abstract example must be labelled illustrative.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 16,
+      "cells": [
+        "D08",
+        "No data yet",
+        "Consider a small legitimate theoretical case",
+        "Could a purely mathematical example clarify your question while empirical data are pending?",
+        "Hypothetical/symbolic case clearly labelled, or skip.",
+        "C40",
+        "Course, actual problem, no-data route",
+        "Only if mathematically worthwhile and teacher-appropriate.",
+        "Never fabricate measurements or treat illustration as validation.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 17,
+      "cells": [
+        "D09",
+        "No data yet",
+        "Prepare accurate source references",
+        "Record who collected existing published data, their definitions, date and how source can be cited.",
+        "Short citation and data-source candidate status.",
+        "C20",
+        "Secondary or published source if actually found",
+        "No invented references or assumed sampling design.",
+        "Check original provenance before comparing sources.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 18,
+      "cells": [
+        "D10",
+        "No data yet",
+        "Review or narrow the original aim if evidence cannot be found",
+        "Could a feasible question using real accessible data still be meaningful to the intended beneficiary?",
+        "Optional transparent aim/method edit; teacher question if substantial.",
+        "C02 / C03",
+        "Original aim, beneficiary, teacher permissions",
+        "Keep first aim and prediction history; no automatic changes.",
+        "Revisit whether actual maths still suits AI SL/AA SL.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 19,
+      "cells": [
+        "D11",
+        "No data yet",
+        "Record ONE useful action and save",
+        "Choose a small next task now; can return to data later.",
+        "Short action, status Pending, optional time/date entered by student.",
+        "C95N / C91",
+        "Current stage and saved notes",
+        "No assumed deadline or background reminder.",
+        "Allow Save at any point without claiming a draft is finished.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 20,
+      "cells": [
+        "D12",
+        "Partial data",
+        "Distinguish what is already available from what is missing",
+        "What actual observations have you got? Are they suitable for limited descriptive work?",
+        "Record obtained vs awaiting, with quality and scope.",
+        "C95L / C20",
+        "Real data and remaining source tasks",
+        "Never add dummy observations to reach a target n.",
+        "Substantiate which population any conclusion could apply to.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 23,
+      "cells": [
+        "ALTERNATIVE DATA SOURCES  |  Matching the original aim matters more than simply finding numbers"
+      ]
+    },
+    {
+      "row": 25,
+      "cells": [
+        "ID",
+        "Route",
+        "Potential approach",
+        "When worth considering",
+        "Mathematical/source quality check",
+        "What to document",
+        "What must NOT happen",
+        "Navigation",
+        "Scope safeguard",
+        "Status"
+      ]
+    },
+    {
+      "row": 26,
+      "cells": [
+        "S01",
+        "Statistical project",
+        "Equivalent public secondary dataset",
+        "Official statistics, public research tables or reputable educational/research repositories with the right variables.",
+        "Compare population, year, definitions, units, collection method, response patterns and selection.",
+        "Record source citation and whether same aim still holds.",
+        "Student must verify source; not an automatic data download.",
+        "C95A→C20",
+        "Useful only if maths can answer the real aim.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 27,
+      "cells": [
+        "S02",
+        "Statistical project",
+        "Another approved primary sample/census",
+        "Accessible class, club or smaller target group ONLY where consent/procedures permit.",
+        "Define sampled population; random vs convenience vs census honestly, sample sizes and bias.",
+        "Explain limited inference or revise audience/aim if necessary.",
+        "Do not treat a club sample as whole-school evidence.",
+        "C95A→C20/C03",
+        "No covert data collection or personal data uploads.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 28,
+      "cells": [
+        "S03",
+        "Statistical project",
+        "Published aggregated data",
+        "Could school-level, region-level or published summary statistics answer a revised question?",
+        "Check whether each record is an individual or an aggregate and what comparisons remain valid.",
+        "Adapt interpretation and avoid individual-level claims from group averages.",
+        "Do not mix aggregate and individual records as if equivalent.",
+        "C95A→C20",
+        "Aggregate-level inference only.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 29,
+      "cells": [
+        "S04",
+        "Statistical project",
+        "Partial/lower response data",
+        "Is there a defensible descriptive analysis of this group, even if wider inference isn't justified?",
+        "Count actual responses, missingness and group imbalance; avoid asserting sample representative.",
+        "Narrow aims/scope and identify mathematical consequences.",
+        "Never invent respondents or assume low response is harmless.",
+        "C95L→C20",
+        "Teachers advise if project depth at risk.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 30,
+      "cells": [
+        "S05",
+        "Modelling with measurements",
+        "Published parameter values or experimental data",
+        "Can reputable existing measurements inform or validate the proposed model?",
+        "Check physical definitions, time interval, measurement units, accuracy, context and source.",
+        "Use provenance; distinguish calibration from independent validation.",
+        "Don't label a literature value as a measurement personally taken.",
+        "C95A→C20",
+        "Model validity depends on relevant input domain.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 31,
+      "cells": [
+        "S06",
+        "Modelling with measurements",
+        "Change feasible experimental setup",
+        "Could a smaller safe experiment or different measurable quantity answer the modelling question?",
+        "Check assumptions, limitations of range/resolution and actual feasibility.",
+        "Revise method transparently and keep underlying mathematical objective.",
+        "No unsafe experiments or unapproved subject measurements.",
+        "C95A→C03/C20",
+        "Avoid an experiment that yields only trivial maths.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 32,
+      "cells": [
+        "S07",
+        "Mathematical/theoretical exploration",
+        "Purely mathematical case or proof route",
+        "Does the investigation meaningfully proceed from definitions, algebra or a conjecture without empirical data?",
+        "Separate mathematical example from empirical validation; check course level with teacher.",
+        "Continue theoretical mathematics if it genuinely addresses the aim.",
+        "Do not pretend hypothetical values constitute measured evidence.",
+        "C95D→C40/C03",
+        "Teacher check if changing route substantially.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 33,
+      "cells": [
+        "S08",
+        "Any empirical route",
+        "Access to original source delayed",
+        "Could the provider share an accessible extract or published summary, when authorised?",
+        "Check that the extract has original sampling/definitions and enough detail for planned comparisons.",
+        "Make one reasonable follow-up; work on safe sections while waiting.",
+        "No pressure on respondents, access control bypass or inferred consent.",
+        "C95D→C95A",
+        "Missing data remains Pending until received.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 34,
+      "cells": [
+        "S09",
+        "Any empirical route",
+        "Same topic, different date or population",
+        "Would a different period, age group, region or organisation still make the investigation meaningful?",
+        "Compare variable definitions, seasonality, context, population and representativeness.",
+        "Student may refine aim/beneficiary/prediction with reason.",
+        "Don't silently equate sources across incompatible periods/groups.",
+        "C95A→C02/C20",
+        "Preserve original expectation and audit changes.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 35,
+      "cells": [
+        "S10",
+        "Any empirical route",
+        "Dataset looks available but cannot be used",
+        "Source may be behind a paywall, prohibited, incomplete or personally identifiable.",
+        "Check legal permission, privacy, provenance and alternative public route.",
+        "Record inaccessible / pending / unsuitable and next action.",
+        "Don't scrape around restrictions or upload sensitive details.",
+        "C95A→C03/C20",
+        "A listed URL doesn't mean data are usable.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 36,
+      "cells": [
+        "S11",
+        "Any empirical route",
+        "Several public datasets combined",
+        "Could carefully harmonised data provide meaningful comparisons?",
+        "Check consistent variable definitions, units, inclusion criteria, populations, missingness and source dates.",
+        "Keep full provenance and state consequences for interpretation.",
+        "Do not join mismatched columns or manipulate exclusions to produce desired pattern.",
+        "C95A→C20",
+        "Prefer one coherent source when possible.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 40,
+      "cells": [
+        "OTHER COMMON HICCOUGHS  |  Offer one useful route, not an overwhelming troubleshooting tree"
+      ]
+    },
+    {
+      "row": 42,
+      "cells": [
+        "ID",
+        "Student says",
+        "One helpful first question",
+        "Useful response / next action",
+        "Go to",
+        "Don't do",
+        "When relevant",
+        "Choice / status",
+        "Status"
+      ]
+    },
+    {
+      "row": 43,
+      "cells": [
+        "H01",
+        "I don't have any data",
+        "Can I draft my introduction or prediction, or research a legitimate alternative source?",
+        "No real data required for a concise introduction or tentative prediction.",
+        "C95D",
+        "No fake results, graphs or conclusions.",
+        "Any empirical student",
+        "Write intro / source shortlist / Not sure",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 44,
+      "cells": [
+        "H02",
+        "Only a few survey responses",
+        "What does my actual sample allow me to describe honestly?",
+        "Check representativeness/response bias and consider one feasible source change.",
+        "C95L",
+        "Don't assert full population claims or make up answers.",
+        "Statistics",
+        "Narrow scope / source / Ask teacher",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 45,
+      "cells": [
+        "H03",
+        "Waiting for consent/teacher permission",
+        "What safe preparatory work can I do before collecting anything?",
+        "Draft aim, intro, method alternatives and definitions; seek approval.",
+        "C03 / C95D",
+        "Never proceed with restricted collection before permission.",
+        "People/third-party data",
+        "Safe draft / Teacher check",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 46,
+      "cells": [
+        "H04",
+        "Secondary data don't match my original variables",
+        "Does this source still test the same claim with compatible definitions and units?",
+        "Look for compatible source or transparently refine aim and beneficiary.",
+        "C95A / C02",
+        "No mismatched datasets passed off as equivalent.",
+        "Statistics/modelling",
+        "Compare source / Update aim",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 47,
+      "cells": [
+        "H05",
+        "Measurements have gaps or mistakes",
+        "Can I check original records, units and the actual effect of missing values?",
+        "Correct defensible errors, state exclusions and limits, possibly seek more genuine data.",
+        "C95L / C20",
+        "No invented missing numbers or unexplained exclusions.",
+        "Empirical",
+        "Verify / Narrow inference",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 48,
+      "cells": [
+        "H06",
+        "I have no idea how to begin writing",
+        "Can I start with one sentence explaining what I want to find out and why?",
+        "Use/edit planning aim, motivation and whom result might help; stay under a page.",
+        "C10",
+        "No full AI-written introduction.",
+        "Any",
+        "One sentence / Use plan",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 49,
+      "cells": [
+        "H07",
+        "I don't know what to predict",
+        "What do I suspect and WHY? Or is 'Not sure yet' more honest?",
+        "Optional plausible conjecture; if true what would it mean for beneficiary?",
+        "C02",
+        "Do not force a correlation, fabricated prior belief or fake data.",
+        "Any",
+        "Predict / Not sure",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 50,
+      "cells": [
+        "H08",
+        "My data contradict my prediction",
+        "What exactly looks different, and which mathematical check might explain it?",
+        "Describe actual result and consider a justified alternative/another angle.",
+        "C34U",
+        "Don't erase prediction or force data to fit.",
+        "Active investigation",
+        "Investigate / Save unresolved",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 51,
+      "cells": [
+        "H09",
+        "My graph doesn't tell me much",
+        "What new insight would it give a reader? Would a short calculation be better?",
+        "Choose purposeful first move or omit repetitive graph.",
+        "C31",
+        "No decorative graphs or compulsory figures.",
+        "Graph-based",
+        "Change representation / Skip",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 52,
+      "cells": [
+        "H10",
+        "I can't decide on the next maths",
+        "What question follows from what I actually observed?",
+        "Request one or two course-appropriate ideas, teacher question if beyond level.",
+        "C35H / C40D",
+        "No arbitrary sequence or unstarted technique limitations.",
+        "Active maths",
+        "Show ideas / Other",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 53,
+      "cells": [
+        "H11",
+        "The mathematics seems too advanced",
+        "Do I understand enough to explain it, or could another method answer my aim better?",
+        "Focus on a justified in-course route and consult teacher if necessary.",
+        "C40D / C03",
+        "Advanced maths for its own sake doesn't ensure quality.",
+        "All maths routes",
+        "Simplify / Teacher check",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 54,
+      "cells": [
+        "H12",
+        "The calculator or software isn't working",
+        "Can a simpler taught method or a different supported tool carry out the SAME mathematical task?",
+        "Keep inputs, goals and interpretation clear; use technology guidance only for actual output.",
+        "C40T / C40",
+        "Don't invent results or substitute screenshot for understanding.",
+        "Active technique",
+        "Try alternative / Teacher",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 55,
+      "cells": [
+        "H13",
+        "I'm stuck explaining the maths",
+        "What did I calculate and what does it mean for my original aim?",
+        "Brief interpretation near actual result and defined symbols/accuracy.",
+        "C34 / C70N",
+        "No routine textbook derivation or long generic evaluation.",
+        "Any active maths",
+        "Explain result / Not sure",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 56,
+      "cells": [
+        "H14",
+        "I have too much material and can't see a story",
+        "Which few figures/calculations actually help answer the aim?",
+        "Revisit aim, remove repetition, order results logically with reflections.",
+        "C70 / C64",
+        "Don't save all evaluation for conclusion.",
+        "Writing stage",
+        "Prune / Reorder",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 57,
+      "cells": [
+        "H15",
+        "I am behind or draft feedback is overwhelming",
+        "What one concrete action matters most for the next school milestone?",
+        "Check actual date, teacher feedback permissions and choose small action.",
+        "C95N / C80D",
+        "No made-up deadlines, second written-feedback promise or automatic reminder.",
+        "Any",
+        "One step / Ask teacher / Save",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 58,
+      "cells": [
+        "H16",
+        "I can't resume from a saved document",
+        "Was it a Pathfinder-generated file? What values can I recover manually?",
+        "Try permitted PDF/DOCX import or enter aim/prediction/source fields; keep current work.",
+        "C00 / C01 / C02",
+        "Import is design spec only; never claim file parser exists now.",
+        "Resume",
+        "Retry / Manual",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 61,
+      "cells": [
+        "OPTIONAL SECONDARY SOURCE CHECK  |  Short, relevant and never a compulsory generic form"
+      ]
+    },
+    {
+      "row": 63,
+      "cells": [
+        "ID",
+        "Check only when considering an alternative source",
+        "What a good answer looks like",
+        "What to record",
+        "Navigation",
+        "Status"
+      ]
+    },
+    {
+      "row": 64,
+      "cells": [
+        "Q01",
+        "Does the candidate source actually measure the quantities needed for the aim?",
+        "Definitions/units and observation level match; if not, what question can it support?",
+        "Source variable names, meaning, units and target comparison.",
+        "C95A → C20",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 65,
+      "cells": [
+        "Q02",
+        "Does the dataset cover the intended population/place/time?",
+        "If not, limit conclusions or revise aim explicitly with student choice.",
+        "Population, time period, selection method and coverage.",
+        "C95A → C02",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 66,
+      "cells": [
+        "Q03",
+        "Is the source trustworthy and traceable?",
+        "Record original organisation, date, link/DOI/publication, licence and method if published.",
+        "A real, attributable source; not 'I found a spreadsheet'.",
+        "C95A → C20",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 67,
+      "cells": [
+        "Q04",
+        "Can you explain how the source values were collected?",
+        "Consider measurement accuracy, sampling/aggregation and missingness relevant to the mathematics.",
+        "Source metadata or clear 'Not stated' if unavailable.",
+        "C95A → C20",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 68,
+      "cells": [
+        "Q05",
+        "Does the new source still answer something useful for the intended beneficiary?",
+        "If not, offer an honest revised aim or other source, not a forced calculation.",
+        "Current beneficiary/intended use and real data readiness.",
+        "C95A → C02",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 69,
+      "cells": [
+        "Q06",
+        "Is access/consent/licence compatible with appropriate use?",
+        "Avoid private, identifiable and restricted data. Teacher approval isn't inferred.",
+        "Permission status; source use restrictions as needed.",
+        "C95A → C03",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 70,
+      "cells": [
+        "Q07",
+        "Do you have the data now or just a candidate link?",
+        "Separate Candidate / Accessible / Checked / Used from Pending / Unavailable.",
+        "Explicit status, selected action and source citation.",
+        "C95N / C20",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 71,
+      "cells": [
+        "Q08",
+        "What ONE feasible next step would allow meaningful maths?",
+        "Pick source check, collect authorised data, write introduction or save.",
+        "Student choice; no mandatory timeline or background monitoring.",
+        "C95N",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 74,
+      "cells": [
+        "STUDENT JOURNEY TESTS  |  These are acceptance criteria for the future website; not yet executed in a browser"
+      ]
+    },
+    {
+      "row": 76,
+      "cells": [
+        "ID",
+        "Student state",
+        "Expected optional guidance",
+        "Must not happen",
+        "QA status"
+      ]
+    },
+    {
+      "row": 77,
+      "cells": [
+        "T01",
+        "No data access and intro missing",
+        "Show Write introduction / prediction / define terms / find secondary data and Save.",
+        "No graph or numerical analysis inferred from hypothetical values.",
+        "To test"
+      ]
+    },
+    {
+      "row": 78,
+      "cells": [
+        "T02",
+        "No data yet but prediction supplied",
+        "Prefill existing tentative prediction/WHY with Edit or Skip.",
+        "Never label original prediction as result.",
+        "To test"
+      ]
+    },
+    {
+      "row": 79,
+      "cells": [
+        "T03",
+        "User awaiting consent",
+        "Permit safe text drafting while showing unresolved permission.",
+        "No survey/measurement action suggested until authorised.",
+        "To test"
+      ]
+    },
+    {
+      "row": 80,
+      "cells": [
+        "T04",
+        "Student asks about secondary data",
+        "Suggest source discovery and source-fit checklist, not just 'download data'.",
+        "No claim that unrelated available dataset answers current aim.",
+        "To test"
+      ]
+    },
+    {
+      "row": 81,
+      "cells": [
+        "T05",
+        "Switching from primary to secondary source",
+        "Require student-confirmed source/aim/method review; keep historical plan.",
+        "No silent method switch or fabricated personal collection.",
+        "To test"
+      ]
+    },
+    {
+      "row": 82,
+      "cells": [
+        "T06",
+        "Only five responses when population much larger",
+        "Explain restricted scope/response uncertainty; student may consult teacher.",
+        "No spurious population inference or fake extra observations.",
+        "To test"
+      ]
+    },
+    {
+      "row": 83,
+      "cells": [
+        "T07",
+        "Different variables/units in second source",
+        "Prompt variable definition/units/population compatibility or reject source.",
+        "No misleading source merge.",
+        "To test"
+      ]
+    },
+    {
+      "row": 84,
+      "cells": [
+        "T08",
+        "I don't understand the next maths",
+        "Show a relevant existing maths guide, not all options.",
+        "No unsolicited long help or calculator-generated result.",
+        "To test"
+      ]
+    },
+    {
+      "row": 85,
+      "cells": [
+        "T09",
+        "Student dismisses Help",
+        "Return to exact stage/draft without losing entered text.",
+        "No mandatory completion of Help form.",
+        "To test"
+      ]
+    },
+    {
+      "row": 86,
+      "cells": [
+        "T10",
+        "Student saves unresolved obstacle",
+        "Snapshot preserves issue category, action, source candidate and return stage.",
+        "No auto 'resolved' status on reupload.",
+        "To test"
+      ]
+    },
+    {
+      "row": 87,
+      "cells": [
+        "T11",
+        "Project is theoretical with no empirical data",
+        "Skip sample/census issues and suggest appropriate mathematical cases/teacher guidance.",
+        "No forced data collection or fake measurements.",
+        "To test"
+      ]
+    },
+    {
+      "row": 88,
+      "cells": [
+        "T12",
+        "Student has a broken document upload",
+        "Offer best-effort extraction/manual resume and Save; keep existing draft.",
+        "No claim PDF/DOCX import currently implemented.",
+        "To test"
+      ]
+    },
+    {
+      "row": 92,
+      "cells": [
+        "DESIGN RULE: The normal experience has a small 'I'm stuck' action, not a separate compulsory worksheet. Persist current section, issue, ONE next task and source changes. Do not make the problem look like a marking weakness."
+      ]
+    }
+  ]
+}
