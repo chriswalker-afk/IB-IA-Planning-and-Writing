@@ -3,6 +3,7 @@
  * Preserves version-1 prototype files and browser localStorage without assuming
  * that planning a technique means it was actually performed.
  */
+import {createPlanningState,normalizePlanningState} from "../planning/engine.js";
 export const STATE_VERSION = 2;
 export const STORAGE_KEY = "ia-pathfinder-prototype-v1"; // Deliberately stable across upgrades.
 export const MAX_ENTRIES = 120;
@@ -65,7 +66,8 @@ export function createProjectState() {
       checkpoints:[],pendingApproval:false,feedbackStatus:"not-requested",concerns:[]
     },
     writingLedger:{},
-    changeLog:[]
+    changeLog:[],
+    planning:createPlanningState()
   };
 }
 function legacyAnswers(p) {
@@ -125,6 +127,9 @@ export function normalizeProjectState(value) {
     next.writingLedger=safeRecord(value.writingLedger);
     next.changeLog=Array.isArray(value.changeLog)?value.changeLog.filter(plain).slice(-400):[];
   }
+  const migrated = normalizePlanningState(value.planning,next.project);
+  if(!value.planning && next.journey.currentNodeId?.startsWith("N"))migrated.current=next.journey.currentNodeId;
+  next.planning=migrated;
   return next;
 }
 export function persistProjectState(state,storage) {
