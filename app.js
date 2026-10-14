@@ -5,7 +5,7 @@ import { planningMove, planAutoAdvance, planningBack, planningEdit, applyPlannin
 import { createPlanningViews } from "./src/ui/planning-views.js";
 import { createStudioViews } from "./src/ui/studio-views.js";
 import {createCompletingViews} from "./src/completing/views.js";
-import {setCompletionNode,moveCompletionRoute,completionBack,markCompletionStage,setCompletionField,addAccuracyDecision,completionSuggestions,sectionForNode,targetForSection,completeEntry,latestRealResult} from "./src/completing/engine.js";
+import {setCompletionNode,moveCompletionRoute,completionBack,markCompletionStage,setCompletionField,addAccuracyDecision,completionSuggestions,sectionForNode,targetForSection,completionStage,completeEntry,latestRealResult} from "./src/completing/engine.js";
 
 import { createProjectViews } from "./src/ui/project-views.js";
 import { createProjectState as newState, normalizeProjectState as normalise, persistProjectState, STORAGE_KEY as KEY } from "./src/core/project-state.js";
@@ -40,7 +40,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   ];
   const filled = value => typeof value === "string" ? !!value.trim() : !!value;
   const hasPlan = () => state.planning.visited.length > 0 || state.ui.planMax > 0 || filled(state.project.aim) || filled(state.project.idea);
-  const hasStudio = () => state.entries.length > 0 || Object.values(state.scratch).some(filled);
+  const hasStudio = () => state.entries.length > 0 || state.completion.visited.length>0 || Object.values(state.scratch).some(filled) || Object.values(state.completion.fields).some(filled);
   const demoFlag = () => state.demo ? '<span class="meta-pill gold">' + icon("sparkles") + ' Sample investigation</span>' : "";
   const field = (path, label, placeholder, opts = {}) => {
     const value = getPath(path) ?? "";
@@ -67,7 +67,14 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     if(path.startsWith("completion.fields.")){
       return setCompletionField(state,path.slice("completion.fields.".length),value);
     }
+    const before=getPath(path);
     const changed=putPath(path,value);
+    if(changed&&before!==value){
+      let stage=path==="scratch.introduction"?"C10":path==="scratch.conclusion"?"C60":
+        path==="scratch.dataNotes"?"C20":path==="scratch.finalReview"?"C90":
+        path.startsWith("entries.")?(state.entries[Number(path.split(".")[1])]?.phase==="first"?"C30":"C40"):null;
+      if(stage&&state.completion.stages[stage]==="complete")state.completion.stages[stage]="needs-review";
+    }
     if(changed&&state.handover?.confirmedAt&&(path.startsWith("planning.fields.")||path.startsWith("project."))){
       state.handover.confirmedAt="";state.handover.needsReview=true;
     }
@@ -151,8 +158,8 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       ["Your idea",filled(state.project.idea)||filled(state.project.aim),"plan",0],
       ["Your purpose",filled(state.project.beneficiary),"plan",1],
       ["Planning checkpoint",state.planning.completed,"plan",5],
-      ["Actual mathematics",state.entries.some(x=>x.status==="completed"),"studio","math"],
-      ["Conclusion",filled(state.scratch.conclusion),"studio","conclusion"]
+      ["Actual mathematics",state.entries.some(x=>x.status==="completed"&&filled(x.result)),"studio","math"],
+      ["Conclusion",state.completion.stages.C60==="complete","studio","conclusion"]
     ];
     $("#sideMilestones").innerHTML=items.map(([title,done,target,index],i)=>
       '<button type="button" class="side-milestone '+(done?"done":i===0?"active":"")+'" data-action="'+(target==="plan"?"path-plan":"studio-"+index)+'" '+(target==="plan"?'data-index="'+index+'"':"")+'>'+
@@ -487,7 +494,19 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         if(item){setCompletionField(state,"nextQuestion",item[0]);save();render();}
         break;
       }
-      case "math-add": addMath();break;
+      case "completion-first-from-map":
+        setCompletionNode(state,"C30");nav("completing");break;
+      case "completion-next-from-map":{
+        const recent=latestRealResult(state);
+        if(recent){setCompletionNode(state,"C35");nav("completing");}
+        else if(state.entries.length){editMath(state.entries.length-1);}
+        else{setCompletionNode(state,"C30");nav("completing");}
+        break;
+      }
+      case "math-add":{
+        setCompletionNode(state,latestRealResult(state)?"C35":"C30");
+        nav("completing");break;
+      }
       case "edit-step":editMath(Number(el.dataset.index));break;
       case "math-phase": state.ui.mathPhase=el.dataset.phase;save();render();break;
       case "math-work":state.ui.mathPhase="work";save();render({top:true});break;
@@ -504,9 +523,11 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       }
       case "math-add-next":{
         const st=currentMath();
-        if(!st)break;
-        if(!filled(st.nextQuestion)){toast("Write or choose a next mathematical question first.");return;}
-        addMath(st.nextQuestion);break;
+        if(!st || !filled(st.nextQuestion)){toast("Record a real mathematical finding and next question first.");return;}
+        setCompletionField(state,"nextQuestion",st.nextQuestion);
+        setCompletionField(state,"nextReason",st.nextWhy||"");
+        setCompletionNode(state,"C35");
+        nav("completing");break;
       }
       case "toggle-help":
         state.ui.helpKey=state.ui.helpKey===el.dataset.help?"":el.dataset.help;
