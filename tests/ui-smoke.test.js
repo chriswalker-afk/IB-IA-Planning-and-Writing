@@ -7,6 +7,7 @@ import {readRecordValue,updateRecordValue} from "../src/core/record-access.js";
 import {icon,escapeHtml,cleanUrl,button} from "../src/ui/primitives.js";
 import {referenceNodeForPrototypeStep} from "../src/core/prototype-bridge.js";
 import {createPlanningViews} from "../src/ui/planning-views.js";
+import {planningMove,planAutoAdvance,planningBack,planningEdit,applyPlanningField,toggleMath,syncPlanningToProject,setPlanCurrent,planningFlags} from "../src/planning/engine.js";
 import {createStudioViews} from "../src/ui/studio-views.js";
 import {createProjectViews} from "../src/ui/project-views.js";
 
@@ -36,7 +37,8 @@ function createHarness(savedValue){
     newState:createProjectState,normalise:normalizeProjectState,
     KEY:"ia-pathfinder-prototype-v1",
     readRecordValue,updateRecordValue,icon,escapeHtml,cleanUrl,button,
-    referenceNodeForPrototypeStep,createPlanningViews,createStudioViews,createProjectViews
+    referenceNodeForPrototypeStep,createPlanningViews,createStudioViews,createProjectViews,
+    planningMove,planAutoAdvance,planningBack,planningEdit,applyPlanningField,toggleMath,syncPlanningToProject,setPlanCurrent,planningFlags
   };
   runInNewContext(script,globals,{filename:"app.js",timeout:5000});
   function click(type,dataset){
@@ -61,23 +63,50 @@ test("module app boots to the existing homepage with a keyboard-friendly navigat
  assert(h.html.includes("Find my starting point"));
  assert(h.html.includes("data-nav=\"home\""));
 });
-test("ten-step prototype planning still works after UI extraction and traces to source nodes",()=>{
+test("adaptive Planning follows genuine spreadsheet source nodes and retains student answers",()=>{
  const h=createHarness();
  h.action("start-planning");
  assert(h.html.includes('data-source-node="N00"'));
- h.choose("project.ideaStatus","yes");
- h.action("plan-next");assert(h.html.includes('data-source-node="N01"'));
- h.write("project.aim","How does X relate to Y?");
- h.action("plan-next");assert(h.html.includes("Who might benefit?"));
- h.action("plan-next");h.choose("project.kind","statistics");
- h.action("plan-next");h.choose("project.dataSource","secondary");
- h.action("plan-next");h.choose("project.readiness","4");
- h.action("plan-next");h.choose("project.mathsArea","relationships");
- h.action("plan-next");h.action("plan-next");h.action("plan-next");
- assert(h.html.includes("Your first path is taking shape"));
+ h.choose("planning.fields.ideaStatus","yes");
+ h.action("plan-advance");assert(h.html.includes('data-source-node="N01"'));
+ h.write("planning.fields.aim","How does X relate to Y?");
+ h.action("plan-advance");assert(h.html.includes('data-source-node="N01V"'));
+ h.choose("planning.fields.beneficiaryType","me");
+ h.action("plan-advance");assert(h.html.includes('data-source-node="N02"'));
+ h.choose("planning.fields.kind","statistics");
+ h.action("plan-advance");assert(h.html.includes('data-source-node="N03"'));
+ h.choose("planning.fields.dataSource","secondary");
+ h.action("plan-advance");assert(h.html.includes('data-source-node="N03S"'));
+ h.choose("planning.fields.secondaryStatus","ready");
+ h.action("plan-advance");assert(h.html.includes('data-source-node="N03J"'));
+ h.action("plan-advance");assert(h.html.includes('data-source-node="N03D"'));
+ h.action("plan-advance");assert(h.html.includes('data-source-node="N03E"'));
+ h.choose("planning.fields.dataReadiness","4");
+ h.action("plan-advance");assert(h.html.includes('data-source-node="N03F"'));
+ h.action("plan-advance");assert(h.html.includes('data-source-node="N03G"'));
+ h.choose("planning.fields.practicalEase","3");
+ h.action("plan-advance");assert(h.html.includes('data-source-node="N03H"'));
+ h.action("plan-advance");assert(h.html.includes('data-source-node="N04"'));
+ h.choose("planning.fields.course","AA SL");
+ h.action("plan-advance");assert(h.html.includes('data-source-node="N04S"'));
+ assert(h.html.includes("Pearson"));
+ h.action("plan-toggle-math",{mathId:"AA15"});
+ assert(h.saved.planning.mathSelected.includes("AA15"));
+ h.action("plan-advance");assert(h.html.includes('data-source-node="N01P"'));
+ h.choose("planning.fields.predictionId","S01");
+ h.action("plan-advance");assert(h.html.includes('data-source-node="N04R"'));
+ h.action("plan-advance");assert(h.html.includes('data-source-node="N04M"'));
+ h.action("plan-advance");assert(h.html.includes('data-source-node="N05V"'));
+ h.action("plan-advance");assert(h.html.includes('data-source-node="N05"'));
+ h.action("plan-advance");assert(h.html.includes('data-source-node="N06E"'));
+ h.action("plan-advance");assert(h.html.includes('data-source-node="N06T"'));
+ h.action("plan-advance");assert(h.html.includes('data-source-node="N06"'));
+ h.action("plan-advance");assert(h.html.includes('data-source-node="N07"'));
  assert.equal(h.saved.project.aim,"How does X relate to Y?");
+ assert.equal(h.saved.planning.completed,true);
  assert.equal(h.saved.version,2);
 });
+
 test("maths can remain planned without inventing interpretation, then actual work can be recorded",()=>{
  const h=createHarness();
  h.nav("completing");h.action("studio-math");h.action("math-add");
@@ -112,7 +141,7 @@ test("saved v1 browser project migrates on load without losing its real notes",(
  const h=createHarness(v1);
  assert(h.html.includes("Your IA Studio"));
  h.action("open-files"); // opens save panel but has no unintended state reset
- h.nav("planning");h.action("plan-next");
+ h.nav("planning");h.action("plan-edit",{node:"N01"});
  assert.equal(h.saved.project.aim,"Old question");
  assert.equal(h.saved.scratch.introduction,"My original text");
  assert.equal(h.saved.teacher.pendingApproval,true);
