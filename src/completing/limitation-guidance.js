@@ -78,6 +78,10 @@ export function relevantLimitations(state,node=state.completion.current){
   return p(a.id)-p(b.id);
  });
 }
+export function limitationContextKey(state,node=state.completion.current){
+ const x=guidanceContext(state,node);
+ return node+"|"+(x.entry?.id||"")+"|"+(x.entry?.methodId||x.entry?.technique||"")+"|"+x.sourceStatus;
+}
 export function selectLimitation(state,id){
  const eligible=relevantLimitations(state);
  const match=eligible.find(x=>x.id===id);
