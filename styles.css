@@ -77,3 +77,9 @@ h1,h2,h3,h4,p {margin-top:0} h1,h2,h3,h4 {font-family:Manrope, 'DM Sans', sans-s
  .plan-math-options{max-height:340px}
  .plan-math-count{font-size:11px}
 }
+
+.plan-details{margin-top:20px;border:1px solid var(--line);border-radius:15px;padding:13px 16px;background:#fafcf9}
+.plan-details summary{cursor:pointer;font-size:13px;font-weight:750;color:var(--teal-dark)}
+.plan-details[open] summary{padding-bottom:15px;border-bottom:1px solid var(--line)}
+.plan-details .task-section{margin-top:20px}
+.plan-details summary:focus-visible{outline:3px solid #b8863b;outline-offset:4px}
