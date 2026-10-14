@@ -1,0 +1,548 @@
+{
+  "schemaVersion": 1,
+  "sourceSheet": "Planning Prompts",
+  "sourceBounds": {
+    "rows": 102,
+    "columns": 8
+  },
+  "rowCount": 45,
+  "nonemptyCellCount": 311,
+  "rows": [
+    {
+      "row": 1,
+      "cells": [
+        "PLANNING PROMPTS  |  Additions from JIS IA Guide (2025)"
+      ]
+    },
+    {
+      "row": 2,
+      "cells": [
+        "Use these short questions after the corresponding flowchart nodes. They should not form one compulsory questionnaire."
+      ]
+    },
+    {
+      "row": 3,
+      "cells": [
+        "Optional idea comparison, predictions, future changes and teacher questions accept 'Not sure yet' or Skip."
+      ]
+    },
+    {
+      "row": 4,
+      "cells": [
+        "Comparisons, predictions and planned adjustments are optional; milestone dates are editable, and unknown school deadlines remain 'To confirm with teacher'. The guide's planning-to-draft-to-revision sequence is reflected here."
+      ]
+    },
+    {
+      "row": 5,
+      "cells": [
+        "Teacher discussions are recommended for everyone and required before pursuing certain flagged ideas/actions, never before exporting a summary."
+      ]
+    },
+    {
+      "row": 6,
+      "cells": [
+        "Every recorded answer can appear in the student's personalised planning report; only relevant sections are displayed."
+      ]
+    },
+    {
+      "row": 8,
+      "cells": [
+        "ID",
+        "Node",
+        "When shown",
+        "Student-facing question",
+        "Input type",
+        "Branch/advice logic",
+        "Summary field",
+        "Status"
+      ]
+    },
+    {
+      "row": 9,
+      "cells": [
+        "C01",
+        "N00C",
+        "Student chooses to compare alternatives",
+        "What other IA topic could you investigate? (Up to two additional ideas.)",
+        "Optional short-answer boxes",
+        "One idea is fine; this branch must be skippable.",
+        "Other ideas",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 10,
+      "cells": [
+        "C02",
+        "N00C",
+        "Multiple ideas entered",
+        "Which idea offers the easiest access to suitable data, and why?",
+        "Optional short answer",
+        "Use quick comparison; no need for complete second plan.",
+        "Data accessibility comparison",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 11,
+      "cells": [
+        "C03",
+        "N00C",
+        "Multiple ideas entered",
+        "Which idea is most useful/interesting and realistic given your time?",
+        "Optional short answer",
+        "Do not rank popularity as mathematical quality.",
+        "Reason for topic choice",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 12,
+      "cells": [
+        "C04",
+        "N00C",
+        "When comparison is complete",
+        "Which idea would you like to plan now?",
+        "Choice",
+        "Keep alternatives recorded without treating them as failed ideas.",
+        "Selected idea",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 13,
+      "cells": [
+        "P01",
+        "N01P",
+        "After course and initial maths choices (N04S); IA type and relevant data context known",
+        "What sort of result or pattern do you think you might find? Pick a relevant suggestion, enter your own prediction or choose 'Not sure yet'.",
+        "Context-filtered prediction choice(s), Other text or Not sure",
+        "Prediction nudge depends on IA type and data context. After it, ask separately WHY, and what it might mean for the selected beneficiary IF TRUE (P06); allow edit at N01V before maths review.",
+        "Tentative predicted pattern",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 14,
+      "cells": [
+        "P02",
+        "N01P",
+        "Whenever the student makes a prediction",
+        "WHY do you expect this? What experience, observation or reasoning supports your prediction?",
+        "Separate short-answer box (optional if genuinely unsure)",
+        "Keep WHY distinct from the implication question (P06). Neither is a fabricated result. If unsure, accept uncertainty and proceed.",
+        "Reason for predicted pattern",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 15,
+      "cells": [
+        "V01",
+        "N01V",
+        "Every student after defining an investigation aim",
+        "Who could benefit from knowing the answer to your investigation?",
+        "Choose one: It would help me / I could advise someone / Both / Not sure yet",
+        "Continue to one or two short conditional questions. Personal usefulness counts; do not require a grand real-world impact.",
+        "Intended type of benefit",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 16,
+      "cells": [
+        "D01",
+        "N03J",
+        "Primary/secondary/both data",
+        "What other realistic method of collecting or finding this data did you consider?",
+        "Short answer / Not sure yet",
+        "For Both, wait until both source branches are answered.",
+        "Alternative data approach",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 17,
+      "cells": [
+        "D02",
+        "N03J",
+        "After chosen method named",
+        "Why is your selected method preferable for this investigation?",
+        "Short answer",
+        "Explain fit to aim, not generic pros and cons.",
+        "Choice justification",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 18,
+      "cells": [
+        "D03",
+        "N03J",
+        "Data-based investigations",
+        "What is the main limitation of your chosen collection/source method?",
+        "Short answer / Not sure yet",
+        "Different prompts for surveys, measurements and secondary sources.",
+        "Data method limitation",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 19,
+      "cells": [
+        "D04",
+        "N03J",
+        "If limitation named",
+        "Can you reduce this limitation, or why is it acceptable?",
+        "Optional short answer",
+        "Accept honest limitations without pretending to eliminate them.",
+        "Limitation mitigation",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 20,
+      "cells": [
+        "D05",
+        "N03J",
+        "Only if questionnaire or survey",
+        "What population and sampling method will you use? What alternative was possible?",
+        "Conditional short-answer boxes",
+        "Check bias and survey wording; reuse data already entered.",
+        "Sampling choice",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 21,
+      "cells": [
+        "T01",
+        "N03H",
+        "All planning routes",
+        "What initial-idea, teacher-draft and final deadlines has your school set?",
+        "Configured dates / optional date fields",
+        "No invented dates; 'To confirm with teacher' is valid.",
+        "School deadlines",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 22,
+      "cells": [
+        "T02",
+        "N03H",
+        "Data or simplified example will be used",
+        "By what date could you prepare an initial graph, diagram or simplified case?",
+        "Date / Not sure yet",
+        "Must fit the expected data availability where applicable.",
+        "First visual milestone",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 23,
+      "cells": [
+        "T03",
+        "N03H",
+        "All routes",
+        "When could you complete an initial calculation and reflect on it?",
+        "Date / Not sure yet",
+        "Encourage an early start, not a late all-at-once calculation.",
+        "First mathematical work milestone",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 24,
+      "cells": [
+        "T04",
+        "N03H",
+        "All routes",
+        "When will your written first draft, including analysis and conclusion, be ready?",
+        "Date / Not sure yet",
+        "Use the school's teacher-draft deadline where available.",
+        "Draft-writing milestone",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 25,
+      "cells": [
+        "T05",
+        "N03H",
+        "All routes",
+        "When will you check, correct and submit your revised IA?",
+        "Date / Not sure yet",
+        "Reserve time for self-check and teacher feedback.",
+        "Revision and final submission",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 26,
+      "cells": [
+        "T06",
+        "N03H",
+        "When plan is tight/unrealistic",
+        "What could you start earlier or simplify to create a buffer?",
+        "Conditional short answer",
+        "Flag clashes with known deadlines; don't block summary export.",
+        "Timeline adjustment",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 27,
+      "cells": [
+        "V01",
+        "N05V",
+        "Before first maths",
+        "What simple graph, table, diagram or simplified version of the problem might help you begin?",
+        "Choice + Other + Not sure yet",
+        "Plan only; don't require students to produce the actual graph yet.",
+        "First representation",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 28,
+      "cells": [
+        "V02",
+        "N05V",
+        "If representation named",
+        "What might it help you notice, compare or calculate?",
+        "Optional short answer",
+        "Link the representation back to the investigation aim.",
+        "Reason for representation",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 29,
+      "cells": [
+        "E01",
+        "N06E",
+        "After initial maths planned",
+        "What result or difficulty might cause you to change the direction of your investigation?",
+        "Optional short answer / Not sure",
+        "Recognise that plans evolve; unsuccessful results are worth reflecting on.",
+        "Possible change trigger",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 30,
+      "cells": [
+        "E02",
+        "N06E",
+        "If trigger named",
+        "What could you modify without restarting your whole IA?",
+        "Optional short answer",
+        "E.g. refine variables, model or sample; avoid committing to a fixed structure.",
+        "Possible adaptation",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 31,
+      "cells": [
+        "TC01",
+        "N06T",
+        "All routes",
+        "Is there anything about your aim or plan you would like to discuss with your teacher?",
+        "Optional short answer / Skip",
+        "Use N08 teacher answers if previously supplied; do not ask twice.",
+        "Universal teacher check-in",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 32,
+      "cells": [
+        "TC02",
+        "N06T",
+        "If student wants to book check-in",
+        "When could you discuss your plan with your teacher?",
+        "Optional date / To confirm",
+        "Conversation recommended, not required before export.",
+        "Teacher check-in date",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 33,
+      "cells": [
+        "T07",
+        "N03H",
+        "All routes",
+        "When will your initial planning and introductory explanation be ready?",
+        "Date or Not sure yet",
+        "Pre-fill teacher-provided dates when known, never invent them.",
+        "Planning and introduction",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 34,
+      "cells": [
+        "T08",
+        "N03H",
+        "After first visual planned",
+        "When will you analyse and reflect on your initial graph, table or simplified case?",
+        "Date or Not sure yet",
+        "A graph alone is not enough; leave time to interpret it.",
+        "First visual analysis/reflection",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 35,
+      "cells": [
+        "T09",
+        "N03H",
+        "When multiple mathematical steps are planned",
+        "When will you complete further calculations, analyse the results and write your conclusion?",
+        "Date or Not sure yet",
+        "Plan for reflection before the teacher's draft deadline.",
+        "Further maths and conclusion",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 36,
+      "cells": [
+        "P04",
+        "N01P",
+        "If 'Not sure' selected",
+        "What initial graph or data sample might help you work out what to expect?",
+        "Optional short answer",
+        "Accept uncertainty; don't block the next maths-review node.",
+        "How to explore an uncertain prediction",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 37,
+      "cells": [
+        "R01",
+        "N04R",
+        "After prediction and WHY",
+        "Look again at your earlier maths choices. Would you keep, add or remove any techniques?",
+        "Existing multi-select reopened; optional Other; Not sure",
+        "Show course-specific suggestions based on chosen prediction. No forced additions.",
+        "Revised mathematical techniques",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 38,
+      "cells": [
+        "R02",
+        "N04R",
+        "When a suggested technique is displayed",
+        "Why might this mathematics help investigate the pattern you expect?",
+        "Optional separate short-answer box",
+        "Use explanation to assess fit; don't demand an essay or pretend suggestion is essential.",
+        "Reason for maths selection",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 39,
+      "cells": [
+        "R03",
+        "N04R",
+        "When prediction and mathematics mismatch",
+        "Does the method fit your variables and expected pattern?",
+        "Short contextual note with edit controls",
+        "E.g. PMCC requires paired numerical data and concerns linear association; a normal distribution describes one numerical variable, not correlation.",
+        "Method suitability caveat",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 40,
+      "cells": [
+        "R04",
+        "N04R",
+        "If outside-course technique needed",
+        "Would you like to record another technique not on your course list?",
+        "Optional Other short-answer box",
+        "Retain any existing free-text choice; suggest teacher consultation, not automatic rejection.",
+        "Outside-course mathematics",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 41,
+      "cells": [
+        "P05",
+        "N01P",
+        "Only when data structure cannot be inferred from prior answers",
+        "Which best describes your data: two numerical quantities, one numerical variable, comparing groups, categorical variables, repeated yes/no trials, or something else?",
+        "One small select / Not sure",
+        "Use only to filter sensible prediction nudges. Do not repeat data-type questions if variables already make this clear.",
+        "Data structure for prediction",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 42,
+      "cells": [
+        "V02",
+        "N01V",
+        "If personal benefit or Both is chosen",
+        "What might you decide, do, improve or understand better after answering your question? Why would that be useful to you?",
+        "Short answer (one box)",
+        "Prompt a realistic, directly useful outcome rather than simply naming a mathematical technique. Findings need not confirm the prediction.",
+        "Personal decision or benefit",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 43,
+      "cells": [
+        "V03",
+        "N01V",
+        "If advice to someone or Both is chosen",
+        "Who might find your results useful (person, role or group), and what decision or advice might your findings help them with? Why would that matter?",
+        "Short answer (one box)",
+        "A teacher, team, school group, family member or other realistic audience is fine. Don't request identifiable third-party details. Advice must ultimately follow evidence.",
+        "Intended audience and possible recommendation",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 44,
+      "cells": [
+        "P06",
+        "N01P",
+        "After a prediction is selected and WHY has been answered, if an intended beneficiary is known",
+        "Your aim: [student's current aim]. If [selected prediction] were true, what would it mean for [current beneficiary]? How could this help answer your aim or inform a decision or advice?",
+        "Separate short-answer box or 'Not sure yet'",
+        "Display aim and prediction above the answer box. Address the selected beneficiary naturally ('you' for self, 'your friend / group' for others). Allow Not sure yet; keep it hypothetical. Show 'Edit who is this for?' beside the prompt.",
+        "Meaning IF prediction is true",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 45,
+      "cells": [
+        "P07",
+        "N01P → N01V → N01P",
+        "Always available on prediction screen",
+        "Edit 'Who is this for?'",
+        "Inline Edit link opening N01V fields; Confirm/Back to prediction",
+        "Reopen the original beneficiary and intended-use fields in place, then return directly to prediction. Retain draft implication; if beneficiary changes, ask to confirm/edit it rather than silently discard.",
+        "Updated beneficiary and intended use",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 46,
+      "cells": [
+        "SOURCE: JIS SL Maths IA Guide 2025 — https://docs.google.com/presentation/d/1BesCf9vTKGLm588jx5SUIdLyz-x5HUyYb2LqG_BACKg/edit\nDetailed IA writing and assessment guidance belongs primarily to Completing the IA; this tab contains planning decisions."
+      ]
+    }
+  ]
+}
