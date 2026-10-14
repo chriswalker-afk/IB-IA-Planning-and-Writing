@@ -61,9 +61,9 @@ test("non-completion visiting never marks the stage complete; student self-asses
  assert(markCompletionStage(s,"C10","complete"));
  assert.equal(s.completion.stages.C10,"complete");
  setCompletionField(s,"changedSincePlanning","Unrelated scope change");
- assert.equal(s.completion.stages.C10,"complete");
+ assert.equal(s.completion.stages.C10,"needs-review"); // editing a self-completed stage invalidates the earlier check
  place(s,"C10");
- assert.equal(s.completion.stages.C10,"complete");
+ assert.equal(s.completion.stages.C10,"needs-review");
  assert(!markCompletionStage(s,"C10","perfect"));
 });
 test("source route actions can't jump from one node with a condition belonging to another",()=>{
@@ -176,7 +176,7 @@ test("theoretical/no-data route carries no fabricated sample or readiness score"
  const s=state();applyPlanningField(s,"kind","theoretical");place(s,"C20");
  move(s,"Theoretical or no-data exploration","C21T");
  assert.equal(s.completion.current,"C21T");
- assert.equal(s.project.dataStatus,"not-started");
+ assert.equal(s.project.dataStatus,"theoretical");
  move(s,"No empirical data involved","C25");
  assert.equal(s.entries.length,0);
 });
