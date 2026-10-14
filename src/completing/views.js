@@ -457,6 +457,12 @@ export function createCompletingViews(ctx){
      ["outside","Partly or wholly beyond my syllabus"],
      ["unsure","I need teacher advice"]])+
     F("courseWhy","What mathematical question does this technique answer?","Why it is genuinely suitable for this investigation",{type:"textarea",rows:3})+
+    '<details class="guidance-insight"><summary>Check course-level mathematical depth (optional)</summary>'+
+      entryChoice("priorLearningOnly",[
+        {value:"no",title:"This has course-level mathematical content",icon:"check-circle"},
+        {value:"yes",title:"So far this is only prior-learning mathematics",icon:"lightbulb"},
+        {value:"unsure",title:"Not sure yet — check with my teacher",icon:"help-circle"}])+
+    '</details>'+
     info("Advanced ≠ better","Explain independently researched mathematics you understand when necessary; routine syllabus methods do not need textbook-style tutorials.")
   };
   case "C40L":return{intro:"Explain newly researched mathematics only when first genuinely needed, in your own understanding.",
