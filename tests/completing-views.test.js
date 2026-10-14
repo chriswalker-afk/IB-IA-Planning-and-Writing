@@ -46,7 +46,7 @@ test("theoretical branch contains actual mathematical objects instead of sample 
  assert(!html.includes("Sampling approach"));
 });
 test("first representation has BEFORE purpose, genuine result and AFTER interpretation in separate nodes",()=>{
- const {state,view}=fixture();state.planning.fields.aim="A concrete question";
+ const {state,view}=fixture();state.planning.fields.aim="A concrete question";state.planning.fields.prediction="I tentatively expected a linear pattern";
  startFirstRepresentation(state);
  setCompletionNode(state,"C32");
  let html=view.viewCompleting();
