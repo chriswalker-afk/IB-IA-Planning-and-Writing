@@ -59,7 +59,7 @@ export function createCompletionState(){
   current:"C00",history:[],visited:[],transitions:[],fields:{...C_FIELD_DEFAULTS},
   stages:Object.fromEntries(C_MAJOR_STAGES.map(x=>[x.id,"not-started"])),
   activeEntryIndex:-1,nextFromEntryId:"",scatterPatternForEntryId:"",scatterDetailForEntryId:"",returnTo:"",latestMeaningfulNode:"",
-  guidanceUi:{writeKey:"",coveredKey:"",exampleKey:"",selectedKey:"",quietNode:"",expanded:false,mathsExpanded:false,limitsExpanded:false,accuracyChanged:false,limitPage:0,limitDraftVisible:false,
+  guidanceUi:{writeKey:"",coveredKey:"",exampleKey:"",selectedKey:"",quietNode:"",quietId:"",quietScope:"",quietSignature:"",expanded:false,mathsExpanded:false,limitsExpanded:false,accuracyChanged:false,limitPage:0,limitDraftVisible:false,
    limitNoneKey:"",locationDraft:"",noteDraft:""},
   limitationDraft:{id:"",entryId:"",explanation:"",consequence:"",mitigation:"",location:""},
   confirmedLimitations:[],
@@ -247,6 +247,7 @@ export function setCompletionNode(state,id,{history=true,reason="revisit"}={}){
  c.current=id;
  if(previous!==id&&c.guidanceUi){
   c.guidanceUi.quietNode="";
+  c.guidanceUi.quietId="";c.guidanceUi.quietScope="";c.guidanceUi.quietSignature="";
   c.guidanceUi.exampleKey="";
   c.guidanceUi.expanded=false;
   c.guidanceUi.mathsExpanded=false;
