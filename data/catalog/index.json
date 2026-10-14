@@ -1,0 +1,261 @@
+{
+  "schemaVersion": 1,
+  "sourceWorkbook": "IA Pathfinder — Flowchart Draft",
+  "sourceFileId": "1oGNv4RFI-_mo1L3vznPtHOiUOSZSyJohziq7CR-0WXg",
+  "captureDate": "2026-10-14",
+  "capturedTabs": 24,
+  "columnsAreSourceOrder": true,
+  "tabs": [
+    {
+      "name": "Overview",
+      "slug": "overview",
+      "role": "diagram-reference",
+      "capturedRows": 26,
+      "lastPopulatedRow": 79,
+      "sourceColumns": 22,
+      "sourcePath": "data/sheets/overview.json",
+      "indexedRecords": 0
+    },
+    {
+      "name": "Planning the IA",
+      "slug": "planning-the-ia",
+      "role": "diagram-reference",
+      "capturedRows": 57,
+      "lastPopulatedRow": 88,
+      "sourceColumns": 21,
+      "sourcePath": "data/sheets/planning-the-ia.json",
+      "indexedRecords": 0
+    },
+    {
+      "name": "Maths Options",
+      "slug": "maths-options",
+      "role": "guidance-catalog",
+      "capturedRows": 61,
+      "lastPopulatedRow": 64,
+      "sourceColumns": 7,
+      "sourcePath": "data/sheets/maths-options.json",
+      "indexedRecords": 51
+    },
+    {
+      "name": "Feasibility Checks",
+      "slug": "feasibility-checks",
+      "role": "guidance-catalog",
+      "capturedRows": 32,
+      "lastPopulatedRow": 44,
+      "sourceColumns": 8,
+      "sourcePath": "data/sheets/feasibility-checks.json",
+      "indexedRecords": 15
+    },
+    {
+      "name": "Planning Prompts",
+      "slug": "planning-prompts",
+      "role": "guidance-catalog",
+      "capturedRows": 45,
+      "lastPopulatedRow": 46,
+      "sourceColumns": 8,
+      "sourcePath": "data/sheets/planning-prompts.json",
+      "indexedRecords": 37
+    },
+    {
+      "name": "Prediction Nudges",
+      "slug": "prediction-nudges",
+      "role": "guidance-catalog",
+      "capturedRows": 29,
+      "lastPopulatedRow": 30,
+      "sourceColumns": 9,
+      "sourcePath": "data/sheets/prediction-nudges.json",
+      "indexedRecords": 22
+    },
+    {
+      "name": "Planning Report",
+      "slug": "planning-report",
+      "role": "report-and-handover",
+      "capturedRows": 32,
+      "lastPopulatedRow": 33,
+      "sourceColumns": 8,
+      "sourcePath": "data/sheets/planning-report.json",
+      "indexedRecords": 25
+    },
+    {
+      "name": "Teacher Check-in",
+      "slug": "teacher-check-in",
+      "role": "guidance-catalog",
+      "capturedRows": 20,
+      "lastPopulatedRow": 21,
+      "sourceColumns": 7,
+      "sourcePath": "data/sheets/teacher-check-in.json",
+      "indexedRecords": 13
+    },
+    {
+      "name": "Completing the IA",
+      "slug": "completing-the-ia",
+      "role": "diagram-reference",
+      "capturedRows": 139,
+      "lastPopulatedRow": 416,
+      "sourceColumns": 21,
+      "sourcePath": "data/sheets/completing-the-ia.json",
+      "indexedRecords": 0
+    },
+    {
+      "name": "Handover & Import",
+      "slug": "handover-and-import",
+      "role": "report-and-handover",
+      "capturedRows": 208,
+      "lastPopulatedRow": 267,
+      "sourceColumns": 9,
+      "sourcePath": "data/sheets/handover-and-import.json",
+      "indexedRecords": 102
+    },
+    {
+      "name": "Completion Prompts",
+      "slug": "completion-prompts",
+      "role": "guidance-catalog",
+      "capturedRows": 192,
+      "lastPopulatedRow": 244,
+      "sourceColumns": 8,
+      "sourcePath": "data/sheets/completion-prompts.json",
+      "indexedRecords": 140
+    },
+    {
+      "name": "Data Collection Guide",
+      "slug": "data-collection-guide",
+      "role": "guidance-catalog",
+      "capturedRows": 60,
+      "lastPopulatedRow": 81,
+      "sourceColumns": 9,
+      "sourcePath": "data/sheets/data-collection-guide.json",
+      "indexedRecords": 49
+    },
+    {
+      "name": "Initial Exploration Guide",
+      "slug": "initial-exploration-guide",
+      "role": "guidance-catalog",
+      "capturedRows": 76,
+      "lastPopulatedRow": 92,
+      "sourceColumns": 10,
+      "sourcePath": "data/sheets/initial-exploration-guide.json",
+      "indexedRecords": 61
+    },
+    {
+      "name": "Interpretation & Next Steps",
+      "slug": "interpretation-and-next-steps",
+      "role": "guidance-catalog",
+      "capturedRows": 69,
+      "lastPopulatedRow": 82,
+      "sourceColumns": 10,
+      "sourcePath": "data/sheets/interpretation-and-next-steps.json",
+      "indexedRecords": 55
+    },
+    {
+      "name": "Limitation Examples",
+      "slug": "limitation-examples",
+      "role": "guidance-catalog",
+      "capturedRows": 57,
+      "lastPopulatedRow": 61,
+      "sourceColumns": 12,
+      "sourcePath": "data/sheets/limitation-examples.json",
+      "indexedRecords": 38
+    },
+    {
+      "name": "Nodes",
+      "slug": "nodes",
+      "role": "flow-nodes",
+      "capturedRows": 87,
+      "lastPopulatedRow": 88,
+      "sourceColumns": 7,
+      "sourcePath": "data/sheets/nodes.json",
+      "indexedRecords": 84
+    },
+    {
+      "name": "Routes",
+      "slug": "routes",
+      "role": "flow-routes",
+      "capturedRows": 287,
+      "lastPopulatedRow": 288,
+      "sourceColumns": 5,
+      "sourcePath": "data/sheets/routes.json",
+      "indexedRecords": 284
+    },
+    {
+      "name": "Conclusion & Reflection",
+      "slug": "conclusion-and-reflection",
+      "role": "guidance-catalog",
+      "capturedRows": 65,
+      "lastPopulatedRow": 80,
+      "sourceColumns": 9,
+      "sourcePath": "data/sheets/conclusion-and-reflection.json",
+      "indexedRecords": 49
+    },
+    {
+      "name": "Maths & Technology",
+      "slug": "maths-and-technology",
+      "role": "guidance-catalog",
+      "capturedRows": 85,
+      "lastPopulatedRow": 110,
+      "sourceColumns": 10,
+      "sourcePath": "data/sheets/maths-and-technology.json",
+      "indexedRecords": 60
+    },
+    {
+      "name": "Bivariate Decisions",
+      "slug": "bivariate-decisions",
+      "role": "guidance-catalog",
+      "capturedRows": 59,
+      "lastPopulatedRow": 80,
+      "sourceColumns": 10,
+      "sourcePath": "data/sheets/bivariate-decisions.json",
+      "indexedRecords": 38
+    },
+    {
+      "name": "Draft & Final Review",
+      "slug": "draft-and-final-review",
+      "role": "guidance-catalog",
+      "capturedRows": 53,
+      "lastPopulatedRow": 68,
+      "sourceColumns": 10,
+      "sourcePath": "data/sheets/draft-and-final-review.json",
+      "indexedRecords": 30
+    },
+    {
+      "name": "Getting Unstuck",
+      "slug": "getting-unstuck",
+      "role": "guidance-catalog",
+      "capturedRows": 75,
+      "lastPopulatedRow": 92,
+      "sourceColumns": 10,
+      "sourcePath": "data/sheets/getting-unstuck.json",
+      "indexedRecords": 59
+    },
+    {
+      "name": "Writing Moments",
+      "slug": "writing-moments",
+      "role": "guidance-catalog",
+      "capturedRows": 151,
+      "lastPopulatedRow": 181,
+      "sourceColumns": 11,
+      "sourcePath": "data/sheets/writing-moments.json",
+      "indexedRecords": 124
+    },
+    {
+      "name": "Next Mathematical Step",
+      "slug": "next-mathematical-step",
+      "role": "guidance-catalog",
+      "capturedRows": 118,
+      "lastPopulatedRow": 145,
+      "sourceColumns": 10,
+      "sourcePath": "data/sheets/next-mathematical-step.json",
+      "indexedRecords": 94
+    }
+  ],
+  "primaryGraph": {
+    "nodes": "data/flow/nodes.json",
+    "routes": "data/flow/routes.json"
+  },
+  "indexedCatalog": [
+    "data/catalog/audit-part-1.json",
+    "data/catalog/audit-part-2.json",
+    "data/catalog/audit-part-3.json"
+  ],
+  "coverageCsv": "docs/coverage.csv",
+  "coverageSummary": "docs/coverage.md"
+}
