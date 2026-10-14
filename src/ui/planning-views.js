@@ -223,6 +223,20 @@ export function createPlanningViews(ctx){
     F("workloadHours","Rough non-mathematical setup time (hours, optional)","e.g. 4")+
     F("externalRisks","Any time-sensitive event or dependency on others?","Weather, events, responses or travel",{type:"textarea",rows:2})+
     ((f.cleaningBurden==="lots"||f.unsecured||f.externalRisks)?F("backupMethod","A credible backup if something fails","A suitable alternate method, not invented observations",{type:"textarea",rows:2}):"")+
+    '<details class="plan-details"><summary>Relevant further feasibility checks (optional)</summary><div class="task-section">'+
+    (f.softwareReady!=="yes"?select("pilotReady","Have you tried one data point all the way to a graph or calculation?",[
+      ["yes","Yes — a small complete test"],["no","Not yet"],["unsure","Not yet possible or unsure"]]):"")+
+    (f.dependencies||f.unsecured?select("costIssue","Are cost, travel or specialist access an issue?",[
+      ["no","No"],["yes","Yes"],["unsure","Possibly"]]):"")+
+    (["secondary","both"].includes(f.dataSource)?select("sourceRights","Can the source materials be cited and used appropriately?",[
+      ["yes","Yes"],["no","Not yet"],["unsure","I need to check"]]):"")+
+    select("dataSufficiency","Does the proposed dataset seem adequate for your aim?",[
+      ["yes","Yes, provisionally"],["no","Probably not"],["unsure","An initial sample may help"]])+
+    (["statistics","modelling"].includes(f.kind)?select("negativeResultViable","Could the investigation still be worthwhile if no hoped-for pattern appears?",[
+      ["yes","Yes"],["no","I may need to revise the question"],["unsure","I will check"]]):"")+
+    select("presentationManageable","Can the important data and figures be presented concisely?",[
+      ["yes","Yes"],["no","I need a simpler presentation plan"],["unsure","I'll check"]])+
+    '</div></details>'+
     (["yes","unsure"].includes(f.permissionNeed)?small(callout("Safety, privacy and consent","You can save and continue planning, but do not begin affected data collection until requirements are resolved.",true)+
      '<div class="button-row">'+route("Discuss permissions with my teacher","Safety / privacy / consent unresolved")+'</div>'):""),
     "<h4>Practical risks aren't mathematical limitations</h4><p>Waiting for permission belongs in the project plan. Measurement uncertainty or sampling bias belongs beside the relevant mathematical method.</p>");
@@ -316,12 +330,16 @@ export function createPlanningViews(ctx){
     (f.teacherQuestion?summary("Existing teacher question",f.teacherQuestion):"")+
     F("universalTeacherQuestion","Anything you would like to discuss with your teacher? (optional)","Aim, mathematical suitability, feasibility or what you'd like to achieve",{type:"textarea",rows:2})+
     F("teacherSchedule","Possible discussion date (optional)","",{type:"date"})+
-    (planningFlags(state).length?teacherWarnings(state):callout("You can still ask a question","A teacher conversation is useful but does not block your provisional summary.")),
+    (planningFlags(state).length?teacherWarnings(state)+
+      '<div class="button-row">'+route("Open a specialist teacher checkpoint","Specialist teacher issue")+'</div>':
+      callout("You can still ask a question","A teacher conversation is useful but does not block your provisional summary.")),
     "<h4>No assumed approval</h4><p>Recording a teacher question or choosing to skip it does not mean the teacher has approved this plan.</p>");
    case "N08":return stepBody("What would you like to ask your teacher?","Record one precise question and a safe action while waiting. You can still export a provisional plan.",
     teacherWarnings(state)+
     (f.kind==="theoretical"?F("theoreticalAim","What mathematical property could you investigate?","A conjecture or pattern you want to understand",{type:"textarea",rows:3})+
-      F("theoreticalCase","A simplified case that could get you started","What could you test or calculate?",{type:"textarea",rows:2}):"")+
+      F("theoreticalCase","A simplified case that could get you started","What could you test or calculate?",{type:"textarea",rows:2})+
+      F("theoreticalPrediction","A tentative conjecture (optional)","What mathematical claim might be true?",{type:"textarea",rows:2})+
+      (f.theoreticalPrediction?F("theoreticalWhy","Why might the claim hold?","Reasoning from examples or mathematical structure",{type:"textarea",rows:2}):""):"")+
     (f.course&&!["AI SL","AA SL"].includes(f.course)?F("otherCourseMaths","Possible mathematics for this course","What would you ask about?",{type:"textarea",rows:2}):"")+
     F("teacherNeed","Which part of the plan needs advice?","Maths, data, access, safety or scope",{type:"textarea",rows:2})+
     F("teacherQuestion","A specific question for my teacher","What would you like to clarify?",{type:"textarea",rows:3})+
