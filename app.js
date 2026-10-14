@@ -421,6 +421,12 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       });
       if(merge.unchanged){toast("No changes selected.");return;}
       state=merge.state;
+      if(["C00","C01"].includes(state.completion.current)){
+        const routeLabel=pendingImport.kind==="partial"?"Only some fields recognized":"Recognized document / fields extracted";
+        if(state.completion.current==="C01")moveCompletionRoute(state,routeLabel);
+        else setCompletionNode(state,"C02",{reason:"review-imported-answers"});
+        state.route="completing";
+      }
       state.handover.confirmedAt="";
       state.handover.needsReview=true;
       state.handover.lastImportAt=new Date().toISOString();
@@ -483,6 +489,9 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         if(!markCompletionStage(state,el.dataset.stage,el.dataset.status)){toast("Unknown stage status.");break;}
         save();render();toast("Your own stage status was recorded.");break;
       }
+      case "completion-review-import":
+        setCompletionNode(state,"C02",{reason:"review-unchanged-import"});
+        closeDrawer(false);nav("completing");break;
       case "completion-record-accuracy":{
         const result=addAccuracyDecision(state);
         if(!result.ok){toast(result.error);break;}
