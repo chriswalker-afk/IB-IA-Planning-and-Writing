@@ -121,3 +121,86 @@ h1,h2,h3,h4,p {margin-top:0} h1,h2,h3,h4 {font-family:Manrope, 'DM Sans', sans-s
 @media(prefers-reduced-motion:reduce){
  .handover-diff-row,.handover-select-toolbar .btn{transition:none!important}
 }
+
+
+/* Phase 4 — focused Completing path, mobile-first and non-gamified. */
+.completing-page .task-shell{margin-top:12px}
+.completion-topline{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 0 13px;border-bottom:1px solid var(--line)}
+.completion-topline>span{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:750;color:var(--teal-dark);text-transform:uppercase;letter-spacing:.06em}
+.completion-topline>span .icon{width:15px;height:15px}
+.completion-top-warnings{margin:12px 0}
+.completion-top-warnings .inline-note{margin:6px 0}
+.completion-stage-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin:18px 0 25px}
+.completion-stage-card{display:flex;align-items:center;gap:12px;text-align:left;border:1px solid var(--line);padding:15px;border-radius:15px;background:var(--surface,#fff);cursor:pointer;min-width:0;color:var(--ink);transition:border-color .16s ease,background .16s ease}
+.completion-stage-card:hover{background:#f4faf6;border-color:#b3d6c6}
+.completion-stage-card:focus-visible{outline:3px solid #b8863b;outline-offset:2px}
+.completion-stage-card .feature-icon{flex:none;width:36px;height:36px;border-radius:11px}
+.completion-stage-card .feature-icon .icon{width:19px;height:19px}
+.completion-stage-body{display:flex;flex-direction:column;gap:5px;flex:1;min-width:0}
+.completion-stage-body strong{font-size:13px;font-weight:760}
+.completion-stage-body small{font-size:11px;font-weight:550;color:var(--muted);line-height:1.35}
+.completion-stage-card>.icon:last-child{width:15px;height:15px;color:var(--teal-dark)}
+.completion-big-actions{display:flex;flex-direction:column;gap:10px;margin-top:23px}
+.completion-big-actions>.btn{min-height:51px;text-align:left;display:flex;justify-content:space-between;gap:15px}
+.completion-evidence-anchor{display:flex;align-items:flex-start;gap:12px;padding:17px 18px;margin:14px 0 20px;background:#eff7f2;border:1px solid #cfe4d7;border-radius:14px}
+.completion-evidence-anchor>.icon{flex:none;width:19px;height:19px;color:var(--teal)}
+.completion-evidence-anchor strong{font-size:12px;color:var(--teal-dark)}
+.completion-evidence-anchor p{font-size:14px;line-height:1.6;margin:7px 0;white-space:pre-wrap;overflow-wrap:anywhere}
+.completion-current-record .summary-block{margin:14px 0}
+.completion-active-step{border:1px solid var(--line);border-radius:15px;padding:17px;margin:17px 0}
+.completion-active-step .choice-grid{margin-bottom:18px}
+.completion-status{margin:23px 0 5px;padding-top:16px;border-top:1px solid var(--line)}
+.completion-status>.field-label{display:block;margin-bottom:10px}
+.completion-status-options{display:flex;flex-wrap:wrap;gap:8px}
+.completion-status-options button{border:1px solid var(--line);background:var(--surface,#fff);color:var(--muted);border-radius:100px;padding:8px 11px;font-size:11px;font-weight:700;cursor:pointer}
+.completion-status-options button.selected{color:var(--teal-dark);border-color:#8ac4aa;background:#eef7f1}
+.completion-status-options button:focus-visible{outline:3px solid #b8863b;outline-offset:2px}
+.completion-footer{border-top:1px solid var(--line);padding-top:18px;margin-top:27px}
+.completion-footer>.button-row{display:flex;justify-content:flex-start;align-items:center;gap:9px;flex-wrap:wrap}
+.completion-footer .btn{max-width:100%;text-align:left;white-space:normal;min-height:36px}
+.completion-route-grid{display:grid;grid-template-columns:1fr;gap:7px;margin-top:13px}
+.completion-route-grid .btn{font-size:12px}
+.completion-options{margin-top:14px;padding:10px 13px;border:1px solid var(--line);border-radius:12px}
+.completion-options>summary{cursor:pointer;color:var(--teal-dark);font-weight:700;font-size:12px;line-height:1.5}
+.completion-options>summary:focus-visible{outline:3px solid #b8863b;outline-offset:3px}
+.completion-help{margin-top:20px;padding:13px;background:#f7faf7;border:1px solid var(--line);border-radius:12px}
+.completion-help>summary{display:flex;align-items:center;gap:8px;cursor:pointer;font-size:12px;color:var(--teal-dark);font-weight:700}
+.completion-help .icon{width:14px;height:14px}
+.completion-help p{margin-top:11px;font-size:13px;line-height:1.6}
+.completion-mini-list{display:flex;flex-direction:column;gap:5px;border:1px solid var(--line);border-radius:14px;padding:14px;margin:16px 0}
+.completion-mini-list>strong{font-size:12px;color:var(--ink);margin-bottom:6px}
+.completion-mini-list>button{display:flex;align-items:center;justify-content:space-between;gap:10px;text-align:left;background:none;border:0;border-radius:9px;padding:9px;color:var(--ink);cursor:pointer;font-size:12px}
+.completion-mini-list>button.current{background:#eef7f1}
+.completion-mini-list>button:hover{background:#f5f9f6}
+.completion-accuracy-item{padding:9px;border-bottom:1px solid var(--line);font-size:12px;line-height:1.5}
+.completion-accuracy-item:last-child{border-bottom:0}
+.completion-accuracy-item span{display:block;color:var(--muted);margin-top:3px}
+.completion-accuracy-item p{margin:5px 0;white-space:pre-wrap}
+.completion-suggestions{margin:19px 0}
+.completion-suggestions>.field-label{display:block;margin-bottom:11px}
+.completion-suggestions .choice{margin-bottom:7px}
+.completion-actual-list{margin:16px 0}
+.completion-actual-list .context-card{margin:8px 0}
+.completion-actual-list .context-card p{white-space:pre-wrap}
+@media(min-width:1000px){
+ .completion-stage-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:760px){
+ .completion-stage-grid{grid-template-columns:1fr;gap:8px;margin:13px 0 18px}
+ .completion-stage-card{padding:12px}
+ .completion-stage-card .feature-icon{width:33px;height:33px}
+ .completion-footer>.button-row{flex-direction:column;align-items:stretch}
+ .completion-footer .btn{width:100%;justify-content:space-between}
+ .completion-topline{gap:8px}
+ .completion-topline>span{font-size:10px}
+ .completion-evidence-anchor{padding:12px}
+ .completion-active-step{padding:12px}
+ .completion-status-options button{flex-grow:1}
+ .completion-mini-list{padding:11px}
+}
+@media print{
+ .completion-footer,.completion-topline button,.completion-help summary,.completion-stage-card{break-inside:avoid}
+}
+@media(prefers-reduced-motion:reduce){
+ .completion-stage-card,.completion-status-options button{transition:none}
+}
