@@ -119,7 +119,7 @@ export function createProjectViews(ctx){
       ["Permissions / consent status",pfields.permissionNeed||"Not confirmed"],
       ["Permissions requiring discussion",pfields.permissionDetails],
       ["Software readiness",pfields.softwareReady],["Data cleaning",pfields.cleaningBurden],
-      ["Estimated practical setup hours",pfields.workloadHours],["Practical ease /5",pfields.practicalEase],
+      ["Estimated practical setup hours",pfields.workloadHours],["Smallest workable scope",pfields.minimumVersion],["Practical ease /5",pfields.practicalEase],
       ["Improvement to practical ease",pfields.easeImprovement],["Fallback plan",pfields.backupMethod]
     ]);
     const timeline=planningSection("Timeline and milestones",[
@@ -134,11 +134,11 @@ export function createProjectViews(ctx){
       ["Revision and final checks",pfields.milestoneReview]
     ]);
     const teacher=planningSection("Teacher discussion and unresolved questions",[
-      ["Theoretical starting point",pfields.theoreticalCase],
+      ["Theoretical starting point",pfields.theoreticalCase],["Tentative theoretical conjecture",pfields.theoreticalPrediction],["Reasoning for conjecture",pfields.theoreticalWhy],
       ["Provisional mathematics outside initial course scope",pfields.otherCourseMaths],
       ["Suitability status (self-check only)",pfields.courseSuitability],
       ["Mathematics familiarity / course level",pfields.mathsOutside],
-      ["What I want to ask my teacher",pfields.teacherQuestion],
+      ["What I want to ask my teacher",pfields.teacherQuestion],["Other information for my teacher",pfields.teacherExtra],
       ["Universal check-in question",pfields.universalTeacherQuestion],
       ["Possible discussion date",pfields.teacherSchedule],
       ["Safe action while awaiting feedback",pfields.teacherSafeAction],
