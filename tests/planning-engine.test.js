@@ -44,7 +44,8 @@ test("prediction nudge options respect statistical data context and course sugge
  set(s,"course","AI SL");
  assert.deepEqual(relevantPredictionOptions(s).filter(x=>x.route==="Statistics").map(x=>x.id),["S01","S02","S03","S04"]);
  set(s,"predictionId","S01");
- assert(s.planning.fields.prediction.includes("linear positive"));
+ assert.equal(s.planning.fields.predictionId,"S01");
+ assert.equal(s.planning.fields.prediction,""); // A source nudge must not be copied into the student answer.
  assert(predictionMathSuggestions(s).some(x=>x.id==="AI14"));
  assert.deepEqual(s.planning.mathSelected,[]);
  assert.equal(s.evidence.results.length,0);
