@@ -1,42 +1,47 @@
 # IA Pathfinder — source migration and implementation coverage
 
-**Google Sheet snapshot:** \`IA Pathfinder — Flowchart Draft\`, 14 October 2026. Source sheets are preserved in \`data/sheets/*.json\`, normalized route data in \`data/flow/*.json\`, and Phase 2 catalogs in \`src/planning/\`. No changes have been made to the source Google Sheet.
+**Snapshot:** Google Sheet \`IA Pathfinder — Flowchart Draft\`, 14 October 2026. Its original 24 tabs and all indexed source rows are preserved in the repository; **the source Google Sheet has not been changed**.
 
-## Current coverage by source item
+## Coverage by source item
 
 | Runtime status | Count | Meaning |
 |---|---:|---|
-| phase2-implemented | **166** | All 32 Planning nodes, 61 Planning routes, 51 mathematics options, 22 prediction nudges |
-| phase2-partial | **90** | Supplementary planning prompts/teacher guidance/feasibility and Phase 3 report-format requirements |
-| prototype-partial | **37** | Existing preliminary Completing interactions |
-| not-implemented | **1,137** | Primarily Completing and advanced contextual advice to be built in later phases |
-| **Total indexed records** | **1,430** | From all 24 tabs |
+| Phase 2 implemented | **166** | All 32 Planning nodes, 61 Planning routes, 51 listed techniques and 22 prediction nudges |
+| Phase 2 partial | **65** | Supplemental Planning draft prompts, feasibility details and editorial rules still needing refinement |
+| Phase 3 implemented | **61** | Personalised planning PDF/Word sections, source planning fields, selected import/recovery/merge routes |
+| Phase 3 partial | **8** | Some exact editorial report layouts, third-party/edited document recovery and deferred completion-snapshot details |
+| Prototype partial | **37** | Preliminary Completing interactions that are not yet the full source flowchart |
+| Not implemented | **1,093** | Primarily Completing nodes, guidance libraries and later teacher/final-review features |
+| **Total** | **1,430** | Unique indexed records across all 24 sheet tabs |
 
-Total source flowchart: **84 nodes and 284 route connections**. Planning specifically: **32 nodes and 61 route connections**. The original node editorial statuses are retained: 41 Agreed, 42 Working drafts, 1 Needs discussion. Those statuses are *different* from implementation status.
+The original flowchart has **84 nodes and 284 routes**; Planning accounts for **32 nodes and 61 routes**. Editorial statuses **41 Agreed, 42 Working draft and 1 Needs discussion** refer to workbook content, **not** technical completion.
 
-## Artifacts
+## Traceability and implementation
 
-- [Detailed row-by-row coverage register](coverage.csv): exact source ID, sheet, row, editorial status, runtime status and implementation location.
-- [Phase 2 implementation and test notes](phase-2.md): what now works in Planning, routes to review, safety distinctions, and Phase 3 handover boundaries.
-- [Source manifest](../data/catalog/index.json): all 24 sheet snapshots and source paths.
-- [Full flowchart nodes](../data/flow/nodes.json) and [routes](../data/flow/routes.json).
-- \`src/planning/catalog.js\`: AI SL/AA SL maths, prediction, feasibility, teacher prompts with provenance.
-- \`src/planning/route-table.js\`: original 61 Planning conditions and source row refs.
-- \`src/planning/engine.js\`: actual Planning state, branch execution, flags, conditional suggestions and join safeguards.
-- \`src/ui/planning-views.js\`: focused mobile/desktop student screens.
-- \`tests/planning-engine.test.js\` and \`tests/planning-ui-coverage.test.js\`: complete node rendering, routes, combined data, predictions, course menus, consent and migration.
+- [Complete row-by-row coverage register](coverage.csv): source tab/row, item ID, editorial status, runtime status, implementation file and next phase.
+- [Phase 3 document, handover and reimport tests](phase-3.md): student review paths, safe recovery limits and implementation details.
+- [Phase 2 Planning details](phase-2.md): branching, syllabus menus, context checks and planning tests.
+- [Source tab manifest](../data/catalog/index.json), [full node table](../data/flow/nodes.json) and [all source routes](../data/flow/routes.json).
+- \`src/planning/\` and \`src/ui/planning-views.js\`: fully navigable, conditional Planning.
+- \`src/handover/schema.js\`: versioned planning snapshot, explicit field-level diff/merge, historical teacher concerns.
+- \`src/handover/report-model.js\`: common conditional content in all generated reports.
+- \`src/handover/formats/\`: paginated PDF with embedded JSON; editable Word with embedded custom XML.
+- \`src/handover/read-document.js\`: local document upload, metadata-first import, conservative text fallback.
+- \`src/ui/handover-views.js\`: student confirmation, conflict comparison, manual recovery.
+- \`tests/handover.test.js\`, \`tests/handover-ui.test.js\`, \`tests/ui-smoke.test.js\`: automated round-trip, conflict, migration and consent safeguards.
 
-## Interpreting coverage
+## Interpretation
 
-**Source captured** does not mean implemented. An implemented Planning node means a source-linked interactive screen/branch is present and has automated test coverage. Supplementary draft prompts may still need editorial refinement even when the surrounding node is implemented.
+**Captured data is not executed logic.** “Implemented” means the appropriate student-facing action or data path is connected and tested against the mapped source requirement; related draft content may still need editorial review.
 
-No general spreadsheet prose is evaluated as if it were executable code; approved source conditions are explicitly mapped to student actions. A provisional summary never claims to be teacher-approved and never treats expected findings as actual observations.
+**Docx/PDF import restores the embedded exported plan, not subsequent visible-document edits.** If a document was modified later, changes must be confirmed or re-entered; absence of a reliable embedded snapshot triggers cautious manual recovery. A report does not include completed mathematical results; only the full JSON project backup carries all IA Studio work.
 
-## Remaining work
+No document import claims teacher approval, validates participant consent or converts tentative ratings into an IA score.
 
-- **Phase 3** — polished PDF/Word planning documents and resilient reimport of machine-readable projects.
-- **Phase 4** — full C-node Completing flow with flexible mathematics stages, interpretation and authentic next questions.
-- **Phase 5** — precise triggers and suppression for writing moments, mathematical limitations, accuracy reuse and mathematical learning.
-- **Phase 6** — teacher feedback, final review and comprehensive classroom acceptance testing.
+## Next phases
 
-No fixed number of mathematical sections, predicted IA grade, or arbitrary compulsory mathematical sophistication has been introduced.
+- **Phase 4:** build the complete C-node Completing system and repeatable evidence → interpretation → next mathematical question loop.
+- **Phase 5:** exact contextual writing-moment, mathematical limitations, accuracy memory, outside-syllabus understanding and relevant prompts with suppression.
+- **Phase 6:** draft/final review, real classroom acceptance tests, accessibility and report visual QA against long and varied student responses.
+
+The interface should remain light even as its mathematical judgement becomes more nuanced.
