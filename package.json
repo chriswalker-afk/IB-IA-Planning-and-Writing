@@ -1,11 +1,21 @@
 {
   "name": "ia-pathfinder",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.3.0",
   "type": "module",
-  "description": "IB IA Pathfinder phase-one engine and coverage checks",
+  "description": "IB Mathematics IA Pathfinder - browser-local Planning and writing companion",
   "scripts": {
     "test": "node --test tests/*.test.js",
-    "test:core": "node --test tests/project-state.test.js tests/route-graph.test.js tests/coverage.test.js"
+    "test:core": "node --test tests/project-state.test.js tests/route-graph.test.js tests/coverage.test.js tests/planning-engine.test.js",
+    "build": "node scripts/build.mjs"
+  },
+  "dependencies": {
+    "docx": "9.5.3",
+    "jszip": "3.10.1",
+    "pdf-lib": "1.17.1",
+    "pdfjs-dist": "5.4.449"
+  },
+  "devDependencies": {
+    "esbuild": "0.25.12"
   }
 }
