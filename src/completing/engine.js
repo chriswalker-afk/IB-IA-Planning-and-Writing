@@ -176,7 +176,7 @@ export function completionBack(state){
 }
 export function startFirstRepresentation(state){
  if(state.entries.length>=MAX_ENTRIES)return{ok:false,error:"This project has reached its safety limit of 120 mathematical records. Download a backup before continuing."};
- if(state.completion.activeEntryIndex>=0&&state.entries[state.completion.activeEntryIndex]?.phase==="first")return{ok:true,existing:true};
+ if(state.completion.activeEntryIndex>=0&&state.entries[state.completion.activeEntryIndex]?.phase==="first"&&state.entries[state.completion.activeEntryIndex]?.status==="planned")return{ok:true,existing:true};
  const f=state.completion.fields;
  const id="math-"+(Date.now().toString(36))+"-"+(state.entries.length+1);
  state.entries.push({
@@ -231,8 +231,11 @@ function addTransition(state,route){
 export function moveCompletionRoute(state,condition){
  const c=state.completion,from=c.current,route=routesAt(from).find(x=>x.condition===condition);
  if(!route)return{ok:false,error:"This is not an available transition from your current stage."};
- if(route.to==="C34" && !latestRealResult(state))
-  return{ok:false,error:"An actual figure, calculation or proof must be recorded before interpreting its result. Planned maths is not a result."};
+ if(route.to==="C34"){
+  const active=completeEntry(state);
+  if(!(active?.status==="completed"&&str(active.result).trim()))
+   return{ok:false,error:"Record the actual result for THIS mathematical section first. A planned calculation or an earlier result is not sufficient."};
+ }
  if(["C35B"].includes(route.to)&&!actualScatterExists(state))
   return{ok:false,error:"First record an actual scatter graph and what it showed."};
  if(route.to==="C35P"&&!actualPmccExists(state))
