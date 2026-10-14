@@ -1,0 +1,351 @@
+{
+  "schemaVersion": 1,
+  "sourceSheet": "Feasibility Checks",
+  "sourceBounds": {
+    "rows": 85,
+    "columns": 8
+  },
+  "rowCount": 32,
+  "nonemptyCellCount": 159,
+  "rows": [
+    {
+      "row": 1,
+      "cells": [
+        "PRACTICAL FEASIBILITY  |  Proposed planning checkpoint"
+      ]
+    },
+    {
+      "row": 2,
+      "cells": [
+        "Goal: catch projects that are mathematically viable but logistically difficult to finish."
+      ]
+    },
+    {
+      "row": 3,
+      "cells": [
+        "Do not ask everything at once. Reuse data-source and readiness answers; show extra questions only where a risk is indicated."
+      ]
+    },
+    {
+      "row": 4,
+      "cells": [
+        "Output: a separate completion-ease score /5, the biggest obstacle and ONE concrete improvement. Not a prediction of IA grade."
+      ]
+    },
+    {
+      "row": 5,
+      "cells": [
+        "Important: unresolved safety, consent, privacy or restricted access requires teacher discussion before affected collection/use."
+      ]
+    },
+    {
+      "row": 6,
+      "cells": [
+        "Question wording and scoring are proposals for review, not yet agreed decisions."
+      ]
+    },
+    {
+      "row": 8,
+      "cells": [
+        "ID",
+        "Potential barrier",
+        "Student-facing question",
+        "Answer type",
+        "When to ask",
+        "Feasibility evidence",
+        "Contextual warning / next action",
+        "Status"
+      ]
+    },
+    {
+      "row": 9,
+      "cells": [
+        "F01",
+        "Access and dependencies",
+        "Apart from the data itself, what people, locations, equipment, services or facilities does this project depend on?",
+        "Select all that apply: none / people / equipment / location / software / paid resource / external event / other",
+        "All data-led projects; reuse named items from primary/secondary questions",
+        "Every essential item is accessible or booked",
+        "Unarranged dependencies make the project vulnerable; ask for who/what and access date",
+        "Proposed"
+      ]
+    },
+    {
+      "row": 10,
+      "cells": [
+        "F02",
+        "Unarranged essentials",
+        "Which essential item have you NOT secured, and when will it be available?",
+        "Short answer",
+        "Only if F01 identifies an unarranged dependency",
+        "Specific feasible arrangement and date",
+        "Suggest a smaller test or alternative resource if the date is speculative",
+        "Proposed"
+      ]
+    },
+    {
+      "row": 11,
+      "cells": [
+        "F03",
+        "Permissions and privacy",
+        "Do you need consent or permission, or will you handle identifiable or sensitive information about people?",
+        "Yes / No / Not sure",
+        "Ask if people, photographs, third-party data, surveys or restricted access are involved",
+        "Requirements discussed with teacher and appropriate procedures arranged",
+        "Pause collection when safety, consent or privacy is unresolved; never ask students to upload identifiable data",
+        "Proposed"
+      ]
+    },
+    {
+      "row": 12,
+      "cells": [
+        "F04",
+        "Software and practical skills",
+        "Can you open, clean, graph and work with a small sample using tools you already have and can use?",
+        "Yes / Not yet / Not sure",
+        "All; don't require particular software unnecessarily",
+        "Student can test the intended process with accessible tools",
+        "If coding, subscriptions, specialist software or training is essential, estimate time and suggest a simpler alternative",
+        "Proposed"
+      ]
+    },
+    {
+      "row": 13,
+      "cells": [
+        "F05",
+        "Non-mathematical workload",
+        "Roughly how much time will you spend on arranging access, collecting/cleaning data and learning tools, before the maths itself?",
+        "Short-answer hours estimate (rough)",
+        "All, excluding the time already checked for first usable data",
+        "Effort is bounded, with realistic milestones",
+        "Huge or unknown admin/data-cleaning workload may make an otherwise feasible IA difficult",
+        "Proposed"
+      ]
+    },
+    {
+      "row": 14,
+      "cells": [
+        "F06",
+        "Data-cleaning burden",
+        "How much sorting, transcription, cleaning or merging of datasets will you need?",
+        "None / A little / A lot / Don't know",
+        "Show for large, messy, multiple or secondary datasets",
+        "Student has inspected a sample and understands the workload",
+        "Test ten rows or one file before committing to a huge dataset",
+        "Proposed"
+      ]
+    },
+    {
+      "row": 15,
+      "cells": [
+        "F07",
+        "External uncertainty",
+        "Does success depend on others responding, a once-only event, travel, weather or a time-sensitive condition?",
+        "Select all; optional short answer",
+        "Show when access depends on third parties, scheduled events or fieldwork",
+        "Critical dependencies are confirmed, with time to recover if delayed",
+        "One-off events and slow replies create avoidable risk; consider alternatives",
+        "Proposed"
+      ]
+    },
+    {
+      "row": 16,
+      "cells": [
+        "F08",
+        "Scope and minimum version",
+        "What is the smallest version of this project that would still allow you to investigate your idea?",
+        "Short answer",
+        "Show if many variables, sources, conditions or long setup are proposed",
+        "Student can identify a simpler feasible path",
+        "Narrow the question or reduce the number of moving parts",
+        "Proposed"
+      ]
+    },
+    {
+      "row": 17,
+      "cells": [
+        "F09",
+        "Backup plan",
+        "If your main data source becomes unavailable, what is one credible fallback? Could permitted secondary data, another valid method or a smaller scope still address the aim?",
+        "Short answer",
+        "Only if F01, F03, F04, F06 or F07 indicates unresolved risk",
+        "Backup has compatible variables/population/scope, or student knows which aim changes would be needed. 'To investigate' is allowed.",
+        "In Completing, C95D offers immediate safe tasks while data are pending; C95A compares real secondary source candidates. Do not call a practical access delay a mathematical limitation.",
+        "Proposed"
+      ]
+    },
+    {
+      "row": 18,
+      "cells": [
+        "F10",
+        "Small end-to-end test",
+        "Have you tried one complete step, from obtaining a data point to producing a usable graph or calculation?",
+        "Yes / No / Not yet possible",
+        "Only if proposed tools or data-handling process is untested",
+        "A basic end-to-end test is possible soon",
+        "Test the most difficult operational step early, rather than discovering failure halfway through",
+        "Proposed"
+      ]
+    },
+    {
+      "row": 19,
+      "cells": [
+        "F11",
+        "Cost and restricted access",
+        "Do travel, payments, specialist facilities or licenses make the project difficult to complete?",
+        "Yes / No / Not sure",
+        "Only if an expense or facility requirement is indicated",
+        "Costs and access are realistic within available resources",
+        "Favor free, accessible resources unless there is a convincing alternative",
+        "Proposed"
+      ]
+    },
+    {
+      "row": 20,
+      "cells": [
+        "F12",
+        "Source reuse and attribution",
+        "Can you appropriately cite or use any source datasets, maps, images or other third-party materials you need?",
+        "Yes / No / Not sure",
+        "Show when third-party datasets/images/maps are central to the plan",
+        "Relevant sources are traceable and intended use is permitted",
+        "Cite the source; seek teacher guidance when rights or privacy are unclear",
+        "Proposed"
+      ]
+    },
+    {
+      "row": 21,
+      "cells": [
+        "F13",
+        "Sufficient usable data",
+        "Will you be able to obtain enough relevant, usable observations to investigate your question, rather than just a few convenient examples?",
+        "Yes / No / Not sure; optional scope note",
+        "After a pilot or secondary-data inspection",
+        "Coverage, variables and data quality are plausible for the intended aim",
+        "Small, biased or incomplete datasets may require narrowing the aim or changing source; ask teacher if unsure",
+        "Proposed"
+      ]
+    },
+    {
+      "row": 22,
+      "cells": [
+        "F14",
+        "Outcome dependence",
+        "If your data show no clear correlation, pattern or good-fitting model, can you still carry out a useful exploration?",
+        "Yes / No / Not sure",
+        "Especially for correlation or model-fitting investigations",
+        "A worthwhile question remains even if the anticipated pattern does not appear",
+        "Do not design an IA that can work only if it finds the hoped-for result; consider a comparison or evaluation route",
+        "Proposed"
+      ]
+    },
+    {
+      "row": 23,
+      "cells": [
+        "F15",
+        "Manageable presentation",
+        "Can you present and reference the key data, tables and diagrams without copying an enormous dataset or doing excessive manual formatting?",
+        "Yes / No / Not sure",
+        "If the proposed dataset or outputs are large/complex",
+        "The necessary evidence can be shown clearly and concisely",
+        "Link or cite the full original dataset and include relevant extracts, summaries and graphs instead",
+        "Proposed"
+      ]
+    },
+    {
+      "row": 24,
+      "cells": [
+        "DRAFT RUBRIC  |  Ease of practical completion (1–5), separate from data readiness"
+      ]
+    },
+    {
+      "row": 25,
+      "cells": [
+        "5/5",
+        "Very easy to execute",
+        "Essential resources and permissions are secured; tools and workflow are tested; practical workload fits the timeframe. A reasonable fallback is identified.",
+        null,
+        null,
+        null,
+        null,
+        "Proposed"
+      ]
+    },
+    {
+      "row": 26,
+      "cells": [
+        "4/5",
+        "Straightforward with small uncertainties",
+        "Only minor arrangements remain, with named actions and believable dates; tasks and tools are manageable.",
+        null,
+        null,
+        null,
+        null,
+        "Proposed"
+      ]
+    },
+    {
+      "row": 27,
+      "cells": [
+        "3/5",
+        "Workable, but needs planning",
+        "At least one meaningful dependency or learning/cleaning burden remains, but there's a credible way to resolve it.",
+        null,
+        null,
+        null,
+        null,
+        "Proposed"
+      ]
+    },
+    {
+      "row": 28,
+      "cells": [
+        "2/5",
+        "Risky to complete",
+        "Several dependencies, heavy data preparation or unfamiliar essential tools could delay the project; simplify before committing.",
+        null,
+        null,
+        null,
+        null,
+        "Proposed"
+      ]
+    },
+    {
+      "row": 29,
+      "cells": [
+        "1/5",
+        "Unworkable as currently proposed",
+        "Essential access/resources cannot be secured, the practical workload is implausible, or there is no viable fallback.",
+        null,
+        null,
+        null,
+        null,
+        "Proposed"
+      ]
+    },
+    {
+      "row": 31,
+      "cells": [
+        "NON-NEGOTIABLE FLAG: If safety, consent, privacy or necessary permission is unresolved, direct the student to a teacher before collecting or using affected data. A high average score cannot override this warning."
+      ]
+    },
+    {
+      "row": 35,
+      "cells": [
+        "INTERFACE RULE: Keep the student's experience short. Ask the few core practical questions first; reuse earlier data-access, equipment and date answers. Show follow-up fields only for identified obstacles. Display the rating, reason and one next action."
+      ]
+    },
+    {
+      "row": 39,
+      "cells": [
+        "INTERPRETATION RULE: A 5/5 practical ease score does not mean the topic makes a stronger IA. Report data readiness, practical completion ease and mathematical suitability separately until an overall rating method is agreed."
+      ]
+    },
+    {
+      "row": 44,
+      "cells": [
+        "TEACHER-DEFINED SETTINGS (to agree): the school's IA planning, first-data, draft and final deadlines; available school software/equipment; and safeguarding/consent procedures. Compare each student's proposed workload and completion date with those settings rather than assuming one universal timetable."
+      ]
+    }
+  ]
+}
