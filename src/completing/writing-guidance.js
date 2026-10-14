@@ -32,7 +32,7 @@ const relevance=(id,x)=>{
  const weak= f.pmccSignal==="weak-linear",applied=real&&entryMethod;
  const insight=real&&exists(entry?.mathsInsight);
  const sourceConfirmed=hasActualSource&&(x.sourceType==="secondary"||x.sourceType==="both") &&
-  exists(f.actualSource||f.sourceCitation)&&matches(p.secondaryVerified,/verified|checked|yes|confirmed|original/i);
+  exists(f.actualSource)&&exists(f.sourceCitation)&&matches(p.secondaryVerified,/verified|checked|yes|confirmed|original/i);
  switch(id){
   case "W01":return !!aim&&(!!str(p.motivation)||!!str(p.interest));
   case "W02":return !theoretical&&exists(x.prediction);
