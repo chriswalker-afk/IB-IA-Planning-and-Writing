@@ -187,6 +187,7 @@ export function createCompletingViews(ctx){
     F("actualSource","What evidence or mathematical starting material do I actually have?","Source or mathematical object, not a promised dataset",{type:"textarea",rows:3})+
     F("sourceCitation","Original published source and date (if relevant)","URL, publisher or citation")+
     F("actualMethod","How did I actually obtain or define it?","Describe the real procedure, never invented data collection",{type:"textarea",rows:3})+
+    field("scratch.dataNotes","Other data/source notes from my earlier work (editable)","Sources, dates, units and assumptions recorded in the earlier prototype",{type:"textarea",rows:3})+
     (s.teacher.pendingApproval?info("Permissions still require care","Do not perform affected restricted collection without meeting consent or school requirements.",true):"")+
     '<div class="button-row">'+sourceAction("Statistics with sampled or secondary data","Statistics questions")+
       sourceAction("Empirical modelling or measured model inputs","Modelling questions")+
@@ -453,10 +454,12 @@ export function createCompletingViews(ctx){
   };
   case "C90":return{intro:"This is a final self-check, not a predicted assessment mark.",
    html:actualList()+smallSummary("School final date from Planning",p.milestoneSchoolFinal)+
+     field("scratch.finalReview","Existing revision notes (editable)","The details I was already checking",{type:"textarea",rows:3})+
      F("finalRequirements","Which school requirements do I need to confirm?","Deadline, identifying details, citation style, length or spacing",{type:"textarea",rows:2})
   };
   case "C90F":return{intro:"Locate genuine evidence for criteria A–E and check the finished document's mathematical accuracy and readability.",
-   html:F("finalCriteria","Where are the strongest examples of A presentation, B communication, C engagement, D reflection and E mathematics?","Your own evidence references; not a grade",{type:"textarea",rows:5})+
+   html:field("scratch.finalReview","My earlier review notes (editable)","Revisit what still needs correcting",{type:"textarea",rows:3})+
+    F("finalCriteria","Where are the strongest examples of A presentation, B communication, C engagement, D reflection and E mathematics?","Your own evidence references; not a grade",{type:"textarea",rows:5})+
      F("finalProofread","What still needs proofreading or verifying?","Notation, ≈, units, diagrams, precision, source links, page numbers",{type:"textarea",rows:3})+
      F("finalRequirements","Confirmed submission and formatting requirements","School guidance, not assumed IB deadlines",{type:"textarea",rows:2})
   };
