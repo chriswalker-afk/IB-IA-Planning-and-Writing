@@ -1,0 +1,634 @@
+{
+  "schemaVersion": 1,
+  "sourceSheet": "Draft & Final Review",
+  "sourceBounds": {
+    "rows": 110,
+    "columns": 10
+  },
+  "rowCount": 53,
+  "nonemptyCellCount": 357,
+  "rows": [
+    {
+      "row": 1,
+      "cells": [
+        "DRAFT & FINAL REVIEW  |  One complete teacher draft → feedback → student's revisions → final self-check"
+      ]
+    },
+    {
+      "row": 2,
+      "cells": [
+        "School guide: IA is worth 20% of course grade; assessment A Presentation /4, B Mathematical Communication /4, C Personal Engagement /3, D Reflection /3, E Use of Mathematics /6."
+      ]
+    },
+    {
+      "row": 3,
+      "cells": [
+        "Show this at two real milestones: BEFORE the fully completed draft for teacher written feedback, and again BEFORE final submission. Do NOT show a 20-item checklist after every page."
+      ]
+    },
+    {
+      "row": 4,
+      "cells": [
+        "2025 JIS guidance: approximately 12–20 pages and double line spacing are recommendations to verify against current school requirements; never treat length/spacing as an IB mark guarantee."
+      ]
+    },
+    {
+      "row": 5,
+      "cells": [
+        "Students normally receive ONE round of written teacher feedback on a complete draft; other teacher feedback should be verbal and noted. The Pathfinder is not a submission or automatic marker."
+      ]
+    },
+    {
+      "row": 6,
+      "cells": [
+        "Keep the essential default questions short and give a detailed optional checklist. Allow Save/Resume without declaring a draft or final IA ready; don't invent teacher deadlines."
+      ]
+    },
+    {
+      "row": 8,
+      "cells": [
+        "ID",
+        "When to check",
+        "Area/criterion",
+        "Student-facing check",
+        "Evidence or observation",
+        "Improvement action",
+        "Condition/guardrail",
+        "Guide source",
+        "Priority",
+        "Status"
+      ]
+    },
+    {
+      "row": 9,
+      "cells": [
+        "D01",
+        "Before teacher draft",
+        "Structure",
+        "Is the IA genuinely COMPLETE enough for a useful single written feedback round?",
+        "Aim/introduction, relevant methods/data or theory, maths, integrated figures, reflection and conclusion",
+        "Finish missing essential section and reread the whole exploration",
+        "Show near actual school draft milestone",
+        "Guide slides 3, 40",
+        "Core",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 10,
+      "cells": [
+        "D02",
+        "Both reviews",
+        "Criterion A /4",
+        "Can the reader follow the investigation logically without irrelevant or repeated work?",
+        "Clear introduction with aim, coherent unfolding mathematics and conclusion",
+        "Remove repetition, clarify connections between stages, keep helpful diagrams beside text",
+        "Criterion check, not a predicted 0–4 mark",
+        "Guide slides 42–43",
+        "Core",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 11,
+      "cells": [
+        "D03",
+        "Both reviews",
+        "Criterion B /4",
+        "Are mathematical variables/terms, notation, units, equations and figures used clearly and correctly?",
+        "Equation editor, definitions at first use, credible accuracy, ≈ for rounded values, titled visuals",
+        "Jump to the precise equation/figure requiring repair",
+        "Only show detailed notation checklist on request/error",
+        "Guide slides 28,44; Checklist B",
+        "Core",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 12,
+      "cells": [
+        "D04",
+        "Both reviews",
+        "Criterion C /3",
+        "Does the work demonstrate OWNERSHIP through purposeful choices, conjectures and a personal perspective?",
+        "Student's aim and reasons, independently chosen investigations, authentic changes of direction",
+        "Strengthen genuine decision rationale where student actually made a choice",
+        "No invented personal history or artificial creative flourish",
+        "Guide slide 45",
+        "Core",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 13,
+      "cells": [
+        "D05",
+        "Both reviews",
+        "Criterion D /3",
+        "Have I reflected throughout, not just collected generic limitations in my conclusion?",
+        "Actual results interpreted, expectations revisited, mathematical methods evaluated in place, meaningful next questions",
+        "Return to result/method where reflection is missing, leave conclusion as synthesis",
+        "No retrospective evaluation dump",
+        "Guide slides 33,46",
+        "Core",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 14,
+      "cells": [
+        "D06",
+        "Both reviews",
+        "Criterion E /6",
+        "Is my ACTUAL mathematics relevant, appropriate for my course, correct and UNDERSTOOD?",
+        "Substantial, purposeful course-level mathematics; justified modelling or inference, explained technology use",
+        "Revise/select purpose-driven maths or discuss suitability with teacher",
+        "No guarantee that adding more techniques increases marks",
+        "Guide slides 27,47; Criterion Explained 15–17",
+        "Core",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 15,
+      "cells": [
+        "D07",
+        "Before teacher draft",
+        "Readability",
+        "Have I printed or closely inspected the WHOLE draft as a reader would see it?",
+        "Single-page graphs, legible equations, captions, page breaks, coherent margins",
+        "Fix specific clutter/oversized or split figure before teacher reads",
+        "Don't inspect only on zoomed screen",
+        "Guide slide 40",
+        "Core",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 16,
+      "cells": [
+        "D08",
+        "Before teacher draft",
+        "Reader check",
+        "Could a classmate follow the mathematical decisions? Could a non-mathematician follow the story?",
+        "Peer or relative's confusion points, if available",
+        "Ask one reader to flag unclear jumps; revise in own words",
+        "Optional; does not require sharing private participant data",
+        "Guide slide 40",
+        "Optional",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 17,
+      "cells": [
+        "D09",
+        "Both reviews",
+        "Source integrity",
+        "Are datasets, claims, graphics, quotations and outside mathematics correctly cited?",
+        "Consistent in-text citation and bibliography or works-cited, traceable URLs/publishers",
+        "Add missing attributions before submitting draft/final",
+        "School 2025 guide suggests MLA in Google Docs; follow current teacher-approved style consistently",
+        "Guide slides 4–6",
+        "Core",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 18,
+      "cells": [
+        "D10",
+        "Both reviews",
+        "Layout guidance",
+        "Have I checked current school instructions for title page, spacing, approximate length and page numbering?",
+        "The 2025 guide suggests ~12–20 pages, double spacing; current policies may differ",
+        "Check current requirements; no invented deadline or absolute page-limit gate",
+        "Course requirements/formatting may be updated",
+        "Guide slides 2–3",
+        "Optional",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 19,
+      "cells": [
+        "D11",
+        "Before teacher draft",
+        "Mathematics present",
+        "Have I included substantial calculations/figures, not only a plan and placeholders?",
+        "Real calculations, purpose and interpretation near results",
+        "Finish mathematical body rather than treating intention as completed work",
+        "Teacher draft must be complete; data not assumed from plan",
+        "Guide slide 40",
+        "Core",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 20,
+      "cells": [
+        "D12",
+        "Before teacher draft",
+        "Academic integrity",
+        "Is all analysis and reflection truly mine, with permissions and source credit?",
+        "Student authorship and sources; no unsupported AI-written IA passages",
+        "Revise unsupported passage, cite non-original sources, consult teacher when uncertain",
+        "Pathfinder must not auto-write final IA prose",
+        "Guide slides 3–6",
+        "Core",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 21,
+      "cells": [
+        "D13",
+        "During feedback",
+        "Written feedback rule",
+        "Have I used the school's permitted written draft feedback opportunity appropriately?",
+        "One allowed teacher-written feedback round for completed IA",
+        "Record teacher feedback and action items; teacher controls advice",
+        "Never request a second round of written teacher feedback from this tool",
+        "Guide slides 3,37",
+        "Core",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 22,
+      "cells": [
+        "D14",
+        "During feedback",
+        "Verbal notes",
+        "When my teacher gives verbal advice, have I recorded what I need to do?",
+        "Short feedback note/action/date; distinguish suggestions from verified corrections",
+        "Act on relevant notes and re-check work",
+        "Do not let the tool impersonate teacher approval",
+        "Guide slide 37",
+        "Core",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 23,
+      "cells": [
+        "D15",
+        "Before final",
+        "Revisions",
+        "Have I actually implemented the permitted feedback and checked the changes work?",
+        "Revised analysis/graphs/calculations and rechecked accuracy/context",
+        "Return to exact affected stage; preserve old notes and student writing",
+        "Don't auto-mark revisions done because feedback was imported",
+        "Guide slides 3,40",
+        "Core",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 24,
+      "cells": [
+        "D16",
+        "Before final",
+        "Final evidence A–E",
+        "Can I identify the page or section where each criterion is genuinely evident?",
+        "Student-generated A–E evidence pointers, not automatic marks",
+        "Fix a genuine gap or note limitations; no predicted score",
+        "Criteria labels/scores are maxima, not guaranteed grade",
+        "Guide slides 42,52",
+        "Core",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 25,
+      "cells": [
+        "D17",
+        "Before final",
+        "Proofread and check",
+        "Have I reread the final file, tested equation rendering, citations and figure placement?",
+        "Final print/PDF preview, spelling, grammar, page numbering",
+        "Correct local issue and recheck the final render",
+        "Not a submission action; cannot verify final file if not uploaded",
+        "Guide slide 40; Checklist A",
+        "Core",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 26,
+      "cells": [
+        "D18",
+        "Before final",
+        "Formatting & identity",
+        "Does the final cover page/identifier follow current school IB instructions?",
+        "Appropriate title, correct candidate identifier where required, no unapproved personal details",
+        "Ask teacher about identity, cover style and school submission method",
+        "Do not publish real participant names or assume one universal cover policy",
+        "IA Tips per topic; school requirements",
+        "Optional",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 27,
+      "cells": [
+        "D19",
+        "Both reviews",
+        "Appendix and data",
+        "Is the necessary evidence traceable without huge raw tables cluttering the IA?",
+        "Short meaningful examples/figures in body, dataset/source cited; optional justified supporting material",
+        "Default Pathfinder editorial preference: no long raw tables even in appendix; ask teacher if an exception is necessary for reproducibility",
+        "IB Guide ALLOWS justified large-data appendices; this is NOT an IB ban. Avoid redundant data tables.",
+        "Guide slides 24,43",
+        "Optional",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 28,
+      "cells": [
+        "D20",
+        "Both reviews",
+        "Course and tools",
+        "Do calculator or software outputs show meaningful mathematical understanding?",
+        "Method name/inputs, purpose, interpretation, check of assumptions when needed",
+        "Explain mathematical reasoning at the point of use, not a tutorial",
+        "Show only for tools actually used",
+        "Guide slides 27–28; Criterion E",
+        "Core",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 29,
+      "cells": [
+        "D21",
+        "Before final",
+        "Deadline and process",
+        "Is the correct school submission date/method confirmed, and am I ready to submit my own IA?",
+        "Actual student/school schedule and source-independent file",
+        "Follow school's process; no Pathfinder submission claim",
+        "No guessed dates or automated IB approval",
+        "Guide slide 3; school",
+        "Core",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 33,
+      "cells": [
+        "TWO DISTINCT MILESTONES  |  The same Criteria A–E, but different timing and actions"
+      ]
+    },
+    {
+      "row": 35,
+      "cells": [
+        "Step",
+        "Timing",
+        "Core student action",
+        "Route",
+        "Why here",
+        "Guardrail",
+        "Status"
+      ]
+    },
+    {
+      "row": 36,
+      "cells": [
+        "1",
+        "Before teacher's complete draft",
+        "Complete work; self-review A–E; proofread and print-read; cite sources.",
+        "C80 → C80D",
+        "Full draft required for meaningful ONE written feedback round.",
+        "Not a final submission.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 37,
+      "cells": [
+        "2",
+        "During teacher feedback",
+        "Record allowed written feedback once, plus ongoing verbal notes and specific corrections.",
+        "C80",
+        "Teacher's feedback is not automatically approval or a second review.",
+        "No editing student work on teacher's behalf.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 38,
+      "cells": [
+        "3",
+        "Student revision",
+        "Apply feedback, correct errors/graphs/equations and reflect as needed.",
+        "C80 → stage-specific C40/C50/C70",
+        "Use actual revised results rather than copied comments.",
+        "Preserve past version if student uses progress snapshot.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 39,
+      "cells": [
+        "4",
+        "Before FINAL submission",
+        "Run A–E evidence check again; print/PDF readability; proofreading; current deadline and process.",
+        "C90 → C90F",
+        "Self-check, not software-generated IA mark.",
+        "Save progress allowed without final readiness claim.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 43,
+      "cells": [
+        "SELF-CHECK A–E  |  Show the concise question; detailed wording only if a student asks for it"
+      ]
+    },
+    {
+      "row": 45,
+      "cells": [
+        "Criterion",
+        "Name",
+        "Maximum /20",
+        "Student-friendly prompt",
+        "Look for",
+        "Guide reference",
+        "Status"
+      ]
+    },
+    {
+      "row": 46,
+      "cells": [
+        "A",
+        "Presentation",
+        "4",
+        "Can someone follow my mathematical story, from clear aim to conclusion?",
+        "Coherence; relevant diagrams; no repetition; references.",
+        "Source slide 43",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 47,
+      "cells": [
+        "B",
+        "Mathematical communication",
+        "4",
+        "Are the notation, definitions, diagrams, units and ≈/= precise and consistent?",
+        "Correct labels; proper mathematical symbols; appropriate accuracy.",
+        "Source slide 44",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 48,
+      "cells": [
+        "C",
+        "Personal engagement",
+        "3",
+        "Do my independent choices, conjectures and response to results show ownership?",
+        "Authentic motivation and investigation, not a fictional biography.",
+        "Source slide 45",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 49,
+      "cells": [
+        "D",
+        "Reflection",
+        "3",
+        "Did I reflect meaningfully as my mathematics unfolded?",
+        "Implications, limits, alternatives, justified changes, next questions.",
+        "Source slide 46",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 50,
+      "cells": [
+        "E",
+        "Use of mathematics",
+        "6",
+        "Is the maths relevant, correct, understood and suitable for my IB course?",
+        "Substantial mathematical understanding, including technology where used.",
+        "Source slide 47",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 53,
+      "cells": [
+        "REALISTIC USER-EXPERIENCE TESTS  |  Pending implementation"
+      ]
+    },
+    {
+      "row": 55,
+      "cells": [
+        "Test ID",
+        "Given context",
+        "Expected behavior",
+        "Must NOT occur",
+        "Status"
+      ]
+    },
+    {
+      "row": 56,
+      "cells": [
+        "R01",
+        "Student seeks teacher written feedback with missing conclusion",
+        "Warn draft incomplete; offer jump to C60.",
+        "Do not label ready or require a particular IA heading template.",
+        "To test"
+      ]
+    },
+    {
+      "row": 57,
+      "cells": [
+        "R02",
+        "Student has completed a full teacher draft",
+        "Show concise review + A–E optional evidence; proceed to teacher process.",
+        "Do not offer automatic marking or send to teacher without explicit action.",
+        "To test"
+      ]
+    },
+    {
+      "row": 58,
+      "cells": [
+        "R03",
+        "Teacher written feedback already received",
+        "Record notes and corrective actions; no second written-feedback suggestion.",
+        "Follow school's one-written-feedback rule.",
+        "To test"
+      ]
+    },
+    {
+      "row": 59,
+      "cells": [
+        "R04",
+        "Student preparing final file",
+        "Ask optional print-view/proofread and current deadlines/format.",
+        "Do not infer current deadline or declare authenticity checked.",
+        "To test"
+      ]
+    },
+    {
+      "row": 60,
+      "cells": [
+        "R05",
+        "Course-level maths only from prior learning",
+        "Criterion E flags need to reconsider actual maths with teacher.",
+        "Don't promise marks from simply adding complexity.",
+        "To test"
+      ]
+    },
+    {
+      "row": 61,
+      "cells": [
+        "R06",
+        "Document includes large dataset appendix",
+        "Suggest concise source link / justified evidence, state this is Pathfinder preference.",
+        "Don't label justified data appendices as IB-prohibited.",
+        "To test"
+      ]
+    },
+    {
+      "row": 62,
+      "cells": [
+        "R07",
+        "Student uses technology output without explanation",
+        "Prompt what method, why, what result means where performed.",
+        "Don't force full manual recalculation or a software tutorial.",
+        "To test"
+      ]
+    },
+    {
+      "row": 63,
+      "cells": [
+        "R08",
+        "Student's final presentation readable on computer but splits printed figure",
+        "Flag print/PDF check; recommend reflow to one page.",
+        "Don't shrink to illegibly small caption/axis text.",
+        "To test"
+      ]
+    },
+    {
+      "row": 64,
+      "cells": [
+        "R09",
+        "Student wants to save incomplete work",
+        "Allow Save/Resume at both milestones.",
+        "Don't mistake save snapshot for final IA submission.",
+        "To test"
+      ]
+    },
+    {
+      "row": 68,
+      "cells": [
+        "REFERENCE: JIS SL Maths IA Guide 2025 (slides 2–6, 37, 40, 42–47 and 52); IB IA Checklist; IA Criterion Explained. Current school/teacher requirements take precedence where guidelines differ."
+      ]
+    }
+  ]
+}
