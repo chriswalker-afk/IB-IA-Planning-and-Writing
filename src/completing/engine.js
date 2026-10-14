@@ -58,7 +58,7 @@ export function createCompletionState(){
  return {
   current:"C00",history:[],visited:[],transitions:[],fields:{...C_FIELD_DEFAULTS},
   stages:Object.fromEntries(C_MAJOR_STAGES.map(x=>[x.id,"not-started"])),
-  activeEntryIndex:-1,returnTo:"",latestMeaningfulNode:"",
+  activeEntryIndex:-1,nextFromEntryId:"",scatterPatternForEntryId:"",returnTo:"",latestMeaningfulNode:"",
   sourceVersion:"2026-10-14",helpersExpanded:false,stageExpanded:false,
   accuracyDecisions:[],confirmedCurrentAimAt:"",notices:[]
  };
@@ -81,6 +81,7 @@ export function normalizeCompletionState(data,project={}){
   history:ids(v.history),visited:ids(v.visited),transitions,
   fields,stages:states,accuracyDecisions:accuracy,
   activeEntryIndex:Number.isInteger(v.activeEntryIndex)?Math.max(-1,Math.min(119,v.activeEntryIndex)):-1,
+  nextFromEntryId:str(v.nextFromEntryId).slice(0,160),scatterPatternForEntryId:str(v.scatterPatternForEntryId).slice(0,160),
   returnTo:validNode(v.returnTo)?v.returnTo:"",
   latestMeaningfulNode:validNode(v.latestMeaningfulNode)?v.latestMeaningfulNode:"",
   confirmedCurrentAimAt:str(v.confirmedCurrentAimAt),
@@ -115,14 +116,51 @@ export function latestRealResult(state){
  }
  return null;
 }
-export function actualPmccExists(state){
- return state.entries.some(x=>x?.status==="completed"&&str(x.result).trim()&&
-  /(?:\bpmcc\b|\bpearson(?:'s)?\b|product.moment correlation)/i.test(str(x.technique)+" "+str(x.title)));
+
+const genuinelyDone=entry=>entry?.status==="completed"&&str(entry.result).trim();
+export const isPearsonResult=entry=>!!(genuinelyDone(entry)&&
+ /(?:\bpmcc\b|\bpearson(?:'s)?\b|product.moment correlation)/i.test(
+  str(entry.technique)+" "+str(entry.title)));
+export const isScatterResult=entry=>!!(genuinelyDone(entry)&&
+ (entry.kind==="scatter"||/\bscatter\b/i.test(str(entry.technique)+" "+str(entry.title))));
+/** The chosen real result to build upon, or the latest one on general entry. */
+export function sourceResultForNext(state){
+ const id=state.completion.nextFromEntryId;
+ if(id){
+  const i=state.entries.findIndex(x=>x.id===id);
+  if(i>=0&&genuinelyDone(state.entries[i]))return {...state.entries[i],index:i};
+ }
+ return latestRealResult(state);
 }
-export function actualScatterExists(state){
- return state.entries.some(x=>x?.status==="completed"&&str(x.result).trim()&&
-  (x.kind==="scatter"||/scatter/i.test(str(x.technique)+" "+str(x.title))));
+/** A plotted pattern is relevant only if this step IS that graph or descends from it. */
+export function scatterForNext(state){
+ let entry=sourceResultForNext(state);
+ if(!entry)return null;
+ const visited=new Set();
+ for(let tries=0;tries<120&&entry&&!visited.has(entry.id);tries++){
+  if(isScatterResult(entry))return entry;
+  visited.add(entry.id);
+  if(!entry.fromEntryId)break;
+  const i=state.entries.findIndex(x=>x.id===entry.fromEntryId);
+  entry=i<0?null:{...state.entries[i],index:i};
+ }
+ return null;
 }
+export function observedFeatureForNext(state){
+ const prior=sourceResultForNext(state),scatter=scatterForNext(state);
+ if(!prior)return"";
+ if(scatter && state.completion.scatterPatternForEntryId===scatter.id &&
+  ["linear","curved","unclear","unexpected","unsure"].includes(state.completion.fields.scatterPattern))
+  return state.completion.fields.scatterPattern;
+ // If Pearson's r depends on an observed scatter graph, use THAT observation.
+ if(scatter&&isPearsonResult(prior))return str(scatter.observation);
+ return str(prior.observation);
+}
+export const canViewPmccFollowup=state=>isPearsonResult(sourceResultForNext(state));
+export const canViewScatterFollowup=state=>!!scatterForNext(state);
+
+export function actualPmccExists(state){return state.entries.some(isPearsonResult);}
+export function actualScatterExists(state){return state.entries.some(isScatterResult);}
 export function completionFlags(state){
  const f=state.completion.fields,plan=state.planning.fields,out=[];
  if(["pending","unsure"].includes(f.permissionStatus)||(!f.permissionStatus&&["yes","unsure"].includes(plan.permissionNeed)))
@@ -136,6 +174,9 @@ export function setCompletionField(state,key,value){
  if(!hasOwn(C_FIELD_DEFAULTS,key))return false;
  const c=state.completion,previous=c.fields[key];
  c.fields[key]=str(value).slice(0,20000);
+ if(key==="scatterPattern"){
+  c.scatterPatternForEntryId=scatterForNext(state)?.id||"";
+ }
  const stage=completionStage(c.current);
  if(stage&&c.stages[stage]==="complete"&&previous!==c.fields[key])
   c.stages[stage]="needs-review";
@@ -156,6 +197,15 @@ export function markCompletionStage(state,stage,status){
 export function setCompletionNode(state,id,{history=true,reason="revisit"}={}){
  if(!validNode(id))return{ok:false,error:"Unknown Completing stage."};
  const c=state.completion;
+ const previous=c.current;
+ if(id==="C35"){
+  if(["C34","C34A","C34B","C34U"].includes(previous)){
+   const active=completeEntry(state);
+   if(genuinelyDone(active))c.nextFromEntryId=active.id;
+  }else if(!["C35","C35H","C35B","C35P"].includes(previous)){
+   c.nextFromEntryId=latestRealResult(state)?.id||"";
+  }
+ }
  if(c.current!==id&&history)c.history.push(c.current);
  c.history=c.history.slice(-350);
  c.current=id;
@@ -192,7 +242,7 @@ export function startFirstRepresentation(state){
  return{ok:true,index:state.entries.length-1};
 }
 export function startNextMathematics(state,first=false){
- const c=state.completion,prior=latestRealResult(state);
+ const c=state.completion,prior=sourceResultForNext(state);
  if(!prior)return{ok:false,error:"Record at least one real mathematical result before adding mathematics that follows from it."};
  if(state.entries.length>=MAX_ENTRIES)return{ok:false,error:"This project has reached 120 mathematical records. Download a full backup before adding more."};
  const f=c.fields;
@@ -236,11 +286,11 @@ export function moveCompletionRoute(state,condition){
   if(!(active?.status==="completed"&&str(active.result).trim()))
    return{ok:false,error:"Record the actual result for THIS mathematical section first. A planned calculation or an earlier result is not sufficient."};
  }
- if(["C35B"].includes(route.to)&&!actualScatterExists(state))
+ if(["C35B"].includes(route.to)&&!canViewScatterFollowup(state))
   return{ok:false,error:"First record an actual scatter graph and what it showed."};
- if(route.to==="C35P"&&!actualPmccExists(state))
+ if(route.to==="C35P"&&!canViewPmccFollowup(state))
   return{ok:false,error:"Pearson's r or the PMCC must actually have been calculated before these follow-up ideas are relevant."};
- if(route.to==="C35H"&&!latestRealResult(state))
+ if(route.to==="C35H"&&!sourceResultForNext(state))
   return{ok:false,error:"The next-step suggestions depend on an actual mathematical finding, not a prediction."};
  if(route.to==="C32"){
   const result=startFirstRepresentation(state);if(!result.ok)return result;
@@ -255,7 +305,7 @@ export function moveCompletionRoute(state,condition){
  if(from==="C34"&&route.to==="C34B"){
   const entry=completeEntry(state);
   if(entry?.kind==="scatter"&&entry.observation)
-   c.fields.scatterPattern=entry.observation;
+  {c.fields.scatterPattern=entry.observation;c.scatterPatternForEntryId=entry.id;}
  }
  if(from==="C02"&&route.to==="C10")c.returnTo="";
  if(route.to==="C02"&&from==="C10")c.returnTo="C10";
@@ -275,6 +325,7 @@ export function moveCompletionRoute(state,condition){
    const pattern=route.condition.toLowerCase();
    c.fields.scatterPattern=pattern.includes("curved")?"curved":
     pattern.includes("no clear")?"unclear":pattern.includes("straight")?"linear":"unsure";
+   c.scatterPatternForEntryId=scatterForNext(state)?.id||"";
   }
   if(from==="C35P"&&!c.fields.pmccMeaning)c.fields.pmccMeaning=condition;
  }
@@ -297,16 +348,16 @@ export function addAccuracyDecision(state){
  return{ok:true,record};
 }
 export function completionSuggestions(state){
- const c=state.completion,f=c.fields,prior=latestRealResult(state);
+ const c=state.completion,f=c.fields,prior=sourceResultForNext(state);
  if(!prior)return[];
- if(c.current==="C35P"&&!actualPmccExists(state))return[];
- const observed=str(f.scatterPattern||prior.observation).toLowerCase();
+ if(c.current==="C35P"&&!canViewPmccFollowup(state))return[];
+ const observed=observedFeatureForNext(state).toLowerCase();
  const s=[];
  if(c.current==="C35P"){
   if(observed==="curved")s.push(["Could a justified nonlinear model describe the actual curvature?","Pearson's r measures linear association; it cannot rule out a curved pattern."]);
   else if(observed==="unclear")s.push(["Does the scatter graph show a meaningful pattern that a linear coefficient misses?","No clear linear association need not prove no relationship."]);
   else if(observed==="unexpected")s.push(["Should I verify an unusual observation and examine its influence?","Do not exclude points merely to improve a coefficient."]);
-  else s.push(["Would a regression line answer my aim better than r alone?","Only if a roughly linear scatter and a meaningful prediction justify it."]);
+  else s.push(["Does the actual scatter graph justify a straight-line model?","A Pearson coefficient alone is not enough to diagnose the shape. Only consider regression when the plot and aim support it."]);
   s.push(["Could I interpret the strength and direction of linear association without another model?","Further mathematics is optional when the finding already helps answer the aim."]);
  }else if(observed==="curved"){
   s.push(["Which curved function might fit the actual shape, if modelling serves my aim?","Do not force a straight line merely because a PMCC was planned."]);
