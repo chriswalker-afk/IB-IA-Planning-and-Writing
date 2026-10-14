@@ -54,7 +54,7 @@ export function createProjectViews(ctx){
     return '<div class="page wide">'+tabletNav()+
       (resume?'<div class="welcome-row"><div>'+overline("WELCOME BACK")+'<h2>Your mathematical journey is taking shape.</h2><p>Pick up where your thinking left off.</p></div>'+demoFlag()+'</div>'+
       '<div class="resume-card"><div><span class="meta-pill">'+icon("route")+' Your investigation</span><h3>'+e(state.project.aim||"Your developing IA idea")+'</h3><p>'+e(state.entries.length?state.entries.length+" mathematical step(s) recorded":"Planning your mathematical investigation")+'</p></div>'+
-      button("Continue my journey",state.entries.length||state.ui.studioSection!=="overview"?"go-studio":"go-planning","btn-primary","", "arrow-right")+'</div>'+
+      button("Continue my journey",state.entries.length||state.ui.studioSection!=="overview"?"go-studio":"go-planning","btn-primary","", "arrow-right")+button("Import a planning document","import-report","btn-secondary","", "upload")+'</div>'+
       '<div class="journey-tiles">'+
       '<button class="journey-tile" data-nav="planning"><span class="feature-icon">'+icon("compass")+'</span><span><strong>My planning</strong><p>Revisit or refine your choices.</p></span></button>'+
       '<button class="journey-tile" data-nav="completing"><span class="feature-icon">'+icon("pencil")+'</span><span><strong>My IA Studio</strong><p>Record actual mathematics and reflect.</p></span></button></div>':
@@ -62,7 +62,7 @@ export function createProjectViews(ctx){
       '<h1>Big questions.<br><em>Meaningful maths.</em></h1>'+
       '<p>Turn something that makes you curious into a mathematical investigation worth exploring. One thoughtful step at a time.</p>'+
       '<div class="button-row">'+button("Find my starting point","start-planning","btn-primary","", "arrow-right")+
-      button("Explore a sample","open-demos","btn-secondary","", "sparkles")+'</div></div>'+
+      button("Explore a sample","open-demos","btn-secondary","", "sparkles")+button("Import an existing plan","import-report","btn-light","", "upload")+'</div></div>'+
       '<div class="hero-deco"><svg viewBox="0 0 400 430" fill="none" aria-hidden="true"><circle cx="250" cy="175" r="130" fill="#c9e5d5" opacity=".65"/><circle cx="325" cy="295" r="106" fill="#f4dfa6" opacity=".55"/><path d="M58 385 C245 368 79 183 288 180 C399 178 221 46 363 24" stroke="#82b6a4" stroke-width="3" stroke-linecap="round" stroke-dasharray="4 12"/><circle cx="105" cy="358" r="11" fill="#138477"/><circle cx="281" cy="180" r="12" fill="#fff" stroke="#138477" stroke-width="4"/><circle cx="323" cy="61" r="10" fill="#e9aa72"/></svg></div>'+
       '<span class="deco-bubble deco-one">'+icon("target")+'</span><span class="deco-bubble deco-two">'+icon("chart")+'</span><span class="deco-bubble deco-three">'+icon("sparkles")+'</span></section>')+
       '<div class="section-title-row"><h2>Two parts. One investigation.</h2><span class="text-muted text-xs">Built around your thinking</span></div>'+
@@ -153,7 +153,10 @@ export function createProjectViews(ctx){
       '<p class="text-muted text-small">These flags are not teacher responses or formal approval decisions.</p>':"";
     return '<div class="page narrow print-report">'+tabletNav()+
       '<div class="no-print">'+sheetTitle("YOUR WORKING RECORD","My IA Pathfinder report","A readable summary of what you've recorded, not a completed IA or teacher-approved plan.")+
-      '<div class="button-row" style="margin-bottom:22px">'+button("Print / save as PDF","print-report","btn-primary","", "download")+
+      '<div class="button-row" style="margin-bottom:22px">'+button("Download structured PDF","export-plan-pdf","btn-primary","", "download")+
+      button("Download editable Word","export-plan-docx","btn-secondary","", "download")+
+      button("Import earlier plan","import-report","btn-light","", "upload")+
+      button("Print working record","print-report","btn-quiet","", "file")+
       button("Download project backup","export-json","btn-secondary","", "save")+
       button("Back to my path","go-path","btn-quiet")+'</div></div>'+
       '<div class="content-card"><p class="section-eyebrow">IA PATHFINDER · STUDENT WORKING RECORD</p><h1 style="font-size:26px">My mathematical investigation</h1>'+
