@@ -292,7 +292,7 @@ export function createPlanningViews(ctx){
     mathChoices(state,true)+
     F("mathsRevisedWhy","Why might this mathematics be useful? (optional)","Connect a selected method to the question you want to answer",{type:"textarea",rows:2}),
     "<h4>Keep it flexible</h4><p>These suggestions respond to a prediction, not a demonstrated pattern. Once you have real results, you may need to choose a different method or end the investigation.</p>");
-   case "N04M":return stepBody("Is the mathematics likely to answer your question?","Check purpose, course suitability and potential interpretation. This node is marked as needing discussion in the source flowchart.",
+   case "N04M":return stepBody("Is the mathematics likely to answer your question?","Check purpose, course suitability and potential interpretation. If the mathematical suitability is unclear, note a question for your teacher without blocking your plan.",
     summary("Current aim",f.aim)+
     summary("Possible mathematics",selectedMaths(state).map(x=>x.label).join("; ")+(f.otherMaths?" · "+f.otherMaths:""))+
     select("courseSuitability","Does your mathematics look suited to this aim?",[
