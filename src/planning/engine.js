@@ -154,6 +154,10 @@ export function applyPlanningField(state,key,value){
  const f=state.planning.fields;
  const before=f[key];
  f[key]=String(value??"");
+ if(before!==f[key]&&state.handover?.confirmedAt){
+  state.handover.confirmedAt="";
+  state.handover.needsReview=true;
+ }
  if(before!==f[key]&&state.planning.completed){
   state.planning.completed=false;
   state.planning.notices=["Your planning choices changed. Review the updated provisional plan before using it."];
@@ -192,6 +196,7 @@ export function toggleMath(state,id){
  const f=state.planning.fields;
  if(item.course!==f.course)return false;
  const ids=state.planning.mathSelected,i=ids.indexOf(id);
+ if(state.handover?.confirmedAt){state.handover.confirmedAt="";state.handover.needsReview=true;}
  if(state.planning.completed){state.planning.completed=false;state.planning.notices=["Your mathematics selections changed. Review the provisional plan again."];}
  if(i>=0)ids.splice(i,1);else ids.push(id);
  syncPlanningToProject(state);return true;
