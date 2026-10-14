@@ -1,0 +1,3822 @@
+{
+  "part": 1,
+  "items": [
+    {
+      "sheet": {
+        "name": "Overview",
+        "slug": "overview",
+        "role": "diagram-reference",
+        "capturedRows": 26,
+        "lastPopulatedRow": 79,
+        "sourceColumns": 22,
+        "sourcePath": "data/sheets/overview.json",
+        "indexedRecords": 0
+      },
+      "records": []
+    },
+    {
+      "sheet": {
+        "name": "Planning the IA",
+        "slug": "planning-the-ia",
+        "role": "diagram-reference",
+        "capturedRows": 57,
+        "lastPopulatedRow": 88,
+        "sourceColumns": 21,
+        "sourcePath": "data/sheets/planning-the-ia.json",
+        "indexedRecords": 0
+      },
+      "records": []
+    },
+    {
+      "sheet": {
+        "name": "Maths Options",
+        "slug": "maths-options",
+        "role": "guidance-catalog",
+        "capturedRows": 61,
+        "lastPopulatedRow": 64,
+        "sourceColumns": 7,
+        "sourcePath": "data/sheets/maths-options.json",
+        "indexedRecords": 51
+      },
+      "records": [
+        {
+          "recordId": "Maths Options:AI01@9",
+          "id": "AI01",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Maths Options",
+            "row": 9,
+            "slug": "maths-options"
+          },
+          "part": "Planning the IA",
+          "label": "Arithmetic sequences and series",
+          "fields": [
+            "AI01",
+            "AI SL",
+            "Number and algebra",
+            "Arithmetic sequences and series",
+            "Find or model a pattern with a roughly constant difference.",
+            "Review",
+            "Might be a supporting technique rather than the entire IA."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Maths Options:AI02@10",
+          "id": "AI02",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Maths Options",
+            "row": 10,
+            "slug": "maths-options"
+          },
+          "part": "Planning the IA",
+          "label": "Geometric sequences and series",
+          "fields": [
+            "AI02",
+            "AI SL",
+            "Number and algebra",
+            "Geometric sequences and series",
+            "Model quantities increasing or decreasing by a constant ratio.",
+            "Review",
+            "Link the model to real observations."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Maths Options:AI03@11",
+          "id": "AI03",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Maths Options",
+            "row": 11,
+            "slug": "maths-options"
+          },
+          "part": "Planning the IA",
+          "label": "Compound growth and financial mathematics",
+          "fields": [
+            "AI03",
+            "AI SL",
+            "Number and algebra",
+            "Compound growth and financial mathematics",
+            "Model interest, loans, repayments or accumulated change.",
+            "Review",
+            "Explain assumptions and test against relevant data."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Maths Options:AI04@12",
+          "id": "AI04",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Maths Options",
+            "row": 12,
+            "slug": "maths-options"
+          },
+          "part": "Planning the IA",
+          "label": "Linear functions and models",
+          "fields": [
+            "AI04",
+            "AI SL",
+            "Functions and modelling",
+            "Linear functions and models",
+            "Represent relationships with a constant rate of change.",
+            "Review",
+            "Not the same as correlation; explain why linearity is reasonable."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Maths Options:AI05@13",
+          "id": "AI05",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Maths Options",
+            "row": 13,
+            "slug": "maths-options"
+          },
+          "part": "Planning the IA",
+          "label": "Quadratic or cubic models",
+          "fields": [
+            "AI05",
+            "AI SL",
+            "Functions and modelling",
+            "Quadratic or cubic models",
+            "Explore a curved relationship and possible turning points.",
+            "Review",
+            "Check the behaviour within a realistic domain."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Maths Options:AI06@14",
+          "id": "AI06",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Maths Options",
+            "row": 14,
+            "slug": "maths-options"
+          },
+          "part": "Planning the IA",
+          "label": "Exponential growth or decay",
+          "fields": [
+            "AI06",
+            "AI SL",
+            "Functions and modelling",
+            "Exponential growth or decay",
+            "Model repeated multiplicative change over time.",
+            "Review",
+            "Explain parameters and check against observations."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Maths Options:AI07@15",
+          "id": "AI07",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Maths Options",
+            "row": 15,
+            "slug": "maths-options"
+          },
+          "part": "Planning the IA",
+          "label": "Power models",
+          "fields": [
+            "AI07",
+            "AI SL",
+            "Functions and modelling",
+            "Power models",
+            "Investigate a relationship of the form y = ax^b.",
+            "Review",
+            "Distinguish a plausible model from a convenient curve."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Maths Options:AI08@16",
+          "id": "AI08",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Maths Options",
+            "row": 16,
+            "slug": "maths-options"
+          },
+          "part": "Planning the IA",
+          "label": "Sinusoidal or periodic models",
+          "fields": [
+            "AI08",
+            "AI SL",
+            "Functions and modelling",
+            "Sinusoidal or periodic models",
+            "Explore repeating changes, cycles or seasonal patterns.",
+            "Review",
+            "Verify that data show genuine periodic behaviour."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Maths Options:AI09@17",
+          "id": "AI09",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Maths Options",
+            "row": 17,
+            "slug": "maths-options"
+          },
+          "part": "Planning the IA",
+          "label": "Compare and evaluate fitted models",
+          "fields": [
+            "AI09",
+            "AI SL",
+            "Functions and modelling",
+            "Compare and evaluate fitted models",
+            "Try more than one model and check how well each explains data.",
+            "Review",
+            "Evaluation is part of the modelling process; not a stand-alone magic technique."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Maths Options:AI10@18",
+          "id": "AI10",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Maths Options",
+            "row": 18,
+            "slug": "maths-options"
+          },
+          "part": "Planning the IA",
+          "label": "Trigonometric measurements and models",
+          "fields": [
+            "AI10",
+            "AI SL",
+            "Geometry and trigonometry",
+            "Trigonometric measurements and models",
+            "Use angles and lengths to model an observed situation.",
+            "Review",
+            "Best paired with real measurements and a clear modelling question."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Maths Options:AI11@19",
+          "id": "AI11",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Maths Options",
+            "row": 19,
+            "slug": "maths-options"
+          },
+          "part": "Planning the IA",
+          "label": "Area, surface area and volume models",
+          "fields": [
+            "AI11",
+            "AI SL",
+            "Geometry and trigonometry",
+            "Area, surface area and volume models",
+            "Model quantities such as capacity, material or shape.",
+            "Review",
+            "A geometry-only exposition may be too limited; link to the aim."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Maths Options:AI12@20",
+          "id": "AI12",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Maths Options",
+            "row": 20,
+            "slug": "maths-options"
+          },
+          "part": "Planning the IA",
+          "label": "Voronoi diagrams",
+          "fields": [
+            "AI12",
+            "AI SL",
+            "Geometry and trigonometry",
+            "Voronoi diagrams",
+            "Investigate nearest-site regions, travel access or locations.",
+            "Review",
+            "AI SL-specific technique; check appropriate use."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Maths Options:AI13@21",
+          "id": "AI13",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Maths Options",
+            "row": 21,
+            "slug": "maths-options"
+          },
+          "part": "Planning the IA",
+          "label": "Sampling and descriptive statistics",
+          "fields": [
+            "AI13",
+            "AI SL",
+            "Statistics and probability",
+            "Sampling and descriptive statistics",
+            "Plan sampling and summarise centre, spread or distributions.",
+            "Review",
+            "Usually supporting evidence, not sufficient on its own."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Maths Options:AI14@22",
+          "id": "AI14",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Maths Options",
+            "row": 22,
+            "slug": "maths-options"
+          },
+          "part": "Planning the IA",
+          "label": "Scatter plots and Pearson's r",
+          "fields": [
+            "AI14",
+            "AI SL",
+            "Statistics and probability",
+            "Scatter plots and Pearson's r",
+            "Investigate the direction and strength of a linear association.",
+            "Review",
+            "Correlation does not imply causation; check scatter graph."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Maths Options:AI15@23",
+          "id": "AI15",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Maths Options",
+            "row": 23,
+            "slug": "maths-options"
+          },
+          "part": "Planning the IA",
+          "label": "Linear regression",
+          "fields": [
+            "AI15",
+            "AI SL",
+            "Statistics and probability",
+            "Linear regression",
+            "Find and interpret a fitted line, then test predictions.",
+            "Review",
+            "Interpret gradient, intercept and limitations."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Maths Options:AI16@24",
+          "id": "AI16",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Maths Options",
+            "row": 24,
+            "slug": "maths-options"
+          },
+          "part": "Planning the IA",
+          "label": "Spearman's rank correlation",
+          "fields": [
+            "AI16",
+            "AI SL",
+            "Statistics and probability",
+            "Spearman's rank correlation",
+            "Investigate a monotonic association or ranked data.",
+            "Review",
+            "Useful if a relationship is not linear."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Maths Options:AI17@25",
+          "id": "AI17",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Maths Options",
+            "row": 25,
+            "slug": "maths-options"
+          },
+          "part": "Planning the IA",
+          "label": "Binomial distribution",
+          "fields": [
+            "AI17",
+            "AI SL",
+            "Statistics and probability",
+            "Binomial distribution",
+            "Model numbers of successes across repeated independent trials.",
+            "Review",
+            "Check binomial conditions before use."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Maths Options:AI18@26",
+          "id": "AI18",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Maths Options",
+            "row": 26,
+            "slug": "maths-options"
+          },
+          "part": "Planning the IA",
+          "label": "Normal distribution",
+          "fields": [
+            "AI18",
+            "AI SL",
+            "Statistics and probability",
+            "Normal distribution",
+            "Model continuously measured variation and probabilities.",
+            "Review",
+            "Check plausibility of normal assumptions."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Maths Options:AI19@27",
+          "id": "AI19",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Maths Options",
+            "row": 27,
+            "slug": "maths-options"
+          },
+          "part": "Planning the IA",
+          "label": "Conditional probability or expected value",
+          "fields": [
+            "AI19",
+            "AI SL",
+            "Statistics and probability",
+            "Conditional probability or expected value",
+            "Analyse dependent probabilities and long-run averages.",
+            "Review",
+            "Needs a concrete decision or prediction."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Maths Options:AI20@28",
+          "id": "AI20",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Maths Options",
+            "row": 28,
+            "slug": "maths-options"
+          },
+          "part": "Planning the IA",
+          "label": "Chi-squared test for independence",
+          "fields": [
+            "AI20",
+            "AI SL",
+            "Statistics and probability",
+            "Chi-squared test for independence",
+            "Explore evidence of association in categorical variables.",
+            "Review",
+            "Check sample size and expected-frequency conditions."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Maths Options:AI21@29",
+          "id": "AI21",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Maths Options",
+            "row": 29,
+            "slug": "maths-options"
+          },
+          "part": "Planning the IA",
+          "label": "Chi-squared goodness-of-fit test",
+          "fields": [
+            "AI21",
+            "AI SL",
+            "Statistics and probability",
+            "Chi-squared goodness-of-fit test",
+            "Compare observed counts with an expected distribution.",
+            "Review",
+            "Check categories and expected frequencies."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Maths Options:AI22@30",
+          "id": "AI22",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Maths Options",
+            "row": 30,
+            "slug": "maths-options"
+          },
+          "part": "Planning the IA",
+          "label": "Two-sample t-test",
+          "fields": [
+            "AI22",
+            "AI SL",
+            "Statistics and probability",
+            "Two-sample t-test",
+            "Compare mean outcomes in two groups.",
+            "Review",
+            "Check assumptions, sample independence and context."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Maths Options:AI23@31",
+          "id": "AI23",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Maths Options",
+            "row": 31,
+            "slug": "maths-options"
+          },
+          "part": "Planning the IA",
+          "label": "Differentiation and rate of change",
+          "fields": [
+            "AI23",
+            "AI SL",
+            "Calculus",
+            "Differentiation and rate of change",
+            "Investigate how quickly a quantity or model changes.",
+            "Review",
+            "Derivatives should answer a real question."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Maths Options:AI24@32",
+          "id": "AI24",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Maths Options",
+            "row": 32,
+            "slug": "maths-options"
+          },
+          "part": "Planning the IA",
+          "label": "Optimisation using differentiation",
+          "fields": [
+            "AI24",
+            "AI SL",
+            "Calculus",
+            "Optimisation using differentiation",
+            "Find model maxima/minima and test whether they are meaningful.",
+            "Review",
+            "Usually part of a modelling IA; constraints and reality matter."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Maths Options:AI25@33",
+          "id": "AI25",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Maths Options",
+            "row": 33,
+            "slug": "maths-options"
+          },
+          "part": "Planning the IA",
+          "label": "Definite integrals and area",
+          "fields": [
+            "AI25",
+            "AI SL",
+            "Calculus",
+            "Definite integrals and area",
+            "Find accumulated quantities or area under a model.",
+            "Review",
+            "Explain what the integral represents and its units."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Maths Options:AI26@34",
+          "id": "AI26",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Maths Options",
+            "row": 34,
+            "slug": "maths-options"
+          },
+          "part": "Planning the IA",
+          "label": "Trapezoidal rule",
+          "fields": [
+            "AI26",
+            "AI SL",
+            "Calculus",
+            "Trapezoidal rule",
+            "Estimate an integral or area using numerical approximation.",
+            "Review",
+            "Discuss accuracy and resolution of measurements."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Maths Options:AA01@35",
+          "id": "AA01",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Maths Options",
+            "row": 35,
+            "slug": "maths-options"
+          },
+          "part": "Planning the IA",
+          "label": "Arithmetic or geometric sequences",
+          "fields": [
+            "AA01",
+            "AA SL",
+            "Number and algebra",
+            "Arithmetic or geometric sequences",
+            "Model discrete patterns or progressions.",
+            "Review",
+            "Connect abstract relationships to investigation goals."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Maths Options:AA02@36",
+          "id": "AA02",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Maths Options",
+            "row": 36,
+            "slug": "maths-options"
+          },
+          "part": "Planning the IA",
+          "label": "Geometric series and accumulation",
+          "fields": [
+            "AA02",
+            "AA SL",
+            "Number and algebra",
+            "Geometric series and accumulation",
+            "Analyse repeated growth, decay or repeated sums.",
+            "Review",
+            "Explain what the terms and totals represent."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Maths Options:AA03@37",
+          "id": "AA03",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Maths Options",
+            "row": 37,
+            "slug": "maths-options"
+          },
+          "part": "Planning the IA",
+          "label": "Logarithms and exponential relationships",
+          "fields": [
+            "AA03",
+            "AA SL",
+            "Number and algebra",
+            "Logarithms and exponential relationships",
+            "Transform and investigate multiplicative relationships.",
+            "Review",
+            "Do more than name a function type."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Maths Options:AA04@38",
+          "id": "AA04",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Maths Options",
+            "row": 38,
+            "slug": "maths-options"
+          },
+          "part": "Planning the IA",
+          "label": "Algebraic justification or simple proof",
+          "fields": [
+            "AA04",
+            "AA SL",
+            "Number and algebra",
+            "Algebraic justification or simple proof",
+            "Justify a relationship or result used in the investigation.",
+            "Review",
+            "A pure proof/no-data IA requires teacher consultation."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Maths Options:AA05@39",
+          "id": "AA05",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Maths Options",
+            "row": 39,
+            "slug": "maths-options"
+          },
+          "part": "Planning the IA",
+          "label": "Binomial expansion",
+          "fields": [
+            "AA05",
+            "AA SL",
+            "Number and algebra",
+            "Binomial expansion",
+            "Develop an algebraic approximation or expression.",
+            "Review",
+            "Relevant only where it genuinely advances the aim."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Maths Options:AA06@40",
+          "id": "AA06",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Maths Options",
+            "row": 40,
+            "slug": "maths-options"
+          },
+          "part": "Planning the IA",
+          "label": "Linear, quadratic or polynomial functions",
+          "fields": [
+            "AA06",
+            "AA SL",
+            "Functions",
+            "Linear, quadratic or polynomial functions",
+            "Construct, analyse and interpret mathematical relationships.",
+            "Review",
+            "May be fitted or derived; justify the model."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Maths Options:AA07@41",
+          "id": "AA07",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Maths Options",
+            "row": 41,
+            "slug": "maths-options"
+          },
+          "part": "Planning the IA",
+          "label": "Exponential or logarithmic functions",
+          "fields": [
+            "AA07",
+            "AA SL",
+            "Functions",
+            "Exponential or logarithmic functions",
+            "Analyse growth/decay and non-linear relationships.",
+            "Review",
+            "Explain and check model parameters."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Maths Options:AA08@42",
+          "id": "AA08",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Maths Options",
+            "row": 42,
+            "slug": "maths-options"
+          },
+          "part": "Planning the IA",
+          "label": "Trigonometric functions",
+          "fields": [
+            "AA08",
+            "AA SL",
+            "Functions",
+            "Trigonometric functions",
+            "Represent and analyse periodic relationships.",
+            "Review",
+            "Check frequency and domain against context."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Maths Options:AA09@43",
+          "id": "AA09",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Maths Options",
+            "row": 43,
+            "slug": "maths-options"
+          },
+          "part": "Planning the IA",
+          "label": "Domain, range and inverse functions",
+          "fields": [
+            "AA09",
+            "AA SL",
+            "Functions",
+            "Domain, range and inverse functions",
+            "Examine restrictions and interpret reversibility of a model.",
+            "Review",
+            "Must connect to the real situation or aim."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Maths Options:AA10@44",
+          "id": "AA10",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Maths Options",
+            "row": 44,
+            "slug": "maths-options"
+          },
+          "part": "Planning the IA",
+          "label": "Function transformations and intersections",
+          "fields": [
+            "AA10",
+            "AA SL",
+            "Functions",
+            "Function transformations and intersections",
+            "Compare functions and solve meaningful model equalities.",
+            "Review",
+            "Use algebraic reasoning when appropriate."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Maths Options:AA11@45",
+          "id": "AA11",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Maths Options",
+            "row": 45,
+            "slug": "maths-options"
+          },
+          "part": "Planning the IA",
+          "label": "Coordinate geometry and distances",
+          "fields": [
+            "AA11",
+            "AA SL",
+            "Geometry and trigonometry",
+            "Coordinate geometry and distances",
+            "Model points, paths and geometric relationships.",
+            "Review",
+            "A pure geometry-only topic may need teacher discussion."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Maths Options:AA12@46",
+          "id": "AA12",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Maths Options",
+            "row": 46,
+            "slug": "maths-options"
+          },
+          "part": "Planning the IA",
+          "label": "Sine rule, cosine rule and trigonometry",
+          "fields": [
+            "AA12",
+            "AA SL",
+            "Geometry and trigonometry",
+            "Sine rule, cosine rule and trigonometry",
+            "Analyse angles, distances or measurements.",
+            "Review",
+            "Link to an actual investigation or modelling context."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Maths Options:AA13@47",
+          "id": "AA13",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Maths Options",
+            "row": 47,
+            "slug": "maths-options"
+          },
+          "part": "Planning the IA",
+          "label": "Radians and trigonometric identities",
+          "fields": [
+            "AA13",
+            "AA SL",
+            "Geometry and trigonometry",
+            "Radians and trigonometric identities",
+            "Use trigonometric reasoning to derive or analyse a model.",
+            "Review",
+            "Check level, notation and meaningful application."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Maths Options:AA14@48",
+          "id": "AA14",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Maths Options",
+            "row": 48,
+            "slug": "maths-options"
+          },
+          "part": "Planning the IA",
+          "label": "Sampling and descriptive statistics",
+          "fields": [
+            "AA14",
+            "AA SL",
+            "Statistics and probability",
+            "Sampling and descriptive statistics",
+            "Study data distributions, centres and variability.",
+            "Review",
+            "Typically part of a larger investigation."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Maths Options:AA15@49",
+          "id": "AA15",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Maths Options",
+            "row": 49,
+            "slug": "maths-options"
+          },
+          "part": "Planning the IA",
+          "label": "Pearson's correlation coefficient",
+          "fields": [
+            "AA15",
+            "AA SL",
+            "Statistics and probability",
+            "Pearson's correlation coefficient",
+            "Explore the strength of a linear relationship.",
+            "Review",
+            "Current syllabus only; 2029 AA revision removes bivariate data."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Maths Options:AA16@50",
+          "id": "AA16",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Maths Options",
+            "row": 50,
+            "slug": "maths-options"
+          },
+          "part": "Planning the IA",
+          "label": "Linear regression",
+          "fields": [
+            "AA16",
+            "AA SL",
+            "Statistics and probability",
+            "Linear regression",
+            "Model and interpret a linear association.",
+            "Review",
+            "Current syllabus only; 2029 AA revision removes bivariate data."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Maths Options:AA17@51",
+          "id": "AA17",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Maths Options",
+            "row": 51,
+            "slug": "maths-options"
+          },
+          "part": "Planning the IA",
+          "label": "Binomial distribution",
+          "fields": [
+            "AA17",
+            "AA SL",
+            "Statistics and probability",
+            "Binomial distribution",
+            "Model numbers of successes in independent trials.",
+            "Review",
+            "Check conditions before using."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Maths Options:AA18@52",
+          "id": "AA18",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Maths Options",
+            "row": 52,
+            "slug": "maths-options"
+          },
+          "part": "Planning the IA",
+          "label": "Normal distribution",
+          "fields": [
+            "AA18",
+            "AA SL",
+            "Statistics and probability",
+            "Normal distribution",
+            "Explore continuous random variation and probabilities.",
+            "Review",
+            "Check distribution assumptions."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Maths Options:AA19@53",
+          "id": "AA19",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Maths Options",
+            "row": 53,
+            "slug": "maths-options"
+          },
+          "part": "Planning the IA",
+          "label": "Conditional probability and expected value",
+          "fields": [
+            "AA19",
+            "AA SL",
+            "Statistics and probability",
+            "Conditional probability and expected value",
+            "Model uncertain outcomes and expected behaviour.",
+            "Review",
+            "Explain outcomes and assumptions."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Maths Options:AA20@54",
+          "id": "AA20",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Maths Options",
+            "row": 54,
+            "slug": "maths-options"
+          },
+          "part": "Planning the IA",
+          "label": "Differentiation and rates of change",
+          "fields": [
+            "AA20",
+            "AA SL",
+            "Calculus",
+            "Differentiation and rates of change",
+            "Study gradients, changing quantities and model sensitivity.",
+            "Review",
+            "Tie each rate to the IA aim."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Maths Options:AA21@55",
+          "id": "AA21",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Maths Options",
+            "row": 55,
+            "slug": "maths-options"
+          },
+          "part": "Planning the IA",
+          "label": "Chain, product and quotient rules",
+          "fields": [
+            "AA21",
+            "AA SL",
+            "Calculus",
+            "Chain, product and quotient rules",
+            "Differentiate more complex model functions.",
+            "Review",
+            "Applying a rule alone is not a complete exploration."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Maths Options:AA22@56",
+          "id": "AA22",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Maths Options",
+            "row": 56,
+            "slug": "maths-options"
+          },
+          "part": "Planning the IA",
+          "label": "Stationary points and optimisation",
+          "fields": [
+            "AA22",
+            "AA SL",
+            "Calculus",
+            "Stationary points and optimisation",
+            "Find and interpret maximum or minimum model values.",
+            "Review",
+            "Evaluate assumptions and domain."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Maths Options:AA23@57",
+          "id": "AA23",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Maths Options",
+            "row": 57,
+            "slug": "maths-options"
+          },
+          "part": "Planning the IA",
+          "label": "Definite integration and areas",
+          "fields": [
+            "AA23",
+            "AA SL",
+            "Calculus",
+            "Definite integration and areas",
+            "Analyse accumulated effects and areas under/between curves.",
+            "Review",
+            "Explain units and what accumulation represents."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Maths Options:AA24@58",
+          "id": "AA24",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Maths Options",
+            "row": 58,
+            "slug": "maths-options"
+          },
+          "part": "Planning the IA",
+          "label": "Integration by substitution",
+          "fields": [
+            "AA24",
+            "AA SL",
+            "Calculus",
+            "Integration by substitution",
+            "Integrate appropriate functions while interpreting results.",
+            "Review",
+            "Consider if directly necessary."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Maths Options:AA25@59",
+          "id": "AA25",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Maths Options",
+            "row": 59,
+            "slug": "maths-options"
+          },
+          "part": "Planning the IA",
+          "label": "Kinematics via derivatives and integrals",
+          "fields": [
+            "AA25",
+            "AA SL",
+            "Calculus",
+            "Kinematics via derivatives and integrals",
+            "Analyse displacement, velocity and acceleration models.",
+            "Review",
+            "Validate with physical data where relevant."
+          ],
+          "editorialStatus": null
+        }
+      ]
+    },
+    {
+      "sheet": {
+        "name": "Feasibility Checks",
+        "slug": "feasibility-checks",
+        "role": "guidance-catalog",
+        "capturedRows": 32,
+        "lastPopulatedRow": 44,
+        "sourceColumns": 8,
+        "sourcePath": "data/sheets/feasibility-checks.json",
+        "indexedRecords": 15
+      },
+      "records": [
+        {
+          "recordId": "Feasibility Checks:F01@9",
+          "id": "F01",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Feasibility Checks",
+            "row": 9,
+            "slug": "feasibility-checks"
+          },
+          "part": "Planning the IA",
+          "label": "Select all that apply: none / people / equipment / location / software / paid resource / external event / other",
+          "fields": [
+            "F01",
+            "Access and dependencies",
+            "Apart from the data itself, what people, locations, equipment, services or facilities does this project depend on?",
+            "Select all that apply: none / people / equipment / location / software / paid resource / external event / other",
+            "All data-led projects; reuse named items from primary/secondary questions",
+            "Every essential item is accessible or booked",
+            "Unarranged dependencies make the project vulnerable; ask for who/what and access date",
+            "Proposed"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Feasibility Checks:F02@10",
+          "id": "F02",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Feasibility Checks",
+            "row": 10,
+            "slug": "feasibility-checks"
+          },
+          "part": "Planning the IA",
+          "label": "Short answer",
+          "fields": [
+            "F02",
+            "Unarranged essentials",
+            "Which essential item have you NOT secured, and when will it be available?",
+            "Short answer",
+            "Only if F01 identifies an unarranged dependency",
+            "Specific feasible arrangement and date",
+            "Suggest a smaller test or alternative resource if the date is speculative",
+            "Proposed"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Feasibility Checks:F03@11",
+          "id": "F03",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Feasibility Checks",
+            "row": 11,
+            "slug": "feasibility-checks"
+          },
+          "part": "Planning the IA",
+          "label": "Yes / No / Not sure",
+          "fields": [
+            "F03",
+            "Permissions and privacy",
+            "Do you need consent or permission, or will you handle identifiable or sensitive information about people?",
+            "Yes / No / Not sure",
+            "Ask if people, photographs, third-party data, surveys or restricted access are involved",
+            "Requirements discussed with teacher and appropriate procedures arranged",
+            "Pause collection when safety, consent or privacy is unresolved; never ask students to upload identifiable data",
+            "Proposed"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Feasibility Checks:F04@12",
+          "id": "F04",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Feasibility Checks",
+            "row": 12,
+            "slug": "feasibility-checks"
+          },
+          "part": "Planning the IA",
+          "label": "Yes / Not yet / Not sure",
+          "fields": [
+            "F04",
+            "Software and practical skills",
+            "Can you open, clean, graph and work with a small sample using tools you already have and can use?",
+            "Yes / Not yet / Not sure",
+            "All; don't require particular software unnecessarily",
+            "Student can test the intended process with accessible tools",
+            "If coding, subscriptions, specialist software or training is essential, estimate time and suggest a simpler alternative",
+            "Proposed"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Feasibility Checks:F05@13",
+          "id": "F05",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Feasibility Checks",
+            "row": 13,
+            "slug": "feasibility-checks"
+          },
+          "part": "Planning the IA",
+          "label": "Short-answer hours estimate (rough)",
+          "fields": [
+            "F05",
+            "Non-mathematical workload",
+            "Roughly how much time will you spend on arranging access, collecting/cleaning data and learning tools, before the maths itself?",
+            "Short-answer hours estimate (rough)",
+            "All, excluding the time already checked for first usable data",
+            "Effort is bounded, with realistic milestones",
+            "Huge or unknown admin/data-cleaning workload may make an otherwise feasible IA difficult",
+            "Proposed"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Feasibility Checks:F06@14",
+          "id": "F06",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Feasibility Checks",
+            "row": 14,
+            "slug": "feasibility-checks"
+          },
+          "part": "Planning the IA",
+          "label": "None / A little / A lot / Don't know",
+          "fields": [
+            "F06",
+            "Data-cleaning burden",
+            "How much sorting, transcription, cleaning or merging of datasets will you need?",
+            "None / A little / A lot / Don't know",
+            "Show for large, messy, multiple or secondary datasets",
+            "Student has inspected a sample and understands the workload",
+            "Test ten rows or one file before committing to a huge dataset",
+            "Proposed"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Feasibility Checks:F07@15",
+          "id": "F07",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Feasibility Checks",
+            "row": 15,
+            "slug": "feasibility-checks"
+          },
+          "part": "Planning the IA",
+          "label": "Select all; optional short answer",
+          "fields": [
+            "F07",
+            "External uncertainty",
+            "Does success depend on others responding, a once-only event, travel, weather or a time-sensitive condition?",
+            "Select all; optional short answer",
+            "Show when access depends on third parties, scheduled events or fieldwork",
+            "Critical dependencies are confirmed, with time to recover if delayed",
+            "One-off events and slow replies create avoidable risk; consider alternatives",
+            "Proposed"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Feasibility Checks:F08@16",
+          "id": "F08",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Feasibility Checks",
+            "row": 16,
+            "slug": "feasibility-checks"
+          },
+          "part": "Planning the IA",
+          "label": "Short answer",
+          "fields": [
+            "F08",
+            "Scope and minimum version",
+            "What is the smallest version of this project that would still allow you to investigate your idea?",
+            "Short answer",
+            "Show if many variables, sources, conditions or long setup are proposed",
+            "Student can identify a simpler feasible path",
+            "Narrow the question or reduce the number of moving parts",
+            "Proposed"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Feasibility Checks:F09@17",
+          "id": "F09",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Feasibility Checks",
+            "row": 17,
+            "slug": "feasibility-checks"
+          },
+          "part": "Planning the IA",
+          "label": "Short answer",
+          "fields": [
+            "F09",
+            "Backup plan",
+            "If your main data source becomes unavailable, what is one credible fallback? Could permitted secondary data, another valid method or a smaller scope still address the aim?",
+            "Short answer",
+            "Only if F01, F03, F04, F06 or F07 indicates unresolved risk",
+            "Backup has compatible variables/population/scope, or student knows which aim changes would be needed. 'To investigate' is allowed.",
+            "In Completing, C95D offers immediate safe tasks while data are pending; C95A compares real secondary source candidates. Do not call a practical access delay a mathematical limitation.",
+            "Proposed"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Feasibility Checks:F10@18",
+          "id": "F10",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Feasibility Checks",
+            "row": 18,
+            "slug": "feasibility-checks"
+          },
+          "part": "Planning the IA",
+          "label": "Yes / No / Not yet possible",
+          "fields": [
+            "F10",
+            "Small end-to-end test",
+            "Have you tried one complete step, from obtaining a data point to producing a usable graph or calculation?",
+            "Yes / No / Not yet possible",
+            "Only if proposed tools or data-handling process is untested",
+            "A basic end-to-end test is possible soon",
+            "Test the most difficult operational step early, rather than discovering failure halfway through",
+            "Proposed"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Feasibility Checks:F11@19",
+          "id": "F11",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Feasibility Checks",
+            "row": 19,
+            "slug": "feasibility-checks"
+          },
+          "part": "Planning the IA",
+          "label": "Yes / No / Not sure",
+          "fields": [
+            "F11",
+            "Cost and restricted access",
+            "Do travel, payments, specialist facilities or licenses make the project difficult to complete?",
+            "Yes / No / Not sure",
+            "Only if an expense or facility requirement is indicated",
+            "Costs and access are realistic within available resources",
+            "Favor free, accessible resources unless there is a convincing alternative",
+            "Proposed"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Feasibility Checks:F12@20",
+          "id": "F12",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Feasibility Checks",
+            "row": 20,
+            "slug": "feasibility-checks"
+          },
+          "part": "Planning the IA",
+          "label": "Yes / No / Not sure",
+          "fields": [
+            "F12",
+            "Source reuse and attribution",
+            "Can you appropriately cite or use any source datasets, maps, images or other third-party materials you need?",
+            "Yes / No / Not sure",
+            "Show when third-party datasets/images/maps are central to the plan",
+            "Relevant sources are traceable and intended use is permitted",
+            "Cite the source; seek teacher guidance when rights or privacy are unclear",
+            "Proposed"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Feasibility Checks:F13@21",
+          "id": "F13",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Feasibility Checks",
+            "row": 21,
+            "slug": "feasibility-checks"
+          },
+          "part": "Planning the IA",
+          "label": "Yes / No / Not sure; optional scope note",
+          "fields": [
+            "F13",
+            "Sufficient usable data",
+            "Will you be able to obtain enough relevant, usable observations to investigate your question, rather than just a few convenient examples?",
+            "Yes / No / Not sure; optional scope note",
+            "After a pilot or secondary-data inspection",
+            "Coverage, variables and data quality are plausible for the intended aim",
+            "Small, biased or incomplete datasets may require narrowing the aim or changing source; ask teacher if unsure",
+            "Proposed"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Feasibility Checks:F14@22",
+          "id": "F14",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Feasibility Checks",
+            "row": 22,
+            "slug": "feasibility-checks"
+          },
+          "part": "Planning the IA",
+          "label": "Yes / No / Not sure",
+          "fields": [
+            "F14",
+            "Outcome dependence",
+            "If your data show no clear correlation, pattern or good-fitting model, can you still carry out a useful exploration?",
+            "Yes / No / Not sure",
+            "Especially for correlation or model-fitting investigations",
+            "A worthwhile question remains even if the anticipated pattern does not appear",
+            "Do not design an IA that can work only if it finds the hoped-for result; consider a comparison or evaluation route",
+            "Proposed"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Feasibility Checks:F15@23",
+          "id": "F15",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Feasibility Checks",
+            "row": 23,
+            "slug": "feasibility-checks"
+          },
+          "part": "Planning the IA",
+          "label": "Yes / No / Not sure",
+          "fields": [
+            "F15",
+            "Manageable presentation",
+            "Can you present and reference the key data, tables and diagrams without copying an enormous dataset or doing excessive manual formatting?",
+            "Yes / No / Not sure",
+            "If the proposed dataset or outputs are large/complex",
+            "The necessary evidence can be shown clearly and concisely",
+            "Link or cite the full original dataset and include relevant extracts, summaries and graphs instead",
+            "Proposed"
+          ],
+          "editorialStatus": null
+        }
+      ]
+    },
+    {
+      "sheet": {
+        "name": "Planning Prompts",
+        "slug": "planning-prompts",
+        "role": "guidance-catalog",
+        "capturedRows": 45,
+        "lastPopulatedRow": 46,
+        "sourceColumns": 8,
+        "sourcePath": "data/sheets/planning-prompts.json",
+        "indexedRecords": 37
+      },
+      "records": [
+        {
+          "recordId": "Planning Prompts:C01@9",
+          "id": "C01",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Planning Prompts",
+            "row": 9,
+            "slug": "planning-prompts"
+          },
+          "part": "Planning the IA",
+          "label": "What other IA topic could you investigate? (Up to two additional ideas.)",
+          "fields": [
+            "C01",
+            "N00C",
+            "Student chooses to compare alternatives",
+            "What other IA topic could you investigate? (Up to two additional ideas.)",
+            "Optional short-answer boxes",
+            "One idea is fine; this branch must be skippable.",
+            "Other ideas",
+            "Working draft"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Planning Prompts:C02@10",
+          "id": "C02",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Planning Prompts",
+            "row": 10,
+            "slug": "planning-prompts"
+          },
+          "part": "Planning the IA",
+          "label": "Which idea offers the easiest access to suitable data, and why?",
+          "fields": [
+            "C02",
+            "N00C",
+            "Multiple ideas entered",
+            "Which idea offers the easiest access to suitable data, and why?",
+            "Optional short answer",
+            "Use quick comparison; no need for complete second plan.",
+            "Data accessibility comparison",
+            "Working draft"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Planning Prompts:C03@11",
+          "id": "C03",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Planning Prompts",
+            "row": 11,
+            "slug": "planning-prompts"
+          },
+          "part": "Planning the IA",
+          "label": "Which idea is most useful/interesting and realistic given your time?",
+          "fields": [
+            "C03",
+            "N00C",
+            "Multiple ideas entered",
+            "Which idea is most useful/interesting and realistic given your time?",
+            "Optional short answer",
+            "Do not rank popularity as mathematical quality.",
+            "Reason for topic choice",
+            "Working draft"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Planning Prompts:C04@12",
+          "id": "C04",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Planning Prompts",
+            "row": 12,
+            "slug": "planning-prompts"
+          },
+          "part": "Planning the IA",
+          "label": "Which idea would you like to plan now?",
+          "fields": [
+            "C04",
+            "N00C",
+            "When comparison is complete",
+            "Which idea would you like to plan now?",
+            "Choice",
+            "Keep alternatives recorded without treating them as failed ideas.",
+            "Selected idea",
+            "Working draft"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Planning Prompts:P01@13",
+          "id": "P01",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Planning Prompts",
+            "row": 13,
+            "slug": "planning-prompts"
+          },
+          "part": "Planning the IA",
+          "label": "What sort of result or pattern do you think you might find? Pick a relevant suggestion, enter your own prediction or choose 'Not sure yet'.",
+          "fields": [
+            "P01",
+            "N01P",
+            "After course and initial maths choices (N04S); IA type and relevant data context known",
+            "What sort of result or pattern do you think you might find? Pick a relevant suggestion, enter your own prediction or choose 'Not sure yet'.",
+            "Context-filtered prediction choice(s), Other text or Not sure",
+            "Prediction nudge depends on IA type and data context. After it, ask separately WHY, and what it might mean for the selected beneficiary IF TRUE (P06); allow edit at N01V before maths review.",
+            "Tentative predicted pattern",
+            "Working draft"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Planning Prompts:P02@14",
+          "id": "P02",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Planning Prompts",
+            "row": 14,
+            "slug": "planning-prompts"
+          },
+          "part": "Planning the IA",
+          "label": "WHY do you expect this? What experience, observation or reasoning supports your prediction?",
+          "fields": [
+            "P02",
+            "N01P",
+            "Whenever the student makes a prediction",
+            "WHY do you expect this? What experience, observation or reasoning supports your prediction?",
+            "Separate short-answer box (optional if genuinely unsure)",
+            "Keep WHY distinct from the implication question (P06). Neither is a fabricated result. If unsure, accept uncertainty and proceed.",
+            "Reason for predicted pattern",
+            "Working draft"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Planning Prompts:V01@15",
+          "id": "V01",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Planning Prompts",
+            "row": 15,
+            "slug": "planning-prompts"
+          },
+          "part": "Planning the IA",
+          "label": "Who could benefit from knowing the answer to your investigation?",
+          "fields": [
+            "V01",
+            "N01V",
+            "Every student after defining an investigation aim",
+            "Who could benefit from knowing the answer to your investigation?",
+            "Choose one: It would help me / I could advise someone / Both / Not sure yet",
+            "Continue to one or two short conditional questions. Personal usefulness counts; do not require a grand real-world impact.",
+            "Intended type of benefit",
+            "Agreed"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Planning Prompts:D01@16",
+          "id": "D01",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Planning Prompts",
+            "row": 16,
+            "slug": "planning-prompts"
+          },
+          "part": "Planning the IA",
+          "label": "What other realistic method of collecting or finding this data did you consider?",
+          "fields": [
+            "D01",
+            "N03J",
+            "Primary/secondary/both data",
+            "What other realistic method of collecting or finding this data did you consider?",
+            "Short answer / Not sure yet",
+            "For Both, wait until both source branches are answered.",
+            "Alternative data approach",
+            "Working draft"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Planning Prompts:D02@17",
+          "id": "D02",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Planning Prompts",
+            "row": 17,
+            "slug": "planning-prompts"
+          },
+          "part": "Planning the IA",
+          "label": "Why is your selected method preferable for this investigation?",
+          "fields": [
+            "D02",
+            "N03J",
+            "After chosen method named",
+            "Why is your selected method preferable for this investigation?",
+            "Short answer",
+            "Explain fit to aim, not generic pros and cons.",
+            "Choice justification",
+            "Working draft"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Planning Prompts:D03@18",
+          "id": "D03",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Planning Prompts",
+            "row": 18,
+            "slug": "planning-prompts"
+          },
+          "part": "Planning the IA",
+          "label": "What is the main limitation of your chosen collection/source method?",
+          "fields": [
+            "D03",
+            "N03J",
+            "Data-based investigations",
+            "What is the main limitation of your chosen collection/source method?",
+            "Short answer / Not sure yet",
+            "Different prompts for surveys, measurements and secondary sources.",
+            "Data method limitation",
+            "Working draft"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Planning Prompts:D04@19",
+          "id": "D04",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Planning Prompts",
+            "row": 19,
+            "slug": "planning-prompts"
+          },
+          "part": "Planning the IA",
+          "label": "Can you reduce this limitation, or why is it acceptable?",
+          "fields": [
+            "D04",
+            "N03J",
+            "If limitation named",
+            "Can you reduce this limitation, or why is it acceptable?",
+            "Optional short answer",
+            "Accept honest limitations without pretending to eliminate them.",
+            "Limitation mitigation",
+            "Working draft"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Planning Prompts:D05@20",
+          "id": "D05",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Planning Prompts",
+            "row": 20,
+            "slug": "planning-prompts"
+          },
+          "part": "Planning the IA",
+          "label": "What population and sampling method will you use? What alternative was possible?",
+          "fields": [
+            "D05",
+            "N03J",
+            "Only if questionnaire or survey",
+            "What population and sampling method will you use? What alternative was possible?",
+            "Conditional short-answer boxes",
+            "Check bias and survey wording; reuse data already entered.",
+            "Sampling choice",
+            "Working draft"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Planning Prompts:T01@21",
+          "id": "T01",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Planning Prompts",
+            "row": 21,
+            "slug": "planning-prompts"
+          },
+          "part": "Planning the IA",
+          "label": "What initial-idea, teacher-draft and final deadlines has your school set?",
+          "fields": [
+            "T01",
+            "N03H",
+            "All planning routes",
+            "What initial-idea, teacher-draft and final deadlines has your school set?",
+            "Configured dates / optional date fields",
+            "No invented dates; 'To confirm with teacher' is valid.",
+            "School deadlines",
+            "Working draft"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Planning Prompts:T02@22",
+          "id": "T02",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Planning Prompts",
+            "row": 22,
+            "slug": "planning-prompts"
+          },
+          "part": "Planning the IA",
+          "label": "By what date could you prepare an initial graph, diagram or simplified case?",
+          "fields": [
+            "T02",
+            "N03H",
+            "Data or simplified example will be used",
+            "By what date could you prepare an initial graph, diagram or simplified case?",
+            "Date / Not sure yet",
+            "Must fit the expected data availability where applicable.",
+            "First visual milestone",
+            "Working draft"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Planning Prompts:T03@23",
+          "id": "T03",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Planning Prompts",
+            "row": 23,
+            "slug": "planning-prompts"
+          },
+          "part": "Planning the IA",
+          "label": "When could you complete an initial calculation and reflect on it?",
+          "fields": [
+            "T03",
+            "N03H",
+            "All routes",
+            "When could you complete an initial calculation and reflect on it?",
+            "Date / Not sure yet",
+            "Encourage an early start, not a late all-at-once calculation.",
+            "First mathematical work milestone",
+            "Working draft"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Planning Prompts:T04@24",
+          "id": "T04",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Planning Prompts",
+            "row": 24,
+            "slug": "planning-prompts"
+          },
+          "part": "Planning the IA",
+          "label": "When will your written first draft, including analysis and conclusion, be ready?",
+          "fields": [
+            "T04",
+            "N03H",
+            "All routes",
+            "When will your written first draft, including analysis and conclusion, be ready?",
+            "Date / Not sure yet",
+            "Use the school's teacher-draft deadline where available.",
+            "Draft-writing milestone",
+            "Working draft"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Planning Prompts:T05@25",
+          "id": "T05",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Planning Prompts",
+            "row": 25,
+            "slug": "planning-prompts"
+          },
+          "part": "Planning the IA",
+          "label": "When will you check, correct and submit your revised IA?",
+          "fields": [
+            "T05",
+            "N03H",
+            "All routes",
+            "When will you check, correct and submit your revised IA?",
+            "Date / Not sure yet",
+            "Reserve time for self-check and teacher feedback.",
+            "Revision and final submission",
+            "Working draft"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Planning Prompts:T06@26",
+          "id": "T06",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Planning Prompts",
+            "row": 26,
+            "slug": "planning-prompts"
+          },
+          "part": "Planning the IA",
+          "label": "What could you start earlier or simplify to create a buffer?",
+          "fields": [
+            "T06",
+            "N03H",
+            "When plan is tight/unrealistic",
+            "What could you start earlier or simplify to create a buffer?",
+            "Conditional short answer",
+            "Flag clashes with known deadlines; don't block summary export.",
+            "Timeline adjustment",
+            "Working draft"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Planning Prompts:V01@27",
+          "id": "V01",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Planning Prompts",
+            "row": 27,
+            "slug": "planning-prompts"
+          },
+          "part": "Planning the IA",
+          "label": "What simple graph, table, diagram or simplified version of the problem might help you begin?",
+          "fields": [
+            "V01",
+            "N05V",
+            "Before first maths",
+            "What simple graph, table, diagram or simplified version of the problem might help you begin?",
+            "Choice + Other + Not sure yet",
+            "Plan only; don't require students to produce the actual graph yet.",
+            "First representation",
+            "Working draft"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Planning Prompts:V02@28",
+          "id": "V02",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Planning Prompts",
+            "row": 28,
+            "slug": "planning-prompts"
+          },
+          "part": "Planning the IA",
+          "label": "What might it help you notice, compare or calculate?",
+          "fields": [
+            "V02",
+            "N05V",
+            "If representation named",
+            "What might it help you notice, compare or calculate?",
+            "Optional short answer",
+            "Link the representation back to the investigation aim.",
+            "Reason for representation",
+            "Working draft"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Planning Prompts:E01@29",
+          "id": "E01",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Planning Prompts",
+            "row": 29,
+            "slug": "planning-prompts"
+          },
+          "part": "Planning the IA",
+          "label": "What result or difficulty might cause you to change the direction of your investigation?",
+          "fields": [
+            "E01",
+            "N06E",
+            "After initial maths planned",
+            "What result or difficulty might cause you to change the direction of your investigation?",
+            "Optional short answer / Not sure",
+            "Recognise that plans evolve; unsuccessful results are worth reflecting on.",
+            "Possible change trigger",
+            "Working draft"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Planning Prompts:E02@30",
+          "id": "E02",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Planning Prompts",
+            "row": 30,
+            "slug": "planning-prompts"
+          },
+          "part": "Planning the IA",
+          "label": "What could you modify without restarting your whole IA?",
+          "fields": [
+            "E02",
+            "N06E",
+            "If trigger named",
+            "What could you modify without restarting your whole IA?",
+            "Optional short answer",
+            "E.g. refine variables, model or sample; avoid committing to a fixed structure.",
+            "Possible adaptation",
+            "Working draft"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Planning Prompts:TC01@31",
+          "id": "TC01",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Planning Prompts",
+            "row": 31,
+            "slug": "planning-prompts"
+          },
+          "part": "Planning the IA",
+          "label": "Is there anything about your aim or plan you would like to discuss with your teacher?",
+          "fields": [
+            "TC01",
+            "N06T",
+            "All routes",
+            "Is there anything about your aim or plan you would like to discuss with your teacher?",
+            "Optional short answer / Skip",
+            "Use N08 teacher answers if previously supplied; do not ask twice.",
+            "Universal teacher check-in",
+            "Working draft"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Planning Prompts:TC02@32",
+          "id": "TC02",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Planning Prompts",
+            "row": 32,
+            "slug": "planning-prompts"
+          },
+          "part": "Planning the IA",
+          "label": "When could you discuss your plan with your teacher?",
+          "fields": [
+            "TC02",
+            "N06T",
+            "If student wants to book check-in",
+            "When could you discuss your plan with your teacher?",
+            "Optional date / To confirm",
+            "Conversation recommended, not required before export.",
+            "Teacher check-in date",
+            "Working draft"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Planning Prompts:T07@33",
+          "id": "T07",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Planning Prompts",
+            "row": 33,
+            "slug": "planning-prompts"
+          },
+          "part": "Planning the IA",
+          "label": "When will your initial planning and introductory explanation be ready?",
+          "fields": [
+            "T07",
+            "N03H",
+            "All routes",
+            "When will your initial planning and introductory explanation be ready?",
+            "Date or Not sure yet",
+            "Pre-fill teacher-provided dates when known, never invent them.",
+            "Planning and introduction",
+            "Working draft"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Planning Prompts:T08@34",
+          "id": "T08",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Planning Prompts",
+            "row": 34,
+            "slug": "planning-prompts"
+          },
+          "part": "Planning the IA",
+          "label": "When will you analyse and reflect on your initial graph, table or simplified case?",
+          "fields": [
+            "T08",
+            "N03H",
+            "After first visual planned",
+            "When will you analyse and reflect on your initial graph, table or simplified case?",
+            "Date or Not sure yet",
+            "A graph alone is not enough; leave time to interpret it.",
+            "First visual analysis/reflection",
+            "Working draft"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Planning Prompts:T09@35",
+          "id": "T09",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Planning Prompts",
+            "row": 35,
+            "slug": "planning-prompts"
+          },
+          "part": "Planning the IA",
+          "label": "When will you complete further calculations, analyse the results and write your conclusion?",
+          "fields": [
+            "T09",
+            "N03H",
+            "When multiple mathematical steps are planned",
+            "When will you complete further calculations, analyse the results and write your conclusion?",
+            "Date or Not sure yet",
+            "Plan for reflection before the teacher's draft deadline.",
+            "Further maths and conclusion",
+            "Working draft"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Planning Prompts:P04@36",
+          "id": "P04",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Planning Prompts",
+            "row": 36,
+            "slug": "planning-prompts"
+          },
+          "part": "Planning the IA",
+          "label": "What initial graph or data sample might help you work out what to expect?",
+          "fields": [
+            "P04",
+            "N01P",
+            "If 'Not sure' selected",
+            "What initial graph or data sample might help you work out what to expect?",
+            "Optional short answer",
+            "Accept uncertainty; don't block the next maths-review node.",
+            "How to explore an uncertain prediction",
+            "Agreed"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Planning Prompts:R01@37",
+          "id": "R01",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Planning Prompts",
+            "row": 37,
+            "slug": "planning-prompts"
+          },
+          "part": "Planning the IA",
+          "label": "Look again at your earlier maths choices. Would you keep, add or remove any techniques?",
+          "fields": [
+            "R01",
+            "N04R",
+            "After prediction and WHY",
+            "Look again at your earlier maths choices. Would you keep, add or remove any techniques?",
+            "Existing multi-select reopened; optional Other; Not sure",
+            "Show course-specific suggestions based on chosen prediction. No forced additions.",
+            "Revised mathematical techniques",
+            "Agreed"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Planning Prompts:R02@38",
+          "id": "R02",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Planning Prompts",
+            "row": 38,
+            "slug": "planning-prompts"
+          },
+          "part": "Planning the IA",
+          "label": "Why might this mathematics help investigate the pattern you expect?",
+          "fields": [
+            "R02",
+            "N04R",
+            "When a suggested technique is displayed",
+            "Why might this mathematics help investigate the pattern you expect?",
+            "Optional separate short-answer box",
+            "Use explanation to assess fit; don't demand an essay or pretend suggestion is essential.",
+            "Reason for maths selection",
+            "Agreed"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Planning Prompts:R03@39",
+          "id": "R03",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Planning Prompts",
+            "row": 39,
+            "slug": "planning-prompts"
+          },
+          "part": "Planning the IA",
+          "label": "Does the method fit your variables and expected pattern?",
+          "fields": [
+            "R03",
+            "N04R",
+            "When prediction and mathematics mismatch",
+            "Does the method fit your variables and expected pattern?",
+            "Short contextual note with edit controls",
+            "E.g. PMCC requires paired numerical data and concerns linear association; a normal distribution describes one numerical variable, not correlation.",
+            "Method suitability caveat",
+            "Agreed"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Planning Prompts:R04@40",
+          "id": "R04",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Planning Prompts",
+            "row": 40,
+            "slug": "planning-prompts"
+          },
+          "part": "Planning the IA",
+          "label": "Would you like to record another technique not on your course list?",
+          "fields": [
+            "R04",
+            "N04R",
+            "If outside-course technique needed",
+            "Would you like to record another technique not on your course list?",
+            "Optional Other short-answer box",
+            "Retain any existing free-text choice; suggest teacher consultation, not automatic rejection.",
+            "Outside-course mathematics",
+            "Agreed"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Planning Prompts:P05@41",
+          "id": "P05",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Planning Prompts",
+            "row": 41,
+            "slug": "planning-prompts"
+          },
+          "part": "Planning the IA",
+          "label": "Which best describes your data: two numerical quantities, one numerical variable, comparing groups, categorical variables, repeated yes/no trials, or something else?",
+          "fields": [
+            "P05",
+            "N01P",
+            "Only when data structure cannot be inferred from prior answers",
+            "Which best describes your data: two numerical quantities, one numerical variable, comparing groups, categorical variables, repeated yes/no trials, or something else?",
+            "One small select / Not sure",
+            "Use only to filter sensible prediction nudges. Do not repeat data-type questions if variables already make this clear.",
+            "Data structure for prediction",
+            "Agreed"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Planning Prompts:V02@42",
+          "id": "V02",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Planning Prompts",
+            "row": 42,
+            "slug": "planning-prompts"
+          },
+          "part": "Planning the IA",
+          "label": "What might you decide, do, improve or understand better after answering your question? Why would that be useful to you?",
+          "fields": [
+            "V02",
+            "N01V",
+            "If personal benefit or Both is chosen",
+            "What might you decide, do, improve or understand better after answering your question? Why would that be useful to you?",
+            "Short answer (one box)",
+            "Prompt a realistic, directly useful outcome rather than simply naming a mathematical technique. Findings need not confirm the prediction.",
+            "Personal decision or benefit",
+            "Agreed"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Planning Prompts:V03@43",
+          "id": "V03",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Planning Prompts",
+            "row": 43,
+            "slug": "planning-prompts"
+          },
+          "part": "Planning the IA",
+          "label": "Who might find your results useful (person, role or group), and what decision or advice might your findings help them with? Why would that matter?",
+          "fields": [
+            "V03",
+            "N01V",
+            "If advice to someone or Both is chosen",
+            "Who might find your results useful (person, role or group), and what decision or advice might your findings help them with? Why would that matter?",
+            "Short answer (one box)",
+            "A teacher, team, school group, family member or other realistic audience is fine. Don't request identifiable third-party details. Advice must ultimately follow evidence.",
+            "Intended audience and possible recommendation",
+            "Agreed"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Planning Prompts:P06@44",
+          "id": "P06",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Planning Prompts",
+            "row": 44,
+            "slug": "planning-prompts"
+          },
+          "part": "Planning the IA",
+          "label": "Your aim: [student's current aim]. If [selected prediction] were true, what would it mean for [current beneficiary]? How could this help answer your aim or inform a decision or advice?",
+          "fields": [
+            "P06",
+            "N01P",
+            "After a prediction is selected and WHY has been answered, if an intended beneficiary is known",
+            "Your aim: [student's current aim]. If [selected prediction] were true, what would it mean for [current beneficiary]? How could this help answer your aim or inform a decision or advice?",
+            "Separate short-answer box or 'Not sure yet'",
+            "Display aim and prediction above the answer box. Address the selected beneficiary naturally ('you' for self, 'your friend / group' for others). Allow Not sure yet; keep it hypothetical. Show 'Edit who is this for?' beside the prompt.",
+            "Meaning IF prediction is true",
+            "Agreed"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Planning Prompts:P07@45",
+          "id": "P07",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Planning Prompts",
+            "row": 45,
+            "slug": "planning-prompts"
+          },
+          "part": "Planning the IA",
+          "label": "Edit 'Who is this for?'",
+          "fields": [
+            "P07",
+            "N01P → N01V → N01P",
+            "Always available on prediction screen",
+            "Edit 'Who is this for?'",
+            "Inline Edit link opening N01V fields; Confirm/Back to prediction",
+            "Reopen the original beneficiary and intended-use fields in place, then return directly to prediction. Retain draft implication; if beneficiary changes, ask to confirm/edit it rather than silently discard.",
+            "Updated beneficiary and intended use",
+            "Agreed"
+          ],
+          "editorialStatus": null
+        }
+      ]
+    },
+    {
+      "sheet": {
+        "name": "Prediction Nudges",
+        "slug": "prediction-nudges",
+        "role": "guidance-catalog",
+        "capturedRows": 29,
+        "lastPopulatedRow": 30,
+        "sourceColumns": 9,
+        "sourcePath": "data/sheets/prediction-nudges.json",
+        "indexedRecords": 22
+      },
+      "records": [
+        {
+          "recordId": "Prediction Nudges:S01@9",
+          "id": "S01",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Prediction Nudges",
+            "row": 9,
+            "slug": "prediction-nudges"
+          },
+          "part": "Planning the IA",
+          "label": "Do you expect a roughly linear positive relationship?",
+          "fields": [
+            "S01",
+            "Statistics",
+            "Paired numerical",
+            "Do you expect a roughly linear positive relationship?",
+            "Scatter plots and Pearson's r; Linear regression",
+            "Pearson's correlation coefficient; Linear regression",
+            "Planning only: this is a tentative prediction for PAIRED numerical data. After the real scatter, decide whether PMCC adds value; discuss linearity/outliers/causation when actually calculating/interpreting it.",
+            "Choose → Why? → Review maths",
+            "Working draft"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Prediction Nudges:S02@10",
+          "id": "S02",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Prediction Nudges",
+            "row": 10,
+            "slug": "prediction-nudges"
+          },
+          "part": "Planning the IA",
+          "label": "Do you expect a roughly linear negative relationship?",
+          "fields": [
+            "S02",
+            "Statistics",
+            "Paired numerical",
+            "Do you expect a roughly linear negative relationship?",
+            "Scatter plots and Pearson's r; Linear regression",
+            "Pearson's correlation coefficient; Linear regression",
+            "Planning only: a negative relation is one possibility, not an observed result. Check the ACTUAL scatter first; interpret correlation and method-specific limitations only if subsequently used.",
+            "Choose → Why? → Review maths",
+            "Working draft"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Prediction Nudges:S03@11",
+          "id": "S03",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Prediction Nudges",
+            "row": 11,
+            "slug": "prediction-nudges"
+          },
+          "part": "Planning the IA",
+          "label": "Could the relationship be curved rather than straight?",
+          "fields": [
+            "S03",
+            "Statistics",
+            "Paired numerical",
+            "Could the relationship be curved rather than straight?",
+            "Spearman's rank correlation; Compare and evaluate fitted models",
+            "Linear, quadratic or polynomial functions; explore scatter plot",
+            "Planning only: predicted curvature is not evidence. If the actual plot is monotonic but curved, a course-appropriate rank/model technique MAY suit; discuss the mathematics at actual use.",
+            "Choose → Why? → Consider curves",
+            "Working draft"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Prediction Nudges:S04@12",
+          "id": "S04",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Prediction Nudges",
+            "row": 12,
+            "slug": "prediction-nudges"
+          },
+          "part": "Planning the IA",
+          "label": "Might there be little or no clear relationship?",
+          "fields": [
+            "S04",
+            "Statistics",
+            "Paired numerical",
+            "Might there be little or no clear relationship?",
+            "Sampling and descriptive statistics; Scatter plots and Pearson's r",
+            "Sampling and descriptive statistics; Pearson's correlation coefficient",
+            "A weak/absent relationship is a valid possible finding, not a failure. Wait for actual paired observations before deciding whether any coefficient would help the aim.",
+            "Choose → Why? → Explore uncertainty",
+            "Working draft"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Prediction Nudges:S05@13",
+          "id": "S05",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Prediction Nudges",
+            "row": 13,
+            "slug": "prediction-nudges"
+          },
+          "part": "Planning the IA",
+          "label": "Do you predict an approximately symmetric, bell-shaped distribution?",
+          "fields": [
+            "S05",
+            "Statistics",
+            "One numerical variable",
+            "Do you predict an approximately symmetric, bell-shaped distribution?",
+            "Sampling and descriptive statistics; Normal distribution",
+            "Sampling and descriptive statistics; Normal distribution",
+            "A normal model is a possible future approach only after inspecting real continuous numerical data. Explain fit and its restrictions with the ACTUAL model, not the prediction.",
+            "Choose → Why? → Consider histogram",
+            "Working draft"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Prediction Nudges:S06@14",
+          "id": "S06",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Prediction Nudges",
+            "row": 14,
+            "slug": "prediction-nudges"
+          },
+          "part": "Planning the IA",
+          "label": "Do you expect a skewed distribution or outliers?",
+          "fields": [
+            "S06",
+            "Statistics",
+            "One numerical variable",
+            "Do you expect a skewed distribution or outliers?",
+            "Sampling and descriptive statistics",
+            "Sampling and descriptive statistics",
+            "Compare median, spread and outliers; do not assume normality.",
+            "Choose → Why? → Consider descriptive measures",
+            "Working draft"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Prediction Nudges:S07@15",
+          "id": "S07",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Prediction Nudges",
+            "row": 15,
+            "slug": "prediction-nudges"
+          },
+          "part": "Planning the IA",
+          "label": "Do you expect distinct clusters or more than one peak?",
+          "fields": [
+            "S07",
+            "Statistics",
+            "One numerical variable",
+            "Do you expect distinct clusters or more than one peak?",
+            "Sampling and descriptive statistics",
+            "Sampling and descriptive statistics",
+            "Investigate whether the data mix subgroups before using one normal curve.",
+            "Choose → Why? → Consider groups",
+            "Working draft"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Prediction Nudges:S08@16",
+          "id": "S08",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Prediction Nudges",
+            "row": 16,
+            "slug": "prediction-nudges"
+          },
+          "part": "Planning the IA",
+          "label": "Do you expect one group to have a higher mean than another?",
+          "fields": [
+            "S08",
+            "Statistics",
+            "Two groups",
+            "Do you expect one group to have a higher mean than another?",
+            "Sampling and descriptive statistics; Two-sample t-test",
+            "Sampling and descriptive statistics",
+            "Two-sample t-test is in the AI SL menu, not AA SL. This is a possible planning idea only; discuss assumptions and limitations WHEN performing a justified test.",
+            "Choose → Why? → Consider comparisons",
+            "Working draft"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Prediction Nudges:S09@17",
+          "id": "S09",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Prediction Nudges",
+            "row": 17,
+            "slug": "prediction-nudges"
+          },
+          "part": "Planning the IA",
+          "label": "Might the groups differ more in spread than in mean?",
+          "fields": [
+            "S09",
+            "Statistics",
+            "Two groups",
+            "Might the groups differ more in spread than in mean?",
+            "Sampling and descriptive statistics",
+            "Sampling and descriptive statistics",
+            "A comparison of means is not a test of spread; use appropriate measures.",
+            "Choose → Why? → Consider variation",
+            "Working draft"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Prediction Nudges:S10@18",
+          "id": "S10",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Prediction Nudges",
+            "row": 18,
+            "slug": "prediction-nudges"
+          },
+          "part": "Planning the IA",
+          "label": "Do you predict an association between these categories?",
+          "fields": [
+            "S10",
+            "Statistics",
+            "Two categorical variables",
+            "Do you predict an association between these categories?",
+            "Chi-squared test for independence; Conditional probability or expected value",
+            "Conditional probability and expected value; descriptive frequencies",
+            "Chi-squared independence is an AI SL menu option; it is not mandatory merely because categories exist. Evaluate expected counts/assumptions if the test is later ACTUALLY performed.",
+            "Choose → Why? → Consider categorical maths",
+            "Working draft"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Prediction Nudges:S11@19",
+          "id": "S11",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Prediction Nudges",
+            "row": 19,
+            "slug": "prediction-nudges"
+          },
+          "part": "Planning the IA",
+          "label": "Might the categories be independent?",
+          "fields": [
+            "S11",
+            "Statistics",
+            "Two categorical variables",
+            "Might the categories be independent?",
+            "Chi-squared test for independence",
+            "Conditional probability and expected value",
+            "No association is an informative possible finding, not a failure.",
+            "Choose → Why? → Check independence",
+            "Working draft"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Prediction Nudges:S12@20",
+          "id": "S12",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Prediction Nudges",
+            "row": 20,
+            "slug": "prediction-nudges"
+          },
+          "part": "Planning the IA",
+          "label": "Do you expect the count of successes to follow a binomial distribution?",
+          "fields": [
+            "S12",
+            "Statistics",
+            "Repeated yes/no trials",
+            "Do you expect the count of successes to follow a binomial distribution?",
+            "Binomial distribution",
+            "Binomial distribution",
+            "A binomial model may be suitable with fixed trials, two outcomes, stable probability and independence; evaluate these conditions WHEN using the real model, not as a collection-stage critique.",
+            "Choose → Why? → Check assumptions",
+            "Working draft"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Prediction Nudges:M01@21",
+          "id": "M01",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Prediction Nudges",
+            "row": 21,
+            "slug": "prediction-nudges"
+          },
+          "part": "Planning the IA",
+          "label": "Do you predict a roughly constant rate of change, giving a linear model?",
+          "fields": [
+            "M01",
+            "Modelling",
+            "Rate / two quantities",
+            "Do you predict a roughly constant rate of change, giving a linear model?",
+            "Linear functions and models; Linear regression",
+            "Linear, quadratic or polynomial functions; Linear regression",
+            "PMCC is only a potential technique for ACTUAL paired numerical data that look approximately linear. Model-fit limitations are discussed when a model is actually fitted.",
+            "Choose → Why? → Consider linear maths",
+            "Working draft"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Prediction Nudges:M02@22",
+          "id": "M02",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Prediction Nudges",
+            "row": 22,
+            "slug": "prediction-nudges"
+          },
+          "part": "Planning the IA",
+          "label": "Do you predict a roughly fixed percentage increase or decrease per period?",
+          "fields": [
+            "M02",
+            "Modelling",
+            "Growth / decay",
+            "Do you predict a roughly fixed percentage increase or decrease per period?",
+            "Exponential growth or decay; Geometric sequences and series",
+            "Exponential or logarithmic functions; Arithmetic or geometric sequences",
+            "Constant percentage change differs from a constant absolute change.",
+            "Choose → Why? → Consider exponential maths",
+            "Working draft"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Prediction Nudges:M03@23",
+          "id": "M03",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Prediction Nudges",
+            "row": 23,
+            "slug": "prediction-nudges"
+          },
+          "part": "Planning the IA",
+          "label": "Do you expect a maximum, minimum or change of direction?",
+          "fields": [
+            "M03",
+            "Modelling",
+            "Turning point",
+            "Do you expect a maximum, minimum or change of direction?",
+            "Quadratic or cubic models; Optimisation using differentiation",
+            "Linear, quadratic or polynomial functions; Stationary points and optimisation",
+            "A predicted turning point doesn't demonstrate a quadratic law. Introduce genuine constraints with the model and assess the real optimum/domain once mathematical work is performed.",
+            "Choose → Why? → Consider optimisation",
+            "Working draft"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Prediction Nudges:M04@24",
+          "id": "M04",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Prediction Nudges",
+            "row": 24,
+            "slug": "prediction-nudges"
+          },
+          "part": "Planning the IA",
+          "label": "Do you predict a pattern repeating at regular intervals?",
+          "fields": [
+            "M04",
+            "Modelling",
+            "Periodic behaviour",
+            "Do you predict a pattern repeating at regular intervals?",
+            "Sinusoidal or periodic models",
+            "Trigonometric functions",
+            "Check that enough cycles exist and periodicity is plausible.",
+            "Choose → Why? → Consider sine/cosine",
+            "Working draft"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Prediction Nudges:M05@25",
+          "id": "M05",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Prediction Nudges",
+            "row": 25,
+            "slug": "prediction-nudges"
+          },
+          "part": "Planning the IA",
+          "label": "Might one quantity change approximately as a power of another?",
+          "fields": [
+            "M05",
+            "Modelling",
+            "Scaling",
+            "Might one quantity change approximately as a power of another?",
+            "Power models; Compare and evaluate fitted models",
+            "Logarithms and exponential relationships; functions comparisons",
+            "Fit and interpretation matter; outside-course methods need teacher discussion.",
+            "Choose → Why? → Consider scaling models",
+            "Working draft"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Prediction Nudges:M06@26",
+          "id": "M06",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Prediction Nudges",
+            "row": 26,
+            "slug": "prediction-nudges"
+          },
+          "part": "Planning the IA",
+          "label": "Do you expect there to be a best value, such as a maximum capacity or minimum cost?",
+          "fields": [
+            "M06",
+            "Modelling",
+            "Optimal value",
+            "Do you expect there to be a best value, such as a maximum capacity or minimum cost?",
+            "Optimisation using differentiation; Area, surface area and volume models",
+            "Stationary points and optimisation; Definite integration and areas",
+            "Optimisation needs a clear objective, relevant constraints and a realistic model.",
+            "Choose → Why? → Consider constraints",
+            "Working draft"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Prediction Nudges:M07@27",
+          "id": "M07",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Prediction Nudges",
+            "row": 27,
+            "slug": "prediction-nudges"
+          },
+          "part": "Planning the IA",
+          "label": "Could more than one model be needed to describe the situation?",
+          "fields": [
+            "M07",
+            "Modelling",
+            "Imperfect fit",
+            "Could more than one model be needed to describe the situation?",
+            "Compare and evaluate fitted models",
+            "Compare functions and check model behaviour",
+            "A weak fit can prompt useful model comparison and reflection.",
+            "Choose → Why? → Evaluate alternatives",
+            "Working draft"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Prediction Nudges:T01@28",
+          "id": "T01",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Prediction Nudges",
+            "row": 28,
+            "slug": "prediction-nudges"
+          },
+          "part": "Planning the IA",
+          "label": "Do you have a tentative conjecture about a mathematical pattern or property?",
+          "fields": [
+            "T01",
+            "Teacher-led/no-data",
+            "Conjecture",
+            "Do you have a tentative conjecture about a mathematical pattern or property?",
+            "Other/free text; teacher discussion",
+            "Other/free text; teacher discussion",
+            "Do not force data-based predictions on a theoretical investigation.",
+            "Optional conjecture → Why? → Teacher",
+            "Working draft"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Prediction Nudges:X01@29",
+          "id": "X01",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Prediction Nudges",
+            "row": 29,
+            "slug": "prediction-nudges"
+          },
+          "part": "Planning the IA",
+          "label": "I have a different prediction and would like to describe it.",
+          "fields": [
+            "X01",
+            "Any",
+            "Other",
+            "I have a different prediction and would like to describe it.",
+            "Retain initial course choices",
+            "Retain initial course choices",
+            "Do not invent a method from ambiguous free text; offer teacher guidance.",
+            "Free text → Why? → Review",
+            "Agreed"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Prediction Nudges:X02@30",
+          "id": "X02",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Prediction Nudges",
+            "row": 30,
+            "slug": "prediction-nudges"
+          },
+          "part": "Planning the IA",
+          "label": "Not sure yet — I would like to examine an initial sample or simplified example.",
+          "fields": [
+            "X02",
+            "Any",
+            "Unsure",
+            "Not sure yet — I would like to examine an initial sample or simplified example.",
+            "Existing selections; exploratory maths as appropriate",
+            "Existing selections; exploratory maths as appropriate",
+            "No penalty for uncertainty; encourage a safe concrete first action.",
+            "Explore first → Review",
+            "Agreed"
+          ],
+          "editorialStatus": null
+        }
+      ]
+    },
+    {
+      "sheet": {
+        "name": "Planning Report",
+        "slug": "planning-report",
+        "role": "report-and-handover",
+        "capturedRows": 32,
+        "lastPopulatedRow": 33,
+        "sourceColumns": 8,
+        "sourcePath": "data/sheets/planning-report.json",
+        "indexedRecords": 25
+      },
+      "records": [
+        {
+          "recordId": "Planning Report:01 · p1@9",
+          "id": "01 · p1",
+          "type": "report-section",
+          "source": {
+            "sheet": "Planning Report",
+            "row": 9,
+            "slug": "planning-report"
+          },
+          "part": "Planning the IA",
+          "label": "'My IB Mathematics IA Plan' with clearly labelled draft status and date",
+          "fields": [
+            "01 · p1",
+            "Title and identification",
+            "Working IA title or aim; course (AI SL / AA SL); optional student identifier; generation date",
+            "'My IB Mathematics IA Plan' with clearly labelled draft status and date",
+            "All; identifier optional, no unnecessary personal details",
+            "N01, N04",
+            "Proposed",
+            "A short heading; not the final IA title or formal cover sheet."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Planning Report:02 · p1@10",
+          "id": "02 · p1",
+          "type": "report-section",
+          "source": {
+            "sheet": "Planning Report",
+            "row": 10,
+            "slug": "planning-report"
+          },
+          "part": "Planning the IA",
+          "label": "Use the most recently confirmed 'Who is it for?' answer; do not retain outdated audience text if the student has changed it during prediction.",
+          "fields": [
+            "02 · p1",
+            "Investigation aim, personal benefit and intended audience",
+            "Student's aim, motivation, current chosen beneficiary (self, another audience, or both), what the investigation could help them decide/understand, and why it matters. Include any edits made during prediction.",
+            "Use the most recently confirmed 'Who is it for?' answer; do not retain outdated audience text if the student has changed it during prediction.",
+            "Every planning route, including teacher-led ideas; uncertainty never prevents a summary.",
+            "N01, N01V",
+            "Proposed",
+            "State the *intended* possible use, not a guaranteed or evidence-proven outcome. Do not generate the student's introduction."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Planning Report:03 · p1@11",
+          "id": "03 · p1",
+          "type": "report-section",
+          "source": {
+            "sheet": "Planning Report",
+            "row": 11,
+            "slug": "planning-report"
+          },
+          "part": "Planning the IA",
+          "label": "A simple source-and-variables summary; direct hyperlink for secondary dataset",
+          "fields": [
+            "03 · p1",
+            "Data source and variables",
+            "Primary / secondary / both; exactly what is measured; variable(s) and units",
+            "A simple source-and-variables summary; direct hyperlink for secondary dataset",
+            "Only for primary, secondary or both. A no-data route records the idea in the teacher section, not fabricated data fields.",
+            "N03, N03P, N03S",
+            "Proposed",
+            "Reference original secondary data, not a pasted full dataset."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Planning Report:04 · p1@12",
+          "id": "04 · p1",
+          "type": "report-section",
+          "source": {
+            "sheet": "Planning Report",
+            "row": 12,
+            "slug": "planning-report"
+          },
+          "part": "Planning the IA",
+          "label": "Compact collection checklist and student-provided answers",
+          "fields": [
+            "04 · p1",
+            "Primary-data collection plan",
+            "When, where, who/what, how, measurement tools/equipment and relevant survey design",
+            "Compact collection checklist and student-provided answers",
+            "Only if Primary or Both chosen",
+            "N03P",
+            "Proposed",
+            "Add the choice of an alternative data-collection method and why the actual method was selected, including acceptable limitations (N03J)."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Planning Report:05 · p1@13",
+          "id": "05 · p1",
+          "type": "report-section",
+          "source": {
+            "sheet": "Planning Report",
+            "row": 13,
+            "slug": "planning-report"
+          },
+          "part": "Planning the IA",
+          "label": "Clickable source URL and short description; student-selected columns",
+          "fields": [
+            "05 · p1",
+            "Secondary-data access plan",
+            "Exact source URL, publisher, relevant fields/columns, intended subset and verification status",
+            "Clickable source URL and short description; student-selected columns",
+            "Only if Secondary or Both chosen",
+            "N03S",
+            "Proposed",
+            "Only include the relevant secondary-data columns, source reference and justification; do not dump entire dataset into the report."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Planning Report:06 · p1@14",
+          "id": "06 · p1",
+          "type": "report-section",
+          "source": {
+            "sheet": "Planning Report",
+            "row": 14,
+            "slug": "planning-report"
+          },
+          "part": "Planning the IA",
+          "label": "Two labelled dates and a short note on starting mathematical work",
+          "fields": [
+            "06 · p1",
+            "Data collection dates",
+            "First usable data target; full dataset target; proposed collection/start date",
+            "Two labelled dates and a short note on starting mathematical work",
+            "Data-based routes only. For no-data/theoretical route, omit dates or label them 'Not applicable'.",
+            "N03D",
+            "Proposed",
+            "Maintain the distinction between first usable data and complete collection; longer draft and revision milestones are in the full timeline (N03H)."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Planning Report:07 · p1@15",
+          "id": "07 · p1",
+          "type": "report-section",
+          "source": {
+            "sheet": "Planning Report",
+            "row": 15,
+            "slug": "planning-report"
+          },
+          "part": "Planning the IA",
+          "label": "For data-based IAs: score /5 plus reasons. No-data: 'Not applicable — discuss with teacher'. Unclear evidence: 'Not yet assessed'.",
+          "fields": [
+            "07 · p1",
+            "Data readiness /5",
+            "Calculated/provisional score, evidence, reason, one suggested improvement",
+            "For data-based IAs: score /5 plus reasons. No-data: 'Not applicable — discuss with teacher'. Unclear evidence: 'Not yet assessed'.",
+            "Show score only when data readiness applies; N/A and unassessed do not equal 0/5.",
+            "N03E",
+            "Proposed",
+            "5/5 requires usable data; 4/5 can reflect a convincing near-term plan."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Planning Report:08 · p1@16",
+          "id": "08 · p1",
+          "type": "report-section",
+          "source": {
+            "sheet": "Planning Report",
+            "row": 16,
+            "slug": "planning-report"
+          },
+          "part": "Planning the IA",
+          "label": "Show a completion-ease score only where enough practical details have been supplied. Otherwise display 'Not yet assessed' and state what remains unresolved.",
+          "fields": [
+            "08 · p1",
+            "Practical completion ease /5",
+            "Rating, dependencies, permissions/access, tool/software burden, workload, fallback",
+            "Show a completion-ease score only where enough practical details have been supplied. Otherwise display 'Not yet assessed' and state what remains unresolved.",
+            "Any route with sufficient practical information; otherwise explain why the rating is pending.",
+            "N03F, N03G",
+            "Proposed",
+            "Separate from data readiness; unresolved safety/consent flags cannot be hidden by a high score."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Planning Report:09 · p1@17",
+          "id": "09 · p1",
+          "type": "report-section",
+          "source": {
+            "sheet": "Planning Report",
+            "row": 17,
+            "slug": "planning-report"
+          },
+          "part": "Planning the IA",
+          "label": "Show a clearly labelled placeholder or omit until agreed",
+          "fields": [
+            "09 · p1",
+            "Overall plan rating (OPEN)",
+            "Possible combined score or summary status; scoring approach not yet approved",
+            "Show a clearly labelled placeholder or omit until agreed",
+            "Only once overall plan rating system is agreed",
+            "N03E, N03G, N04M",
+            "Needs discussion",
+            "Never average a 'Not applicable' or 'Not yet assessed' element as 0. Overall plan rating remains to be agreed."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Planning Report:10 · p2@18",
+          "id": "10 · p2",
+          "type": "report-section",
+          "source": {
+            "sheet": "Planning Report",
+            "row": 18,
+            "slug": "planning-report"
+          },
+          "part": "Planning the IA",
+          "label": "Show proposed mathematics as provisional, explicitly distinguishing the student's choices from website suggestions.",
+          "fields": [
+            "10 · p2",
+            "Intended mathematics",
+            "Initial course-maths selections; student-selected additions/removals after prediction; any outside-course technique; why methods may fit the expected data.",
+            "Show proposed mathematics as provisional, explicitly distinguishing the student's choices from website suggestions.",
+            "Any route. No-data and other-course students can use optional free-text maths instead of a course-specific menu.",
+            "N04S, N01P, N04R, N04M",
+            "Proposed",
+            "Outside-course mathematics should trigger teacher discussion, not automatic rejection."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Planning Report:11 · p2@19",
+          "id": "11 · p2",
+          "type": "report-section",
+          "source": {
+            "sheet": "Planning Report",
+            "row": 19,
+            "slug": "planning-report"
+          },
+          "part": "Planning the IA",
+          "label": "If suitability cannot be judged, show 'Teacher review needed' and the student's proposed method, not an automatic failure.",
+          "fields": [
+            "11 · p2",
+            "Mathematical suitability (provisional)",
+            "Selected methods, uncertainty, teacher-review prompts",
+            "If suitability cannot be judged, show 'Teacher review needed' and the student's proposed method, not an automatic failure.",
+            "All routes, including no-data, AA HL, outside-course or uncertain mathematics.",
+            "N04M",
+            "Needs discussion",
+            "Use the prediction plus the planned data type and sample structure when considering suitability; do not assume prediction is correct."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Planning Report:12 · p2@20",
+          "id": "12 · p2",
+          "type": "report-section",
+          "source": {
+            "sheet": "Planning Report",
+            "row": 20,
+            "slug": "planning-report"
+          },
+          "part": "Planning the IA",
+          "label": "Only the 2–3 most significant risks, each linked to a possible mitigation",
+          "fields": [
+            "12 · p2",
+            "Key risks and warnings",
+            "Data delays, practical obstacles, method/sampling limitations, timetable bottlenecks and uncertainty, but only the few most consequential for this plan.",
+            "Only the 2–3 most significant risks, each linked to a possible mitigation",
+            "Only when a real risk or uncertainty is identified",
+            "N03P, N03S, N03F",
+            "Proposed",
+            "Never paste every generic warning into the report; flag consent and safeguarding separately."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Planning Report:13 · p2@21",
+          "id": "13 · p2",
+          "type": "report-section",
+          "source": {
+            "sheet": "Planning Report",
+            "row": 21,
+            "slug": "planning-report"
+          },
+          "part": "Planning the IA",
+          "label": "A specific safe mathematical first step if supplied; otherwise 'To discuss with teacher'.",
+          "fields": [
+            "13 · p2",
+            "First mathematical action",
+            "Student's first meaningful maths action and the planned graph/table/diagram or simplified example that will help start the investigation.",
+            "A specific safe mathematical first step if supplied; otherwise 'To discuss with teacher'.",
+            "All routes. Optional if teacher questions remain; never instruct unsafe or restricted collection.",
+            "N05V, N05",
+            "Proposed",
+            "Do not automatically write a mathematical method or analysis on the student's behalf."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Planning Report:14 · p2@22",
+          "id": "14 · p2",
+          "type": "report-section",
+          "source": {
+            "sheet": "Planning Report",
+            "row": 22,
+            "slug": "planning-report"
+          },
+          "part": "Planning the IA",
+          "label": "Short prioritised action list with dates if known",
+          "fields": [
+            "14 · p2",
+            "Next actions and milestones",
+            "Date for first representation, initial calculation, writing a complete teacher draft, checking and corrections, known school deadlines, and one next action.",
+            "Short prioritised action list with dates if known",
+            "All routes, including provisional plans awaiting teacher feedback.",
+            "N03D, N03H, N03E, N03G, N05",
+            "Proposed",
+            "Proposed recommendations must be clearly distinguished from student-supplied commitments."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Planning Report:15 · p2@23",
+          "id": "15 · p2",
+          "type": "report-section",
+          "source": {
+            "sheet": "Planning Report",
+            "row": 23,
+            "slug": "planning-report"
+          },
+          "part": "Planning the IA",
+          "label": "Clearly labelled 'To discuss with my teacher' section with the student's own short answers and unresolved decisions.",
+          "fields": [
+            "15 · p2",
+            "Questions for the teacher",
+            "Optional teacher question offered to every student (N06T) plus any targeted teacher-check-in notes (N08), including no-data or permission issues.",
+            "Clearly labelled 'To discuss with my teacher' section with the student's own short answers and unresolved decisions.",
+            "All routes may record a question; specialist flags are conspicuous but should not prevent export.",
+            "N06T, N08, N02T, N04T, N03F, N04M",
+            "Proposed",
+            "Never imply the teacher has approved a topic just because a report was generated."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Planning Report:16 · p2@24",
+          "id": "16 · p2",
+          "type": "report-section",
+          "source": {
+            "sheet": "Planning Report",
+            "row": 24,
+            "slug": "planning-report"
+          },
+          "part": "Planning the IA",
+          "label": "Footer: 'Planning aid, not an IB assessment or guaranteed topic approval'",
+          "fields": [
+            "16 · p2",
+            "Student review and disclaimer",
+            "Student-revised answers and generated-at timestamp",
+            "Footer: 'Planning aid, not an IB assessment or guaranteed topic approval'",
+            "All",
+            "N06, N07",
+            "Proposed",
+            "Planning report is a snapshot. It may be revised as an investigation unfolds; it is not a rigid IA writing structure or teacher approval."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Planning Report:17 · p2+@25",
+          "id": "17 · p2+",
+          "type": "report-section",
+          "source": {
+            "sheet": "Planning Report",
+            "row": 25,
+            "slug": "planning-report"
+          },
+          "part": "Planning the IA",
+          "label": "When flagged, headline says 'Provisional plan — teacher discussion needed'. Unanswered nonessential fields say 'To be confirmed'.",
+          "fields": [
+            "17 · p2+",
+            "Teacher-review status and outstanding details",
+            "Consultation trigger(s), question(s) for the teacher, plan fields still unknown, next safe step and relevant student explanation.",
+            "When flagged, headline says 'Provisional plan — teacher discussion needed'. Unanswered nonessential fields say 'To be confirmed'.",
+            "Only teacher-advice routes; summary still available before feedback.",
+            "N02T, N04T, N08, N06, N07",
+            "Agreed",
+            "When approval remains outstanding, the report flags it; all students can record a universal teacher question even without a specialist flag."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Planning Report:18 · p1@26",
+          "id": "18 · p1",
+          "type": "report-section",
+          "source": {
+            "sheet": "Planning Report",
+            "row": 26,
+            "slug": "planning-report"
+          },
+          "part": "Planning the IA",
+          "label": "Concise comparison note only if entered; one idea does not earn a lower rating.",
+          "fields": [
+            "18 · p1",
+            "Alternative topics considered",
+            "Up to two alternatives, quick feasibility comparison and the student's reason for the chosen provisional idea.",
+            "Concise comparison note only if entered; one idea does not earn a lower rating.",
+            "Only when student uses optional comparison.",
+            "N00C",
+            "Proposed",
+            "Avoid a separate detailed plan/score for each candidate topic."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Planning Report:19 · p1@27",
+          "id": "19 · p1",
+          "type": "report-section",
+          "source": {
+            "sheet": "Planning Report",
+            "row": 27,
+            "slug": "planning-report"
+          },
+          "part": "Planning the IA",
+          "label": "Two distinct student statements: 'Why I expect this' and 'What it might mean for [beneficiary] if true'. Explicitly hypothetical; don't make recommendations on untested data.",
+          "fields": [
+            "19 · p1",
+            "Prediction and reasoning",
+            "Student's chosen prediction (or Not sure yet); WHY they expect it; IF TRUE what it could mean for the intended beneficiary; any uncertainty; and revised mathematical techniques kept separate as student selections.",
+            "Two distinct student statements: 'Why I expect this' and 'What it might mean for [beneficiary] if true'. Explicitly hypothetical; don't make recommendations on untested data.",
+            "Show only questions answered; 'Not sure yet' is acceptable.",
+            "N01P, N01V, N04R",
+            "Proposed",
+            "Retain the student's own conditional implication; if 'Who is it for?' was edited, use current beneficiary fields. This is not a demonstrated finding, promise or predicted grade."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Planning Report:20 · p1@28",
+          "id": "20 · p1",
+          "type": "report-section",
+          "source": {
+            "sheet": "Planning Report",
+            "row": 28,
+            "slug": "planning-report"
+          },
+          "part": "Planning the IA",
+          "label": "One clear rationale and important limitation rather than a long generic methods essay.",
+          "fields": [
+            "20 · p1",
+            "Choice of data method and limitations",
+            "Alternative data source or sampling method, reason for selection, main limitation and any mitigation.",
+            "One clear rationale and important limitation rather than a long generic methods essay.",
+            "Data-based plans, conditionally detailed for surveys.",
+            "N03J, N03P, N03S",
+            "Proposed",
+            "Relevant source/citation included when needed."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Planning Report:21 · p2@29",
+          "id": "21 · p2",
+          "type": "report-section",
+          "source": {
+            "sheet": "Planning Report",
+            "row": 29,
+            "slug": "planning-report"
+          },
+          "part": "Planning the IA",
+          "label": "Compact project-specific milestone table, with editable dates and 'To confirm' for unknown school deadlines.",
+          "fields": [
+            "21 · p2",
+            "Complete IA work schedule",
+            "Known school deadlines, first representation, initial mathematics, complete draft, feedback, revisions and contingency buffer.",
+            "Compact project-specific milestone table, with editable dates and 'To confirm' for unknown school deadlines.",
+            "All routes; no invented deadlines or false date-based scoring.",
+            "N03H",
+            "Proposed",
+            "Warnings for impossible sequences or no time to act on feedback."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Planning Report:22 · p2@30",
+          "id": "22 · p2",
+          "type": "report-section",
+          "source": {
+            "sheet": "Planning Report",
+            "row": 30,
+            "slug": "planning-report"
+          },
+          "part": "Planning the IA",
+          "label": "One-line description, not a mandatory finished graph.",
+          "fields": [
+            "22 · p2",
+            "Planned first representation",
+            "Which graph, table, sketch or simplified model student intends to make and why it is useful.",
+            "One-line description, not a mandatory finished graph.",
+            "All routes; optional/unsure accepted.",
+            "N05V",
+            "Proposed",
+            "Belongs to planning: full diagram presentation remains in Completing the IA."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Planning Report:23 · p2@31",
+          "id": "23 · p2",
+          "type": "report-section",
+          "source": {
+            "sheet": "Planning Report",
+            "row": 31,
+            "slug": "planning-report"
+          },
+          "part": "Planning the IA",
+          "label": "Short 'If this happens, I could...' note where offered.",
+          "fields": [
+            "23 · p2",
+            "Possible changes of direction",
+            "Possible changes of direction after an unexpected result or practical obstacle (especially unavailable data): alternative approved collection, credible secondary source, narrower scope, or method/aim adjustment with a reason.",
+            "Short 'If this happens, I could...' note where offered.",
+            "Optional for any investigation.",
+            "N06E",
+            "Proposed",
+            "Keep the original aim, prediction and intended beneficiary visible. Planning can be progressed before data arrive; Completing offers short, optional C95D/C95A support."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Planning Report:24 · p2@32",
+          "id": "24 · p2",
+          "type": "report-section",
+          "source": {
+            "sheet": "Planning Report",
+            "row": 32,
+            "slug": "planning-report"
+          },
+          "part": "Planning the IA",
+          "label": "'Questions I could discuss with my teacher' plus required review warning where applicable.",
+          "fields": [
+            "24 · p2",
+            "Universal teacher check-in",
+            "Optional question for the teacher and intended discussion date alongside any mandatory specialist flags.",
+            "'Questions I could discuss with my teacher' plus required review warning where applicable.",
+            "Available to every student; never an export blocker.",
+            "N06T, N08",
+            "Proposed",
+            "Suggested conversation for all; specific permissions needed before affected actions."
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Planning Report:25 · technical@33",
+          "id": "25 · technical",
+          "type": "report-section",
+          "source": {
+            "sheet": "Planning Report",
+            "row": 33,
+            "slug": "planning-report"
+          },
+          "part": "Planning the IA",
+          "label": "Readable PDF/DOCX with embedded versioned resume data plus labelled field text to help recovery; never the IA itself.",
+          "fields": [
+            "25 · technical",
+            "Recoverable planning document",
+            "Stable field IDs and a schema version; answers, selected maths, prediction/why, risks and permission flags, milestones and original report date.",
+            "Readable PDF/DOCX with embedded versioned resume data plus labelled field text to help recovery; never the IA itself.",
+            "All planning exports, including provisional teacher-review cases.",
+            "N07, C00, C01, C02",
+            "Agreed",
+            "Reuploading the Pathfinder PDF or Word prepopulates editable fields. If import fails, allow partial recovery or manual entry. A JSON backup is optional, not mandatory."
+          ],
+          "editorialStatus": null
+        }
+      ]
+    },
+    {
+      "sheet": {
+        "name": "Teacher Check-in",
+        "slug": "teacher-check-in",
+        "role": "guidance-catalog",
+        "capturedRows": 20,
+        "lastPopulatedRow": 21,
+        "sourceColumns": 7,
+        "sourcePath": "data/sheets/teacher-check-in.json",
+        "indexedRecords": 13
+      },
+      "records": [
+        {
+          "recordId": "Teacher Check-in:T01@9",
+          "id": "T01",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Teacher Check-in",
+            "row": 9,
+            "slug": "teacher-check-in"
+          },
+          "part": "Planning the IA",
+          "label": "Short-answer box",
+          "fields": [
+            "T01",
+            "Any teacher flag",
+            "Which part of your idea would you like to discuss with your teacher?",
+            "Short-answer box",
+            "Whenever any teacher flag appears",
+            "This text appears in 'Questions for my teacher'.",
+            "Agreed"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Teacher Check-in:T02@10",
+          "id": "T02",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Teacher Check-in",
+            "row": 10,
+            "slug": "teacher-check-in"
+          },
+          "part": "Planning the IA",
+          "label": "Short-answer box",
+          "fields": [
+            "T02",
+            "No-data / theoretical idea",
+            "What would you like to investigate mathematically without collecting a dataset?",
+            "Short-answer box",
+            "No-data choice at investigation-type node",
+            "Do not ask for primary/secondary sources; report data-readiness as Not applicable.",
+            "Proposed"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Teacher Check-in:T03@11",
+          "id": "T03",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Teacher Check-in",
+            "row": 11,
+            "slug": "teacher-check-in"
+          },
+          "part": "Planning the IA",
+          "label": "Short-answer box + 'Not sure yet'",
+          "fields": [
+            "T03",
+            "No-data / theoretical idea",
+            "What mathematics, small example or simple case could you discuss?",
+            "Short-answer box + 'Not sure yet'",
+            "No-data choice",
+            "Course selection and outside-course maths may be recorded without data questions.",
+            "Proposed"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Teacher Check-in:T04@12",
+          "id": "T04",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Teacher Check-in",
+            "row": 12,
+            "slug": "teacher-check-in"
+          },
+          "part": "Planning the IA",
+          "label": "Course selection + short answer",
+          "fields": [
+            "T04",
+            "AA HL / course outside initial scope",
+            "Which course do you study, and what mathematics might you use?",
+            "Course selection + short answer",
+            "AA HL / Other course selected",
+            "No AI SL/AA SL maths-suitability score; record tentative mathematics and flag teacher review.",
+            "Proposed"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Teacher Check-in:T05@13",
+          "id": "T05",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Teacher Check-in",
+            "row": 13,
+            "slug": "teacher-check-in"
+          },
+          "part": "Planning the IA",
+          "label": "Short-answer box + 'Not sure yet'",
+          "fields": [
+            "T05",
+            "Maths outside syllabus or unsuitable depth",
+            "Which method do you hope to use, and how might it help answer your question?",
+            "Short-answer box + 'Not sure yet'",
+            "Outside-course or unconfirmed maths",
+            "Preserve student explanation; suitability 'Not yet assessed' pending teacher.",
+            "Proposed"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Teacher Check-in:T06@14",
+          "id": "T06",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Teacher Check-in",
+            "row": 14,
+            "slug": "teacher-check-in"
+          },
+          "part": "Planning the IA",
+          "label": "Short-answer box",
+          "fields": [
+            "T06",
+            "Privacy, consent, safety or access",
+            "What approval or advice is still needed before collecting or using the data?",
+            "Short-answer box",
+            "Unresolved permission, consent, safeguarding or private data",
+            "Do not request individual participant details; do not collect or use affected data until approved.",
+            "Proposed"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Teacher Check-in:T07@15",
+          "id": "T07",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Teacher Check-in",
+            "row": 15,
+            "slug": "teacher-check-in"
+          },
+          "part": "Planning the IA",
+          "label": "Optional short-answer box",
+          "fields": [
+            "T07",
+            "Data/resources unavailable",
+            "What alternative or smaller version could you try if access is not secured?",
+            "Optional short-answer box",
+            "Data inaccessible or practical barriers flagged",
+            "Retain earlier plan/rating, and show limitations honestly; no invented alternative.",
+            "Proposed"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Teacher Check-in:T08@16",
+          "id": "T08",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Teacher Check-in",
+            "row": 16,
+            "slug": "teacher-check-in"
+          },
+          "part": "Planning the IA",
+          "label": "Short-answer box",
+          "fields": [
+            "T08",
+            "Any teacher flag",
+            "What specific question will you ask your teacher?",
+            "Short-answer box",
+            "All teacher-advice routes",
+            "Included in the printable summary as a concrete talking point.",
+            "Agreed"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Teacher Check-in:T09@17",
+          "id": "T09",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Teacher Check-in",
+            "row": 17,
+            "slug": "teacher-check-in"
+          },
+          "part": "Planning the IA",
+          "label": "Optional short-answer box + 'Not sure yet'",
+          "fields": [
+            "T09",
+            "Any teacher flag",
+            "What can you safely do next while waiting for advice?",
+            "Optional short-answer box + 'Not sure yet'",
+            "All teacher-advice routes",
+            "Do not propose restricted collection; 'Discuss with teacher' is sufficient.",
+            "Agreed"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Teacher Check-in:T10@18",
+          "id": "T10",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Teacher Check-in",
+            "row": 18,
+            "slug": "teacher-check-in"
+          },
+          "part": "Planning the IA",
+          "label": "Optional short-answer box",
+          "fields": [
+            "T10",
+            "Any teacher flag",
+            "Is there anything else you want your teacher to know about the idea?",
+            "Optional short-answer box",
+            "All teacher-advice routes",
+            "Preserve student notes if supplied; do not fabricate unanswered information.",
+            "Proposed"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Teacher Check-in:T11@19",
+          "id": "T11",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Teacher Check-in",
+            "row": 19,
+            "slug": "teacher-check-in"
+          },
+          "part": "Planning the IA",
+          "label": "Review + PDF / optional Word export",
+          "fields": [
+            "T11",
+            "Any route",
+            "Review and generate a provisional summary",
+            "Review + PDF / optional Word export",
+            "Always, before or after teacher discussion",
+            "Export is NEVER blocked by lack of teacher feedback; prominently flag pending decisions.",
+            "Agreed"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Teacher Check-in:T12@20",
+          "id": "T12",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Teacher Check-in",
+            "row": 20,
+            "slug": "teacher-check-in"
+          },
+          "part": "Planning the IA",
+          "label": "Optional conjecture box / Not sure",
+          "fields": [
+            "T12",
+            "No-data / theoretical idea",
+            "Is there a mathematical pattern or claim you tentatively think might be true?",
+            "Optional conjecture box / Not sure",
+            "No-data choice only",
+            "Use a mathematical conjecture rather than asking about distributions or correlations. Summary export remains available.",
+            "Proposed"
+          ],
+          "editorialStatus": null
+        },
+        {
+          "recordId": "Teacher Check-in:T13@21",
+          "id": "T13",
+          "type": "catalog-entry",
+          "source": {
+            "sheet": "Teacher Check-in",
+            "row": 21,
+            "slug": "teacher-check-in"
+          },
+          "part": "Planning the IA",
+          "label": "Separate short-answer box",
+          "fields": [
+            "T13",
+            "No-data / theoretical idea",
+            "Why do you think that claim or pattern might hold?",
+            "Separate short-answer box",
+            "If a tentative conjecture was entered",
+            "Capture their mathematical reasoning; no forced proof or automatic course rating.",
+            "Proposed"
+          ],
+          "editorialStatus": null
+        }
+      ]
+    }
+  ]
+}
