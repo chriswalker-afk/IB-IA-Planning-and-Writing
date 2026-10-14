@@ -1,0 +1,2874 @@
+{
+  "schemaVersion": 1,
+  "sourceSheet": "Routes",
+  "sourceBounds": {
+    "rows": 295,
+    "columns": 5
+  },
+  "rowCount": 287,
+  "nonemptyCellCount": 1427,
+  "rows": [
+    {
+      "row": 1,
+      "cells": [
+        "ROUTES  |  Branch connections"
+      ]
+    },
+    {
+      "row": 3,
+      "cells": [
+        "Routes link the Planning phase nodes. New N03F/N03G nodes cover operational ease separately from data readiness."
+      ]
+    },
+    {
+      "row": 4,
+      "cells": [
+        "From node",
+        "Answer / condition",
+        "To node",
+        "Routing note",
+        "Part"
+      ]
+    },
+    {
+      "row": 5,
+      "cells": [
+        "N00",
+        "Yes",
+        "N01",
+        "Main path",
+        "Planning the IA"
+      ]
+    },
+    {
+      "row": 6,
+      "cells": [
+        "N00",
+        "No",
+        "N00B",
+        "Explore ideas",
+        "Planning the IA"
+      ]
+    },
+    {
+      "row": 7,
+      "cells": [
+        "N00B",
+        "Return",
+        "N00",
+        "Back to topic",
+        "Planning the IA"
+      ]
+    },
+    {
+      "row": 8,
+      "cells": [
+        "N01",
+        "Continue",
+        "N01V",
+        "After defining the aim, identify an intended beneficiary and possible meaningful use of the results",
+        "Planning the IA"
+      ]
+    },
+    {
+      "row": 9,
+      "cells": [
+        "N02",
+        "Statistics",
+        "N03",
+        "Data-led route",
+        "Planning the IA"
+      ]
+    },
+    {
+      "row": 10,
+      "cells": [
+        "N02",
+        "Modelling",
+        "N03",
+        "Data-led route",
+        "Planning the IA"
+      ]
+    },
+    {
+      "row": 11,
+      "cells": [
+        "N02",
+        "No data",
+        "N02T",
+        "Teacher checkpoint",
+        "Planning the IA"
+      ]
+    },
+    {
+      "row": 12,
+      "cells": [
+        "N02",
+        "Unsure",
+        "N02U",
+        "Clarify route",
+        "Planning the IA"
+      ]
+    },
+    {
+      "row": 13,
+      "cells": [
+        "N02U",
+        "Return",
+        "N02",
+        "Reconsider",
+        "Planning the IA"
+      ]
+    },
+    {
+      "row": 14,
+      "cells": [
+        "N03",
+        "Primary",
+        "N03P",
+        "Short-answer primary questions",
+        "Planning the IA"
+      ]
+    },
+    {
+      "row": 15,
+      "cells": [
+        "N03",
+        "Secondary",
+        "N03S",
+        "Short-answer secondary questions",
+        "Planning the IA"
+      ]
+    },
+    {
+      "row": 16,
+      "cells": [
+        "N03",
+        "Both",
+        "N03B",
+        "Both question sets",
+        "Planning the IA"
+      ]
+    },
+    {
+      "row": 17,
+      "cells": [
+        "N03B",
+        "Primary questions",
+        "N03P",
+        "Complete primary part",
+        "Planning the IA"
+      ]
+    },
+    {
+      "row": 18,
+      "cells": [
+        "N03B",
+        "Secondary questions",
+        "N03S",
+        "Complete secondary part",
+        "Planning the IA"
+      ]
+    },
+    {
+      "row": 19,
+      "cells": [
+        "N03P",
+        "Complete",
+        "N03J",
+        "Primary data details complete, now compare and justify method",
+        "Planning the IA"
+      ]
+    },
+    {
+      "row": 20,
+      "cells": [
+        "N03S",
+        "Complete",
+        "N03J",
+        "Secondary data details complete, now compare and justify method",
+        "Planning the IA"
+      ]
+    },
+    {
+      "row": 21,
+      "cells": [
+        "N03D",
+        "Continue",
+        "N03E",
+        "Rate feasibility",
+        "Planning the IA"
+      ]
+    },
+    {
+      "row": 22,
+      "cells": [
+        "N03E",
+        "Continue",
+        "N03F",
+        "Continue to practical feasibility",
+        "Planning the IA"
+      ]
+    },
+    {
+      "row": 23,
+      "cells": [
+        "N03E",
+        "Revise",
+        "N03R",
+        "Act on readiness warnings",
+        "Planning the IA"
+      ]
+    },
+    {
+      "row": 24,
+      "cells": [
+        "N03R",
+        "Retry",
+        "N03",
+        "Return to data choice",
+        "Planning the IA"
+      ]
+    },
+    {
+      "row": 25,
+      "cells": [
+        "N03F",
+        "Feasibility questions answered",
+        "N03G",
+        "Assess non-mathematical workload and dependencies",
+        "Planning the IA"
+      ]
+    },
+    {
+      "row": 26,
+      "cells": [
+        "N03F",
+        "Safety / privacy / consent unresolved",
+        "N02T",
+        "Teacher discussion before collecting or using affected data",
+        "Planning the IA"
+      ]
+    },
+    {
+      "row": 27,
+      "cells": [
+        "N03G",
+        "Practical plan is workable",
+        "N03H",
+        "Full project timeline after practical completion-ease rating",
+        "Planning the IA"
+      ]
+    },
+    {
+      "row": 28,
+      "cells": [
+        "N03G",
+        "Reduce workload or resolve blockers",
+        "N03F",
+        "Revise access, time, resources or backup plan",
+        "Planning the IA"
+      ]
+    },
+    {
+      "row": 29,
+      "cells": [
+        "N04",
+        "AI SL / AA SL",
+        "N04S",
+        "Show selected course's menu",
+        "Planning the IA"
+      ]
+    },
+    {
+      "row": 30,
+      "cells": [
+        "N04",
+        "Other / AA HL",
+        "N04T",
+        "Teacher judgement",
+        "Planning the IA"
+      ]
+    },
+    {
+      "row": 31,
+      "cells": [
+        "N04S",
+        "Techniques selected or unsure",
+        "N01P",
+        "Initial maths selected → type-specific prediction choices and WHY",
+        "Planning the IA"
+      ]
+    },
+    {
+      "row": 32,
+      "cells": [
+        "N04M",
+        "Continue",
+        "N05V",
+        "Choose a first representation before first mathematical action",
+        "Planning the IA"
+      ]
+    },
+    {
+      "row": 33,
+      "cells": [
+        "N05",
+        "Continue",
+        "N06E",
+        "Ask how investigation might adapt to results",
+        "Planning the IA"
+      ]
+    },
+    {
+      "row": 34,
+      "cells": [
+        "N06",
+        "Student reviews plan and chooses to generate",
+        "N07",
+        "Create personalised planning document; allow editing before export",
+        "Planning the IA"
+      ]
+    },
+    {
+      "row": 35,
+      "cells": [
+        "N07",
+        "Revisit an answer or correct a detail",
+        "N06",
+        "Return to review, retain existing entries, and regenerate only after student confirms",
+        "Planning the IA"
+      ]
+    },
+    {
+      "row": 36,
+      "cells": [
+        "N02T",
+        "Continue with provisional plan",
+        "N08",
+        "No-data branch: teacher discussion before pursuing; bypass irrelevant data collection questions; summary still available",
+        "Planning the IA"
+      ]
+    },
+    {
+      "row": 37,
+      "cells": [
+        "N04T",
+        "Record tentative maths and teacher question",
+        "N08",
+        "AA HL/other course: course suitability pending, still export",
+        "Planning the IA"
+      ]
+    },
+    {
+      "row": 38,
+      "cells": [
+        "N04M",
+        "Outside-course maths or unclear mathematical depth",
+        "N08",
+        "Flag concern, retain techniques, offer summary without teacher response",
+        "Planning the IA"
+      ]
+    },
+    {
+      "row": 39,
+      "cells": [
+        "N03R",
+        "No accessible data; request teacher guidance",
+        "N08",
+        "Keep existing data answers; allow summary even if access uncertain",
+        "Planning the IA"
+      ]
+    },
+    {
+      "row": 40,
+      "cells": [
+        "N03G",
+        "Practical obstacles not yet resolved",
+        "N08",
+        "Carry forward warnings, partial ratings and questions; allow summary",
+        "Planning the IA"
+      ]
+    },
+    {
+      "row": 41,
+      "cells": [
+        "N08",
+        "Optional: identify first safe mathematical step",
+        "N05V",
+        "Optional initial graph or simplified example; teacher flag retained",
+        "Planning the IA"
+      ]
+    },
+    {
+      "row": 42,
+      "cells": [
+        "N08",
+        "Review answers and export provisional plan",
+        "N06T",
+        "Universal teacher check-in then summary review",
+        "Planning the IA"
+      ]
+    },
+    {
+      "row": 43,
+      "cells": [
+        "N08",
+        "Revisit existing planning answers",
+        "N01",
+        "Return without deleting prior entries or teacher flags",
+        "Planning the IA"
+      ]
+    },
+    {
+      "row": 44,
+      "cells": [
+        "N00",
+        "Optional: compare more than one idea",
+        "N00C",
+        "Do a quick practical comparison; single-idea route remains",
+        "Planning the IA"
+      ]
+    },
+    {
+      "row": 45,
+      "cells": [
+        "N00B",
+        "I brainstormed possible ideas",
+        "N00C",
+        "Compare 2–3 candidate IA topics",
+        "Planning the IA"
+      ]
+    },
+    {
+      "row": 46,
+      "cells": [
+        "N00B",
+        "Ready with one idea",
+        "N01",
+        "No comparison required",
+        "Planning the IA"
+      ]
+    },
+    {
+      "row": 47,
+      "cells": [
+        "N00C",
+        "Selected one idea",
+        "N01",
+        "Define its tentative aim",
+        "Planning the IA"
+      ]
+    },
+    {
+      "row": 48,
+      "cells": [
+        "N00C",
+        "Keep original idea",
+        "N01",
+        "No penalty for choosing first idea",
+        "Planning the IA"
+      ]
+    },
+    {
+      "row": 49,
+      "cells": [
+        "N01P",
+        "Prediction made or 'not sure'",
+        "N04R",
+        "After prediction/why, prompt return to mathematics choices and show appropriate suggestions",
+        "Planning the IA"
+      ]
+    },
+    {
+      "row": 50,
+      "cells": [
+        "N03J",
+        "Method justification or 'not sure'",
+        "N03D",
+        "Continue to data timing and readiness",
+        "Planning the IA"
+      ]
+    },
+    {
+      "row": 51,
+      "cells": [
+        "N03B",
+        "Both data sources complete",
+        "N03J",
+        "Only after BOTH primary and secondary answers, not just one",
+        "Planning the IA"
+      ]
+    },
+    {
+      "row": 52,
+      "cells": [
+        "N03H",
+        "Milestones recorded or pending",
+        "N04",
+        "Move to course-specific mathematics",
+        "Planning the IA"
+      ]
+    },
+    {
+      "row": 53,
+      "cells": [
+        "N05V",
+        "Representation planned or uncertain",
+        "N05",
+        "First meaningful mathematics",
+        "Planning the IA"
+      ]
+    },
+    {
+      "row": 54,
+      "cells": [
+        "N06E",
+        "Possible changes considered or unsure",
+        "N06T",
+        "Offer teacher consultation to everyone",
+        "Planning the IA"
+      ]
+    },
+    {
+      "row": 55,
+      "cells": [
+        "N06T",
+        "Record question or skip",
+        "N06",
+        "Review and export",
+        "Planning the IA"
+      ]
+    },
+    {
+      "row": 56,
+      "cells": [
+        "N06T",
+        "Specialist teacher issue",
+        "N08",
+        "Use conditional teacher-check-in questions, then review/export",
+        "Planning the IA"
+      ]
+    },
+    {
+      "row": 57,
+      "cells": [
+        "N08",
+        "Optional: plan milestones before export",
+        "N03H",
+        "If the student wants, enter school deadlines and a working timeline, then return through later nodes",
+        "Planning the IA"
+      ]
+    },
+    {
+      "row": 58,
+      "cells": [
+        "N04R",
+        "Keep / add / remove maths or remain unsure",
+        "N04M",
+        "Continue to mathematical suitability; suggestions not compulsory and not auto-selected",
+        "Planning the IA"
+      ]
+    },
+    {
+      "row": 59,
+      "cells": [
+        "N07",
+        "Continue into Completing in this session",
+        "C00",
+        "Pass student planning fields directly after generating/viewing planning report",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 60,
+      "cells": [
+        "C00",
+        "Continue from completed Planning in this session",
+        "C02",
+        "Prepopulate from in-session plan without needing to upload",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 61,
+      "cells": [
+        "C00",
+        "Upload saved planning report PDF/DOCX",
+        "C01",
+        "Read compatible saved report and continue",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 62,
+      "cells": [
+        "C00",
+        "Start without a saved plan",
+        "C02",
+        "Open editable empty summary with Not provided fields",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 63,
+      "cells": [
+        "C01",
+        "Recognized document / fields extracted",
+        "C02",
+        "Review imported fields before applying; display document date and source",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 64,
+      "cells": [
+        "C01",
+        "Only some fields recognized",
+        "C02",
+        "Prefill recognized values, flag missing or uncertain; allow manual edits",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 65,
+      "cells": [
+        "C01",
+        "Unreadable/scanned/unsupported file",
+        "C02",
+        "Explain problem and offer manual completion; do not block access",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 66,
+      "cells": [
+        "C01",
+        "Try a different file",
+        "C01",
+        "Allow retry without clearing existing work",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 67,
+      "cells": [
+        "C02",
+        "Confirm or update carried-forward information",
+        "C03",
+        "Preserve student's edits and provenance of imported values",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 68,
+      "cells": [
+        "C02",
+        "Change / replace imported file",
+        "C01",
+        "Review conflicts before merging; never overwrite later work by default",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 69,
+      "cells": [
+        "C03",
+        "Idea and permissions reviewed",
+        "C04",
+        "Continue to flexible stages; leave unresolved alerts visible",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 70,
+      "cells": [
+        "C03",
+        "Teacher/permission concern remains",
+        "C04",
+        "Still guide safe work and review; do not authorise restricted data collection",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 71,
+      "cells": [
+        "C03",
+        "Return to update planning answers",
+        "N06",
+        "Optional back-navigation to planning review; preserve completion progress",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 72,
+      "cells": [
+        "C04",
+        "Work on introduction",
+        "C10",
+        "Introduction can be opened or revisited at any time from the stage dashboard; existing writing is restored.",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 73,
+      "cells": [
+        "C04",
+        "Work with data and sources",
+        "C20",
+        "Data or no-data small example route",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 74,
+      "cells": [
+        "C04",
+        "Prepare first representation",
+        "C30",
+        "Graph/table/diagram/simplified problem",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 75,
+      "cells": [
+        "C04",
+        "Work on first mathematics",
+        "C40",
+        "Explain method, notation, result and link to aim",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 76,
+      "cells": [
+        "C04",
+        "Develop further mathematics",
+        "C50",
+        "Iterative analysis and reflection",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 77,
+      "cells": [
+        "C04",
+        "Write/revise the concise concluding synthesis",
+        "C60",
+        "Open C60, with optional C61–C64 guided synthesis and future mathematical questions",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 78,
+      "cells": [
+        "C04",
+        "Check presentation",
+        "C70",
+        "Presentation/communication/citations/appendix",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 79,
+      "cells": [
+        "C04",
+        "Manage teacher feedback",
+        "C80",
+        "Draft feedback, changes and deadlines",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 80,
+      "cells": [
+        "C04",
+        "Final readiness review",
+        "C90",
+        "Student self-check, not an IB grade",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 81,
+      "cells": [
+        "C04",
+        "Save progress",
+        "C91",
+        "Accessible at any stage via persistent Save option",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 82,
+      "cells": [
+        "C10",
+        "Continue / choose another stage",
+        "C04",
+        "Leaving the introduction never locks it; the student's draft and optional planning edits remain available.",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 83,
+      "cells": [
+        "C20",
+        "Continue / choose another stage",
+        "C04",
+        "Can return to data when new observations arrive",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 84,
+      "cells": [
+        "C30",
+        "Continue / choose another stage",
+        "C04",
+        "Record first visual and its interpretation",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 85,
+      "cells": [
+        "C40",
+        "Continue / choose another stage",
+        "C04",
+        "Record mathematical evidence and reflections",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 86,
+      "cells": [
+        "C50",
+        "Continue / choose another stage",
+        "C04",
+        "Further mathematics can repeat as often as necessary",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 87,
+      "cells": [
+        "C60",
+        "Continue / choose another stage",
+        "C04",
+        "Conclusion stays editable after later maths; avoid using C60 to replace earlier reflection",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 88,
+      "cells": [
+        "C70",
+        "Continue / choose another stage",
+        "C04",
+        "Communicate, reference and revise where necessary",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 89,
+      "cells": [
+        "C80",
+        "Continue / choose another stage",
+        "C04",
+        "Keep feedback and actions while navigating",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 90,
+      "cells": [
+        "C90",
+        "Revise issues found",
+        "C04",
+        "Return to relevant task, not automatically mark as finished",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 91,
+      "cells": [
+        "C90",
+        "Record / save current work",
+        "C91",
+        "Snapshot for later upload; does not submit the IA",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 92,
+      "cells": [
+        "C91",
+        "Keep working",
+        "C04",
+        "Return to selected stage after save",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 93,
+      "cells": [
+        "C91",
+        "Resume from saved snapshot later",
+        "C00",
+        "Use entry choice and import; preserve version and confirmations",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 94,
+      "cells": [
+        "N01V",
+        "The results could help me directly",
+        "N02",
+        "Student explains what they could decide, change or understand and why; then continue to IA type",
+        "Planning the IA"
+      ]
+    },
+    {
+      "row": 95,
+      "cells": [
+        "N01V",
+        "I could offer advice to someone else",
+        "N02",
+        "Student describes an audience/role and the decision or recommendation the findings may inform",
+        "Planning the IA"
+      ]
+    },
+    {
+      "row": 96,
+      "cells": [
+        "N01V",
+        "Both personal benefit and advice",
+        "N02",
+        "Allow both, without duplicate questions",
+        "Planning the IA"
+      ]
+    },
+    {
+      "row": 97,
+      "cells": [
+        "N01V",
+        "I'm not sure yet",
+        "N02",
+        "Show a small purpose nudge; record as To be confirmed and optionally ask teacher; summary still available",
+        "Planning the IA"
+      ]
+    },
+    {
+      "row": 98,
+      "cells": [
+        "N01P",
+        "Edit 'Who is this for?' while predicting",
+        "N01V",
+        "Open current beneficiary/purpose fields inline; preserve prediction, WHY, maths and other answers. Return here after confirmation.",
+        "Planning the IA"
+      ]
+    },
+    {
+      "row": 99,
+      "cells": [
+        "N01V",
+        "Return to prediction after editing beneficiary",
+        "N01P",
+        "Only when N01V was opened from prediction. Update dynamic wording; confirm or revise previously written implication; do not repeat earlier planning stages.",
+        "Planning the IA"
+      ]
+    },
+    {
+      "row": 100,
+      "cells": [
+        "C10",
+        "Edit aim, audience or prediction while writing introduction",
+        "C02",
+        "Open shared planning fields with current draft preserved. On confirmation, return to introduction rather than restarting other stages.",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 101,
+      "cells": [
+        "C02",
+        "Return to introduction after editing fields",
+        "C10",
+        "Only when opened from Introduction; restore written draft and ask to review any passages affected by changed aim or prediction.",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 102,
+      "cells": [
+        "C20",
+        "Statistics with sampled or secondary data",
+        "C21S",
+        "Ask about population, observation type, sampling/census and representativeness where relevant; use existing plan route",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 103,
+      "cells": [
+        "C20",
+        "Empirical modelling or measured model inputs",
+        "C21M",
+        "Ask how model inputs are sourced or measured and whether/where it can be checked",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 104,
+      "cells": [
+        "C20",
+        "Statistical and modelling elements",
+        "C21S",
+        "Complete statistics prompts first and then modelling prompts as needed; remember which branches are done",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 105,
+      "cells": [
+        "C20",
+        "Theoretical or no-data exploration",
+        "C21T",
+        "Do not force data collection or statistical sampling onto a proof/conjecture",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 106,
+      "cells": [
+        "C20",
+        "Other or currently unsure",
+        "C21T",
+        "Offer assumptions and definitions; student can change route later",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 107,
+      "cells": [
+        "C21S",
+        "Statistical design considered",
+        "C22",
+        "Continue to compare the real collection/source options and justify the decision",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 108,
+      "cells": [
+        "C21S",
+        "Also modelling with measured/calibrated inputs",
+        "C21M",
+        "When both routes apply, ask modelling questions once; preserve completed statistics answers",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 109,
+      "cells": [
+        "C21M",
+        "Model inputs or validation considered",
+        "C22",
+        "Compare actual methods, including any measurement/repeated data options",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 110,
+      "cells": [
+        "C21M",
+        "Also collecting a sample for model fitting",
+        "C21S",
+        "Show sampling questions if needed and not already completed; avoid infinite loop",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 111,
+      "cells": [
+        "C21T",
+        "No empirical data involved",
+        "C25",
+        "Define specialist language, symbols and assumptions; bypass sampling/measurement precision",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 112,
+      "cells": [
+        "C21T",
+        "Empirical measurements or sources do apply",
+        "C22",
+        "Optional context-based comparison of methods; route can evolve",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 113,
+      "cells": [
+        "C22",
+        "Method selected and reason recorded",
+        "C23",
+        "Consider limitations, attempted mitigation and why residual limits are acceptable",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 114,
+      "cells": [
+        "C23",
+        "Quantitative measurements or rounded source values",
+        "C24",
+        "Record accuracy/resolution and plan precision of subsequent work",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 115,
+      "cells": [
+        "C23",
+        "No numerical measurements",
+        "C25",
+        "Skip irrelevant instrument accuracy; still define key terms and symbols",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 116,
+      "cells": [
+        "C24",
+        "Accuracy/precision decision explained",
+        "C25",
+        "Set meaningful variable symbols, units and just-in-time term definitions",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 117,
+      "cells": [
+        "C25",
+        "Variables and terms reviewed",
+        "C26",
+        "Summarize choices and intended evidence; connect data to the investigation aim",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 118,
+      "cells": [
+        "C26",
+        "Return to flexible stage dashboard",
+        "C04",
+        "Retain student answers and reopen at any point",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 119,
+      "cells": [
+        "C26",
+        "Proceed to first representation",
+        "C30",
+        "Continue with graph, table, diagram or a simplified theoretical case",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 120,
+      "cells": [
+        "C26",
+        "Change source or collection approach",
+        "C20",
+        "Revisit prompts while preserving prior notes; flag what changed",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 121,
+      "cells": [
+        "C26",
+        "Seek teacher advice without stopping work",
+        "C03",
+        "Track unresolved permissions/approvals, then allow safe next stages or saving",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 122,
+      "cells": [
+        "C40",
+        "Check precision of a reported calculation",
+        "C24",
+        "Return to original collection resolution/uncertainty; then return to mathematical work via the stage dashboard",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 123,
+      "cells": [
+        "C50",
+        "Reconsider data or model inputs after results",
+        "C20",
+        "Investigations evolve: record the change without overwriting the original justification",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 124,
+      "cells": [
+        "C70",
+        "Review specialist terms and notation",
+        "C25",
+        "Check variables and data-specific jargon at their first use",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 125,
+      "cells": [
+        "C90",
+        "Review whether reported accuracy is defensible",
+        "C24",
+        "Review actual measurement limits and rounding across tables, maths and conclusions",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 126,
+      "cells": [
+        "C30",
+        "Begin purposeful initial exploration",
+        "C31",
+        "Select a diagram, concise first calculation, compact summary or small theoretical case (or None); use prior Planning + actual data",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 127,
+      "cells": [
+        "C31",
+        "Chosen useful initial representation or calculation",
+        "C32",
+        "Ask why this move is relevant and define variables before first appearance",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 128,
+      "cells": [
+        "C31",
+        "No helpful diagram or calculation right now",
+        "C04",
+        "Skip without penalty; student may go directly to first substantial mathematics or another stage",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 129,
+      "cells": [
+        "C31",
+        "Required measurements/data not ready",
+        "C20",
+        "Return to collecting/preparing actual evidence without inventing data or locking the stage",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 130,
+      "cells": [
+        "C32",
+        "Purpose and symbols defined",
+        "C33",
+        "Make student-selected diagram/compact calculation then apply corresponding checks",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 131,
+      "cells": [
+        "C33",
+        "Figure or brief calculation checked",
+        "C34",
+        "Ask what was observed, not how to perform routine graphing",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 132,
+      "cells": [
+        "C33",
+        "Presentation fails a relevant check",
+        "C32",
+        "Correct titles, notation, scale, single-page fit, precision etc. without losing work",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 133,
+      "cells": [
+        "C34",
+        "Observation made; check accuracy where new, then reconnect to aim/prediction",
+        "C34B",
+        "Existing route when accuracy is already covered; C34B is an explicit mandatory connection to aim/prediction before next step.",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 134,
+      "cells": [
+        "C35",
+        "Begin FIRST justified mathematical section (or the next appropriate method)",
+        "C40",
+        "C35's explicit next question and bridging explanation must reference preceding actual result and local conclusion; method rationale written BEFORE maths at C40.",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 135,
+      "cells": [
+        "C35",
+        "Return to dashboard / save",
+        "C04",
+        "Persist choices, representation reference, observation and intended next mathematical step",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 136,
+      "cells": [
+        "C35",
+        "Different representation would help more",
+        "C31",
+        "Reconsider a figure/calculation; avoid duplication and repeat content only for a meaningful side-by-side comparison",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 137,
+      "cells": [
+        "C35",
+        "Need better/more data",
+        "C20",
+        "Preserve original observations and note reason for changed data plan",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 138,
+      "cells": [
+        "C35",
+        "Begin ANOTHER meaningful mathematical section",
+        "C50",
+        "Repeat C35→C50 using last completed section's result/takeaway; each substantive output returns via C34/C34B to C35.",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 139,
+      "cells": [
+        "C40",
+        "Review an earlier initial representation when interpretation changes",
+        "C30",
+        "Optional reversible navigation; refer to existing figure rather than duplicate it",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 140,
+      "cells": [
+        "C50",
+        "A genuinely new observation needs a different figure",
+        "C30",
+        "Revisit only if it advances the story or makes a side-by-side comparison useful",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 141,
+      "cells": [
+        "C70",
+        "Review a specific diagram quality issue",
+        "C33",
+        "Apply relevant presentation checklist; no need to redo or duplicate a correct figure",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 142,
+      "cells": [
+        "C34",
+        "This result's accuracy or interpretation remains uncertain",
+        "C34A",
+        "Only show C34A when input resolution/source scope or THIS figure/calculation introduces an unresolved precision/validity issue; otherwise skip",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 143,
+      "cells": [
+        "C34A",
+        "Accuracy/uncertainty meaningfully considered",
+        "C34B",
+        "Use relevant C24 and C23 records, don't duplicate earlier accurate explanations",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 144,
+      "cells": [
+        "C34A",
+        "Need to check original measurement/source uncertainty",
+        "C24",
+        "Optional revisit to established precision notes; keep current finding to return to",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 145,
+      "cells": [
+        "C34B",
+        "Consistent with prediction, or no prediction, or sufficiently explained",
+        "C35",
+        "After actual figure or calculation and short local takeaway, go to C35's explicit Next logical mathematical step; further mathematics is optional and justified.",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 146,
+      "cells": [
+        "C34B",
+        "Unexpected, contradicts prediction, or is unclear",
+        "C34U",
+        "Investigate a plausible other angle rather than simply ticking next stage",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 147,
+      "cells": [
+        "C34B",
+        "Earlier aim/prediction/beneficiary needs revisiting",
+        "C04",
+        "Make edits from dashboard, preserve original prediction and current interpretation notes",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 148,
+      "cells": [
+        "C34U",
+        "A plausible explanation or alternative has been considered",
+        "C35",
+        "After documenting surprise vs conjecture, return to next-step reasoning grounded in real result; no cherry-picking or unperformed tests.",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 149,
+      "cells": [
+        "C34U",
+        "One different view/example is genuinely needed",
+        "C31",
+        "No duplicate charts unless meaningful comparison; preserve current figure and interpretation",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 150,
+      "cells": [
+        "C34U",
+        "Possible data/source/collection issue warrants checking",
+        "C20",
+        "Return to data stage when justified, not automatically whenever result surprising",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 151,
+      "cells": [
+        "C34U",
+        "Need to review accuracy of this observation",
+        "C34A",
+        "Only for a NEW uncertainty/assumption or incorrect reporting precision",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 152,
+      "cells": [
+        "C34U",
+        "Record unresolved surprise and save for later",
+        "C04",
+        "Do not force a false interpretation; restore observations/unfinished question on resume",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 153,
+      "cells": [
+        "C35",
+        "Show me relevant NEXT mathematical ideas",
+        "C35H",
+        "On-demand only. Match actual observed feature + aim + course, not prediction or proposed maths alone",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 154,
+      "cells": [
+        "C35H",
+        "Choose an idea, another method, or none",
+        "C35",
+        "Return to the student's own next-step rationale; no automatic method execution",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 155,
+      "cells": [
+        "C35H",
+        "Need better evidence before deciding",
+        "C20",
+        "Student can fetch more relevant data when justified, keeping earlier observations",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 156,
+      "cells": [
+        "C40",
+        "Actual later mathematical result warrants reinterpretation",
+        "C34",
+        "ACTUAL substantive first mathematics result → C34 observation/accuracy if new/aim/prediction/LOCAL TAKEAWAY → C35; don't jump directly to another technique without interpreting this.",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 157,
+      "cells": [
+        "C60",
+        "Open guided conclusion synthesis",
+        "C61",
+        "Reuse previous genuine results and ongoing reflection notes; stage remains revisitable",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 158,
+      "cells": [
+        "C61",
+        "Main answer identified or honestly inconclusive",
+        "C62",
+        "Move to implications without repeating mathematical work",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 159,
+      "cells": [
+        "C61",
+        "Need to check an earlier result or missing reflection",
+        "C04",
+        "Offer go-to-relevant-stage shortcut; return to conclusion without losing draft",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 160,
+      "cells": [
+        "C62",
+        "Meaning for beneficiary considered",
+        "C63",
+        "Choose a realistic mathematical extension or outstanding question",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 161,
+      "cells": [
+        "C62",
+        "Audience/aim has changed",
+        "C02",
+        "Review relevant carried-forward fields; preserve student-authored conclusion and original aim history",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 162,
+      "cells": [
+        "C63",
+        "Next steps recorded or no meaningful extension",
+        "C64",
+        "Do not block completion if an extension is not justified",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 163,
+      "cells": [
+        "C63",
+        "Proposed extension seems already completed",
+        "C61",
+        "Return to overall synthesis; never present performed work as future research",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 164,
+      "cells": [
+        "C64",
+        "Conclusion complete or provisional",
+        "C04",
+        "Preserve the draft for later revision or move to another stage",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 165,
+      "cells": [
+        "C64",
+        "Check overall presentation",
+        "C70",
+        "Review readability/references without repeating evaluation",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 166,
+      "cells": [
+        "C64",
+        "Save current conclusion notes",
+        "C91",
+        "Snapshot stores student-authored synthesis, purpose and next steps",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 167,
+      "cells": [
+        "C64",
+        "Earlier mathematical reflection needs attention",
+        "C50",
+        "Return to relevant mathematical evidence; edit reflection THERE, not in ending",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 168,
+      "cells": [
+        "C64",
+        "Earlier diagram/result reflection needs attention",
+        "C34",
+        "Return to relevant result-ledger entry; keep conclusion draft intact",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 169,
+      "cells": [
+        "C40",
+        "After appropriate reflection, begin final synthesis if ready",
+        "C60",
+        "Only if the latest substantive result has already received C34/C34B local interpretation and C35 has established that sufficient relevant course-level mathematics now answers the aim. Otherwise use C40→C34 first.",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 170,
+      "cells": [
+        "C50",
+        "Reflect on a new mathematical result as it happens",
+        "C34",
+        "ACTUAL substantive further mathematics result → C34 result interpretation + local takeaway → C35 repeated step or evidence-based conclusion. Do not send routine algebra through the loop.",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 171,
+      "cells": [
+        "C10",
+        "See optional intro contrast examples",
+        "C10E",
+        "Only when requested; don't interrupt writing",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 172,
+      "cells": [
+        "C10E",
+        "Return to own introduction",
+        "C10",
+        "Preserve student prose and revised plan fields",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 173,
+      "cells": [
+        "C35",
+        "Show bivariate options for actual scatter pattern",
+        "C35B",
+        "Only paired quantitative data with actual observation; on demand",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 174,
+      "cells": [
+        "C35H",
+        "Show specific paired-data suggestions",
+        "C35B",
+        "Optional on-demand deeper advice",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 175,
+      "cells": [
+        "C35B",
+        "Clearly straight-line scatter",
+        "C35",
+        "PMCC may be unnecessary if quantification adds nothing; fitting only if useful",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 176,
+      "cells": [
+        "C35B",
+        "Approximately straight line",
+        "C35",
+        "PMCC may help quantify the LINEAR association; make purpose explicit",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 177,
+      "cells": [
+        "C35B",
+        "Curved or distinctly non-linear",
+        "C35",
+        "Try a justified nonlinear model/rank alternative as course permits; no forced PMCC",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 178,
+      "cells": [
+        "C35B",
+        "No clear relationship",
+        "C35",
+        "Discuss lack of visible evidence; no forced regression or data fishing",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 179,
+      "cells": [
+        "C35B",
+        "Uncertain pattern or inspect actual plot again",
+        "C34",
+        "Revisit observation; don't silently choose a category",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 180,
+      "cells": [
+        "C40",
+        "Used technology for an actual calculation",
+        "C40T",
+        "Conditional; tool-based calculation only",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 181,
+      "cells": [
+        "C40T",
+        "Explain result and reflect",
+        "C34",
+        "Normal observation → aim → next maths loop",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 182,
+      "cells": [
+        "C40T",
+        "Continue the active calculation",
+        "C40",
+        "No extra tech gate when already explained",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 183,
+      "cells": [
+        "C40T",
+        "Save a provisional explanation",
+        "C04",
+        "Do not mark calculation or commentary complete",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 184,
+      "cells": [
+        "C40",
+        "Check course suitability and depth",
+        "C40D",
+        "On request or when actual maths is inadequate/uncertain",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 185,
+      "cells": [
+        "C50",
+        "Recheck maths as investigation develops",
+        "C40D",
+        "Actual methods may change from Planning",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 186,
+      "cells": [
+        "C40D",
+        "Current method adequate: continue first maths",
+        "C40",
+        "Record reasoning, don't invent more techniques",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 187,
+      "cells": [
+        "C40D",
+        "Return to later maths",
+        "C50",
+        "Preserve section and mathematical work",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 188,
+      "cells": [
+        "C40D",
+        "Need teacher discussion about suitability",
+        "C03",
+        "Course-specific concerns, including unsupported course",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 189,
+      "cells": [
+        "C40D",
+        "Leave unresolved and return to dashboard",
+        "C04",
+        "Keep reason and no fake rating",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 190,
+      "cells": [
+        "C70",
+        "Check notation and maths presentation",
+        "C70N",
+        "Optional or triggered by a specific communication concern",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 191,
+      "cells": [
+        "C70N",
+        "Review finished or resume later",
+        "C04",
+        "No global compulsory notation quiz",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 192,
+      "cells": [
+        "C70N",
+        "Move to teacher draft",
+        "C80",
+        "Use appropriately typeset mathematics in a full draft",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 193,
+      "cells": [
+        "C70N",
+        "Save notes",
+        "C91",
+        "Save snapshot, not final submission",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 194,
+      "cells": [
+        "C80",
+        "Full teacher-draft review before written feedback",
+        "C80D",
+        "Once near school's draft milestone; not on every session",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 195,
+      "cells": [
+        "C80D",
+        "Full draft prepared",
+        "C80",
+        "Return to school's teacher feedback process",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 196,
+      "cells": [
+        "C80D",
+        "Missing essential work: jump to stage",
+        "C04",
+        "Revision without losing earlier notes",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 197,
+      "cells": [
+        "C80D",
+        "Save incomplete draft review",
+        "C91",
+        "No false declaration of readiness",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 198,
+      "cells": [
+        "C90",
+        "Final submission self-review",
+        "C90F",
+        "Student chooses once after draft/revisions",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 199,
+      "cells": [
+        "C90F",
+        "Check complete: save progress",
+        "C91",
+        "Doesn't submit the school's IA",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 200,
+      "cells": [
+        "C90F",
+        "Return to edit an identified section",
+        "C04",
+        "Save results of checks and navigation",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 201,
+      "cells": [
+        "C90F",
+        "Review teacher corrections",
+        "C80",
+        "Don't initiate another written-feedback round",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 202,
+      "cells": [
+        "C04",
+        "I'm stuck / Something isn't working",
+        "C95",
+        "Optional help, persistent return location",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 203,
+      "cells": [
+        "C10",
+        "Need help beginning writing",
+        "C95",
+        "On demand without overwriting intro",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 204,
+      "cells": [
+        "C20",
+        "Data access / collection problem",
+        "C95",
+        "On demand, no fabricated data",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 205,
+      "cells": [
+        "C31",
+        "No useful initial diagram",
+        "C95",
+        "Diagram remains optional",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 206,
+      "cells": [
+        "C35",
+        "Unsure what mathematics should come next",
+        "C95",
+        "Use real observed result",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 207,
+      "cells": [
+        "C40",
+        "Mathematics or software difficulty",
+        "C95",
+        "Explain active maths only",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 208,
+      "cells": [
+        "C50",
+        "Subsequent investigation has stalled",
+        "C95",
+        "Keep earlier reflections",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 209,
+      "cells": [
+        "C70",
+        "Writing / presentation trouble",
+        "C95",
+        "Targeted help",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 210,
+      "cells": [
+        "C80",
+        "Teacher draft / feedback obstacle",
+        "C95",
+        "Respect school's one written feedback round",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 211,
+      "cells": [
+        "C03",
+        "Access, consent or permission obstacle",
+        "C95",
+        "Leave restrictions visible",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 212,
+      "cells": [
+        "C95",
+        "I cannot get data",
+        "C95D",
+        "Safe things to do now",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 213,
+      "cells": [
+        "C95",
+        "Data are too limited or unusable",
+        "C95L",
+        "Consider actual scope and quality",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 214,
+      "cells": [
+        "C95",
+        "Look for an alternative source",
+        "C95A",
+        "Compare mathematical relevance and provenance",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 215,
+      "cells": [
+        "C95",
+        "Something else",
+        "C95Q",
+        "Conditional stage-specific help",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 216,
+      "cells": [
+        "C95",
+        "Pick just one next action",
+        "C95N",
+        "Optional, no mandatory form",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 217,
+      "cells": [
+        "C95",
+        "Back to project",
+        "C04",
+        "Return to saved origin in website, dashboard fallback",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 218,
+      "cells": [
+        "C95D",
+        "Write/revisit introduction",
+        "C10",
+        "Aim and motivation available before data",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 219,
+      "cells": [
+        "C95D",
+        "Make/revise prediction, reason, beneficiary",
+        "C02",
+        "Keep it tentative, Not sure valid",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 220,
+      "cells": [
+        "C95D",
+        "Find other primary/secondary data",
+        "C95A",
+        "Assess source suitability first",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 221,
+      "cells": [
+        "C95D",
+        "Plan source/method, sample, terms and units",
+        "C20",
+        "Do not mark collected",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 222,
+      "cells": [
+        "C95D",
+        "Ask about permission/access",
+        "C03",
+        "No collection before approvals",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 223,
+      "cells": [
+        "C95D",
+        "Record one step and Save if useful",
+        "C95N",
+        "No compulsory plan",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 224,
+      "cells": [
+        "C95A",
+        "Inspect alternative sources and method",
+        "C20",
+        "Compare definitions, source/precision/coverage",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 225,
+      "cells": [
+        "C95A",
+        "Change aim/beneficiary only if needed",
+        "C02",
+        "Preserve history of original plan",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 226,
+      "cells": [
+        "C95A",
+        "Source has too little or incompatible data",
+        "C95L",
+        "Never invent or mix without justification",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 227,
+      "cells": [
+        "C95A",
+        "Teacher approval needed",
+        "C03",
+        "Retain permission flag",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 228,
+      "cells": [
+        "C95A",
+        "Record source or next step",
+        "C95N",
+        "Student decides",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 229,
+      "cells": [
+        "C95L",
+        "Check data availability/method",
+        "C20",
+        "Scope the maths honestly",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 230,
+      "cells": [
+        "C95L",
+        "Seek appropriate alternate source",
+        "C95A",
+        "No padding data",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 231,
+      "cells": [
+        "C95L",
+        "Choose limited-scope conclusion or next check",
+        "C95N",
+        "No unsupported claims",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 232,
+      "cells": [
+        "C95Q",
+        "My result contradicts prediction",
+        "C34U",
+        "Surprise investigated where it occurs",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 233,
+      "cells": [
+        "C95Q",
+        "Can't choose or explain maths",
+        "C40D",
+        "Active maths and course reviewed",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 234,
+      "cells": [
+        "C95Q",
+        "Notation or mathematical communication",
+        "C70N",
+        "On-demand targeted check",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 235,
+      "cells": [
+        "C95Q",
+        "Draft or feedback help",
+        "C80D",
+        "No unearned readiness",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 236,
+      "cells": [
+        "C95Q",
+        "Access, consent or deadline issue",
+        "C03",
+        "Current policies, teacher check",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 237,
+      "cells": [
+        "C95Q",
+        "Other/Not sure",
+        "C95N",
+        "Single next action or Save",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 238,
+      "cells": [
+        "C95N",
+        "Write introduction now",
+        "C10",
+        "Restore earlier draft",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 239,
+      "cells": [
+        "C95N",
+        "Review provisional prediction",
+        "C02",
+        "No false evidence",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 240,
+      "cells": [
+        "C95N",
+        "Research source/method",
+        "C20",
+        "Pending ≠ obtained",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 241,
+      "cells": [
+        "C95N",
+        "Resume maths with real evidence",
+        "C40",
+        "Do not proceed from invented observations",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 242,
+      "cells": [
+        "C95N",
+        "Return to my previous work",
+        "C04",
+        "Restore origin stage in website; dashboard fallback",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 243,
+      "cells": [
+        "C95N",
+        "Save this obstacle and action",
+        "C91",
+        "Resume with same issue and chosen task",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 244,
+      "cells": [
+        "C04",
+        "Where should I write this? (optional)",
+        "C96",
+        "Current stage context; hide when nothing new; exact stage return pointer",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 245,
+      "cells": [
+        "C10",
+        "Optional placement help for introduction",
+        "C96",
+        "Student may ask but never force writing prompt",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 246,
+      "cells": [
+        "C20",
+        "Write about THIS chosen data/source method",
+        "C96",
+        "Only when actual method/source relevant; pending means planning note",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 247,
+      "cells": [
+        "C22",
+        "Write selection rationale at the right place",
+        "C96",
+        "Confirm chosen/used method and actual alternative first",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 248,
+      "cells": [
+        "C26",
+        "Already explained data choice or write it now?",
+        "C96",
+        "Preserve prior section reference, don't duplicate",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 249,
+      "cells": [
+        "C32",
+        "Where to introduce this figure/calculation",
+        "C96",
+        "Before output; purpose + definitions; actual figure not compulsory",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 250,
+      "cells": [
+        "C34",
+        "Write interpretation after meaningful result",
+        "C96",
+        "After actual output, only when not adequately covered",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 251,
+      "cells": [
+        "C35",
+        "Write the bridge to next mathematics",
+        "C96",
+        "Justified next question before new method starts",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 252,
+      "cells": [
+        "C40",
+        "Where to justify/interpret active mathematics",
+        "C96",
+        "Method before working, results/limitations when active",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 253,
+      "cells": [
+        "C50",
+        "Place reflection with later meaningful findings",
+        "C96",
+        "Return to actual result, not generic conclusion",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 254,
+      "cells": [
+        "C60",
+        "Keep conclusion concise and in its place",
+        "C96",
+        "Synthesis only; avoid repetition",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 255,
+      "cells": [
+        "C70",
+        "Where to repair a communication issue",
+        "C96",
+        "At original equation/figure/citation",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 256,
+      "cells": [
+        "C95",
+        "Can I write anything useful while stuck?",
+        "C96",
+        "Distinguish private progress note from IA-ready writing",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 257,
+      "cells": [
+        "C96",
+        "Return to my original stage (with cue status)",
+        "C04",
+        "Website returns to stored origin stage; dashboard is fallback",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 258,
+      "cells": [
+        "C96",
+        "Save writing state / resume later",
+        "C91",
+        "Preserve cue/trigger/status/section reference",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 259,
+      "cells": [
+        "C96",
+        "Do a planning-only next action instead",
+        "C95N",
+        "No invented data or completed method statement",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 260,
+      "cells": [
+        "C35",
+        "Pearson r was ACTUALLY calculated: contextual next-step ideas",
+        "C35P",
+        "Post-PMCC branch only AFTER a real coefficient and its C34/C34B interpretation; not on first scatter or Planning prediction",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 261,
+      "cells": [
+        "C35P",
+        "Useful apparent linear association; prediction/model would benefit aim",
+        "C35",
+        "Optional next step: fit/interprete an appropriate line and later inspect fit, domain, parameters; student chooses and justifies, not automatic regression",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 262,
+      "cells": [
+        "C35P",
+        "Little evidence of LINEAR association in these data",
+        "C35",
+        "Inspect real scatter for curvature/subgroups/unusual values/range; only then consider justified alternate method or an honest limited finding, not correlation fishing",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 263,
+      "cells": [
+        "C35P",
+        "Moderate, uncertain or context-dependent linear relationship",
+        "C35",
+        "Clarify what the actual sample r tells you and whether precision/aim justify additional mathematics; no rigid strength threshold",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 264,
+      "cells": [
+        "C35P",
+        "Coefficient and scatter disagree or result is unexpected",
+        "C34U",
+        "Check observed pattern/data, domain and actual limitations; explain discrepancy next to output rather than bypassing it",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 265,
+      "cells": [
+        "C35P",
+        "No useful further calculation is necessary",
+        "C35",
+        "Student returns to C35, may choose conclusion when sufficient appropriate mathematics; no quota",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 266,
+      "cells": [
+        "C35P",
+        "Need to reread/interprete the actual r or result",
+        "C34",
+        "Return to original resultRef and latest local takeaway; preserve coefficient and existing text",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 267,
+      "cells": [
+        "C35P",
+        "Save the next question or decide later",
+        "C04",
+        "Keep PMCC result and tentative next-step choice; source data status unchanged",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 268,
+      "cells": [
+        "C35",
+        "Enough relevant mathematics—bring findings together",
+        "C60",
+        "Stop looping when current aim can be answered or honestly scoped, actual maths suitably substantial; no mandatory extra method or automatic grade",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 269,
+      "cells": [
+        "C35",
+        "Unsure whether chosen NEXT maths is course-appropriate",
+        "C40D",
+        "Optional teacher/course level check of proposed technique; no artificial complexity",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 270,
+      "cells": [
+        "C35H",
+        "PMCC result already calculated; see appropriate follow-ups",
+        "C35P",
+        "Only if PMCC actually performed and the prior result was interpreted; scatter-only use C35B",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 271,
+      "cells": [
+        "C50",
+        "New meaningful result already interpreted: revisit next-step decision",
+        "C35",
+        "Only if C34/C34B reflection is complete for latest section; otherwise use C50→C34, no bypassing interpretation",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 272,
+      "cells": [
+        "C33",
+        "Check earlier recorded source/measurement precision for this figure",
+        "C24",
+        "Optional ONLY when C24 accuracy missing/changed or real axis precision unclear; save return pointer C33; don't restart data collection",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 273,
+      "cells": [
+        "C24",
+        "Return to current figure after accuracy clarification",
+        "C33",
+        "Only if originStage was C33; otherwise use normal collection path; preserve diagram state",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 274,
+      "cells": [
+        "C24",
+        "Return to current numerical result's accuracy reflection",
+        "C34A",
+        "Only if originStage was C34A; active result must exist; avoid changing written prose automatically",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 275,
+      "cells": [
+        "C24",
+        "Return to active first mathematical calculation",
+        "C40",
+        "Only if originStage was C40 and genuine active maths/result exists; a planning-only C24 review cannot bypass current method setup",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 276,
+      "cells": [
+        "C50",
+        "Check earlier input/source precision relevant to later mathematics",
+        "C24",
+        "Optional targeted accuracy review if data/source has changed or output accuracy is uncertain; preserve C50 work and stage",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 277,
+      "cells": [
+        "C24",
+        "Return to active later mathematical section",
+        "C50",
+        "Only if originStage was C50, preserve previous maths and source history; no fictitious completed method",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 278,
+      "cells": [
+        "C35",
+        "Check syllabus level of newly chosen mathematics (optional)",
+        "C40D",
+        "Only if new technique is uncertain/partly beyond; teacher check does not stall work",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 279,
+      "cells": [
+        "C40D",
+        "I need to explain mathematics beyond this course",
+        "C40L",
+        "Only after student confirms outside/partly outside or requests help. Not an automatic detour",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 280,
+      "cells": [
+        "C40",
+        "First-use beyond-syllabus explanation or new independent research",
+        "C40L",
+        "Offer only when relevant to current ACTUAL technique and before first use; preserve active calculation",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 281,
+      "cells": [
+        "C50",
+        "First-use mathematics explanation in this later section",
+        "C40L",
+        "Only for current novel/beyond-course technique; no repeated general tutorials",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 282,
+      "cells": [
+        "C34B",
+        "I genuinely learned something mathematically from this result",
+        "C40L",
+        "Optional AFTER a real result, once the aim-link is understood; no fake personal engagement",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 283,
+      "cells": [
+        "C40L",
+        "Continue first substantial mathematics",
+        "C40",
+        "Only if originStage C40 or first-method setup; keep chosen technique/notes",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 284,
+      "cells": [
+        "C40L",
+        "Continue later mathematical section",
+        "C50",
+        "Only if originStage C50; preserve section ID and student writing",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 285,
+      "cells": [
+        "C40L",
+        "Return to the mathematical result and its aim-linked reflection",
+        "C34B",
+        "Only if originStage C34B and actual resultRef exists",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 286,
+      "cells": [
+        "C40L",
+        "Return to course suitability/teacher check",
+        "C40D",
+        "When course status or understood level is still uncertain",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 287,
+      "cells": [
+        "C40L",
+        "Return to the next-method decision",
+        "C35",
+        "If originStage C35; no forced new maths",
+        "Completing the IA"
+      ]
+    },
+    {
+      "row": 288,
+      "cells": [
+        "C40L",
+        "Save current learning note and resume",
+        "C91",
+        "Persist method course classification, student learning source, own explanation and resume pointer",
+        "Completing the IA"
+      ]
+    }
+  ]
+}
