@@ -39,7 +39,7 @@ export const C_FIELD_DEFAULTS=Object.freeze({
  benefitFinding:"",surpriseReason:"",surpriseCheck:"",
  nextQuestion:"",nextMethod:"",nextReason:"",nextLocation:"",
  scatterPattern:"",scatterDetail:"",pairedDataType:"",scatterAimRelevance:"",pmccSignal:"",pmccMeaning:"",pmccInterpretation:"",
- technologyTool:"",technologyInput:"",technologyOutcome:"",
+ technologyTool:"",technologyForEntryId:"",technologyInput:"",technologyOutcome:"",
  technologyInterpretation:"",courseLevel:"",courseWhy:"",
  researchedMethod:"",researchedUnderstanding:"",mathsLearning:"",
  mainConclusion:"",conclusionEvidence:"",conclusionUncertainty:"",
@@ -213,6 +213,13 @@ export function setCompletionField(state,key,value){
   // A student's own assertion is not documentary proof of teacher sign-off.
   // Leave existing teacher/consent flags intact until separately resolved.
   if(value==="pending"||value==="unsure")state.teacher.pendingApproval=true;
+ }
+ if(["technologyTool","technologyInput","technologyOutcome","technologyInterpretation"].includes(key)){
+  // Tech output belongs to the single active actual mathematical section.
+  // Do not display it later as if it explained a different calculation.
+  const entry=completeEntry(state);
+  if(entry?.id && (c.fields.technologyTool.trim()||c.fields.technologyOutcome.trim()))
+   c.fields.technologyForEntryId=entry.id;
  }
  if(key==="dataStatus" && ["not-started","candidate","partial","ready","theoretical"].includes(value))
   state.project.dataStatus=value==="candidate"?"not-started":value;
