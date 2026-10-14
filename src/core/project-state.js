@@ -4,6 +4,8 @@
  * that planning a technique means it was actually performed.
  */
 import {createPlanningState,normalizePlanningState} from "../planning/engine.js";
+import {createCompletionState,normalizeCompletionState} from "../completing/engine.js";
+import {normalizeEntry} from "../completing/entry-record.js";
 export const STATE_VERSION = 2;
 export const STORAGE_KEY = "ia-pathfinder-prototype-v1"; // Deliberately stable across upgrades.
 export const MAX_ENTRIES = 120;
@@ -68,6 +70,7 @@ export function createProjectState() {
     writingLedger:{},
     changeLog:[],
     planning:createPlanningState(),
+    completion:createCompletionState(),
     handover:{confirmedAt:"",lastExportAt:"",lastImportAt:"",lastImportSource:"",needsReview:false}
   };
 }
@@ -100,7 +103,7 @@ export function normalizeProjectState(value) {
     demo: str(value.demo),
     route:["home","planning","completing","path","report"].includes(value.route)?value.route:"home",
     project:p,ui:u,scratch:s,
-    entries:Array.isArray(value.entries)?value.entries.filter(plain).slice(0,MAX_ENTRIES).map(x=>({...x})):[],
+    entries:Array.isArray(value.entries)?value.entries.filter(plain).slice(0,MAX_ENTRIES).map(normalizeEntry):[],
     cues:safeRecord(value.cues),cueNotes:safeRecord(value.cueNotes),cueLocations:safeRecord(value.cueLocations)
   };
   if(value.version===1){
@@ -131,6 +134,10 @@ export function normalizeProjectState(value) {
   const migrated = normalizePlanningState(value.planning,next.project);
   if(!value.planning && next.journey.currentNodeId?.startsWith("N"))migrated.current=next.journey.currentNodeId;
   next.planning=migrated;
+  next.completion=normalizeCompletionState(value.completion,next.project);
+  if(!value.completion && next.entries.length){
+    next.completion.activeEntryIndex=Math.min(next.entries.length-1,next.ui.mathIndex);
+  }
   const h=plain(value.handover)?value.handover:{};
   next.handover={
     confirmedAt:str(h.confirmedAt),lastExportAt:str(h.lastExportAt),
