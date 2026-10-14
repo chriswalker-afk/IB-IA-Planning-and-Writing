@@ -1,0 +1,1384 @@
+{
+  "schemaVersion": 1,
+  "sourceSheet": "Next Mathematical Step",
+  "sourceBounds": {
+    "rows": 150,
+    "columns": 10
+  },
+  "rowCount": 118,
+  "nonemptyCellCount": 782,
+  "rows": [
+    {
+      "row": 1,
+      "cells": [
+        "NEXT LOGICAL MATHEMATICAL STEP  |  Make each section follow naturally from the previous result"
+      ]
+    },
+    {
+      "row": 2,
+      "cells": [
+        "Repeatable IA structure: previous real figure/calculation and its LOCAL takeaway → worthwhile unanswered question → justified maths → actual result → interpretation and local takeaway → repeat, or conclude."
+      ]
+    },
+    {
+      "row": 3,
+      "cells": [
+        "The student's actual evidence drives the suggestion. A prediction or planned technique never counts as a mathematical result. Show only ONE short main question and at most two optional personalised hints."
+      ]
+    },
+    {
+      "row": 4,
+      "cells": [
+        "Put the transition in the IA immediately AFTER the previous section's takeaway and BEFORE the next mathematics. Explain WHY the proposed technique will help address the still-open question, not a recipe for doing routine calculations."
+      ]
+    },
+    {
+      "row": 5,
+      "cells": [
+        "After each meaningful new result, write what it shows and what it establishes. Any relevant mathematical limitations belong WITH the method/result actually used. No reflection needed after every algebraic line."
+      ]
+    },
+    {
+      "row": 6,
+      "cells": [
+        "There is no prescribed number of mathematical sections. Stop and draw together findings when the aim has been addressed honestly with relevant, understood, suitably substantial course-level mathematics."
+      ]
+    },
+    {
+      "row": 8,
+      "cells": [
+        "ID",
+        "Repeatable section moment",
+        "Show when",
+        "Use previous actual choices",
+        "Student-facing advice",
+        "Exact writing position",
+        "Capture / amount",
+        "Next route",
+        "Guardrail",
+        "Status"
+      ]
+    },
+    {
+      "row": 9,
+      "cells": [
+        "L01",
+        "Previous result and takeaway",
+        "C34/C34B; real substantive figure or calculation",
+        "Previous resultRef, observation, original aim/prediction/beneficiary",
+        "What did THIS result establish or fail to establish?",
+        "1–2 sentences immediately AFTER prior result",
+        "Record an honest LOCAL finding and any necessary scope",
+        "C35",
+        "Not a second full IA conclusion",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 10,
+      "cells": [
+        "L02",
+        "One unresolved question",
+        "C35 entered from meaningful result",
+        "Local takeaway, aim, currently understood scope",
+        "What specific mathematical question still matters to [aim/beneficiary]?",
+        "At END of previous section, before new maths",
+        "One question, or 'enough evidence / not sure'",
+        "L03 or C60",
+        "Do not invent a new question to increase length",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 11,
+      "cells": [
+        "L03",
+        "Choose a useful mathematical method",
+        "A real question has been identified",
+        "Observed feature, available evidence, course, prior methods",
+        "Why would [chosen technique] help answer THAT question better than doing more of the same?",
+        "Brief linking statement between sections",
+        "One student-owned reason; optional 1–2 context-specific hints",
+        "L04",
+        "No arbitrary mathematics or automatic harder methods",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 12,
+      "cells": [
+        "L04",
+        "Bridge into next section",
+        "C35 chosen a justified method",
+        "previousResultRef, localTakeaway, openQuestion, chosenMethod",
+        "WRITE now: 'Because the last result showed [student observation], I will investigate [new question] using [technique] to find out [mathematical purpose].' Adapt in your OWN words.",
+        "End of earlier interpretation, BEFORE next calculation",
+        "One or two sentences; first person natural, not template prose",
+        "C40 first / C50 later",
+        "No ready-made IA paragraph to copy; show placement not forced sentence",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 13,
+      "cells": [
+        "L05",
+        "New mathematical section setup",
+        "C40/C50; method confirmed ACTUALLY relevant",
+        "Student-chosen technique, relevant symbols, constraints",
+        "Before using [actual new method], define variables and assumptions. If this is in the student's VERIFIED syllabus, proceed directly with mathematical working. If a new component is beyond, explain just that unfamiliar principle in the student's own words at first use.",
+        "Immediately before new calculation/equation",
+        "Short essential setup; no textbook method explanation",
+        "L06",
+        "Definitions not a long front-loaded glossary",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 14,
+      "cells": [
+        "L06",
+        "Perform mathematical work",
+        "Method genuinely underway",
+        "Active technique, real inputs, course and source accuracy",
+        "Carry out the mathematics. What exactly was calculated or tested and why was this appropriate?",
+        "Working and interpreted output in this section",
+        "Clear actual maths; student-owned working or explained technology",
+        "L07 via C34",
+        "Do not assume software/plan has produced a result",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 15,
+      "cells": [
+        "L07",
+        "Interpret actual new result",
+        "A NEW substantial output exists",
+        "Real figure/equation/resultRef, aim and preceding question",
+        "What does your ACTUAL new result establish for [aim] and, ONLY IF a real mathematical insight occurred, what did you understand about the mathematics itself? Accuracy and limitations are checked separately when relevant.",
+        "DIRECTLY after new result",
+        "Observation, new limitations only if relevant, link to aim/beneficiary",
+        "C34/C34B (and C34U if surprising)",
+        "No reflection after each routine intermediate step",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 16,
+      "cells": [
+        "L08",
+        "Close section locally",
+        "Student has interpreted substantial result",
+        "Confirmed meaning, method validity and still-open aim",
+        "In one or two sentences, what has THIS mathematical section established or left open?",
+        "After the result's interpretation (not final conclusion)",
+        "Short local takeaway, with one source/result ID",
+        "C35 again",
+        "Do not reprint figure, whole calculation or earlier evaluation",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 17,
+      "cells": [
+        "L09",
+        "Continue, adapt or stop",
+        "A meaningful section was reflected on",
+        "Local takeaway, overall aim, course-depth review if needed",
+        "Does another question genuinely follow? If yes, what? If enough mathematics already answers the aim, move to the conclusion.",
+        "Repeat C35 before next substantive maths, OR go C60",
+        "Student decides more maths / revisit / data check / conclude / save",
+        "C35→C40/C50/C60",
+        "No fixed number of iterations; 'inconclusive' may be valid",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 18,
+      "cells": [
+        "L10",
+        "Preserve revisions and provenance",
+        "Earlier result or aim is revised",
+        "Original prediction, previous resultRef, chosen section nextStep",
+        "Does a changed finding alter the rationale for any LATER mathematical section? Review only affected transitions.",
+        "At original changed result and next bridge",
+        "Flag impacted sections for student review; preserve authored text",
+        "C35 / C96",
+        "No silent rewriting of earlier work or global restart",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 21,
+      "cells": [
+        "AFTER AN ACTUAL PMCC CALCULATION  |  Distinguish weak LINEAR association from 'no relationship of any kind'"
+      ]
+    },
+    {
+      "row": 23,
+      "cells": [
+        "ID",
+        "PMCC outcome (not preset threshold)",
+        "Only if ACTUALLY observed",
+        "Context used",
+        "Specific next logical question",
+        "Suggested new section or local conclusion",
+        "Return route",
+        "Must not happen",
+        "Status"
+      ]
+    },
+    {
+      "row": 24,
+      "cells": [
+        "P01",
+        "No Pearson r calculated",
+        "Only prediction or first scatter exists",
+        "NONE—do not show post-PMCC suggestions",
+        "First decide whether r would serve the question; if appropriate, calculate and interpret it.",
+        "Not yet a calculated coefficient",
+        "C35B / C35 (pre-technique)",
+        "No PMCC weaknesses or guessed r",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 25,
+      "cells": [
+        "P02",
+        "Fairly strong sample linear association; prediction matters",
+        "Actual numerical r and scatter roughly linear; student confirms a relevant predictive aim",
+        "real r, named variables, domain, original aim and sample",
+        "A line of best fit might help predict [dependent quantity]. Would fitting and interpreting one add value?",
+        "One optional next section: fit line, interpret slope/intercept, check residuals/valid range when done",
+        "C35P→C35→C40/C50",
+        "Not automatic regression; no causal claim or guaranteed prediction accuracy",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 26,
+      "cells": [
+        "P03",
+        "Fairly strong sample association; aim only relationship strength",
+        "Real r interpreted; no prediction/estimation needed",
+        "r, actual scatter, beneficiary and question already answered",
+        "If the aim was only to describe linear association, have you obtained enough relevant evidence?",
+        "May conclude, or justify a real additional question if needed",
+        "C35P→C35→C60",
+        "Do not invent line-fitting simply for another method",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 27,
+      "cells": [
+        "P04",
+        "Small |r| and ACTUAL curved scatter",
+        "Real r near zero/small in context, student-confirmed curved plot",
+        "r, actual curve, possible monotonic/turning/cyclical feature",
+        "PMCC measures linear association. Could [observed curvature] explain the weak r? What suitable model would test it?",
+        "Check mathematical shape, choose course-appropriate nonlinear model if purpose demands; rank only if monotonic and approved",
+        "C35P→C35→C50",
+        "Do not say r≈0 proves no relationship, or default to Spearman for non-monotonic patterns",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 28,
+      "cells": [
+        "P05",
+        "Small |r| and no clear scatter trend",
+        "Real small sample r, genuinely scattered observations",
+        "r, plot, population/sample scope, aim",
+        "You found little apparent linear association IN THIS SAMPLE. Is that itself a useful answer, or is there a justified different question?",
+        "Briefly interpret honest null/inconclusive finding; optional genuine new variable/range if warranted",
+        "C35P→C35→C60 or C50",
+        "Never search many correlations merely until one looks strong",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 29,
+      "cells": [
+        "P06",
+        "Small |r| and one unusual observation matters",
+        "Real r plus visible unusual point and actual data",
+        "r and source records of point; observed difference",
+        "Could that genuine observation be affecting r? Check its accuracy and, if useful, compare the legitimate sensitivity without deleting it.",
+        "Data verification and transparent sensitivity analysis where meaningful",
+        "C35P→C34U→C35",
+        "No selective deletion or post-hoc claim that inconvenient point is wrong",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 30,
+      "cells": [
+        "P07",
+        "Low/moderate r with meaningful subgroups",
+        "Real graph shows groups tied to substantive contextual variable",
+        "Actual group definitions, sample sizes, aim, r",
+        "Do real, pre-existing subgroups suggest a different within-group relationship worth investigating?",
+        "Justified group comparison or scoped discussion, if course-appropriate",
+        "C35P→C35→C50",
+        "Not dozens of arbitrary subgroup splits or manufactured correlation",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 31,
+      "cells": [
+        "P08",
+        "Restricted explanatory-variable range",
+        "Actual sample only covers narrow range of variable",
+        "real sample domain, aim, coefficient and intended advice",
+        "Could the narrow sampled range limit what the coefficient tells you about the intended population?",
+        "State proper scope; seek wider legitimate observations only if useful and feasible",
+        "C35P→C35 / C20",
+        "Do not extrapolate to unobserved domain or claim a population effect from one sample",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 32,
+      "cells": [
+        "P09",
+        "Strong r but curved plot / cluster / leverage",
+        "A large |r| together with actual pattern inconsistent with single stable linear model",
+        "r, graph, evidence source, possible exceptions",
+        "Despite r, does the actual scatter justify a single straight-line model over the range relevant to your aim?",
+        "Inspect meaningful shape, fit/residuals if model actually used, or choose justified alternative",
+        "C35P→C35→C50",
+        "A high r alone doesn't establish line-fit quality, causation or useful extrapolation",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 33,
+      "cells": [
+        "P10",
+        "Observed direction differs from original prediction",
+        "Real PMCC sign and scatter don't match expected direction",
+        "original hypothesis and why, actual r, variables",
+        "What does this negative/positive sample association mean for the prediction? Is a different mathematical check genuinely needed?",
+        "Record discrepancy near r; consider true data definitions, domain, alternative explanatory variable",
+        "C35P→C34U→C35",
+        "Do not silently reverse the original prediction or invent an error",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 34,
+      "cells": [
+        "P11",
+        "Intermediate/ambiguous |r| or limited sample",
+        "Actual coefficient but its relevance unclear or data sparse",
+        "r, sample size, scatter, measurement precision, aim",
+        "What can THIS sample's r answer about linear association, and what remains uncertain?",
+        "Interpret without rigid strong/weak threshold; optionally check model utility or scoped conclusion",
+        "C35P→C35",
+        "No invented significance tests or absolute coefficient thresholds",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 35,
+      "cells": [
+        "P12",
+        "Student proposes 'try another correlation'",
+        "Student reports small r and wants a different calculation",
+        "observed shape/actual groups/aim, course options",
+        "What NEW evidence-based mathematical question would a different relationship measure answer?",
+        "Only a justified nonlinear model, appropriate monotonic measure, or meaningful comparison; may stop",
+        "C35P→C35",
+        "No p-hacking, fishing until significant, arbitrarily re-coding points or unapproved tests",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 36,
+      "cells": [
+        "P13",
+        "Correlation is real but causal recommendation proposed",
+        "Student wants to use sample correlation to advise causal intervention",
+        "r, data-collection design and beneficiary",
+        "Does your design justify causal conclusions, or only a description/association? What advice remains defensible?",
+        "Qualify implication now; possible future study for causality, not retroactive proof",
+        "C35P→C35",
+        "No automatic 'increase X to cause Y'; distinguish association from causation",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 38,
+      "cells": [
+        "OTHER MATHEMATICAL ROUTES  |  The same result → question → method → result → next-question logic"
+      ]
+    },
+    {
+      "row": 40,
+      "cells": [
+        "ID",
+        "Previous actual finding",
+        "Prerequisite",
+        "Next question to ask",
+        "Potential further section",
+        "Avoid",
+        "Route",
+        "Status"
+      ]
+    },
+    {
+      "row": 41,
+      "cells": [
+        "S01",
+        "First scatter looks roughly straight",
+        "C34/C35: real paired quantitative plot",
+        "Would quantifying linear association answer the aim better than a visual impression?",
+        "Optional PMCC if course-suitable, then interpret r and decide again",
+        "No automatic formula if line visually clear and coefficient adds little",
+        "C35→C40",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 42,
+      "cells": [
+        "S02",
+        "First scatter curves",
+        "C34: student-confirmed curve",
+        "What shape/feature matters mathematically—turning, monotonic rise, repetition?",
+        "Compare meaningful model families or a valid monotonic measure if suitable",
+        "No forcing Pearson, or taking several points as proof of a model",
+        "C35→C40/C50",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 43,
+      "cells": [
+        "S03",
+        "Histogram actually skewed",
+        "C34: observed skew/outliers",
+        "Do median and IQR describe the distribution more usefully than mean and SD?",
+        "Compute appropriate centre/spread and interpret groups if warranted",
+        "No normality claim simply to apply a familiar technique",
+        "C35→C40",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 44,
+      "cells": [
+        "S04",
+        "Observed distribution approximately symmetric",
+        "C34: real relevant numerical data",
+        "Is a normal model useful for a concrete probability or comparison in this context?",
+        "Only if justified, estimate parameters/probabilities and test suitability",
+        "Don't add normal model where descriptive statistics already answer the aim",
+        "C35→C40",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 45,
+      "cells": [
+        "S05",
+        "Groups differ on a comparable chart",
+        "C34: actual common-scale comparison",
+        "What mathematical measure would establish whether the difference is meaningful?",
+        "Compare centre/spread or a permitted statistical test after justification",
+        "No automatic hypothesis test or course-inappropriate formula",
+        "C35→C40/C50",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 46,
+      "cells": [
+        "S06",
+        "Categorical counts differ",
+        "C34: actual categories and counts",
+        "Are conditional proportions or a relevant measure/test needed to answer association question?",
+        "Calculate appropriate proportions; chi-squared only when course-approved and assumptions relevant",
+        "Don't apply Pearson to categorical codes or infer cause",
+        "C35→C40",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 47,
+      "cells": [
+        "S07",
+        "Fitted line/model gives useful predictions",
+        "C40/C50: genuine fitted model and observed performance",
+        "Can the model predict a meaningful new situation within its evidence-supported domain?",
+        "Interpret coefficients then check residuals/scope or independent observation where feasible",
+        "No unquestioned extrapolation or duplicate fitted graphs",
+        "C35→C50",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 48,
+      "cells": [
+        "S08",
+        "A model fails to explain a real pattern",
+        "C40/C50: actual large/misleading discrepancies",
+        "What assumption/model feature might explain the mismatch?",
+        "Inspect residual structure, range or one justified alternative model",
+        "No arbitrary swapping models just for higher fit statistic",
+        "C35→C50",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 49,
+      "cells": [
+        "S09",
+        "Model estimated outside valid range",
+        "Active model with real outside-domain prediction",
+        "Does that result respect physical/mathematical constraints?",
+        "Restrict prediction range, change scenario or evaluate endpoint",
+        "No 'realistic value' when impossible in context",
+        "C35→C50",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 50,
+      "cells": [
+        "S10",
+        "Optimisation yields stationary point",
+        "C40/C50: actual derivative and candidate",
+        "Is this the feasible optimum given constraints and endpoints?",
+        "Check boundaries/other candidates; interpret best admissible choice",
+        "Derivative zero alone isn't proof of global optimum",
+        "C35→C50",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 51,
+      "cells": [
+        "S11",
+        "Measured inputs feed derived calculation",
+        "C40/C50: geometry, speed or similar computed",
+        "Could source precision materially affect the conclusion or decision?",
+        "Consider justified uncertainty/sensitivity only if consequential",
+        "No invented uncertainty bounds or equipment gripe",
+        "C35→C50",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 52,
+      "cells": [
+        "S12",
+        "Time-series looks periodic",
+        "C34: observed cycles; suitable actual period",
+        "Is estimating period/amplitude useful for the question, or is trend more relevant?",
+        "If appropriate, fit/compare a periodic model and interpret parameters",
+        "No periodic assumption from a single up/down",
+        "C35→C40",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 53,
+      "cells": [
+        "S13",
+        "Several theoretical examples support a conjecture",
+        "C34: actual exact examples",
+        "Can the pattern be proved, or can a counterexample be found?",
+        "Reasoned proof, special cases or restrictions, appropriate for course",
+        "No claim examples constitute proof",
+        "C35→C40/C50",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 54,
+      "cells": [
+        "S14",
+        "Counterexample contradicts conjecture",
+        "C34U: real counterexample",
+        "Can the original statement be narrowed and proved under a valid condition?",
+        "Revise proposition, seek proof or more counterexamples",
+        "Don't delete or disguise contradictory example",
+        "C35→C50",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 55,
+      "cells": [
+        "S15",
+        "Significant question is already answered",
+        "C34B: real results with adequate course-level maths",
+        "Would any further technique tell the reader something necessary?",
+        "If no, synthesise in conclusion; explain any remaining limits concisely",
+        "No compulsory number of mathematical sections",
+        "C35→C60",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 58,
+      "cells": [
+        "WRITING LINK EXAMPLES  |  Illustrative reasoning structures only; students must write their own text from actual results"
+      ]
+    },
+    {
+      "row": 60,
+      "cells": [
+        "ID",
+        "Illustrative section connection",
+        "Required ACTUAL prior evidence",
+        "What previous section established",
+        "Question still open",
+        "Next mathematical section (student chooses)",
+        "Loop / placement",
+        "Avoid",
+        "Status"
+      ]
+    },
+    {
+      "row": 61,
+      "cells": [
+        "W01",
+        "Scatter → PMCC",
+        "Previous scatter appears roughly linear; no coefficient calculated yet",
+        "Observation/takeaway: some points appear to follow a straight trend.",
+        "Open question: how much LINEAR association is present?",
+        "Next step: if quantifying matters for aim, calculate PMCC; interpret result only AFTER calculation.",
+        "C34→C35→C40",
+        "No prewritten 'strong correlation' statement",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 62,
+      "cells": [
+        "W02",
+        "PMCC → line of best fit",
+        "ACTUAL r + observed roughly linear pattern + prediction need",
+        "Takeaway: sample data show [student's honest interpretation of r].",
+        "Open question: can a simple line estimate [meaningful quantity]?",
+        "Next step: fit and interpret a line if useful, later evaluate suitability/domain.",
+        "C34→C35P→C35→C50",
+        "No automatic causation or forced regression",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 63,
+      "cells": [
+        "W03",
+        "PMCC small → curve",
+        "ACTUAL small |r| and actual curved scatter",
+        "Takeaway: little sample LINEAR association measured.",
+        "Open question: does [observed nonlinearity] explain the pattern?",
+        "Next step: investigate a justified nonlinear form or suitable monotonic measure; don't assert effect before test.",
+        "C34→C35P→C35→C50",
+        "No data fishing or predetermined function",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 64,
+      "cells": [
+        "W04",
+        "PMCC small → stop honestly",
+        "ACTUAL small r and no convincing alternative shape",
+        "Takeaway: sample has little evidence of the proposed linear relationship.",
+        "Open question: is further maths genuinely useful for the original aim?",
+        "Next step: if sufficiently explored at course level, conclude with appropriate scope; future ideas belong in conclusion.",
+        "C34→C35P→C35→C60",
+        "Don't manufacture a positive finding",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 65,
+      "cells": [
+        "W05",
+        "Fitted model → validation",
+        "ACTUAL model fit obtained",
+        "Takeaway: fitted function approximates observed values within a limited domain.",
+        "Open question: are its predictions reliable for [intended decision]?",
+        "Next step: justify a residual/independent test or limit the domain; connect findings again.",
+        "C34→C35→C50",
+        "No repeated graph without new purpose",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 66,
+      "cells": [
+        "W06",
+        "Optimisation → constraints",
+        "Stationary point actually calculated",
+        "Takeaway: derivative gives a candidate best value.",
+        "Open question: is it feasible and best on the full allowed interval?",
+        "Next step: evaluate endpoints/constraints; report defensible optimum.",
+        "C34→C35→C50",
+        "Don't treat every stationary point as global maximum",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 67,
+      "cells": [
+        "W07",
+        "Theoretical example → proof",
+        "Actual pattern found across a few cases",
+        "Takeaway: examples suggest a conjecture but don't establish it.",
+        "Open question: under what conditions can it be proved?",
+        "Next step: attempt course-suitable proof/counterexample; afterwards explain exact scope.",
+        "C34→C35→C50",
+        "Not a data-collection issue",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 70,
+      "cells": [
+        "IMPLEMENTATION GUARDRAILS  |  Context-aware and student-owned, not another mandatory checklist"
+      ]
+    },
+    {
+      "row": 72,
+      "cells": [
+        "Rule",
+        "Focus",
+        "Show / capture",
+        "Must avoid",
+        "Status"
+      ]
+    },
+    {
+      "row": 73,
+      "cells": [
+        "G01",
+        "Relevance",
+        "Use student-confirmed resultRef and observed feature; never infer from Planning predictions or proposed techniques.",
+        "Default to a plain 'What's left to find out?' if no specific evidence.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 74,
+      "cells": [
+        "G02",
+        "Timing",
+        "A section-level takeaway comes directly AFTER meaningful mathematics; bridging sentence BEFORE next new calculation.",
+        "No big list of evaluation in final conclusion.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 75,
+      "cells": [
+        "G03",
+        "Depth",
+        "Offer at most two tailored suggestions on demand; show only one compact main prompt.",
+        "No mandatory series of techniques or fixed section count.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 76,
+      "cells": [
+        "G04",
+        "Course",
+        "Offer maths appropriate to the student's verified AI SL / AA SL (or other selected course); on-syllabus methods are USED without procedural explanation, while new beyond-course parts require first-use conceptual understanding and teacher/course check if uncertain.",
+        "Don't assume a researched topic is outside syllabus or that advanced complexity boosts marks; do not force a mathematical-learning sentence after routine results.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 77,
+      "cells": [
+        "G05",
+        "Statistical honesty",
+        "'No linear association in sample' is NOT a proof there is no nonlinear or population relationship.",
+        "No significance inference without appropriate test; no fabricated r/threshold.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 78,
+      "cells": [
+        "G06",
+        "Result meaning",
+        "High |r| doesn't by itself prove a line will predict reliably or imply causality.",
+        "Check actual scatter/domain/residuals only at model stage where useful.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 79,
+      "cells": [
+        "G07",
+        "Exploring alternatives",
+        "Choose alternative relationship/model only when actual shape/context motivates it.",
+        "No data dredging, cherry-picked exclusion or re-plotting until a positive result appears.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 80,
+      "cells": [
+        "G08",
+        "Section history",
+        "Store each prior result, local conclusion and next question with stable IDs; repeating loop creates new section record.",
+        "A revisit never overwrites earlier student text or original prediction.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 81,
+      "cells": [
+        "G09",
+        "Already covered",
+        "Use Writing Moments W20/W21/W23/W26 statuses and student's own IA section reference.",
+        "Don't repeat the same bridging paragraph or method limitation.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 82,
+      "cells": [
+        "G10",
+        "Stop/Save",
+        "Allow Not sure, return to data, teacher check, Save or conclusion after enough purposeful maths.",
+        "Don't require another calculation merely because a prompt exists.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 83,
+      "cells": [
+        "G11",
+        "Accuracy",
+        "Collection-stage sampling/source accuracy stays with methods; new PMCC/model/derivative validity only when used.",
+        "Avoid generic practical equipment difficulties as IA limitations.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 86,
+      "cells": [
+        "ACCEPTANCE TESTS  |  Future student website scenarios; specifications only, not browser-tested"
+      ]
+    },
+    {
+      "row": 88,
+      "cells": [
+        "Test ID",
+        "Actual student state",
+        "Expected conditional interaction",
+        "Must NOT happen",
+        "QA status"
+      ]
+    },
+    {
+      "row": 89,
+      "cells": [
+        "T01",
+        "First scatter → approx linear",
+        "C35 proposes PMCC only if quantification helps the aim, with why to write at transition.",
+        "No PMCC result or limitation until actually computed.",
+        "To test"
+      ]
+    },
+    {
+      "row": 90,
+      "cells": [
+        "T02",
+        "First scatter → curved",
+        "Offer model/other relevant maths, not automatic PMCC.",
+        "No coefficient inferred from eye or prediction.",
+        "To test"
+      ]
+    },
+    {
+      "row": 91,
+      "cells": [
+        "T03",
+        "PMCC completed, r fairly strong and scattered roughly along line, predictive aim",
+        "Optional line of best fit; student writes purpose, then later interprets fitted coefficients/domain.",
+        "No automatic regression or causal conclusion.",
+        "To test"
+      ]
+    },
+    {
+      "row": 92,
+      "cells": [
+        "T04",
+        "PMCC completed, r fairly strong but aim already answered",
+        "Allow stop and conclusion (subject to appropriate depth); no compulsory extra line.",
+        "No grade promise.",
+        "To test"
+      ]
+    },
+    {
+      "row": 93,
+      "cells": [
+        "T05",
+        "PMCC completed, r small; scatter actually curves",
+        "Explain PMCC is only linear; justify a suitable nonlinear model or course-approved rank method.",
+        "No 'no correlation' blanket statement or forced Spearman.",
+        "To test"
+      ]
+    },
+    {
+      "row": 94,
+      "cells": [
+        "T06",
+        "PMCC completed, r small; scatter unstructured",
+        "Permit honest weak linear finding and conclusion, or an evidence-grounded question.",
+        "No trying new correlations until positive.",
+        "To test"
+      ]
+    },
+    {
+      "row": 95,
+      "cells": [
+        "T07",
+        "PMCC completed, r small; actual outlier",
+        "Offer data check and appropriate transparent sensitivity analysis.",
+        "No dropping genuine inconvenient points.",
+        "To test"
+      ]
+    },
+    {
+      "row": 96,
+      "cells": [
+        "T08",
+        "PMCC completed, strong r; scatter has two clusters",
+        "Prompt whether a single line makes sense; possible justified subgroup scope.",
+        "No confusing high r with predictive validation.",
+        "To test"
+      ]
+    },
+    {
+      "row": 97,
+      "cells": [
+        "T09",
+        "Student has ONLY planned PMCC",
+        "No C35P branch; ordinary plot/first-stage advice only.",
+        "No premature coefficient or method limitation.",
+        "To test"
+      ]
+    },
+    {
+      "row": 98,
+      "cells": [
+        "T10",
+        "New meaningful mathematical result at C50",
+        "Auto-offer small local interpretation; return to C35 for next step if appropriate.",
+        "Do not silently jump to another section.",
+        "To test"
+      ]
+    },
+    {
+      "row": 99,
+      "cells": [
+        "T11",
+        "Routine rearrangement in a calculation",
+        "Do not trigger mini-conclusion or forced 'new question'.",
+        "No interruptions after every algebra line.",
+        "To test"
+      ]
+    },
+    {
+      "row": 100,
+      "cells": [
+        "T12",
+        "Student chooses Already covered",
+        "Suppress repeated transition cue, link existing IA passage.",
+        "No duplicate prose when revisiting same result.",
+        "To test"
+      ]
+    },
+    {
+      "row": 101,
+      "cells": [
+        "T13",
+        "Student's earlier result is corrected",
+        "Flag only affected later-section rationale for review, retain student text.",
+        "No global wipe or silent reauthoring.",
+        "To test"
+      ]
+    },
+    {
+      "row": 102,
+      "cells": [
+        "T14",
+        "Course-appropriate mathematical aim now sufficiently answered",
+        "Offer conclusion; no fixed count of stages.",
+        "No forced sophistication for appearances.",
+        "To test"
+      ]
+    },
+    {
+      "row": 103,
+      "cells": [
+        "T15",
+        "Modelling fit poor after actual regression",
+        "Discuss fit/domain at result and consider a justified alternative, not generic source issues.",
+        "Don't invent results or p-values.",
+        "To test"
+      ]
+    },
+    {
+      "row": 104,
+      "cells": [
+        "T16",
+        "Theoretical conjecture falsified",
+        "Use counterexample to motivate narrower statement/proof where worthwhile.",
+        "No pretending earlier pattern was proved.",
+        "To test"
+      ]
+    },
+    {
+      "row": 105,
+      "cells": [
+        "T17",
+        "Student can't find next useful question",
+        "Allow Not sure/Save, help or conclusion if defensible.",
+        "No requirement to manufacture a technique.",
+        "To test"
+      ]
+    },
+    {
+      "row": 106,
+      "cells": [
+        "T18",
+        "Student says 'r low, I want another correlation'",
+        "Ask actual mathematical reason and data type/shape before suggesting a new measure.",
+        "No automatic multiple testing/data fishing.",
+        "To test"
+      ]
+    },
+    {
+      "row": 111,
+      "cells": [
+        "SOURCE ALIGNMENT: JIS bivariate mini-project and IA guide; existing C34/C35, Bivariate Decisions, Interpretation & Next Steps, and Writing Moments. This is a DESIGN SPECIFICATION: no automated maths, grading, source retrieval or IA text generation is implemented."
+      ]
+    },
+    {
+      "row": 113,
+      "cells": [
+        "ACCURACY AND EVIDENCE CHECKS AT THE NEXT MATHEMATICAL STEP  |  Use old input decisions in new calculations"
+      ]
+    },
+    {
+      "row": 115,
+      "cells": [
+        "ID",
+        "Where",
+        "Real trigger",
+        "Relevant earlier record",
+        "Useful student reminder",
+        "Writing moment",
+        "Type",
+        "Avoid",
+        "Route",
+        "Status"
+      ]
+    },
+    {
+      "row": 116,
+      "cells": [
+        "A01",
+        "C33 · actual diagram",
+        "Graph includes measured or published rounded values",
+        "C24 variable/unit/source resolution and any actual uncertainty",
+        "Do the axes, plotted points and labels preserve the meaning and accuracy of the original data?",
+        "Check the graph itself; explain only consequential new issue",
+        "Presentation/accuracy cue",
+        "No false extra precision from visual smoothing",
+        "C34",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 117,
+      "cells": [
+        "A02",
+        "C40/C50 · derived area or volume",
+        "Lengths with documented source/measurement resolution enter a formula",
+        "Original dimensional accuracy and current geometry/equation",
+        "Does the resolution of the measured dimensions meaningfully constrain this area/volume estimate? Use sensible working precision then report a justified result.",
+        "With derived result if consequences matter",
+        "Accuracy application / interpretation",
+        "Don't blindly report area to the same decimal places as length",
+        "C34A/C34B",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 118,
+      "cells": [
+        "A03",
+        "C40/C50 · speed/rate",
+        "A rate is calculated from time/distance readings",
+        "Earlier measurement resolution/uncertainty and time interval used",
+        "Could the precision of either reading, especially a small measured difference, materially affect this rate?",
+        "Beside reported rate and its meaning for aim",
+        "Specific derived limitation if applicable",
+        "No imaginary ± values or equipment-difficulty story",
+        "C34A/C34B",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 119,
+      "cells": [
+        "A04",
+        "C40/C50 · ratio/percentage change",
+        "Calculated percentage uses rounded/source values",
+        "Earlier data/source precision and relevant denominator",
+        "What accuracy is justified for this ratio or percentage, given the source and computation?",
+        "After numerical calculation, with units/context",
+        "Reporting decision",
+        "Do not keep spurious digits from a calculator",
+        "C34B",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 120,
+      "cells": [
+        "A05",
+        "C40/C50 · PMCC",
+        "Pearson r ACTUALLY computed on paired data",
+        "C24 measurement/source quality, actual scatter, sample and r",
+        "Interpret the real r in context and report it at useful precision. Does data quality or relevant PMCC validity affect the claim?",
+        "Immediately after computed r",
+        "Coefficient interpretation and real limitation if needed",
+        "r has no units and doesn't automatically inherit input decimal places; no causal claim",
+        "C34/C35P",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 121,
+      "cells": [
+        "A06",
+        "C40/C50 · fitted model prediction",
+        "Actual model/forecast used for meaningful advice",
+        "Accuracy of measured/calibrated inputs, real fit and valid domain",
+        "Are the digits and confidence of this prediction justified by the input data, model fit and domain?",
+        "Beside actual prediction",
+        "Apply earlier precision + model limitation if relevant",
+        "No claim that more fitted-equation digits mean a precise real prediction",
+        "C34A/C35",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 122,
+      "cells": [
+        "A07",
+        "C40/C50 · rounded secondary data",
+        "Real public-source values are rounded or aggregated",
+        "Provenance, source reporting resolution, population and dates",
+        "The software may give a long result; what could the original source's rounding/aggregation mean for its interpretation?",
+        "Alongside affected result",
+        "Contextual source limit if consequential",
+        "Don't reconstruct unreported precision or infer individual-level facts from averages",
+        "C34A",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 123,
+      "cells": [
+        "A08",
+        "C40/C50 · inferential sample",
+        "Actual sample statistic used to make a wider claim",
+        "Sample method/size/coverage already discussed at data stage",
+        "Given your original population and sampling decision, which group does this result actually describe?",
+        "Immediately after claim related to aim/beneficiary",
+        "Scope/interpretation",
+        "Do not confuse measurement d.p. with representativeness or pretend causality",
+        "C34B",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 124,
+      "cells": [
+        "A09",
+        "C40/C50 · exact theoretical work",
+        "No empirical measurements, exact symbolic result",
+        "Proven relation, exact variables and mathematical constraints",
+        "Keep exact values where useful; if decimals are used, is ≈ appropriate? What does the proof establish about the aim?",
+        "After exact theorem/proof/case",
+        "Mathematical reasoning not data uncertainty",
+        "No forced C24 measurement caveat in theoretical proof",
+        "C34B",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 125,
+      "cells": [
+        "A10",
+        "C40/C50 · numerical method",
+        "Approximate integration/iteration/regression computed",
+        "Input/source resolution plus approximation method and step size if used",
+        "Does numerical approximation introduce a NEW limitation beyond the earlier measurement/source precision?",
+        "Beside actual numerical estimate",
+        "Distinguish input error from method error if it matters",
+        "No automatic formula for error or invented bound",
+        "C34A",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 126,
+      "cells": [
+        "A11",
+        "C40/C50 · optimisation",
+        "Real optimum obtained from a fitted or measured model",
+        "Earlier parameter/source accuracy, physical constraints, derived stationary point",
+        "Is the claimed optimal value meaningful to the supported precision and within the valid domain and constraints?",
+        "With optimum interpretation for beneficiary",
+        "Accuracy and feasibility check if consequential",
+        "Do not treat stationary point/extra decimals as a perfect decision",
+        "C34A/C34B",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 127,
+      "cells": [
+        "A12",
+        "C35 · transition",
+        "Student chooses next method after a limited result",
+        "Prior local takeaway and only material earlier accuracy/assumption boundary",
+        "Given what the previous evidence can support, WHY is this next mathematical method a sensible way to investigate what remains?",
+        "Between two mathematical sections",
+        "Purpose-linked justification",
+        "No recycling generic limitation lists or method-for-marks",
+        "C40/C50",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 130,
+      "cells": [
+        "Accuracy is context-dependent: keep suitable working precision, report derived estimates at defensible precision and distinguish earlier data limitations from genuinely new technique limitations. The student's aim remains the purpose of every calculation."
+      ]
+    },
+    {
+      "row": 132,
+      "cells": [
+        "ADDITIONAL QA JOURNEYS  |  Accuracy should be recalled at the right moment, not repeated as a limitations paragraph"
+      ]
+    },
+    {
+      "row": 134,
+      "cells": [
+        "Test ID",
+        "Real student context",
+        "Expected contextual reminder",
+        "Must NOT occur",
+        "QA status"
+      ]
+    },
+    {
+      "row": 135,
+      "cells": [
+        "T19",
+        "Student measured lengths to nearest 0.1 cm and plots a graph later",
+        "Recall recorded units/source resolution when checking graph and its labels.",
+        "No graph that pretends the readings have extra measurement precision.",
+        "To test"
+      ]
+    },
+    {
+      "row": 136,
+      "cells": [
+        "T20",
+        "A student uses those length measurements in an area formula",
+        "Preserve working accuracy; check derived area accuracy in context and interpret for aim.",
+        "No automatic rule that area must be rounded to 1 d.p.; no fabricated ± error.",
+        "To test"
+      ]
+    },
+    {
+      "row": 137,
+      "cells": [
+        "T21",
+        "Actual Pearson r reported after calculating from rounded measurements",
+        "Interpret the real coefficient and relevant data/method scope, with sensible precision for r itself.",
+        "Do not force r to the input measurement decimal places or invent a significance test.",
+        "To test"
+      ]
+    },
+    {
+      "row": 138,
+      "cells": [
+        "T22",
+        "Student replaces secondary dataset with a source of different precision",
+        "Flag only dependent diagrams and computations for review; preserve original source history and prose.",
+        "No global reset or silent alteration of previous result wording.",
+        "To test"
+      ]
+    },
+    {
+      "row": 139,
+      "cells": [
+        "T23",
+        "Theoretical exact proof without measured quantities",
+        "Prompt conclusion about what mathematics proves; skip measurement accuracy entirely.",
+        "No forced C24 sampling/resolution limitations or arbitrary decimal output.",
+        "To test"
+      ]
+    },
+    {
+      "row": 140,
+      "cells": [
+        "T24",
+        "Meaningful later model result interpreted and accuracy already discussed",
+        "Show one explicit aim-linked local takeaway; mark earlier limitation Already covered and optionally reference it.",
+        "No duplicate evaluation paragraph and no prompt after each intermediate algebra line.",
+        "To test"
+      ]
+    },
+    {
+      "row": 141,
+      "cells": [
+        "T25",
+        "Student's only problem is late survey responses",
+        "Offer safe planning/writing work; don't treat access inconvenience as a mathematical data limitation.",
+        "No 'I struggled to get respondents' as required IA mathematical critique.",
+        "To test"
+      ]
+    },
+    {
+      "row": 142,
+      "cells": [
+        "T26",
+        "Actual regression produces a prediction outside supported domain",
+        "At the real model result, remind source/model limitations and qualified usefulness for intended audience.",
+        "No model extrapolation warning presented while only collecting data; no false predictive certainty.",
+        "To test"
+      ]
+    },
+    {
+      "row": 145,
+      "cells": [
+        "IMPLEMENTATION TEST: The current file specifies prompts and triggers; after building the website, verify that these reminders refer to the student's real recorded source precision, displayed results and aim. Neither generated IA prose nor automatic Word/PDF inspection is implemented."
+      ]
+    }
+  ]
+}
