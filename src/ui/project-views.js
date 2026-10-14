@@ -1,6 +1,6 @@
 /** Home, student journey map and working-record views. */
 export function createProjectViews(ctx){
-  const {icon,e,button,readableArea,summary,filled,sheetTitle,overline,hasPlan,hasStudio,demoFlag,studioSections}=ctx;
+  const {icon,e,button,note,readableArea,summary,filled,sheetTitle,overline,hasPlan,hasStudio,demoFlag,studioSections}=ctx;
   function pathNode(title,desc,status,action,extra="") {
     const state = ctx.getState();
     return '<div class="path-node '+e(status)+'"><span class="path-gutter"><span class="path-circle">'+icon(status==="done"?"check":status==="current"?"sparkles":"circle")+'</span></span>'+
