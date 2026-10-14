@@ -373,14 +373,15 @@ export function createPlanningViews(ctx){
     "Review and save plan");
    case "N07":return stepBody("Your provisional plan is ready to take forward.","You've created a working direction. Your mathematical findings—and perhaps your aim—may evolve.",
     '<div class="success-moment"><span class="feature-icon">'+icon("check")+'</span><div><strong>Planning checkpoint reached</strong><p>Review your work in the printable report, or download a portable project backup. Save and return later, or explore your actual mathematics in IA Studio.</p></div></div>'+
-    summary("Your aim",f.aim)+summary("First mathematical move",f.firstAction)+teacherWarnings(state)+
+    summary("Your aim",f.aim)+summary("First mathematical move",f.firstAction)+
+    F("planIdentifier","Optional label for my copy of this plan","e.g. My IA plan — revision 2")+teacherWarnings(state)+
     '<div class="button-row" style="margin-top:18px">'+button("Download my planning PDF","export-plan-pdf","btn-primary","", "download")+
     button("Download editable Word plan","export-plan-docx","btn-secondary","", "download")+
     button("View working report","go-report","btn-quiet","", "file")+
     button("Download project backup","export-json","btn-secondary","", "download")+
     route("Review my plan again","Revisit an answer or correct a detail")+
     route("Open IA Studio","Continue into Completing in this session")+'</div>'+
-    callout("Export reminder","A printable working report is available now. PDF/DOCX with embedded reimport data is scheduled for Phase 3; JSON is the reliable backup for now."),
+    callout("Export reminder","Your PDF and Word reports contain an importable Planning snapshot. Later edits to the visible document do not update that snapshot automatically. Use a JSON backup to restore your entire IA Studio work."),
     "<h4>What happens next?</h4><p>In Completing you will work with ACTUAL findings, not only this proposed plan. Unexpected results can legitimately change your next mathematical question.</p>",
     "View my report");
    default:return stepBody("Review this planning question.","This source stage isn't ready yet.",callout("Stage not recognised","Use your project report to preserve any work."),"");
