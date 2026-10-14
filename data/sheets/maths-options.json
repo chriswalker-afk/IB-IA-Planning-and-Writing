@@ -1,0 +1,693 @@
+{
+  "schemaVersion": 1,
+  "sourceSheet": "Maths Options",
+  "sourceBounds": {
+    "rows": 120,
+    "columns": 7
+  },
+  "rowCount": 61,
+  "nonemptyCellCount": 376,
+  "rows": [
+    {
+      "row": 1,
+      "cells": [
+        "MATHS MENU  |  Draft options for Planning the IA"
+      ]
+    },
+    {
+      "row": 3,
+      "cells": [
+        "AFTER COURSE CHOICE  ·  Searchable dropdown, allow multiple selections. Show only the student's course options, grouped by topic."
+      ]
+    },
+    {
+      "row": 4,
+      "cells": [
+        "OTHER MATHEMATICS  ·  Optional separate short-answer field (free text), including techniques outside the course. Ask for teacher discussion; do not auto-reject."
+      ]
+    },
+    {
+      "row": 5,
+      "cells": [
+        "ALSO OFFER  ·  'I'm not sure yet'. Selecting many techniques is NOT evidence of a better IA; students must justify what each would achieve."
+      ]
+    },
+    {
+      "row": 6,
+      "cells": [
+        "COURSE VERSION  ·  Initial list is for the current programme (first assessment 2021). Review for the revised syllabus first assessed in 2029."
+      ]
+    },
+    {
+      "row": 8,
+      "cells": [
+        "ID",
+        "Course",
+        "IB topic group",
+        "Selectable maths",
+        "What could this help with?",
+        "Review",
+        "Teacher/developer notes"
+      ]
+    },
+    {
+      "row": 9,
+      "cells": [
+        "AI01",
+        "AI SL",
+        "Number and algebra",
+        "Arithmetic sequences and series",
+        "Find or model a pattern with a roughly constant difference.",
+        "Review",
+        "Might be a supporting technique rather than the entire IA."
+      ]
+    },
+    {
+      "row": 10,
+      "cells": [
+        "AI02",
+        "AI SL",
+        "Number and algebra",
+        "Geometric sequences and series",
+        "Model quantities increasing or decreasing by a constant ratio.",
+        "Review",
+        "Link the model to real observations."
+      ]
+    },
+    {
+      "row": 11,
+      "cells": [
+        "AI03",
+        "AI SL",
+        "Number and algebra",
+        "Compound growth and financial mathematics",
+        "Model interest, loans, repayments or accumulated change.",
+        "Review",
+        "Explain assumptions and test against relevant data."
+      ]
+    },
+    {
+      "row": 12,
+      "cells": [
+        "AI04",
+        "AI SL",
+        "Functions and modelling",
+        "Linear functions and models",
+        "Represent relationships with a constant rate of change.",
+        "Review",
+        "Not the same as correlation; explain why linearity is reasonable."
+      ]
+    },
+    {
+      "row": 13,
+      "cells": [
+        "AI05",
+        "AI SL",
+        "Functions and modelling",
+        "Quadratic or cubic models",
+        "Explore a curved relationship and possible turning points.",
+        "Review",
+        "Check the behaviour within a realistic domain."
+      ]
+    },
+    {
+      "row": 14,
+      "cells": [
+        "AI06",
+        "AI SL",
+        "Functions and modelling",
+        "Exponential growth or decay",
+        "Model repeated multiplicative change over time.",
+        "Review",
+        "Explain parameters and check against observations."
+      ]
+    },
+    {
+      "row": 15,
+      "cells": [
+        "AI07",
+        "AI SL",
+        "Functions and modelling",
+        "Power models",
+        "Investigate a relationship of the form y = ax^b.",
+        "Review",
+        "Distinguish a plausible model from a convenient curve."
+      ]
+    },
+    {
+      "row": 16,
+      "cells": [
+        "AI08",
+        "AI SL",
+        "Functions and modelling",
+        "Sinusoidal or periodic models",
+        "Explore repeating changes, cycles or seasonal patterns.",
+        "Review",
+        "Verify that data show genuine periodic behaviour."
+      ]
+    },
+    {
+      "row": 17,
+      "cells": [
+        "AI09",
+        "AI SL",
+        "Functions and modelling",
+        "Compare and evaluate fitted models",
+        "Try more than one model and check how well each explains data.",
+        "Review",
+        "Evaluation is part of the modelling process; not a stand-alone magic technique."
+      ]
+    },
+    {
+      "row": 18,
+      "cells": [
+        "AI10",
+        "AI SL",
+        "Geometry and trigonometry",
+        "Trigonometric measurements and models",
+        "Use angles and lengths to model an observed situation.",
+        "Review",
+        "Best paired with real measurements and a clear modelling question."
+      ]
+    },
+    {
+      "row": 19,
+      "cells": [
+        "AI11",
+        "AI SL",
+        "Geometry and trigonometry",
+        "Area, surface area and volume models",
+        "Model quantities such as capacity, material or shape.",
+        "Review",
+        "A geometry-only exposition may be too limited; link to the aim."
+      ]
+    },
+    {
+      "row": 20,
+      "cells": [
+        "AI12",
+        "AI SL",
+        "Geometry and trigonometry",
+        "Voronoi diagrams",
+        "Investigate nearest-site regions, travel access or locations.",
+        "Review",
+        "AI SL-specific technique; check appropriate use."
+      ]
+    },
+    {
+      "row": 21,
+      "cells": [
+        "AI13",
+        "AI SL",
+        "Statistics and probability",
+        "Sampling and descriptive statistics",
+        "Plan sampling and summarise centre, spread or distributions.",
+        "Review",
+        "Usually supporting evidence, not sufficient on its own."
+      ]
+    },
+    {
+      "row": 22,
+      "cells": [
+        "AI14",
+        "AI SL",
+        "Statistics and probability",
+        "Scatter plots and Pearson's r",
+        "Investigate the direction and strength of a linear association.",
+        "Review",
+        "Correlation does not imply causation; check scatter graph."
+      ]
+    },
+    {
+      "row": 23,
+      "cells": [
+        "AI15",
+        "AI SL",
+        "Statistics and probability",
+        "Linear regression",
+        "Find and interpret a fitted line, then test predictions.",
+        "Review",
+        "Interpret gradient, intercept and limitations."
+      ]
+    },
+    {
+      "row": 24,
+      "cells": [
+        "AI16",
+        "AI SL",
+        "Statistics and probability",
+        "Spearman's rank correlation",
+        "Investigate a monotonic association or ranked data.",
+        "Review",
+        "Useful if a relationship is not linear."
+      ]
+    },
+    {
+      "row": 25,
+      "cells": [
+        "AI17",
+        "AI SL",
+        "Statistics and probability",
+        "Binomial distribution",
+        "Model numbers of successes across repeated independent trials.",
+        "Review",
+        "Check binomial conditions before use."
+      ]
+    },
+    {
+      "row": 26,
+      "cells": [
+        "AI18",
+        "AI SL",
+        "Statistics and probability",
+        "Normal distribution",
+        "Model continuously measured variation and probabilities.",
+        "Review",
+        "Check plausibility of normal assumptions."
+      ]
+    },
+    {
+      "row": 27,
+      "cells": [
+        "AI19",
+        "AI SL",
+        "Statistics and probability",
+        "Conditional probability or expected value",
+        "Analyse dependent probabilities and long-run averages.",
+        "Review",
+        "Needs a concrete decision or prediction."
+      ]
+    },
+    {
+      "row": 28,
+      "cells": [
+        "AI20",
+        "AI SL",
+        "Statistics and probability",
+        "Chi-squared test for independence",
+        "Explore evidence of association in categorical variables.",
+        "Review",
+        "Check sample size and expected-frequency conditions."
+      ]
+    },
+    {
+      "row": 29,
+      "cells": [
+        "AI21",
+        "AI SL",
+        "Statistics and probability",
+        "Chi-squared goodness-of-fit test",
+        "Compare observed counts with an expected distribution.",
+        "Review",
+        "Check categories and expected frequencies."
+      ]
+    },
+    {
+      "row": 30,
+      "cells": [
+        "AI22",
+        "AI SL",
+        "Statistics and probability",
+        "Two-sample t-test",
+        "Compare mean outcomes in two groups.",
+        "Review",
+        "Check assumptions, sample independence and context."
+      ]
+    },
+    {
+      "row": 31,
+      "cells": [
+        "AI23",
+        "AI SL",
+        "Calculus",
+        "Differentiation and rate of change",
+        "Investigate how quickly a quantity or model changes.",
+        "Review",
+        "Derivatives should answer a real question."
+      ]
+    },
+    {
+      "row": 32,
+      "cells": [
+        "AI24",
+        "AI SL",
+        "Calculus",
+        "Optimisation using differentiation",
+        "Find model maxima/minima and test whether they are meaningful.",
+        "Review",
+        "Usually part of a modelling IA; constraints and reality matter."
+      ]
+    },
+    {
+      "row": 33,
+      "cells": [
+        "AI25",
+        "AI SL",
+        "Calculus",
+        "Definite integrals and area",
+        "Find accumulated quantities or area under a model.",
+        "Review",
+        "Explain what the integral represents and its units."
+      ]
+    },
+    {
+      "row": 34,
+      "cells": [
+        "AI26",
+        "AI SL",
+        "Calculus",
+        "Trapezoidal rule",
+        "Estimate an integral or area using numerical approximation.",
+        "Review",
+        "Discuss accuracy and resolution of measurements."
+      ]
+    },
+    {
+      "row": 35,
+      "cells": [
+        "AA01",
+        "AA SL",
+        "Number and algebra",
+        "Arithmetic or geometric sequences",
+        "Model discrete patterns or progressions.",
+        "Review",
+        "Connect abstract relationships to investigation goals."
+      ]
+    },
+    {
+      "row": 36,
+      "cells": [
+        "AA02",
+        "AA SL",
+        "Number and algebra",
+        "Geometric series and accumulation",
+        "Analyse repeated growth, decay or repeated sums.",
+        "Review",
+        "Explain what the terms and totals represent."
+      ]
+    },
+    {
+      "row": 37,
+      "cells": [
+        "AA03",
+        "AA SL",
+        "Number and algebra",
+        "Logarithms and exponential relationships",
+        "Transform and investigate multiplicative relationships.",
+        "Review",
+        "Do more than name a function type."
+      ]
+    },
+    {
+      "row": 38,
+      "cells": [
+        "AA04",
+        "AA SL",
+        "Number and algebra",
+        "Algebraic justification or simple proof",
+        "Justify a relationship or result used in the investigation.",
+        "Review",
+        "A pure proof/no-data IA requires teacher consultation."
+      ]
+    },
+    {
+      "row": 39,
+      "cells": [
+        "AA05",
+        "AA SL",
+        "Number and algebra",
+        "Binomial expansion",
+        "Develop an algebraic approximation or expression.",
+        "Review",
+        "Relevant only where it genuinely advances the aim."
+      ]
+    },
+    {
+      "row": 40,
+      "cells": [
+        "AA06",
+        "AA SL",
+        "Functions",
+        "Linear, quadratic or polynomial functions",
+        "Construct, analyse and interpret mathematical relationships.",
+        "Review",
+        "May be fitted or derived; justify the model."
+      ]
+    },
+    {
+      "row": 41,
+      "cells": [
+        "AA07",
+        "AA SL",
+        "Functions",
+        "Exponential or logarithmic functions",
+        "Analyse growth/decay and non-linear relationships.",
+        "Review",
+        "Explain and check model parameters."
+      ]
+    },
+    {
+      "row": 42,
+      "cells": [
+        "AA08",
+        "AA SL",
+        "Functions",
+        "Trigonometric functions",
+        "Represent and analyse periodic relationships.",
+        "Review",
+        "Check frequency and domain against context."
+      ]
+    },
+    {
+      "row": 43,
+      "cells": [
+        "AA09",
+        "AA SL",
+        "Functions",
+        "Domain, range and inverse functions",
+        "Examine restrictions and interpret reversibility of a model.",
+        "Review",
+        "Must connect to the real situation or aim."
+      ]
+    },
+    {
+      "row": 44,
+      "cells": [
+        "AA10",
+        "AA SL",
+        "Functions",
+        "Function transformations and intersections",
+        "Compare functions and solve meaningful model equalities.",
+        "Review",
+        "Use algebraic reasoning when appropriate."
+      ]
+    },
+    {
+      "row": 45,
+      "cells": [
+        "AA11",
+        "AA SL",
+        "Geometry and trigonometry",
+        "Coordinate geometry and distances",
+        "Model points, paths and geometric relationships.",
+        "Review",
+        "A pure geometry-only topic may need teacher discussion."
+      ]
+    },
+    {
+      "row": 46,
+      "cells": [
+        "AA12",
+        "AA SL",
+        "Geometry and trigonometry",
+        "Sine rule, cosine rule and trigonometry",
+        "Analyse angles, distances or measurements.",
+        "Review",
+        "Link to an actual investigation or modelling context."
+      ]
+    },
+    {
+      "row": 47,
+      "cells": [
+        "AA13",
+        "AA SL",
+        "Geometry and trigonometry",
+        "Radians and trigonometric identities",
+        "Use trigonometric reasoning to derive or analyse a model.",
+        "Review",
+        "Check level, notation and meaningful application."
+      ]
+    },
+    {
+      "row": 48,
+      "cells": [
+        "AA14",
+        "AA SL",
+        "Statistics and probability",
+        "Sampling and descriptive statistics",
+        "Study data distributions, centres and variability.",
+        "Review",
+        "Typically part of a larger investigation."
+      ]
+    },
+    {
+      "row": 49,
+      "cells": [
+        "AA15",
+        "AA SL",
+        "Statistics and probability",
+        "Pearson's correlation coefficient",
+        "Explore the strength of a linear relationship.",
+        "Review",
+        "Current syllabus only; 2029 AA revision removes bivariate data."
+      ]
+    },
+    {
+      "row": 50,
+      "cells": [
+        "AA16",
+        "AA SL",
+        "Statistics and probability",
+        "Linear regression",
+        "Model and interpret a linear association.",
+        "Review",
+        "Current syllabus only; 2029 AA revision removes bivariate data."
+      ]
+    },
+    {
+      "row": 51,
+      "cells": [
+        "AA17",
+        "AA SL",
+        "Statistics and probability",
+        "Binomial distribution",
+        "Model numbers of successes in independent trials.",
+        "Review",
+        "Check conditions before using."
+      ]
+    },
+    {
+      "row": 52,
+      "cells": [
+        "AA18",
+        "AA SL",
+        "Statistics and probability",
+        "Normal distribution",
+        "Explore continuous random variation and probabilities.",
+        "Review",
+        "Check distribution assumptions."
+      ]
+    },
+    {
+      "row": 53,
+      "cells": [
+        "AA19",
+        "AA SL",
+        "Statistics and probability",
+        "Conditional probability and expected value",
+        "Model uncertain outcomes and expected behaviour.",
+        "Review",
+        "Explain outcomes and assumptions."
+      ]
+    },
+    {
+      "row": 54,
+      "cells": [
+        "AA20",
+        "AA SL",
+        "Calculus",
+        "Differentiation and rates of change",
+        "Study gradients, changing quantities and model sensitivity.",
+        "Review",
+        "Tie each rate to the IA aim."
+      ]
+    },
+    {
+      "row": 55,
+      "cells": [
+        "AA21",
+        "AA SL",
+        "Calculus",
+        "Chain, product and quotient rules",
+        "Differentiate more complex model functions.",
+        "Review",
+        "Applying a rule alone is not a complete exploration."
+      ]
+    },
+    {
+      "row": 56,
+      "cells": [
+        "AA22",
+        "AA SL",
+        "Calculus",
+        "Stationary points and optimisation",
+        "Find and interpret maximum or minimum model values.",
+        "Review",
+        "Evaluate assumptions and domain."
+      ]
+    },
+    {
+      "row": 57,
+      "cells": [
+        "AA23",
+        "AA SL",
+        "Calculus",
+        "Definite integration and areas",
+        "Analyse accumulated effects and areas under/between curves.",
+        "Review",
+        "Explain units and what accumulation represents."
+      ]
+    },
+    {
+      "row": 58,
+      "cells": [
+        "AA24",
+        "AA SL",
+        "Calculus",
+        "Integration by substitution",
+        "Integrate appropriate functions while interpreting results.",
+        "Review",
+        "Consider if directly necessary."
+      ]
+    },
+    {
+      "row": 59,
+      "cells": [
+        "AA25",
+        "AA SL",
+        "Calculus",
+        "Kinematics via derivatives and integrals",
+        "Analyse displacement, velocity and acceleration models.",
+        "Review",
+        "Validate with physical data where relevant."
+      ]
+    },
+    {
+      "row": 61,
+      "cells": [
+        "SOURCES / REVIEW"
+      ]
+    },
+    {
+      "row": 62,
+      "cells": [
+        "IB course overview",
+        "https://www.ibo.org/programmes/diploma-programme/curriculum/mathematics/"
+      ]
+    },
+    {
+      "row": 63,
+      "cells": [
+        "IB 2029 update",
+        "https://ibo.org/university-admission/latest-curriculum-updates/dp-mathematics-analysis-and-approaches-updates/"
+      ]
+    },
+    {
+      "row": 64,
+      "cells": [
+        "JIS IA planning guide",
+        "https://docs.google.com/document/d/1QqOb7j8HDvuhevk0MNE8k5rY9oSsd3Xj7o4S3_HEF7o/edit"
+      ]
+    }
+  ]
+}
