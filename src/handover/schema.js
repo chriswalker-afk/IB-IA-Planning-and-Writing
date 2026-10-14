@@ -199,9 +199,37 @@ export function mergePlanningEnvelope(current,envelope,selectedKeys=[],{origin="
   state.teacher.pendingApproval=existingPending;
   syncPlanningToProject(state);
   state.teacher.pendingApproval=existingPending||incomingTeacherNeedsApproval||state.teacher.pendingApproval;
+  // A reviewed old plan can change the interpretation of later *actual* maths.
+  // Keep every result and student-written paragraph, but ask the student to
+  // recheck only sections affected by meaningful imported differences.
+  const affected=new Set();
+  const aimKeys=new Set(["aim","motivation","beneficiaryType","beneficiary","intendedUse","prediction","predictionWhy","predictionImplication"]);
+  const mathsKeys=new Set(["course","kind","mathSelected","mathsOutside","otherMaths","otherCourseMaths","firstAction","figureType","figurePurpose","firstAccuracy"]);
+  const sourceKeys=new Set(["dataSource","secondaryUrl","secondaryVariables","primaryWhat","primaryHow","primarySampling","methodReason","methodLimitation","methodMitigation"]);
+  const changesAim=applied.some(k=>aimKeys.has(k));
+  const changesMaths=applied.some(k=>mathsKeys.has(k));
+  const changesSource=applied.some(k=>sourceKeys.has(k));
+  if(changesAim){["C10","C30","C40","C60"].forEach(k=>affected.add(k));}
+  if(changesMaths){["C30","C40","C60"].forEach(k=>affected.add(k));}
+  if(changesSource){["C20","C30","C40","C60"].forEach(k=>affected.add(k));}
+  let mathLinksFlagged=0;
+  if(state.completion?.stages){
+   for(const stage of affected){
+    if(state.completion.stages[stage]==="complete")state.completion.stages[stage]="needs-review";
+   }
+   if(changesAim||changesMaths||changesSource){
+    state.completion.confirmedCurrentAimAt="";
+    for(const entry of state.entries||[]){
+     if(entry.status!=="completed"||!text(entry.result).trim())continue;
+     entry.reviewNeeded="yes";
+     entry.reviewReason="Your imported plan changed the aim, mathematical direction or evidence. Recheck that the actual result and its interpretation still address the current investigation.";
+     mathLinksFlagged++;
+    }
+   }
+  }
   const changeLog=Array.isArray(state.changeLog)?state.changeLog:[];
   changeLog.push({kind:"planning-import",at:new Date().toISOString(),source:origin,snapshotDate:imported.exportedAt,
-   fields:applied,teacherStatus:"unchanged"});
+   fields:applied,teacherStatus:"unchanged",reviewStages:[...affected],mathLinksFlagged});
   state.changeLog=changeLog.slice(-400);
  }
  return {state,applied,unchanged:!applied.length};
