@@ -32,7 +32,8 @@ export function createHandoverViews(ctx){
    '<p>Importing this file is not permission or confirmation of any teacher decision.</p></div>':"")+
    '<div class="button-row handover-select-toolbar">'+button("Fill missing answers","merge-select-missing","btn-light")+
    button("Select all","merge-select-all","btn-quiet")+button("Clear selection","merge-select-none","btn-quiet")+'</div>';
-  if(!diffs.length)result+='<p class="field-hint">All recognisable planning answers already match this project. There is nothing new to import.</p>';
+  if(!diffs.length)result+='<p class="field-hint">All recognisable planning answers already match this project. There is nothing new to import.</p>'+
+    '<div class="button-row">'+button("Review my current details","completion-review-import","btn-secondary")+'</div>';
   else {
    for(const group of Object.keys(FIELD_GROUPS)){
     const items=diffs.filter(d=>d.group===group);
