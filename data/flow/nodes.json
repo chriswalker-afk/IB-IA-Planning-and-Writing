@@ -1,0 +1,1101 @@
+{
+  "schemaVersion": 1,
+  "sourceWorkbook": "IA Pathfinder — Flowchart Draft",
+  "sourceTab": "Nodes",
+  "headerRow": 4,
+  "recordCount": 84,
+  "nodes": [
+    {
+      "id": "N00",
+      "label": "0 · Do you have a topic idea?",
+      "kind": "Question",
+      "editorialStatus": "Agreed",
+      "purpose": "Choose whether a possible idea exists.",
+      "branchNotes": "No → explore ideas; yes → define aim.",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 5
+      }
+    },
+    {
+      "id": "N00B",
+      "label": "Explore possible ideas",
+      "kind": "Support",
+      "editorialStatus": "Working draft",
+      "purpose": "Explore ideas from hobbies, daily routines, school or accessible organisations. Encourage alternatives without requiring them.",
+      "branchNotes": "Offer optional comparison N00C; students with one idea proceed directly.",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 6
+      }
+    },
+    {
+      "id": "N01",
+      "label": "1 · What do you want to find out?",
+      "kind": "Question",
+      "editorialStatus": "Agreed",
+      "purpose": "Ask what the student wants to find out and what sparked their interest. N01V then establishes who could benefit and what the findings could be used for.",
+      "branchNotes": "Next: N01V meaningful-outcome checkpoint; do not repeat the beneficiary/use questions here. Predictions come later, after the investigation type and initial maths choices.",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 7
+      }
+    },
+    {
+      "id": "N02",
+      "label": "2 · Type of investigation?",
+      "kind": "Decision",
+      "editorialStatus": "Agreed",
+      "purpose": "Statistics, modelling, no data or unsure.",
+      "branchNotes": "Statistics/modelling → data; no data → teacher.",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 8
+      }
+    },
+    {
+      "id": "N02U",
+      "label": "Explore examples",
+      "kind": "Support",
+      "editorialStatus": "Working draft",
+      "purpose": "Brief comparison of statistics and modelling.",
+      "branchNotes": "Return to type choice.",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 9
+      }
+    },
+    {
+      "id": "N02T",
+      "label": "Teacher guidance needed\nSummary still available",
+      "kind": "Checkpoint",
+      "editorialStatus": "Agreed",
+      "purpose": "A no-data IA requires teacher consultation before pursuing it. Unresolved consent, safety, privacy or permissions must be discussed before affected data collection or use.",
+      "branchNotes": "Do not block a planning summary. Move to N08 teacher check-in, retain earlier answers, and flag action that requires approval.",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 10
+      }
+    },
+    {
+      "id": "N03",
+      "label": "3A · Primary, secondary or both?",
+      "kind": "Decision",
+      "editorialStatus": "Agreed",
+      "purpose": "Choose the data source type(s).",
+      "branchNotes": "Primary → 3B; secondary → 3C; both → both.",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 11
+      }
+    },
+    {
+      "id": "N03P",
+      "label": "3B · Primary data questions\nWhen · where · how · equipment",
+      "kind": "Question set",
+      "editorialStatus": "Agreed",
+      "purpose": "Short-answer questions for WHAT, WHEN, WHERE, WHO/WHAT, HOW and equipment.",
+      "branchNotes": "After primary route go to N03J for alternative method, rationale and limitations.",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 12
+      }
+    },
+    {
+      "id": "N03S",
+      "label": "3C · Secondary data questions\nSource link · variables · useful subset",
+      "kind": "Question set",
+      "editorialStatus": "Agreed",
+      "purpose": "Source link, publisher, available variables, verification and useful subset.",
+      "branchNotes": "After secondary route go to N03J for fit-for-purpose justification, alternative source and limitations.",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 13
+      }
+    },
+    {
+      "id": "N03B",
+      "label": "Both: complete primary + secondary",
+      "kind": "Branch",
+      "editorialStatus": "Agreed",
+      "purpose": "Both primary and secondary routes must be completed.",
+      "branchNotes": "Do not exit the Both route after only one branch; once both finished, join at N03J.",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 14
+      }
+    },
+    {
+      "id": "N03D",
+      "label": "3D · First usable + full-data dates",
+      "kind": "Question",
+      "editorialStatus": "Agreed",
+      "purpose": "Two dates; weight earlier mathematical progress more.",
+      "branchNotes": "Both dates contribute to the rating.",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 15
+      }
+    },
+    {
+      "id": "N03E",
+      "label": "3E · Data-readiness rating /5",
+      "kind": "Rating",
+      "editorialStatus": "Working draft",
+      "purpose": "5/5 requires usable data; 4/5 allows a credible near-term plan.",
+      "branchNotes": "Give a specific improvement, not a predicted IA grade.",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 16
+      }
+    },
+    {
+      "id": "N03R",
+      "label": "Revise data plan",
+      "kind": "Support",
+      "editorialStatus": "Agreed",
+      "purpose": "Pilot sooner, narrow the scope or change data source.",
+      "branchNotes": "Return to data branch.",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 17
+      }
+    },
+    {
+      "id": "N03F",
+      "label": "3F · Practical feasibility\nResources · time · permissions",
+      "kind": "Question set",
+      "editorialStatus": "Working draft",
+      "purpose": "Screen essential dependencies, approvals/ethics, tools/skills, non-mathematical workload, external uncertainty and possible fallback.",
+      "branchNotes": "Reuse earlier data answers; 4–5 brief prompts plus targeted conditional follow-ups. See Feasibility Checks tab.",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 18
+      }
+    },
+    {
+      "id": "N03G",
+      "label": "3G · Completion-ease rating /5",
+      "kind": "Rating",
+      "editorialStatus": "Working draft",
+      "purpose": "Provisional assessment of how practical and independently achievable the non-mathematical work is, separately from data readiness.",
+      "branchNotes": "Explain largest barrier and ONE improvement. Safety/privacy/permission concerns trigger teacher review; not an IA mark.",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 19
+      }
+    },
+    {
+      "id": "N04",
+      "label": "4 · Which IB course?",
+      "kind": "Decision",
+      "editorialStatus": "Agreed",
+      "purpose": "Primarily AI SL and AA SL.",
+      "branchNotes": "After practical ratings, ask full project milestones and then course mathematics. Type-specific prediction is deliberately after initial maths selection.",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 20
+      }
+    },
+    {
+      "id": "N04T",
+      "label": "Teacher: course advice needed\nSummary still available",
+      "kind": "Checkpoint",
+      "editorialStatus": "Agreed",
+      "purpose": "Students taking AA HL/other courses can still state their aim, tentative maths, uncertainties and first safe steps for a teacher to review.",
+      "branchNotes": "Use N08; course-specific mathematical suitability may be 'Not yet assessed'. An export does not mean the course has been validated.",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 21
+      }
+    },
+    {
+      "id": "N04S",
+      "label": "4A · Choose possible maths\nMulti-select + optional Other",
+      "kind": "Multi-select",
+      "editorialStatus": "Agreed",
+      "purpose": "Student selects tentative methods from the AI SL or AA SL course list, with optional Other and Not sure.",
+      "branchNotes": "Do not lock selections: after choosing a context-aware prediction, use N04R to revisit the maths. No points for selecting more techniques.",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 22
+      }
+    },
+    {
+      "id": "N04M",
+      "label": "4D · Check mathematical suitability",
+      "kind": "Question",
+      "editorialStatus": "Needs discussion",
+      "purpose": "Evaluate whether the retained/revised mathematics can address the original aim and lead to an interpretable result for the intended beneficiary, with suitable variables, context and assumptions.",
+      "branchNotes": "Suggestions are not compulsory, predictions may be wrong and a teacher flag never prevents report export.",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 23
+      }
+    },
+    {
+      "id": "N05",
+      "label": "5 · First mathematical action",
+      "kind": "Question",
+      "editorialStatus": "Working draft",
+      "purpose": "Specify an achievable first piece of mathematics connected to N05V's initial representation.",
+      "branchNotes": "Use the selected/reviewed maths when deciding on a meaningful first action and planned representation.",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 24
+      }
+    },
+    {
+      "id": "N06",
+      "label": "IA idea checkpoint",
+      "kind": "Checkpoint",
+      "editorialStatus": "Working draft",
+      "purpose": "Review the aim, beneficiary, predicted pattern, WHY and SO WHAT (if prediction true), updated maths, methods, timelines, scores, teacher flags and next action. The predicted implication may change if the student revises the beneficiary.",
+      "branchNotes": "Encourage a meaningful answer; do not force evidence-free promised advice. If prediction or beneficiary is uncertain, show 'To be confirmed', offer edit and keep the export available.",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 25
+      }
+    },
+    {
+      "id": "N07",
+      "label": "6 · Generate personalised IA plan\nPDF (optional Word)",
+      "kind": "Document output",
+      "editorialStatus": "Working draft",
+      "purpose": "Export a personalised planning PDF/Word with the student's intended beneficiary, provisional prediction, why they expect it, what it would mean for the beneficiary IF TRUE, their final maths and all feasibility/teacher information.",
+      "branchNotes": "Carry plan.predictionImplication and the current beneficiary/use into versioned PDF/DOCX reimport. This is a hypothetical implication, not findings or approved advice; summary remains available even when unclear.",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 26
+      }
+    },
+    {
+      "id": "N08",
+      "label": "Teacher check-in\nFill in what you can → summary",
+      "kind": "Question set",
+      "editorialStatus": "Agreed",
+      "purpose": "Targeted teacher guidance for unusual or unresolved issues; additionally all students see optional universal check N06T.",
+      "branchNotes": "A teacher flag blocks only actions requiring approval, not a planning summary.",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 27
+      }
+    },
+    {
+      "id": "N00C",
+      "label": "Compare 2–3 ideas (optional)",
+      "kind": "Question set",
+      "editorialStatus": "Working draft",
+      "purpose": "Compare candidate ideas for data access, usefulness, practical workload and possible mathematics, then choose one provisional idea.",
+      "branchNotes": "Optional; students with one idea can proceed without comparison. Do not force several full feasibility reviews.",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 28
+      }
+    },
+    {
+      "id": "N01P",
+      "label": "4B · Predict → Why? → So what?",
+      "kind": "Question set",
+      "editorialStatus": "Agreed",
+      "purpose": "Prediction stage must show the student's AIM, relevant contextual prediction choices and selected beneficiary. Ask: WHAT do you expect, WHY, and IF TRUE, what might it MEAN for that person and how could it answer the aim?",
+      "branchNotes": "Re-use plan.benefitType, plan.beneficiary and plan.intendedUse to personalize the implication prompt. Separate short answers for WHY and SO WHAT; Not sure yet accepted. Include 'Edit who this is for' inline, preserving answers and returning to prediction. Then N04R to reconsider maths.",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 29
+      }
+    },
+    {
+      "id": "N03J",
+      "label": "Compare and justify data methods",
+      "kind": "Question set",
+      "editorialStatus": "Working draft",
+      "purpose": "What alternative source, method or sampling approach was considered? Why was the chosen method selected, and what limitation is acceptable?",
+      "branchNotes": "Primary/secondary only. Survey users receive targeted sampling/wording advice. Short answers, not a long essay.",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 30
+      }
+    },
+    {
+      "id": "N03H",
+      "label": "Full IA timeline and milestones",
+      "kind": "Question set",
+      "editorialStatus": "Working draft",
+      "purpose": "Capture teacher-defined school planning, teacher-draft and final deadlines plus initial data, first graph, maths, drafting, checking and revisions.",
+      "branchNotes": "School dates prefilled only when configured. Provide editable milestones, buffers and warnings for impossible schedules.",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 31
+      }
+    },
+    {
+      "id": "N05V",
+      "label": "Plan first diagram or simple example",
+      "kind": "Question set",
+      "editorialStatus": "Working draft",
+      "purpose": "What simple graph, table, diagram or simplified mathematical situation could give an informative starting view? Why?",
+      "branchNotes": "Plan only, not a requirement to create the chart here. Allow 'not sure' and teacher discussion where appropriate.",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 32
+      }
+    },
+    {
+      "id": "N06E",
+      "label": "How might your investigation evolve?",
+      "kind": "Question set",
+      "editorialStatus": "Working draft",
+      "purpose": "What could change your investigation? In particular, if your intended data become unavailable, what alternative method or reliable secondary data source could still address the aim? Students can still draft an introduction, make a tentative prediction with reasons, and prepare definitions without any collected data.",
+      "branchNotes": "Contingency only, not a compulsory new topic or invented dataset. Keep original aim, beneficiary and predicted outcome as historical context. In Completing, offer contextual 'I'm stuck' rescue guidance without marking a practical delay as an IA mathematical limitation.",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 33
+      }
+    },
+    {
+      "id": "N06T",
+      "label": "Teacher check-in for everyone",
+      "kind": "Checkpoint",
+      "editorialStatus": "Working draft",
+      "purpose": "Offer every student a short teacher check-in about aim, feasibility and meaningful intended use. If the beneficiary or decision is still uncertain, let the student record a question for the teacher.",
+      "branchNotes": "If already covered in N08, do not repeat. Teacher input may be useful, but cannot be a prerequisite to exporting the provisional planning summary.",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 34
+      }
+    },
+    {
+      "id": "N04R",
+      "label": "4C · Revisit your maths\nPrediction-linked suggestions",
+      "kind": "Multi-select review",
+      "editorialStatus": "Agreed",
+      "purpose": "After the prediction, WHY, and what it could mean for the intended beneficiary, reopen the existing course-maths selections. Suggest methods suited to the predicted pattern and what the student wants to find out for that audience.",
+      "branchNotes": "Course-filtered suggestions remain optional; students may add/remove/keep selected techniques or use Other/Not sure. Do not conflate an expected outcome or intended advice with a demonstrated result.",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 35
+      }
+    },
+    {
+      "id": "C00",
+      "label": "Begin / resume Completing the IA",
+      "kind": "Entry choice",
+      "editorialStatus": "Agreed",
+      "purpose": "Continue directly from Planning; upload a saved IA Pathfinder planning PDF/Word; or start with empty fields.",
+      "branchNotes": "Three choices, no sign-in assumption. Preserve current work when using the direct handover.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 36
+      }
+    },
+    {
+      "id": "C01",
+      "label": "Upload planning document / import",
+      "kind": "File input",
+      "editorialStatus": "Agreed",
+      "purpose": "Accept a saved IA Pathfinder planning document in PDF or DOCX, and (if supported later) a completion progress snapshot.",
+      "branchNotes": "Extract only whitelisted planning fields. Embedded versioned resume data preferred; older/edited/unrecognized files reviewed rather than blindly trusted. No forced upload.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 37
+      }
+    },
+    {
+      "id": "C02",
+      "label": "Review prepopulated project details",
+      "kind": "Review / edit",
+      "editorialStatus": "Agreed",
+      "purpose": "Review editable carried-forward fields including who could benefit, what decision/recommendation was proposed and why it matters, alongside aim, course, maths, sources, milestones and teacher flags.",
+      "branchNotes": "When C02 is opened from Introduction, allow students to edit the shared aim, motivation, beneficiary and prediction; after confirmation return directly to the introduction with the student's written draft intact, showing changes for review rather than rewriting it.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 38
+      }
+    },
+    {
+      "id": "C03",
+      "label": "Check current idea and permissions",
+      "kind": "Checkpoint",
+      "editorialStatus": "Working draft",
+      "purpose": "What has changed since planning? Is the investigation aim still workable? Does any consent/access/teacher discussion remain unresolved?",
+      "branchNotes": "Carry teacher flags forward; if access is restricted do not encourage collection/use before permission. Student can still plan, write safe sections and save.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 39
+      }
+    },
+    {
+      "id": "C04",
+      "label": "Where are you in the IA?",
+      "kind": "Stage selection",
+      "editorialStatus": "Working draft",
+      "purpose": "Flexible IA stage dashboard: Introduction, data/theory, first representation, active mathematics, further exploration, conclusion, teacher draft and final review. Include one visible optional 'I'm stuck' / 'Something isn't working' link (C95) at all stages; preserve the original stage and student work.",
+      "branchNotes": "Help is student-invoked, never modal or compulsory. In C95D, offer constructive work before data arrive; C95A tests alternative public/approved data sources; C95L handles partial/unusable data; C95Q directs to existing guidance. Any unresolved issue can be saved. No permission bypass, no fake data.\nWRITING MOMENT: a single contextual, dismissible 'Where should I write this?' action (C96) appears only when stage-relevant actual work creates a new writing need. Resume existing Already covered / Not relevant statuses; never present every cue.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 40
+      }
+    },
+    {
+      "id": "C10",
+      "label": "Introduction · short, personal, revisitable",
+      "kind": "Stage prompt",
+      "editorialStatus": "Working draft",
+      "purpose": "Student-facing opening advice: 'Keep your introduction comfortably under one page; a few short paragraphs (often half a page or less) is usually enough.' Suggest relevant previously entered aim, motivation, personal benefit/beneficiary, tentative prediction and reason, and a brief outline of intended approach; each can be Used, Edited or Skipped. Encourage natural first-person writing with optional examples. The student writes their own introduction.",
+      "branchNotes": "Offer one optional Compare Examples action at C10E. Present a small weak-versus-effective introduction pair only if requested; do not force a heading template. Introduction remains short, personal and always editable.\nWRITING MOMENT: opening aim/motivation and optional original prediction may be written now even when data have not arrived. Show current plan details but no invented outcome; keep prose student-authored.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 41
+      }
+    },
+    {
+      "id": "C20",
+      "label": "Data collection · methods, sampling, accuracy",
+      "kind": "Stage prompt",
+      "editorialStatus": "Working draft",
+      "purpose": "Open statistics, modelling or theoretical prompts conditionally. Compare realistic methods and justify the choice, but focus the limitations discussion on mathematical consequences: measurement precision, bias and representativeness, model assumptions, fit, sensitivity or domain. Explain mitigation and the defensible scope of conclusions; define symbols/terms as needed.",
+      "branchNotes": "When data are still Pending, allow the student to open C95D and work on introduction, tentative prediction with WHY, definitions, method comparison, or alternative sources. Do not pretend a planned dataset is already available. Collection-stage limitations still depend on ACTUAL collection/method; practical delays are project barriers, not generic written IA criticism.\nWRITING MOMENT: after source/method is confirmed ACTUALLY USED, encourage student to write a concise choice-specific justification WHERE the data are introduced. Candidate source/method remains a private planning note, not completed IA prose.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 42
+      }
+    },
+    {
+      "id": "C30",
+      "label": "First purposeful diagram or brief calculation",
+      "kind": "Stage prompt",
+      "editorialStatus": "Working draft",
+      "purpose": "Guide through C31–C35H: select meaningful first representation/calculation → introduce/define → check presentation → observe actual result → consider accuracy if not covered → reconnect to aim and original prediction → investigate surprises → justify logical next mathematics. Every result should contribute to the investigation's story.",
+      "branchNotes": "At this point avoid detailing routine course-level procedures (e.g., how to draw a bar chart). Graphs must be readable on one printed page, correctly scaled/labeled, not repetitive or misleadingly precise. No long data tables anywhere, including appendices. Diagram is optional; PMCC/test/model-specific limitations wait until C40–C50.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 43
+      }
+    },
+    {
+      "id": "C40",
+      "label": "First substantial mathematics",
+      "kind": "Stage prompt",
+      "editorialStatus": "Working draft",
+      "purpose": "First substantial mathematical section STARTS from C35's reasoned next mathematical question, not a disconnected technique. Put a one- or two-sentence bridge after the preceding result explaining why this method follows; define new variables and assumptions before first use. Show ACTUAL maths with equations/appropriate ≈, not routine technique tutorials; interpret the substantive output in C34 with aim/beneficiary/prediction, local takeaway and the next question. Actual PMCC or software output may trigger C35P AFTER interpretation.\nAT METHOD CHOICE: Briefly justify why the actual technique follows from the preceding evidence and is suitable for [aim]. ACCURACY REMINDER: If the new mathematical output uses quantitative inputs with a recorded C24 resolution/source policy, display that policy unobtrusively at calculation setup and again when reporting results; derived values may need a DIFFERENT defensible precision.\nMATHEMATICAL LEARNING: If [actual technique] is within the student's verified course, USE it with correct work, a concise reason for choosing it, and interpretation—NO tutorial or formula derivation. If the student independently learned mathematics beyond the course, show an optional C40L cue BEFORE first use to demonstrate their own understanding, explain the necessary new idea and cite sources. Partly outside: explain only the new component.",
+      "branchNotes": "When actual maths starts, use the reasoning from latest C35: clear prior-result reference, specific new question and why this technique helps. After each substantive calculation, route C40→C34 before optional further work/conclusion. PMCC, regression and fit caveats belong with active method results. Avoid explaining maths at or below the course in lengthy prose. Software output must be interpreted.\nAFTER RESULT: Before continuing, return to C34's short aim-linked interpretation; identify one real method-specific weakness only if it changes the conclusion. Reuse previously discussed source precision rather than re-explaining it. Keep extra digits through working, round final results sensibly; exact and approximate signs must remain correct.\nFirst-use mathematics check (course-specific, teacher-confirmed if unsure) is separate from post-result insight. Do not generate copied explanations, reward off-syllabus sophistication automatically, or force routine technique descriptions.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 44
+      }
+    },
+    {
+      "id": "C50",
+      "label": "Further mathematics · reflect as you go",
+      "kind": "Stage prompt",
+      "editorialStatus": "Working draft",
+      "purpose": "FURTHER mathematical section follows the SAME repeatable sequence: previous meaningful result and local takeaway → C35 Next logical mathematical step, with why/current course/method → actual new maths here → C34 observation, interpretation, relevant limitations, aim/prediction, section-level takeaway → C35 again or C60. The number of loops depends on worthwhile unanswered questions, never a quota. Record revisited methods and what changed when evidence challenges the original plan.\nAT EACH FURTHER SECTION: Start from the previous local takeaway, explain WHY the new method advances the aim, and bring forward only relevant C24 accuracy/source decisions for its inputs. After the meaningful result, interpret what it adds to [aim], whether limitations alter its claim, and what mathematical question logically follows.\nAt the start of EACH further substantial technique, recall the verified course status: within syllabus → use without procedural explanation; novel beyond-syllabus → clarify mathematical meaning, relevant step/assumption and own understanding at first use, citing independent sources. After ACTUAL new result, optionally ask whether this led to a genuine NEW MATHEMATICAL INSIGHT, in addition to what the result means for the aim.",
+      "branchNotes": "Each new meaningful method section closes locally (what answer it gave, how reliable, what question remains) at C34/C34B before the NEXT C35 decision. Use W26/W27 Writing Moments or Already covered to avoid repeated prompts. Optional targeted choices; don't add a method solely to increase apparent difficulty.\nRECHECK ON CHANGE: If input/source/units or a modelling assumption genuinely changes, review the applicable prior accuracy policy; otherwise respect Already covered and avoid duplicate limitations. Keep accurate working precision; apply a justified final reporting decision for new derived values, not the raw-input decimal count by default.\nLearning reflection must concern an authentic mathematical discovery or independent understanding, not 'I used a calculator' or fabricated personal engagement. Where meaningful, write it BESIDE the relevant mathematical work; don't accumulate general statements for the conclusion.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 45
+      }
+    },
+    {
+      "id": "C60",
+      "label": "Conclusion · synthesis and what next",
+      "kind": "Stage prompt",
+      "editorialStatus": "Working draft",
+      "purpose": "At C60, the conclusion draws together the main mathematical findings into a defensible response to the original aim; revisits the intended beneficiary and meaning; briefly acknowledges only essential scope/boundaries already evaluated; then considers one or two realistic mathematical next steps. Do NOT summarise the whole IA or repeat calculations, figures, method descriptions or detailed limitations.",
+      "branchNotes": "Ongoing reflection/evaluation is embedded beside choices and findings throughout C20–C26, C34–C35, C40 and C50. The conclusion is NOT the place to retroactively add a long evaluation. Use C61–C64 with optional links back to the exact earlier work when reflection is missing; no required section template and no invented future work.\nWRITING MOMENT: conclusion ONLY draws together existing evidence, its meaning for beneficiary, appropriate scope and worthwhile FUTURE mathematics. No copied figures, repeated calculations or first-ever generic evaluation.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 46
+      }
+    },
+    {
+      "id": "C70",
+      "label": "Clarity, presentation and referencing",
+      "kind": "Self-check",
+      "editorialStatus": "Working draft",
+      "purpose": "Presentation checks include appropriate diagram placement and source, defined variables/units, clearly typeset equations using an editor, consistent mathematical language, '=' for exact equality versus '≈' for justified rounding, and appropriate reporting accuracy. Technology-generated results must be interpreted in the student's own mathematical reasoning. Appendix preference: avoid lengthy raw tables but the JIS guide permits justified supporting material.\nEDITORIAL PRECISION CHECK: Verify that figures, derived results and model predictions consistently apply the student's earlier C24 decisions (or an explicit justified revision). Check units, meaningful digits, '=' versus '≈' and any causal/scope statements in their ORIGINAL locations; do not create a final accuracy essay.",
+      "branchNotes": "C70N is an optional notation/technology checklist. Use only at student request or genuine communication issue, not as a long interruption after every graph. Verify current school requirements for references and formatting; Pathfinder's no-long-tables preference is NOT an IB prohibition.\nWRITING MOMENT: prompt corrections at the ORIGINAL mathematical/figure/citation location. Presentation review is not a new IA paragraph.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 47
+      }
+    },
+    {
+      "id": "C80",
+      "label": "Draft, teacher feedback and revisions",
+      "kind": "Feedback / progress",
+      "editorialStatus": "Working draft",
+      "purpose": "Complete teacher draft checkpoint: IA genuinely finished (introduction, relevant data/theoretical setup, substantial course-level mathematics, diagrams and ongoing reflection, conclusion, sources), plus concise A–E self-review and print-readability. Follow one permitted written teacher feedback round, record verbal advice and planned revisions.",
+      "branchNotes": "Use C80D to check teacher draft readiness when relevant, then return to teacher-led process. Prompt optional peer or non-mathematician clarity read. Don't imply this tool submits or grades a draft; incomplete students may save progress without declaring readiness.\nWRITING MOMENT: teacher feedback stays as private project notes; student's actual revisions belong alongside the affected calculation, interpretation or diagram, not in a new feedback section.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 48
+      }
+    },
+    {
+      "id": "C90",
+      "label": "Final self-check and readiness",
+      "kind": "Self-check",
+      "editorialStatus": "Working draft",
+      "purpose": "Before FINAL submission, ask for evidence across Criteria A–E (A/4 presentation, B/4 communication, C/3 engagement, D/3 ongoing reflection, E/6 relevant understood maths), accuracy, clear source citations, proofread/printed diagram fit, allowed feedback/revisions and current school dates and formatting. Conclusion still synthesises rather than repeats.",
+      "branchNotes": "C90F holds the final student-led check; do NOT calculate an IB grade, invent deadlines, demand a fixed IA structure or claim authenticity approval. Distinguish the complete teacher draft review from final review, with one written teacher feedback round.\nFINAL CONSISTENCY: Confirm meaningful results were related to the aim where they appear; consequential assumptions/limitations were justified at actual method use; precision/reporting decisions are consistent with C24 or explained updates. Avoid a final repetitive evaluation section.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 49
+      }
+    },
+    {
+      "id": "C91",
+      "label": "Save a progress snapshot / resume",
+      "kind": "Save / export",
+      "editorialStatus": "Working draft",
+      "purpose": "Save/restore introduction, confirmed planning context, data availability (Pending/Partial/Verified), source candidates/fit checks, the student's optional 'I'm stuck' issue and ONE next action, return-stage pointer, active maths and genuine reflections, and latest conclusion draft. No imported prediction automatically becomes a real result.",
+      "branchNotes": "The import/save feature is still a design requirement. Preserve unresolved consent/teacher flags and original aim/prediction; Save can occur even with no data, no maths and an unresolved hiccough. Do not claim the IA is completed or that the site will automatically search/monitor sources.\nSave cue ID, relevance basis and CURRENT writing state (noted is NOT written in IA), student's optional own IA location/result reference and re-evaluation flag after substantive context change. PDF/DOCX save/reimport remains specification only.\nSAVE ACCURACY IN CONTEXT: Preserve per-input C24 precision/source decisions, later output-specific derived-accuracy decisions, the student's reference to earlier explanations and any revision flags. Do not infer a reported accuracy was applied to the actual IA merely because this rule was displayed.\nSAVE LEARNING STATE: Preserve course/technique status (with teacher verification or uncertainty), actual independent learning sources, the student's own concept explanation and where it appears, plus any genuine post-result mathematical insight. Planned research is not automatically performed mathematics.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 50
+      }
+    },
+    {
+      "id": "N01V",
+      "label": "1A · Who benefits?\nYou / Someone you advise",
+      "kind": "Question set",
+      "editorialStatus": "Agreed",
+      "purpose": "Progress snapshot includes student-chosen initial representation OR concise first calculation, its rationale, defined quantities, source/accuracy notes, figure checklist status, interpretation, the next maths step and any deliberate comparison. Preserve current work without pasting generic example text.",
+      "branchNotes": "N01V entered for the first time continues to N02. When opened from N01P, save beneficiary changes and RETURN to N01P without restarting data/maths or deleting prediction/WHY. If earlier 'so what' answer no longer fits, ask student to confirm or revise it.",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 51
+      }
+    },
+    {
+      "id": "C21S",
+      "label": "Statistics · population and sampling",
+      "kind": "Conditional questions",
+      "editorialStatus": "Agreed",
+      "purpose": "Identify target population, observations/units, sampling frame, plausible sampling methods or a census, nonresponse and representativeness. If using secondary data, examine how it was originally sampled rather than claiming a method not chosen.",
+      "branchNotes": "Compare realistic alternatives in context (random/stratified/systematic/opportunity/census etc.). Justify the chosen method against aim, time, access and risks. Sampling methods only when a sample/population exists; not every statistics project is a survey.\nWRITING MOMENT: justify ACTUAL census/sampling choice, procedure and target population at first data description. Volunteer, random, stratified and census methods have different prompts; show only matching example.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 52
+      }
+    },
+    {
+      "id": "C21M",
+      "label": "Modelling · inputs, measurements and testing",
+      "kind": "Conditional questions",
+      "editorialStatus": "Agreed",
+      "purpose": "Identify model inputs, parameters, relevant units, restrictions, assumptions and whether evidence is empirical or theoretical. Compare ways of measuring/estimating inputs and plan a reasonable model check.",
+      "branchNotes": "Consider measurement method, accuracy, repeat readings, independence of validation data where feasible, parameter calibration and domain. Sampling also relevant if empirical model uses a sample; no mandatory statistical sampling for a theoretical model.\nWRITING MOMENT: explain chosen measurement/input source at first relevant use; model assumptions before construction; evaluate output/model fit later once mathematics is actually performed.\nPRECISION FOR MODELLING: Track the actual input resolution/source accuracy here, but discuss its mathematical consequence for a derived prediction, derivative or fit only when that calculation/model is genuinely used.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 53
+      }
+    },
+    {
+      "id": "C21T",
+      "label": "Theoretical / other route",
+      "kind": "Conditional questions",
+      "editorialStatus": "Agreed",
+      "purpose": "For no-data or unusual work, identify definitions, assumptions, constraints and a simple case; select a mathematical approach. Avoid irrelevant dataset/sampling prompts.",
+      "branchNotes": "Allow teacher review for out-of-scope methods, retain a path to C25 definitions and save; if empirical data are later used the route can be revised.\nWRITING MOMENT: define objects, conditions, constraints and initial mathematical question before theoretical mathematics; no data-collection paragraph for a pure investigation.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 54
+      }
+    },
+    {
+      "id": "C22",
+      "label": "Compare methods → justify choice",
+      "kind": "Decision record",
+      "editorialStatus": "Agreed",
+      "purpose": "Record feasible collection/source/measurement options, specific pros and cons for this investigation, and WHY the chosen approach best addresses the aim and intended beneficiary.\nAT THE WRITING MOMENT: When a chosen source/method is genuinely used, justify it beside the first method description with one relevant alternative, explaining how the choice serves the aim; when the chosen method changes, justify that change where it happens.",
+      "branchNotes": "Compare collection methods mainly for quality of mathematical evidence, including potential systematic error, variability, sampling bias, relevant assumptions and the inference each can support. Cost/time are planning trade-offs, not mathematical limitations.\nWRITING MOMENT: as actual method is described, prompt a student-owned why-this-method explanation versus one feasible alternative, tied to aim and type of evidence. Avoid generic lists of every method.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 55
+      }
+    },
+    {
+      "id": "C23",
+      "label": "Collection-stage limitations only",
+      "kind": "Decision record",
+      "editorialStatus": "Agreed",
+      "purpose": "At C23, show optional examples solely for actual sampling/census, survey, data source, data cleaning and measurement choices. Focus on consequences for data precision, coverage and validity. Do not show PMCC, regression, fitting, derivatives or optimisation weaknesses—even if the student selected those during Planning.",
+      "branchNotes": "Stage K of Limitation Examples is a HARD filter: C20-C26 here. After filtering, require confirmed source/method relevance (column L), then show up to 3 on request. Reject/None apply allowed. Mathematical technique limitations are held until C40-C50 when genuinely performed.\nWRITING MOMENT: place a genuinely relevant data-stage mathematical limitation beside the method that causes it, with effect on inference/precision and defensible scope; do not mention PMCC/test/model weaknesses before those methods are active.\nLIMITATION TIMING: Show a data/source limitation only if actually relevant to a current inference or input precision. If it compromises the aim, suggest narrowing or revising it, not declaring the weakness acceptable. Never insert later PMCC/model limitations prematurely.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 56
+      }
+    },
+    {
+      "id": "C24",
+      "label": "Measurement accuracy → reported precision",
+      "kind": "Accuracy checkpoint",
+      "editorialStatus": "Agreed",
+      "purpose": "Identify the actual precision/resolution/uncertainty of measured inputs and any limitations inherited from source data. Explain how this constrains the sensible accuracy of subsequent numerical results.\nPERSIST AN ACCURACY BASELINE: For each actual quantitative input, record meaningful symbol, units, measurement/source resolution or stated uncertainty (when justified), provenance, and a defensible approach to working precision versus reported accuracy. Treat resolution and reliability as different; do not invent an error margin.",
+      "branchNotes": "At C24, use only measurement/source examples tagged C20-C26 (e.g. stopwatch resolution or capped source data). How uncertainty affects AREA/volume/derivative results is prompted later during that actual mathematics (C40-C50).\nWRITING MOMENT: explain observed/source resolution and justified reporting precision where inputs are first described, and refer back later unless a NEW calculation changes the uncertainty effect.\nREUSE RULE: The C24 baseline follows its quantities to later figures and calculations (C33, C34A, C40, C50, C70). Show a short reminder only when reporting/plotting/deriving a value affected by it. If source, measurement, units or intended use changes, ask the student to review the baseline; previously explained limits need not be rewritten.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 57
+      }
+    },
+    {
+      "id": "C25",
+      "label": "Define terms and name variables meaningfully",
+      "kind": "Communication checkpoint",
+      "editorialStatus": "Agreed",
+      "purpose": "Define data-collection and non-mathematical specialist terms at first relevant use; use meaningful variable symbols such as h for height, t for time, L for length, with units and clear descriptions.",
+      "branchNotes": "Do not default automatically to x and y. If conventional notation is genuinely clearer, define it. Introduce later mathematical/specialist terms immediately before their first later use, not in a long up-front glossary.\nWRITING MOMENT: define meaningful variable symbols/units and field-specific terms immediately BEFORE the first occurrence in written work. Do not add a complete glossary or repeat definitions.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 58
+      }
+    },
+    {
+      "id": "C26",
+      "label": "Data/method record · link back to aim",
+      "kind": "Review checkpoint",
+      "editorialStatus": "Agreed",
+      "purpose": "Review what data and mathematical assumptions were actually used, why those choices fit the aim, the limitations that affect numerical accuracy/inference and how the remaining restrictions bound results. Skip generic practical obstacles, define terms and sources and connect to next maths.",
+      "branchNotes": "Summarise decisions in the student's own voice. Where it fits in their IA (short introduction passage, separate methods section or contextual explanation) is flexible. Link to next graph/calculation; allow revisiting. Outstanding teacher/permission flags persist, but progress saving is always available.\nWRITING MOMENT: student confirms which of methods/limitations/accuracy they have ACTUALLY WRITTEN in the IA; use 'Already covered' plus their own section reference or 'Not relevant' to suppress repeats.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 59
+      }
+    },
+    {
+      "id": "C31",
+      "label": "Choose a purposeful FIRST move",
+      "kind": "Conditional choice",
+      "editorialStatus": "Agreed",
+      "purpose": "Using the student's aim, beneficiary, expected pattern (if any), route, actual data readiness, initially chosen maths and planned first representation, offer at most 2–3 relevant starting representations or brief calculations (or a small theoretical case). Ask which helps reveal the next useful mathematical step, with Other/None/Not ready.",
+      "branchNotes": "Never require a diagram if it adds nothing. Recommendations are possibilities, not automatic figures, calculated answers or proof of a prediction. Show conditional suggestions on request; preserve changed choices and let the student return when data arrive.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 60
+      }
+    },
+    {
+      "id": "C32",
+      "label": "Before it: purpose and definitions",
+      "kind": "Writing / setup",
+      "editorialStatus": "Agreed",
+      "purpose": "Before any diagram or calculation, ask students to introduce it in their own words: what question/feature does it illuminate and why is it useful for the overall aim? Define EVERY symbol, quantity and unit BEFORE first appearance (from C25 if available), and explain unfamiliar specialist terms where first used.",
+      "branchNotes": "One or two meaningful introductory sentences can be enough. Do not explain routine course-or-below skills such as HOW to make a bar chart, calculate a mean or plot a scatter diagram; explain choice and relevance, not construction.\nWRITING MOMENT: make 'Write this in your IA NOW—immediately BEFORE this figure or calculation' prominent with aim-linked purpose and any first-use definitions.\nPRECISION BEFORE DISPLAY: If data precision was agreed at C24, show units and an unobtrusive reminder before inserting a relevant graph/calculation; this supports appropriate labels and quantities but is not a new written limitations paragraph.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 61
+      }
+    },
+    {
+      "id": "C33",
+      "label": "Create + presentation check",
+      "kind": "Conditional checklist",
+      "editorialStatus": "Agreed",
+      "purpose": "For any diagram/plot, run the full Diagram Checklist: descriptive title/caption, axis labels with variables/units, sensible scales, printable legibility, attractive uncluttered layout, entire figure on a SINGLE printed page, appropriate precision from C24 and source citation. For initial calculation, use concise notation, correct units and justified reported accuracy.\nACCURACY CARRY-FORWARD: Retrieve the exact relevant C24 per-variable/source accuracy policy and units while checking the figure. Inspect labels, tick scale, displayed numerical precision and any visual impression of certainty; keep the graph readable and its data fidelity honest.",
+      "branchNotes": "Use a short relevant summary, not extensive raw-data tables in the main text OR appendix. Never repeat figures unless a direct side-by-side comparison genuinely helps; keep comparable axes/scales. If no diagram, skip diagram-only checks; saved output may be a figure reference/notes, not an auto-created image.\nWRITING MOMENT: a diagram-specific quality check improves the FIGURE, not a prose checklist in the IA; skip when working is mathematical without figure.\nDo not force a fixed number of decimals on every axis or apply one universal rule. If data are rounded/aggregated, a polished figure does not add measurement precision. The student only explains a mathematical implication in their IA if it affects interpretation.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 62
+      }
+    },
+    {
+      "id": "C34",
+      "label": "After it: what do you SEE?",
+      "kind": "Student reflection",
+      "editorialStatus": "Agreed",
+      "purpose": "After EACH genuinely meaningful first figure/calculation or later C40/C50 result, give a short evidence-led interpretation beside the output: WHAT is observed, accuracy/validity if NEW, connection to original aim, prediction and beneficiary, and a short LOCAL TAKEAWAY stating what this mathematical section established (or could not establish). Then C35 chooses whether another question is worth investigating. Routine intermediate algebra needs no mini-conclusion.\nAIM FIRST: After each genuinely meaningful output, show the student's CURRENT aim (and beneficiary when useful) and ask what the ACTUAL result means for that aim. Then show the prior accuracy reminder or one relevant current-method limitation ONLY if it affects interpretation. End with a short local takeaway and next mathematical question.",
+      "branchNotes": "Mandatory lightweight reflection for a NEW substantive output, not after routine rearrangements: observed result → novel accuracy/validity where needed → aim/prediction → section takeaway. Return to C35 to select next maths. For a performed PMCC, only NOW consider the technique and its calculated coefficient. Student owns any prose; keep result IDs and writing-cue suppression.\nLightweight default = What does this result actually show about [aim]? Optional follow-up = Is there a meaningful new accuracy/validity consequence? Don't force repeated caveats or prompt after routine intermediate algebra. Record writing status per resultRef.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 63
+      }
+    },
+    {
+      "id": "C35",
+      "label": "Next logical mathematical step · repeat",
+      "kind": "Repeatable transition / evidence-led choice",
+      "editorialStatus": "Agreed",
+      "purpose": "This is an EXPLICIT, REPEATABLE 'NEXT LOGICAL MATHEMATICAL STEP' section after the FIRST meaningful figure/calculation AND after EACH substantive C40/C50 result. From the previous section's actual resultRef and LOCAL TAKEAWAY, ask: What did we learn? What remains unanswered for my AIM? What specific mathematical question is worth tackling NEXT, and WHY would the proposed technique answer it? Show up to two context-matched optional ideas; record chosen method and brief bridge BEFORE starting C40/C50. After the new maths, interpret its actual result at C34 and return HERE again. Repeat as many times as useful, or move toward a concise C60 conclusion when evidence and depth are sufficient.",
+      "branchNotes": "Display [previous real figure/calculation or section title], student-authored local conclusion, aim/beneficiary and still-open question. Student may Write the brief link in IA now / Already covered / Show examples / Not sure / Enough mathematics—conclude. Before first maths use actual initial observation, thereafter use the MOST RECENT substantial result. If Pearson r has ACTUALLY been calculated, C35P offers interpretation-dependent follow-ups: useful linear fit (if aim needs prediction), or justified investigation of weak linear association (scatter shape/curvature/groups/scope/precision). Never assume a small r proves no relationship, recommend arbitrary correlation hunting, prescribe an automatic regression, or show limits of unstarted methods. Allow returning to data, course-check or Save; no forced number of sections.\nEACH TRANSITION: Reuse the last result's aim-linked takeaway and any consequential uncertainty/limitation to judge what can logically be investigated next. Ask the student WHY their chosen method would overcome an unanswered issue; do not require repeating earlier limitations or adding a technique merely for difficulty.\nLEARNING-CHECK TIMING: Before starting a NEW technique, classify only the actually chosen technique against the student's confirmed course (within syllabus / partly beyond / beyond / unsure). If outside or uncertain, offer optional C40L and teacher review; this is a preparation decision, not a required IA paragraph.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 64
+      }
+    },
+    {
+      "id": "C34A",
+      "label": "Accuracy of THIS result · if needed",
+      "kind": "Conditional check",
+      "editorialStatus": "Agreed",
+      "purpose": "Only if the accuracy of this actual figure/calculation hasn't already been addressed or the representation creates a NEW accuracy issue: What resolution, uncertainty, sample scope or approximation affects how confidently I can interpret what I see?\nRECALL EARLIER ACCURACY: Show the relevant C24 source/units/resolution/precision decision alongside THIS actual output. Ask whether measurement resolution, sampling scope, approximation or current technique affects the defensible interpretation or displayed digits. Reuse earlier justification; only write a NEW consequence next to this result if it changes what can be claimed.",
+      "branchNotes": "Reuse confirmed C24/C23 and figure checks. If sufficient, skip without repeated questions. Distinguish visual impression from numerical evidence; do not offer PMCC/regression/optimisation assumptions before those methods start.\nWRITING MOMENT: write a NEW uncertainty consequence beside the actual result only if not previously explained; otherwise 'Already covered' references earlier precision paragraph.\nDistinguish measured-input precision from derived-result precision: retain sensible intermediate accuracy, consider how the actual operation/model affects uncertainty, then justify final reporting. Pearson r (dimensionless) does not automatically inherit input decimal places. No made-up ± value or unnecessary restatement of C24.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 65
+      }
+    },
+    {
+      "id": "C34B",
+      "label": "Reconnect with aim and prediction",
+      "kind": "Contextual reflection",
+      "editorialStatus": "Agreed",
+      "purpose": "Display current AIM, intended BENEFICIARY, original prediction/WHY and student-confirmed ACTUAL output. Prompt a one- or two-sentence section-level takeaway: what did this result establish or leave unresolved, and why is that meaningful for the original aim? Store localTakeaway with resultRef, not as a second overall conclusion. If unexpected, explore it at C34U.\nEXPLICIT RELEVANCE CHECK: The student explains in context what the actual result establishes, does NOT establish, or means for the aim and intended beneficiary, referring to original prediction when useful. Offer a concise local conclusion rather than generic 'the graph shows a trend' or a conclusion-section evaluation dump.\nOPTIONAL MATHS LEARNING: After an actual meaningful result, when the student has independently worked out or researched a concept, ask 'What did you learn MATHEMATICALLY about why this method works, its structure or its conditions—and how did it affect your investigation?' This is distinct from the essential aim-linked interpretation. Allow None / Already covered / Show example.",
+      "branchNotes": "Use student-authored actual values and localTakeaway; mark whether the earlier section substantially answered the immediate mathematical question, partly answered it or left it unresolved. Do not repeat whole calculations as a 'mini-conclusion'; write 1–2 sentences IMMEDIATELY after output, then use them to motivate C35. Original prediction persists.\nOnly surface extra learning cue when student confirms genuine conceptual learning; do not insert a reflective claim by default after every graph/algebra step. The earlier aim-linked result interpretation remains the primary task. Save learning insight linked to this resultRef.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 66
+      }
+    },
+    {
+      "id": "C34U",
+      "label": "Unexpected or unclear? Investigate, don't skip",
+      "kind": "Conditional investigation",
+      "editorialStatus": "Agreed",
+      "purpose": "If different from expectation, unclear, or an apparent anomaly: Ask exactly what differed and why it matters. Offer contextual possible checks: revisit what is plotted, verify data/units/exclusions, compare relevant subgroups or scope, examine alternate relation/model or try a justified small counterexample. Ask what would distinguish the explanations.",
+      "branchNotes": "An unexpected result is valuable mathematical reflection, not failure. Offer only 1–3 relevant optional possibilities based on REAL observed feature/route, without inventing causes or demanding extra figures. Recheck accuracy if relevant; record what is suspected versus actually tested. Preserve original prediction.\nWRITING MOMENT: document surprising/unclear actual finding and a worthwhile alternative check immediately after the result, before changing mathematics; differentiate contemplated check from test actually done.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 67
+      }
+    },
+    {
+      "id": "C35H",
+      "label": "Optional next-step ideas from actual finding",
+      "kind": "On-demand suggestions",
+      "editorialStatus": "Agreed",
+      "purpose": "Optional C35H suggests at most 2–3 course-appropriate next actions from student-confirmed ACTUAL observations, aim and beneficiary. For paired numeric data, show the C35B four-outcome choice; don't force Pearson, Spearman or regression. Each technique needs a reason.",
+      "branchNotes": "PMCC is not always necessary: very clear straight lines may need purposeful modelling rather than redundant r; approximately linear plots may benefit from quantifying association; curves often require different mathematics; no apparent pattern can justify a scoped conclusion. No predictions treated as observed evidence.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 68
+      }
+    },
+    {
+      "id": "C61",
+      "label": "Draw together the essential answer",
+      "kind": "Short synthesis",
+      "editorialStatus": "Agreed",
+      "purpose": "Show current aim, original prediction and a SHORT pick-list of the student's confirmed meaningful results and reflections (figure/calculation IDs). Ask: what is the best-supported answer to the investigation question, drawing on the key mathematical findings AS A WHOLE?",
+      "branchNotes": "Synthesis rather than recap: no re-running calculations, explaining plots, duplicating figures/tables, or copying paragraphs already evaluated. Distinguish a well-supported answer from an inconclusive result. Short own-voice explanation, not auto-generated prose.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 69
+      }
+    },
+    {
+      "id": "C62",
+      "label": "Meaning for the intended beneficiary",
+      "kind": "Evidence-based significance",
+      "editorialStatus": "Agreed",
+      "purpose": "Revisit the student-confirmed intended beneficiary, original predicted implication and actual key findings. Ask what practical decision, understanding or advice the mathematics really supports for themselves or others. If the investigation is theoretical, ask what the insight establishes and why that matters to their mathematical curiosity.",
+      "branchNotes": "Avoid inventing an impact, overclaiming causality or introducing fresh evaluation. Briefly reference earlier qualified uncertainty/scope only where essential to calibrate advice. The conclusion need not separately repeat all limitations or reflect on every procedure.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 70
+      }
+    },
+    {
+      "id": "C63",
+      "label": "What would you investigate next?",
+      "kind": "Optional mathematical extension",
+      "editorialStatus": "Agreed",
+      "purpose": "Ask for one or two plausible mathematical next directions arising SPECIFICALLY from the findings or an unresolved question, and WHY each could add value. Offer on-demand choices from students' actual course/methods/observations such as a targeted additional comparison, alternate model assumption, new data or a theoretical extension.",
+      "branchNotes": "Extensions are FUTURE possibilities, not work already completed or a generic 'more time, more data' list. If a meaningful extension is not clear, record None/not yet or an unresolved question; never force a new experiment or another calculation into the finished conclusion.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 71
+      }
+    },
+    {
+      "id": "C64",
+      "label": "Keep the conclusion focused",
+      "kind": "Review / revise",
+      "editorialStatus": "Agreed",
+      "purpose": "Self-check: Does the ending answer the aim, draw together rather than repeat the mathematics, explain the most meaningful implication and look towards plausible next questions? Remove repeated descriptions, calculations, figure screenshots, methodological justifications and a new list of generic limitations.",
+      "branchNotes": "Reflection/evaluation belong THROUGHOUT Data Collection and mathematical exploration at their point of relevance. If a key earlier choice/result has not been reflected upon, offer a reversible link to that exact section instead of pasting a belated evaluation paragraph into the conclusion. No mandatory fixed template or length.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 72
+      }
+    },
+    {
+      "id": "C10E",
+      "label": "Compare introductions: optional examples",
+      "kind": "On-demand contrast",
+      "editorialStatus": "Working draft",
+      "purpose": "Only on request, show 2–3 short illustrative weak-versus-effective introduction pairs. Ask what makes authentic, concise purpose clearer; return directly to own draft.",
+      "branchNotes": "Don't prescribe an IA template or generate a student introduction. Source: JIS IA Introduction—using sample IAs. Natural first person, not forced every sentence.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 73
+      }
+    },
+    {
+      "id": "C35B",
+      "label": "Bivariate: which observed pattern?",
+      "kind": "Conditional decision",
+      "editorialStatus": "Working draft",
+      "purpose": "For student-confirmed paired QUANTITATIVE data, offer four observed scatter patterns: clearly straight, approximately linear, curved, no clear relation; plus unsure. Show optional matched next steps, never infer from prediction.",
+      "branchNotes": "Very clear straight line: PMCC may add little unless quantification matters. Roughly linear: PMCC may be useful. Curved: consider a nonlinear model or relevant rank measure if course-appropriate. No pattern: consider honest inconclusive answer or a justified alternative. Student retains choice.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 74
+      }
+    },
+    {
+      "id": "C40T",
+      "label": "Explain technology-assisted mathematics",
+      "kind": "Conditional communication",
+      "editorialStatus": "Working draft",
+      "purpose": "When technology ACTUALLY performs a statistical calculation, fitting, plotting or numerical analysis, ask what was computed, WHY that tool/method fits the aim, what the key output means, and how interpretation/validity can be checked.",
+      "branchNotes": "Avoid click-by-click instructions, unexplained screenshots and merely naming an app. Calculations in course can be concise; unfamiliar methods need enough demonstration of mathematical understanding.\nWRITING MOMENT: the actual software result belongs beside its explanation (what/why/meaning), not a screenshot with a button-click tutorial. No tool-use explanation if no technology was used.\nTECHNOLOGY/LEARNING SPLIT: For syllabus mathematics calculated using technology, explain WHAT was calculated, why and its meaning—not menu commands or a derivation of familiar mathematics. For mathematical algorithms/techniques independently learnt beyond course, C40L should require concise conceptual understanding in addition to interpreting the software's result.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 75
+      }
+    },
+    {
+      "id": "C40D",
+      "label": "Assess ACTUAL mathematical relevance and depth",
+      "kind": "Conditional course check",
+      "editorialStatus": "Working draft",
+      "purpose": "At C40/C50, assess mathematics actually USED: relevance to current aim, correctness, grasp of meaning, appropriateness to AI SL or AA SL, and whether it goes beyond merely listing prior-learning skills.\nCOURSE-LEVEL DECISION: From student-selected course and ACTUAL mathematical technique, ask 'On my syllabus / New extension only / Outside my syllabus / Not sure'. If unsure or outside, seek teacher suitability guidance. If within: normal mathematical use and interpretation, NO procedural teaching. If new: demonstrate actual understanding where it first appears, with reliable cited learning source.",
+      "branchNotes": "A few well-understood course-level approaches often beat many superficial or gratuitously complex ones. Course not supported/outside-course or uncertain → teacher guidance, not automatic rejection or predicted mark.\nDo not automatically label topics in/out of the IB course from a generic list or promise higher marks for extra difficulty. Verify against the student's real course/version or teacher where uncertain. Keep a genuinely useful course-level technique over an obscure one that the student can't explain.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 76
+      }
+    },
+    {
+      "id": "C70N",
+      "label": "Notation and mathematical presentation",
+      "kind": "On-demand checklist",
+      "editorialStatus": "Working draft",
+      "purpose": "On active mathematical work or final readability review, check clearly typeset equations (use equation editor), correct symbols/units/definitions, '≈' versus '=' when results are rounded, readable graphs and justified precision.",
+      "branchNotes": "No mandatory repetition after every calculation. Explained technology output can coexist with concise own mathematical notation. Do not force a long account of routine maths at or below course level.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 77
+      }
+    },
+    {
+      "id": "C80D",
+      "label": "Teacher-draft: complete, criteria, readability",
+      "kind": "Before-draft review",
+      "editorialStatus": "Working draft",
+      "purpose": "Before the one permitted written teacher feedback, check a genuinely COMPLETE IA: concise introduction, relevant substantial mathematics and evidence, ongoing reflection, integrated figures, conclusion and sources. Optional criteria A–E evidence check, print-read, peer/non-mathematician clarity check.",
+      "branchNotes": "Use actual school timeline and one round of written feedback; verbal advice may be recorded. Saving a partial draft is allowed but must not label it complete or imply teacher approval.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 78
+      }
+    },
+    {
+      "id": "C90F",
+      "label": "Final review A–E and proofreading",
+      "kind": "Final review",
+      "editorialStatus": "Working draft",
+      "purpose": "After permitted written/verbal teacher feedback, use a concise A–E self-check with evidence, mathematical accuracy/notation/precision, print/PDF readability, citations, title/page numbers and identity/style per school.",
+      "branchNotes": "No guessed due dates, scores or auto-submission. Reader checks are recommended and optional; progress save remains possible before completion.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 79
+      }
+    },
+    {
+      "id": "C95",
+      "label": "I'm stuck — what is blocking me?",
+      "kind": "Optional global help",
+      "editorialStatus": "Working draft",
+      "purpose": "Show a small I'm stuck link in every Completing stage. Offer concise choices: No data / Not enough or unusable data / Another source / Maths or writing problem / Permissions, timing or other. Choose based on current issue.",
+      "branchNotes": "This is process help, not an automatic IA weakness. Only appears when requested; offer at most 1–3 relevant suggestions, with Close, Not sure and Save. Preserve current stage and entered work.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 80
+      }
+    },
+    {
+      "id": "C95D",
+      "label": "No data yet: make progress anyway",
+      "kind": "Data-access recovery",
+      "editorialStatus": "Working draft",
+      "purpose": "While waiting for real evidence, suggest one immediate useful task: write brief introduction based on aim/motivation; draft or revise prediction, WHY and possible implication; define quantities/units and sampling scope; compare data methods; investigate alternative primary/secondary sources; keep a provisional first diagram/maths plan; Save.",
+      "branchNotes": "No prediction mistaken for a result, no invented observations. Pending means pending; cannot calculate conclusions from nonexistent data. Keep teacher consent/access flags. Practical delay is not an IA mathematical limitation to write about.\nWRITING MOMENT: with data pending, student may write introduction and tentative prediction NOW; searching sources and waiting for consent are project notes, not data/results passages.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 81
+      }
+    },
+    {
+      "id": "C95A",
+      "label": "Find and check alternative data sources",
+      "kind": "Source recovery",
+      "editorialStatus": "Working draft",
+      "purpose": "Follow up original source, use another permitted method, seek a credible publicly accessible secondary dataset/report, narrow to a feasible group/time period, or review revised aim. Ask whether the new data have relevant variable definitions, population, units, source dates, provenance, sampling quality, permissions and accuracy.",
+      "branchNotes": "Switch only after student confirms that source still serves the original aim/beneficiary or updates aim transparently. No fabricated data, private information, unexplained mixing, unattributed secondary data or silent methodology switch. Refer to C20/C02/C03 as needed.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 82
+      }
+    },
+    {
+      "id": "C95L",
+      "label": "Some data, but incomplete or poor quality",
+      "kind": "Limited-data recovery",
+      "editorialStatus": "Working draft",
+      "purpose": "Ask whether response count too low, groups unbalanced, measurements missing, units inconsistent or source has unusable scope. Check genuine errors/definitions, see if more representative observations or equivalent sources are feasible; adjust claims to actual sample and consider revised aim. Save legitimate partial observations.",
+      "branchNotes": "Do not assume small n always invalid, but explain consequence for estimates/inference. Do not fill gaps with invented values, drop inconvenient results or assert population claims without support. Separate practical obstacle from mathematical limitation discussed at C20.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 83
+      }
+    },
+    {
+      "id": "C95Q",
+      "label": "Other hiccough: targeted support",
+      "kind": "Optional help selector",
+      "editorialStatus": "Working draft",
+      "purpose": "Route only to relevant existing help: unexpected result→C34U; can't choose method→C40D or C35H; technology/notation→C40T/C70N; diagram unhelpful→C31; writing/feedback→C10/C80D; ethical permission or access→C03; lost progress→C00/C01; timeline/aim unclear→C02/C04.",
+      "branchNotes": "One specific action then return. Don't show all checklists or imply an unexpected result is bad. No automatic second teacher written-feedback round; all edits student-authored.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 84
+      }
+    },
+    {
+      "id": "C95N",
+      "label": "One helpful next action",
+      "kind": "Action/resume",
+      "editorialStatus": "Working draft",
+      "purpose": "Ask: What ONE worthwhile thing will you do next? Choose Write introduction, Record a tentative prediction, Search/check alternate data, Prepare definitions/method, Ask teacher where needed, Continue actual maths, Return, or Save; Other/Not sure allowed. Optional date only if student chooses.",
+      "branchNotes": "Persist issue category, blocker status, selected action, source alternatives, current plan, unresolved permissions and origin stage. Don't invent deadlines, background reminders or auto-complete work; Save and resume preserve drafts.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 85
+      }
+    },
+    {
+      "id": "C96",
+      "label": "Where should I write this?",
+      "kind": "On-demand contextual writing",
+      "editorialStatus": "Working draft",
+      "purpose": "Look at student's CURRENT stage, data/source status, actual selected method, course, aim/beneficiary, observation and prior cue ledger. Match at most ONE applicable Writing Moments ID. State exactly 'Write this in your IA now: [specific purpose] — [precise location]', or 'Planning note — not IA text' where there is no real evidence. Offer Write now / Already covered / Not relevant / Show an example / Dismiss for now.",
+      "branchNotes": "No generic checklist, generated student prose, guessed result or unstarted-technique limitations. 'Already covered' stores student's own text location; 'Not relevant' suppresses until meaningful change; 'Noted' is not 'written'. Preserve the origin stage/unsaved work. After changing aim/method/result, re-check only affected cues. Save/Resume remains available.\nONE RELEVANT WRITING CUE: Prioritise a missing aim-linked interpretation after a real result over stylistic reminders. Show an earlier-accuracy application only when a current output needs it. Persist Already covered / Not relevant per specific result, source and changed context; no repeated nagging.\nWRITING PRIORITY: If a new method is confirmed beyond syllabus and currently about to be used, show the brief 'explain what the unfamiliar mathematics means' cue at FIRST USE, not after all results. Within syllabus, never prompt method-teaching prose. If actual output yields real mathematical insight, allow separate optional 'what did I learn mathematically?' next to result.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 86
+      }
+    },
+    {
+      "id": "C35P",
+      "label": "After PMCC: which mathematical step follows?",
+      "kind": "Conditional post-calculation branch",
+      "editorialStatus": "Working draft",
+      "purpose": "Only when Pearson's r was ACTUALLY calculated for paired quantitative data, after student has interpreted its sign/magnitude and considered real scatter, display the computed r (do not invent it), the original aim, current question, actual observed graph and relevant scope. Offer ONE or TWO contextual NEXT steps: if sample r indicates useful linear association and a predictive model would help, consider fitting/interpreting a line of best fit then checking suitable fit/domain; if weak linear association, examine whether scatter hints at curvature, clusters, unusual values or limited range and whether a justified alternative model/comparison could answer the aim, or conclude there is little evidence of a LINEAR association. If intermediate/uncertain, record what r can and cannot answer; allow stop if enough.",
+      "branchNotes": "Do not equate low |r| with no relationship of any kind, or high |r| with causation/valid prediction. Never manufacture coefficients, statistical significance or thresholds; sample size, domain and justified uncertainty matter. Don't cherry-pick points/subgroups or search multiple correlations just to get a desirable answer. Spearman only when relationship appears monotonic and course/teacher-appropriate. The next section must be student-chosen, based on previous conclusion; keep original result and previous section's writing intact.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 87
+      }
+    },
+    {
+      "id": "C40L",
+      "label": "Explain new mathematics · only when relevant",
+      "kind": "Optional syllabus-aware support",
+      "editorialStatus": "Working draft",
+      "purpose": "Show ONLY for the actual chosen substantial mathematical technique, at its FIRST use (or on demand while reviewing it), if beyond syllabus, partly beyond, independently researched, or course status is uncertain; or AFTER a real finding when the student opts to describe mathematical learning. Display current course, technique, original aim and previous real result. Ask 'Is this within your course, beyond it, partly new, or not sure?' COURSE: skip method tutorial; simply apply it, justify purpose and interpret. BEYOND: invite student's OWN concise description of the unfamiliar principle, key notation/conditions and why method works/is appropriate, ideally by a relevant step, derivation, checked example or comparison. Cite the researched source(s). PARTLY BEYOND: explain novel extension only. AFTER RESULT: optional authentic insight about what the student learned mathematically, linked to current working/aim. Unsure: ask teacher for syllabus and suitability review.",
+      "branchNotes": "No compulsory stage or interruption for syllabus maths. Don't auto-classify any topic without verified course/version; don't assume 'researched' implies beyond syllabus or that more advanced maths earns more marks. Keep explanation adjacent to FIRST use, not conclusion, and avoid copied sources, long generic tutorials or describing software clicks. The student owns written explanation and can choose Already covered (with location), Not relevant, Example, Teacher check, or Save. Preserve originStage, techniqueId, genuine resultRef and unsaved draft; later insight is optional and must not replace result-to-aim interpretation.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Nodes",
+        "row": 88
+      }
+    }
+  ]
+}
