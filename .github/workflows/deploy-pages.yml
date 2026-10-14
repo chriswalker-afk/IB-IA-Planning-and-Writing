@@ -1,4 +1,4 @@
-name: Deploy IA Pathfinder prototype
+name: Deploy IA Pathfinder
 on:
   push:
     branches: [main]
@@ -22,14 +22,24 @@ jobs:
     steps:
       - name: Check out source
         uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install document tooling
+        run: npm install --no-audit --no-fund
+      - name: Validate and build
+        run: |
+          npm test
+          npm run build
       - name: Configure Pages
         uses: actions/configure-pages@v5
         with:
           enablement: true
-      - name: Upload static website
+      - name: Upload bundled website
         uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: dist
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
