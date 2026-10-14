@@ -68,7 +68,7 @@
     const type = opts.type || "text";
     const hint = opts.hint ? '<p class="field-hint">' + e(opts.hint) + '</p>' : "";
     const rows = opts.rows || 3;
-    const fieldId = "field-" + path.replace(/[^a-z0-9-]/gi, "-");
+    const fieldId = "field-" + path.replace(/[^a-z0-9-]/gi, "-") + (opts.drawer ? "-drawer" : "");
     const input = type === "textarea"
       ? '<textarea class="field" id="' + fieldId + '" data-bind="' + e(path) + '" rows="' + rows + '" placeholder="' + e(placeholder) + '">' + e(value) + '</textarea>'
       : type === "select"
@@ -569,7 +569,7 @@
     const items=[
       ["Your idea",filled(state.project.idea)||filled(state.project.aim),"plan",0],
       ["Your purpose",filled(state.project.beneficiary),"plan",2],
-      ["Feasible plan",state.ui.planMax>=8,"plan",5],
+      ["Planning checkpoint",state.ui.planMax>=8,"plan",5],
       ["Actual mathematics",state.entries.some(x=>x.status==="completed"),"studio","math"],
       ["Conclusion",filled(state.scratch.conclusion),"studio","conclusion"]
     ];
@@ -583,7 +583,7 @@
     main.innerHTML=map[state.route]();
     document.querySelectorAll("[data-nav]").forEach(b=>b.classList.toggle("active",b.dataset.nav===state.route));
     sideMilestones();
-    if(opts.top){window.scrollTo({top:0,behavior:"instant"});main.focus({preventScroll:true})}
+    if(opts.top){window.scrollTo({top:0,behavior:"auto"});main.focus({preventScroll:true})}
   }
   function nav(route,opts={}) {
     state.route=route;
@@ -634,11 +634,11 @@
     if(panel==="project"){
       body='<section><p class="text-muted">Your details stay in this browser unless you deliberately export them.</p>'+
         (state.demo?note("You are editing an illustrative sample project.",true):"")+
-        field("project.aim","Current aim","What do you want to find out?",{type:"textarea",rows:3})+
-        field("project.course","IB Mathematics course","Select your course",{type:"select",options:[["","Select a course"],["AA SL","Mathematics AA SL"],["AI SL","Mathematics AI SL"],["AA HL","Mathematics AA HL"],["AI HL","Mathematics AI HL"] ]})+
-        field("project.beneficiary","Meaning or intended benefit","Who might use this, or why does it interest you?",{type:"textarea",rows:2})+
-        field("project.precision","Measurement accuracy to remember","Units, precision or rounding", {type:"textarea",rows:2})+
-        field("project.documentUrl","Link to my real IA document (optional)","https://docs.google.com/…", {type:"url",hint:"Keep the finished IA in Word or Google Docs. Pathfinder never edits your document."})+
+        field("project.aim","Current aim","What do you want to find out?",{type:"textarea",rows:3,drawer:true})+
+        field("project.course","IB Mathematics course","Select your course",{type:"select",drawer:true,options:[["","Select a course"],["AA SL","Mathematics AA SL"],["AI SL","Mathematics AI SL"],["AA HL","Mathematics AA HL"],["AI HL","Mathematics AI HL"] ]})+
+        field("project.beneficiary","Meaning or intended benefit","Who might use this, or why does it interest you?",{type:"textarea",rows:2,drawer:true})+
+        field("project.precision","Measurement accuracy to remember","Units, precision or rounding", {type:"textarea",rows:2,drawer:true})+
+        field("project.documentUrl","Link to my real IA document (optional)","https://docs.google.com/…", {type:"url",drawer:true,hint:"Keep the finished IA in Word or Google Docs. Pathfinder never edits your document."})+
         (cleanUrl(p.documentUrl)?'<a class="btn btn-secondary" href="'+e(cleanUrl(p.documentUrl))+'" target="_blank" rel="noopener noreferrer">Open my IA document '+icon("arrow-up-right")+'</a>':"")+
         '</section><div class="panel-list">'+button("Review my plan","go-planning","btn-secondary")+button("See my journey","go-path","btn-light")+'</div>';
     }else if(panel==="files"){
