@@ -140,9 +140,9 @@ export function setCompletionField(state,key,value){
  if(stage&&c.stages[stage]==="complete"&&previous!==c.fields[key])
   c.stages[stage]="needs-review";
  if(key==="permissionStatus"){
-  // Do not convert a student's self-report into verified third-party teacher approval.
+  // A student's own assertion is not documentary proof of teacher sign-off.
+  // Leave existing teacher/consent flags intact until separately resolved.
   if(value==="pending"||value==="unsure")state.teacher.pendingApproval=true;
-  if(value==="confirmed"||value==="not-needed")state.teacher.pendingApproval=false;
  }
  if(key==="dataStatus" && ["not-started","candidate","partial","ready","theoretical"].includes(value))
   state.project.dataStatus=value==="candidate"?"not-started":value;
@@ -246,7 +246,16 @@ export function moveCompletionRoute(state,condition){
   const result=startFirstRepresentation(state);if(!result.ok)return result;
  }
  if(from==="C35"&&["C40","C50"].includes(route.to)){
+  const priorSubstantial=state.entries.some(x=>x.phase==="substantial"&&
+    x.status==="completed"&&str(x.result).trim());
+  if(route.to==="C50"&&!priorSubstantial)
+   return{ok:false,error:"Begin the first substantial mathematical section before classifying the next one as further mathematics."};
   const result=startNextMathematics(state,route.to==="C40");if(!result.ok)return result;
+ }
+ if(from==="C34"&&route.to==="C34B"){
+  const entry=completeEntry(state);
+  if(entry?.kind==="scatter"&&entry.observation)
+   c.fields.scatterPattern=entry.observation;
  }
  if(from==="C02"&&route.to==="C10")c.returnTo="";
  if(route.to==="C02"&&from==="C10")c.returnTo="C10";
