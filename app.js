@@ -1,3 +1,4 @@
+import { planningMove, planAutoAdvance, planningBack, planningEdit, applyPlanningField, toggleMath, syncPlanningToProject, setPlanCurrent, planningFlags } from "./src/planning/engine.js";
 import { createPlanningViews } from "./src/ui/planning-views.js";
 import { createStudioViews } from "./src/ui/studio-views.js";
 import { createProjectViews } from "./src/ui/project-views.js";
@@ -30,7 +31,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     {id:"review",name:"Final review",sub:"Check communication and prepare your own draft",icon:"check-circle"}
   ];
   const filled = value => typeof value === "string" ? !!value.trim() : !!value;
-  const hasPlan = () => state.ui.planMax > 0 || filled(state.project.aim) || filled(state.project.idea);
+  const hasPlan = () => state.planning.visited.length > 0 || state.ui.planMax > 0 || filled(state.project.aim) || filled(state.project.idea);
   const hasStudio = () => state.entries.length > 0 || Object.values(state.scratch).some(filled);
   const demoFlag = () => state.demo ? '<span class="meta-pill gold">' + icon("sparkles") + ' Sample investigation</span>' : "";
   const field = (path, label, placeholder, opts = {}) => {
@@ -119,8 +120,8 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   function sideMilestones() {
     const items=[
       ["Your idea",filled(state.project.idea)||filled(state.project.aim),"plan",0],
-      ["Your purpose",filled(state.project.beneficiary),"plan",2],
-      ["Planning checkpoint",state.ui.planMax>=8,"plan",5],
+      ["Your purpose",filled(state.project.beneficiary),"plan",1],
+      ["Planning checkpoint",state.planning.completed,"plan",5],
       ["Actual mathematics",state.entries.some(x=>x.status==="completed"),"studio","math"],
       ["Conclusion",filled(state.scratch.conclusion),"studio","conclusion"]
     ];
@@ -129,9 +130,24 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       '<span class="dot">'+(done?icon("check"):i+1)+'</span><span>'+e(title)+'</span></button>').join("");
     $("#pathCount").textContent=state.entries.length;
   }
+  function filterMathOptions() {
+    const query=(state.planning.mathSearch||"").toLocaleLowerCase("en").trim();
+    document.querySelectorAll(".plan-math-option").forEach(el=>{
+      el.hidden=!!query && !(el.dataset.searchText||"").includes(query);
+    });
+  }
+  function handlePlanningResult(result){
+    if(!result?.ok){toast(result?.error||"Please review this answer.");return;}
+    syncPlanningToProject(state);
+    if(result.route?.to==="C00"||result.completePlanning===true&&result.route?.to==="C00"){
+      nav("completing",{section:"overview"});return;
+    }
+    nav("planning");
+  }
   function render(opts={}) {
     const map={home:viewHome,planning:viewPlanning,completing:viewCompleting,path:viewPath,report:viewReport};
     main.innerHTML=map[state.route]();
+    filterMathOptions();
     document.querySelectorAll("[data-nav]").forEach(b=>b.classList.toggle("active",b.dataset.nav===state.route));
     sideMilestones();
     if(opts.top){window.scrollTo({top:0,behavior:"auto"});main.focus({preventScroll:true})}
@@ -265,14 +281,20 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     const action=el.dataset.action||"";
     if(changeNavAction(action,el)!==false)return;
     switch(action){
-      case "start-planning": state.ui.planStep=0;nav("planning");break;
+      case "start-planning": setPlanCurrent(state,state.planning.current||"N00");nav("planning");break;
       case "plan-next":
-        state.ui.planMax=Math.max(state.ui.planMax,state.ui.planStep);
-        state.ui.planStep=Math.min(9,state.ui.planStep+1);
-        state.ui.planMax=Math.max(state.ui.planMax,state.ui.planStep);
-        nav("planning");break;
-      case "plan-back":state.ui.planStep=Math.max(0,state.ui.planStep-1);nav("planning");break;
-      case "path-plan":state.ui.planStep=Math.max(0,Math.min(9,Number(el.dataset.index)||0));nav("planning");break;
+      case "plan-advance":handlePlanningResult(planAutoAdvance(state));break;
+      case "plan-route":handlePlanningResult(planningMove(state,el.dataset.condition));break;
+      case "plan-back":handlePlanningResult(planningBack(state));break;
+      case "plan-edit":handlePlanningResult(planningEdit(state,el.dataset.node));break;
+      case "path-plan":{
+        const map={"0":"N00","1":"N01","5":"N03F"};
+        handlePlanningResult(planningEdit(state,map[el.dataset.index]||"N00"));break;
+      }
+      case "plan-toggle-math":{
+        if(!toggleMath(state,el.dataset.mathId)){toast("Choose a technique from your selected course.");break;}
+        save();render();break;
+      }
       case "studio-tab":nav("completing",{section:el.dataset.section});break;
       case "math-add": addMath();break;
       case "edit-step":editMath(Number(el.dataset.index));break;
@@ -323,7 +345,11 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       const path=choice.dataset.choice;
       const previous=getPath(path);
       const numeric=["project.readiness","project.ease"].includes(path);
-      putPath(path,numeric?Number(choice.dataset.value):choice.dataset.value);
+      if(path.startsWith("planning.fields.")){
+        applyPlanningField(state,path.slice("planning.fields.".length),choice.dataset.value);
+      } else {
+        putPath(path,numeric?Number(choice.dataset.value):choice.dataset.value);
+      }
       if(path.endsWith(".status")&&path.startsWith("entries.")&&previous!==choice.dataset.value){state.ui.helpKey="";}
       save();render();
       const focusTarget=[...document.querySelectorAll("[data-choice]")].find(x=>x.dataset.choice===path&&x.dataset.value===choice.dataset.value);
@@ -338,12 +364,26 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   });
   document.addEventListener("input",evt=>{
     const target=evt.target;
-    if(target.dataset.bind){putPath(target.dataset.bind,target.value);save();}
+    if(target.dataset.planSearch!==undefined){
+      state.planning.mathSearch=target.value.slice(0,90);filterMathOptions();return;
+    }
+    if(target.dataset.bind){
+      if(target.dataset.bind.startsWith("planning.fields.")){
+        applyPlanningField(state,target.dataset.bind.slice("planning.fields.".length),target.value);
+      }else{putPath(target.dataset.bind,target.value);}
+      save();
+    }
   });
   document.addEventListener("change",evt=>{
     const target=evt.target;
     if(target.dataset.check){state.cues[target.dataset.check]=target.checked?"done":"open";save();}
-    if(target.dataset.bind){putPath(target.dataset.bind,target.value);save();}
+    if(target.dataset.bind){
+      if(target.dataset.bind.startsWith("planning.fields.")){
+        applyPlanningField(state,target.dataset.bind.slice("planning.fields.".length),target.value);
+      }else{putPath(target.dataset.bind,target.value);}
+      save();
+      if(target.dataset.bind==="planning.fields.course"||target.dataset.bind==="planning.fields.ideaSelected")render();
+    }
   });
   document.addEventListener("keydown",evt=>{
     if(evt.key==="Escape"&&!layer.hidden){evt.preventDefault();closeDrawer();}
