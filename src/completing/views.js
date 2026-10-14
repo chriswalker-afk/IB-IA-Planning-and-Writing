@@ -33,8 +33,42 @@ export function createCompletingViews(ctx){
  };
  const routeList=(conditions)=>conditions.map(x=>sourceAction(x)).filter(Boolean).join("");
  const selectStage=(id)=>'<button type="button" class="btn btn-quiet btn-sm" data-action="completion-open" data-node="'+e(id)+'">'+e(titleMap.get(id)||id)+icon("arrow-right")+'</button>';
+ const relevantRoute=(route)=>{
+  const s=getState(),f=s.completion.fields,prior=latestRealResult(s),entry=completeEntry(s),
+  current=s.completion.current,kind=s.planning.fields.kind||s.project.kind;
+  if(current==="C04"&&["C10","C20","C30","C40","C50","C60","C70","C80","C90"].includes(route.to))
+    return false; // The accessible dashboard cards already navigate to these stages.
+  if(["C35P"].includes(route.to)&&!actualPmccExists(s))return false;
+  if(["C35B"].includes(route.to)&&!actualScatterExists(s))return false;
+  if(["C35H"].includes(route.to)&&!prior)return false;
+  if(route.to==="C34"&&current!=="C95Q"&&
+    !(entry?.status==="completed"&&filled(entry.result)))return false;
+  if(current==="C20"){
+    if(route.to==="C21T")return kind==="theoretical"||kind==="unsure"||!kind;
+    if(route.to==="C21S")return kind==="statistics"||kind==="modelling";
+    if(route.to==="C21M")return kind==="modelling"||kind==="statistics";
+  }
+  if(current==="C35"){
+    if(["C35H","C35B","C35P"].includes(route.to))return false; // Already available beside the next-question form.
+    const hasSubstantial=s.entries.some(x=>x.phase==="substantial"&&x.status==="completed"&&filled(x.result));
+    if(route.to==="C40"&&hasSubstantial)return false;
+    if(route.to==="C50"&&!hasSubstantial)return false;
+  }
+  if(current==="C35B"&&route.to==="C35"&&f.scatterPattern){
+    const label=route.condition.toLowerCase();
+    if(f.scatterPattern==="curved")return label.includes("curved");
+    if(f.scatterPattern==="unclear")return label.includes("no clear");
+    if(f.scatterPattern==="linear")return label.includes("straight");
+    if(f.scatterPattern==="unexpected")return label.includes("uncertain");
+    if(f.scatterPattern==="unsure")return label.includes("uncertain");
+  }
+  if(current==="C40"||current==="C50"){
+    if(route.to==="C40L"&&entry?.knowledge==="syllabus")return false;
+  }
+  return true;
+ };
  const allButtons=(current,primary=[])=>{
-  const rows=routesAt(current).filter(r=>r.to.startsWith("C")||r.to.startsWith("N"));
+  const rows=routesAt(current).filter(relevantRoute);
   const used=new Set(primary);
   const display=rows.filter(r=>used.has(r.condition));
   const remaining=rows.filter(r=>!used.has(r.condition));
@@ -131,7 +165,7 @@ export function createCompletingViews(ctx){
   }
   case "C04":return{intro:"Choose a meaningful task. A section may be revisited whenever the evidence changes; there is no required number of maths sections.",
     html:stageDashboard()+miniList()+
-      '<div class="button-row">'+sourceAction("Save progress -> C91","Save a full project backup")+
+      '<div class="button-row">'+sourceAction("Save progress","Save a full project backup")+
       sourceAction("I'm stuck / Something isn't working","I'm stuck")+'</div>'};
   case "C10":return{intro:"Keep the opening short, genuine and in your own words. Results and detailed mathematics belong later.",
     html:smallSummary("My current aim",currentAim())+
