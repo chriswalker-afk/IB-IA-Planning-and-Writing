@@ -5,11 +5,7 @@ import { planningMove, planAutoAdvance, planningBack, planningEdit, applyPlannin
 import { createPlanningViews } from "./src/ui/planning-views.js";
 import { createStudioViews } from "./src/ui/studio-views.js";
 import {createCompletingViews} from "./src/completing/views.js";
-import {
- setCompletionNode,moveCompletionRoute,completionBack,markCompletionStage,
- setCompletionField,addAccuracyDecision,completionSuggestions,sectionForNode,targetForSection,
- completeEntry,latestRealResult
-} from "./src/completing/engine.js";
+import {setCompletionNode,moveCompletionRoute,completionBack,markCompletionStage,setCompletionField,addAccuracyDecision,completionSuggestions,sectionForNode,targetForSection,completeEntry,latestRealResult} from "./src/completing/engine.js";
 
 import { createProjectViews } from "./src/ui/project-views.js";
 import { createProjectState as newState, normalizeProjectState as normalise, persistProjectState, STORAGE_KEY as KEY } from "./src/core/project-state.js";
