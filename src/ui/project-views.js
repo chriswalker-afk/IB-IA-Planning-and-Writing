@@ -1,3 +1,4 @@
+import {PLANNING_CATALOG} from "../planning/catalog.js";
 import {planningFlags,selectedMaths} from "../planning/engine.js";
 /** Home, student journey map and working-record views. */
 export function createProjectViews(ctx){
@@ -85,7 +86,8 @@ export function createProjectViews(ctx){
       ["What the answer might help with",pfields.intendedUse],["Course",p.course],
       ["Investigation route",p.kind],
       ["Tentative mathematical techniques",chosen.map(x=>x.label).join("; ")+(pfields.otherMaths?" · "+pfields.otherMaths:"")+(pfields.otherCourseMaths?" · "+pfields.otherCourseMaths:"")],
-      ["My tentative prediction / conjecture",pfields.prediction||p.prediction],
+      ["Selected prediction prompt (not a mathematical result)",PLANNING_CATALOG.predictions.find(x=>x.id===pfields.predictionId)?.question||""],
+      ["My tentative prediction / conjecture",pfields.prediction||p.prediction],["Earlier prediction (saved note)",pfields.predictionPrior],
       ["WHY I expect this",pfields.predictionWhy||p.predictionWhy],
       ["What it might mean IF TRUE (not an actual result)",pfields.predictionImplication],
       ["First planned figure, calculation or case",pfields.figureOther||pfields.figureType],
