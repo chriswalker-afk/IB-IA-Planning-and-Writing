@@ -55,7 +55,7 @@ export function relevantBivariateOptions(state,node=state.completion.current){
    break;
   case "unclear":
    out.push(option("B05","What limited conclusion can I support from the absence of a clear pattern?",
-    "A justified alternate variable/range may help, but fishing for a positive relationship does not."));
+    "A cautious conclusion may be sufficient. A justified alternate variable or range may help, but fishing for a positive relationship does not."));
    break;
   case "unexpected":
    out.push(option("B07","Could I check the original value, definition or group behind this unusual point?",
