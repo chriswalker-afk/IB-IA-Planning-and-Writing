@@ -1,0 +1,771 @@
+{
+  "schemaVersion": 1,
+  "sourceSheet": "Conclusion & Reflection",
+  "sourceBounds": {
+    "rows": 120,
+    "columns": 9
+  },
+  "rowCount": 65,
+  "nonemptyCellCount": 434,
+  "rows": [
+    {
+      "row": 1,
+      "cells": [
+        "CONCLUSION & REFLECTION  |  Evaluate THROUGHOUT; draw things TOGETHER at the end"
+      ]
+    },
+    {
+      "row": 2,
+      "cells": [
+        "The conclusion isn't a summary of everything done. In a few focused thoughts, answer the aim with the key evidence, connect to the intended beneficiary, and look forward."
+      ]
+    },
+    {
+      "row": 3,
+      "cells": [
+        "Keep justification/limitations at the relevant data or mathematical work, and reflect when something changes the interpretation. Don't save all evaluation for the end."
+      ]
+    },
+    {
+      "row": 4,
+      "cells": [
+        "Use earlier student-authored result records, interpretation and key limitations as references—not material to copy into a second section or graphs to repeat."
+      ]
+    },
+    {
+      "row": 5,
+      "cells": [
+        "Future directions should be prompted by what the student FOUND: What could be investigated NEXT, why would it matter, and what mathematics/evidence would help?"
+      ]
+    },
+    {
+      "row": 6,
+      "cells": [
+        "Keep the default prompt sequence compact. Contextual examples and an anti-repetition checklist are available ON REQUEST. No guaranteed marks, automated conclusion or rigid structure."
+      ]
+    },
+    {
+      "row": 8,
+      "cells": [
+        "ID",
+        "When in project",
+        "Natural trigger",
+        "Brief student-facing reflection",
+        "Why THIS is the appropriate place",
+        "What the tool can recall",
+        "What the conclusion must NOT repeat",
+        "Carry forward to conclusion",
+        "Status"
+      ]
+    },
+    {
+      "row": 9,
+      "cells": [
+        "R01",
+        "C20–C26 · collection",
+        "Once a method/source/sampling choice is made",
+        "Why does it yield suitable evidence? What mathematical limitation changes what I can infer?",
+        "Justify method and its mathematical effects HERE, not in the ending.",
+        "Chosen sampling/source, accuracy and method decisions",
+        "No generic list of data-collection problems in conclusion.",
+        "Carry only a short evidence-boundary if needed for the final answer.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 10,
+      "cells": [
+        "R02",
+        "C34–C35 · first plot/case",
+        "Right AFTER any meaningful first diagram/calculation",
+        "What do I actually see, how does it match my prediction, and WHY does that lead to the next mathematics?",
+        "Student's own interpretation and purpose belong beside the displayed result.",
+        "Observation, precision notes, purpose, unexpected-result checks",
+        "No repeated graph descriptions at the end.",
+        "Carry a reference to this observation into final synthesis.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 11,
+      "cells": [
+        "R03",
+        "C40 · active technique",
+        "While performing/interpreting a mathematical method",
+        "Why this maths? What do the results mean, and how do the actual assumptions/uncertainty affect them?",
+        "Mathematical limitations and validity only once technique is ACTUALLY used.",
+        "Method, calculated results, selected technique-specific limitations",
+        "Don't revisit every formula or limitations list in conclusion.",
+        "Carry only confirmed key insights and any essential inferential limits.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 12,
+      "cells": [
+        "R04",
+        "C50 · ongoing exploration",
+        "As further results change the question or original plan",
+        "What surprised me, what did I test/modify, and why is this new direction mathematically sensible?",
+        "Record reasoning as it develops, not as a retrospective 'what went wrong' chapter.",
+        "Student's revisions, alternative checks, next steps",
+        "Don't paste an entire project diary into the ending.",
+        "Reference the change only if it matters to the overall answer.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 13,
+      "cells": [
+        "R05",
+        "C34U · unexpected result",
+        "When actual output differs from prediction, not only at the end",
+        "What differs? Is there a useful alternative view, check or restricted conclusion?",
+        "A justified detour is good mathematical reflection, even if no favourable pattern emerges.",
+        "Original prediction, real observation, considered vs tested explanation",
+        "Don't claim an untested explanation was proved.",
+        "Only mention important unresolved questions and their future implications.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 14,
+      "cells": [
+        "R06",
+        "C60–C64 · conclusion",
+        "When enough mathematics exists to provide an answer or explain why not",
+        "What is the overall answer, what does it mean, and what sensible investigation might follow?",
+        "Synthesize evidence already explained; leave methodological detail where it first occurred.",
+        "Aim, beneficiary, 1–3 key result references and evidence scope",
+        "No replay of calculations, charts, sampling, assumptions or every limitation.",
+        "A concise ending and future question, in the student's voice.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 15,
+      "cells": [
+        "R07",
+        "C70/C90 · editorial check",
+        "When reviewing the completed written IA",
+        "Have I made reflection visible throughout without duplicating it in my conclusion?",
+        "Check coherence and correct placement, not that enough reflection paragraphs exist.",
+        "Result-by-result reflections, existing conclusion draft",
+        "No final evaluation dump or forced heading order.",
+        "Offer links to relevant earlier sections for targeted improvements.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 18,
+      "cells": [
+        "CONCLUSION PROMPTS  |  Core questions first; additional prompts only if relevant"
+      ]
+    },
+    {
+      "row": 20,
+      "cells": [
+        "ID",
+        "Prompt type",
+        "Show when",
+        "Student question",
+        "Expected student response",
+        "Earlier context shown",
+        "Don't do",
+        "Node",
+        "Status"
+      ]
+    },
+    {
+      "row": 21,
+      "cells": [
+        "K01",
+        "Core · answer aim",
+        "All routes with some investigation evidence",
+        "What is the BEST answer your actual mathematics supports to your original aim?",
+        "Short answer; 'partly answered' or 'inconclusive' allowed",
+        "Current/original aim + confirmed actual results",
+        "Don't write a chapter-by-chapter summary, or copy introduction wording.",
+        "C61",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 22,
+      "cells": [
+        "K02",
+        "Core · draw together evidence",
+        "When student has several meaningful findings",
+        "Which one, two or three results MOST support that answer, considered together?",
+        "Select meaningful existing result references; add one connecting sentence",
+        "Result-ledger IDs, existing explanations and accuracy notes",
+        "Refer to earlier figures/equations; don't reprint or explain them again.",
+        "C61",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 23,
+      "cells": [
+        "K03",
+        "Core · so what?",
+        "When intended beneficiary or mathematical motivation known",
+        "Taken together, what do your findings MEAN for you, someone you hope to advise, or your mathematical question?",
+        "Evidence-qualified decision/understanding/advice; no invented impact",
+        "Current beneficiary and initial intended usefulness vs real answer",
+        "Don't claim causation or a practical recommendation the work cannot support.",
+        "C62",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 24,
+      "cells": [
+        "K04",
+        "Optional · key boundary",
+        "When an earlier confirmed limitation directly changes the final answer",
+        "What one essential restriction should your audience know before using the conclusion?",
+        "Only a concise scope statement if needed",
+        "C23/C24, confirmed technique-specific limitations, source/domain",
+        "No fresh list of weak methods, generic difficulties or repeated evaluation.",
+        "C61/C62",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 25,
+      "cells": [
+        "K05",
+        "Optional · original expectation",
+        "Only if difference from prediction genuinely matters to final answer",
+        "Was the outcome different from what you first expected, and how has this changed the overall interpretation?",
+        "One short high-level observation, or skip",
+        "Original prediction plus earlier C34B/C34U reflections",
+        "Do not repeat detailed 'surprise' analysis already alongside results.",
+        "C61",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 26,
+      "cells": [
+        "K06",
+        "Core · unresolved questions",
+        "If a question really remains unanswered or result inconclusive",
+        "What important mathematical question remains open after the investigation?",
+        "One specific question or None",
+        "Actual partial findings, untested ideas and evidence limits",
+        "No obligation to manufacture a failure or further work.",
+        "C63",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 27,
+      "cells": [
+        "K07",
+        "Core · future mathematical direction",
+        "If a useful extension naturally follows",
+        "What would be worth investigating NEXT, and WHY would it build on what you discovered?",
+        "One or two optional concrete future possibilities, with rationale",
+        "Student-confirmed result features, real data, maths, limitations and course",
+        "A generic 'collect more data' isn't an explanation. Don't call already completed work future work.",
+        "C63",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 28,
+      "cells": [
+        "K08",
+        "Optional · extension design",
+        "When student chooses a plausible next step",
+        "What new calculation, model, comparison, test case or better evidence would clarify the open question?",
+        "Short feasible mathematical direction; no required new investigation",
+        "Original method, current finding and purpose",
+        "No need to actually carry out an extension to finish this IA.",
+        "C63",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 29,
+      "cells": [
+        "K09",
+        "Core · prevent repetition",
+        "Before student finalises conclusion draft",
+        "If you remove duplicated diagrams, derivations and detailed evaluation, does your conclusion still give a clear overall answer?",
+        "Optional quick self-edit; not a hurdle",
+        "Conclusion draft; figure/result ledger",
+        "No formula walkthroughs, tables, pages of graph interpretations or repeated caveats.",
+        "C64",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 30,
+      "cells": [
+        "K10",
+        "Optional · reflect in place",
+        "When earlier reflection missing, at ANY stage",
+        "Would this insight be more meaningful just after the result or method that prompted it?",
+        "Return-to-stage link; keep conclusion draft",
+        "Matching output/technique and reflection status",
+        "Do not insert late evaluation artificially into conclusion.",
+        "C64→C34/C50",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 31,
+      "cells": [
+        "K11",
+        "Core · writing voice",
+        "Student preparing final wording",
+        "Can the ending sound like your own considered mathematical conclusion, rather than a formulaic checklist?",
+        "Student-authored conclusion; no auto-generated paragraphs",
+        "Aim, interests, results and intended audience",
+        "First person is fine; no need to force 'I' in every sentence or rigid headings.",
+        "C64",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 33,
+      "cells": [
+        "POSSIBLE NEXT STEPS  |  Match to the student's REAL findings; at most two suggestions, only on request"
+      ]
+    },
+    {
+      "row": 35,
+      "cells": [
+        "ID",
+        "Investigation/outcome",
+        "Required actual previous finding",
+        "Optional student-facing next-step nudge",
+        "Possible further mathematics/evidence",
+        "Why it would add value",
+        "Avoid",
+        "Stage",
+        "Status"
+      ]
+    },
+    {
+      "row": 36,
+      "cells": [
+        "E01",
+        "Statistics · association observed",
+        "Actual correlation/association interpreted, causal claim limited",
+        "Could a justified third variable or different context help explain the association?",
+        "Suggest a specific relevant confounder/stratification or independent comparison and why it matters.",
+        "May clarify generalisability or mechanism, not guarantee causation.",
+        "Avoid automatically saying 'prove cause and effect' or forcing PMCC again.",
+        "C63",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 37,
+      "cells": [
+        "E02",
+        "Statistics · weak or inconclusive relationship",
+        "Student actually found little clear association",
+        "Would a better-targeted variable or different question make the inference more informative?",
+        "Offer a more focused investigation aim or one mathematically justified comparison. No need for a formal research-question template.",
+        "Could show whether no association is meaningful or a limitation of study design.",
+        "Avoid fishing for a significant result or pretending it must exist.",
+        "C63",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 38,
+      "cells": [
+        "E03",
+        "Statistics · sampling limits restrict the answer",
+        "Actual representativeness/coverage concern was confirmed",
+        "Would a broader or more carefully selected group change the population the conclusions apply to?",
+        "Name the missing/biased group or a better frame, and what estimate would be compared.",
+        "May increase the defensible scope of advice.",
+        "Not simply 'collect more data'; justify the mathematical benefit.",
+        "C63",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 39,
+      "cells": [
+        "E04",
+        "Statistics · groups differ or are unexpectedly similar",
+        "Student made a genuine group comparison",
+        "Would comparing an additional meaningful group or controlling for a relevant variable help explain the difference?",
+        "Specify new group/context or variable and intended comparison.",
+        "Tests whether pattern generalises or differs by a known condition.",
+        "Don't invent group differences or demand an extra hypothesis test.",
+        "C63",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 40,
+      "cells": [
+        "E05",
+        "Statistics · distribution looks unusual",
+        "Student actually found skew/clusters or non-normal shape",
+        "Would contrasting another legitimate subgroup/period help understand the distribution?",
+        "Name a meaningful comparison and why it could affect the apparent shape.",
+        "Can explore a contextual explanation for grouping/skewness.",
+        "No forced normal distribution or random additional charts.",
+        "C63",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 41,
+      "cells": [
+        "E06",
+        "Modelling · fitted relationship seems useful",
+        "Model has actually been fitted/tested and range noted",
+        "What additional conditions or independent measurements would assess its predictive usefulness?",
+        "Suggest a new realistic test range or held-out observation where feasible.",
+        "Shows whether model survives beyond calibration context.",
+        "Don't automatically claim the model is valid everywhere.",
+        "C63",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 42,
+      "cells": [
+        "E07",
+        "Modelling · model accuracy/fit proved limited",
+        "Real model discrepancy or assumption issue was confirmed",
+        "Would changing one relevant assumption, parameter or model form address the observed discrepancy?",
+        "Specify the particular assumption/range/model candidate and the mathematical test.",
+        "Could explain residual structure or improve reliable predictions.",
+        "Avoid vague 'use better maths' or claiming a model was wrong without testing.",
+        "C63",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 43,
+      "cells": [
+        "E08",
+        "Optimisation · practical choice depends on constraints",
+        "An actual feasible optimum or trade-off was found",
+        "What extra constraint or different objective would change the optimal decision?",
+        "Choose a real constraint such as budget/geometry/material or a genuine second objective.",
+        "Could reveal a trade-off important to the intended beneficiary.",
+        "Only relevant if optimisation was actually done; not just planned in IA proposal.",
+        "C63",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 44,
+      "cells": [
+        "E09",
+        "Measurement-driven model · key uncertainty mattered",
+        "Recorded source/measurement uncertainty affects result",
+        "Could higher-quality evidence meaningfully distinguish between two plausible outcomes?",
+        "Identify which variable's accuracy and what decision it would alter.",
+        "A justified improvement in precision may make results more useful.",
+        "Do not frame 'difficulty with equipment' as the limitation or claim arbitrarily smaller error.",
+        "C63",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 45,
+      "cells": [
+        "E10",
+        "Theoretical · conjecture/proof has scope",
+        "Investigation has a demonstrated pattern/counterexample or restricted theorem",
+        "Could the result generalise to another case, dimension or different mathematical condition?",
+        "Name exact changed condition and potential proof/counterexample question.",
+        "Extends mathematical understanding beyond the current proven case.",
+        "Do not present several tested examples as a proof.",
+        "C63",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 46,
+      "cells": [
+        "E11",
+        "Unexpected finding still not explained",
+        "A genuine unresolved discrepancy is recorded",
+        "Which one alternative view or mathematical check could distinguish your leading explanations?",
+        "A targeted counterexample, different valid model or sensitivity comparison.",
+        "Shows a mathematically motivated continuation of honest uncertainty.",
+        "Do not retcon the original prediction or invent a tested explanation.",
+        "C63",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 47,
+      "cells": [
+        "E12",
+        "No meaningful extension identified",
+        "Student has a coherent supported answer; no further question is obvious",
+        "Would ending with the justified answer be stronger than inventing an extension?",
+        "Allow None/not sure yet; possibly mention a genuine boundary without a new experiment.",
+        "An honest conclusion is preferable to filler.",
+        "Future steps encouraged, not compulsory invented research.",
+        "C63",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 50,
+      "cells": [
+        "FOCUSED CONCLUSION CHECKLIST  |  Use after writing, not as mandatory section headings"
+      ]
+    },
+    {
+      "row": 52,
+      "cells": [
+        "ID",
+        "Student check",
+        "What success looks like",
+        "Review earlier part",
+        "What to avoid",
+        "Status"
+      ]
+    },
+    {
+      "row": 53,
+      "cells": [
+        "A01",
+        "Does my ending clearly respond to the investigation aim?",
+        "A short direct answer, including if partially inconclusive",
+        "Refer to the aim and strongest findings",
+        "No new explanation of the entire project.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 54,
+      "cells": [
+        "A02",
+        "Do I draw together meaningful results instead of listing each in order?",
+        "Synthesis shows how key results connect",
+        "Reference one or two earlier figures/equations only if needed",
+        "No repeated figures, full tables or worked calculations.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 55,
+      "cells": [
+        "A03",
+        "Does the final meaning for the intended beneficiary reflect what the maths genuinely supports?",
+        "A defensible takeaway, choice or advice",
+        "Reuse intended audience and actual findings",
+        "No inflated social impact or causal leap.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 56,
+      "cells": [
+        "A04",
+        "If original prediction matters, have I dealt with it honestly?",
+        "Briefly state overall alignment or surprise",
+        "Use reflection written alongside original result",
+        "No relabeling the old prediction to look correct.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 57,
+      "cells": [
+        "A05",
+        "Are any crucial qualifications concise and already grounded?",
+        "Only necessary uncertainty, scope or assumption noted",
+        "Refer to relevant earlier method/evaluation",
+        "No new generic limitation paragraph.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 58,
+      "cells": [
+        "A06",
+        "Have I offered a meaningful further mathematical question, if one naturally follows?",
+        "1–2 concrete future ideas with reasons, or no extension",
+        "Select based on actual outputs",
+        "No 'do more research' without saying why.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 59,
+      "cells": [
+        "A07",
+        "Have I avoided presenting work already done as future work?",
+        "Clear distinction between completed and suggested next steps",
+        "Check method/result history",
+        "No fabricated future study.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 60,
+      "cells": [
+        "A08",
+        "Are new diagrams, calculations, method descriptions and raw data absent from the conclusion?",
+        "No material whose proper home is Exploration",
+        "Move missing detail to relevant earlier stage",
+        "Conclusion is not an appendix or second Maths section.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 61,
+      "cells": [
+        "A09",
+        "Is reflection/evaluation visible THROUGHOUT the investigation?",
+        "Students explain methods, findings, accuracy and changes where they occur",
+        "Use C20/C34/C40/C50 saved reflections",
+        "Don't pad the conclusion with delayed evaluation.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 62,
+      "cells": [
+        "A10",
+        "Is the conclusion concise, coherent and in my own voice?",
+        "A satisfying short end, no prescribed length or paragraph formula",
+        "Student's own writing and key linked insights",
+        "Don't generate a stock 'In conclusion' template.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 65,
+      "cells": [
+        "QUALITY / NAVIGATION TESTS  |  Planned checks for student website; do not mark tested before implementation"
+      ]
+    },
+    {
+      "row": 67,
+      "cells": [
+        "Test ID",
+        "Actual student context",
+        "Expected behaviour",
+        "Must NOT occur",
+        "Important guardrail",
+        "Status"
+      ]
+    },
+    {
+      "row": 68,
+      "cells": [
+        "T01",
+        "Reflection already present after each method",
+        "Conclusion pulls only 2–3 strongest findings into synthesis.",
+        "No repeated method-by-method evaluation prompts.",
+        "Student's existing reflection IDs are referenced.",
+        "To test"
+      ]
+    },
+    {
+      "row": 69,
+      "cells": [
+        "T02",
+        "Student has unfinished earlier reflection",
+        "Offer a reversible link to that exact graph/method.",
+        "Don't demand long evaluation in final conclusion.",
+        "Preserve conclusion draft when navigating away/back.",
+        "To test"
+      ]
+    },
+    {
+      "row": 70,
+      "cells": [
+        "T03",
+        "Real findings contradict original prediction",
+        "Conclude honestly and note important insight, with next step if justified.",
+        "Don't rewrite initial prediction or force a positive result.",
+        "Future direction follows the surprising evidence.",
+        "To test"
+      ]
+    },
+    {
+      "row": 71,
+      "cells": [
+        "T04",
+        "Student only has statistical association",
+        "Suggestion is qualified advice and possible third-variable follow-up.",
+        "No automatic causal recommendation.",
+        "Audience implication remains within mathematical support.",
+        "To test"
+      ]
+    },
+    {
+      "row": 72,
+      "cells": [
+        "T05",
+        "Model fitted only within observed range",
+        "Future idea may be independent validation/changed range.",
+        "No unsupported extrapolation.",
+        "No repeated calibration plots in conclusion.",
+        "To test"
+      ]
+    },
+    {
+      "row": 73,
+      "cells": [
+        "T06",
+        "Theoretical IA with no beneficiary outside maths",
+        "Explain mathematical insight and logical possible generalisation.",
+        "No forced real-world advice or sampling extension.",
+        "Focus stays on actual mathematical questions.",
+        "To test"
+      ]
+    },
+    {
+      "row": 74,
+      "cells": [
+        "T07",
+        "Student asks for more next-step ideas",
+        "Show at most 2 context-matched, on-demand ideas or None.",
+        "No unrelated models or unstarted maths assumed completed.",
+        "Student chooses or writes own, may dismiss.",
+        "To test"
+      ]
+    },
+    {
+      "row": 75,
+      "cells": [
+        "T08",
+        "Conclusion repeats graphs/calculations",
+        "Prompt targeted trimming/referencing earlier results.",
+        "Do not duplicate content as new analysis.",
+        "Student retains authentic synthesis.",
+        "To test"
+      ]
+    },
+    {
+      "row": 76,
+      "cells": [
+        "T09",
+        "Student has genuinely inconclusive answer",
+        "Allow uncertainty as the answer, with meaningful boundary.",
+        "No forced recommendation or fake investigation success.",
+        "Next steps can target a real unresolved issue.",
+        "To test"
+      ]
+    },
+    {
+      "row": 80,
+      "cells": [
+        "HANDOVER RULE: The Planning document supplies the original aim/prediction/beneficiary. Only actual Completing work supplies findings, ongoing reflections, limitations, concluding synthesis, future mathematical directions and any finished text."
+      ]
+    }
+  ]
+}
