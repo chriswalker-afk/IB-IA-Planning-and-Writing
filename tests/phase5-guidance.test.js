@@ -82,6 +82,7 @@ test("already covered, not relevant, deferred and saved-note statuses suppress r
  const restored=normalizeProjectState(JSON.parse(JSON.stringify(s)));
  assert.equal(restored.writingLedger[cue.key].status,"already-covered");
  applyPlanningField(restored,"aim","I now aim to model a different quantity");
+ assert.equal(quietAutoWritingCue(restored,"C10"),false);
  assert(eligibleWritingCues(restored,"C10").some(x=>x.id==="W01"));
 });
 test("saving a private cue thought never claims the original Word/Google Doc was edited",()=>{
