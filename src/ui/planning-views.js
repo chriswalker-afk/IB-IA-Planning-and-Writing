@@ -97,12 +97,13 @@ export function createPlanningViews(ctx){
     {value:"no",title:"Help me find one",desc:"I need an idea to start from.",icon:"compass"},
     {value:"unsure",title:"I have a few ideas",desc:"I want to compare them briefly.",icon:"layers"}],{stack:true})+
     small(F("idea","A possible topic or question","e.g. patterns in a sport, design or natural phenomenon")+
-    F("interest","My interests (optional)","A hobby, everyday decision or mathematical curiosity")),
+    F("interest","My interests (optional)","A hobby, everyday decision or mathematical curiosity")+
+    '<div class="button-row">'+route("Compare two or three possible ideas","Optional: compare more than one idea")+'</div>'),
     "<h4>A useful first question</h4><p>Look for something you can investigate mathematically with accessible evidence or a defensible mathematical starting point. One idea is enough.</p>");
    case "N00B":return stepBody("Find a question worth exploring.","Think about a genuine interest, a recurring observation or a mathematical pattern.",
     F("interest","Things I'm interested in","Sport, environment, music, games, transport, geometry, …",{type:"textarea",rows:2})+
     F("idea","One possible mathematical investigation","You can keep it broad for now.")+
-    '<div class="task-section">'+route("Compare a few possible ideas","I brainstormed possible ideas")+'</div>',
+    '<div class="task-section">'+route("Compare a few possible ideas","I brainstormed possible ideas")+route("Return to starting choices","Return")+'</div>',
     "<h4>Possible directions</h4><p>Explore a changing measurement, a design to optimise, a surprising numerical pattern, a comparison you could actually make, or a relationship you can model. Avoid choosing complexity for its own sake.</p>");
    case "N00C":return stepBody("Compare your possibilities.","A quick comparison is enough; you don't need three full IA plans.",
     F("otherIdea1","Alternative idea 1 (optional)","Another promising question")+
@@ -344,7 +345,7 @@ export function createPlanningViews(ctx){
     F("teacherNeed","Which part of the plan needs advice?","Maths, data, access, safety or scope",{type:"textarea",rows:2})+
     F("teacherQuestion","A specific question for my teacher","What would you like to clarify?",{type:"textarea",rows:3})+
     F("teacherSafeAction","One safe step I can do before getting feedback","Review an assumption, refine an aim or prepare a permitted example",{type:"textarea",rows:2})+
-    '<div class="button-row">'+route("Plan milestones and course mathematics","Optional: plan milestones before export")+
+    '<div class="button-row">'+route("Revise my aim","Revisit existing planning answers")+route("Plan milestones and course mathematics","Optional: plan milestones before export")+
     route("Plan a safe first mathematical step","Optional: identify first safe mathematical step")+'</div>'+
     callout("Provisional summary stays available","An unresolved flag must remain visible. Do not begin affected collection requiring permission, but you can save this work.",true),
     "<h4>Safety comes first</h4><p>A teacher checkpoint does not mean consent or safety permission has been granted. It also does not prevent saving or printing a provisional plan.</p>",
