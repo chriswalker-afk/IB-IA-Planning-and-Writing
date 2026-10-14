@@ -400,7 +400,6 @@ export function createCompletingViews(ctx){
    html:bridgeFromPrior()+
     F("pmccInterpretation","What value or finding did I calculate and what does it mean?","Describe actual direction and strength of LINEAR association",{type:"textarea",rows:3})+
     (f.scatterPattern?smallSummary("Observed scatter shape",f.scatterPattern):"")+
-    suggestionCards()+
     F("nextQuestion","My next question, if another is needed","A model, outlier check, different explanation, or no further calculation",{type:"textarea",rows:2})+
     F("nextReason","Why would that next step help the aim?","The actual r and graph—not a planned coefficient—drive the choice",{type:"textarea",rows:2})+
     info("Association is not causation","Even a strong coefficient does not show that one variable caused another. Avoid forcing a straight-line regression on a curved pattern.")+
