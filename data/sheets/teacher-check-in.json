@@ -1,0 +1,216 @@
+{
+  "schemaVersion": 1,
+  "sourceSheet": "Teacher Check-in",
+  "sourceBounds": {
+    "rows": 80,
+    "columns": 7
+  },
+  "rowCount": 20,
+  "nonemptyCellCount": 104,
+  "rows": [
+    {
+      "row": 1,
+      "cells": [
+        "TEACHER CHECK-IN  |  No dead ends"
+      ]
+    },
+    {
+      "row": 2,
+      "cells": [
+        "Specialist Teacher Check-in (N08) records unresolved concerns. Every other student is also offered a shorter optional teacher check-in at N06T; do not ask the same questions twice."
+      ]
+    },
+    {
+      "row": 3,
+      "cells": [
+        "Only show relevant questions. Reuse previous answers. Offer 'Not sure yet' and allow non-essential fields to remain blank."
+      ]
+    },
+    {
+      "row": 4,
+      "cells": [
+        "No-data investigations still require teacher discussion before being pursued. Unresolved safeguarding, privacy or permissions must be resolved before affected actions."
+      ]
+    },
+    {
+      "row": 5,
+      "cells": [
+        "A personalised summary is available before feedback. Plans can change after advice or findings; a teacher conversation is not required merely to export the PDF/Word."
+      ]
+    },
+    {
+      "row": 6,
+      "cells": [
+        "Question wording is provisional. Availability of a summary on every teacher-advice route is an agreed requirement."
+      ]
+    },
+    {
+      "row": 8,
+      "cells": [
+        "ID",
+        "Trigger",
+        "Student-facing short question or action",
+        "Answer format",
+        "When it appears",
+        "Report behaviour / safeguard",
+        "Status"
+      ]
+    },
+    {
+      "row": 9,
+      "cells": [
+        "T01",
+        "Any teacher flag",
+        "Which part of your idea would you like to discuss with your teacher?",
+        "Short-answer box",
+        "Whenever any teacher flag appears",
+        "This text appears in 'Questions for my teacher'.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 10,
+      "cells": [
+        "T02",
+        "No-data / theoretical idea",
+        "What would you like to investigate mathematically without collecting a dataset?",
+        "Short-answer box",
+        "No-data choice at investigation-type node",
+        "Do not ask for primary/secondary sources; report data-readiness as Not applicable.",
+        "Proposed"
+      ]
+    },
+    {
+      "row": 11,
+      "cells": [
+        "T03",
+        "No-data / theoretical idea",
+        "What mathematics, small example or simple case could you discuss?",
+        "Short-answer box + 'Not sure yet'",
+        "No-data choice",
+        "Course selection and outside-course maths may be recorded without data questions.",
+        "Proposed"
+      ]
+    },
+    {
+      "row": 12,
+      "cells": [
+        "T04",
+        "AA HL / course outside initial scope",
+        "Which course do you study, and what mathematics might you use?",
+        "Course selection + short answer",
+        "AA HL / Other course selected",
+        "No AI SL/AA SL maths-suitability score; record tentative mathematics and flag teacher review.",
+        "Proposed"
+      ]
+    },
+    {
+      "row": 13,
+      "cells": [
+        "T05",
+        "Maths outside syllabus or unsuitable depth",
+        "Which method do you hope to use, and how might it help answer your question?",
+        "Short-answer box + 'Not sure yet'",
+        "Outside-course or unconfirmed maths",
+        "Preserve student explanation; suitability 'Not yet assessed' pending teacher.",
+        "Proposed"
+      ]
+    },
+    {
+      "row": 14,
+      "cells": [
+        "T06",
+        "Privacy, consent, safety or access",
+        "What approval or advice is still needed before collecting or using the data?",
+        "Short-answer box",
+        "Unresolved permission, consent, safeguarding or private data",
+        "Do not request individual participant details; do not collect or use affected data until approved.",
+        "Proposed"
+      ]
+    },
+    {
+      "row": 15,
+      "cells": [
+        "T07",
+        "Data/resources unavailable",
+        "What alternative or smaller version could you try if access is not secured?",
+        "Optional short-answer box",
+        "Data inaccessible or practical barriers flagged",
+        "Retain earlier plan/rating, and show limitations honestly; no invented alternative.",
+        "Proposed"
+      ]
+    },
+    {
+      "row": 16,
+      "cells": [
+        "T08",
+        "Any teacher flag",
+        "What specific question will you ask your teacher?",
+        "Short-answer box",
+        "All teacher-advice routes",
+        "Included in the printable summary as a concrete talking point.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 17,
+      "cells": [
+        "T09",
+        "Any teacher flag",
+        "What can you safely do next while waiting for advice?",
+        "Optional short-answer box + 'Not sure yet'",
+        "All teacher-advice routes",
+        "Do not propose restricted collection; 'Discuss with teacher' is sufficient.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 18,
+      "cells": [
+        "T10",
+        "Any teacher flag",
+        "Is there anything else you want your teacher to know about the idea?",
+        "Optional short-answer box",
+        "All teacher-advice routes",
+        "Preserve student notes if supplied; do not fabricate unanswered information.",
+        "Proposed"
+      ]
+    },
+    {
+      "row": 19,
+      "cells": [
+        "T11",
+        "Any route",
+        "Review and generate a provisional summary",
+        "Review + PDF / optional Word export",
+        "Always, before or after teacher discussion",
+        "Export is NEVER blocked by lack of teacher feedback; prominently flag pending decisions.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 20,
+      "cells": [
+        "T12",
+        "No-data / theoretical idea",
+        "Is there a mathematical pattern or claim you tentatively think might be true?",
+        "Optional conjecture box / Not sure",
+        "No-data choice only",
+        "Use a mathematical conjecture rather than asking about distributions or correlations. Summary export remains available.",
+        "Proposed"
+      ]
+    },
+    {
+      "row": 21,
+      "cells": [
+        "T13",
+        "No-data / theoretical idea",
+        "Why do you think that claim or pattern might hold?",
+        "Separate short-answer box",
+        "If a tentative conjecture was entered",
+        "Capture their mathematical reasoning; no forced proof or automatic course rating.",
+        "Proposed"
+      ]
+    }
+  ]
+}
