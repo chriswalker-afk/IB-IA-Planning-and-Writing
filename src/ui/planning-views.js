@@ -225,6 +225,8 @@ export function createPlanningViews(ctx){
     F("externalRisks","Any time-sensitive event or dependency on others?","Weather, events, responses or travel",{type:"textarea",rows:2})+
     ((f.cleaningBurden==="lots"||f.unsecured||f.externalRisks)?F("backupMethod","A credible backup if something fails","A suitable alternate method, not invented observations",{type:"textarea",rows:2}):"")+
     '<details class="plan-details"><summary>Relevant further feasibility checks (optional)</summary><div class="task-section">'+
+    ((f.unsecured||f.cleaningBurden==="lots"||f.externalRisks)?
+      F("minimumVersion","Smallest workable version of this investigation","A narrower scope, simpler method or smaller permitted sample",{type:"textarea",rows:2}):"")+
     (f.softwareReady!=="yes"?select("pilotReady","Have you tried one data point all the way to a graph or calculation?",[
       ["yes","Yes — a small complete test"],["no","Not yet"],["unsure","Not yet possible or unsure"]]):"")+
     (f.dependencies||f.unsecured?select("costIssue","Are cost, travel or specialist access an issue?",[
@@ -345,6 +347,7 @@ export function createPlanningViews(ctx){
     F("teacherNeed","Which part of the plan needs advice?","Maths, data, access, safety or scope",{type:"textarea",rows:2})+
     F("teacherQuestion","A specific question for my teacher","What would you like to clarify?",{type:"textarea",rows:3})+
     F("teacherSafeAction","One safe step I can do before getting feedback","Review an assumption, refine an aim or prepare a permitted example",{type:"textarea",rows:2})+
+    F("teacherExtra","Anything else you would like your teacher to know? (optional)","An important uncertainty, interest or practical constraint",{type:"textarea",rows:2})+
     '<div class="button-row">'+route("Revise my aim","Revisit existing planning answers")+route("Plan milestones and course mathematics","Optional: plan milestones before export")+
     route("Plan a safe first mathematical step","Optional: identify first safe mathematical step")+'</div>'+
     callout("Provisional summary stays available","An unresolved flag must remain visible. Do not begin affected collection requiring permission, but you can save this work.",true),
