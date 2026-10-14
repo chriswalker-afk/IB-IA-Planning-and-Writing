@@ -245,3 +245,60 @@ test("all guidance state is preserved in a full JSON project backup without asse
  assert.equal(restored.completion.confirmedLimitations[0].consequence,"Comparisons across years may be invalid");
  assert.equal(restored.completion.guidanceUi.limitsExpanded,true);
 });
+
+test("verified secondary-source writing appears only when that source is actually being used and cited",()=>{
+ const s=create();applyPlanningField(s,"kind","statistics");
+ applyPlanningField(s,"dataSource","secondary");
+ applyPlanningField(s,"secondaryVerified","verified");
+ setCompletionNode(s,"C20");
+ setCompletionField(s,"dataStatus","candidate");
+ setCompletionField(s,"actualSource","A tentative dataset");
+ setCompletionField(s,"sourceCitation","Publisher name and URL");
+ assert(!eligibleWritingCues(s).some(x=>x.id==="W08"));
+ setCompletionField(s,"dataStatus","ready");
+ assert(eligibleWritingCues(s).some(x=>x.id==="W08"));
+ setCompletionField(s,"actualSource","");
+ assert(!eligibleWritingCues(s).some(x=>x.id==="W08"));
+});
+test("real technology support does not bleed into an unrelated later calculation",()=>{
+ const s=create();
+ const first=entry(s,{methodId:"quadratic-fit",status:"completed",result:"Model result"});
+ setCompletionNode(s,"C40T");
+ setCompletionField(s,"technologyTool","Spreadsheet regression");
+ setCompletionField(s,"technologyInput","Real measured observations");
+ setCompletionField(s,"technologyOutcome","Quadratic fit parameters");
+ assert.equal(s.completion.fields.technologyForEntryId,first.id);
+ assert(relevantMathsGuidance(s).some(x=>x.id==="M06"));
+ const next=entry(s,{methodId:"algebra",status:"completed",result:"Exact symbolic result"});
+ setCompletionNode(s,"C40T");
+ assert(!relevantMathsGuidance(s).some(x=>x.id==="M06"));
+ assert(!eligibleWritingCues(s).some(x=>x.id==="W22"));
+});
+test("changing a recorded source after completing maths flags dependent results but preserves their conclusions",()=>{
+ const s=create();setCompletionField(s,"dataStatus","ready");
+ setCompletionField(s,"actualSource","Measured height data from an authorised survey");
+ const result=entry(s,{status:"completed",kind:"model",methodId:"linear-regression",
+  result:"A fitted equation",interpretation:"A justified restricted-domain conclusion"});
+ s.completion.stages.C40="complete";
+ setCompletionField(s,"actualSource","Corrected dataset with different variable definitions");
+ assert.equal(result.reviewNeeded,"yes");
+ assert.equal(s.completion.stages.C40,"needs-review");
+ assert.equal(result.result,"A fitted equation");
+ assert.equal(result.interpretation,"A justified restricted-domain conclusion");
+});
+test("measured-geometry limitations require a relevant measured length, not arbitrary precision metadata",()=>{
+ const s=create();applyPlanningField(s,"kind","modelling");
+ entry(s,{methodId:"geometric-model",status:"completed",result:"Area calculation",kind:"model"});
+ setCompletionNode(s,"C40");
+ s.completion.accuracyDecisions=[{id:"a1",quantity:"Temperature",unit:"C",resolution:"1 C",policy:"Nearest degree"}];
+ assert(!relevantLimitations(s).some(x=>x.id==="L24"));
+ s.completion.accuracyDecisions.push({id:"a2",quantity:"Measured width",unit:"cm",resolution:"0.1 cm",policy:"Justified"});
+ assert(relevantLimitations(s).some(x=>x.id==="L24"));
+});
+test("course-level-only work is a student-declared condition, not inferred from 'other' technique names",()=>{
+ const s=create(),e=entry(s,{methodId:"other",knowledge:"unsure",status:"completed",result:"A genuine expression"});
+ setCompletionNode(s,"C40D");
+ assert(!relevantMathsGuidance(s).some(x=>x.id==="M12"));
+ e.priorLearningOnly="yes";
+ assert(relevantMathsGuidance(s).some(x=>x.id==="M12"));
+});
