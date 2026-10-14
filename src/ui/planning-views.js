@@ -143,7 +143,7 @@ export function createPlanningViews(ctx){
     bullet("Statistics","Explore actual data through graphs, distributions, relationships or comparison.")+
     bullet("Modelling","Build and test mathematical representations with clear variables, parameters and assumptions.")+
     bullet("Theoretical exploration","Test a pattern or investigate an underlying mathematical property, often without an empirical dataset.")+
-    '<p class="text-small text-muted">Choose which seems promising when you return. It's fine to remain uncertain.</p>',
+    '<p class="text-small text-muted">Choose which seems promising when you return. It is fine to remain uncertain.</p>',
     "<h4>Still unsure?</h4><p>Ask which mathematical question interests you most and what evidence or examples you can realistically access.</p>","Return to investigation choices");
    case "N02T":return stepBody("This needs a teacher conversation.","A theoretical or no-data investigation may be valuable, but its mathematical suitability should be checked.",
     F("theoreticalAim","What mathematical property or conjecture might you investigate?","e.g. an identity, geometric pattern or optimisation case",{type:"textarea",rows:3})+
@@ -313,7 +313,7 @@ export function createPlanningViews(ctx){
     callout("Plans are provisional","A prediction that turns out to be wrong can be an excellent mathematical starting point. Do not change findings to make them fit the plan."),
     "<h4>A contingency isn't an extra IA section</h4><p>Keep logistical concerns in planning notes. Only discuss actual mathematical limitations at the point where they affect an analysis.</p>");
    case "N06T":return stepBody("A brief teacher check-in.","Every student can note one question. If you've already completed a specialist check-in, your answers are kept.",
-    f.teacherQuestion?summary("Existing teacher question",f.teacherQuestion):""+
+    (f.teacherQuestion?summary("Existing teacher question",f.teacherQuestion):"")+
     F("universalTeacherQuestion","Anything you would like to discuss with your teacher? (optional)","Aim, mathematical suitability, feasibility or what you'd like to achieve",{type:"textarea",rows:2})+
     F("teacherSchedule","Possible discussion date (optional)","",{type:"date"})+
     (planningFlags(state).length?teacherWarnings(state):callout("You can still ask a question","A teacher conversation is useful but does not block your provisional summary.")),
