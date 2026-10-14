@@ -1,0 +1,370 @@
+{
+  "schemaVersion": 1,
+  "sourceSheet": "Prediction Nudges",
+  "sourceBounds": {
+    "rows": 90,
+    "columns": 9
+  },
+  "rowCount": 29,
+  "nonemptyCellCount": 213,
+  "rows": [
+    {
+      "row": 1,
+      "cells": [
+        "PREDICTION NUDGES  |  IA type → provisional prediction → WHY? → revisit maths"
+      ]
+    },
+    {
+      "row": 2,
+      "cells": [
+        "Show only nudge choices relevant to statistics or modelling AND the student's data context; do not display the whole library."
+      ]
+    },
+    {
+      "row": 3,
+      "cells": [
+        "After a student selects a suitable prediction, ask WHY they expect it, then: 'If true, what would that mean for [selected beneficiary]?' Provide an inline 'Edit who this is for?' control."
+      ]
+    },
+    {
+      "row": 4,
+      "cells": [
+        "Use the current answer to 'Who is it for?' (self / audience / both) from Planning. On edits, refresh the implication prompt and request confirmation of any previously typed answer; never erase it automatically."
+      ]
+    },
+    {
+      "row": 5,
+      "cells": [
+        "Offer a free-text prediction and 'Not sure yet'. Contradictory results are valid; do not reward guessing a strong relationship."
+      ]
+    },
+    {
+      "row": 6,
+      "cells": [
+        "For no-data/theoretical ideas, offer a conjecture and teacher check-in without requiring datasets or statistical predictions."
+      ]
+    },
+    {
+      "row": 8,
+      "cells": [
+        "ID",
+        "IA route",
+        "Data context",
+        "Student-facing prediction nudge",
+        "Consider: AI SL maths",
+        "Consider: AA SL maths",
+        "Mathematical caveat",
+        "Follow-up",
+        "Status"
+      ]
+    },
+    {
+      "row": 9,
+      "cells": [
+        "S01",
+        "Statistics",
+        "Paired numerical",
+        "Do you expect a roughly linear positive relationship?",
+        "Scatter plots and Pearson's r; Linear regression",
+        "Pearson's correlation coefficient; Linear regression",
+        "Planning only: this is a tentative prediction for PAIRED numerical data. After the real scatter, decide whether PMCC adds value; discuss linearity/outliers/causation when actually calculating/interpreting it.",
+        "Choose → Why? → Review maths",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 10,
+      "cells": [
+        "S02",
+        "Statistics",
+        "Paired numerical",
+        "Do you expect a roughly linear negative relationship?",
+        "Scatter plots and Pearson's r; Linear regression",
+        "Pearson's correlation coefficient; Linear regression",
+        "Planning only: a negative relation is one possibility, not an observed result. Check the ACTUAL scatter first; interpret correlation and method-specific limitations only if subsequently used.",
+        "Choose → Why? → Review maths",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 11,
+      "cells": [
+        "S03",
+        "Statistics",
+        "Paired numerical",
+        "Could the relationship be curved rather than straight?",
+        "Spearman's rank correlation; Compare and evaluate fitted models",
+        "Linear, quadratic or polynomial functions; explore scatter plot",
+        "Planning only: predicted curvature is not evidence. If the actual plot is monotonic but curved, a course-appropriate rank/model technique MAY suit; discuss the mathematics at actual use.",
+        "Choose → Why? → Consider curves",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 12,
+      "cells": [
+        "S04",
+        "Statistics",
+        "Paired numerical",
+        "Might there be little or no clear relationship?",
+        "Sampling and descriptive statistics; Scatter plots and Pearson's r",
+        "Sampling and descriptive statistics; Pearson's correlation coefficient",
+        "A weak/absent relationship is a valid possible finding, not a failure. Wait for actual paired observations before deciding whether any coefficient would help the aim.",
+        "Choose → Why? → Explore uncertainty",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 13,
+      "cells": [
+        "S05",
+        "Statistics",
+        "One numerical variable",
+        "Do you predict an approximately symmetric, bell-shaped distribution?",
+        "Sampling and descriptive statistics; Normal distribution",
+        "Sampling and descriptive statistics; Normal distribution",
+        "A normal model is a possible future approach only after inspecting real continuous numerical data. Explain fit and its restrictions with the ACTUAL model, not the prediction.",
+        "Choose → Why? → Consider histogram",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 14,
+      "cells": [
+        "S06",
+        "Statistics",
+        "One numerical variable",
+        "Do you expect a skewed distribution or outliers?",
+        "Sampling and descriptive statistics",
+        "Sampling and descriptive statistics",
+        "Compare median, spread and outliers; do not assume normality.",
+        "Choose → Why? → Consider descriptive measures",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 15,
+      "cells": [
+        "S07",
+        "Statistics",
+        "One numerical variable",
+        "Do you expect distinct clusters or more than one peak?",
+        "Sampling and descriptive statistics",
+        "Sampling and descriptive statistics",
+        "Investigate whether the data mix subgroups before using one normal curve.",
+        "Choose → Why? → Consider groups",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 16,
+      "cells": [
+        "S08",
+        "Statistics",
+        "Two groups",
+        "Do you expect one group to have a higher mean than another?",
+        "Sampling and descriptive statistics; Two-sample t-test",
+        "Sampling and descriptive statistics",
+        "Two-sample t-test is in the AI SL menu, not AA SL. This is a possible planning idea only; discuss assumptions and limitations WHEN performing a justified test.",
+        "Choose → Why? → Consider comparisons",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 17,
+      "cells": [
+        "S09",
+        "Statistics",
+        "Two groups",
+        "Might the groups differ more in spread than in mean?",
+        "Sampling and descriptive statistics",
+        "Sampling and descriptive statistics",
+        "A comparison of means is not a test of spread; use appropriate measures.",
+        "Choose → Why? → Consider variation",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 18,
+      "cells": [
+        "S10",
+        "Statistics",
+        "Two categorical variables",
+        "Do you predict an association between these categories?",
+        "Chi-squared test for independence; Conditional probability or expected value",
+        "Conditional probability and expected value; descriptive frequencies",
+        "Chi-squared independence is an AI SL menu option; it is not mandatory merely because categories exist. Evaluate expected counts/assumptions if the test is later ACTUALLY performed.",
+        "Choose → Why? → Consider categorical maths",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 19,
+      "cells": [
+        "S11",
+        "Statistics",
+        "Two categorical variables",
+        "Might the categories be independent?",
+        "Chi-squared test for independence",
+        "Conditional probability and expected value",
+        "No association is an informative possible finding, not a failure.",
+        "Choose → Why? → Check independence",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 20,
+      "cells": [
+        "S12",
+        "Statistics",
+        "Repeated yes/no trials",
+        "Do you expect the count of successes to follow a binomial distribution?",
+        "Binomial distribution",
+        "Binomial distribution",
+        "A binomial model may be suitable with fixed trials, two outcomes, stable probability and independence; evaluate these conditions WHEN using the real model, not as a collection-stage critique.",
+        "Choose → Why? → Check assumptions",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 21,
+      "cells": [
+        "M01",
+        "Modelling",
+        "Rate / two quantities",
+        "Do you predict a roughly constant rate of change, giving a linear model?",
+        "Linear functions and models; Linear regression",
+        "Linear, quadratic or polynomial functions; Linear regression",
+        "PMCC is only a potential technique for ACTUAL paired numerical data that look approximately linear. Model-fit limitations are discussed when a model is actually fitted.",
+        "Choose → Why? → Consider linear maths",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 22,
+      "cells": [
+        "M02",
+        "Modelling",
+        "Growth / decay",
+        "Do you predict a roughly fixed percentage increase or decrease per period?",
+        "Exponential growth or decay; Geometric sequences and series",
+        "Exponential or logarithmic functions; Arithmetic or geometric sequences",
+        "Constant percentage change differs from a constant absolute change.",
+        "Choose → Why? → Consider exponential maths",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 23,
+      "cells": [
+        "M03",
+        "Modelling",
+        "Turning point",
+        "Do you expect a maximum, minimum or change of direction?",
+        "Quadratic or cubic models; Optimisation using differentiation",
+        "Linear, quadratic or polynomial functions; Stationary points and optimisation",
+        "A predicted turning point doesn't demonstrate a quadratic law. Introduce genuine constraints with the model and assess the real optimum/domain once mathematical work is performed.",
+        "Choose → Why? → Consider optimisation",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 24,
+      "cells": [
+        "M04",
+        "Modelling",
+        "Periodic behaviour",
+        "Do you predict a pattern repeating at regular intervals?",
+        "Sinusoidal or periodic models",
+        "Trigonometric functions",
+        "Check that enough cycles exist and periodicity is plausible.",
+        "Choose → Why? → Consider sine/cosine",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 25,
+      "cells": [
+        "M05",
+        "Modelling",
+        "Scaling",
+        "Might one quantity change approximately as a power of another?",
+        "Power models; Compare and evaluate fitted models",
+        "Logarithms and exponential relationships; functions comparisons",
+        "Fit and interpretation matter; outside-course methods need teacher discussion.",
+        "Choose → Why? → Consider scaling models",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 26,
+      "cells": [
+        "M06",
+        "Modelling",
+        "Optimal value",
+        "Do you expect there to be a best value, such as a maximum capacity or minimum cost?",
+        "Optimisation using differentiation; Area, surface area and volume models",
+        "Stationary points and optimisation; Definite integration and areas",
+        "Optimisation needs a clear objective, relevant constraints and a realistic model.",
+        "Choose → Why? → Consider constraints",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 27,
+      "cells": [
+        "M07",
+        "Modelling",
+        "Imperfect fit",
+        "Could more than one model be needed to describe the situation?",
+        "Compare and evaluate fitted models",
+        "Compare functions and check model behaviour",
+        "A weak fit can prompt useful model comparison and reflection.",
+        "Choose → Why? → Evaluate alternatives",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 28,
+      "cells": [
+        "T01",
+        "Teacher-led/no-data",
+        "Conjecture",
+        "Do you have a tentative conjecture about a mathematical pattern or property?",
+        "Other/free text; teacher discussion",
+        "Other/free text; teacher discussion",
+        "Do not force data-based predictions on a theoretical investigation.",
+        "Optional conjecture → Why? → Teacher",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 29,
+      "cells": [
+        "X01",
+        "Any",
+        "Other",
+        "I have a different prediction and would like to describe it.",
+        "Retain initial course choices",
+        "Retain initial course choices",
+        "Do not invent a method from ambiguous free text; offer teacher guidance.",
+        "Free text → Why? → Review",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 30,
+      "cells": [
+        "X02",
+        "Any",
+        "Unsure",
+        "Not sure yet — I would like to examine an initial sample or simplified example.",
+        "Existing selections; exploratory maths as appropriate",
+        "Existing selections; exploratory maths as appropriate",
+        "No penalty for uncertainty; encourage a safe concrete first action.",
+        "Explore first → Review",
+        "Agreed"
+      ]
+    }
+  ]
+}
