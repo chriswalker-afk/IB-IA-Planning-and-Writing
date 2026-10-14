@@ -1,55 +1,42 @@
-# IA Pathfinder — Phase 1 migration and coverage audit
+# IA Pathfinder — source migration and implementation coverage
 
-**Source:** 24-tab live Google Sheet `IA Pathfinder — Flowchart Draft`, captured 14 October 2026. Stored in GitHub as a versioned, read-only snapshot. The student-facing site is still the Phase 0 prototype.
+**Google Sheet snapshot:** \`IA Pathfinder — Flowchart Draft\`, 14 October 2026. Source sheets are preserved in \`data/sheets/*.json\`, normalized route data in \`data/flow/*.json\`, and Phase 2 catalogs in \`src/planning/\`. No changes have been made to the source Google Sheet.
 
-## Source coverage
+## Current coverage by source item
 
-| Item | Count |
-|---|---:|
-| catalog-entry | 950 |
-| report-section | 25 |
-| handover-field | 87 |
-| flow-node | 84 |
-| flow-route | 284 |
-| **Indexed records** | **1430** |
-| Source tabs fully represented as cell values | 24 |
+| Runtime status | Count | Meaning |
+|---|---:|---|
+| phase2-implemented | **166** | All 32 Planning nodes, 61 Planning routes, 51 mathematics options, 22 prediction nudges |
+| phase2-partial | **90** | Supplementary planning prompts/teacher guidance/feasibility and Phase 3 report-format requirements |
+| prototype-partial | **37** | Existing preliminary Completing interactions |
+| not-implemented | **1,137** | Primarily Completing and advanced contextual advice to be built in later phases |
+| **Total indexed records** | **1,430** | From all 24 tabs |
 
-| Current runtime status | Count |
-|---|---:|
-| not-implemented | 1373 |
-| prototype-partial | 57 |
+Total source flowchart: **84 nodes and 284 route connections**. Planning specifically: **32 nodes and 61 route connections**. The original node editorial statuses are retained: 41 Agreed, 42 Working drafts, 1 Needs discussion. Those statuses are *different* from implementation status.
 
-The source contains **84 unique nodes**, **284 route connections**, and 24 source tabs. Node editorial statuses are **41 agreed, 42 working drafts, 1 needs discussion**. These editorial statuses are *not* the website implementation status. Every indexed source item has a unique reference and row number, including cases where an ID repeats in a different catalogue.
+## Artifacts
 
-## Files and definitions
+- [Detailed row-by-row coverage register](coverage.csv): exact source ID, sheet, row, editorial status, runtime status and implementation location.
+- [Phase 2 implementation and test notes](phase-2.md): what now works in Planning, routes to review, safety distinctions, and Phase 3 handover boundaries.
+- [Source manifest](../data/catalog/index.json): all 24 sheet snapshots and source paths.
+- [Full flowchart nodes](../data/flow/nodes.json) and [routes](../data/flow/routes.json).
+- \`src/planning/catalog.js\`: AI SL/AA SL maths, prediction, feasibility, teacher prompts with provenance.
+- \`src/planning/route-table.js\`: original 61 Planning conditions and source row refs.
+- \`src/planning/engine.js\`: actual Planning state, branch execution, flags, conditional suggestions and join safeguards.
+- \`src/ui/planning-views.js\`: focused mobile/desktop student screens.
+- \`tests/planning-engine.test.js\` and \`tests/planning-ui-coverage.test.js\`: complete node rendering, routes, combined data, predictions, course menus, consent and migration.
 
-- [Detailed coverage register](coverage.csv) has one row per indexed source record, with exact source ID, tab/row, runtime status, responsible future phase and partial prototype mapping.
-- [Sheet manifest](../data/catalog/index.json) identifies all 24 preserved tabs, captures row counts, and points to source snapshots.
-- [Compact record index](../data/catalog/records.json) lists record IDs for application indexing.
-- Three `data/catalog/audit-part-*.json` files contain full content for indexed rows, retaining their cells and source references.
-- `data/sheets/*.json` preserves **all nonempty source cells**, including editorial preambles, explanations, rules, annotations and diagrams' associated text.
-- `data/flow/nodes.json` and `data/flow/routes.json` normalize the flowchart's two explicit tables.
+## Interpreting coverage
 
-These are faithful cell-value captures, not a clone of spreadsheet formatting, embedded drawings, shape connectors, formulas or comments. Diagram geometry remains in the original Sheet; website runtime logic must be driven by the normalized tables and reviewed rule definitions.
+**Source captured** does not mean implemented. An implemented Planning node means a source-linked interactive screen/branch is present and has automated test coverage. Supplementary draft prompts may still need editorial refinement even when the surrounding node is implemented.
 
-## Status definitions
+No general spreadsheet prose is evaluated as if it were executable code; approved source conditions are explicitly mapped to student actions. A provisional summary never claims to be teacher-approved and never treats expected findings as actual observations.
 
-- `sourceCaptured: true` = accessible in the repository as text, **not** implemented.
-- `prototype-partial` = an illustrative on-screen analogue exists but does not necessarily follow the Google Sheet's complete rules.
-- `not-implemented` = browser behaviour not yet verified.
-- `Agreed`, `Working draft` and `Needs discussion` remain distinct editorial statuses in the source.
-- Original route-condition prose is not executable; must be mapped to explicit, tested predicates before activation.
+## Remaining work
 
-## Outstanding implementation work
+- **Phase 3** — polished PDF/Word planning documents and resilient reimport of machine-readable projects.
+- **Phase 4** — full C-node Completing flow with flexible mathematics stages, interpretation and authentic next questions.
+- **Phase 5** — precise triggers and suppression for writing moments, mathematical limitations, accuracy reuse and mathematical learning.
+- **Phase 6** — teacher feedback, final review and comprehensive classroom acceptance testing.
 
-1. **Phase 2 Planning:** replace ten generic screens with reviewed N-node graph, joins (especially primary+secondary), student-entered values, course-specific multi-select mathematics, teacher checkpoints and genuine feasibility questions.
-2. **Phase 3 Handover:** versioned PDF/Word working report and controlled reimport/merge of data; a JSON backup does not make arbitrary documents reimportable.
-3. **Phase 4 Completing:** convert C-node flow to meaningful stage navigation without a fixed number of maths sections; support real results, true interpretations and changing investigations.
-4. **Phase 5 Guidance:** rule-based triggers and suppression ledgers for relevant writing moments, accuracy memory, PMCC decisions, limitations and explanations of new mathematics. Never show limits for unperformed techniques.
-5. **Phase 6 Quality:** teacher-draft policy, final A–E checks and end-to-end accessibility scenarios.
-
-## Definition of done for an individual requirement
-
-Before changing `runtimeStatus` to `implemented`, an item must have a verified source reference, an explicit predicate (or documented unconditional display), a state/field mapping, a view, and at least one passing end-to-end or unit test. Tests must include negative cases where irrelevant advice stays hidden. Changes to draft guidance require a deliberate editorial review. The source snapshot is frozen until intentionally regenerated from the original Sheet.
-
-No feature counts as implemented merely because its source text is in `data/`.
+No fixed number of mathematical sections, predicted IA grade, or arbitrary compulsory mathematical sophistication has been introduced.
