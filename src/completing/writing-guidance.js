@@ -23,7 +23,7 @@ const relevance=(id,x)=>{
    entry?.kind==="model");
  const accuracyRelated=accuracy.length>0&&(exists(entry?.accuracyRef)||exists(f.accuracyForResult));
  const nextMath=exists(f.nextQuestion)&&exists(f.nextReason)&&!!next;
- const techUsed=exists(f.technologyTool)&&exists(f.technologyOutcome)&&!!actualResults.length;
+ const techUsed=exists(f.technologyTool)&&exists(f.technologyOutcome)&&real&&f.technologyForEntryId===entry?.id;
  const measured=exists(f.actualMethod)&&dataSafe &&
   /measure|timing|stopwatch|ruler|sensor|scale|video|survey|collect/i.test(f.actualMethod);
  const limits=x.confirmedLimitations.length>0||exists(f.methodLimitation);
