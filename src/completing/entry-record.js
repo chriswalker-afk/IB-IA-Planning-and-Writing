@@ -4,7 +4,7 @@ export const ENTRY_BASE=Object.freeze({
  title:"",purpose:"",technique:"",knowledge:"unsure",knowledgeNotes:"",
  kind:"",status:"planned",result:"",resultRef:"",observation:"",observationText:"",
  interpretation:"",localTakeaway:"",limitations:"",nextQuestion:"",nextWhy:"",
- bridge:"",accuracyRef:"",createdAt:""
+ bridge:"",accuracyRef:"",reviewNeeded:"",reviewReason:"",reviewCheckedAt:"",createdAt:""
 });
 export function normalizeEntry(raw){
  if(!raw||typeof raw!=="object"||Array.isArray(raw))return {...ENTRY_BASE};
