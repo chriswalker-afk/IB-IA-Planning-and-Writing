@@ -1,6 +1,6 @@
 /** Student-owned writing guidance progress. No action writes to the IA document. */
 import {eligibleWritingCues} from "./writing-guidance.js";
-const actions=new Set(["write-now","covered","not-relevant","defer","example","save-note","written"]);
+const actions=new Set(["write-now","covered-start","covered","not-relevant","defer","example","save-note","written"]);
 const savedStatus=new Set(["already-covered","not-relevant","deferred","noted","written"]);
 const str=v=>typeof v==="string"?v.trim():"";
 export function actOnWritingCue(state,{id,key,action}){
@@ -16,9 +16,15 @@ export function actOnWritingCue(state,{id,key,action}){
   ui.exampleKey=ui.exampleKey===key?"":key;
   return{ok:true,action};
  }
+ if(action==="covered-start"){
+  ui.coveredKey=ui.coveredKey===key?"":key;
+  ui.writeKey="";ui.coveredKey="";ui.exampleKey="";
+  ui.locationDraft=str(base.location);
+  return{ok:true,action};
+ }
  if(action==="write-now"){
   if(ui.writeKey===key){ui.writeKey="";return{ok:true,action:"closed"};}
-  ui.writeKey=key;ui.exampleKey="";
+  ui.writeKey=key;ui.coveredKey="";ui.exampleKey="";
   ui.noteDraft=str(base.note);ui.locationDraft=str(base.location);
   return{ok:true,action};
  }
