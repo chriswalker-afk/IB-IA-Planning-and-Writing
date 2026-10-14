@@ -6,7 +6,7 @@
 import {C_NODES,C_PROMPTS} from "./catalog.js";
 import {
  C_MAJOR_STAGES,C_STAGE_STATUS,routesAt,completionStage,completionFlags,
- completeEntry,latestRealResult,actualPmccExists,actualScatterExists,completionSuggestions
+ completeEntry,latestRealResult,sourceResultForNext,scatterForNext,canViewPmccFollowup,canViewScatterFollowup,completionSuggestions
 } from "./engine.js";
 
 export function createCompletingViews(ctx){
@@ -38,8 +38,8 @@ export function createCompletingViews(ctx){
   current=s.completion.current,kind=s.planning.fields.kind||s.project.kind;
   if(current==="C04"&&["C10","C20","C30","C40","C50","C60","C70","C80","C90"].includes(route.to))
     return false; // The accessible dashboard cards already navigate to these stages.
-  if(["C35P"].includes(route.to)&&!actualPmccExists(s))return false;
-  if(["C35B"].includes(route.to)&&!actualScatterExists(s))return false;
+  if(["C35P"].includes(route.to)&&!canViewPmccFollowup(s))return false;
+  if(["C35B"].includes(route.to)&&!canViewScatterFollowup(s))return false;
   if(["C35H"].includes(route.to)&&!prior)return false;
   if(route.to==="C34"&&current!=="C95Q"&&
     !(entry?.status==="completed"&&filled(entry.result)))return false;
@@ -79,7 +79,7 @@ export function createCompletingViews(ctx){
     '<div class="completion-route-grid">'+remaining.map(r=>action(null,r)).join("")+'</div></details>':"")+'</div>';
  };
  const bridgeFromPrior=()=>{
-  const prior=latestRealResult(getState());
+  const prior=sourceResultForNext(getState());
   if(!prior)return info("Actual mathematics first","When you have a genuine result, record what it shows before choosing another method.");
   return '<div class="completion-evidence-anchor">'+icon("route")+'<div><strong>What your previous mathematics actually established</strong>'+
     '<p>'+e(prior.localTakeaway||prior.interpretation||prior.observationText||prior.result)+'</p>'+
@@ -329,8 +329,8 @@ export function createCompletingViews(ctx){
     F("nextReason","Why would this next technique follow from the previous result?","Explain the bridge BEFORE the new mathematics in your real IA",{type:"textarea",rows:3})+
     info("No prescribed number of mathematical sections","Another technique is useful only if it answers a genuine next question. An honest conclusion may be the best next step.")+
     '<div class="button-row">'+sourceAction("Show me relevant NEXT mathematical ideas","Help me think of a next step")+
-    (actualScatterExists(s)?sourceAction("Show bivariate options for actual scatter pattern","Interpret my scatter pattern"):"")+
-    (actualPmccExists(s)?sourceAction("Pearson r was ACTUALLY calculated: contextual next-step ideas","After actual PMCC"):"")+
+    (canViewScatterFollowup(s)?sourceAction("Show bivariate options for actual scatter pattern","Interpret my scatter pattern"):"")+
+    (canViewPmccFollowup(s)?sourceAction("Pearson r was ACTUALLY calculated: contextual next-step ideas","After actual PMCC"):"")+
     sourceAction("Enough relevant mathematics—bring findings together","Enough to conclude")+'</div>'
   };
   case "C35H":return{intro:"Two optional prompts based on what you actually recorded. Neither is a required extra technique.",
@@ -339,7 +339,7 @@ export function createCompletingViews(ctx){
     F("nextReason","Why would answering this follow from my result?","Meaningful mathematical connection",{type:"textarea",rows:3})
   };
   case "C35B":return{intro:"Confirm what the actual scatter graph shows before deciding on correlation or fitting a model.",
-   html:smallSummary("Last actual scatter result",s.entries.filter(x=>x.status==="completed"&&x.kind==="scatter").at(-1)?.result)+
+   html:smallSummary("Last actual scatter result",scatterForNext(s)?.result)+
     choice("scatterPattern",[
      ["linear","Clearly or approximately straight"],
      ["curved","Clearly curved or nonlinear"],
