@@ -118,7 +118,7 @@ export function normalizePlanningEnvelope(value){
   planning:{current:clean.current,fields:clean.fields,mathSelected:clean.mathSelected,
    sourceBranches:clean.sourceBranches,completedNodes:clean.completedNodes,
    completed:clean.completed,sourceSnapshot:clean.sourceSnapshot},
-  teacher:{openFlags,pendingReview:true}, // never say that a document proves approval
+  teacher:{openFlags,pendingReview:value.teacher?.pendingReview===true||openFlags.length>0}, // no imported document establishes approval
   historicalScores:{asOf:text(value.exportedAt),dataReadiness:clean.fields.kind==="theoretical"?null:(clean.fields.dataReadiness||null),practicalEase:clean.fields.practicalEase||null}
  };
 }
