@@ -10,6 +10,7 @@ import {relevantLimitations,selectLimitation,recordLimitation,confirmedLimitatio
 import {relevantMathsGuidance} from "../src/completing/maths-guidance.js";
 import {relevantBivariateOptions} from "../src/completing/bivariate-guidance.js";
 import {guidanceContext,familyOf} from "../src/completing/guidance-context.js";
+import {createGuidanceViews} from "../src/completing/guidance-views.js";
 
 const create=()=>{const s=createProjectState();applyPlanningField(s,"course","AI SL");applyPlanningField(s,"aim","How does the evidence answer my question?");return s};
 const entry=(s,p={})=>{
@@ -301,4 +302,49 @@ test("course-level-only work is a student-declared condition, not inferred from 
  assert(!relevantMathsGuidance(s).some(x=>x.id==="M12"));
  e.priorLearningOnly="yes";
  assert(relevantMathsGuidance(s).some(x=>x.id==="M12"));
+});
+
+test("the UI shows one useful writing moment by default even when multiple moments are eligible",()=>{
+ const s=create();const first=entry(s,{phase:"first",kind:"scatter",status:"completed",result:"A real curved plot",observation:"curved"});
+ setCompletionNode(s,"C34B");
+ const escape=v=>String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+ const views=createGuidanceViews({getState:()=>s,e:escape,icon:()=>"",
+  field:(path,label)=>'<label data-path="'+escape(path)+'">'+escape(label)+'</label>',
+  choose:()=>'<p>Choice</p>'});
+ let html=views.writingMoment("C34B");
+ assert.equal((html.match(/data-writing-cue=/g)||[]).length,1);
+ assert(html.includes("Other relevant advice"));
+ assert(!html.includes("guidance-other-button")); // optional extras remain collapsed
+ const one=currentWritingCue(s);
+ actOnWritingCue(s,{id:one.id,key:one.key,action:"not-relevant"});
+ html=views.writingMoment("C34B");
+ assert(!html.includes('data-writing-cue="'));
+ assert(html.includes("Review optional writing guidance"));
+});
+test("potential limitations never expand or diagnose themselves without a student action",()=>{
+ const s=create();applyPlanningField(s,"kind","statistics");
+ setCompletionField(s,"dataStatus","ready");
+ setCompletionField(s,"statisticalPopulation","Year 13 students");
+ setCompletionField(s,"samplingMethod","Volunteer convenience sample");
+ setCompletionField(s,"actualMethod","Survey questionnaire");
+ setCompletionField(s,"dataCleaning","Missing response fields were excluded");
+ setCompletionNode(s,"C23");
+ const views=createGuidanceViews({getState:()=>s,e:x=>String(x??"").replace(/&/g,"&amp;").replace(/</g,"&lt;"),icon:()=>"",
+  field:(path,label)=>'<label>'+label+'</label>',choose:()=>'<p>choice</p>'});
+ let html=views.limitsHelp("C23");
+ assert(html.includes("Would any mathematical limitation actually matter here?"));
+ assert(!html.includes("guidance-limit-option"));
+ s.completion.guidanceUi.limitsExpanded=true;
+ html=views.limitsHelp("C23");
+ assert((html.match(/class="guidance-limit-option"/g)||[]).length<=3);
+ assert.equal(s.completion.confirmedLimitations.length,0);
+});
+test("student-authored results are escaped before inserting into an example or contextual advice panel",()=>{
+ const s=create();entry(s,{phase:"first",status:"completed",result:"<script>alert(1)</script>",kind:"scatter"});
+ setCompletionNode(s,"C34B");
+ const views=createGuidanceViews({getState:()=>s,
+  e:x=>String(x??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"),
+  icon:()=>"",field:()=>"",choose:()=>""});
+ const html=views.writingMoment("C34B");
+ assert(!html.includes("<script>"));
 });
