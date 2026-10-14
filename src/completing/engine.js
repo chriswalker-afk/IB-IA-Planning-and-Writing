@@ -59,7 +59,7 @@ export function createCompletionState(){
   current:"C00",history:[],visited:[],transitions:[],fields:{...C_FIELD_DEFAULTS},
   stages:Object.fromEntries(C_MAJOR_STAGES.map(x=>[x.id,"not-started"])),
   activeEntryIndex:-1,nextFromEntryId:"",scatterPatternForEntryId:"",scatterDetailForEntryId:"",returnTo:"",latestMeaningfulNode:"",
-  guidanceUi:{writeKey:"",exampleKey:"",expanded:false,mathsExpanded:false,limitPage:0,limitDraftVisible:false,
+  guidanceUi:{writeKey:"",coveredKey:"",exampleKey:"",selectedKey:"",quietNode:"",expanded:false,mathsExpanded:false,limitsExpanded:false,accuracyChanged:false,limitPage:0,limitDraftVisible:false,
    limitNoneKey:"",locationDraft:"",noteDraft:""},
   limitationDraft:{id:"",entryId:"",explanation:"",consequence:"",mitigation:"",location:""},
   confirmedLimitations:[],
@@ -238,6 +238,16 @@ export function setCompletionNode(state,id,{history=true,reason="revisit"}={}){
  if(c.current!==id&&history)c.history.push(c.current);
  c.history=c.history.slice(-350);
  c.current=id;
+ if(previous!==id&&c.guidanceUi){
+  c.guidanceUi.quietNode="";
+  c.guidanceUi.exampleKey="";
+  c.guidanceUi.expanded=false;
+  c.guidanceUi.mathsExpanded=false;
+  c.guidanceUi.limitsExpanded=false;
+  c.guidanceUi.limitPage=0;
+  c.guidanceUi.selectedKey="";
+  // Retain the student's own uncommitted note/limitation text if they return.
+ }
  if(!c.visited.includes(id))c.visited.push(id);
  const stage=completionStage(id,state);
  if(stage&&c.stages[stage]==="not-started")c.stages[stage]="working";
@@ -428,8 +438,25 @@ export function addAccuracyDecision(state){
   quantity:f.accuracyQuantity,symbol:f.accuracySymbol,unit:f.accuracyUnit,
   resolution:f.accuracyResolution,policy:f.accuracyPolicy,reason:f.accuracyReason};
  const idx=state.completion.accuracyDecisions.findIndex(x=>x.quantity.trim().toLowerCase()===record.quantity.trim().toLowerCase());
- if(idx>=0)state.completion.accuracyDecisions[idx]=record;
- else if(state.completion.accuracyDecisions.length<40)state.completion.accuracyDecisions.push(record);
+ if(idx>=0){
+  const old=state.completion.accuracyDecisions[idx];
+  record.id=old.id;
+  const changed=["quantity","symbol","unit","resolution","policy","reason"].some(k=>String(old[k]||"")!==String(record[k]||""));
+  state.completion.accuracyDecisions[idx]=record;
+  if(changed){
+   state.completion.guidanceUi.accuracyChanged=true;
+   const linked=state.entries.filter(x=>x.status==="completed"&&
+    (x.accuracyRef===old.id||x.accuracyRef===old.quantity));
+   for(const entry of linked){
+    entry.reviewNeeded="yes";
+    entry.reviewReason="Earlier input precision, unit or source resolution changed. Recheck the affected calculation's reported accuracy and interpretation.";
+   }
+   if(linked.length){
+    for(const stage of ["C30","C40","C60"])if(state.completion.stages[stage]==="complete")
+     state.completion.stages[stage]="needs-review";
+   }
+  }
+ }else if(state.completion.accuracyDecisions.length<40)state.completion.accuracyDecisions.push(record);
  else return{ok:false,error:"The accuracy list is full; edit an existing record."};
  state.evidence.accuracyDecisions=state.completion.accuracyDecisions.map(x=>({...x}));
  for(const key of ["accuracyQuantity","accuracySymbol","accuracyUnit","accuracyResolution","accuracyPolicy","accuracyReason"])f[key]="";
