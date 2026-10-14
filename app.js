@@ -462,7 +462,7 @@
   }
   function studioReview() {
     return '<div class="task-shell"><div class="stage-label">'+icon("check-circle")+' DRAFT & FINAL REVIEW</div><h2>Make your mathematics readable.</h2>'+
-      '<p class="task-intro">This is a self-review companion, not a marking tool. Use the real IA draft and your school's teacher-feedback process.</p>'+
+      '<p class="task-intro">This is a self-review companion, not a marking tool. Use the real IA draft and the teacher-feedback process at your school.</p>'+
       '<div class="panel-list">'+[
         ["clear","My aim and reasoning are clear"],
         ["figures","Every important figure has a purpose, labels and contextual interpretation"],
