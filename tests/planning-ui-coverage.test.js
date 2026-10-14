@@ -57,7 +57,7 @@ test("theoretical prompts don't ask for data sampling and specialist checkpoint 
  assert(html.includes("tentative conjecture"));
  assert(!html.includes("Sampling strategy"));
  assert(html.includes("Plan milestones and course mathematics"));
- assert(html.includes("Review my provisional plan"));
+ assert(html.includes("Continue to review"));
 });
 test("unresolved consent exposes teacher support and never pretends approval",()=>{
  const {state,view}=screenFixture();state.planning.current="N03F";
