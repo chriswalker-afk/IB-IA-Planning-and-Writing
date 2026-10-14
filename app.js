@@ -49,6 +49,17 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   };
   const getPath = path => readRecordValue(state,path);
   const putPath = (path,value) => updateRecordValue(state,path,value);
+  function updateBoundField(path,value) {
+    if(path.startsWith("planning.fields.")){
+      return applyPlanningField(state,path.slice("planning.fields.".length),value);
+    }
+    const changed=putPath(path,value);
+    // Editing the project-context drawer must not leave the Planning record stale.
+    const mirror={"project.aim":"aim","project.course":"course",
+      "project.beneficiary":"beneficiary","project.precision":"firstAccuracy"};
+    if(changed&&mirror[path])applyPlanningField(state,mirror[path],value);
+    return changed;
+  }
   function save() {
     try { persistProjectState(state,localStorage); setSaveStatus("Saved on this device"); }
     catch { setSaveStatus("Could not save — export a backup",true); }
@@ -292,8 +303,18 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         handlePlanningResult(planningEdit(state,map[el.dataset.index]||"N00"));break;
       }
       case "plan-toggle-math":{
-        if(!toggleMath(state,el.dataset.mathId)){toast("Choose a technique from your selected course.");break;}
-        save();render();break;
+        const id=el.dataset.mathId;
+        if(!toggleMath(state,id)){toast("Choose a technique from your selected course.");break;}
+        const selected=state.planning.mathSelected.includes(id);
+        // Preserve search, keyboard focus and scroll position while multiple options are chosen.
+        document.querySelectorAll(".plan-math-option").forEach(node=>{
+          if(node.dataset.mathId!==id)return;
+          node.classList.toggle("selected",selected);
+          node.setAttribute("aria-pressed",String(selected));
+        });
+        const count=document.querySelector(".plan-math-count strong");
+        if(count)count.textContent=state.planning.mathSelected.length;
+        save();break;
       }
       case "studio-tab":nav("completing",{section:el.dataset.section});break;
       case "math-add": addMath();break;
@@ -368,9 +389,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       state.planning.mathSearch=target.value.slice(0,90);filterMathOptions();return;
     }
     if(target.dataset.bind){
-      if(target.dataset.bind.startsWith("planning.fields.")){
-        applyPlanningField(state,target.dataset.bind.slice("planning.fields.".length),target.value);
-      }else{putPath(target.dataset.bind,target.value);}
+      updateBoundField(target.dataset.bind,target.value);
       save();
     }
   });
@@ -378,9 +397,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     const target=evt.target;
     if(target.dataset.check){state.cues[target.dataset.check]=target.checked?"done":"open";save();}
     if(target.dataset.bind){
-      if(target.dataset.bind.startsWith("planning.fields.")){
-        applyPlanningField(state,target.dataset.bind.slice("planning.fields.".length),target.value);
-      }else{putPath(target.dataset.bind,target.value);}
+      updateBoundField(target.dataset.bind,target.value);
       save();
       if(target.dataset.bind==="planning.fields.course"||target.dataset.bind==="planning.fields.ideaSelected")render();
     }
