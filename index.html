@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f7f9f5">
+  <meta name="description" content="IA Pathfinder: a thoughtful companion for planning and developing your IB Mathematics Internal Assessment.">
+  <title>IA Pathfinder — Your mathematical journey</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./app.js" defer></script>
+</head>
+<body>
+  <svg xmlns="http://www.w3.org/2000/svg" class="svg-library" aria-hidden="true" focusable="false">
+    <symbol id="i-compass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m16 8-2.5 5.5L8 16l2.5-5.5z"/><circle cx="12" cy="12" r="1"/></symbol>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10H3z"/><path d="M9 20v-6h6v6"/></symbol>
+    <symbol id="i-route" viewBox="0 0 24 24"><circle cx="5" cy="6" r="2"/><circle cx="19" cy="18" r="2"/><path d="M7 6h6a5 5 0 0 1 0 10H9a4 4 0 0 0-4 4"/></symbol>
+    <symbol id="i-layers" viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5z"/><path d="m3 12 9 5 9-5M3 16l9 5 9-5"/></symbol>
+    <symbol id="i-sparkles" viewBox="0 0 24 24"><path d="m12 2 1.9 6.1L20 10l-6.1 1.9L12 18l-1.9-6.1L4 10l6.1-1.9zM19 16l.9 2.1L22 19l-2.1.9L19 22l-.9-2.1L16 19l2.1-.9z"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+    <symbol id="i-check-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></symbol>
+    <symbol id="i-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/></symbol>
+    <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/></symbol>
+    <symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></symbol>
+    <symbol id="i-chevron-left" viewBox="0 0 24 24"><path d="m15 5-7 7 7 7"/></symbol>
+    <symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="M4 12h16m-7-7 7 7-7 7"/></symbol>
+    <symbol id="i-arrow-up-right" viewBox="0 0 24 24"><path d="M7 17 17 7M8 7h9v9"/></symbol>
+    <symbol id="i-lightbulb" viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M8 15c-1.7-1.4-2.5-3.1-2.5-5a6.5 6.5 0 0 1 13 0c0 1.9-.8 3.6-2.5 5l-1 2H9z"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M12 5a8 8 0 0 0-9-1v15a8 8 0 0 1 9 1 8 8 0 0 1 9-1V4a8 8 0 0 0-9 1zM12 5v15"/></symbol>
+    <symbol id="i-pencil" viewBox="0 0 24 24"><path d="m4 16-1 5 5-1L20 8l-4-4zM14 6l4 4"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 3v18h18M7 17l4-5 4 2 5-8"/><circle cx="7" cy="17" r="1"/><circle cx="11" cy="12" r="1"/><circle cx="15" cy="14" r="1"/><circle cx="20" cy="6" r="1"/></symbol>
+    <symbol id="i-calculator" viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 7h8M8 12h2m4 0h2m-8 4h2m4 0h2"/></symbol>
+    <symbol id="i-flask" viewBox="0 0 24 24"><path d="M9 2h6m-4 0v8l-6.8 9.3A2 2 0 0 0 5.8 22h12.4a2 2 0 0 0 1.6-2.7L13 10V2M8 16h8"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M5 5 19 19M19 5 5 19"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M4 17v4h16v-4"/></symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 17V5M7 10l5-5 5 5M4 17v4h16v-4"/></symbol>
+    <symbol id="i-save" viewBox="0 0 24 24"><path d="M4 3h13l3 3v15H4zM7 3v7h9V3M8 21v-8h8v8"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7h.01"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="m12 2 8 4v6c0 5-3 8-8 10-5-2-8-5-8-10V6z"/><path d="m9 12 2 2 4-4"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v6l4 2"/></symbol>
+    <symbol id="i-flag" viewBox="0 0 24 24"><path d="M5 22V3m0 1c5-3 8 3 15 0v11c-7 3-10-3-15 0"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M5 2h10l5 5v15H5zM15 2v5h5M8 12h9M8 16h9"/></symbol>
+    <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-2 2M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l2-2"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 8V3l-4 4a9 9 0 1 0 5 8M20 8h-6"/></symbol>
+    <symbol id="i-ellipsis" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></symbol>
+  </svg>
+  <div class="app">
+    <header class="topbar">
+      <button class="brand" type="button" data-nav="home" aria-label="IA Pathfinder home">
+        <span class="brand-mark"><svg class="icon" aria-hidden="true"><use href="#i-compass"></use></svg></span>
+        <span class="brand-label">IA <strong>Pathfinder</strong><small>Make your maths meaningful.</small></span>
+      </button>
+      <div class="topbar-actions">
+        <span class="save-status" id="saveStatus" aria-live="polite"><span class="save-dot"></span> Saved on this device</span>
+        <button class="icon-button desktop-utility" type="button" data-action="open-panel" data-panel="project" aria-label="My project" title="My project"><svg class="icon"><use href="#i-target"></use></svg></button>
+        <button class="icon-button desktop-utility" type="button" data-action="open-panel" data-panel="files" aria-label="Backups and exports" title="Backups and exports"><svg class="icon"><use href="#i-download"></use></svg></button>
+        <button class="icon-button" type="button" data-action="open-panel" data-panel="help" aria-label="Help and tips" title="Help and tips"><svg class="icon"><use href="#i-lightbulb"></use></svg></button>
+      </div>
+    </header>
+    <div class="app-grid">
+      <aside class="sidebar" aria-label="Main navigation">
+        <p class="rail-kicker">YOUR SPACE</p>
+        <nav class="side-links">
+          <button data-nav="home" class="side-link active" type="button"><svg class="icon"><use href="#i-home"></use></svg><span>Home</span></button>
+          <button data-nav="planning" class="side-link" type="button"><svg class="icon"><use href="#i-compass"></use></svg><span>Planning</span></button>
+          <button data-nav="completing" class="side-link" type="button"><svg class="icon"><use href="#i-pencil"></use></svg><span>IA Studio</span></button>
+          <button data-nav="path" class="side-link" type="button"><svg class="icon"><use href="#i-route"></use></svg><span>My path</span><span class="side-link-end" id="pathCount">0</span></button>
+        </nav>
+        <div class="rail-separator"></div>
+        <p class="rail-kicker">YOUR JOURNEY</p>
+        <div id="sideMilestones" class="side-milestones"></div>
+        <div class="sidebar-bottom">
+          <div class="rail-tip"><span class="rail-tip-sparkle"><svg class="icon"><use href="#i-sparkles"></use></svg></span><strong>Little steps. Bigger ideas.</strong><p>A useful IA grows from questions worth exploring.</p></div>
+          <span class="prototype-label">DESIGN PROTOTYPE · V1</span>
+        </div>
+      </aside>
+      <main id="main" class="main" tabindex="-1"></main>
+    </div>
+    <nav class="mobile-nav" aria-label="Main navigation">
+      <button data-nav="home" class="mobile-nav-link active" type="button"><svg class="icon"><use href="#i-home"></use></svg><span>Home</span></button>
+      <button data-nav="planning" class="mobile-nav-link" type="button"><svg class="icon"><use href="#i-compass"></use></svg><span>Plan</span></button>
+      <button data-nav="completing" class="mobile-nav-link" type="button"><svg class="icon"><use href="#i-pencil"></use></svg><span>Studio</span></button>
+      <button data-nav="path" class="mobile-nav-link" type="button"><svg class="icon"><use href="#i-route"></use></svg><span>My path</span></button>
+    </nav>
+    <div id="drawerLayer" class="drawer-layer" hidden></div>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <input id="importFile" type="file" accept=".json,application/json" class="visually-hidden">
+  </div>
+</body>
+</html>
