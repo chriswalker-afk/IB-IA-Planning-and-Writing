@@ -1,7 +1,7 @@
 import { createPlanningViews } from "./src/ui/planning-views.js";
 import { createStudioViews } from "./src/ui/studio-views.js";
 import { createProjectViews } from "./src/ui/project-views.js";
-import { createProjectState as newState, normalizeProjectState as normalise, persistProjectState } from "./src/core/project-state.js";
+import { createProjectState as newState, normalizeProjectState as normalise, persistProjectState, STORAGE_KEY as KEY } from "./src/core/project-state.js";
 import { readRecordValue, updateRecordValue } from "./src/core/record-access.js";
 import { icon, escapeHtml, cleanUrl, button } from "./src/ui/primitives.js";
 import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
