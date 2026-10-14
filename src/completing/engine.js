@@ -87,8 +87,13 @@ export function normalizeCompletionState(data,project={}){
   confirmedCurrentAimAt:str(v.confirmedCurrentAimAt),
   sourceVersion:"2026-10-14",notices:[]};
 }
-export function completionStage(id){
+export function completionStage(id,state=null){
  if(["C00","C01","C02","C03","C04","C91","C95","C95D","C95L","C95A","C95Q","C95N","C96"].includes(id))return null;
+ if(["C34","C34A","C34B","C34U","C35","C35H","C35B","C35P"].includes(id)){
+  const active=["C34","C34A","C34B","C34U"].includes(id) ?
+   (state?completeEntry(state):null) : (state?sourceResultForNext(state):null);
+  return active?.phase==="first"?"C30":"C40";
+ }
  if(["C10","C10E"].includes(id))return "C10";
  if(["C20","C21S","C21M","C21T","C22","C23","C24","C25","C26"].includes(id))return "C20";
  if(["C30","C31","C32","C33"].includes(id))return "C30";
@@ -178,7 +183,7 @@ export function setCompletionField(state,key,value){
  if(key==="scatterPattern"){
   c.scatterPatternForEntryId=scatterForNext(state)?.id||"";
  }
- const stage=completionStage(c.current);
+ const stage=completionStage(c.current,state);
  if(stage&&c.stages[stage]==="complete"&&previous!==c.fields[key])
   c.stages[stage]="needs-review";
  if(key==="permissionStatus"){
@@ -211,7 +216,7 @@ export function setCompletionNode(state,id,{history=true,reason="revisit"}={}){
  c.history=c.history.slice(-350);
  c.current=id;
  if(!c.visited.includes(id))c.visited.push(id);
- const stage=completionStage(id);
+ const stage=completionStage(id,state);
  if(stage&&c.stages[stage]==="not-started")c.stages[stage]="working";
  state.ui.studioSection=sectionForNode(id);
  if(id==="C40"||id==="C50"){
