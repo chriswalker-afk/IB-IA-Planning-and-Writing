@@ -10,6 +10,9 @@ import {createPlanningViews} from "../src/ui/planning-views.js";
 import {planningMove,planAutoAdvance,planningBack,planningEdit,applyPlanningField,toggleMath,syncPlanningToProject,setPlanCurrent,planningFlags} from "../src/planning/engine.js";
 import {createStudioViews} from "../src/ui/studio-views.js";
 import {createProjectViews} from "../src/ui/project-views.js";
+import {createHandoverViews} from "../src/ui/handover-views.js";
+import {createPlanningEnvelope,getFieldDiff,mergePlanningEnvelope} from "../src/handover/schema.js";
+import {modelFromEnvelope,suggestedFilename} from "../src/handover/report-model.js";
 
 const read=p=>readFileSync(new URL(p,import.meta.url),"utf8");
 function createHarness(savedValue){
@@ -17,7 +20,7 @@ function createHarness(savedValue){
   const store=new Map(savedValue?[["ia-pathfinder-prototype-v1",JSON.stringify(savedValue)]]:[]);
   const classList={add(){},remove(){},toggle(){}};
   const elements={};
-  for(const id of ["#main","#drawerLayer","#saveStatus","#pathCount","#sideMilestones","#importFile","#toast"]){
+  for(const id of ["#main","#drawerLayer","#saveStatus","#pathCount","#sideMilestones","#importFile","#reportImportFile","#toast"]){
     elements[id]={innerHTML:"",textContent:"",hidden:id==="#drawerLayer",classList,focus(){},addEventListener(n,cb){events["file-"+n]=cb;}};
   }
   elements["#drawerLayer"].querySelector=()=>({focus(){}});
@@ -38,6 +41,7 @@ function createHarness(savedValue){
     KEY:"ia-pathfinder-prototype-v1",
     readRecordValue,updateRecordValue,icon,escapeHtml,cleanUrl,button,
     referenceNodeForPrototypeStep,createPlanningViews,createStudioViews,createProjectViews,
+    createHandoverViews,createPlanningEnvelope,getFieldDiff,mergePlanningEnvelope,modelFromEnvelope,suggestedFilename,
     planningMove,planAutoAdvance,planningBack,planningEdit,applyPlanningField,toggleMath,syncPlanningToProject,setPlanCurrent,planningFlags
   };
   runInNewContext(script,globals,{filename:"app.js",timeout:5000});
@@ -107,6 +111,21 @@ test("adaptive Planning follows genuine spreadsheet source nodes and retains stu
  assert.equal(h.saved.version,2);
 });
 
+test("new Phase 3 handover panel and report export actions remain reachable",()=>{
+ const h=createHarness();
+ assert(h.html.includes("Import an existing plan"));
+ h.action("open-handover");
+ assert(h.drawer.includes("Confirm your starting plan")||h.drawer.includes("current investigation aim")||h.drawer.includes("Current investigation aim"));
+ assert(h.drawer.includes("I have reviewed these details"));
+ h.action("handover-confirm");
+ assert.equal(typeof h.saved.handover.confirmedAt,"string");
+ assert(h.saved.handover.confirmedAt.length>10);
+ h.action("open-panel",{panel:"files"});
+ assert(h.drawer.includes("Download planning PDF"));
+ assert(h.drawer.includes("Download editable Word"));
+ assert(h.drawer.includes("Import planning PDF or Word"));
+ h.nav("report");assert(h.html.includes("Download structured PDF"));
+});
 test("maths can remain planned without inventing interpretation, then actual work can be recorded",()=>{
  const h=createHarness();
  h.nav("completing");h.action("studio-math");h.action("math-add");
