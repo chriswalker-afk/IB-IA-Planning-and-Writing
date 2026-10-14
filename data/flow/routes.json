@@ -1,0 +1,3133 @@
+{
+  "schemaVersion": 1,
+  "sourceWorkbook": "IA Pathfinder — Flowchart Draft",
+  "sourceTab": "Routes",
+  "headerRow": 4,
+  "recordCount": 284,
+  "routes": [
+    {
+      "from": "N00",
+      "condition": "Yes",
+      "to": "N01",
+      "notes": "Main path",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 5
+      }
+    },
+    {
+      "from": "N00",
+      "condition": "No",
+      "to": "N00B",
+      "notes": "Explore ideas",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 6
+      }
+    },
+    {
+      "from": "N00B",
+      "condition": "Return",
+      "to": "N00",
+      "notes": "Back to topic",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 7
+      }
+    },
+    {
+      "from": "N01",
+      "condition": "Continue",
+      "to": "N01V",
+      "notes": "After defining the aim, identify an intended beneficiary and possible meaningful use of the results",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 8
+      }
+    },
+    {
+      "from": "N02",
+      "condition": "Statistics",
+      "to": "N03",
+      "notes": "Data-led route",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 9
+      }
+    },
+    {
+      "from": "N02",
+      "condition": "Modelling",
+      "to": "N03",
+      "notes": "Data-led route",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 10
+      }
+    },
+    {
+      "from": "N02",
+      "condition": "No data",
+      "to": "N02T",
+      "notes": "Teacher checkpoint",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 11
+      }
+    },
+    {
+      "from": "N02",
+      "condition": "Unsure",
+      "to": "N02U",
+      "notes": "Clarify route",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 12
+      }
+    },
+    {
+      "from": "N02U",
+      "condition": "Return",
+      "to": "N02",
+      "notes": "Reconsider",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 13
+      }
+    },
+    {
+      "from": "N03",
+      "condition": "Primary",
+      "to": "N03P",
+      "notes": "Short-answer primary questions",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 14
+      }
+    },
+    {
+      "from": "N03",
+      "condition": "Secondary",
+      "to": "N03S",
+      "notes": "Short-answer secondary questions",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 15
+      }
+    },
+    {
+      "from": "N03",
+      "condition": "Both",
+      "to": "N03B",
+      "notes": "Both question sets",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 16
+      }
+    },
+    {
+      "from": "N03B",
+      "condition": "Primary questions",
+      "to": "N03P",
+      "notes": "Complete primary part",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 17
+      }
+    },
+    {
+      "from": "N03B",
+      "condition": "Secondary questions",
+      "to": "N03S",
+      "notes": "Complete secondary part",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 18
+      }
+    },
+    {
+      "from": "N03P",
+      "condition": "Complete",
+      "to": "N03J",
+      "notes": "Primary data details complete, now compare and justify method",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 19
+      }
+    },
+    {
+      "from": "N03S",
+      "condition": "Complete",
+      "to": "N03J",
+      "notes": "Secondary data details complete, now compare and justify method",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 20
+      }
+    },
+    {
+      "from": "N03D",
+      "condition": "Continue",
+      "to": "N03E",
+      "notes": "Rate feasibility",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 21
+      }
+    },
+    {
+      "from": "N03E",
+      "condition": "Continue",
+      "to": "N03F",
+      "notes": "Continue to practical feasibility",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 22
+      }
+    },
+    {
+      "from": "N03E",
+      "condition": "Revise",
+      "to": "N03R",
+      "notes": "Act on readiness warnings",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 23
+      }
+    },
+    {
+      "from": "N03R",
+      "condition": "Retry",
+      "to": "N03",
+      "notes": "Return to data choice",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 24
+      }
+    },
+    {
+      "from": "N03F",
+      "condition": "Feasibility questions answered",
+      "to": "N03G",
+      "notes": "Assess non-mathematical workload and dependencies",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 25
+      }
+    },
+    {
+      "from": "N03F",
+      "condition": "Safety / privacy / consent unresolved",
+      "to": "N02T",
+      "notes": "Teacher discussion before collecting or using affected data",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 26
+      }
+    },
+    {
+      "from": "N03G",
+      "condition": "Practical plan is workable",
+      "to": "N03H",
+      "notes": "Full project timeline after practical completion-ease rating",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 27
+      }
+    },
+    {
+      "from": "N03G",
+      "condition": "Reduce workload or resolve blockers",
+      "to": "N03F",
+      "notes": "Revise access, time, resources or backup plan",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 28
+      }
+    },
+    {
+      "from": "N04",
+      "condition": "AI SL / AA SL",
+      "to": "N04S",
+      "notes": "Show selected course's menu",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 29
+      }
+    },
+    {
+      "from": "N04",
+      "condition": "Other / AA HL",
+      "to": "N04T",
+      "notes": "Teacher judgement",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 30
+      }
+    },
+    {
+      "from": "N04S",
+      "condition": "Techniques selected or unsure",
+      "to": "N01P",
+      "notes": "Initial maths selected → type-specific prediction choices and WHY",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 31
+      }
+    },
+    {
+      "from": "N04M",
+      "condition": "Continue",
+      "to": "N05V",
+      "notes": "Choose a first representation before first mathematical action",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 32
+      }
+    },
+    {
+      "from": "N05",
+      "condition": "Continue",
+      "to": "N06E",
+      "notes": "Ask how investigation might adapt to results",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 33
+      }
+    },
+    {
+      "from": "N06",
+      "condition": "Student reviews plan and chooses to generate",
+      "to": "N07",
+      "notes": "Create personalised planning document; allow editing before export",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 34
+      }
+    },
+    {
+      "from": "N07",
+      "condition": "Revisit an answer or correct a detail",
+      "to": "N06",
+      "notes": "Return to review, retain existing entries, and regenerate only after student confirms",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 35
+      }
+    },
+    {
+      "from": "N02T",
+      "condition": "Continue with provisional plan",
+      "to": "N08",
+      "notes": "No-data branch: teacher discussion before pursuing; bypass irrelevant data collection questions; summary still available",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 36
+      }
+    },
+    {
+      "from": "N04T",
+      "condition": "Record tentative maths and teacher question",
+      "to": "N08",
+      "notes": "AA HL/other course: course suitability pending, still export",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 37
+      }
+    },
+    {
+      "from": "N04M",
+      "condition": "Outside-course maths or unclear mathematical depth",
+      "to": "N08",
+      "notes": "Flag concern, retain techniques, offer summary without teacher response",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 38
+      }
+    },
+    {
+      "from": "N03R",
+      "condition": "No accessible data; request teacher guidance",
+      "to": "N08",
+      "notes": "Keep existing data answers; allow summary even if access uncertain",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 39
+      }
+    },
+    {
+      "from": "N03G",
+      "condition": "Practical obstacles not yet resolved",
+      "to": "N08",
+      "notes": "Carry forward warnings, partial ratings and questions; allow summary",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 40
+      }
+    },
+    {
+      "from": "N08",
+      "condition": "Optional: identify first safe mathematical step",
+      "to": "N05V",
+      "notes": "Optional initial graph or simplified example; teacher flag retained",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 41
+      }
+    },
+    {
+      "from": "N08",
+      "condition": "Review answers and export provisional plan",
+      "to": "N06T",
+      "notes": "Universal teacher check-in then summary review",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 42
+      }
+    },
+    {
+      "from": "N08",
+      "condition": "Revisit existing planning answers",
+      "to": "N01",
+      "notes": "Return without deleting prior entries or teacher flags",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 43
+      }
+    },
+    {
+      "from": "N00",
+      "condition": "Optional: compare more than one idea",
+      "to": "N00C",
+      "notes": "Do a quick practical comparison; single-idea route remains",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 44
+      }
+    },
+    {
+      "from": "N00B",
+      "condition": "I brainstormed possible ideas",
+      "to": "N00C",
+      "notes": "Compare 2–3 candidate IA topics",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 45
+      }
+    },
+    {
+      "from": "N00B",
+      "condition": "Ready with one idea",
+      "to": "N01",
+      "notes": "No comparison required",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 46
+      }
+    },
+    {
+      "from": "N00C",
+      "condition": "Selected one idea",
+      "to": "N01",
+      "notes": "Define its tentative aim",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 47
+      }
+    },
+    {
+      "from": "N00C",
+      "condition": "Keep original idea",
+      "to": "N01",
+      "notes": "No penalty for choosing first idea",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 48
+      }
+    },
+    {
+      "from": "N01P",
+      "condition": "Prediction made or 'not sure'",
+      "to": "N04R",
+      "notes": "After prediction/why, prompt return to mathematics choices and show appropriate suggestions",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 49
+      }
+    },
+    {
+      "from": "N03J",
+      "condition": "Method justification or 'not sure'",
+      "to": "N03D",
+      "notes": "Continue to data timing and readiness",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 50
+      }
+    },
+    {
+      "from": "N03B",
+      "condition": "Both data sources complete",
+      "to": "N03J",
+      "notes": "Only after BOTH primary and secondary answers, not just one",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 51
+      }
+    },
+    {
+      "from": "N03H",
+      "condition": "Milestones recorded or pending",
+      "to": "N04",
+      "notes": "Move to course-specific mathematics",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 52
+      }
+    },
+    {
+      "from": "N05V",
+      "condition": "Representation planned or uncertain",
+      "to": "N05",
+      "notes": "First meaningful mathematics",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 53
+      }
+    },
+    {
+      "from": "N06E",
+      "condition": "Possible changes considered or unsure",
+      "to": "N06T",
+      "notes": "Offer teacher consultation to everyone",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 54
+      }
+    },
+    {
+      "from": "N06T",
+      "condition": "Record question or skip",
+      "to": "N06",
+      "notes": "Review and export",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 55
+      }
+    },
+    {
+      "from": "N06T",
+      "condition": "Specialist teacher issue",
+      "to": "N08",
+      "notes": "Use conditional teacher-check-in questions, then review/export",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 56
+      }
+    },
+    {
+      "from": "N08",
+      "condition": "Optional: plan milestones before export",
+      "to": "N03H",
+      "notes": "If the student wants, enter school deadlines and a working timeline, then return through later nodes",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 57
+      }
+    },
+    {
+      "from": "N04R",
+      "condition": "Keep / add / remove maths or remain unsure",
+      "to": "N04M",
+      "notes": "Continue to mathematical suitability; suggestions not compulsory and not auto-selected",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 58
+      }
+    },
+    {
+      "from": "N07",
+      "condition": "Continue into Completing in this session",
+      "to": "C00",
+      "notes": "Pass student planning fields directly after generating/viewing planning report",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 59
+      }
+    },
+    {
+      "from": "C00",
+      "condition": "Continue from completed Planning in this session",
+      "to": "C02",
+      "notes": "Prepopulate from in-session plan without needing to upload",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 60
+      }
+    },
+    {
+      "from": "C00",
+      "condition": "Upload saved planning report PDF/DOCX",
+      "to": "C01",
+      "notes": "Read compatible saved report and continue",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 61
+      }
+    },
+    {
+      "from": "C00",
+      "condition": "Start without a saved plan",
+      "to": "C02",
+      "notes": "Open editable empty summary with Not provided fields",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 62
+      }
+    },
+    {
+      "from": "C01",
+      "condition": "Recognized document / fields extracted",
+      "to": "C02",
+      "notes": "Review imported fields before applying; display document date and source",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 63
+      }
+    },
+    {
+      "from": "C01",
+      "condition": "Only some fields recognized",
+      "to": "C02",
+      "notes": "Prefill recognized values, flag missing or uncertain; allow manual edits",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 64
+      }
+    },
+    {
+      "from": "C01",
+      "condition": "Unreadable/scanned/unsupported file",
+      "to": "C02",
+      "notes": "Explain problem and offer manual completion; do not block access",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 65
+      }
+    },
+    {
+      "from": "C01",
+      "condition": "Try a different file",
+      "to": "C01",
+      "notes": "Allow retry without clearing existing work",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 66
+      }
+    },
+    {
+      "from": "C02",
+      "condition": "Confirm or update carried-forward information",
+      "to": "C03",
+      "notes": "Preserve student's edits and provenance of imported values",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 67
+      }
+    },
+    {
+      "from": "C02",
+      "condition": "Change / replace imported file",
+      "to": "C01",
+      "notes": "Review conflicts before merging; never overwrite later work by default",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 68
+      }
+    },
+    {
+      "from": "C03",
+      "condition": "Idea and permissions reviewed",
+      "to": "C04",
+      "notes": "Continue to flexible stages; leave unresolved alerts visible",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 69
+      }
+    },
+    {
+      "from": "C03",
+      "condition": "Teacher/permission concern remains",
+      "to": "C04",
+      "notes": "Still guide safe work and review; do not authorise restricted data collection",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 70
+      }
+    },
+    {
+      "from": "C03",
+      "condition": "Return to update planning answers",
+      "to": "N06",
+      "notes": "Optional back-navigation to planning review; preserve completion progress",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 71
+      }
+    },
+    {
+      "from": "C04",
+      "condition": "Work on introduction",
+      "to": "C10",
+      "notes": "Introduction can be opened or revisited at any time from the stage dashboard; existing writing is restored.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 72
+      }
+    },
+    {
+      "from": "C04",
+      "condition": "Work with data and sources",
+      "to": "C20",
+      "notes": "Data or no-data small example route",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 73
+      }
+    },
+    {
+      "from": "C04",
+      "condition": "Prepare first representation",
+      "to": "C30",
+      "notes": "Graph/table/diagram/simplified problem",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 74
+      }
+    },
+    {
+      "from": "C04",
+      "condition": "Work on first mathematics",
+      "to": "C40",
+      "notes": "Explain method, notation, result and link to aim",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 75
+      }
+    },
+    {
+      "from": "C04",
+      "condition": "Develop further mathematics",
+      "to": "C50",
+      "notes": "Iterative analysis and reflection",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 76
+      }
+    },
+    {
+      "from": "C04",
+      "condition": "Write/revise the concise concluding synthesis",
+      "to": "C60",
+      "notes": "Open C60, with optional C61–C64 guided synthesis and future mathematical questions",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 77
+      }
+    },
+    {
+      "from": "C04",
+      "condition": "Check presentation",
+      "to": "C70",
+      "notes": "Presentation/communication/citations/appendix",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 78
+      }
+    },
+    {
+      "from": "C04",
+      "condition": "Manage teacher feedback",
+      "to": "C80",
+      "notes": "Draft feedback, changes and deadlines",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 79
+      }
+    },
+    {
+      "from": "C04",
+      "condition": "Final readiness review",
+      "to": "C90",
+      "notes": "Student self-check, not an IB grade",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 80
+      }
+    },
+    {
+      "from": "C04",
+      "condition": "Save progress",
+      "to": "C91",
+      "notes": "Accessible at any stage via persistent Save option",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 81
+      }
+    },
+    {
+      "from": "C10",
+      "condition": "Continue / choose another stage",
+      "to": "C04",
+      "notes": "Leaving the introduction never locks it; the student's draft and optional planning edits remain available.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 82
+      }
+    },
+    {
+      "from": "C20",
+      "condition": "Continue / choose another stage",
+      "to": "C04",
+      "notes": "Can return to data when new observations arrive",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 83
+      }
+    },
+    {
+      "from": "C30",
+      "condition": "Continue / choose another stage",
+      "to": "C04",
+      "notes": "Record first visual and its interpretation",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 84
+      }
+    },
+    {
+      "from": "C40",
+      "condition": "Continue / choose another stage",
+      "to": "C04",
+      "notes": "Record mathematical evidence and reflections",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 85
+      }
+    },
+    {
+      "from": "C50",
+      "condition": "Continue / choose another stage",
+      "to": "C04",
+      "notes": "Further mathematics can repeat as often as necessary",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 86
+      }
+    },
+    {
+      "from": "C60",
+      "condition": "Continue / choose another stage",
+      "to": "C04",
+      "notes": "Conclusion stays editable after later maths; avoid using C60 to replace earlier reflection",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 87
+      }
+    },
+    {
+      "from": "C70",
+      "condition": "Continue / choose another stage",
+      "to": "C04",
+      "notes": "Communicate, reference and revise where necessary",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 88
+      }
+    },
+    {
+      "from": "C80",
+      "condition": "Continue / choose another stage",
+      "to": "C04",
+      "notes": "Keep feedback and actions while navigating",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 89
+      }
+    },
+    {
+      "from": "C90",
+      "condition": "Revise issues found",
+      "to": "C04",
+      "notes": "Return to relevant task, not automatically mark as finished",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 90
+      }
+    },
+    {
+      "from": "C90",
+      "condition": "Record / save current work",
+      "to": "C91",
+      "notes": "Snapshot for later upload; does not submit the IA",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 91
+      }
+    },
+    {
+      "from": "C91",
+      "condition": "Keep working",
+      "to": "C04",
+      "notes": "Return to selected stage after save",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 92
+      }
+    },
+    {
+      "from": "C91",
+      "condition": "Resume from saved snapshot later",
+      "to": "C00",
+      "notes": "Use entry choice and import; preserve version and confirmations",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 93
+      }
+    },
+    {
+      "from": "N01V",
+      "condition": "The results could help me directly",
+      "to": "N02",
+      "notes": "Student explains what they could decide, change or understand and why; then continue to IA type",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 94
+      }
+    },
+    {
+      "from": "N01V",
+      "condition": "I could offer advice to someone else",
+      "to": "N02",
+      "notes": "Student describes an audience/role and the decision or recommendation the findings may inform",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 95
+      }
+    },
+    {
+      "from": "N01V",
+      "condition": "Both personal benefit and advice",
+      "to": "N02",
+      "notes": "Allow both, without duplicate questions",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 96
+      }
+    },
+    {
+      "from": "N01V",
+      "condition": "I'm not sure yet",
+      "to": "N02",
+      "notes": "Show a small purpose nudge; record as To be confirmed and optionally ask teacher; summary still available",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 97
+      }
+    },
+    {
+      "from": "N01P",
+      "condition": "Edit 'Who is this for?' while predicting",
+      "to": "N01V",
+      "notes": "Open current beneficiary/purpose fields inline; preserve prediction, WHY, maths and other answers. Return here after confirmation.",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 98
+      }
+    },
+    {
+      "from": "N01V",
+      "condition": "Return to prediction after editing beneficiary",
+      "to": "N01P",
+      "notes": "Only when N01V was opened from prediction. Update dynamic wording; confirm or revise previously written implication; do not repeat earlier planning stages.",
+      "part": "Planning the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 99
+      }
+    },
+    {
+      "from": "C10",
+      "condition": "Edit aim, audience or prediction while writing introduction",
+      "to": "C02",
+      "notes": "Open shared planning fields with current draft preserved. On confirmation, return to introduction rather than restarting other stages.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 100
+      }
+    },
+    {
+      "from": "C02",
+      "condition": "Return to introduction after editing fields",
+      "to": "C10",
+      "notes": "Only when opened from Introduction; restore written draft and ask to review any passages affected by changed aim or prediction.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 101
+      }
+    },
+    {
+      "from": "C20",
+      "condition": "Statistics with sampled or secondary data",
+      "to": "C21S",
+      "notes": "Ask about population, observation type, sampling/census and representativeness where relevant; use existing plan route",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 102
+      }
+    },
+    {
+      "from": "C20",
+      "condition": "Empirical modelling or measured model inputs",
+      "to": "C21M",
+      "notes": "Ask how model inputs are sourced or measured and whether/where it can be checked",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 103
+      }
+    },
+    {
+      "from": "C20",
+      "condition": "Statistical and modelling elements",
+      "to": "C21S",
+      "notes": "Complete statistics prompts first and then modelling prompts as needed; remember which branches are done",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 104
+      }
+    },
+    {
+      "from": "C20",
+      "condition": "Theoretical or no-data exploration",
+      "to": "C21T",
+      "notes": "Do not force data collection or statistical sampling onto a proof/conjecture",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 105
+      }
+    },
+    {
+      "from": "C20",
+      "condition": "Other or currently unsure",
+      "to": "C21T",
+      "notes": "Offer assumptions and definitions; student can change route later",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 106
+      }
+    },
+    {
+      "from": "C21S",
+      "condition": "Statistical design considered",
+      "to": "C22",
+      "notes": "Continue to compare the real collection/source options and justify the decision",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 107
+      }
+    },
+    {
+      "from": "C21S",
+      "condition": "Also modelling with measured/calibrated inputs",
+      "to": "C21M",
+      "notes": "When both routes apply, ask modelling questions once; preserve completed statistics answers",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 108
+      }
+    },
+    {
+      "from": "C21M",
+      "condition": "Model inputs or validation considered",
+      "to": "C22",
+      "notes": "Compare actual methods, including any measurement/repeated data options",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 109
+      }
+    },
+    {
+      "from": "C21M",
+      "condition": "Also collecting a sample for model fitting",
+      "to": "C21S",
+      "notes": "Show sampling questions if needed and not already completed; avoid infinite loop",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 110
+      }
+    },
+    {
+      "from": "C21T",
+      "condition": "No empirical data involved",
+      "to": "C25",
+      "notes": "Define specialist language, symbols and assumptions; bypass sampling/measurement precision",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 111
+      }
+    },
+    {
+      "from": "C21T",
+      "condition": "Empirical measurements or sources do apply",
+      "to": "C22",
+      "notes": "Optional context-based comparison of methods; route can evolve",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 112
+      }
+    },
+    {
+      "from": "C22",
+      "condition": "Method selected and reason recorded",
+      "to": "C23",
+      "notes": "Consider limitations, attempted mitigation and why residual limits are acceptable",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 113
+      }
+    },
+    {
+      "from": "C23",
+      "condition": "Quantitative measurements or rounded source values",
+      "to": "C24",
+      "notes": "Record accuracy/resolution and plan precision of subsequent work",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 114
+      }
+    },
+    {
+      "from": "C23",
+      "condition": "No numerical measurements",
+      "to": "C25",
+      "notes": "Skip irrelevant instrument accuracy; still define key terms and symbols",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 115
+      }
+    },
+    {
+      "from": "C24",
+      "condition": "Accuracy/precision decision explained",
+      "to": "C25",
+      "notes": "Set meaningful variable symbols, units and just-in-time term definitions",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 116
+      }
+    },
+    {
+      "from": "C25",
+      "condition": "Variables and terms reviewed",
+      "to": "C26",
+      "notes": "Summarize choices and intended evidence; connect data to the investigation aim",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 117
+      }
+    },
+    {
+      "from": "C26",
+      "condition": "Return to flexible stage dashboard",
+      "to": "C04",
+      "notes": "Retain student answers and reopen at any point",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 118
+      }
+    },
+    {
+      "from": "C26",
+      "condition": "Proceed to first representation",
+      "to": "C30",
+      "notes": "Continue with graph, table, diagram or a simplified theoretical case",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 119
+      }
+    },
+    {
+      "from": "C26",
+      "condition": "Change source or collection approach",
+      "to": "C20",
+      "notes": "Revisit prompts while preserving prior notes; flag what changed",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 120
+      }
+    },
+    {
+      "from": "C26",
+      "condition": "Seek teacher advice without stopping work",
+      "to": "C03",
+      "notes": "Track unresolved permissions/approvals, then allow safe next stages or saving",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 121
+      }
+    },
+    {
+      "from": "C40",
+      "condition": "Check precision of a reported calculation",
+      "to": "C24",
+      "notes": "Return to original collection resolution/uncertainty; then return to mathematical work via the stage dashboard",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 122
+      }
+    },
+    {
+      "from": "C50",
+      "condition": "Reconsider data or model inputs after results",
+      "to": "C20",
+      "notes": "Investigations evolve: record the change without overwriting the original justification",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 123
+      }
+    },
+    {
+      "from": "C70",
+      "condition": "Review specialist terms and notation",
+      "to": "C25",
+      "notes": "Check variables and data-specific jargon at their first use",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 124
+      }
+    },
+    {
+      "from": "C90",
+      "condition": "Review whether reported accuracy is defensible",
+      "to": "C24",
+      "notes": "Review actual measurement limits and rounding across tables, maths and conclusions",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 125
+      }
+    },
+    {
+      "from": "C30",
+      "condition": "Begin purposeful initial exploration",
+      "to": "C31",
+      "notes": "Select a diagram, concise first calculation, compact summary or small theoretical case (or None); use prior Planning + actual data",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 126
+      }
+    },
+    {
+      "from": "C31",
+      "condition": "Chosen useful initial representation or calculation",
+      "to": "C32",
+      "notes": "Ask why this move is relevant and define variables before first appearance",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 127
+      }
+    },
+    {
+      "from": "C31",
+      "condition": "No helpful diagram or calculation right now",
+      "to": "C04",
+      "notes": "Skip without penalty; student may go directly to first substantial mathematics or another stage",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 128
+      }
+    },
+    {
+      "from": "C31",
+      "condition": "Required measurements/data not ready",
+      "to": "C20",
+      "notes": "Return to collecting/preparing actual evidence without inventing data or locking the stage",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 129
+      }
+    },
+    {
+      "from": "C32",
+      "condition": "Purpose and symbols defined",
+      "to": "C33",
+      "notes": "Make student-selected diagram/compact calculation then apply corresponding checks",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 130
+      }
+    },
+    {
+      "from": "C33",
+      "condition": "Figure or brief calculation checked",
+      "to": "C34",
+      "notes": "Ask what was observed, not how to perform routine graphing",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 131
+      }
+    },
+    {
+      "from": "C33",
+      "condition": "Presentation fails a relevant check",
+      "to": "C32",
+      "notes": "Correct titles, notation, scale, single-page fit, precision etc. without losing work",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 132
+      }
+    },
+    {
+      "from": "C34",
+      "condition": "Observation made; check accuracy where new, then reconnect to aim/prediction",
+      "to": "C34B",
+      "notes": "Existing route when accuracy is already covered; C34B is an explicit mandatory connection to aim/prediction before next step.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 133
+      }
+    },
+    {
+      "from": "C35",
+      "condition": "Begin FIRST justified mathematical section (or the next appropriate method)",
+      "to": "C40",
+      "notes": "C35's explicit next question and bridging explanation must reference preceding actual result and local conclusion; method rationale written BEFORE maths at C40.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 134
+      }
+    },
+    {
+      "from": "C35",
+      "condition": "Return to dashboard / save",
+      "to": "C04",
+      "notes": "Persist choices, representation reference, observation and intended next mathematical step",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 135
+      }
+    },
+    {
+      "from": "C35",
+      "condition": "Different representation would help more",
+      "to": "C31",
+      "notes": "Reconsider a figure/calculation; avoid duplication and repeat content only for a meaningful side-by-side comparison",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 136
+      }
+    },
+    {
+      "from": "C35",
+      "condition": "Need better/more data",
+      "to": "C20",
+      "notes": "Preserve original observations and note reason for changed data plan",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 137
+      }
+    },
+    {
+      "from": "C35",
+      "condition": "Begin ANOTHER meaningful mathematical section",
+      "to": "C50",
+      "notes": "Repeat C35→C50 using last completed section's result/takeaway; each substantive output returns via C34/C34B to C35.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 138
+      }
+    },
+    {
+      "from": "C40",
+      "condition": "Review an earlier initial representation when interpretation changes",
+      "to": "C30",
+      "notes": "Optional reversible navigation; refer to existing figure rather than duplicate it",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 139
+      }
+    },
+    {
+      "from": "C50",
+      "condition": "A genuinely new observation needs a different figure",
+      "to": "C30",
+      "notes": "Revisit only if it advances the story or makes a side-by-side comparison useful",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 140
+      }
+    },
+    {
+      "from": "C70",
+      "condition": "Review a specific diagram quality issue",
+      "to": "C33",
+      "notes": "Apply relevant presentation checklist; no need to redo or duplicate a correct figure",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 141
+      }
+    },
+    {
+      "from": "C34",
+      "condition": "This result's accuracy or interpretation remains uncertain",
+      "to": "C34A",
+      "notes": "Only show C34A when input resolution/source scope or THIS figure/calculation introduces an unresolved precision/validity issue; otherwise skip",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 142
+      }
+    },
+    {
+      "from": "C34A",
+      "condition": "Accuracy/uncertainty meaningfully considered",
+      "to": "C34B",
+      "notes": "Use relevant C24 and C23 records, don't duplicate earlier accurate explanations",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 143
+      }
+    },
+    {
+      "from": "C34A",
+      "condition": "Need to check original measurement/source uncertainty",
+      "to": "C24",
+      "notes": "Optional revisit to established precision notes; keep current finding to return to",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 144
+      }
+    },
+    {
+      "from": "C34B",
+      "condition": "Consistent with prediction, or no prediction, or sufficiently explained",
+      "to": "C35",
+      "notes": "After actual figure or calculation and short local takeaway, go to C35's explicit Next logical mathematical step; further mathematics is optional and justified.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 145
+      }
+    },
+    {
+      "from": "C34B",
+      "condition": "Unexpected, contradicts prediction, or is unclear",
+      "to": "C34U",
+      "notes": "Investigate a plausible other angle rather than simply ticking next stage",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 146
+      }
+    },
+    {
+      "from": "C34B",
+      "condition": "Earlier aim/prediction/beneficiary needs revisiting",
+      "to": "C04",
+      "notes": "Make edits from dashboard, preserve original prediction and current interpretation notes",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 147
+      }
+    },
+    {
+      "from": "C34U",
+      "condition": "A plausible explanation or alternative has been considered",
+      "to": "C35",
+      "notes": "After documenting surprise vs conjecture, return to next-step reasoning grounded in real result; no cherry-picking or unperformed tests.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 148
+      }
+    },
+    {
+      "from": "C34U",
+      "condition": "One different view/example is genuinely needed",
+      "to": "C31",
+      "notes": "No duplicate charts unless meaningful comparison; preserve current figure and interpretation",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 149
+      }
+    },
+    {
+      "from": "C34U",
+      "condition": "Possible data/source/collection issue warrants checking",
+      "to": "C20",
+      "notes": "Return to data stage when justified, not automatically whenever result surprising",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 150
+      }
+    },
+    {
+      "from": "C34U",
+      "condition": "Need to review accuracy of this observation",
+      "to": "C34A",
+      "notes": "Only for a NEW uncertainty/assumption or incorrect reporting precision",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 151
+      }
+    },
+    {
+      "from": "C34U",
+      "condition": "Record unresolved surprise and save for later",
+      "to": "C04",
+      "notes": "Do not force a false interpretation; restore observations/unfinished question on resume",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 152
+      }
+    },
+    {
+      "from": "C35",
+      "condition": "Show me relevant NEXT mathematical ideas",
+      "to": "C35H",
+      "notes": "On-demand only. Match actual observed feature + aim + course, not prediction or proposed maths alone",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 153
+      }
+    },
+    {
+      "from": "C35H",
+      "condition": "Choose an idea, another method, or none",
+      "to": "C35",
+      "notes": "Return to the student's own next-step rationale; no automatic method execution",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 154
+      }
+    },
+    {
+      "from": "C35H",
+      "condition": "Need better evidence before deciding",
+      "to": "C20",
+      "notes": "Student can fetch more relevant data when justified, keeping earlier observations",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 155
+      }
+    },
+    {
+      "from": "C40",
+      "condition": "Actual later mathematical result warrants reinterpretation",
+      "to": "C34",
+      "notes": "ACTUAL substantive first mathematics result → C34 observation/accuracy if new/aim/prediction/LOCAL TAKEAWAY → C35; don't jump directly to another technique without interpreting this.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 156
+      }
+    },
+    {
+      "from": "C60",
+      "condition": "Open guided conclusion synthesis",
+      "to": "C61",
+      "notes": "Reuse previous genuine results and ongoing reflection notes; stage remains revisitable",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 157
+      }
+    },
+    {
+      "from": "C61",
+      "condition": "Main answer identified or honestly inconclusive",
+      "to": "C62",
+      "notes": "Move to implications without repeating mathematical work",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 158
+      }
+    },
+    {
+      "from": "C61",
+      "condition": "Need to check an earlier result or missing reflection",
+      "to": "C04",
+      "notes": "Offer go-to-relevant-stage shortcut; return to conclusion without losing draft",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 159
+      }
+    },
+    {
+      "from": "C62",
+      "condition": "Meaning for beneficiary considered",
+      "to": "C63",
+      "notes": "Choose a realistic mathematical extension or outstanding question",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 160
+      }
+    },
+    {
+      "from": "C62",
+      "condition": "Audience/aim has changed",
+      "to": "C02",
+      "notes": "Review relevant carried-forward fields; preserve student-authored conclusion and original aim history",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 161
+      }
+    },
+    {
+      "from": "C63",
+      "condition": "Next steps recorded or no meaningful extension",
+      "to": "C64",
+      "notes": "Do not block completion if an extension is not justified",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 162
+      }
+    },
+    {
+      "from": "C63",
+      "condition": "Proposed extension seems already completed",
+      "to": "C61",
+      "notes": "Return to overall synthesis; never present performed work as future research",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 163
+      }
+    },
+    {
+      "from": "C64",
+      "condition": "Conclusion complete or provisional",
+      "to": "C04",
+      "notes": "Preserve the draft for later revision or move to another stage",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 164
+      }
+    },
+    {
+      "from": "C64",
+      "condition": "Check overall presentation",
+      "to": "C70",
+      "notes": "Review readability/references without repeating evaluation",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 165
+      }
+    },
+    {
+      "from": "C64",
+      "condition": "Save current conclusion notes",
+      "to": "C91",
+      "notes": "Snapshot stores student-authored synthesis, purpose and next steps",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 166
+      }
+    },
+    {
+      "from": "C64",
+      "condition": "Earlier mathematical reflection needs attention",
+      "to": "C50",
+      "notes": "Return to relevant mathematical evidence; edit reflection THERE, not in ending",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 167
+      }
+    },
+    {
+      "from": "C64",
+      "condition": "Earlier diagram/result reflection needs attention",
+      "to": "C34",
+      "notes": "Return to relevant result-ledger entry; keep conclusion draft intact",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 168
+      }
+    },
+    {
+      "from": "C40",
+      "condition": "After appropriate reflection, begin final synthesis if ready",
+      "to": "C60",
+      "notes": "Only if the latest substantive result has already received C34/C34B local interpretation and C35 has established that sufficient relevant course-level mathematics now answers the aim. Otherwise use C40→C34 first.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 169
+      }
+    },
+    {
+      "from": "C50",
+      "condition": "Reflect on a new mathematical result as it happens",
+      "to": "C34",
+      "notes": "ACTUAL substantive further mathematics result → C34 result interpretation + local takeaway → C35 repeated step or evidence-based conclusion. Do not send routine algebra through the loop.",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 170
+      }
+    },
+    {
+      "from": "C10",
+      "condition": "See optional intro contrast examples",
+      "to": "C10E",
+      "notes": "Only when requested; don't interrupt writing",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 171
+      }
+    },
+    {
+      "from": "C10E",
+      "condition": "Return to own introduction",
+      "to": "C10",
+      "notes": "Preserve student prose and revised plan fields",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 172
+      }
+    },
+    {
+      "from": "C35",
+      "condition": "Show bivariate options for actual scatter pattern",
+      "to": "C35B",
+      "notes": "Only paired quantitative data with actual observation; on demand",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 173
+      }
+    },
+    {
+      "from": "C35H",
+      "condition": "Show specific paired-data suggestions",
+      "to": "C35B",
+      "notes": "Optional on-demand deeper advice",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 174
+      }
+    },
+    {
+      "from": "C35B",
+      "condition": "Clearly straight-line scatter",
+      "to": "C35",
+      "notes": "PMCC may be unnecessary if quantification adds nothing; fitting only if useful",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 175
+      }
+    },
+    {
+      "from": "C35B",
+      "condition": "Approximately straight line",
+      "to": "C35",
+      "notes": "PMCC may help quantify the LINEAR association; make purpose explicit",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 176
+      }
+    },
+    {
+      "from": "C35B",
+      "condition": "Curved or distinctly non-linear",
+      "to": "C35",
+      "notes": "Try a justified nonlinear model/rank alternative as course permits; no forced PMCC",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 177
+      }
+    },
+    {
+      "from": "C35B",
+      "condition": "No clear relationship",
+      "to": "C35",
+      "notes": "Discuss lack of visible evidence; no forced regression or data fishing",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 178
+      }
+    },
+    {
+      "from": "C35B",
+      "condition": "Uncertain pattern or inspect actual plot again",
+      "to": "C34",
+      "notes": "Revisit observation; don't silently choose a category",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 179
+      }
+    },
+    {
+      "from": "C40",
+      "condition": "Used technology for an actual calculation",
+      "to": "C40T",
+      "notes": "Conditional; tool-based calculation only",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 180
+      }
+    },
+    {
+      "from": "C40T",
+      "condition": "Explain result and reflect",
+      "to": "C34",
+      "notes": "Normal observation → aim → next maths loop",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 181
+      }
+    },
+    {
+      "from": "C40T",
+      "condition": "Continue the active calculation",
+      "to": "C40",
+      "notes": "No extra tech gate when already explained",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 182
+      }
+    },
+    {
+      "from": "C40T",
+      "condition": "Save a provisional explanation",
+      "to": "C04",
+      "notes": "Do not mark calculation or commentary complete",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 183
+      }
+    },
+    {
+      "from": "C40",
+      "condition": "Check course suitability and depth",
+      "to": "C40D",
+      "notes": "On request or when actual maths is inadequate/uncertain",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 184
+      }
+    },
+    {
+      "from": "C50",
+      "condition": "Recheck maths as investigation develops",
+      "to": "C40D",
+      "notes": "Actual methods may change from Planning",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 185
+      }
+    },
+    {
+      "from": "C40D",
+      "condition": "Current method adequate: continue first maths",
+      "to": "C40",
+      "notes": "Record reasoning, don't invent more techniques",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 186
+      }
+    },
+    {
+      "from": "C40D",
+      "condition": "Return to later maths",
+      "to": "C50",
+      "notes": "Preserve section and mathematical work",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 187
+      }
+    },
+    {
+      "from": "C40D",
+      "condition": "Need teacher discussion about suitability",
+      "to": "C03",
+      "notes": "Course-specific concerns, including unsupported course",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 188
+      }
+    },
+    {
+      "from": "C40D",
+      "condition": "Leave unresolved and return to dashboard",
+      "to": "C04",
+      "notes": "Keep reason and no fake rating",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 189
+      }
+    },
+    {
+      "from": "C70",
+      "condition": "Check notation and maths presentation",
+      "to": "C70N",
+      "notes": "Optional or triggered by a specific communication concern",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 190
+      }
+    },
+    {
+      "from": "C70N",
+      "condition": "Review finished or resume later",
+      "to": "C04",
+      "notes": "No global compulsory notation quiz",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 191
+      }
+    },
+    {
+      "from": "C70N",
+      "condition": "Move to teacher draft",
+      "to": "C80",
+      "notes": "Use appropriately typeset mathematics in a full draft",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 192
+      }
+    },
+    {
+      "from": "C70N",
+      "condition": "Save notes",
+      "to": "C91",
+      "notes": "Save snapshot, not final submission",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 193
+      }
+    },
+    {
+      "from": "C80",
+      "condition": "Full teacher-draft review before written feedback",
+      "to": "C80D",
+      "notes": "Once near school's draft milestone; not on every session",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 194
+      }
+    },
+    {
+      "from": "C80D",
+      "condition": "Full draft prepared",
+      "to": "C80",
+      "notes": "Return to school's teacher feedback process",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 195
+      }
+    },
+    {
+      "from": "C80D",
+      "condition": "Missing essential work: jump to stage",
+      "to": "C04",
+      "notes": "Revision without losing earlier notes",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 196
+      }
+    },
+    {
+      "from": "C80D",
+      "condition": "Save incomplete draft review",
+      "to": "C91",
+      "notes": "No false declaration of readiness",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 197
+      }
+    },
+    {
+      "from": "C90",
+      "condition": "Final submission self-review",
+      "to": "C90F",
+      "notes": "Student chooses once after draft/revisions",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 198
+      }
+    },
+    {
+      "from": "C90F",
+      "condition": "Check complete: save progress",
+      "to": "C91",
+      "notes": "Doesn't submit the school's IA",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 199
+      }
+    },
+    {
+      "from": "C90F",
+      "condition": "Return to edit an identified section",
+      "to": "C04",
+      "notes": "Save results of checks and navigation",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 200
+      }
+    },
+    {
+      "from": "C90F",
+      "condition": "Review teacher corrections",
+      "to": "C80",
+      "notes": "Don't initiate another written-feedback round",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 201
+      }
+    },
+    {
+      "from": "C04",
+      "condition": "I'm stuck / Something isn't working",
+      "to": "C95",
+      "notes": "Optional help, persistent return location",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 202
+      }
+    },
+    {
+      "from": "C10",
+      "condition": "Need help beginning writing",
+      "to": "C95",
+      "notes": "On demand without overwriting intro",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 203
+      }
+    },
+    {
+      "from": "C20",
+      "condition": "Data access / collection problem",
+      "to": "C95",
+      "notes": "On demand, no fabricated data",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 204
+      }
+    },
+    {
+      "from": "C31",
+      "condition": "No useful initial diagram",
+      "to": "C95",
+      "notes": "Diagram remains optional",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 205
+      }
+    },
+    {
+      "from": "C35",
+      "condition": "Unsure what mathematics should come next",
+      "to": "C95",
+      "notes": "Use real observed result",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 206
+      }
+    },
+    {
+      "from": "C40",
+      "condition": "Mathematics or software difficulty",
+      "to": "C95",
+      "notes": "Explain active maths only",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 207
+      }
+    },
+    {
+      "from": "C50",
+      "condition": "Subsequent investigation has stalled",
+      "to": "C95",
+      "notes": "Keep earlier reflections",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 208
+      }
+    },
+    {
+      "from": "C70",
+      "condition": "Writing / presentation trouble",
+      "to": "C95",
+      "notes": "Targeted help",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 209
+      }
+    },
+    {
+      "from": "C80",
+      "condition": "Teacher draft / feedback obstacle",
+      "to": "C95",
+      "notes": "Respect school's one written feedback round",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 210
+      }
+    },
+    {
+      "from": "C03",
+      "condition": "Access, consent or permission obstacle",
+      "to": "C95",
+      "notes": "Leave restrictions visible",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 211
+      }
+    },
+    {
+      "from": "C95",
+      "condition": "I cannot get data",
+      "to": "C95D",
+      "notes": "Safe things to do now",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 212
+      }
+    },
+    {
+      "from": "C95",
+      "condition": "Data are too limited or unusable",
+      "to": "C95L",
+      "notes": "Consider actual scope and quality",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 213
+      }
+    },
+    {
+      "from": "C95",
+      "condition": "Look for an alternative source",
+      "to": "C95A",
+      "notes": "Compare mathematical relevance and provenance",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 214
+      }
+    },
+    {
+      "from": "C95",
+      "condition": "Something else",
+      "to": "C95Q",
+      "notes": "Conditional stage-specific help",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 215
+      }
+    },
+    {
+      "from": "C95",
+      "condition": "Pick just one next action",
+      "to": "C95N",
+      "notes": "Optional, no mandatory form",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 216
+      }
+    },
+    {
+      "from": "C95",
+      "condition": "Back to project",
+      "to": "C04",
+      "notes": "Return to saved origin in website, dashboard fallback",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 217
+      }
+    },
+    {
+      "from": "C95D",
+      "condition": "Write/revisit introduction",
+      "to": "C10",
+      "notes": "Aim and motivation available before data",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 218
+      }
+    },
+    {
+      "from": "C95D",
+      "condition": "Make/revise prediction, reason, beneficiary",
+      "to": "C02",
+      "notes": "Keep it tentative, Not sure valid",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 219
+      }
+    },
+    {
+      "from": "C95D",
+      "condition": "Find other primary/secondary data",
+      "to": "C95A",
+      "notes": "Assess source suitability first",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 220
+      }
+    },
+    {
+      "from": "C95D",
+      "condition": "Plan source/method, sample, terms and units",
+      "to": "C20",
+      "notes": "Do not mark collected",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 221
+      }
+    },
+    {
+      "from": "C95D",
+      "condition": "Ask about permission/access",
+      "to": "C03",
+      "notes": "No collection before approvals",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 222
+      }
+    },
+    {
+      "from": "C95D",
+      "condition": "Record one step and Save if useful",
+      "to": "C95N",
+      "notes": "No compulsory plan",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 223
+      }
+    },
+    {
+      "from": "C95A",
+      "condition": "Inspect alternative sources and method",
+      "to": "C20",
+      "notes": "Compare definitions, source/precision/coverage",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 224
+      }
+    },
+    {
+      "from": "C95A",
+      "condition": "Change aim/beneficiary only if needed",
+      "to": "C02",
+      "notes": "Preserve history of original plan",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 225
+      }
+    },
+    {
+      "from": "C95A",
+      "condition": "Source has too little or incompatible data",
+      "to": "C95L",
+      "notes": "Never invent or mix without justification",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 226
+      }
+    },
+    {
+      "from": "C95A",
+      "condition": "Teacher approval needed",
+      "to": "C03",
+      "notes": "Retain permission flag",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 227
+      }
+    },
+    {
+      "from": "C95A",
+      "condition": "Record source or next step",
+      "to": "C95N",
+      "notes": "Student decides",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 228
+      }
+    },
+    {
+      "from": "C95L",
+      "condition": "Check data availability/method",
+      "to": "C20",
+      "notes": "Scope the maths honestly",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 229
+      }
+    },
+    {
+      "from": "C95L",
+      "condition": "Seek appropriate alternate source",
+      "to": "C95A",
+      "notes": "No padding data",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 230
+      }
+    },
+    {
+      "from": "C95L",
+      "condition": "Choose limited-scope conclusion or next check",
+      "to": "C95N",
+      "notes": "No unsupported claims",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 231
+      }
+    },
+    {
+      "from": "C95Q",
+      "condition": "My result contradicts prediction",
+      "to": "C34U",
+      "notes": "Surprise investigated where it occurs",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 232
+      }
+    },
+    {
+      "from": "C95Q",
+      "condition": "Can't choose or explain maths",
+      "to": "C40D",
+      "notes": "Active maths and course reviewed",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 233
+      }
+    },
+    {
+      "from": "C95Q",
+      "condition": "Notation or mathematical communication",
+      "to": "C70N",
+      "notes": "On-demand targeted check",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 234
+      }
+    },
+    {
+      "from": "C95Q",
+      "condition": "Draft or feedback help",
+      "to": "C80D",
+      "notes": "No unearned readiness",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 235
+      }
+    },
+    {
+      "from": "C95Q",
+      "condition": "Access, consent or deadline issue",
+      "to": "C03",
+      "notes": "Current policies, teacher check",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 236
+      }
+    },
+    {
+      "from": "C95Q",
+      "condition": "Other/Not sure",
+      "to": "C95N",
+      "notes": "Single next action or Save",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 237
+      }
+    },
+    {
+      "from": "C95N",
+      "condition": "Write introduction now",
+      "to": "C10",
+      "notes": "Restore earlier draft",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 238
+      }
+    },
+    {
+      "from": "C95N",
+      "condition": "Review provisional prediction",
+      "to": "C02",
+      "notes": "No false evidence",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 239
+      }
+    },
+    {
+      "from": "C95N",
+      "condition": "Research source/method",
+      "to": "C20",
+      "notes": "Pending ≠ obtained",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 240
+      }
+    },
+    {
+      "from": "C95N",
+      "condition": "Resume maths with real evidence",
+      "to": "C40",
+      "notes": "Do not proceed from invented observations",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 241
+      }
+    },
+    {
+      "from": "C95N",
+      "condition": "Return to my previous work",
+      "to": "C04",
+      "notes": "Restore origin stage in website; dashboard fallback",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 242
+      }
+    },
+    {
+      "from": "C95N",
+      "condition": "Save this obstacle and action",
+      "to": "C91",
+      "notes": "Resume with same issue and chosen task",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 243
+      }
+    },
+    {
+      "from": "C04",
+      "condition": "Where should I write this? (optional)",
+      "to": "C96",
+      "notes": "Current stage context; hide when nothing new; exact stage return pointer",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 244
+      }
+    },
+    {
+      "from": "C10",
+      "condition": "Optional placement help for introduction",
+      "to": "C96",
+      "notes": "Student may ask but never force writing prompt",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 245
+      }
+    },
+    {
+      "from": "C20",
+      "condition": "Write about THIS chosen data/source method",
+      "to": "C96",
+      "notes": "Only when actual method/source relevant; pending means planning note",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 246
+      }
+    },
+    {
+      "from": "C22",
+      "condition": "Write selection rationale at the right place",
+      "to": "C96",
+      "notes": "Confirm chosen/used method and actual alternative first",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 247
+      }
+    },
+    {
+      "from": "C26",
+      "condition": "Already explained data choice or write it now?",
+      "to": "C96",
+      "notes": "Preserve prior section reference, don't duplicate",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 248
+      }
+    },
+    {
+      "from": "C32",
+      "condition": "Where to introduce this figure/calculation",
+      "to": "C96",
+      "notes": "Before output; purpose + definitions; actual figure not compulsory",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 249
+      }
+    },
+    {
+      "from": "C34",
+      "condition": "Write interpretation after meaningful result",
+      "to": "C96",
+      "notes": "After actual output, only when not adequately covered",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 250
+      }
+    },
+    {
+      "from": "C35",
+      "condition": "Write the bridge to next mathematics",
+      "to": "C96",
+      "notes": "Justified next question before new method starts",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 251
+      }
+    },
+    {
+      "from": "C40",
+      "condition": "Where to justify/interpret active mathematics",
+      "to": "C96",
+      "notes": "Method before working, results/limitations when active",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 252
+      }
+    },
+    {
+      "from": "C50",
+      "condition": "Place reflection with later meaningful findings",
+      "to": "C96",
+      "notes": "Return to actual result, not generic conclusion",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 253
+      }
+    },
+    {
+      "from": "C60",
+      "condition": "Keep conclusion concise and in its place",
+      "to": "C96",
+      "notes": "Synthesis only; avoid repetition",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 254
+      }
+    },
+    {
+      "from": "C70",
+      "condition": "Where to repair a communication issue",
+      "to": "C96",
+      "notes": "At original equation/figure/citation",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 255
+      }
+    },
+    {
+      "from": "C95",
+      "condition": "Can I write anything useful while stuck?",
+      "to": "C96",
+      "notes": "Distinguish private progress note from IA-ready writing",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 256
+      }
+    },
+    {
+      "from": "C96",
+      "condition": "Return to my original stage (with cue status)",
+      "to": "C04",
+      "notes": "Website returns to stored origin stage; dashboard is fallback",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 257
+      }
+    },
+    {
+      "from": "C96",
+      "condition": "Save writing state / resume later",
+      "to": "C91",
+      "notes": "Preserve cue/trigger/status/section reference",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 258
+      }
+    },
+    {
+      "from": "C96",
+      "condition": "Do a planning-only next action instead",
+      "to": "C95N",
+      "notes": "No invented data or completed method statement",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 259
+      }
+    },
+    {
+      "from": "C35",
+      "condition": "Pearson r was ACTUALLY calculated: contextual next-step ideas",
+      "to": "C35P",
+      "notes": "Post-PMCC branch only AFTER a real coefficient and its C34/C34B interpretation; not on first scatter or Planning prediction",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 260
+      }
+    },
+    {
+      "from": "C35P",
+      "condition": "Useful apparent linear association; prediction/model would benefit aim",
+      "to": "C35",
+      "notes": "Optional next step: fit/interprete an appropriate line and later inspect fit, domain, parameters; student chooses and justifies, not automatic regression",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 261
+      }
+    },
+    {
+      "from": "C35P",
+      "condition": "Little evidence of LINEAR association in these data",
+      "to": "C35",
+      "notes": "Inspect real scatter for curvature/subgroups/unusual values/range; only then consider justified alternate method or an honest limited finding, not correlation fishing",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 262
+      }
+    },
+    {
+      "from": "C35P",
+      "condition": "Moderate, uncertain or context-dependent linear relationship",
+      "to": "C35",
+      "notes": "Clarify what the actual sample r tells you and whether precision/aim justify additional mathematics; no rigid strength threshold",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 263
+      }
+    },
+    {
+      "from": "C35P",
+      "condition": "Coefficient and scatter disagree or result is unexpected",
+      "to": "C34U",
+      "notes": "Check observed pattern/data, domain and actual limitations; explain discrepancy next to output rather than bypassing it",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 264
+      }
+    },
+    {
+      "from": "C35P",
+      "condition": "No useful further calculation is necessary",
+      "to": "C35",
+      "notes": "Student returns to C35, may choose conclusion when sufficient appropriate mathematics; no quota",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 265
+      }
+    },
+    {
+      "from": "C35P",
+      "condition": "Need to reread/interprete the actual r or result",
+      "to": "C34",
+      "notes": "Return to original resultRef and latest local takeaway; preserve coefficient and existing text",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 266
+      }
+    },
+    {
+      "from": "C35P",
+      "condition": "Save the next question or decide later",
+      "to": "C04",
+      "notes": "Keep PMCC result and tentative next-step choice; source data status unchanged",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 267
+      }
+    },
+    {
+      "from": "C35",
+      "condition": "Enough relevant mathematics—bring findings together",
+      "to": "C60",
+      "notes": "Stop looping when current aim can be answered or honestly scoped, actual maths suitably substantial; no mandatory extra method or automatic grade",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 268
+      }
+    },
+    {
+      "from": "C35",
+      "condition": "Unsure whether chosen NEXT maths is course-appropriate",
+      "to": "C40D",
+      "notes": "Optional teacher/course level check of proposed technique; no artificial complexity",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 269
+      }
+    },
+    {
+      "from": "C35H",
+      "condition": "PMCC result already calculated; see appropriate follow-ups",
+      "to": "C35P",
+      "notes": "Only if PMCC actually performed and the prior result was interpreted; scatter-only use C35B",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 270
+      }
+    },
+    {
+      "from": "C50",
+      "condition": "New meaningful result already interpreted: revisit next-step decision",
+      "to": "C35",
+      "notes": "Only if C34/C34B reflection is complete for latest section; otherwise use C50→C34, no bypassing interpretation",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 271
+      }
+    },
+    {
+      "from": "C33",
+      "condition": "Check earlier recorded source/measurement precision for this figure",
+      "to": "C24",
+      "notes": "Optional ONLY when C24 accuracy missing/changed or real axis precision unclear; save return pointer C33; don't restart data collection",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 272
+      }
+    },
+    {
+      "from": "C24",
+      "condition": "Return to current figure after accuracy clarification",
+      "to": "C33",
+      "notes": "Only if originStage was C33; otherwise use normal collection path; preserve diagram state",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 273
+      }
+    },
+    {
+      "from": "C24",
+      "condition": "Return to current numerical result's accuracy reflection",
+      "to": "C34A",
+      "notes": "Only if originStage was C34A; active result must exist; avoid changing written prose automatically",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 274
+      }
+    },
+    {
+      "from": "C24",
+      "condition": "Return to active first mathematical calculation",
+      "to": "C40",
+      "notes": "Only if originStage was C40 and genuine active maths/result exists; a planning-only C24 review cannot bypass current method setup",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 275
+      }
+    },
+    {
+      "from": "C50",
+      "condition": "Check earlier input/source precision relevant to later mathematics",
+      "to": "C24",
+      "notes": "Optional targeted accuracy review if data/source has changed or output accuracy is uncertain; preserve C50 work and stage",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 276
+      }
+    },
+    {
+      "from": "C24",
+      "condition": "Return to active later mathematical section",
+      "to": "C50",
+      "notes": "Only if originStage was C50, preserve previous maths and source history; no fictitious completed method",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 277
+      }
+    },
+    {
+      "from": "C35",
+      "condition": "Check syllabus level of newly chosen mathematics (optional)",
+      "to": "C40D",
+      "notes": "Only if new technique is uncertain/partly beyond; teacher check does not stall work",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 278
+      }
+    },
+    {
+      "from": "C40D",
+      "condition": "I need to explain mathematics beyond this course",
+      "to": "C40L",
+      "notes": "Only after student confirms outside/partly outside or requests help. Not an automatic detour",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 279
+      }
+    },
+    {
+      "from": "C40",
+      "condition": "First-use beyond-syllabus explanation or new independent research",
+      "to": "C40L",
+      "notes": "Offer only when relevant to current ACTUAL technique and before first use; preserve active calculation",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 280
+      }
+    },
+    {
+      "from": "C50",
+      "condition": "First-use mathematics explanation in this later section",
+      "to": "C40L",
+      "notes": "Only for current novel/beyond-course technique; no repeated general tutorials",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 281
+      }
+    },
+    {
+      "from": "C34B",
+      "condition": "I genuinely learned something mathematically from this result",
+      "to": "C40L",
+      "notes": "Optional AFTER a real result, once the aim-link is understood; no fake personal engagement",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 282
+      }
+    },
+    {
+      "from": "C40L",
+      "condition": "Continue first substantial mathematics",
+      "to": "C40",
+      "notes": "Only if originStage C40 or first-method setup; keep chosen technique/notes",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 283
+      }
+    },
+    {
+      "from": "C40L",
+      "condition": "Continue later mathematical section",
+      "to": "C50",
+      "notes": "Only if originStage C50; preserve section ID and student writing",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 284
+      }
+    },
+    {
+      "from": "C40L",
+      "condition": "Return to the mathematical result and its aim-linked reflection",
+      "to": "C34B",
+      "notes": "Only if originStage C34B and actual resultRef exists",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 285
+      }
+    },
+    {
+      "from": "C40L",
+      "condition": "Return to course suitability/teacher check",
+      "to": "C40D",
+      "notes": "When course status or understood level is still uncertain",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 286
+      }
+    },
+    {
+      "from": "C40L",
+      "condition": "Return to the next-method decision",
+      "to": "C35",
+      "notes": "If originStage C35; no forced new maths",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 287
+      }
+    },
+    {
+      "from": "C40L",
+      "condition": "Save current learning note and resume",
+      "to": "C91",
+      "notes": "Persist method course classification, student learning source, own explanation and resume pointer",
+      "part": "Completing the IA",
+      "source": {
+        "sheet": "Routes",
+        "row": 288
+      }
+    }
+  ]
+}
