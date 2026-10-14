@@ -32,7 +32,7 @@ const relevance=(id,x)=>{
  const weak= f.pmccSignal==="weak-linear",applied=real&&entryMethod;
  const insight=real&&exists(entry?.mathsInsight);
  const sourceConfirmed=hasActualSource&&(x.sourceType==="secondary"||x.sourceType==="both") &&
-  exists(f.actualSource||f.sourceCitation)&&matches(f.secondaryVerified,/verified|checked|yes|confirmed|original/i);
+  exists(f.actualSource||f.sourceCitation)&&matches(p.secondaryVerified,/verified|checked|yes|confirmed|original/i);
  switch(id){
   case "W01":return !!aim&&(!!str(p.motivation)||!!str(p.interest));
   case "W02":return !theoretical&&exists(x.prediction);
@@ -81,9 +81,9 @@ const relevance=(id,x)=>{
     x.state.completion.transitions.at(-1)?.from==="C35"&&
     x.state.completion.transitions.at(-1)?.to==="C60";
   case "W46":return accuracy.length>0&&dataSafe;
-  case "W47":return real&&entry?.phase==="first"&&accuracy.length>0;
+  case "W47":return real&&entry?.phase==="first"&&accuracyRelated;
   case "W49":return derived&&accuracyRelated;
-  case "W50":return entry?.phase!=="first"&&entryMethod&&exists(entry?.purpose)&&accuracy.length>0;
+  case "W50":return entry?.phase!=="first"&&entryMethod&&exists(entry?.purpose)&&accuracyRelated;
   case "W51":return derived&&accuracyRelated;
   case "W52":return real&&method.has("fitted-model")&&(accuracy.length>0||exists(f.modelAssumptions));
   case "W53":return real&&(method.has("statistic")||isPearsonResult(entry));
