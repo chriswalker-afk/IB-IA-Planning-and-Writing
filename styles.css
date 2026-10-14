@@ -46,3 +46,34 @@ h1,h2,h3,h4,p {margin-top:0} h1,h2,h3,h4 {font-family:Manrope, 'DM Sans', sans-s
 @media(max-width:380px){.brand-label{font-size:14px}.hero h1{font-size:32px}.task-shell{padding:20px 15px}.task-shell h2{font-size:23px}.choice{padding:12px}.page-top h1{font-size:27px}.btn{padding:11px 12px}.micro-cue .button-row{display:grid;grid-template-columns:1fr 1fr}.context-card{padding:12px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
 @media print{.topbar,.sidebar,.mobile-nav,.tablet-nav,.no-print,.toast,.drawer-layer{display:none!important}.app-grid{display:block}.main{padding:0}.page{max-width:none}.print-only{display:block}.task-shell,.content-card{box-shadow:none;border:0;padding:0}.print-report{display:block!important}body{background:white;color:black;font:12pt/1.6 Arial,sans-serif}.print-report h1{font-size:22pt}.print-report h2{font-size:15pt;page-break-after:avoid}.summary-block{break-inside:avoid}.print-hidden{display:none!important}}
+
+
+/* Phase 2 — Planning: a focused journey with optional depth, not a giant checklist. */
+.plan-stage-line{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:0 0 24px}
+.plan-stage-chip{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;color:#82958d;border:1px solid #dfe8df;background:rgba(255,255,255,.7);border-radius:100px;padding:7px 12px}
+.plan-stage-chip.current{background:var(--teal-pale);border-color:#b9d9cd;color:var(--teal-dark)}
+.plan-stage-chip.done{color:#528677;background:#f3f9f4}
+.plan-stage-chip .icon{width:12px;height:12px}
+.plan-source-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:22px 0}
+.plan-source-grid .content-card{box-shadow:none;padding:18px}
+.plan-source-grid .content-card strong{font-size:14px}
+.plan-math-options{display:grid;grid-template-columns:1fr;max-height:385px;overflow-y:auto;gap:9px;padding:2px 7px 2px 1px;scrollbar-color:#c4d8cf transparent}
+.plan-math-options .choice{min-height:77px;align-items:center}
+.plan-math-options .choice.selected{border-color:var(--teal);background:#eff8f3}
+.plan-math-option[hidden]{display:none!important}
+.plan-math-topic{display:inline-block;margin-top:7px;font-size:10px;color:#63928a;background:#eaf6f1;border-radius:8px;padding:2px 7px;font-weight:700}
+.plan-math-count{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:12px;gap:10px;margin:5px 0 13px}
+.plan-math-count strong{color:var(--teal)}
+.plan-review .summary-block{margin-bottom:8px}
+.plan-review .btn-quiet{min-height:28px;margin:0 0 10px}
+.field-row .field-group{min-width:0}
+.field-row input[type=date]{min-width:0}
+@media(max-width:760px){
+ .plan-stage-line{gap:5px;margin:0 0 16px}
+ .plan-stage-chip{padding:6px 8px;font-size:9px}
+ .plan-stage-chip .icon{width:11px;height:11px}
+ .plan-source-grid{grid-template-columns:1fr}
+ .plan-source-grid .content-card{padding:16px}
+ .plan-math-options{max-height:340px}
+ .plan-math-count{font-size:11px}
+}
