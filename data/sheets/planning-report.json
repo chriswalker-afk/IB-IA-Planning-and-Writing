@@ -1,0 +1,386 @@
+{
+  "schemaVersion": 1,
+  "sourceSheet": "Planning Report",
+  "sourceBounds": {
+    "rows": 95,
+    "columns": 8
+  },
+  "rowCount": 32,
+  "nonemptyCellCount": 214,
+  "rows": [
+    {
+      "row": 1,
+      "cells": [
+        "STUDENT IA PLANNING DOCUMENT  |  Proposed output specification"
+      ]
+    },
+    {
+      "row": 2,
+      "cells": [
+        "The personalised summary includes student choices, alternatives, predictions, data-method rationale, full milestones, proposed first representation, potential adjustments and teacher questions. Available from every route."
+      ]
+    },
+    {
+      "row": 3,
+      "cells": [
+        "PDF default, optional editable Word. Report length adapts to the student's answers; avoid padding a fixed IA-writing template or including irrelevant content."
+      ]
+    },
+    {
+      "row": 4,
+      "cells": [
+        "Student reviews answers before exporting. Optional unanswered planning prompts remain 'To be confirmed' rather than blocking output or receiving an automatic low score."
+      ]
+    },
+    {
+      "row": 5,
+      "cells": [
+        "Pending teacher discussion changes the report STATUS, never export access. For restricted data, do not collect/use affected information before required approval."
+      ]
+    },
+    {
+      "row": 6,
+      "cells": [
+        "This tab is the DOCUMENT DESIGN SPECIFICATION. No student-facing document generator has been implemented."
+      ]
+    },
+    {
+      "row": 8,
+      "cells": [
+        "Order / page",
+        "Report section",
+        "Student input / data fields",
+        "How it appears in final document",
+        "Conditional display",
+        "Source node",
+        "Status",
+        "Implementation notes"
+      ]
+    },
+    {
+      "row": 9,
+      "cells": [
+        "01 · p1",
+        "Title and identification",
+        "Working IA title or aim; course (AI SL / AA SL); optional student identifier; generation date",
+        "'My IB Mathematics IA Plan' with clearly labelled draft status and date",
+        "All; identifier optional, no unnecessary personal details",
+        "N01, N04",
+        "Proposed",
+        "A short heading; not the final IA title or formal cover sheet."
+      ]
+    },
+    {
+      "row": 10,
+      "cells": [
+        "02 · p1",
+        "Investigation aim, personal benefit and intended audience",
+        "Student's aim, motivation, current chosen beneficiary (self, another audience, or both), what the investigation could help them decide/understand, and why it matters. Include any edits made during prediction.",
+        "Use the most recently confirmed 'Who is it for?' answer; do not retain outdated audience text if the student has changed it during prediction.",
+        "Every planning route, including teacher-led ideas; uncertainty never prevents a summary.",
+        "N01, N01V",
+        "Proposed",
+        "State the *intended* possible use, not a guaranteed or evidence-proven outcome. Do not generate the student's introduction."
+      ]
+    },
+    {
+      "row": 11,
+      "cells": [
+        "03 · p1",
+        "Data source and variables",
+        "Primary / secondary / both; exactly what is measured; variable(s) and units",
+        "A simple source-and-variables summary; direct hyperlink for secondary dataset",
+        "Only for primary, secondary or both. A no-data route records the idea in the teacher section, not fabricated data fields.",
+        "N03, N03P, N03S",
+        "Proposed",
+        "Reference original secondary data, not a pasted full dataset."
+      ]
+    },
+    {
+      "row": 12,
+      "cells": [
+        "04 · p1",
+        "Primary-data collection plan",
+        "When, where, who/what, how, measurement tools/equipment and relevant survey design",
+        "Compact collection checklist and student-provided answers",
+        "Only if Primary or Both chosen",
+        "N03P",
+        "Proposed",
+        "Add the choice of an alternative data-collection method and why the actual method was selected, including acceptable limitations (N03J)."
+      ]
+    },
+    {
+      "row": 13,
+      "cells": [
+        "05 · p1",
+        "Secondary-data access plan",
+        "Exact source URL, publisher, relevant fields/columns, intended subset and verification status",
+        "Clickable source URL and short description; student-selected columns",
+        "Only if Secondary or Both chosen",
+        "N03S",
+        "Proposed",
+        "Only include the relevant secondary-data columns, source reference and justification; do not dump entire dataset into the report."
+      ]
+    },
+    {
+      "row": 14,
+      "cells": [
+        "06 · p1",
+        "Data collection dates",
+        "First usable data target; full dataset target; proposed collection/start date",
+        "Two labelled dates and a short note on starting mathematical work",
+        "Data-based routes only. For no-data/theoretical route, omit dates or label them 'Not applicable'.",
+        "N03D",
+        "Proposed",
+        "Maintain the distinction between first usable data and complete collection; longer draft and revision milestones are in the full timeline (N03H)."
+      ]
+    },
+    {
+      "row": 15,
+      "cells": [
+        "07 · p1",
+        "Data readiness /5",
+        "Calculated/provisional score, evidence, reason, one suggested improvement",
+        "For data-based IAs: score /5 plus reasons. No-data: 'Not applicable — discuss with teacher'. Unclear evidence: 'Not yet assessed'.",
+        "Show score only when data readiness applies; N/A and unassessed do not equal 0/5.",
+        "N03E",
+        "Proposed",
+        "5/5 requires usable data; 4/5 can reflect a convincing near-term plan."
+      ]
+    },
+    {
+      "row": 16,
+      "cells": [
+        "08 · p1",
+        "Practical completion ease /5",
+        "Rating, dependencies, permissions/access, tool/software burden, workload, fallback",
+        "Show a completion-ease score only where enough practical details have been supplied. Otherwise display 'Not yet assessed' and state what remains unresolved.",
+        "Any route with sufficient practical information; otherwise explain why the rating is pending.",
+        "N03F, N03G",
+        "Proposed",
+        "Separate from data readiness; unresolved safety/consent flags cannot be hidden by a high score."
+      ]
+    },
+    {
+      "row": 17,
+      "cells": [
+        "09 · p1",
+        "Overall plan rating (OPEN)",
+        "Possible combined score or summary status; scoring approach not yet approved",
+        "Show a clearly labelled placeholder or omit until agreed",
+        "Only once overall plan rating system is agreed",
+        "N03E, N03G, N04M",
+        "Needs discussion",
+        "Never average a 'Not applicable' or 'Not yet assessed' element as 0. Overall plan rating remains to be agreed."
+      ]
+    },
+    {
+      "row": 18,
+      "cells": [
+        "10 · p2",
+        "Intended mathematics",
+        "Initial course-maths selections; student-selected additions/removals after prediction; any outside-course technique; why methods may fit the expected data.",
+        "Show proposed mathematics as provisional, explicitly distinguishing the student's choices from website suggestions.",
+        "Any route. No-data and other-course students can use optional free-text maths instead of a course-specific menu.",
+        "N04S, N01P, N04R, N04M",
+        "Proposed",
+        "Outside-course mathematics should trigger teacher discussion, not automatic rejection."
+      ]
+    },
+    {
+      "row": 19,
+      "cells": [
+        "11 · p2",
+        "Mathematical suitability (provisional)",
+        "Selected methods, uncertainty, teacher-review prompts",
+        "If suitability cannot be judged, show 'Teacher review needed' and the student's proposed method, not an automatic failure.",
+        "All routes, including no-data, AA HL, outside-course or uncertain mathematics.",
+        "N04M",
+        "Needs discussion",
+        "Use the prediction plus the planned data type and sample structure when considering suitability; do not assume prediction is correct."
+      ]
+    },
+    {
+      "row": 20,
+      "cells": [
+        "12 · p2",
+        "Key risks and warnings",
+        "Data delays, practical obstacles, method/sampling limitations, timetable bottlenecks and uncertainty, but only the few most consequential for this plan.",
+        "Only the 2–3 most significant risks, each linked to a possible mitigation",
+        "Only when a real risk or uncertainty is identified",
+        "N03P, N03S, N03F",
+        "Proposed",
+        "Never paste every generic warning into the report; flag consent and safeguarding separately."
+      ]
+    },
+    {
+      "row": 21,
+      "cells": [
+        "13 · p2",
+        "First mathematical action",
+        "Student's first meaningful maths action and the planned graph/table/diagram or simplified example that will help start the investigation.",
+        "A specific safe mathematical first step if supplied; otherwise 'To discuss with teacher'.",
+        "All routes. Optional if teacher questions remain; never instruct unsafe or restricted collection.",
+        "N05V, N05",
+        "Proposed",
+        "Do not automatically write a mathematical method or analysis on the student's behalf."
+      ]
+    },
+    {
+      "row": 22,
+      "cells": [
+        "14 · p2",
+        "Next actions and milestones",
+        "Date for first representation, initial calculation, writing a complete teacher draft, checking and corrections, known school deadlines, and one next action.",
+        "Short prioritised action list with dates if known",
+        "All routes, including provisional plans awaiting teacher feedback.",
+        "N03D, N03H, N03E, N03G, N05",
+        "Proposed",
+        "Proposed recommendations must be clearly distinguished from student-supplied commitments."
+      ]
+    },
+    {
+      "row": 23,
+      "cells": [
+        "15 · p2",
+        "Questions for the teacher",
+        "Optional teacher question offered to every student (N06T) plus any targeted teacher-check-in notes (N08), including no-data or permission issues.",
+        "Clearly labelled 'To discuss with my teacher' section with the student's own short answers and unresolved decisions.",
+        "All routes may record a question; specialist flags are conspicuous but should not prevent export.",
+        "N06T, N08, N02T, N04T, N03F, N04M",
+        "Proposed",
+        "Never imply the teacher has approved a topic just because a report was generated."
+      ]
+    },
+    {
+      "row": 24,
+      "cells": [
+        "16 · p2",
+        "Student review and disclaimer",
+        "Student-revised answers and generated-at timestamp",
+        "Footer: 'Planning aid, not an IB assessment or guaranteed topic approval'",
+        "All",
+        "N06, N07",
+        "Proposed",
+        "Planning report is a snapshot. It may be revised as an investigation unfolds; it is not a rigid IA writing structure or teacher approval."
+      ]
+    },
+    {
+      "row": 25,
+      "cells": [
+        "17 · p2+",
+        "Teacher-review status and outstanding details",
+        "Consultation trigger(s), question(s) for the teacher, plan fields still unknown, next safe step and relevant student explanation.",
+        "When flagged, headline says 'Provisional plan — teacher discussion needed'. Unanswered nonessential fields say 'To be confirmed'.",
+        "Only teacher-advice routes; summary still available before feedback.",
+        "N02T, N04T, N08, N06, N07",
+        "Agreed",
+        "When approval remains outstanding, the report flags it; all students can record a universal teacher question even without a specialist flag."
+      ]
+    },
+    {
+      "row": 26,
+      "cells": [
+        "18 · p1",
+        "Alternative topics considered",
+        "Up to two alternatives, quick feasibility comparison and the student's reason for the chosen provisional idea.",
+        "Concise comparison note only if entered; one idea does not earn a lower rating.",
+        "Only when student uses optional comparison.",
+        "N00C",
+        "Proposed",
+        "Avoid a separate detailed plan/score for each candidate topic."
+      ]
+    },
+    {
+      "row": 27,
+      "cells": [
+        "19 · p1",
+        "Prediction and reasoning",
+        "Student's chosen prediction (or Not sure yet); WHY they expect it; IF TRUE what it could mean for the intended beneficiary; any uncertainty; and revised mathematical techniques kept separate as student selections.",
+        "Two distinct student statements: 'Why I expect this' and 'What it might mean for [beneficiary] if true'. Explicitly hypothetical; don't make recommendations on untested data.",
+        "Show only questions answered; 'Not sure yet' is acceptable.",
+        "N01P, N01V, N04R",
+        "Proposed",
+        "Retain the student's own conditional implication; if 'Who is it for?' was edited, use current beneficiary fields. This is not a demonstrated finding, promise or predicted grade."
+      ]
+    },
+    {
+      "row": 28,
+      "cells": [
+        "20 · p1",
+        "Choice of data method and limitations",
+        "Alternative data source or sampling method, reason for selection, main limitation and any mitigation.",
+        "One clear rationale and important limitation rather than a long generic methods essay.",
+        "Data-based plans, conditionally detailed for surveys.",
+        "N03J, N03P, N03S",
+        "Proposed",
+        "Relevant source/citation included when needed."
+      ]
+    },
+    {
+      "row": 29,
+      "cells": [
+        "21 · p2",
+        "Complete IA work schedule",
+        "Known school deadlines, first representation, initial mathematics, complete draft, feedback, revisions and contingency buffer.",
+        "Compact project-specific milestone table, with editable dates and 'To confirm' for unknown school deadlines.",
+        "All routes; no invented deadlines or false date-based scoring.",
+        "N03H",
+        "Proposed",
+        "Warnings for impossible sequences or no time to act on feedback."
+      ]
+    },
+    {
+      "row": 30,
+      "cells": [
+        "22 · p2",
+        "Planned first representation",
+        "Which graph, table, sketch or simplified model student intends to make and why it is useful.",
+        "One-line description, not a mandatory finished graph.",
+        "All routes; optional/unsure accepted.",
+        "N05V",
+        "Proposed",
+        "Belongs to planning: full diagram presentation remains in Completing the IA."
+      ]
+    },
+    {
+      "row": 31,
+      "cells": [
+        "23 · p2",
+        "Possible changes of direction",
+        "Possible changes of direction after an unexpected result or practical obstacle (especially unavailable data): alternative approved collection, credible secondary source, narrower scope, or method/aim adjustment with a reason.",
+        "Short 'If this happens, I could...' note where offered.",
+        "Optional for any investigation.",
+        "N06E",
+        "Proposed",
+        "Keep the original aim, prediction and intended beneficiary visible. Planning can be progressed before data arrive; Completing offers short, optional C95D/C95A support."
+      ]
+    },
+    {
+      "row": 32,
+      "cells": [
+        "24 · p2",
+        "Universal teacher check-in",
+        "Optional question for the teacher and intended discussion date alongside any mandatory specialist flags.",
+        "'Questions I could discuss with my teacher' plus required review warning where applicable.",
+        "Available to every student; never an export blocker.",
+        "N06T, N08",
+        "Proposed",
+        "Suggested conversation for all; specific permissions needed before affected actions."
+      ]
+    },
+    {
+      "row": 33,
+      "cells": [
+        "25 · technical",
+        "Recoverable planning document",
+        "Stable field IDs and a schema version; answers, selected maths, prediction/why, risks and permission flags, milestones and original report date.",
+        "Readable PDF/DOCX with embedded versioned resume data plus labelled field text to help recovery; never the IA itself.",
+        "All planning exports, including provisional teacher-review cases.",
+        "N07, C00, C01, C02",
+        "Agreed",
+        "Reuploading the Pathfinder PDF or Word prepopulates editable fields. If import fails, allow partial recovery or manual entry. A JSON backup is optional, not mandatory."
+      ]
+    }
+  ]
+}
