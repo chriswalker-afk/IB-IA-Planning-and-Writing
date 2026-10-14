@@ -1,44 +1,49 @@
 # IA Pathfinder — Hybrid Pathfinder
 
-A responsive companion that helps IB Mathematics students **plan a meaningful IA** and build their investigation from their own mathematical findings. Students write the finished IA in Word or Google Docs; Pathfinder holds decisions, prompts and short student-authored working notes.
+A responsive companion for IB Mathematics Internal Assessments, designed to help students develop a meaningful investigation from **genuine mathematical decisions and findings**. The finished IA is authored in Word or Google Docs. Pathfinder supports planning, authentic maths records, interpretation and appropriately timed writing advice.
 
-**Website:** https://chriswalker-afk.github.io/IB-IA-Planning-and-Writing/
+**Live website:** https://chriswalker-afk.github.io/IB-IA-Planning-and-Writing/
 
-## Current release: Phase 2 — Planning
+## Current release — Phase 3: Documents and handover
 
-Planning now follows the Google Sheet's **32 source-linked Planning nodes and 61 defined routes**, replacing the earlier fixed ten-step walkthrough. Each student sees only the questions relevant to their pathway.
+**Planning (Phase 2)** uses the original Google Sheet's **32 Planning nodes and 61 routes**, with purposeful branching, feasibility ratings, risk and teacher check-ins, a searchable **51-technique** AI SL / AA SL maths catalogue, and **22 context-filtered prediction nudges**.
 
-- Ideas, optional comparison, investigation aims, intended usefulness and beneficiaries
-- Statistics, modelling or theoretical/no-data routes
-- Primary/secondary/combined evidence planning; combined sources require both question sets
-- Separate data readiness and practical completion-ease ratings (not IA grade predictions)
-- Permissions, ethics, practical dependencies, deadlines and teacher checkpoints
-- Searchable, multiple-selection **AI SL / AA SL** maths menu with **51 techniques**
-- **22 conditional predictions** and separate WHY / IF TRUE implications
-- Optional mathematics review after prediction, purposeful first diagram/calculation, contingency
-- Personalised, readable working report, JSON backups, autosave and desktop/mobile journey map
+**Planning documents and handover (Phase 3)** now support:
+- **Download a personalised PDF plan** with readable, conditional student answers and an embedded versioned planning snapshot.
+- **Download an editable Word (.docx) plan** with the same answers and its own embedded importable snapshot.
+- **Import a previous Pathfinder PDF or Word report** locally, preview differences, and select which earlier Planning fields to merge. Blank current fields are selected by default; conflicting fields are **not**.
+- **Direct Planning → IA Studio confirmation** of current aim, course, intended beneficiary, planned first maths and provisional prediction.
+- **Preserve actual mathematical work, writing notes and teacher flags** when merging a planning report. Imported documents never imply data were collected or consent was granted.
+- **JSON full-project backup and restore** for mathematical steps, notes, and planning across devices.
 
-**Phase 2 notes and review paths:** [docs/phase-2.md](docs/phase-2.md)  
-**Complete source audit:** [docs/coverage.md](docs/coverage.md)
+**How to use and test:** [docs/phase-3.md](docs/phase-3.md)  
+**Source coverage:** [docs/coverage.md](docs/coverage.md)  
+**Planning design:** [docs/phase-2.md](docs/phase-2.md)
 
-### IA Studio — currently an exploratory prototype
+### Important limitation of embedded document data
 
-Completing has a functioning illustrative cycle: purposeful mathematics → actual result → interpretation → next mathematical question. The remaining C-node workflow and many contextual advice libraries are still planned for Phases 4–6. Sample results are fictional and labelled as such.
+The importable snapshot records the plan **at the time the PDF or Word report was generated**. Editing paragraphs in Word *afterwards* does **not** automatically update its embedded snapshot. Third-party editors may strip that data. If metadata is missing, Pathfinder attempts only clearly labelled text recovery with explicit student confirmation; scanned PDFs are not reliably supported. Re-enter edits in Pathfinder and export a fresh plan, or restore a JSON backup.
 
-### Important distinctions
+PDF and Word are **planning handovers**, not full records of completed maths. Use the **JSON backup** to transfer the entire IA Studio project.
 
-A planned technique is **not** a result. A prediction is **not** a finding. A teacher consultation flag is **not** approval. The site does **not** grade IAs, invent results, approve data collection or require a fixed number of mathematical sections.
+### IA Studio — Completing still in development
 
-Source-listed mathematics are *possible planning options* for AI SL and AA SL, not an independent certification against future syllabus changes. Other/HL courses receive a teacher-check pathway.
+The existing IA Studio prototype supports recording actual mathematics separately from planned techniques, interpreting results and choosing a purposeful next question. Most of the source sheet's full Completing flow and contextual guidance remain scheduled for Phases 4–6. Example investigations are fictional and clearly labelled.
 
-The printable report can be saved as a PDF, but it is not yet a structured PDF/DOCX handover: **Phase 3** will implement robust document reimport. **Use the JSON backup** for safe project restoration. Browser autosave is local to the device; there is no account or cross-device syncing. Avoid entering sensitive participant data or restricted personal information.
+**Safeguards:** A plan is not a result. Predictions are not findings. A teacher question is not an approval. Planning readiness/ease ratings are not IB marks. The site does not invent mathematical evidence, automatically grade IAs, verify external datasets, approve data collection or force a fixed number of calculations.
+
+Browser autosave is **device-local**. No user accounts, cloud sync, default remote OCR or publication of student plans. Avoid uploading personal participant data or restricted information.
 
 ## Development
 
-Static HTML, CSS and JavaScript ES modules; no external application framework, analytics or account system. No package install required:
+Node 22+ required to build the static site. No server database or hosting backend:
 
-- Open the website or serve the project with a local HTTP server.
-- Run \`npm test\` on Node 22+ for pure routing, source coverage and simulated UI tests.
-- GitHub Actions validates tests and deploys GitHub Pages.
+\`\`\`sh
+npm install
+npm test
+npm run build
+\`\`\`
 
-The source Google Sheet was captured into 24 versioned read-only JSON snapshots on 14 October 2026. The original Sheet remains the editorial reference; edits to that Sheet should be intentionally re-imported and reviewed before changing runtime rules.
+The build emits \`dist/\` using esbuild with lazily loaded PDF/Word libraries and a PDF text worker. GitHub Actions validates, builds and deploys \`dist/\` to GitHub Pages.
+
+The original Google Sheet remains the editorial reference; its 24 tabs were captured into versioned read-only JSON snapshots on 14 October 2026. Changes to the Sheet must be reviewed before updating application logic.
