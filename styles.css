@@ -83,3 +83,41 @@ h1,h2,h3,h4,p {margin-top:0} h1,h2,h3,h4 {font-family:Manrope, 'DM Sans', sans-s
 .plan-details[open] summary{padding-bottom:15px;border-bottom:1px solid var(--line)}
 .plan-details .task-section{margin-top:20px}
 .plan-details summary:focus-visible{outline:3px solid #b8863b;outline-offset:4px}
+
+
+/* Phase 3 — planning document export and safe, field-level handover review. */
+.handover-provenance{display:flex;justify-content:space-between;align-items:start;gap:15px;padding:14px;border-radius:13px;background:#f4f8f5;margin:15px 0}
+.handover-provenance strong{font-size:14px;color:var(--ink)}
+.handover-provenance p{margin:6px 0 0;font-size:12px;color:var(--muted)}
+.handover-provenance .status-tag{flex-shrink:0}
+.compare-highlight{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:16px 0}
+.handover-value{padding:14px;border:1px solid var(--line);border-radius:13px;min-width:0}
+.handover-value span{font-size:11px;color:var(--muted);font-weight:750;letter-spacing:.025em}
+.handover-value p{overflow-wrap:anywhere;margin:8px 0 0;font-size:13px;line-height:1.55}
+.handover-diff-group{border-top:1px solid var(--line);margin-top:18px;padding-top:14px}
+.handover-diff-group h3{font-size:13px;margin:0 0 12px;color:var(--ink)}
+.handover-diff-row{display:flex;align-items:flex-start;gap:12px;padding:13px;margin:9px 0;background:var(--surface,#fff);border:1px solid var(--line);border-radius:13px;cursor:pointer}
+.handover-diff-row:has(input:checked){background:#f0f8f4;border-color:#b7d9c8}
+.handover-diff-row input{width:19px;height:19px;flex-shrink:0;accent-color:var(--teal);margin:2px 0 0}
+.handover-diff-body{flex:1;min-width:0}
+.handover-diff-body>strong{display:block;font-size:13px;margin-bottom:9px;color:var(--ink)}
+.handover-diff-body>span{display:block;font-size:12px;overflow-wrap:anywhere;color:var(--ink);line-height:1.55;margin:4px 0}
+.handover-diff-body em{font-style:normal;color:var(--muted);font-weight:750;display:block;font-size:10px;letter-spacing:.015em}
+.handover-incoming{border-left:3px solid #95cbb8;padding:6px 9px;background:#f6faf7;border-radius:4px}
+.handover-warning,.inline-warning{padding:13px 15px;border:1px solid #e5d6ad;background:#fbf8ef;color:#5f533b;border-radius:13px;margin:15px 0;font-size:12px;line-height:1.6}
+.handover-warning p{margin:8px 0}
+.handover-warning ul{padding-left:21px;margin:8px 0}
+.handover-select-toolbar{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:14px 0 17px}
+.handover-select-toolbar .btn{font-size:12px}
+.handover-actions{position:sticky;bottom:-16px;z-index:2;background:var(--surface,#fff);border-top:1px solid var(--line);padding:15px 0 0;margin-top:20px}
+.handover-actions p{font-size:12px;color:var(--muted);margin:0 0 8px}
+.handover-actions .btn{max-width:100%}
+@media(max-width:760px){
+ .compare-highlight{grid-template-columns:1fr}
+ .handover-provenance{flex-direction:column;gap:7px}
+ .handover-diff-row{padding:11px}
+ .handover-actions{padding-bottom:12px}
+}
+@media(prefers-reduced-motion:reduce){
+ .handover-diff-row,.handover-select-toolbar .btn{transition:none!important}
+}
