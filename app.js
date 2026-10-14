@@ -300,6 +300,99 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       setTimeout(()=>URL.revokeObjectURL(url),3000);toast("Project backup downloaded.");
     } catch(err) {toast("Backup could not be created. Please try again.");console.error(err);}
   }
+
+  function downloadFile(bytes,name,mime){
+    const blob=new Blob([bytes],{type:mime});
+    const url=URL.createObjectURL(blob),a=document.createElement("a");
+    try{
+      a.href=url;a.download=name;document.body.appendChild(a);a.click();
+    }finally{
+      a.remove();setTimeout(()=>URL.revokeObjectURL(url),3000);
+    }
+  }
+  async function exportPlanningDocument(format){
+    if(exportBusy){toast("A planning report is already being prepared.");return;}
+    exportBusy=true;
+    setSaveStatus("Creating planning document…");
+    try{
+      const snapshot=createPlanningEnvelope(state),model=modelFromEnvelope(snapshot);
+      let bytes,mime;
+      if(format==="pdf"){
+        const mod=await import("./src/handover/formats/pdf.js");
+        bytes=await mod.createPdfPlanningReport(snapshot);
+        mime="application/pdf";
+      }else{
+        const mod=await import("./src/handover/formats/docx.js");
+        bytes=await mod.createDocxPlanningReport(snapshot);
+        mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+      }
+      downloadFile(bytes,suggestedFilename(model,format),mime);
+      state.handover.lastExportAt=snapshot.exportedAt;
+      save();
+      toast(format==="pdf"?"Planning PDF downloaded.":"Editable planning Word document downloaded.");
+    }catch(error){
+      console.error("Planning report export failed",error);
+      setSaveStatus("Export failed — your browser work remains saved",true);
+      toast("Could not create that report. Try the other format or export JSON.");
+    }finally{exportBusy=false;}
+  }
+  async function readPlanningDocument(file){
+    try{
+      setSaveStatus("Reading document on this device…");
+      const {readHandoverDocument}=await import("./src/handover/read-document.js");
+      const result=await readHandoverDocument(file);
+      if(result.kind==="manual"){
+        pendingImport={reason:result.reason};importSelected=new Set();
+        openDrawer("import-manual");return;
+      }
+      const differences=getFieldDiff(state,result.envelope);
+      pendingImport={
+        envelope:result.envelope,fileName:result.name,kind:result.kind,
+        changes:differences,warning:result.warning
+      };
+      importSelected=new Set(differences.filter(x=>x.recommended).map(x=>x.key));
+      openDrawer("import-preview");
+    }catch(error){
+      console.warn("Could not import planning document",error);
+      pendingImport={reason:"The document could not be safely read: "+error.message+
+        " Your existing work has not been changed."};
+      importSelected=new Set();
+      openDrawer("import-manual");
+    }finally{
+      setSaveStatus("Saved on this device");
+    }
+  }
+  function updateImportSelections(mode){
+    if(!pendingImport?.changes)return;
+    importSelected=new Set(pendingImport.changes.filter(d=>
+      mode==="all"||(mode==="missing"&&d.recommended)
+    ).map(d=>d.key));
+    openDrawer("import-preview");
+  }
+  function applySelectedImport(){
+    if(!pendingImport?.envelope){toast("Choose a planning document first.");return;}
+    const keys=[...importSelected];
+    if(!keys.length){toast("Select at least one planning answer to import.");return;}
+    try{
+      const merge=mergePlanningEnvelope(state,pendingImport.envelope,keys,{
+        origin:pendingImport.fileName||"report"
+      });
+      if(merge.unchanged){toast("No changes selected.");return;}
+      state=merge.state;
+      state.handover.confirmedAt="";
+      state.handover.needsReview=true;
+      state.handover.lastImportAt=new Date().toISOString();
+      state.handover.lastImportSource=pendingImport.fileName||"planning document";
+      pendingImport=null;importSelected.clear();
+      save();render();
+      openDrawer("handover");
+      toast(merge.applied.length+" planning answers imported; review current details.");
+    }catch(error){
+      console.error("Planning merge failed",error);
+      toast("These answers could not be merged. Your existing project is unchanged.");
+    }
+  }
+
   function changeNavAction(action,el) {
     if(action==="go-home")return nav("home");
     if(action==="go-planning")return nav("planning");
@@ -375,6 +468,24 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         if((hasPlan()||hasStudio()) && !window.confirm("Replace your current local project with an illustrative sample? Download a backup first if needed."))return;
         demo(el.dataset.demo);break;
       case "export-json":exportJson();break;
+      case "export-plan-pdf":void exportPlanningDocument("pdf");break;
+      case "export-plan-docx":void exportPlanningDocument("docx");break;
+      case "import-report":{
+        const target=$("#reportImportFile");
+        if(target)target.click();else toast("The document upload control is unavailable.");
+        break;
+      }
+      case "open-handover":lastFocus=el;openDrawer("handover");break;
+      case "merge-select-missing":updateImportSelections("missing");break;
+      case "merge-select-all":updateImportSelections("all");break;
+      case "merge-select-none":updateImportSelections("none");break;
+      case "merge-apply":applySelectedImport();break;
+      case "handover-confirm":
+        if(!state.handover)state.handover={};
+        state.handover.confirmedAt=new Date().toISOString();
+        state.handover.needsReview=false;
+        save();closeDrawer();render();
+        toast("Starting details reviewed. Teacher flags, if any, remain open.");break;
       case "import-json":$("#importFile").click();break;
       case "print-report":window.print();break;
       case "new-project":
@@ -420,6 +531,14 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   document.addEventListener("change",evt=>{
     const target=evt.target;
     if(target.dataset.check){state.cues[target.dataset.check]=target.checked?"done":"open";save();}
+    if(target.dataset.mergeKey!==undefined){
+      const key=target.dataset.mergeKey;
+      if(pendingImport?.changes?.some(x=>x.key===key)){
+        if(target.checked)importSelected.add(key);else importSelected.delete(key);
+        const n=$("#mergeCount",layer);if(n)n.textContent=importSelected.size;
+      }
+      return;
+    }
     if(target.dataset.bind){
       updateBoundField(target.dataset.bind,target.value);
       save();
@@ -446,6 +565,12 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       state=imported;state.route="home";save();closeDrawer();render({top:true});toast("Project backup restored.");
     }catch(err){window.alert("This file could not be imported. "+err.message);}
     finally{input.value="";}
+  });
+  $("#reportImportFile").addEventListener("change",async event=>{
+    const file=event.target.files?.[0];
+    if(!file)return;
+    try{await readPlanningDocument(file);}
+    finally{event.target.value="";}
   });
   // Welcome: current route from a previous session should always remain reachable and understandable.
   render();
