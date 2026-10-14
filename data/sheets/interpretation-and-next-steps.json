@@ -1,0 +1,840 @@
+{
+  "schemaVersion": 1,
+  "sourceSheet": "Interpretation & Next Steps",
+  "sourceBounds": {
+    "rows": 120,
+    "columns": 10
+  },
+  "rowCount": 69,
+  "nonemptyCellCount": 483,
+  "rows": [
+    {
+      "row": 1,
+      "cells": [
+        "AFTER THE DIAGRAM / CALCULATION  |  Observe → (accuracy if needed) → aim + prediction → investigate surprises → choose next maths"
+      ]
+    },
+    {
+      "row": 2,
+      "cells": [
+        "Use this AFTER an actual figure or calculation, not from a predicted outcome. Short student-authored reflections; one clear observation and one reasoned next step often suffice."
+      ]
+    },
+    {
+      "row": 3,
+      "cells": [
+        "Ask accuracy only if it is new, unresolved or consequential. Reuse documented measurement/precision limits from C24; avoid redundant explanations."
+      ]
+    },
+    {
+      "row": 4,
+      "cells": [
+        "Unexpected findings are valuable: state what differs, consider a plausible alternative CHECK, and keep the original prediction visible. Never force a result to match."
+      ]
+    },
+    {
+      "row": 5,
+      "cells": [
+        "Only suggest 1–3 contextual next actions on request, using the student's confirmed observed feature, type of IA, aim, actual data and course. Planned PMCC alone isn't evidence of linearity."
+      ]
+    },
+    {
+      "row": 6,
+      "cells": [
+        "Examples are questions, NOT diagnoses or ready-made prose. Students may reject them, change the mathematics, or Save with an unresolved observation."
+      ]
+    },
+    {
+      "row": 8,
+      "cells": [
+        "ID",
+        "Actual context / observation",
+        "Show only when student has confirmed",
+        "Ask: what do you ACTUALLY see?",
+        "Accuracy: only if NEW/unclear",
+        "Aim, original prediction and beneficiary",
+        "Plausible NEXT mathematical question",
+        "If unexpected or unclear, investigate",
+        "Do not imply / stage guardrail",
+        "Status"
+      ]
+    },
+    {
+      "row": 9,
+      "cells": [
+        "I01",
+        "Statistics | scatter, roughly straight-line",
+        "Student confirms paired data and points appear approximately linear",
+        "What direction, spread and rough linear form do you ACTUALLY see? Are there clusters or unusual points?",
+        "Use previously confirmed input precision/coverage; ask again only for a NEW issue.",
+        "How does a possible linear association answer the aim? Is direction as predicted, and what might it mean for the intended beneficiary?",
+        "If the student reports roughly straight (not near-perfect) data and quantifying LINEAR association would help the aim, consider PMCC NEXT. If already clearly straight, ask whether PMCC adds any real value. A fitted line may matter more for prediction.",
+        "If a straight-ish pattern contradicts the prediction, acknowledge that, check variables/range, and state why quantifying the new pattern could help.",
+        "A scatter plot doesn't prove linearity, PMCC isn't yet performed, and association alone isn't causation.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 10,
+      "cells": [
+        "I02",
+        "Statistics | scatter, visibly curved",
+        "Student confirms curved or changing-slope pattern from actual scatter, especially after predicted linear trend",
+        "Does the direction or steepness change? Where does the curvature appear?",
+        "Check whether the apparent bend exceeds known measurement variability; don't repeat C24 unprompted.",
+        "A curve may challenge the original linear expectation; does a different model better answer the aim?",
+        "If curved, consider whether monotonic or turning/cyclical; examine course-appropriate nonlinear modelling first. Spearman is an optional option only for suitable monotonic association, if in student's course/teacher-approved, not all curves.",
+        "Rather than forcing PMCC, ask whether the variable definitions, data range or different regimes explain the curve.",
+        "Don't claim a particular quadratic/exponential form solely from appearance.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 11,
+      "cells": [
+        "I03",
+        "Statistics | scatter, weak or no apparent association",
+        "Student reports points look scattered or relationship unclear",
+        "Is there a consistent direction or merely an indistinct cloud? What are the observed limits?",
+        "If scatter/noise is substantial relative to expected effect, note uncertainty and sample scope only when not covered.",
+        "Does no obvious association challenge the prediction, and what decision can/can't this evidence support?",
+        "A genuinely absent/unclear trend may merit a cautious interpretation. PMCC is not required; if visual evidence is ambiguous, student may choose a justified quantitative check rather than forcing a positive result.",
+        "Explore a plausible narrower range/subgroup ONLY with a reason, or check variable definitions, rather than searching until a positive result appears.",
+        "A weak visual pattern isn't proof of no population association; don't invent one.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 12,
+      "cells": [
+        "I04",
+        "Statistics | scatter with surprising extreme observation",
+        "Student actually notices one/few unusual plotted observations",
+        "What makes this point unusual in context? Could it be a genuine part of the data?",
+        "Review data entry/source precision ONLY when there is specific reason for concern.",
+        "How much does it change the story and prediction? Would ignoring it misrepresent the intended population?",
+        "Check the source value; later, when genuinely calculating correlation/model, assess sensitivity to this point.",
+        "Keep the genuine point unless a documented reason excludes it; an unexpected value might reveal something useful.",
+        "PMCC outlier sensitivity is a technique-specific limitation at C40/C50, not automatically at scatter construction.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 13,
+      "cells": [
+        "I05",
+        "Statistics | single variable appears bell-shaped",
+        "Student reports a roughly symmetric, single-peaked histogram of numerical observations",
+        "How symmetric is the shape, and what spread or tail behaviour can you actually see?",
+        "Check whether bins/data resolution distort apparent smoothness, if a new issue.",
+        "Would a particular distribution model help with the probabilities or comparison in the aim?",
+        "If suitable for the course and actual data, explore a normal model and relevant descriptive measures later.",
+        "If the histogram differs from normal prediction, describe the difference first and compare appropriate alternatives.",
+        "Appearance is not proof of normality; don't automatically calculate model probabilities.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 14,
+      "cells": [
+        "I06",
+        "Statistics | skewed, clumped or multimodal histogram",
+        "Student observes asymmetry, several peaks or marked grouping",
+        "What does the skew or clustering imply about typical values and variability?",
+        "Consider effect of data binning/source when genuinely material.",
+        "How does this affect any predicted normality and who might benefit from comparing subgroups?",
+        "Consider median/IQR, appropriate centre/spread measures or a justified group comparison.",
+        "Investigate whether groups/time periods could reasonably explain more than one cluster, rather than forcing a single normal curve.",
+        "Don't invent separate populations or causation from a histogram.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 15,
+      "cells": [
+        "I07",
+        "Statistics | side-by-side comparison, visible group difference",
+        "Student reports meaningful difference in location/spread on common-scale plots",
+        "Which centre, spread or unusual values differ between groups?",
+        "Use real sample sizes and measurement resolution when judging strength of visible difference.",
+        "Does the difference support the prediction? What advice can be cautiously drawn for the stated group?",
+        "Calculate appropriate summary measures and, if course-appropriate/needed, later a suitable comparison method.",
+        "If direction differs from prediction, check group definitions, ranges and possible confounders before claiming the inverse.",
+        "Don't infer significance or causality from different-looking boxes/bars alone.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 16,
+      "cells": [
+        "I08",
+        "Statistics | group plots unexpectedly similar",
+        "Student expected a group difference but common-scale plots show little",
+        "Are the groups alike in centre, spread, or both? Do the scales hide an actual small difference?",
+        "Consider group sizes and uncertainty before treating no visible difference as precise equality.",
+        "What would a lack of meaningful difference mean for the original advice/choice?",
+        "Compare relevant summaries; consider whether study can support a cautious null/inconclusive interpretation.",
+        "Check whether the intended contrast is the right variable and whether another meaningful comparison has a rationale.",
+        "Don't alter axes to manufacture a visually dramatic difference.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 17,
+      "cells": [
+        "I09",
+        "Statistics | categorical bars/proportions",
+        "Student has counts/proportions across categories/groups",
+        "Which relative proportions appear different? Are the denominators comparable?",
+        "Small counts may make apparent percentage changes unstable; don't repeat earlier coverage checks.",
+        "Which category pattern directly bears on the aim and expected usefulness?",
+        "Compute defensible conditional proportions or later a suitable course test when really used.",
+        "If proportions conflict with prediction, inspect group definitions/denominators and sampling rather than ignoring result.",
+        "No long raw tables; don't force chi-squared unless categories and question warrant it.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 18,
+      "cells": [
+        "I10",
+        "Statistics/modelling | time series looks periodic",
+        "Student observes repeated ups/downs over actual ordered measurements",
+        "How many visible cycles, and are intervals/peaks broadly consistent?",
+        "Is time sampling dense/precise enough to see the cycles? Ask only when material.",
+        "Would a recurring pattern help the original aim or predicted future behaviour?",
+        "If evidence supports it, investigate period/amplitude or a sinusoidal model within course scope.",
+        "If cycles are less regular than predicted, compare a simpler trend or note limited evidence.",
+        "A single rise-and-fall needn't establish true periodicity.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 19,
+      "cells": [
+        "I11",
+        "Statistics/modelling | expected cycle absent",
+        "Student predicted periodicity but actual series appears irregular or mainly trending",
+        "What trend or variability replaces the expected repeating pattern?",
+        "Check observation span or sampling frequency if this might conceal a cycle.",
+        "How does the result revise the original decision or prediction?",
+        "Consider a trend/rate analysis, or explicitly investigate whether more cycles would be needed.",
+        "Re-examine period assumptions and time interval before constructing a decorative sinusoidal model.",
+        "Don't extend time range or fabricate extra data to show a cycle.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 20,
+      "cells": [
+        "I12",
+        "Modelling | expected exponential vs observed changes",
+        "Student predicted percentage growth but observed interval differences/ratios vary",
+        "Are absolute differences or percentage changes roughly stable over meaningful equal intervals?",
+        "Check rounding and variable units if differences are small.",
+        "Which model would produce predictions relevant to the aim and beneficiary?",
+        "Compare evidence for linear versus exponential forms as substantive next mathematics.",
+        "If growth seems closer to constant difference than constant percentage, document this and consider changing model family.",
+        "Do not assert linear/exponential from one or two intervals alone.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 21,
+      "cells": [
+        "I13",
+        "Modelling | motion data, changing intervals",
+        "Student's time-position data or interval calculation suggests changing speed",
+        "Are equal-time changes in position becoming larger, smaller or irregular?",
+        "Timing/distance resolution may dominate short intervals; refer to earlier C24 record.",
+        "How does this support/challenge constant-speed prediction and subsequent modelling aim?",
+        "Consider appropriate rates of change, or form a position/time model from suitable evidence.",
+        "If a result is physically surprising, verify units and timing conventions, then explore a legitimate alternative.",
+        "Do not compute acceleration to unsupported precision.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 22,
+      "cells": [
+        "I14",
+        "Modelling | labelled geometry and constraints",
+        "Student has drawn a useful scale/sketch or calculated an initial area/volume relation",
+        "What quantity is fixed, what varies and how are they related?",
+        "Confirm input dimensions/units; revisit precision only if newly relevant.",
+        "Why does the relationship help find an actionable optimum or geometric conclusion?",
+        "Derive the objective expression with the constraint; explore optimisation only once it begins.",
+        "If the geometry contradicts an assumed constraint, revise model setup rather than continuing algebra unchanged.",
+        "No stationary-point warnings until actually optimising.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 23,
+      "cells": [
+        "I15",
+        "Modelling | calculated optimum is outside constraints",
+        "Student has ACTUALLY differentiated/compared candidates and result lies outside allowable domain",
+        "What value did the mathematics return, and why is it infeasible in context?",
+        "Check constraints, units and input sensitivity if these could change feasible choice.",
+        "Can the intended practical decision be answered by endpoints or realistic discrete options?",
+        "Evaluate feasible boundaries and compare admissible candidates; explain why this follows.",
+        "Acknowledge that the mathematical stationary point isn't a valid practical optimum; update claim rather than hide it.",
+        "Only suggest AFTER optimisation has actually been done (C40/C50), not after first sketch.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 24,
+      "cells": [
+        "I16",
+        "Modelling | measured dimensional result",
+        "Student computes area, volume, speed or similar from measured input values",
+        "What derived value and units does this calculation produce?",
+        "If inherited input uncertainty was not already discussed, consider effect on reported digits/relative size of result.",
+        "Would the result meet the original design/decision aim within defensible accuracy?",
+        "Investigate sensitivity or the next relationship only where consequential.",
+        "If a numerical value is surprising, recheck units/formula and whether real geometry follows ideal assumptions.",
+        "Do not fabricate uncertainties or repeat elementary substitution at length.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 25,
+      "cells": [
+        "I17",
+        "Modelling | fitted model misses actual observations",
+        "Student has ACTUALLY fitted a model and observed mismatched residuals/points",
+        "Where and how does the model deviate? Is a consistent pattern apparent?",
+        "Refer to measurement/source precision only if deviations are comparable to uncertainty.",
+        "Does the model still answer the aim accurately within a restricted domain?",
+        "Inspect meaningful residual pattern/sensitivity, justify an alternative model or restrict range.",
+        "Rather than accept poor fit and move on, ask which assumption or model form might explain it.",
+        "Fit criticism belongs to C40/C50 when a model was actually fitted.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 26,
+      "cells": [
+        "I18",
+        "Modelling | fitted model unexpectedly strong",
+        "Student has ACTUALLY fitted a model and observed unusually good agreement",
+        "What supports the apparent agreement and over which input range?",
+        "Check whether precision/rounding or repeated use of calibration data overstates certainty.",
+        "Would the model's supported range cover the decision needed by beneficiary?",
+        "If prediction beyond fitted data is intended, consider independent observations where feasible.",
+        "Unexpectedly strong fit is not automatically suspicious; check whether it generalises before claiming certainty.",
+        "A high fit measure is not proof of a correct mechanism.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 27,
+      "cells": [
+        "I19",
+        "Modelling | spatial points suggest nearest-location regions",
+        "Student has a labelled location sketch or coordinates",
+        "Which locations seem to compete to be nearest for the decision area?",
+        "Check map distances/scales and actual coordinate conventions.",
+        "Would a nearest-place partition support the original service/location advice?",
+        "Consider a course-appropriate Voronoi or distance calculation when relevant.",
+        "If visual closeness contradicts practical choice, reconsider whether straight-line distance measures what beneficiary needs.",
+        "No automatic assumption that travel time equals straight-line distance.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 28,
+      "cells": [
+        "I20",
+        "Theory | first examples support conjecture",
+        "Student checked a small number of exact cases that appear to agree",
+        "What common structure actually appears across these examples?",
+        "Confirm calculations and scope of integer/domain examples, where relevant.",
+        "What GENERAL statement would advance the investigation beyond individual examples?",
+        "Formulate a precise conjecture and pursue proof or meaningful counterexample checks.",
+        "If a later case fails, preserve the failed conjecture and refine its conditions.",
+        "Multiple examples alone are not a proof.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 29,
+      "cells": [
+        "I21",
+        "Theory | counterexample contradicts conjecture",
+        "Student ACTUALLY finds counterexample or special case that invalidates proposed universal claim",
+        "Which specific condition/example fails, and where did the original reasoning stop applying?",
+        "Verify logic and definitions, not measurement accuracy.",
+        "How might a narrower conjecture still address the aim or inspire new mathematics?",
+        "Identify valid conditions; seek a corrected claim or different proof route.",
+        "Explain why the surprise is mathematically important before revising the investigation.",
+        "Don't discard the example or invent an argument that 'nearly proves' the old conjecture.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 30,
+      "cells": [
+        "I22",
+        "Any | initial calculation gives surprising value",
+        "Student explicitly reports numerical result conflicts with prediction/context",
+        "Is the value larger, smaller, opposite sign or unexpectedly impossible?",
+        "Check unit conversions and input rounding only if newly relevant; do not ask again if already checked.",
+        "Does the result change the intended decision or indicate original aim needs narrowing?",
+        "Verify essential setup; then test a different legitimate case or a sensitivity/constraint check.",
+        "Separate 'I may have made an error' from 'The model/expectation was wrong' and test rather than assume.",
+        "Don't use repeated elementary arithmetic as a substitute for interpretation.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 31,
+      "cells": [
+        "I23",
+        "Statistics | visible clusters in combined scatter",
+        "Student notices group-specific clusters in actual paired data",
+        "Are clusters associated with known categories, conditions or time periods?",
+        "Sample counts within clusters and measurement variation may limit group comparisons.",
+        "Would separate interpretations be more relevant to the chosen beneficiary than a single overall association?",
+        "Compare groups appropriately, perhaps graph them SIDE BY SIDE on matching scales if the comparison genuinely helps.",
+        "If combined trend differs from expectations, examine justified subgroup patterns instead of suppressing a cluster.",
+        "No invented categories or multiple redundant scatter diagrams; avoid causal claims.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 32,
+      "cells": [
+        "I24",
+        "Any | apparent effect may be comparable to measurement uncertainty",
+        "Student observes a small difference/change near actual measurement/source resolution",
+        "Is the apparent effect meaningfully distinguishable at the precision supported by data?",
+        "If C24 already gave sufficient justification, simply reference it; if not, revisit the specific precision issue.",
+        "Can the original aim be answered with a useful range or cautious conclusion instead?",
+        "Consider an appropriate uncertainty/sensitivity comparison only when mathematically justified.",
+        "A surprising tiny change may not support a strong directional claim; seek evidence or limit inference.",
+        "No spurious decimal places; no invented instrument errors.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 33,
+      "cells": [
+        "I25",
+        "Any | little useful pattern or evidence",
+        "Student cannot yet identify a pattern, or original diagram adds nothing to story",
+        "Does the figure answer any part of the aim? Is absence of pattern itself informative?",
+        "Use confirmed evidence scope; avoid a checklist of generic limitations.",
+        "Is the original question still meaningful, or should it be narrowed honestly?",
+        "Explain no clear conclusion so far, plan one genuinely useful alternate view/check or move to a substantive question.",
+        "Don't 'fish' through endless diagrams until the prediction seems true; it's okay to remove a useless chart.",
+        "Not observing the expected effect can be a genuine finding.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 34,
+      "cells": [
+        "I26",
+        "Any | calculation or diagram confirms an earlier conclusion",
+        "Student revisits an earlier result with no new information",
+        "What, if anything, is learned that the first figure/result did not show?",
+        "Reuse the previously justified accuracy; no repeated boilerplate.",
+        "Does repetition advance the aim or just restate earlier work?",
+        "Reference the existing figure/result and proceed to the next new mathematical question.",
+        "If a deliberate side-by-side comparison reveals a meaningful difference, state why, otherwise omit repetition.",
+        "No duplicate figures or lengthy repetitive calculations.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 37,
+      "cells": [
+        "STUDENT REFLECTION PROMPTS  |  Compact, contextual and not repetitive"
+      ]
+    },
+    {
+      "row": 39,
+      "cells": [
+        "ID",
+        "When it appears",
+        "Prompt in student's own words",
+        "Expected answer/control",
+        "Use from earlier answers",
+        "Guardrail",
+        "Status"
+      ]
+    },
+    {
+      "row": 40,
+      "cells": [
+        "D01",
+        "Always after actual output",
+        "What do you SEE in this diagram or calculation? Name the pattern/value/difference, not how you created it.",
+        "Short observation in student's words; 'Not sure yet' allowed.",
+        "Actual figure/calculated value; student-confirmed observed feature",
+        "Never derive a pattern from Planning prediction alone; no auto-written observation.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 41,
+      "cells": [
+        "D02",
+        "Only when precision/inference isn't already covered or new uncertainty arises",
+        "How accurate or trustworthy is THIS observation? Could established measurement/source limits affect the conclusion?",
+        "Conditional brief note or 'Covered earlier' with reference to C24/C23.",
+        "Actual uncertainty and graph/calculation, not generic project difficulties",
+        "Don't repeat limitations after every chart; if nothing new, refer to earlier discussion.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 42,
+      "cells": [
+        "D03",
+        "Always",
+        "How does the observation help ANSWER or refine your original aim?",
+        "One short aim-linked statement.",
+        "Current aim and intended user; avoid rewriting aim automatically.",
+        "Observation can be inconclusive; do not promise advice.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 43,
+      "cells": [
+        "D04",
+        "If prediction exists",
+        "How does the evidence relate to what you originally predicted, and WHY you predicted it?",
+        "Supports / challenges / unclear + short explanation.",
+        "Original dated prediction/WHY and anticipated meaning for beneficiary.",
+        "Preserve original prediction; allow later revision with a reason.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 44,
+      "cells": [
+        "D05",
+        "If an intended beneficiary/use exists",
+        "What might this result mean for you or the person you hoped to advise? What can it NOT yet justify?",
+        "Optional contextual note.",
+        "benefitType, beneficiary, intendedUse and actual evidence",
+        "Do not invent a useful result or causal advice.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 45,
+      "cells": [
+        "D06",
+        "Only when student marks result as unexpected/unclear",
+        "Exactly what was different from your expectation? What could explain that, and which one check would genuinely distinguish the explanations?",
+        "Short discrepancy + optional on-demand suggestions; no mandatory explanation claim.",
+        "Student-confirmed observation and prediction (not automatic visual diagnosis).",
+        "Do not force progress until the discrepancy is considered; still allow Save/Not sure.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 46,
+      "cells": [
+        "D07",
+        "After reflection (all paths)",
+        "What mathematical question follows from THIS observation, and WHY would the next method help answer it?",
+        "Student selects or writes next step; 1–3 optional suggestions.",
+        "Confirmed observed feature + route + actual data + course; plan.initialMaths only as context.",
+        "Do not automatically run PMCC from a scatter plot or offer PMCC limitations before use.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 47,
+      "cells": [
+        "D08",
+        "When surprise involves data quality/measurement",
+        "What do your existing collection notes already tell you? Is there a specific data/source error or resolution issue to verify?",
+        "Optional check / return to C20 or C24.",
+        "C23/C24 records and relevant real data.",
+        "Do not invent errors or ask generic practical difficulties.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 48,
+      "cells": [
+        "D09",
+        "When surprise involves a model/theoretical assumption",
+        "Which assumption, range or special case would be meaningful to vary or test?",
+        "Optional compare small case, model alternative or condition; only if appropriate.",
+        "Current model/conjecture, actual result; no new unsupported syllabus content.",
+        "Do not mistake an unexpected result for proof of model failure.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 49,
+      "cells": [
+        "D10",
+        "When a planned method conflicts with actual pattern",
+        "Is the originally proposed method still sensible? If not, which course-appropriate method better addresses the observed question?",
+        "Keep / Revise / Not sure; student reason.",
+        "Initial maths selections, current observed pattern and aim.",
+        "A changed plan is positive reflection, not an automatic failure. No overfitting or fishing.",
+        "Agreed"
+      ]
+    },
+    {
+      "row": 52,
+      "cells": [
+        "STAGE-AWARE ACCEPTANCE TESTS  |  These scenarios must be tested in the eventual website"
+      ]
+    },
+    {
+      "row": 54,
+      "cells": [
+        "Test ID",
+        "Given student context",
+        "What should happen",
+        "What must NOT happen",
+        "Expected meaningful outcome",
+        "Status"
+      ]
+    },
+    {
+      "row": 55,
+      "cells": [
+        "Q01",
+        "Scatter appears roughly linear; PMCC planned",
+        "C34 observation and C34B purpose first; C35H may suggest PMCC to QUANTIFY linear association if in course.",
+        "Don't run PMCC automatically or show PMCC-specific limitation before C40.",
+        "Student explains how PMCC addresses aim and why evidence motivates it.",
+        "To test"
+      ]
+    },
+    {
+      "row": 56,
+      "cells": [
+        "Q02",
+        "Predicted linear; actual scatter visibly curves",
+        "C34U asks exactly what differs and offers alternative shape/range checks.",
+        "Don't force PMCC because it was selected in Planning.",
+        "Preserve initial prediction, investigate curvature and choose next maths deliberately.",
+        "To test"
+      ]
+    },
+    {
+      "row": 57,
+      "cells": [
+        "Q03",
+        "Expected normal; actual histogram skewed",
+        "Student describes skew, revisits normal prediction; suggests appropriate summary/comparison.",
+        "Don't label curve normal or force normal probability model.",
+        "Explain effect on intended aim and next mathematics.",
+        "To test"
+      ]
+    },
+    {
+      "row": 58,
+      "cells": [
+        "Q04",
+        "Observed no clear correlation",
+        "Allow a worthwhile inconclusive observation; options to check range, sample, true absence.",
+        "No repeated chart fishing until a correlation appears.",
+        "Justified next check OR cautious conclusion; no forced positive result.",
+        "To test"
+      ]
+    },
+    {
+      "row": 59,
+      "cells": [
+        "Q05",
+        "Plot shows surprising outlier",
+        "Student may verify source and retain genuine value; discuss relevance to aim.",
+        "Do not delete automatically or pop PMCC limitations before PMCC is used.",
+        "Explain what is observed vs untested cause.",
+        "To test"
+      ]
+    },
+    {
+      "row": 60,
+      "cells": [
+        "Q06",
+        "Graph accuracy already analysed in C24",
+        "No repeat; simply refer to earlier accuracy record if sufficient.",
+        "No unnecessary mandatory 'accuracy discussion' box.",
+        "Avoid repeated boilerplate and preserve focus on meaningful reflection.",
+        "To test"
+      ]
+    },
+    {
+      "row": 61,
+      "cells": [
+        "Q07",
+        "New result small relative to source precision",
+        "Ask specific accuracy/uncertainty question, link to C24 where needed.",
+        "No invention of a tolerance or spurious decimal precision.",
+        "Determine whether stronger conclusion is defensible.",
+        "To test"
+      ]
+    },
+    {
+      "row": 62,
+      "cells": [
+        "Q08",
+        "Theoretical counterexample",
+        "Record contradicted conjecture and prompt narrower condition/proof.",
+        "No data collection or sampling prompts; don't hide the counterexample.",
+        "Unexpected result becomes mathematical direction.",
+        "To test"
+      ]
+    },
+    {
+      "row": 63,
+      "cells": [
+        "Q09",
+        "Optimisation result infeasible AFTER differentiation",
+        "Check admissible domain/endpoints and revise interpretation.",
+        "No stationary-point limitation while only drawing original sketch.",
+        "Method-stage limitation occurs only during current optimisation.",
+        "To test"
+      ]
+    },
+    {
+      "row": 64,
+      "cells": [
+        "Q10",
+        "Student changes beneficiary or aim",
+        "Offer review of current interpretation; preserve old prediction and observation.",
+        "No silent rewriting, deleting or presenting old impact as proved.",
+        "Student can return to stage without losing work.",
+        "To test"
+      ]
+    },
+    {
+      "row": 65,
+      "cells": [
+        "Q11",
+        "Student selects 'Not sure' after an unexpected finding",
+        "Preserve unresolved discrepancy, allow save and contextual examples later.",
+        "No gate demanding a fabricated cause.",
+        "Resume at same question, original data preserved.",
+        "To test"
+      ]
+    },
+    {
+      "row": 66,
+      "cells": [
+        "Q12",
+        "Student opts out of examples",
+        "Brief core questions remain; no 'show more' block.",
+        "No unwanted hint cards or automatically authored paragraph.",
+        "Student still provides what they see, aim and next action.",
+        "To test"
+      ]
+    },
+    {
+      "row": 69,
+      "cells": [
+        "Save/Resume: store the student's actual observation, accuracy-status, aim and prediction response, unexpected-result note, investigation/check and next-step rationale—not the example text."
+      ]
+    },
+    {
+      "row": 73,
+      "cells": [
+        "AFTER A MATHEMATICAL RESULT  |  Reuse the same evidence-led 'Next logical mathematical step' after each section"
+      ]
+    },
+    {
+      "row": 75,
+      "cells": [
+        "ID",
+        "Actual latest mathematical outcome",
+        "One sensible next question / option",
+        "Connection route",
+        "Never suggest",
+        "Status"
+      ]
+    },
+    {
+      "row": 76,
+      "cells": [
+        "E01",
+        "Actual Pearson r suggests linear association",
+        "If a relevant estimation/prediction aim remains, a fitted line may answer it.",
+        "C35P→C35→C50",
+        "No automatic regression or causation.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 77,
+      "cells": [
+        "E02",
+        "Actual Pearson r small AND scatter curved",
+        "A suitable nonlinear model or approved rank approach may describe REAL observed shape.",
+        "C35P→C35→C50",
+        "No 'no relationship' conclusion from small r alone.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 78,
+      "cells": [
+        "E03",
+        "Actual Pearson r small; no real pattern",
+        "The honest limited finding may answer the aim; further maths only if real open question.",
+        "C35P→C35→C60",
+        "No arbitrary repeated correlation tests.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 79,
+      "cells": [
+        "E04",
+        "Actual fitted model has useful but limited domain",
+        "A justified residual or prediction/domain check can add evidence.",
+        "C34→C35→C50",
+        "No model-fit critique before model is performed.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 80,
+      "cells": [
+        "E05",
+        "Actual optimum is candidate but not globally justified",
+        "Endpoint/constraints comparison could close the mathematical argument.",
+        "C34→C35→C50",
+        "No blind stationary-point claim.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 81,
+      "cells": [
+        "E06",
+        "Actual theoretical conjecture supported by examples",
+        "A proof or counterexample may genuinely establish scope.",
+        "C34→C35→C50",
+        "Examples alone aren't proof.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 82,
+      "cells": [
+        "E07",
+        "Latest section has answered open question",
+        "The IA can proceed to final synthesis if relevant course-level mathematics adequate.",
+        "C34→C35→C60",
+        "No mandatory section count.",
+        "Working draft"
+      ]
+    }
+  ]
+}
