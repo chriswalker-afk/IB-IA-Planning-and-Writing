@@ -18,14 +18,14 @@ function triggered(m,x){
   case "M09":return node==="C40D"&&active;
   case "M10":return node==="C40D"&&real&&(actualTechnology||entry?.knowledge!=="syllabus");
   case "M11":return node==="C40D"&&x.actualResults.length>=3;
-  case "M12":return node==="C40D"&&str(entry?.methodId)==="other"&&entry?.knowledge==="unsure";
+  case "M12":return node==="C40D"&&entry?.priorLearningOnly==="yes";
   case "M13":return node==="C40D"&&real&&["outside","mixed"].includes(entry?.knowledge);
   case "M14":return maths&&str(entry?.methodChangeReason);
   case "M15":return real&&method.has("fitted-model")&&maths;
   case "M16":return real&&method.has("statistic")&&maths;
   case "M17":return real&&theoretical&&maths&&entry?.knowledge!=="outside";
   case "M18":return node==="C70N"&&x.actualResults.length>0;
-  case "M19":return active&&["C35","C40D"].includes(node);
+  case "M19":return node==="C35"?!!str(f.nextMethod):node==="C40D"&&active;
   case "M20":return real&&entry?.knowledge==="syllabus"&&maths;
   case "M21":return real&&entry?.knowledge==="outside"&&maths;
   case "M22":return real&&entry?.knowledge==="mixed"&&maths;
@@ -44,7 +44,7 @@ const priority=new Map(["M01","M19","M21","M22","M23","M06","M07","M27","M29"].m
 export function relevantMathsGuidance(state,node=state.completion.current){
  const ctx=guidanceContext(state,node);
  return MATHS_GUIDANCE.filter(m=>triggered(m,ctx)).map(x=>({
-  ...x,priority:priority.get(x.id)||60,question:x.question.replace(/\[technique\]/gi,ctx.entry?.technique||"this technique")
+  ...x,priority:priority.get(x.id)||60,question:x.question.replace(/\[technique\]/gi,ctx.node==="C35"?ctx.f.nextMethod:ctx.entry?.technique||"this technique").replace(/\[my selected maths course\]/gi,ctx.course||"my course")
  }))
  .sort((a,b)=>b.priority-a.priority);
 }
