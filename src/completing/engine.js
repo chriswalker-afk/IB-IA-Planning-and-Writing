@@ -501,8 +501,12 @@ export function completionSuggestions(state){
   s.push(["Which curved function might fit the actual shape, if modelling serves my aim?","Do not force a straight line merely because a PMCC was planned."]);
   s.push(["Would checking a simplified case or residual pattern improve the model?","Use only if it helps the mathematical question."]);
  }else if(observed==="linear"){
-  s.push(["Would a line of best fit or Pearson's r address my next question?","If prediction or linear strength matters, and suitable paired numerical data exist."]);
-  s.push(["Could another variable help test whether this relationship is useful?","Avoid turning association into causation."]);
+  const paired=f.pairedDataType==="paired-numerical"&&!!scatterForNext(state);
+  if(paired)
+   s.push(["Would quantifying the observed LINEAR relationship genuinely help the aim?","Pearson's r or a fitted line may be optional next tools for actual paired numerical observations. Justify any method rather than treating it as compulsory."]);
+  else
+   s.push(["What mathematical property does the actual graph establish, and is it based on genuine matched numerical pairs?","Do not suggest Pearson's r or regression without confirmed suitable paired data."]);
+  s.push(["Could a different justified variable or range help clarify the actual result?","Avoid turning association into causation or searching for a preferred answer."]);
  }else if(observed==="unclear"){
   s.push(["What cautious conclusion can I draw from the actual evidence?","It may be reasonable to conclude without adding more techniques."]);
   s.push(["Could a justified different range, variable or small case clarify the result?","Only revise the plan when the observed result motivates it."]);
