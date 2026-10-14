@@ -156,12 +156,13 @@ export async function createPdfPlanningReport(envelope){
  return doc.save();
 }
 function attachmentsFromPdf(doc){
+ if(!doc.catalog.has(PDFName.of("Names")))return [];
  const names=doc.catalog.lookup(PDFName.of("Names"),PDFDict);
- if(!names||!names.has(PDFName.of("EmbeddedFiles")))return [];
+ if(!names.has(PDFName.of("EmbeddedFiles")))return [];
  const embedded=names.lookup(PDFName.of("EmbeddedFiles"),PDFDict),result=[];
  function scan(node,depth=0){
   if(depth>4)return;
-  const values=node.lookup(PDFName.of("Names"),PDFArray);
+  const values=node.has(PDFName.of("Names"))?node.lookup(PDFName.of("Names"),PDFArray):null;
   if(values)for(let i=0;i+1<values.size();i+=2){
    const name=values.lookup(i);
    const spec=values.lookup(i+1,PDFDict);
@@ -176,7 +177,7 @@ function attachmentsFromPdf(doc){
     result.push(data);
    }
   }
-  const kids=node.lookup(PDFName.of("Kids"),PDFArray);
+  const kids=node.has(PDFName.of("Kids"))?node.lookup(PDFName.of("Kids"),PDFArray):null;
   if(kids)for(let i=0;i<Math.min(kids.size(),20);i++){
    const child=kids.lookup(i,PDFDict);if(child)scan(child,depth+1);
   }
