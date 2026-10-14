@@ -1,4 +1,4 @@
-name: Validate Phase 1 foundation
+name: Validate IA Pathfinder
 on:
   push:
     branches: [main]
