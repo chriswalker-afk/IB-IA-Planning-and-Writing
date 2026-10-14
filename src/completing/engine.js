@@ -200,6 +200,21 @@ export function setCompletionField(state,key,value){
  if(!hasOwn(C_FIELD_DEFAULTS,key))return false;
  const c=state.completion,previous=c.fields[key];
  c.fields[key]=str(value).slice(0,20000);
+ if(previous!==c.fields[key]&&String(previous||"").trim()&&
+  ["actualSource","sourceCitation","actualMethod","samplingMethod","modelInputs","modelAssumptions",
+   "modelDomain","dataCleaning","statisticalPopulation"].includes(key)){
+  const affectsMath=state.entries.filter(x=>x.status==="completed"&&String(x.result||"").trim()&&
+   !(x.kind==="theory"&&!["modelInputs","modelAssumptions","modelDomain"].includes(key)));
+  for(const entry of affectsMath){
+   entry.reviewNeeded="yes";
+   entry.reviewReason="The source, sampling, model assumption or data definition used earlier has changed. Recheck the actual calculation, accuracy and interpretation before relying on it.";
+  }
+  if(affectsMath.length){
+   for(const stage of ["C20","C30","C40","C60"])
+    if(c.stages[stage]==="complete")c.stages[stage]="needs-review";
+   c.guidanceUi.accuracyChanged=true;
+  }
+ }
  if(key==="scatterPattern"){
   c.scatterPatternForEntryId=scatterForNext(state)?.id||"";
  }
