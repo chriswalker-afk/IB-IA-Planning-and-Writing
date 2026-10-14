@@ -1,0 +1,871 @@
+{
+  "schemaVersion": 1,
+  "sourceSheet": "Limitation Examples",
+  "sourceBounds": {
+    "rows": 100,
+    "columns": 12
+  },
+  "rowCount": 57,
+  "nonemptyCellCount": 574,
+  "rows": [
+    {
+      "row": 1,
+      "cells": [
+        "MATHEMATICAL LIMITATION EXAMPLES  |  Stage-gated help, never a generic menu of weaknesses"
+      ]
+    },
+    {
+      "row": 2,
+      "cells": [
+        "First filter by the CURRENT STAGE in column K. C20–C26: collection/source/sampling/measurement ONLY. C40–C50: technique-specific mathematical limitations ONLY."
+      ]
+    },
+    {
+      "row": 3,
+      "cells": [
+        "Then check route, confirmed real method/data and CURRENTLY USED mathematics (column L). A planned technique or prediction alone cannot trigger a calculation-specific example."
+      ]
+    },
+    {
+      "row": 4,
+      "cells": [
+        "Show 2–3 optional matches at most, on request. 'Show more' stays within the SAME stage. Do not leak a later PMCC, regression or optimisation weakness into Data Collection."
+      ]
+    },
+    {
+      "row": 5,
+      "cells": [
+        "At C60 Evaluation, revisit the limitations the STUDENT actually confirmed when doing earlier work and ask how these affect the conclusion; do not open a new unfiltered suggestions bank."
+      ]
+    },
+    {
+      "row": 6,
+      "cells": [
+        "Every suggestion is a possibility, not a diagnosis. Allow None apply, student-written alternatives and return/review when a method changes. Never write the student's evaluation."
+      ]
+    },
+    {
+      "row": 8,
+      "cells": [
+        "ID",
+        "IA route",
+        "Required earlier selection / signal",
+        "Relevant maths IDs / prediction nudges",
+        "Optional question shown to student",
+        "Possible mathematical consequence",
+        "How the student could check",
+        "Defensible scope / if acceptable",
+        "When NOT to assume this limitation",
+        "Review",
+        "Show during stage",
+        "Only if this is being done NOW"
+      ]
+    },
+    {
+      "row": 9,
+      "cells": [
+        "L01",
+        "Statistics",
+        "Sampling: voluntary/convenience respondents (completion.data.sampleCensus or completion.stat.samplingImplementation)",
+        "AI13 / AA14; S08–S11",
+        "Could volunteers differ systematically from the people you wanted to study?",
+        "Selection bias may change estimates, correlations or group differences; conclusions may not generalise beyond respondents.",
+        "Compare respondent composition with the target population or compare subgroups where possible.",
+        "A scoped analysis of these respondents may still answer a narrower question; avoid claims about all students.",
+        "Only suggest when selection was voluntary/opportunity or demonstrably nonrandom.",
+        "Review",
+        "C20-C26",
+        "Confirmed volunteer/opportunity selection and a stated target population; compare who responds with who is being represented."
+      ]
+    },
+    {
+      "row": 10,
+      "cells": [
+        "L02",
+        "Statistics",
+        "Sampling: simple random sample from an incomplete frame",
+        "AI13 / AA14",
+        "Might your sampling list exclude some members of the intended population?",
+        "Coverage bias remains possible even if selection FROM that list was genuinely random.",
+        "Compare the sampling frame with the target population and identify excluded groups.",
+        "State clearly what population the random selection actually represents.",
+        "Do not say random sampling itself causes bias; the possible issue is frame coverage.",
+        "Review",
+        "C20-C26",
+        "Actual random sample selected from a list that might exclude part of the target population."
+      ]
+    },
+    {
+      "row": 11,
+      "cells": [
+        "L03",
+        "Statistics",
+        "Sampling: stratified sample with unequal selection fractions",
+        "AI13 / AA14",
+        "Were some groups sampled at a different rate than their share of the target population?",
+        "Unweighted overall averages/percentages may overrepresent heavily sampled groups.",
+        "Compare the strata proportions; consider weighting when appropriate and within the student's mathematical scope.",
+        "Comparisons WITHIN each stratum may be more defensible than an unweighted population estimate.",
+        "Only applicable if sampling fractions differ and an overall population estimate is attempted.",
+        "Review",
+        "C20-C26",
+        "Actual stratified sampling with group proportions different from the target population, when planning an overall estimate."
+      ]
+    },
+    {
+      "row": 12,
+      "cells": [
+        "L04",
+        "Statistics",
+        "Sampling: systematic sample from an ordered list",
+        "AI13 / AA14",
+        "Could the ordering of your list line up with the selection interval?",
+        "A repeating pattern in the ordered list could produce a systematically unrepresentative sample.",
+        "Inspect the ordering and compare the selected entries under alternative starting points.",
+        "Defensible if the ordering has no relevant periodic pattern; qualify inference if it might.",
+        "Do not claim all systematic sampling is biased.",
+        "Review",
+        "C20-C26",
+        "Actual systematic selection from an ordered list; a plausible pattern may coincide with the interval."
+      ]
+    },
+    {
+      "row": 13,
+      "cells": [
+        "L05",
+        "Statistics",
+        "Sampling: census of a small accessible group",
+        "AI13 / AA14",
+        "Did every person in your defined group contribute usable data?",
+        "Nonresponse can produce bias even when a census was planned; a census of the club is not a census of the school.",
+        "Calculate coverage/response rate and consider who did not participate.",
+        "Results can describe the measured group when coverage and definitions support that scope.",
+        "Do not call an incomplete census a full population dataset.",
+        "Review",
+        "C20-C26",
+        "Student calls their collection a census of a defined group; check completeness and nonresponse."
+      ]
+    },
+    {
+      "row": 14,
+      "cells": [
+        "L06",
+        "Statistics",
+        "Small/unequal groups in sample comparison",
+        "AI13 / AA14; S08/S09",
+        "Could one group have too few observations for a stable comparison?",
+        "Sample means/spreads or a group comparison may be sensitive to a few values; precision can differ by group.",
+        "Inspect counts, distribution, outliers and sensitivity of the comparison to individual observations.",
+        "A cautious descriptive comparison can still be useful without strong population-level inference.",
+        "No fixed universal sample-size threshold; depends on context/method.",
+        "Review",
+        "C20-C26",
+        "Actual group comparisons planned and available group sizes potentially unbalanced or too small for stable estimates."
+      ]
+    },
+    {
+      "row": 15,
+      "cells": [
+        "L07",
+        "Statistics",
+        "Questionnaire with self-selected responses or subjective items",
+        "AI13 / AA14; S06/S07",
+        "Could the question wording or response scale affect the values you analyse?",
+        "Measurement validity and response bias may weaken comparisons; ordinal ratings do not have known equal intervals.",
+        "Review the exact questions and scale; inspect response patterns and consider plausible interpretations.",
+        "Explain precisely what the scores measure; avoid claims of finer accuracy or physical quantities.",
+        "Suggest only when a survey/subjective scale was actually used.",
+        "Review",
+        "C20-C26",
+        "Survey/questionnaire or subjective scale actually used; its response design and meanings are available to review."
+      ]
+    },
+    {
+      "row": 16,
+      "cells": [
+        "L08",
+        "Statistics",
+        "Paired measurements or comparing groups under differing conditions",
+        "AI14 / AI15 / AA15 / AA16; S01/S02/S08",
+        "Could inconsistent measurement conditions influence the observed relationship or difference?",
+        "A third variable or unmatched pairs may change correlation estimates or group comparisons.",
+        "Verify pairing by participant/observation; compare collection conditions and plausible confounders.",
+        "Interpret findings as associations within the observed conditions, not proven causal effects.",
+        "Do not imply that a correlation always has a specific confounder without evidence.",
+        "Review",
+        "C20-C26",
+        "Paired data or group measurements collected under potentially different conditions; consider pairing and comparability."
+      ]
+    },
+    {
+      "row": 17,
+      "cells": [
+        "L09",
+        "Statistics",
+        "Data exclusions, missing data or filtering (completion.data.processingSources)",
+        "AI13–AI16 / AA14–AA16",
+        "Could excluding missing or unusual values change the pattern you report?",
+        "Means, fitted lines, PMCC and group comparisons may be sensitive to exclusions; missingness may not be random.",
+        "Repeat a relevant calculation with/without defensible exclusions, where ethical and mathematically meaningful.",
+        "Explain and justify exclusion criteria; report sensitivity and any restricted conclusions.",
+        "Do not keep clearly erroneous readings uncritically, nor delete inconvenient real ones.",
+        "Review",
+        "C20-C26",
+        "Missing, excluded or filtered observations in data preparation; discuss how selection could affect later analysis."
+      ]
+    },
+    {
+      "row": 18,
+      "cells": [
+        "L10",
+        "Statistics",
+        "Secondary dataset with changes of definition or period",
+        "AI13 / AA14; plan.dataMode=secondary",
+        "Were variables measured the same way across your data sources or time periods?",
+        "Differences in definitions, units or coverage can create artificial changes/correlations.",
+        "Compare metadata, dates, units and how each variable was defined and aggregated.",
+        "Analyse only the comparable subset or qualify non-comparable periods.",
+        "Only show when data combine sources, years or measures that might be inconsistent.",
+        "Review",
+        "C20-C26",
+        "Secondary sources or periods combined; check whether definitions, units and coverage are genuinely comparable."
+      ]
+    },
+    {
+      "row": 19,
+      "cells": [
+        "L11",
+        "Statistics",
+        "Aggregated secondary data or subgroup averages",
+        "AI14 / AI15 / AA15 / AA16",
+        "Does a pattern between group averages necessarily describe individuals?",
+        "Associations across schools/regions can differ from individual-level associations (ecological inference issue).",
+        "Compare aggregate patterns with within-group data if available, or explicitly note unavailable individual data.",
+        "Conclude about the geographical/group-level units, not individuals.",
+        "Only show when the analysed observations are aggregate groups.",
+        "Review",
+        "C40-C50",
+        "Currently calculating or interpreting a relationship between aggregated group observations; NOT merely collecting aggregated data."
+      ]
+    },
+    {
+      "row": 20,
+      "cells": [
+        "L12",
+        "Statistics",
+        "Chosen PMCC / predicted linear relationship",
+        "AI14 / AA15; S01/S02/S03",
+        "Could curvature or one influential point make PMCC misleading here?",
+        "Pearson's r describes LINEAR association and can be strongly affected by unusual pairs.",
+        "Inspect the actual scatter plot; identify influential observations and consider whether a linear model fits.",
+        "Use PMCC for a plausible linear relationship, with any outliers addressed transparently.",
+        "Selection of PMCC alone does not prove an outlier/nonlinearity exists.",
+        "Review",
+        "C40-C50",
+        "Student is ACTUALLY calculating/interpreting PMCC or evaluating its linear assumption; selecting PMCC in Planning is insufficient."
+      ]
+    },
+    {
+      "row": 21,
+      "cells": [
+        "L13",
+        "Statistics / modelling",
+        "Chosen linear regression or linear-model prediction",
+        "AI04 / AI15 / AA06 / AA16; S01/S02/M01",
+        "Does your fitted line behave sensibly outside the observed values?",
+        "Extrapolated estimates may be unreliable even when the fit inside the measured range appears strong.",
+        "Inspect residual patterns and stated input domain; compare plausible alternatives at boundaries.",
+        "Restrict predictions to the observed/relevant interval or explain why wider use is defensible.",
+        "Show only for a fitted line or actual planned extrapolation; not for all graphs.",
+        "Review",
+        "C40-C50",
+        "Currently fitting/using a linear regression or making a line-based prediction; examine active model domain/extrapolation."
+      ]
+    },
+    {
+      "row": 22,
+      "cells": [
+        "L14",
+        "Statistics",
+        "Correlation or regression used to recommend an action",
+        "AI14 / AI15 / AA15 / AA16; S01/S02",
+        "Could an unmeasured factor influence both quantities you correlated?",
+        "A statistical association does not establish that changing one variable causes the other to change.",
+        "Identify credible confounders; check subgroup patterns or discuss observational study limits.",
+        "Advice may concern association or further investigation, not a proven causal intervention.",
+        "Avoid claiming a particular confounder definitely operates without evidence.",
+        "Review",
+        "C40-C50",
+        "Currently interpreting correlation/regression to support advice or a potentially causal recommendation."
+      ]
+    },
+    {
+      "row": 23,
+      "cells": [
+        "L15",
+        "Statistics",
+        "Spearman rank correlation chosen",
+        "AI16; S03",
+        "Could the relationship change direction, or do many observations share the same rank?",
+        "Rank correlation describes monotonic association; ties and non-monotonic relationships affect interpretation.",
+        "Inspect scatter plot, ranks and ties; check whether association is monotonic.",
+        "Interpret rank-based monotonic association, not necessarily a straight-line effect or causal rule.",
+        "AI SL option; do not recommend as in-course AA SL technique unless specifically added as Other.",
+        "Review",
+        "C40-C50",
+        "Currently computing/interpreting Spearman's rank correlation; check monotonicity/ties as applicable."
+      ]
+    },
+    {
+      "row": 24,
+      "cells": [
+        "L16",
+        "Statistics",
+        "Normal distribution model or bell-shaped prediction",
+        "AI18 / AA18; S05/S06/S07",
+        "Is a normal model reasonable for your observed numerical data, especially in the tails?",
+        "Skew, clusters, bounds or outliers can distort probability estimates derived from a normal model.",
+        "Inspect an appropriate histogram and summary; compare features of sample with model assumptions.",
+        "Use it as an approximation where its limits are appropriate; qualify tail probabilities.",
+        "Do not insist every dataset is normal; ensure continuous numerical context.",
+        "Review",
+        "C40-C50",
+        "Currently applying a normal-distribution model/probability estimate; assess fit to actual observations."
+      ]
+    },
+    {
+      "row": 25,
+      "cells": [
+        "L17",
+        "Statistics",
+        "Two-sample t-test selected",
+        "AI22; S08",
+        "Are the observations independent and are the distribution/variance assumptions appropriate?",
+        "Misused test assumptions can make p-values or intervals misleading, especially for small or skewed samples.",
+        "Inspect study design, group distributions and unequal variability; consult course-appropriate test settings.",
+        "Use the test only where justified; otherwise frame a careful descriptive comparison or revise analysis.",
+        "Only AI SL option in current catalogue; avoid requiring a test solely to seem sophisticated.",
+        "Review",
+        "C40-C50",
+        "Student is performing or interpreting a two-sample t-test and relevant assumptions need evaluating."
+      ]
+    },
+    {
+      "row": 26,
+      "cells": [
+        "L18",
+        "Statistics",
+        "Chi-squared independence test selected",
+        "AI20; S10/S11",
+        "Are some expected cell frequencies too small for the approximation to be reliable?",
+        "A chi-squared approximation can be unreliable with very small expected counts or non-independent observations.",
+        "Calculate expected counts; inspect category definitions and sampling independence.",
+        "Combine categories only if justified or use an appropriate alternative/limited descriptive analysis.",
+        "AI SL-specific listed method; no invented universal cutoff without course guidance.",
+        "Review",
+        "C40-C50",
+        "Student is performing/interpreting chi-squared independence test and has expected frequencies and category counts."
+      ]
+    },
+    {
+      "row": 27,
+      "cells": [
+        "L19",
+        "Statistics",
+        "Chi-squared goodness-of-fit test selected",
+        "AI21",
+        "Do your expected category proportions and expected counts make sense?",
+        "Arbitrary expected probabilities or sparse expected frequencies undermine the reference distribution and inference.",
+        "Explain expected probabilities from a justified model; inspect expected counts and independence.",
+        "Use the test only when its expected pattern and approximation are defensible.",
+        "AI SL-specific; don't use goodness-of-fit for an unrelated association question.",
+        "Review",
+        "C40-C50",
+        "Student is performing/interpreting chi-squared goodness-of-fit and has a justified expected distribution."
+      ]
+    },
+    {
+      "row": 28,
+      "cells": [
+        "L20",
+        "Statistics",
+        "Binomial model / predicted repeated successes",
+        "AI17 / AA17; S12",
+        "Are the number of trials, independence and chance of success sufficiently stable?",
+        "Changes in success probability or dependence can make the binomial distribution a poor model.",
+        "Check how trials were conducted and how success was defined; inspect repeatability/variation.",
+        "Apply binomial results only over conditions where the assumptions are plausible.",
+        "Not all counts follow a binomial model; avoid assuming trials independent without reason.",
+        "Review",
+        "C40-C50",
+        "Student is using a binomial model to calculate probabilities or interpret outcomes, not merely collecting yes/no trials."
+      ]
+    },
+    {
+      "row": 29,
+      "cells": [
+        "L21",
+        "Statistics",
+        "Conditional probability or expected value used",
+        "AI19 / AA19",
+        "Do your probability estimates represent the actual population and conditions?",
+        "Biased probabilities or unjustified independence assumptions change conditional probabilities and expected outcomes.",
+        "Compare estimated probabilities across groups/conditions and identify assumption sources.",
+        "State the decision context and restrict expected-value advice to supported probabilities.",
+        "Require an actual probability-based method, not a vague prediction.",
+        "Review",
+        "C40-C50",
+        "Student is calculating conditional probability/expected value using estimates and assumptions that can be checked."
+      ]
+    },
+    {
+      "row": 30,
+      "cells": [
+        "L22",
+        "Modelling / statistics",
+        "Manual stopwatch timing chosen",
+        "AI23 / AA20 / AA25; measured time",
+        "Could reaction-time variation affect calculated speed, acceleration or rates?",
+        "Timing variation can have a larger effect on derived quantities for short intervals; excessive reported decimals are misleading.",
+        "Take repeated timings where feasible, compare variability or a better-supported timing method.",
+        "Sufficient for an approximate trend only when uncertainty does not change the conclusion.",
+        "Do not equate stopwatch display resolution with true accuracy.",
+        "Review",
+        "C20-C26",
+        "Timing measurements actually collected by manual stopwatch; discuss measurement variability/resolution at source."
+      ]
+    },
+    {
+      "row": 31,
+      "cells": [
+        "L23",
+        "Modelling / statistics",
+        "Video frame timing chosen",
+        "AI23 / AA20 / AA25",
+        "Could frame rate, frame selection or camera positioning limit timing accuracy?",
+        "Quantisation of video time steps and perspective can affect parameter estimates.",
+        "Identify frame interval and physical scaling; check sensitivity to one-frame shifts.",
+        "Defensible at a time scale much larger than frame uncertainty, with appropriate precision.",
+        "Only suggest if video-based measurements were selected.",
+        "Review",
+        "C20-C26",
+        "Timing/distance from video frames actually collected; discuss frame and calibration limits at source."
+      ]
+    },
+    {
+      "row": 32,
+      "cells": [
+        "L24",
+        "Modelling",
+        "Measured lengths/areas/volumes and geometric modelling",
+        "AI11 / AA11 / AA22",
+        "Could a small uncertainty in a length affect an area or volume estimate noticeably?",
+        "Squaring/cubing dimensions can amplify percentage uncertainty in derived areas or volumes.",
+        "Recalculate using plausible upper/lower measurement values or a simple sensitivity check.",
+        "Report a precision/range that reflects input measurements and relevant geometry.",
+        "Never assume a specific instrument tolerance without verifying it.",
+        "Review",
+        "C40-C50",
+        "Student is now using measured lengths in area/volume or other nonlinear geometry calculations; consider how input uncertainty changes the RESULT."
+      ]
+    },
+    {
+      "row": 33,
+      "cells": [
+        "L25",
+        "Modelling",
+        "Exponential model or percentage-growth prediction",
+        "AI06 / AA03 / AA07; M02",
+        "Is a constant percentage change realistic over your entire chosen period?",
+        "Exponential models can diverge from real data when growth saturates, conditions change or rate is not constant.",
+        "Inspect residuals/observations over time and compare with a sensible alternative model.",
+        "Use only over a justified time interval; avoid long-term claims unsupported by data.",
+        "No assertion of an upper bound unless context supports one.",
+        "Review",
+        "C40-C50",
+        "Student is actively constructing/using an exponential model; check its assumptions and useful period."
+      ]
+    },
+    {
+      "row": 34,
+      "cells": [
+        "L26",
+        "Modelling",
+        "Polynomial/quadratic/cubic fit chosen",
+        "AI05 / AA06; M03",
+        "Could the polynomial fit measured points but behave unrealistically between or beyond them?",
+        "High-order curves can fit noise, produce artificial turning points and give unstable extrapolation.",
+        "Compare a simpler model, inspect residuals and graph outside the sample range only to test plausibility.",
+        "Restrict to a sensible domain; avoid treating a fitted turning point as physically meaningful automatically.",
+        "A true quadratic derived from geometry need not have data overfit; check fitted-vs-theoretical context.",
+        "Review",
+        "C40-C50",
+        "Student is actively fitting/interpreting a polynomial data model; distinguish from a theoretically derived polynomial."
+      ]
+    },
+    {
+      "row": 35,
+      "cells": [
+        "L27",
+        "Modelling",
+        "Sinusoidal/periodic prediction or model",
+        "AI08 / AA08; M04",
+        "Have you observed enough cycles to estimate the period and amplitude convincingly?",
+        "A short sequence may fit an apparent cycle that is actually a trend or irregular fluctuation.",
+        "Inspect several cycles where possible; compare phase/period stability and model residuals.",
+        "Interpret repeating behaviour only over supported conditions and duration.",
+        "Don't claim every oscillating graph is periodic.",
+        "Review",
+        "C40-C50",
+        "Student is actively fitting/interpreting a periodic or sinusoidal model; cycles and period estimation can be evaluated."
+      ]
+    },
+    {
+      "row": 36,
+      "cells": [
+        "L28",
+        "Modelling",
+        "Optimisation / derivative stationary point chosen",
+        "AI24 / AA22; M03/M06",
+        "Does your optimum obey the real constraints, including endpoints and allowed dimensions?",
+        "A stationary point might be infeasible or give a local, not global, optimum; discrete design choices also matter.",
+        "Identify domain/constraints; check boundaries, feasibility and alternatives around the optimum.",
+        "Recommend an optimum only for the stated model and realistic constraints.",
+        "Don't equate differentiating to zero with proof of a global optimum.",
+        "Review",
+        "C40-C50",
+        "Student is finding/checking an optimum with differentiation or a model; include constraints/endpoints and interpretation."
+      ]
+    },
+    {
+      "row": 37,
+      "cells": [
+        "L29",
+        "Modelling",
+        "Power models or transformed regression",
+        "AI07 / AA03 / AA07; M05",
+        "Could the model depend strongly on the range of observed positive values?",
+        "A power model fitted over a narrow range may extrapolate poorly; log transformations exclude zero/nonpositive values.",
+        "Check domain, units, plot fit/residuals and sensitivity to high/low observations.",
+        "Report model only for justified positive inputs and observed-scale conditions.",
+        "Only show for a power relationship/transform actually being used.",
+        "Review",
+        "C40-C50",
+        "Student is using a power law or transformed fit; positive-domain and fitted-range constraints are relevant."
+      ]
+    },
+    {
+      "row": 38,
+      "cells": [
+        "L30",
+        "Modelling",
+        "Voronoi diagram chosen",
+        "AI12",
+        "Does straight-line distance represent the 'closest' option people would actually use?",
+        "Euclidean proximity may disagree with road travel time, barriers or accessibility.",
+        "Compare a few locations using a realistic travel measure where available.",
+        "Interpret Voronoi cells as nearest in the CHOSEN metric, not automatically best service.",
+        "AI SL-specific current menu; do not assume real-world accessibility is Euclidean.",
+        "Review",
+        "C40-C50",
+        "Student is constructing/interpreting a Voronoi model for locations; check the distance metric and practical meaning."
+      ]
+    },
+    {
+      "row": 39,
+      "cells": [
+        "L31",
+        "Modelling",
+        "Rates of change inferred from empirical data",
+        "AI23 / AA20 / AA25",
+        "Could small variations in measured values become much larger when estimating their rate of change?",
+        "Finite differences or derivatives estimated from noisy data can be unstable.",
+        "Try reasonable intervals or smooth-model comparisons, noting how each changes the estimate.",
+        "Use rate claims only at time/space resolution supported by evidence.",
+        "If differentiation is purely analytic, measurement noise may not apply.",
+        "Review",
+        "C40-C50",
+        "Student is calculating/inferencing rates of change from empirically measured noisy data, not doing purely symbolic differentiation."
+      ]
+    },
+    {
+      "row": 40,
+      "cells": [
+        "L32",
+        "Modelling",
+        "Trapezoidal rule or numerical integration chosen",
+        "AI26; numeric samples",
+        "Could the spacing between data points miss important curvature?",
+        "Numerical area estimates may depend on step size when the function changes rapidly.",
+        "Compare estimates with finer spacing where available or a sensible alternative approximation.",
+        "State that the numerical estimate applies at the available sampling resolution.",
+        "AI SL catalogue option; don't assert definite error bounds without justified conditions.",
+        "Review",
+        "C40-C50",
+        "Student is actively applying trapezoidal rule/numerical integration to sampled values; review spacing and curvature."
+      ]
+    },
+    {
+      "row": 41,
+      "cells": [
+        "L33",
+        "Modelling",
+        "Calibrated/fitted parameters and model predictions",
+        "AI09 / AI15 / AA16; M07",
+        "Did you assess the model only with the same observations used to fit it?",
+        "Good in-sample fit does not automatically demonstrate predictive accuracy on new cases.",
+        "Where feasible, compare against separate observations or describe the lack of independent validation.",
+        "Use careful within-sample conclusions if independent testing is unavailable.",
+        "Not every theoretical model requires empirical validation; only if claiming predictive fit.",
+        "Review",
+        "C40-C50",
+        "Student is fitting/testing a predictive model and interpreting model fit or accuracy; compare calibration/validation evidence."
+      ]
+    },
+    {
+      "row": 42,
+      "cells": [
+        "L34",
+        "Modelling",
+        "Model assumes ideal conditions/simplifications",
+        "AI10 / AI11 / AA12 / AA25; M06",
+        "Which simplifying assumption most changes the result when relaxed?",
+        "Neglecting friction/air resistance or treating an object as uniform can alter predicted motion/optimisation.",
+        "Compare two plausible parameter values or a more realistic case; discuss magnitude and applicability.",
+        "Retain simplification only if it doesn't change the intended practical decision materially.",
+        "Do not introduce assumptions (e.g. friction) irrelevant to the chosen model.",
+        "Review",
+        "C40-C50",
+        "Student is using a model with an identifiable simplifying assumption whose effect can be checked."
+      ]
+    },
+    {
+      "row": 43,
+      "cells": [
+        "L35",
+        "Theoretical / other",
+        "Mathematical claim inferred only from several numerical examples",
+        "AA04; T01",
+        "Have you established a general claim, or only checked some examples?",
+        "A pattern observed for several inputs may fail for an untested case; examples alone do not prove all cases.",
+        "Seek a valid proof or identify conditions/possible counterexamples.",
+        "Phrase a conjecture as a conjecture until justified; restrict claims to tested cases if necessary.",
+        "Do not frame every theoretical exploration as requiring proof of a universal statement.",
+        "Review",
+        "C40-C50",
+        "Student is now arguing a general mathematical claim from numerical examples; proof/scope is at issue."
+      ]
+    },
+    {
+      "row": 44,
+      "cells": [
+        "L36",
+        "Theoretical / other",
+        "Algebraic derivation uses restricted domains or special cases",
+        "AA04 / AA09; T01",
+        "Could the result fail at an excluded value or outside the stated domain?",
+        "Division by an expression, inverse operations or square roots may require excluded cases or introduce extraneous solutions.",
+        "Check zero denominators, domain restrictions and converse implications; test boundary cases.",
+        "State precisely the set of inputs/conditions for which the result holds.",
+        "Use only when such algebraic restrictions actually arise.",
+        "Review",
+        "C40-C50",
+        "Student is doing algebra/proof involving inverses, division, roots or domain restrictions; exclusions matter now."
+      ]
+    },
+    {
+      "row": 45,
+      "cells": [
+        "L37",
+        "Modelling / statistics",
+        "Time-series observations or repeated measures from same subjects",
+        "AI15 / AA16; M02/M04",
+        "Could observations that are close together in time or from one person be dependent?",
+        "Independence assumptions for tests or error analysis may not hold; apparent sample size can overstate information.",
+        "Inspect grouping/time ordering; compare per-person trends or residual patterns when relevant.",
+        "Conclude about the observed series/conditions and avoid unjustified independent-sample tests.",
+        "Don't impose an advanced independence test; focus on appropriate interpretation.",
+        "Review",
+        "C40-C50",
+        "Student is now using repeated/time-series observations in a test, regression or model where dependence assumptions matter."
+      ]
+    },
+    {
+      "row": 46,
+      "cells": [
+        "L38",
+        "Any empirical",
+        "Rounded/capped/incomplete source measurements",
+        "AI13 / AA14; data resolution",
+        "Could the recorded precision, upper limit or detection threshold hide meaningful variation?",
+        "Rounded or censored input values limit distinguishable differences and numerical precision of derived results.",
+        "Check source definitions/precision and examine whether plausible variation changes calculations or rankings.",
+        "Report results only to defensible precision and avoid conclusions about changes smaller than measurement resolution.",
+        "Only applicable where source values truly have coarse rounding or thresholds.",
+        "Review",
+        "C20-C26",
+        "Collected/source values are rounded, capped, censored or resolution-limited, which needs documenting before later mathematics."
+      ]
+    },
+    {
+      "row": 49,
+      "cells": [
+        "MATCHING ACCEPTANCE TESTS  |  The student sees only relevant, optional questions"
+      ]
+    },
+    {
+      "row": 51,
+      "cells": [
+        "TEST ID",
+        "Current stage",
+        "Already confirmed",
+        "May suggest NOW",
+        "Must NOT suggest now",
+        "Screen behaviour",
+        "What is carried forward",
+        "Guardrail",
+        "Status"
+      ]
+    },
+    {
+      "row": 52,
+      "cells": [
+        "TEST 1",
+        "C20–C26",
+        "Volunteer sample + PMCC selected for later",
+        "L01 (volunteer sample); other applicable collection-only items",
+        "L12 (PMCC), L14 (correlation and causation)",
+        "Only 1–3 collection examples on request",
+        "Save any confirmed sampling bias for later context",
+        "Planning maths alone cannot unlock later-stage limitations",
+        "Design QA"
+      ]
+    },
+    {
+      "row": 53,
+      "cells": [
+        "TEST 2",
+        "C40–C50",
+        "Student has begun computing PMCC; earlier volunteer sample confirmed",
+        "L12 (linearity/outliers); L14 only if causal advice attempted",
+        "L01 as a new collection suggestion",
+        "Show matched technique examples on demand",
+        "Recall previously confirmed sampling caveat without relaunching its prompt",
+        "Do not infer PMCC weakness from selection alone",
+        "Design QA"
+      ]
+    },
+    {
+      "row": 54,
+      "cells": [
+        "TEST 3",
+        "C20–C26",
+        "Video timing data + optimisation planned for later",
+        "L23 (video frame timing) if genuinely collected",
+        "L28 (optimum constraints), L24 (uncertainty in computed volume)",
+        "Focus on precision of source/measurements",
+        "Record measurement uncertainty as contextual evidence",
+        "Future optimisation methods remain locked",
+        "Design QA"
+      ]
+    },
+    {
+      "row": 55,
+      "cells": [
+        "TEST 4",
+        "C40–C50",
+        "Student now evaluating an optimum with constraints",
+        "L28 (endpoints/feasibility); L24 if measured area/volume currently computed",
+        "L23 as a new video-measurement warning",
+        "Show relevant model mathematics only",
+        "Use earlier verified measurement uncertainties when interpreting results",
+        "No method warnings from unstarted calculations",
+        "Design QA"
+      ]
+    },
+    {
+      "row": 56,
+      "cells": [
+        "TEST 5",
+        "C20–C26",
+        "Theoretical/no-data IA without actual measurements",
+        "No compulsory examples from the library",
+        "L35 (proof from examples), L36 (excluded algebraic domains)",
+        "Do not invent a sample or stopwatch method",
+        "Allow none; student can continue and save",
+        "Theory/proof limitations are for mathematical exploration",
+        "Design QA"
+      ]
+    },
+    {
+      "row": 57,
+      "cells": [
+        "TEST 6",
+        "C40–C50",
+        "Student is actively arguing a general claim from cases",
+        "L35; L36 only if domain restrictions actually arise",
+        "L01 and other sampling warnings",
+        "Ask about proof/scope when reasoning actually begins",
+        "Carry proof/domain notes into later evaluation",
+        "No automatic proof criticism before claim attempted",
+        "Design QA"
+      ]
+    },
+    {
+      "row": 58,
+      "cells": [
+        "TEST 7",
+        "C30",
+        "Student has made first scatter plot; PMCC is planned but not used",
+        "No new catalogue suggestions; remind only relevant data/axis accuracy notes",
+        "L12 until they begin PMCC",
+        "Show optional graph presentation/interpretation checks, not test assumptions",
+        "Preserve data collection choices",
+        "A graph is not the same as PMCC calculation",
+        "Design QA"
+      ]
+    },
+    {
+      "row": 59,
+      "cells": [
+        "TEST 8",
+        "C60",
+        "Student has completed calculations, confirmed some limitations",
+        "Recall ONLY earlier confirmed limits and ask effect on advice",
+        "A new blanket bank of L01–L38",
+        "Short evidence-led reflection, no new diagnosis",
+        "Use stage-tagged confirmed limitations only",
+        "Can still write own limitation if new evidence warrants it",
+        "Design QA"
+      ]
+    },
+    {
+      "row": 60,
+      "cells": [
+        "TEST 9",
+        "C40–C50",
+        "Technique selected in Planning but NOT yet used",
+        "No technique-specific limitation examples",
+        "All methods that are only planned",
+        "Wait until method is active; no forced hints",
+        "Keep existing notes without deleting them",
+        "Student control; never guess that maths has started",
+        "Design QA"
+      ]
+    },
+    {
+      "row": 61,
+      "cells": [
+        "TEST 10",
+        "Any stage",
+        "Student changes method/data or dismisses suggestion",
+        "Freshly rank only current-stage, active-method matches",
+        "Previously dismissed unrelated prompts",
+        "'None apply' and 'Show more' remain stage-filtered",
+        "Preserve their earlier explanations, mark stale context for review",
+        "Don't auto-write limitations into the IA",
+        "Design QA"
+      ]
+    }
+  ]
+}
