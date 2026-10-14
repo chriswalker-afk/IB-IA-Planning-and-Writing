@@ -1,0 +1,85 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import {createProjectState} from "../src/core/project-state.js";
+import {createPlanningViews} from "../src/ui/planning-views.js";
+import {PLANNING_NODE_IDS} from "../src/planning/engine.js";
+
+function screenFixture(){
+ const state=createProjectState();state.route="planning";
+ const e=v=>String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;");
+ const ctx={
+  getState:()=>state,icon:()=>"",e,button:(label)=>label,
+  field:(path,label)=>'<label>'+e(label)+'</label>',
+  choose:(path,opts)=>opts.map(x=>'<label>'+e(x.title)+'</label>').join(""),
+  numberPick:()=>"",note:(t)=>t,summary:(label,value)=>'<p>'+e(label)+' '+e(value)+'</p>',
+  helpButton:()=>"",helpBox:()=>"",tabletNav:()=>""
+ };
+ return {state,view:createPlanningViews(ctx)};
+}
+test("all 32 normalized Planning nodes render without throwing, with exact node trace",()=>{
+ const {state,view}=screenFixture();
+ assert.equal(PLANNING_NODE_IDS.length,32);
+ for(const node of PLANNING_NODE_IDS){
+  state.planning.current=node;
+  const html=view.viewPlanning();
+  assert(html.includes('data-source-node="'+node+'"'),node);
+  assert(html.includes('class="task-shell"'),node);
+  assert(html.includes("Back")||html.includes("Home"),node);
+  assert(!html.includes("undefined"),node);
+ }
+});
+test("course options are shown only for the matching SL syllabus",()=>{
+ const {state,view}=screenFixture();state.planning.current="N04S";
+ state.planning.fields.course="AI SL";
+ let html=view.viewPlanning();
+ assert(html.includes("Voronoi diagrams"));
+ assert(!html.includes("Integration by substitution"));
+ state.planning.fields.course="AA SL";html=view.viewPlanning();
+ assert(html.includes("Integration by substitution"));
+ assert(!html.includes("Voronoi diagrams"));
+ state.planning.fields.course="AA HL";html=view.viewPlanning();
+ assert(html.includes("Course review needed"));
+});
+test("primary+secondary branch visibly tracks two distinct confirmation steps",()=>{
+ const {state,view}=screenFixture();
+ state.planning.current="N03B";state.planning.fields.dataSource="both";
+ let html=view.viewPlanning();
+ assert(html.includes("Answer primary questions"));
+ assert(html.includes("Answer secondary questions"));
+ state.planning.sourceBranches.primary=true;html=view.viewPlanning();
+ assert(html.includes("Edit primary questions"));
+ assert(html.includes("Answer secondary questions"));
+});
+test("theoretical prompts don't ask for data sampling and specialist checkpoint is available",()=>{
+ const {state,view}=screenFixture();state.planning.current="N08";
+ state.planning.fields.kind="theoretical";
+ let html=view.viewPlanning();
+ assert(html.includes("tentative conjecture"));
+ assert(!html.includes("Sampling strategy"));
+ assert(html.includes("Plan milestones and course mathematics"));
+ assert(html.includes("Review my provisional plan"));
+});
+test("unresolved consent exposes teacher support and never pretends approval",()=>{
+ const {state,view}=screenFixture();state.planning.current="N03F";
+ state.planning.fields.permissionNeed="yes";
+ let html=view.viewPlanning();
+ assert(html.includes("Discuss permissions with my teacher"));
+ assert(html.includes("do not begin affected data collection"));
+ assert(html.includes('data-condition="Safety / privacy / consent unresolved"'));
+});
+test("statistical prediction choices use chosen data context",()=>{
+ const {state,view}=screenFixture();state.planning.current="N01P";
+ state.planning.fields.kind="statistics";
+ state.planning.fields.statisticsContext="Paired numerical";
+ const html=view.viewPlanning();
+ assert(html.includes("roughly linear positive"));
+ assert(html.includes("relationship be curved"));
+ assert(!html.includes("binomial distribution"));
+});
+test("phase two planning uses route-progress milestones rather than a compulsory fixed step count",()=>{
+ const {state,view}=screenFixture();
+ const html=view.viewPlanning();
+ assert(html.includes("Find your question"));
+ assert(html.includes("Plan your evidence"));
+ assert(!html.includes("Step 1 of 10"));
+});
