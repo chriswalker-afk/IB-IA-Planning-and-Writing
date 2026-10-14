@@ -32,8 +32,8 @@ export function createProjectViews(ctx){
       planNode("Working planning summary",plan.completed?"Provisional plan recorded":"Review and record an initial plan","N06")
     ].join("");
     let mathsNodes=state.entries.map((st,i)=>pathNode(st.title||"Mathematical step "+(i+1),
-      st.status==="completed"?(st.interpretation||st.result||"Actual work recorded"):(st.purpose||"Planned mathematical question"),
-      st.status==="completed"?"done":"current","edit-step",'data-index="'+i+'"')).join("");
+      st.status==="completed"&&filled(st.result)?(st.localTakeaway||st.interpretation||st.result):(st.purpose||"Planned mathematical question"),
+      st.status==="completed"&&filled(st.result)?"done":"current","edit-step",'data-index="'+i+'"')).join("");
     return '<div class="page narrow">'+tabletNav()+sheetTitle("YOUR JOURNEY","My mathematical path","A view of the decisions and discoveries that belong to your investigation. Click any stage to revisit it.")+
       '<div class="content-card"><div class="section-eyebrow">PART 1 · PLANNING</div><div class="path-roadmap">'+planningNodes+'</div>'+
       '<div class="button-row">'+button("Revisit planning","go-planning","btn-light","", "compass")+'</div></div>'+
@@ -176,12 +176,12 @@ export function createProjectViews(ctx){
       pairs.map(([name,val])=>summary(name,val)).join("")+primary+secondary+method+timeline+teacher+flagSection+
       '<h2 style="margin-top:35px">My actual mathematical record</h2>'+
       (state.entries.length?state.entries.map((st,i)=>'<div style="margin:22px 0"><h3>'+(i+1)+'. '+e(st.title||"Untitled step")+'</h3>'+
-       '<p class="text-xs text-muted">Status: '+(st.status==="completed"?"Student marked as completed":"Only planned")+'</p>'+
-       summary("Purpose",st.purpose)+summary("Mathematics",st.technique)+summary("Real result (if completed)",st.status==="completed"?st.result:"Not recorded as completed")+
-       summary("Interpretation",st.status==="completed"?st.interpretation:"Not yet appropriate")+
+       '<p class="text-xs text-muted">Status: '+(st.status==="completed"&&filled(st.result)?"Actual result recorded":"Only planned / no actual result recorded")+'</p>'+
+       summary("Purpose",st.purpose)+summary("Mathematics",st.technique)+summary("Real result (if completed)",st.status==="completed"&&filled(st.result)?st.result:"No actual result recorded")+
+       summary("Interpretation",st.status==="completed"&&filled(st.result)?st.interpretation:"Not yet appropriate")+
        summary("Limitation",st.limitations)+summary("Next question",st.nextQuestion)+'</div>').join(""):'<p class="text-muted">No mathematics recorded yet.</p>')+
       '<h2 style="margin-top:35px">My writing notes</h2>'+summary("Introduction",state.scratch.introduction)+summary("Data & methods",state.scratch.dataNotes)+summary("Conclusion",state.scratch.conclusion)+summary("Revisions",state.scratch.finalReview)+
-      '<p class="text-xs text-muted">Report generated from student-entered information. Prototype only. Not a mark prediction, teacher approval or formal IA submission.</p></div></div>';
+      '<p class="text-xs text-muted">Student-entered Planning and mathematical notes. This working record is not a mark prediction, approval or formal IA submission.</p></div></div>';
   }
   function tabletNav() {
     const state = ctx.getState();
