@@ -202,3 +202,15 @@ test("mobile viewport rules and modular script reference remain present",()=>{
  assert(css.includes(".mobile-nav"));
  assert(css.includes("prefers-reduced-motion"));
 });
+
+test("reopening IA Studio resumes the exact source C-node instead of resetting the student to its overview",()=>{
+ const h=createHarness();
+ h.nav("completing");
+ h.action("completion-open",{node:"C21M"});
+ assert(h.html.includes('data-source-node="C21M"'));
+ h.nav("home");
+ h.action("go-studio");
+ assert(h.html.includes('data-source-node="C21M"'));
+ h.action("studio-overview");
+ assert(h.html.includes('data-source-node="C04"'));
+});
