@@ -85,6 +85,18 @@ export function createCompletingViews(ctx){
     '<p>'+e(prior.localTakeaway||prior.interpretation||prior.observationText||prior.result)+'</p>'+
     '<span class="field-hint">'+e(prior.title||"Previous mathematical investigation")+'</span></div></div>';
  };
+ const bridgeToActive=()=>{
+  const state=getState(),entry=completeEntry(state);
+  if(!entry)return info("Start with real mathematical evidence","A later technique should follow an actual finding or a clearly justified initial mathematical question.");
+  const earlier=entry.fromEntryId?state.entries.find(x=>x.id===entry.fromEntryId):null;
+  const takeaway=earlier&&(earlier.localTakeaway||earlier.interpretation||earlier.observationText||earlier.result);
+  const recorded=takeaway||entry.previousTakeaway;
+  if(!recorded)return info("Where does this technique come from?","Check the actual result or mathematical question that justifies this section. You need not add mathematics merely to fill a section.");
+  return '<div class="completion-evidence-anchor">'+icon("route")+'<div><strong>Earlier finding this section was based on</strong>'+
+    '<p>'+e(recorded)+'</p>'+
+    (earlier?.reviewNeeded==="yes"?'<p class="field-hint">The earlier mathematical record has an outstanding review flag.</p>':"")+
+    '</div></div>';
+ };
  const miniList=()=>{
   const state=getState(),items=state.entries;
   if(!items.length)return"";
@@ -370,9 +382,10 @@ export function createCompletingViews(ctx){
     info("Association is not causation","Even a strong coefficient does not show that one variable caused another. Avoid forcing a straight-line regression on a curved pattern.")
   };
   case "C40":case "C50":{
-   const entry=completeEntry(s);
+   const active=completeEntry(s);
+   const entry=active&&active.phase!=="first"?active:null;
    return{intro:n==="C40"?"Your first substantial technique should have a reason tied to a previous real finding.":"Further mathematics should follow the investigation's own mathematical questions, not a quota.",
-    html:entryReviewAlert()+bridgeFromPrior()+
+    html:(entry?entryReviewAlert()+bridgeToActive():info("Return to the first exploration","If you have only a first representation, interpret it and choose a meaningful next question before starting a substantial mathematical section."))+
      (entry?'<div class="completion-active-step">'+
        entryField("title","Mathematical question this section addresses","Meaningful and focussed")+
        entryField("purpose","Why this technique belongs here, BEFORE the work","Link to the previous result and aim",{type:"textarea",rows:3})+
