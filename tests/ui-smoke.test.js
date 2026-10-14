@@ -33,6 +33,7 @@ function createHarness(savedValue){
   const globals={
     document,window,localStorage:storage,console,clearTimeout(){},setTimeout(){return 1;},
     createProjectState,normalizeProjectState,persistProjectState,
+    newState:createProjectState,normalise:normalizeProjectState,
     readRecordValue,updateRecordValue,icon,escapeHtml,cleanUrl,button,
     referenceNodeForPrototypeStep,createPlanningViews,createStudioViews,createProjectViews
   };
