@@ -32,7 +32,7 @@ test("Completing dashboard presents mature stages without automatic grades or ma
  setCompletionNode(state,"C04");
  const html=view.viewCompleting();
  for(const title of ["Introduction","Sources & methods","First exploration","Mathematics","Conclusion","Communication","Teacher draft","Final checks"])
-  assert(html.includes(title),title);
+  assert(html.includes(e(title)),title);
  assert(!html.includes("Step 3 of 10"));
  assert(html.includes("Not started"));
  assert(html.includes("not automatically graded")===false); // stage cards, not grade widgets
@@ -53,7 +53,7 @@ test("first representation has BEFORE purpose, genuine result and AFTER interpre
  assert(html.includes("purpose BEFORE")||html.includes("Mathematical purpose BEFORE"));
  setCompletionNode(state,"C33");html=view.viewCompleting();
  assert(html.includes("What did you actually"));
- assert(html.includes("Only planned"));
+ assert(html.includes("Still planned"));
  setCompletionNode(state,"C34B");html=view.viewCompleting();
  assert(html.includes("What does this actual result mean for my aim?")||html.includes("current aim"));
  assert(html.includes("Original prediction"));
@@ -77,7 +77,7 @@ test("conclusion and source-fit tips never state a grade, teacher approval or un
  const {state,view}=fixture();setCompletionNode(state,"C62");
  let html=view.viewCompleting();
  assert(html.includes("could reasonably"));
- assert(html.includes("evidence-supported"));
+ assert(html.includes("What could reasonably be recommended"));
  assert(!html.includes("Guaranteed"));
  setCompletionNode(state,"C03");html=view.viewCompleting();
  assert(html.includes("consent"));
