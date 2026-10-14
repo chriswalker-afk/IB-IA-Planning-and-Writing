@@ -213,6 +213,24 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       Object.assign(p,{idea:"Numerical patterns",aim:"Can a pattern observed in small cases be generalised and proved?",beneficiaryType:"curiosity",beneficiary:"Understand why a mathematical relationship holds.",kind:"theoretical",dataSource:"",dataDetails:"Small illustrative numerical cases.",dataStatus:"theoretical",mathsArea:"proof",prediction:"The pattern might generalise.",predictionWhy:"It appears in several cases.",firstMove:"theory"});
       Object.assign(st,{title:"Explore initial numerical cases",purpose:"Look for a plausible mathematical conjecture.",technique:"Numerical reasoning",kind:"theory",observation:"",result:"Illustrative small cases suggest a repeatable pattern.",observationText:"Several numerical examples support a tentative conjecture.",interpretation:"Examples suggest a question but cannot establish a general theorem."});
     }
+    // Sample projects also have a genuine Planning record for document export.
+    // These values remain labelled as fictional; the graph result stays separate.
+    for(const [key,value] of Object.entries({
+      idea:p.idea,aim:p.aim,beneficiaryType:p.beneficiaryType,
+      beneficiary:p.beneficiary,course:p.course,kind:p.kind,
+      dataSource:p.dataSource,prediction:p.prediction,predictionWhy:p.predictionWhy,
+      firstAction:p.firstMove,firstAccuracy:p.precision
+    })){
+      applyPlanningField(next,key,value);
+    }
+    if(kind!=="theory"){
+      applyPlanningField(next,"secondaryPublisher","Illustrative data only — no actual publisher");
+      applyPlanningField(next,"secondaryStatus","unsure");
+      applyPlanningField(next,"dataReadiness","3");
+      applyPlanningField(next,"practicalEase","4");
+    }else{
+      applyPlanningField(next,"theoreticalCase","Illustrative small-number cases");
+    }
     next.entries=[st];next.ui.mathIndex=0;
     state=next;save();closeDrawer();render({top:true});toast("Sample loaded — every result is clearly labelled as illustrative.");
   }
