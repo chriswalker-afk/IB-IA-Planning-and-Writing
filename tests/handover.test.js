@@ -165,3 +165,36 @@ test("unsupported schema or invalid files are rejected without mutating existing
  const v1=normalizeProjectState({version:1,project:{aim:"Older idea"},ui:{planStep:3,planMax:4}});
  assert.equal(createPlanningEnvelope(v1).planning.fields.aim,"Older idea");
 });
+
+test("reviewed import of an older aim flags impacted real mathematics but preserves student work",()=>{
+ const current=example();
+ current.entries[0].phase="substantial";
+ current.entries[0].result="A genuine student-calculated result";
+ current.entries[0].interpretation="What this meant for my earlier aim";
+ current.completion.stages.C40="complete";
+ current.completion.stages.C60="complete";
+ current.scratch.conclusion="My written synthesis";
+ const older=createProjectState();
+ applyPlanningField(older,"aim","Different earlier investigation aim");
+ const imported=createPlanningEnvelope(older);
+ const merged=mergePlanningEnvelope(current,imported,["aim"],{origin:"older-word.docx"});
+ assert.equal(merged.state.planning.fields.aim,"Different earlier investigation aim");
+ assert.equal(merged.state.entries[0].result,"A genuine student-calculated result");
+ assert.equal(merged.state.entries[0].interpretation,"What this meant for my earlier aim");
+ assert.equal(merged.state.scratch.conclusion,"My written synthesis");
+ assert.equal(merged.state.entries[0].reviewNeeded,"yes");
+ assert.equal(merged.state.completion.stages.C40,"needs-review");
+ assert.equal(merged.state.completion.stages.C60,"needs-review");
+ assert.equal(merged.state.teacher.pendingApproval,true);
+ assert.equal(merged.state.changeLog.at(-1).mathLinksFlagged,1);
+});
+test("importing only a deadline does not question unrelated completed mathematical findings",()=>{
+ const current=example();
+ current.completion.stages.C40="complete";
+ const newer=createProjectState();
+ applyPlanningField(newer,"milestoneSchoolFinal","2027-04-23");
+ const envelope=createPlanningEnvelope(newer);
+ const applied=mergePlanningEnvelope(current,envelope,["milestoneSchoolFinal"]);
+ assert.equal(applied.state.completion.stages.C40,"complete");
+ assert.equal(applied.state.entries[0].reviewNeeded,undefined);
+});
