@@ -1,0 +1,676 @@
+{
+  "schemaVersion": 1,
+  "sourceSheet": "Bivariate Decisions",
+  "sourceBounds": {
+    "rows": 110,
+    "columns": 10
+  },
+  "rowCount": 59,
+  "nonemptyCellCount": 369,
+  "rows": [
+    {
+      "row": 1,
+      "cells": [
+        "BIVARIATE DECISIONS  |  What does the student's actual scatter show?"
+      ]
+    },
+    {
+      "row": 2,
+      "cells": [
+        "Display ONLY after paired numerical observations have been plotted and the student has described the pattern. Earlier prediction, chosen PMCC and course choice are context—not evidence of a result."
+      ]
+    },
+    {
+      "row": 3,
+      "cells": [
+        "Short default: 'What do you see?' → choose one of four observed patterns or Not sure → 'What mathematical question would help your aim?' → optional 1–2 matching suggestions."
+      ]
+    },
+    {
+      "row": 4,
+      "cells": [
+        "Do not always compute Pearson's r. Its purpose is to quantify LINEAR association; a visibly near-perfect line may need different further maths, while curvature may make Pearson a poor summary."
+      ]
+    },
+    {
+      "row": 5,
+      "cells": [
+        "Spearman's rank association is only an optional follow-up for monotonic relationships when it is genuinely suitable and allowed by the student's course/teacher; it doesn't fit every curve."
+      ]
+    },
+    {
+      "row": 6,
+      "cells": [
+        "Do not impose a positive result. Clear lack of an apparent relationship, mixed data, surprises and inconclusive findings can still create valuable reflection and a worthwhile next question."
+      ]
+    },
+    {
+      "row": 8,
+      "cells": [
+        "ID",
+        "What is ACTUALLY observed?",
+        "Required evidence / when shown",
+        "Initial interpretation (student words)",
+        "Possible NEXT mathematics",
+        "Why that may help the aim",
+        "Don't do",
+        "Route",
+        "Skip/uncertain allowed",
+        "Status"
+      ]
+    },
+    {
+      "row": 9,
+      "cells": [
+        "B01",
+        "Points lie very close to one straight line",
+        "Actual paired quantitative data, sufficiently many observations, relevant scales",
+        "Describe direction, closeness, relevant unusual points and limits of the visible pattern.",
+        "Ask whether finding a fitted line or using it to predict a relevant quantity advances the aim; r may add little.",
+        "A fitted model could estimate a meaningful value if the aim requires that, after checking appropriate range.",
+        "Do not make students calculate PMCC just to tick a box, or treat visual straightness as causation.",
+        "C34 → C35B → C35",
+        "No model needed is valid.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 10,
+      "cells": [
+        "B02",
+        "Points appear APPROXIMATELY linear with noticeable scatter",
+        "Actual scatter; student confirms a rough positive/negative line rather than no pattern",
+        "Which direction, and how closely do the points appear to follow a straight line?",
+        "Consider calculating PMCC NEXT to quantify strength/direction of LINEAR association, if course-appropriate; fit line only if useful.",
+        "This answers whether apparent linear trend is strong enough to support a decision/model.",
+        "Do not claim an r value or discuss r outlier sensitivity until PMCC is actively used at C40/C50.",
+        "C34 → C35B → C35",
+        "Can choose another meaningful step.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 11,
+      "cells": [
+        "B03",
+        "Curved but MONOTONIC pattern",
+        "Points consistently increase/decrease while slope appears to vary, student confirms",
+        "Where does the rate of change alter? Is there an overall ordered rise/fall?",
+        "Explore a suitable nonlinear model; alternatively consider rank association (e.g., Spearman) if taught and relevant.",
+        "A model could address predictions, while a rank measure describes monotonic association rather than linearity.",
+        "Don't treat Spearman as required or assume permitted for every course; avoid Pearson as a catch-all.",
+        "C34U → C35B → C35",
+        "Not sure whether monotonic is allowed.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 12,
+      "cells": [
+        "B04",
+        "Curved, turning, periodic or NON-monotonic pattern",
+        "Student actually notices one or more turning points or cycles",
+        "Which feature could inform a model: turning point, scale, repetition or changed direction?",
+        "Choose a model family on mathematical/contextual grounds; test quadratic, sinusoidal or other only if evidence supports it.",
+        "Aim may concern an optimum, period or prediction rather than a single measure of association.",
+        "Do not automatically use Spearman for non-monotonic curvature, or infer a particular function from a handful of points.",
+        "C34U → C35B → C35",
+        "Model choice can remain undecided.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 13,
+      "cells": [
+        "B05",
+        "No clear pattern / relationship",
+        "Genuinely scattered points or weak evidence of a direction",
+        "What is the absence of a clear pattern telling you about the original prediction and aim?",
+        "Consider a cautious descriptive conclusion, a well-justified alternate variable/range, or other question genuinely motivated by the data.",
+        "No clear relationship may be the meaningful outcome, influencing advice to the beneficiary.",
+        "Do not force a fitted line, invent r=0, change graph scaling to manufacture a pattern, or fish for a significant result.",
+        "C34B/C34U → C35B → C35",
+        "Can save without a next method.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 14,
+      "cells": [
+        "B06",
+        "Not sure: very weak possible line",
+        "Student cannot tell if weak structure is real from scatter alone",
+        "What makes you unsure: limited data, variation, scale or potential clustering?",
+        "If quantifying strength would change the decision, PMCC may be helpful WHEN it is appropriate to linear association; otherwise review evidence.",
+        "A justified quantitative check is more valuable than an unsupported visual claim.",
+        "Don't classify weak observations as linear or non-linear automatically or announce a correlation without analysis.",
+        "C34 → C35B",
+        "Not sure / teacher question is valid.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 15,
+      "cells": [
+        "B07",
+        "Unexpected point, genuine outlier or cluster",
+        "Unusual point/cluster actually visible, not assumed from planned method",
+        "Does this feature represent real data? How does it alter the original interpretation?",
+        "Verify source or definitions and consider justified group comparison; later check sensitivity of an actively fitted model/correlation.",
+        "Unexpected data can reveal an important exception or change scope of advice.",
+        "Don't delete authentic points just because they don't match a prediction; PMCC weaknesses at C40/C50, not collection stage.",
+        "C34U → C35B",
+        "Retain and revisit observation.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 16,
+      "cells": [
+        "B08",
+        "Strong line but irrelevant to original purpose",
+        "Student acknowledges apparent relation but cannot link it to aim/beneficiary",
+        "Would measuring this relationship answer the investigation aim or merely produce extra maths?",
+        "Revisit the question and purpose; perhaps stop, restrict scope or choose a better measure.",
+        "Prevents mathematically correct but purposeless coefficient calculation.",
+        "Don't recommend PMCC/regression purely because data are available.",
+        "C34B → C35",
+        "Student may change aim with a reason.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 17,
+      "cells": [
+        "B09",
+        "Actual numerical correlation now computed",
+        "C40/C50 active technique, student has REAL r from their paired data",
+        "What does the sign/magnitude mean for your own quantities and context?",
+        "Only now consider PMCC linearity/outlier issues, sample scope and whether regression would aid aim.",
+        "Demonstrates understanding of technology-generated statistics and correctly scoped inference.",
+        "Don't substitute a generic adjective for student interpretation or assert causation.",
+        "C40T → C34",
+        "Not applicable if no PMCC used.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 18,
+      "cells": [
+        "B10",
+        "A fitted model / prediction has been made",
+        "C40/C50 active regression or alternative model actually fitted",
+        "What are the practical meanings of parameters and valid domain? How does model compare with observations?",
+        "Evaluate residuals/accuracy or a relevant realistic prediction; restrict extrapolation where needed.",
+        "Makes mathematics applicable to aim and protects beneficiary from misleading advice.",
+        "Don't treat a line of best fit as a mathematical conclusion without context, or extrapolate by default.",
+        "C40T/C40D → C34",
+        "None if no model used.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 19,
+      "cells": [
+        "B11",
+        "Categorical or unpaired data, NOT bivariate quantitative",
+        "Confirmed data categories or unmatched variables",
+        "What are the variable types, and why wouldn't a paired scatter make sense?",
+        "Return to statistical representation for categories, paired test only if appropriate.",
+        "Prevents choosing PMCC based on unrelated count columns or category codes.",
+        "Do not present B01–B10 if prerequisite paired numerical data not met.",
+        "C31 / statistics route",
+        "Skip whole guide.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 20,
+      "cells": [
+        "B12",
+        "Original prediction contradicted",
+        "Student's observed scatter differs from predicted shape/direction",
+        "What exactly surprised you and what would checking another mathematical angle reveal?",
+        "Check a legitimate alternate model, subgroup or factor, then choose math accordingly.",
+        "Honest responsive exploration can strengthen student ownership and reflection.",
+        "Don't quietly continue the originally selected PMCC without reconsideration.",
+        "C34U → C35B",
+        "Unresolved question may be saved.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 24,
+      "cells": [
+        "FOUR MAIN OBSERVED OUTCOMES  |  Contextual decision cards (not compulsory steps or a preset mathematics sequence)"
+      ]
+    },
+    {
+      "row": 26,
+      "cells": [
+        "Step",
+        "Reported pattern",
+        "Student reflection",
+        "Optional next maths",
+        "Do NOT",
+        "Status"
+      ]
+    },
+    {
+      "row": 27,
+      "cells": [
+        "1",
+        "Clearly straight",
+        "Explain apparent direction and usefulness; PMCC may add little if obvious and not needed for aim.",
+        "If useful, line model → relevant prediction with defensible domain.",
+        "No mandatory PMCC.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 28,
+      "cells": [
+        "2",
+        "Approximately linear",
+        "Is quantifying linear strength useful for the original aim?",
+        "If yes, PMCC at C40 → interpret result → appropriate model if warranted.",
+        "Never run an unstarted PMCC automatically.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 29,
+      "cells": [
+        "3",
+        "Curved",
+        "Is it monotonic? Turning? Periodic? What does context suggest?",
+        "Model comparison; Spearman ONLY if monotonic and course-appropriate.",
+        "Pearson does not measure arbitrary non-linear relationship.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 30,
+      "cells": [
+        "4",
+        "No clear relation",
+        "What can responsibly be concluded from what is observed?",
+        "Document finding, maybe a justified new comparison/question, or honest uncertainty.",
+        "No pressure to find a favourable correlation.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 33,
+      "cells": [
+        "COURSE & STAGE RULES  |  Keep the maths appropriate and the timing of help correct"
+      ]
+    },
+    {
+      "row": 35,
+      "cells": [
+        "ID",
+        "Design/syllabus principle",
+        "Rule in student experience",
+        "Earlier context",
+        "Avoid",
+        "Status"
+      ]
+    },
+    {
+      "row": 36,
+      "cells": [
+        "G01",
+        "Both AI SL and AA SL may have legitimate paired-data projects, depending on syllabus/cohort.",
+        "Mathematical depth and relevance, not course stereotype.",
+        "Actual course and student-owned method",
+        "Course-specific review required where uncertain.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 37,
+      "cells": [
+        "G02",
+        "Pearson's r describes linear association in paired numerical data.",
+        "Suggest only when it would add useful quantification and the scatter is plausibly linear.",
+        "Actual scatter observation and technique purpose",
+        "Don't infer result r from graph alone.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 38,
+      "cells": [
+        "G03",
+        "Spearman's rank may be useful for monotonic association but only if allowed/relevant to student's course or teacher-approved.",
+        "Offer as an option, not universal route.",
+        "Actual monotonic pattern and course",
+        "No automatic Spearman when curve turns back.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 39,
+      "cells": [
+        "G04",
+        "Line regression and limits such as outliers/extrapolation belong at the stage where the fitted line is ACTUALLY used.",
+        "Show method-specific limitations after active calculation.",
+        "Method status C40/C50",
+        "Do not present regression weakness on data collection screen.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 40,
+      "cells": [
+        "G05",
+        "An investigation can change direction when prediction is wrong.",
+        "Keep original prediction, compare it with evidence, document a purposeful alternative.",
+        "Aim, beneficiary, actual observation",
+        "Do not erase inconvenient findings.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 41,
+      "cells": [
+        "G06",
+        "One diagram should support the story; don't create four scatter diagrams merely to represent four options.",
+        "Students choose one current observed outcome and a worthwhile next question.",
+        "Student's actual single diagram",
+        "Only add a true side-by-side comparison with a clear mathematical reason.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 42,
+      "cells": [
+        "G07",
+        "If the question is about causation or recommendation, association alone is insufficient.",
+        "Explain what a relationship can/can't justify to the beneficiary.",
+        "Aim and type of data",
+        "No unsupported causal advice.",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 45,
+      "cells": [
+        "EXPLICIT ACCEPTANCE TESTS  |  These scenarios are for the eventual interactive site; NOT yet tested in code"
+      ]
+    },
+    {
+      "row": 47,
+      "cells": [
+        "Test",
+        "Given student state",
+        "Expected experience",
+        "Must NOT",
+        "QA status"
+      ]
+    },
+    {
+      "row": 48,
+      "cells": [
+        "T01",
+        "User predicted strong linear; actual curved",
+        "Offer curved route and possible mathematical alternatives.",
+        "Do not offer PMCC based on original prediction.",
+        "To test"
+      ]
+    },
+    {
+      "row": 49,
+      "cells": [
+        "T02",
+        "User sees nearly perfectly straight data",
+        "Show that PMCC might add little; fitted line only if useful.",
+        "No universal Pearson coefficient requirement.",
+        "To test"
+      ]
+    },
+    {
+      "row": 50,
+      "cells": [
+        "T03",
+        "User sees rough linear scatter",
+        "Optional PMCC if numeric strength matters; explain why.",
+        "No auto PMCC calculation, no invented r.",
+        "To test"
+      ]
+    },
+    {
+      "row": 51,
+      "cells": [
+        "T04",
+        "Curve is monotonic, AI SL",
+        "Possible relevant Spearman/model option after course check.",
+        "No unconditional Spearman for AA SL.",
+        "To test"
+      ]
+    },
+    {
+      "row": 52,
+      "cells": [
+        "T05",
+        "Curve reverses direction",
+        "Offer non-monotonic model reasoning.",
+        "No blanket Spearman for every curved scatter.",
+        "To test"
+      ]
+    },
+    {
+      "row": 53,
+      "cells": [
+        "T06",
+        "Student reports no clear pattern",
+        "Allow cautious conclusion and evidence-based alternative.",
+        "No p-hacking, no fake conclusion of zero population relation.",
+        "To test"
+      ]
+    },
+    {
+      "row": 54,
+      "cells": [
+        "T07",
+        "Student works with category counts",
+        "Bivariate paired scatter route not shown.",
+        "No Pearson on arbitrary category codes.",
+        "To test"
+      ]
+    },
+    {
+      "row": 55,
+      "cells": [
+        "T08",
+        "User hasn't made a scatter yet",
+        "Keep planned representations optional, do not decide observed outcome.",
+        "No observed feature inferred from planning.",
+        "To test"
+      ]
+    },
+    {
+      "row": 56,
+      "cells": [
+        "T09",
+        "Student has actually computed r",
+        "Now allow interpretation, limitations of active PMCC.",
+        "Don't retroactively show PMCC limits at collection.",
+        "To test"
+      ]
+    },
+    {
+      "row": 61,
+      "cells": [
+        "SOURCE: JIS Bivariate Data Mini Project slides 16–21; IB IA Tips per topic; JIS Maths IA Guide slides 25–28. Treat source teaching examples as prompts, not an examiner-required algorithm."
+      ]
+    },
+    {
+      "row": 64,
+      "cells": [
+        "AFTER PMCC WAS ACTUALLY CALCULATED  |  New branches distinct from pre-PMCC scatter advice"
+      ]
+    },
+    {
+      "row": 66,
+      "cells": [
+        "ID",
+        "Confirmed earlier situation",
+        "What r actually addresses",
+        "Required plotted evidence",
+        "Student-specific next question",
+        "Appropriate next section",
+        "Writing placement",
+        "Do NOT",
+        "Status"
+      ]
+    },
+    {
+      "row": 67,
+      "cells": [
+        "R01",
+        "Only scatter / PMCC PLANNED",
+        "No actual coefficient available",
+        "Initial scatter may look roughly linear or curved",
+        "Would quantifying LINEAR association advance the original aim?",
+        "First decide whether r is useful; otherwise another purposeful maths route",
+        "Bridge before computing r, if chosen",
+        "Do NOT show post-r limitations or line fitting simply because plan mentions PMCC",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 68,
+      "cells": [
+        "R02",
+        "Strong-looking sample r; roughly linear scatter",
+        "Actual r suggests substantial linear association",
+        "Scatter reasonably supports a single straight-line relation",
+        "Would a fitted line provide USEFUL predictions or decisions?",
+        "Optional line of best fit followed by fit/domain checks WHEN performed",
+        "After r commentary, before new model",
+        "Never infer causation or require a regression for every high |r|",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 69,
+      "cells": [
+        "R03",
+        "Strong sample r; no prediction needed",
+        "Real r may already answer a linear-association aim",
+        "Actual scatter supports interpretation",
+        "Would any further model add mathematical value?",
+        "Possibly finish mathematical work and synthesise",
+        "After r, then conclusion if appropriate",
+        "No mandatory extra calculation or grade guarantee",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 70,
+      "cells": [
+        "R04",
+        "Small |r|; real scatter curved",
+        "PMCC captures little LINEAR association",
+        "Observed curve/turning or monotonic bend",
+        "Could a nonlinear model, or course-approved monotonic measure, better address the aim?",
+        "Choose ONE shape-justified next technique, if beneficial",
+        "After r discussion, before new modelling",
+        "r≈0 does NOT imply no nonlinear relationship; Spearman not for every curve",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 71,
+      "cells": [
+        "R05",
+        "Small |r|; scatter looks unstructured",
+        "Little evidence of a straight-line relationship in this SAMPLE",
+        "No justified alternative observed pattern",
+        "Does this honestly answer the original question, perhaps with limited scope?",
+        "Scoped result, potential conclusion or a genuinely new question",
+        "Just after actual r, with eventual synthesis",
+        "No repeated correlation fishing or inventing pattern",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 72,
+      "cells": [
+        "R06",
+        "Actual r seems affected by real extreme point",
+        "Coefficient may depend on genuine unusual observation",
+        "Visible real point; recorded source exists",
+        "Can you check that value and fairly assess sensitivity without hiding it?",
+        "Verify original data; transparent sensitivity when useful",
+        "Beside PMCC reflection, prior to follow-up",
+        "No cherry-picked deletion or unexplained exclusion",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 73,
+      "cells": [
+        "R07",
+        "Large |r| but curvature/clusters",
+        "High sample r alone doesn't establish good predictive fit",
+        "Actual pattern suggests single straight line may mislead",
+        "Would fitting a single line serve the full domain?",
+        "Scope/shape check; justified model alternative",
+        "After actual r, before fit chosen",
+        "No unexamined extrapolation or automatic predictive advice",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 74,
+      "cells": [
+        "R08",
+        "Coefficient sign contradicts original expectation",
+        "r direction different from prediction",
+        "Actual variables/source and observed pattern",
+        "What is the real discrepancy? Which useful check follows?",
+        "Revisit definitions/actual pattern, then decide meaningful maths",
+        "Immediately after r as unexpected-result reflection",
+        "Don't rewrite original prediction or assume calculations wrong",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 75,
+      "cells": [
+        "R09",
+        "Intermediate r or small sample",
+        "Strength uncertain without context or enough evidence",
+        "Actual sample, point pattern, precision",
+        "What does this coefficient genuinely show and NOT show?",
+        "Contextual interpretation, optional reliable check",
+        "After actual r, before another method",
+        "No fixed 'strong if |r| > ...' threshold or made-up significance",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 76,
+      "cells": [
+        "R10",
+        "Student wants another 'correlation'",
+        "Only now evaluating alternative after real r",
+        "Specific scatter feature or meaningful subgroup question required",
+        "What different MATHEMATICAL question would a new statistic/model answer?",
+        "Evidence-justified choice or stop; teacher/course suitability check",
+        "End of interpreted r section",
+        "Never search multiple formulas until one gives desirable result",
+        "Working draft"
+      ]
+    },
+    {
+      "row": 80,
+      "cells": [
+        "Source: student-confirmed real PMCC and prior scatter, NOT prediction alone. Route C35P asks only the relevant follow-up; interpretation of a coefficient is distinct from fitting a model or making a causal claim."
+      ]
+    }
+  ]
+}
