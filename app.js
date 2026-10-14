@@ -1,3 +1,6 @@
+import {createPlanningEnvelope,getFieldDiff,mergePlanningEnvelope} from "./src/handover/schema.js";
+import {modelFromEnvelope,suggestedFilename} from "./src/handover/report-model.js";
+import {createHandoverViews} from "./src/ui/handover-views.js";
 import { planningMove, planAutoAdvance, planningBack, planningEdit, applyPlanningField, toggleMath, syncPlanningToProject, setPlanCurrent, planningFlags } from "./src/planning/engine.js";
 import { createPlanningViews } from "./src/ui/planning-views.js";
 import { createStudioViews } from "./src/ui/studio-views.js";
@@ -15,6 +18,9 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   let state = newState();
   let lastFocus = null;
   let lastDrawer = "";
+  let pendingImport = null;
+  let importSelected = new Set();
+  let exportBusy = false;
   let toastHandle = null;
   try {
     const saved = localStorage.getItem(KEY);
@@ -47,13 +53,19 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       : '<input class="field" type="' + e(type) + '" id="' + fieldId + '" data-bind="' + e(path) + '" placeholder="' + e(placeholder) + '" value="' + e(value) + '">';
     return '<div class="field-group"><label class="field-label" for="' + fieldId + '">' + e(label) + '</label>' + input + hint + '</div>';
   };
+  const handoverViews=createHandoverViews({getState:()=>state,icon,e,button,field});
   const getPath = path => readRecordValue(state,path);
   const putPath = (path,value) => updateRecordValue(state,path,value);
   function updateBoundField(path,value) {
     if(path.startsWith("planning.fields.")){
-      return applyPlanningField(state,path.slice("planning.fields.".length),value);
+      const before=getPath(path),ok=applyPlanningField(state,path.slice("planning.fields.".length),value);
+      if(ok&&before!==value&&state.handover?.confirmedAt){state.handover.confirmedAt="";state.handover.needsReview=true;}
+      return ok;
     }
     const changed=putPath(path,value);
+    if(changed&&state.handover?.confirmedAt&&(path.startsWith("planning.fields.")||path.startsWith("project."))){
+      state.handover.confirmedAt="";state.handover.needsReview=true;
+    }
     // Editing the project-context drawer must not leave the Planning record stale.
     const mirror={"project.aim":"aim","project.course":"course",
       "project.beneficiary":"beneficiary","project.precision":"firstAccuracy"};
@@ -220,13 +232,18 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         (cleanUrl(p.documentUrl)?'<a class="btn btn-secondary" href="'+e(cleanUrl(p.documentUrl))+'" target="_blank" rel="noopener noreferrer">Open my IA document '+icon("arrow-up-right")+'</a>':"")+
         '</section><div class="panel-list">'+button("Review my plan","go-planning","btn-secondary")+button("See my journey","go-path","btn-light")+'</div>';
     }else if(panel==="files"){
-      body='<section><h3>Project backups</h3><p>The reliable way to move this prototype between devices is a downloadable .json project file. Local browser saving is not cloud syncing.</p>'+
-      button("Download project backup","export-json","btn-primary","", "download")+
-      button("Restore from a backup","import-json","btn-secondary","", "upload")+'</section>'+
-      '<section><h3>Readable working record</h3><p>Review a summary or use your browser to print/save it as PDF. Importing a PDF or Word report is not supported in this prototype.</p>'+
-      button("Open my working report","go-report","btn-light","", "file")+'</section>'+
-      '<section><h3>Start fresh</h3><p>Starting a new project clears the current one from this browser. Export a backup first if you want to keep it.</p>'+
-      button("Start a new project","new-project","btn-danger","", "refresh")+'</section>';
+      body='<section><h3>Planning document · take it with you</h3>'+
+        '<p>Create a personalised PDF or editable Word plan. Each Pathfinder export includes an importable snapshot of the answers that existed at the time of export.</p>'+
+        '<div class="panel-list">'+button("Download planning PDF","export-plan-pdf","btn-primary","", "download")+
+        button("Download editable Word plan","export-plan-docx","btn-secondary","", "download")+
+        button("Import planning PDF or Word","import-report","btn-secondary","", "upload")+
+        button("View readable working record","go-report","btn-light","", "file")+'</div>'+
+        '<p class="field-hint">Edits made later to the visible PDF/Word text do not automatically update the embedded snapshot. Import and review, or update Pathfinder directly.</p></section>'+
+      '<section><h3>Full project backup</h3><p>For reliable restoration of your actual mathematics, writing notes and Planning across devices, use the JSON project backup. Browser saving stays local; no cloud sync.</p>'+
+        button("Download entire project (.json)","export-json","btn-secondary","", "download")+
+        button("Restore entire project backup","import-json","btn-secondary","", "upload")+'</section>'+
+      '<section><h3>Start fresh</h3><p>Starting a new project replaces the local workspace. Export a full backup first if needed.</p>'+
+        button("Start a new project","new-project","btn-danger","", "refresh")+'</section>';
     }else if(panel==="help"){
       body='<section><p>Pathfinder is a thinking and writing companion. You remain the author of your mathematics and explanations.</p><div class="panel-list">'+
         '<button class="panel-link" data-action="open-stuck">I am stuck '+icon("arrow-right")+'</button>'+
@@ -234,7 +251,14 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         '<button class="panel-link" data-action="open-files">How do I keep my work safe? '+icon("arrow-right")+'</button>'+
         '<button class="panel-link" data-action="open-demos">Try an illustrative sample '+icon("arrow-right")+'</button></div></section>'+
         '<section><h3>A useful rhythm</h3><p>Ask a mathematical question → do real mathematics → interpret the result in context → choose what genuinely follows. Repeat only when there is a reason.</p></section>'+
-        '<p class="drawer-footer">Design prototype, not the full 24-sheet decision system. It does not calculate marks, validate sources, or approve permissions.</p>';
+        '<p class="drawer-footer">Planning and document handover are available. The detailed Completing logic is still being developed. Pathfinder does not calculate marks, validate sources, or approve permissions.</p>';
+    }else if(panel==="import-preview"){
+      body=pendingImport?handoverViews.preview(pendingImport,importSelected):
+        handoverViews.manual("No planning document has been selected.");
+    }else if(panel==="import-manual"){
+      body=handoverViews.manual(pendingImport?.reason);
+    }else if(panel==="handover"){
+      body=handoverViews.confirmation();
     }else if(panel==="demos"){
       const choices=[
         ["linear","An approximately linear pattern","Could modelling or quantifying correlation be useful?"],
@@ -257,7 +281,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         (noData?note("No data yet? Define variables or terms, check a genuine source, draft a prediction, or work on a small theoretical case clearly labelled as such."):"")+
         '<p class="drawer-footer">If consent, privacy or safety is unresolved, discuss the affected activity with your teacher before proceeding.</p>';
     }
-    const titles={project:"My project",files:"Save & export",help:"Here to help",demos:"Choose a sample",stuck:"Find a way forward"};
+    const titles={project:"My project",files:"Save & export",help:"Here to help",demos:"Choose a sample",stuck:"Find a way forward", "import-preview":"Review planning import","import-manual":"Recover a plan",handover:"Confirm your starting plan"};
     layer.hidden=false;document.body.classList.add("dialog-open");
     layer.innerHTML='<aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle" tabindex="-1"><div class="drawer-header"><h2 id="drawerTitle">'+titles[panel]+'</h2>'+
       '<button class="icon-button" type="button" data-action="close-drawer" aria-label="Close panel">'+icon("x")+'</button></div>'+body+'</aside>';
