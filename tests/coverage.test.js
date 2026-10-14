@@ -37,11 +37,12 @@ test("source's draft-vs-agreed distinction is not lost in the capture",()=>{
  assert.equal(nodes.filter(x=>x.editorialStatus==="Working draft").length,42);
  assert.equal(nodes.filter(x=>x.editorialStatus==="Needs discussion").length,1);
 });
-test("coverage register never labels raw source data as fully implemented",()=>{
+test("coverage keeps source capture separate from implemented Phase 5 rules and partial editorial cases",()=>{
  const csv=readFileSync(new URL("../docs/coverage.csv",import.meta.url),"utf8");
- assert(csv.includes("prototype-partial"));
- assert(csv.includes("not-implemented"));
- assert(!csv.includes('"implemented"'));
+ for(const status of ["phase4-partial","phase5-implemented","phase5-partial","not-implemented"])
+  assert(csv.includes(status),status);
+ assert(!csv.includes('"implemented"')); // statuses must name a verified phase
  const rows=csv.trimEnd().split("\n");
  assert.equal(rows.length,1431);
+ assert.equal((csv.match(/"phase5-implemented"/g)||[]).length,146);
 });
