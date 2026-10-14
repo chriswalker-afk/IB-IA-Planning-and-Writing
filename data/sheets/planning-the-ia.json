@@ -1,0 +1,887 @@
+{
+  "schemaVersion": 1,
+  "sourceSheet": "Planning the IA",
+  "sourceBounds": {
+    "rows": 1010,
+    "columns": 21
+  },
+  "rowCount": 57,
+  "nonemptyCellCount": 86,
+  "rows": [
+    {
+      "row": 2,
+      "cells": [
+        null,
+        "PART 1  |  PLANNING THE IA  ·  Flowchart"
+      ]
+    },
+    {
+      "row": 4,
+      "cells": [
+        null,
+        "Planning pathway · Aim → meaningful personal benefit or advice → investigation type → feasibility and maths → personalised summary. Every route can export."
+      ]
+    },
+    {
+      "row": 6,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "0 · Do you have a topic idea?"
+      ]
+    },
+    {
+      "row": 8,
+      "cells": [
+        null,
+        "NO / NEED IDEAS ↙",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "HAVE A TOPIC ↓"
+      ]
+    },
+    {
+      "row": 9,
+      "cells": [
+        null,
+        "Explore possible ideas"
+      ]
+    },
+    {
+      "row": 10,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↓"
+      ]
+    },
+    {
+      "row": 11,
+      "cells": [
+        null,
+        "OPTIONAL COMPARISON ↓",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "1 · What do you want to find out?"
+      ]
+    },
+    {
+      "row": 12,
+      "cells": [
+        null,
+        "Compare 2–3 ideas (optional)"
+      ]
+    },
+    {
+      "row": 13,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↓"
+      ]
+    },
+    {
+      "row": 14,
+      "cells": [
+        null,
+        "↗  USE CHOSEN IDEA",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "1A · Who benefits?\nYou / Someone you advise",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "For me: a decision I can make\nFor others: useful advice I could offer"
+      ]
+    },
+    {
+      "row": 16,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↓"
+      ]
+    },
+    {
+      "row": 17,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "2 · Type of investigation?"
+      ]
+    },
+    {
+      "row": 19,
+      "cells": [
+        null,
+        "UNSURE ↙",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "STATISTICS / MODELLING ↓",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "NO DATA / TEACHER ↘"
+      ]
+    },
+    {
+      "row": 20,
+      "cells": [
+        null,
+        "Explore examples",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Teacher guidance needed\nSummary still available"
+      ]
+    },
+    {
+      "row": 22,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↓",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↓  Can still get a summary"
+      ]
+    },
+    {
+      "row": 23,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "3A · Primary, secondary or both?"
+      ]
+    },
+    {
+      "row": 25,
+      "cells": [
+        null,
+        "PRIMARY ↙",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "BOTH ↓",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "SECONDARY ↘"
+      ]
+    },
+    {
+      "row": 26,
+      "cells": [
+        null,
+        "3B · Primary data questions\nWhen · where · how · equipment",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Both: complete primary + secondary",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "3C · Secondary data questions\nSource link · variables · useful subset"
+      ]
+    },
+    {
+      "row": 29,
+      "cells": [
+        null,
+        "↘",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↓  AFTER ALL REQUIRED DATA QUESTIONS",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↙"
+      ]
+    },
+    {
+      "row": 30,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Compare and justify data methods"
+      ]
+    },
+    {
+      "row": 32,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↓"
+      ]
+    },
+    {
+      "row": 33,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "3D · First usable + full-data dates"
+      ]
+    },
+    {
+      "row": 35,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↓"
+      ]
+    },
+    {
+      "row": 36,
+      "cells": [
+        null,
+        "Revise data plan",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "3E · Data-readiness rating /5"
+      ]
+    },
+    {
+      "row": 38,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↓"
+      ]
+    },
+    {
+      "row": 39,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "3F · Practical feasibility\nResources · time · permissions",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Permissions / privacy unresolved?\nSeek teacher guidance; summary still available"
+      ]
+    },
+    {
+      "row": 41,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↓"
+      ]
+    },
+    {
+      "row": 42,
+      "cells": [
+        null,
+        "Simplify workload or arrange access\nThen reassess practical ease",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "3G · Completion-ease rating /5"
+      ]
+    },
+    {
+      "row": 44,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↓"
+      ]
+    },
+    {
+      "row": 45,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Full IA timeline and milestones"
+      ]
+    },
+    {
+      "row": 47,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↓"
+      ]
+    },
+    {
+      "row": 48,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "4 · Which IB course?"
+      ]
+    },
+    {
+      "row": 50,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "AI SL / AA SL  ↓",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "OTHER / AA HL  ↘"
+      ]
+    },
+    {
+      "row": 51,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "4A · Choose possible maths\nMulti-select + optional Other",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Teacher: course advice needed\nSummary still available"
+      ]
+    },
+    {
+      "row": 53,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↓"
+      ]
+    },
+    {
+      "row": 54,
+      "cells": [
+        null,
+        "STATISTICS NUDGES\nStraight line? Normal distribution? Two groups?",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "4B · Predict → Why? → So what?",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "WHY do you expect it?\nIF TRUE: what would it mean for [beneficiary] and your aim?"
+      ]
+    },
+    {
+      "row": 56,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↓",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Edit 'Who is it for?' ↩ return to prediction"
+      ]
+    },
+    {
+      "row": 57,
+      "cells": [
+        null,
+        "MODELLING NUDGES\nLinear? Exponential? Repeating? Maximum?",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "4C · Revisit your maths\nPrediction-linked suggestions",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Revise existing selections;\nmaths suggestions are not compulsory"
+      ]
+    },
+    {
+      "row": 59,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↓"
+      ]
+    },
+    {
+      "row": 60,
+      "cells": [
+        null,
+        "PMCC is for paired numerical data with a possible linear association—not proof of cause.",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "4D · Check mathematical suitability",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Teacher-advice routes do not require selecting a prediction before exporting."
+      ]
+    },
+    {
+      "row": 62,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↓"
+      ]
+    },
+    {
+      "row": 63,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Plan first diagram or simple example",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "TEACHER CHECK-IN IF NEEDED"
+      ]
+    },
+    {
+      "row": 64,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Teacher check-in\nFill in what you can → summary"
+      ]
+    },
+    {
+      "row": 65,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↓"
+      ]
+    },
+    {
+      "row": 66,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "5 · First mathematical action"
+      ]
+    },
+    {
+      "row": 67,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↙ Join shared review / report"
+      ]
+    },
+    {
+      "row": 68,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↓"
+      ]
+    },
+    {
+      "row": 69,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "How might your investigation evolve?"
+      ]
+    },
+    {
+      "row": 71,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↓"
+      ]
+    },
+    {
+      "row": 72,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Teacher check-in for everyone"
+      ]
+    },
+    {
+      "row": 74,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↓"
+      ]
+    },
+    {
+      "row": 75,
+      "cells": [
+        null,
+        "Before exporting: who could use the answer, and for what? If unsure, note a question for your teacher.",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "IA idea checkpoint",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "Any unresolved teacher question is marked in the report; downloading remains available."
+      ]
+    },
+    {
+      "row": 77,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "↓"
+      ]
+    },
+    {
+      "row": 78,
+      "cells": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        "6 · Generate personalised IA plan\nPDF (optional Word)"
+      ]
+    },
+    {
+      "row": 82,
+      "cells": [
+        null,
+        "END OF PLANNING  ·  PDF / optional Word available even if the prediction is uncertain or teacher advice is pending"
+      ]
+    },
+    {
+      "row": 85,
+      "cells": [
+        null,
+        "STATUS  ·  Prediction nudges filtered by IA type and data context; WHY is separate; student revisits course maths before suitability."
+      ]
+    },
+    {
+      "row": 88,
+      "cells": [
+        null,
+        "SOURCE  ·  https://docs.google.com/document/d/1tfGJVyF8wvJmrctRVf1xh9Uf9RvzdRTbm0x1r0zKHOI/edit"
+      ]
+    }
+  ]
+}
