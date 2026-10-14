@@ -97,12 +97,12 @@ export function createProjectViews(ctx){
       const lines=rows.filter(([k,v])=>filled(v));
       return lines.length?'<h2 style="margin-top:32px">'+e(title)+'</h2>'+lines.map(([name,value])=>summary(name,value)).join(""):"";
     };
-    const primary=["primary","both"].includes(pfields.dataSource) ? planningSection("Primary-data plan",[
+    const primary=pfields.kind!=="theoretical"&&["primary","both"].includes(pfields.dataSource) ? planningSection("Primary-data plan",[
       ["What will be recorded",pfields.primaryWhat],["Population or objects",pfields.primaryPopulation],
       ["When",pfields.primaryWhen],["Where",pfields.primaryWhere],["How",pfields.primaryHow],
       ["Equipment",pfields.primaryEquipment],["Sampling plan",pfields.primarySampling],
       ["Data-plan confidence",pfields.primaryStatus]]) : "";
-    const secondary=["secondary","both"].includes(pfields.dataSource) ? planningSection("Secondary-data plan",[
+    const secondary=pfields.kind!=="theoretical"&&["secondary","both"].includes(pfields.dataSource) ? planningSection("Secondary-data plan",[
       ["Source link",pfields.secondaryUrl],["Publisher",pfields.secondaryPublisher],
       ["Variables, units and definitions",pfields.secondaryVariables],
       ["Population, dates or subset",pfields.secondaryScope],
