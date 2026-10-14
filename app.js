@@ -5,7 +5,7 @@ import { planningMove, planAutoAdvance, planningBack, planningEdit, applyPlannin
 import { createPlanningViews } from "./src/ui/planning-views.js";
 import { createStudioViews } from "./src/ui/studio-views.js";
 import {createCompletingViews} from "./src/completing/views.js";
-import {setCompletionNode,moveCompletionRoute,completionBack,markCompletionStage,setCompletionField,addAccuracyDecision,completionSuggestions,sectionForNode,targetForSection,completionStage,completeEntry,latestRealResult} from "./src/completing/engine.js";
+import {setCompletionNode,moveCompletionRoute,completionBack,markCompletionStage,setCompletionField,addAccuracyDecision,completionSuggestions,sectionForNode,targetForSection,completionStage,completeEntry,latestRealResult,flagDependentMathematics,acknowledgeMathReview} from "./src/completing/engine.js";
 
 import { createProjectViews } from "./src/ui/project-views.js";
 import { createProjectState as newState, normalizeProjectState as normalise, persistProjectState, STORAGE_KEY as KEY } from "./src/core/project-state.js";
@@ -70,6 +70,10 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     const before=getPath(path);
     const changed=putPath(path,value);
     if(changed&&before!==value){
+      if(path.startsWith("entries.")){
+        const [,index,key]=path.split(".");
+        if(/^\d+$/.test(index))flagDependentMathematics(state,Number(index),key,before,value);
+      }
       let stage=path==="scratch.introduction"?"C10":path==="scratch.conclusion"?"C60":
         path==="scratch.dataNotes"?"C20":path==="scratch.finalReview"?"C90":
         path.startsWith("entries.")?(state.entries[Number(path.split(".")[1])]?.phase==="first"?"C30":"C40"):null;
@@ -492,6 +496,11 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       case "completion-review-import":
         setCompletionNode(state,"C02",{reason:"review-unchanged-import"});
         closeDrawer(false);nav("completing");break;
+      case "completion-entry-reviewed":{
+        const index=Number(el.dataset.index);
+        if(!Number.isInteger(index)||!acknowledgeMathReview(state,index)){toast("No mathematical link is awaiting review.");break;}
+        save();render();toast("Mathematical connection reviewed. Your writing remains unchanged.");break;
+      }
       case "completion-record-accuracy":{
         const result=addAccuracyDecision(state);
         if(!result.ok){toast(result.error);break;}
@@ -590,6 +599,12 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         setCompletionField(state,path.slice("completion.fields.".length),choice.dataset.value);
       }else{
         putPath(path,numeric?Number(choice.dataset.value):choice.dataset.value);
+        if(path.startsWith("entries.")&&previous!==choice.dataset.value){
+          const [,index,key]=path.split(".");
+          if(/^\d+$/.test(index))flagDependentMathematics(state,Number(index),key,previous,choice.dataset.value);
+          const stage=state.entries[Number(index)]?.phase==="first"?"C30":"C40";
+          if(state.completion.stages[stage]==="complete")state.completion.stages[stage]="needs-review";
+        }
       }
       if(path.endsWith(".status")&&path.startsWith("entries.")&&previous!==choice.dataset.value){state.ui.helpKey="";}
       save();render();
