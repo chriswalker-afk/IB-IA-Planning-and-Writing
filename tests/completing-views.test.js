@@ -124,3 +124,28 @@ test("first figure is not displayed as the active substantial-mathematics sectio
  assert(html.includes("Return to the first exploration"));
  assert(!html.includes("Mathematical technique actually intended or used"));
 });
+
+test("previous Planning precision is offered provisionally at first use, then a confirmed quantity policy replaces it",()=>{
+ const {state,view}=fixture();
+ state.planning.fields.firstAccuracy="I planned to measure heights to the nearest 0.1 cm";
+ state.entries=[{id:"first",phase:"first",title:"Measured figure",status:"planned",purpose:"Check a relationship"}];
+ state.completion.activeEntryIndex=0;
+ setCompletionNode(state,"C32");
+ let html=view.viewCompleting();
+ assert(html.includes("Earlier intended accuracy"));
+ assert(html.includes("nearest 0.1 cm"));
+ state.completion.accuracyDecisions=[{id:"height-1",quantity:"Height",unit:"cm",resolution:"Nearest 0.2 cm",policy:"Report calculated area to justified precision",reason:"Source resolution"}];
+ state.entries[0].accuracyRef="height-1";
+ html=view.viewCompleting();
+ assert(html.includes("Accuracy from your earlier measurement/source decision"));
+ assert(html.includes("Report calculated area to justified precision"));
+});
+test("Course check in C40D edits the same mathematical record as C40 rather than an unrelated global status",()=>{
+ const {state,view}=fixture();
+ state.entries=[{id:"first",phase:"substantial",status:"completed",result:"Actual mathematical result",knowledge:"mixed",technique:"New technique"}];
+ state.completion.activeEntryIndex=0;
+ setCompletionNode(state,"C40D");
+ const html=view.viewCompleting();
+ assert(html.includes('data-choice-path="entries.0.knowledge"'));
+ assert(!html.includes('data-choice-path="completion.fields.courseLevel"'));
+});
