@@ -1,6 +1,11 @@
 import {createPlanningEnvelope,getFieldDiff,mergePlanningEnvelope} from "./src/handover/schema.js";
 import {modelFromEnvelope,suggestedFilename} from "./src/handover/report-model.js";
 import {createHandoverViews} from "./src/ui/handover-views.js";
+import {actOnWritingCue} from "./src/completing/guidance-actions.js";
+import {eligibleWritingCues} from "./src/completing/writing-guidance.js";
+import {selectLimitation,recordLimitation,limitationContextKey} from "./src/completing/limitation-guidance.js";
+import {relevantBivariateOptions} from "./src/completing/bivariate-guidance.js";
+
 import { planningMove, planAutoAdvance, planningBack, planningEdit, applyPlanningField, toggleMath, syncPlanningToProject, setPlanCurrent, planningFlags } from "./src/planning/engine.js";
 import { createPlanningViews } from "./src/ui/planning-views.js";
 import { createStudioViews } from "./src/ui/studio-views.js";
@@ -501,6 +506,67 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         if(!Number.isInteger(index)||!acknowledgeMathReview(state,index)){toast("No mathematical link is awaiting review.");break;}
         save();render();toast("Mathematical connection reviewed. Your writing remains unchanged.");break;
       }
+      case "guidance-writing-action":{
+        const result=actOnWritingCue(state,{id:el.dataset.guidanceId,
+          key:el.dataset.guidanceKey,action:el.dataset.guidanceEvent});
+        if(!result.ok){toast(result.error);break;}
+        save();render();
+        if(result.record?.status==="noted")toast("Your note is saved in Pathfinder. It has not been inserted into your IA.");
+        if(result.record?.status==="written")toast("Recorded as written in your IA, as you confirmed.");
+        break;
+      }
+      case "guidance-more":
+        state.completion.guidanceUi.expanded=!state.completion.guidanceUi.expanded;
+        save();render();break;
+      case "guidance-select":{
+        const selected=eligibleWritingCues(state).find(x=>x.key===el.dataset.guidanceKey);
+        if(!selected){toast("That tip is no longer relevant.");break;}
+        state.completion.guidanceUi.selectedKey=selected.key;
+        state.completion.guidanceUi.expanded=true;
+        save();render();break;
+      }
+      case "guidance-maths-toggle":
+        state.completion.guidanceUi.mathsExpanded=!state.completion.guidanceUi.mathsExpanded;
+        save();render();break;
+      case "guidance-limit-toggle":
+        state.completion.guidanceUi.limitsExpanded=!state.completion.guidanceUi.limitsExpanded;
+        save();render();break;
+      case "guidance-limit-more":{
+        const ui=state.completion.guidanceUi;
+        const eligible=relevantLimitations(state);
+        ui.limitPage=(ui.limitPage+1)*3>=eligible.length?0:ui.limitPage+1;
+        ui.limitsExpanded=true;save();render();break;
+      }
+      case "guidance-limit-select":{
+        const result=selectLimitation(state,el.dataset.limitId);
+        if(!result.ok){toast(result.error);break;}
+        state.completion.guidanceUi.limitsExpanded=true;
+        save();render();break;
+      }
+      case "guidance-limit-record":{
+        const result=recordLimitation(state);
+        if(!result.ok){toast(result.error);break;}
+        save();render();toast("Your actual limitation and mathematical consequence were recorded in Pathfinder.");break;
+      }
+      case "guidance-limit-cancel":
+        state.completion.guidanceUi.limitDraftVisible=false;
+        state.completion.limitationDraft={id:"",entryId:"",explanation:"",consequence:"",mitigation:"",location:""};
+        save();render();break;
+      case "guidance-limit-none":
+        state.completion.guidanceUi.limitNoneKey=limitationContextKey(state);
+        state.completion.guidanceUi.limitsExpanded=false;
+        save();render();break;
+      case "guidance-bivariate-use":{
+        const ideas=relevantBivariateOptions(state);
+        const idea=ideas[Number(el.dataset.index)];
+        if(!idea){toast("Review the actual graph before choosing a question.");break;}
+        setCompletionField(state,"nextQuestion",idea.question);
+        setCompletionField(state,"nextReason","");
+        setCompletionField(state,"nextMethod","");
+        save();render();
+        toast("Question selected as a possibility. Write your own mathematical reason before starting.");
+        break;
+      }
       case "completion-record-accuracy":{
         const result=addAccuracyDecision(state);
         if(!result.ok){toast(result.error);break;}
@@ -642,7 +708,12 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     if(target.dataset.bind){
       updateBoundField(target.dataset.bind,target.value);
       save();
-      if(target.dataset.bind==="planning.fields.course"||target.dataset.bind==="planning.fields.ideaSelected")render();
+      const path=target.dataset.bind;
+      if(path==="planning.fields.course"||path==="planning.fields.ideaSelected"||
+       ["completion.fields.scatterDetail","completion.fields.scatterAimRelevance",
+        "entries."+state.completion.activeEntryIndex+".methodId",
+        "entries."+state.completion.activeEntryIndex+".accuracyRef"].includes(path))
+       render();
     }
   });
   document.addEventListener("keydown",evt=>{
