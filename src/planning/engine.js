@@ -24,14 +24,14 @@ export const PLANNING_FIELD_DEFAULTS = Object.freeze({
  sourceFirstDate:"",sourceFullDate:"",dataAvailability:"",dataReadiness:"",readinessImprovement:"",
  dependencies:"",unsecured:"",permissionNeed:"",permissionDetails:"",softwareReady:"",
  workloadHours:"",cleaningBurden:"",externalRisks:"",minimumVersion:"",backupMethod:"",
- pilotReady:"",costIssue:"",sourceRights:"",dataSufficiency:"",negativeResultViable:"",
+ pilotReady:"",costIssue:"",sourceRights:"",dataSufficiency:"",negativeResultViable:"",presentationManageable:"",
  practicalEase:"",easeImprovement:"",mathsOutside:"",otherMaths:"",mathsWhy:"",
  course:"",predictionId:"",prediction:"",predictionWhy:"",predictionImplication:"",
  predictionExploration:"",courseSuitability:"",suitabilityWhy:"",mathsRevisedWhy:"",
  figureType:"",figureOther:"",figurePurpose:"",firstAction:"",firstAccuracy:"",
  changeTrigger:"",changeAdaptation:"",fallbackEvidence:"",
  teacherNeed:"",teacherQuestion:"",teacherSafeAction:"",teacherExtra:"",teacherSchedule:"",
- theoreticalAim:"",theoreticalCase:"",otherCourseMaths:"",universalTeacherQuestion:"",
+ theoreticalAim:"",theoreticalCase:"",theoreticalPrediction:"",theoreticalWhy:"",otherCourseMaths:"",universalTeacherQuestion:"",
  milestonePlan:"",milestoneFirstVisual:"",milestoneVisualReview:"",milestoneFirstMath:"",
  milestoneFurtherMath:"",milestoneDraft:"",milestoneReview:"",milestoneSchoolDraft:"",
  milestoneSchoolFinal:"",milestoneAdjustment:""
@@ -154,6 +154,10 @@ export function applyPlanningField(state,key,value){
  const f=state.planning.fields;
  const before=f[key];
  f[key]=String(value??"");
+ if(before!==f[key]&&state.planning.completed){
+  state.planning.completed=false;
+  state.planning.notices=["Your planning choices changed. Review the updated provisional plan before using it."];
+ }
  if(key==="course"&&before!==f[key])state.planning.mathsReviewVersion++;
  if(key==="kind"&&before!==f[key]){
   // Old branches remain in the plan history; their source is not asserted as appropriate for the new route.
@@ -274,7 +278,7 @@ export function planAutoAdvance(state){
   case "N04":if(!f.course)return{ok:false,error:"Choose your course, or select Another course / unsure."};return go(["AI SL","AA SL"].includes(f.course)?"AI SL / AA SL":"Other / AA HL");
   case "N04T":return go("Record tentative maths and teacher question");
   case "N04S":return go("Techniques selected or unsure");
-  case "N01P":return go("Prediction made or 'not sure'");
+  case "N01P":if(!f.predictionId&&!f.prediction.trim())return{ok:false,error:"Choose a prediction, describe your own, or select Not sure yet."};return go("Prediction made or 'not sure'");
   case "N04R":return go("Keep / add / remove maths or remain unsure");
   case "N04M":return go("Continue");
   case "N05V":return go("Representation planned or uncertain");
