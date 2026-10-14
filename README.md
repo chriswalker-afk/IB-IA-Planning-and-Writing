@@ -1,52 +1,44 @@
-# IA Pathfinder — Interactive prototype
+# IA Pathfinder — Hybrid Pathfinder
 
-IA Pathfinder is a calm, responsive thinking-and-writing companion for IB Mathematics Internal Assessments. This first prototype explores the agreed **Hybrid Pathfinder** direction: focused guidance in the main workspace, with a growing mathematical journey available on demand.
+A responsive companion that helps IB Mathematics students **plan a meaningful IA** and build their investigation from their own mathematical findings. Students write the finished IA in Word or Google Docs; Pathfinder holds decisions, prompts and short student-authored working notes.
 
-## Try it
+**Website:** https://chriswalker-afk.github.io/IB-IA-Planning-and-Writing/
 
-Once GitHub Pages has deployed this repository, open:
+## Current release: Phase 2 — Planning
 
-**https://chriswalker-afk.github.io/IB-IA-Planning-and-Writing/**
+Planning now follows the Google Sheet's **32 source-linked Planning nodes and 61 defined routes**, replacing the earlier fixed ten-step walkthrough. Each student sees only the questions relevant to their pathway.
 
-If the link is not live yet, check [Actions](https://github.com/chriswalker-afk/IB-IA-Planning-and-Writing/actions) or [Settings → Pages](https://github.com/chriswalker-afk/IB-IA-Planning-and-Writing/settings/pages). This repository includes a Pages deployment workflow. **One-time setup:** the repository owner needs to open **Settings → Pages**, set **Build and deployment → Source** to **GitHub Actions**, and save. Then rerun the failed deployment from **Actions** (or push another commit). The connected GitHub integration cannot enable Pages on your behalf.
+- Ideas, optional comparison, investigation aims, intended usefulness and beneficiaries
+- Statistics, modelling or theoretical/no-data routes
+- Primary/secondary/combined evidence planning; combined sources require both question sets
+- Separate data readiness and practical completion-ease ratings (not IA grade predictions)
+- Permissions, ethics, practical dependencies, deadlines and teacher checkpoints
+- Searchable, multiple-selection **AI SL / AA SL** maths menu with **51 techniques**
+- **22 conditional predictions** and separate WHY / IF TRUE implications
+- Optional mathematics review after prediction, purposeful first diagram/calculation, contingency
+- Personalised, readable working report, JSON backups, autosave and desktop/mobile journey map
 
-To run it locally, open \`index.html\` in a browser or serve the repository directory with a small local HTTP server. There is no build process and no dependency installation.
+**Phase 2 notes and review paths:** [docs/phase-2.md](docs/phase-2.md)  
+**Complete source audit:** [docs/coverage.md](docs/coverage.md)
 
-## What this prototype explores
+### IA Studio — currently an exploratory prototype
 
-- **Home:** welcoming start/resume screen, focused actions and an explanation of the two IA phases.
-- **Guided Planning:** short questions, optional help, investigation type and data decisions, feasibility and mathematical direction. Decisions can be revisited.
-- **IA Studio:** writing notes for introduction, real data/methods, actual mathematical work, contextual interpretation, subsequent maths, conclusion and final self-review.
-- **A real mathematical cycle:** purpose → *planned or actual* work → result → interpretation → optional logical next question. No fixed number of steps.
-- **Contextual suggestions:** example branches for linear, curved, unclear and unexpected scatter patterns, plus theoretical mathematical work.
-- **Evolving journey map:** students see what they chose and which mathematical steps are plans versus actual recorded results.
-- **Contextual writing prompts:** surface when relevant, with "Write a note", "Already covered" and "Not relevant" controls.
-- **Responsive experience:** desktop journey sidebar; tablet quick tabs; mobile four-item bottom navigation and single-column task cards.
-- **Local work and portability:** browser-local save, a JSON project backup/import and a printable working-record report.
-- **Five illustrative demo scenarios** to review without entering a full project.
+Completing has a functioning illustrative cycle: purposeful mathematics → actual result → interpretation → next mathematical question. The remaining C-node workflow and many contextual advice libraries are still planned for Phases 4–6. Sample results are fictional and labelled as such.
 
-## Important limits
+### Important distinctions
 
-This is a **prototype of the student experience**, not a complete implementation of the \`IA Pathfinder — Flowchart Draft.xlsx\` decision engine. The workbook contains 24 sheets and considerably more rules and branches, including permissions and teacher check-ins, course-specific mathematics, references, final communication and precise contextual writing guidance.
+A planned technique is **not** a result. A prediction is **not** a finding. A teacher consultation flag is **not** approval. The site does **not** grade IAs, invent results, approve data collection or require a fixed number of mathematical sections.
 
-Sample results are fictional and explicitly labelled as illustrations. The site **does not** create mathematical answers, validate a student's data, import or export Word documents, grade the IA, communicate with teachers, or sync between devices. Its printable report is only a working record; use the JSON file for reliable restoration.
+Source-listed mathematics are *possible planning options* for AI SL and AA SL, not an independent certification against future syllabus changes. Other/HL courses receive a teacher-check pathway.
 
-Work is saved **only in the current browser**. Clearing browser storage or switching devices will lose local progress unless a backup has been exported. Do not use this prototype for sensitive student information or restricted personal data.
+The printable report can be saved as a PDF, but it is not yet a structured PDF/DOCX handover: **Phase 3** will implement robust document reimport. **Use the JSON backup** for safe project restoration. Browser autosave is local to the device; there is no account or cross-device syncing. Avoid entering sensitive participant data or restricted personal information.
 
-## Suggested review route
+## Development
 
-1. Open the homepage on a desktop and a phone. Can a student tell how to start?
-2. Try Planning with **statistics** and then revisit **theoretical exploration**. Is the guidance brief enough?
-3. From Home, choose **Explore a sample**. Try curved, unclear and unexpected patterns.
-4. In IA Studio, check the distinction between **Only planned so far** and **I've completed some mathematics**.
-5. Test recording a result, interpreting it, and choosing a follow-up mathematical question.
-6. Open **My path** and revisit a previous stage; use optional Writing moments only when relevant.
-7. Reload, export a JSON backup, and restore it. Check mobile layout and accessibility.
+Static HTML, CSS and JavaScript ES modules; no external application framework, analytics or account system. No package install required:
 
-## Design intention
+- Open the website or serve the project with a local HTTP server.
+- Run \`npm test\` on Node 22+ for pure routing, source coverage and simulated UI tests.
+- GitHub Actions validates tests and deploys GitHub Pages.
 
-The user owns the mathematical thinking. Pathfinder prompts questions at the right moment, respects uncertainty, recalls prior decisions such as measurement accuracy, and supports an IA that develops logically from genuine findings. It should feel rewarding without imposing scores, streaks, compulsory mathematics, or grade predictions.
-
-Source design: \`IA_Pathfinder_Responsive_UX_Spec_v1.md\` (maintained separately) and \`IA Pathfinder — Flowchart Draft.xlsx\`. The latter remains the authoritative decision-logic reference for future implementation.
-
-**Implementation:** static HTML + CSS + vanilla JavaScript; no application framework or analytics.
+The source Google Sheet was captured into 24 versioned read-only JSON snapshots on 14 October 2026. The original Sheet remains the editorial reference; edits to that Sheet should be intentionally re-imported and reviewed before changing runtime rules.
