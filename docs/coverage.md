@@ -1,47 +1,56 @@
-# IA Pathfinder — source migration and implementation coverage
+# IA Pathfinder — spreadsheet migration and implementation coverage
 
-**Snapshot:** Google Sheet \`IA Pathfinder — Flowchart Draft\`, 14 October 2026. Its original 24 tabs and all indexed source rows are preserved in the repository; **the source Google Sheet has not been changed**.
+**Source snapshot:** 14 October 2026. All 24 original Google Sheet tabs are retained as read-only versioned JSON under data/. **The source spreadsheet has not been modified.** Capturing source content is not the same as implementing its educational instructions.
 
-## Coverage by source item
+## Count of source records
 
 | Runtime status | Count | Meaning |
 |---|---:|---|
-| Phase 2 implemented | **166** | All 32 Planning nodes, 61 Planning routes, 51 listed techniques and 22 prediction nudges |
-| Phase 2 partial | **65** | Supplemental Planning draft prompts, feasibility details and editorial rules still needing refinement |
-| Phase 3 implemented | **61** | Personalised planning PDF/Word sections, source planning fields, selected import/recovery/merge routes |
-| Phase 3 partial | **8** | Some exact editorial report layouts, third-party/edited document recovery and deferred completion-snapshot details |
-| Prototype partial | **37** | Preliminary Completing interactions that are not yet the full source flowchart |
-| Not implemented | **1,093** | Primarily Completing nodes, guidance libraries and later teacher/final-review features |
-| **Total** | **1,430** | Unique indexed records across all 24 sheet tabs |
+| Phase 2 implemented | **166** | Planning routes/nodes, available course mathematics catalogue and contextual predictions |
+| Phase 2 partial | **65** | Additional Planning editorial details still to refine |
+| Phase 3 implemented | **61** | PDF/Word planning reports, embedded snapshots and safe handover/import logic |
+| Phase 3 partial | **8** | Particular report layout/third-party text recovery refinements |
+| Phase 4 implemented | **275** | **52 Completing nodes and 223 source transitions** connected to screens/route engine |
+| Phase 4 partial | **338** | Completing, data-method, first-result, interpretation and next-step prompt inventories, with core behaviour but not every conditional specialty |
+| Prototype partial | **5** | Legacy prototype-level interactions retained, to align with later guidance |
+| Not implemented | **512** | Mainly contextual writing moments, specialist Maths & Technology, bivariate and limitations libraries, advanced review content |
+| **Total** | **1,430** | Unique indexed records across the 24 workbook tabs |
 
-The original flowchart has **84 nodes and 284 routes**; Planning accounts for **32 nodes and 61 routes**. Editorial statuses **41 Agreed, 42 Working draft and 1 Needs discussion** refer to workbook content, **not** technical completion.
+The source flowchart has **84 nodes and 284 routes**: Planning represents 32 nodes and 61 routes, while Completing represents 52 nodes and 223 routes. Editorial spreadsheet statuses (Agreed, Working draft, Needs discussion) are different from runtime completion statuses and student stage statuses.
 
-## Traceability and implementation
+## Source-to-code traceability
 
-- [Complete row-by-row coverage register](coverage.csv): source tab/row, item ID, editorial status, runtime status, implementation file and next phase.
-- [Phase 3 document, handover and reimport tests](phase-3.md): student review paths, safe recovery limits and implementation details.
-- [Phase 2 Planning details](phase-2.md): branching, syllabus menus, context checks and planning tests.
-- [Source tab manifest](../data/catalog/index.json), [full node table](../data/flow/nodes.json) and [all source routes](../data/flow/routes.json).
-- \`src/planning/\` and \`src/ui/planning-views.js\`: fully navigable, conditional Planning.
-- \`src/handover/schema.js\`: versioned planning snapshot, explicit field-level diff/merge, historical teacher concerns.
-- \`src/handover/report-model.js\`: common conditional content in all generated reports.
-- \`src/handover/formats/\`: paginated PDF with embedded JSON; editable Word with embedded custom XML.
-- \`src/handover/read-document.js\`: local document upload, metadata-first import, conservative text fallback.
-- \`src/ui/handover-views.js\`: student confirmation, conflict comparison, manual recovery.
-- \`tests/handover.test.js\`, \`tests/handover-ui.test.js\`, \`tests/ui-smoke.test.js\`: automated round-trip, conflict, migration and consent safeguards.
+- [Exact row-level audit with spreadsheet tab, source row, ID, status and implementation reference](coverage.csv).
+- [Phase 4: Completing workflow design and acceptance tests](phase-4.md).
+- [Phase 3: personalised planning reports, import and handover](phase-3.md).
+- [Phase 2: source-derived Planning journey](phase-2.md).
+- [Manifest and all source nodes/routes](../data/catalog/index.json).
+- Planning engine and responsive interface: src/planning/ and src/ui/planning-views.js.
+- Phase 4 source-linked Completing engine, 52 screens and route choices: src/completing/catalog.js, engine.js and views.js.
+- Actual mathematical step migration, revist/review flags, precision memory and state transitions: src/completing/entry-record.js and src/core/project-state.js.
+- Shared current-project data and browser actions: app.js, src/core/record-access.js.
+- Personalised reports, versioned planning snapshots and guarded import: src/handover/.
+- Automated regression tests: tests/completing-engine.test.js, tests/completing-views.test.js, tests/ui-smoke.test.js, plus Planning, project-state and document round-trip suites.
 
-## Interpretation
+## Exactly what is functional in Phase 4
 
-**Captured data is not executed logic.** “Implemented” means the appropriate student-facing action or data path is connected and tested against the mapped source requirement; related draft content may still need editorial review.
+- A source-linked screen for each original Completing node, with exact source-row destinations for all 223 transitions.
+- A student-friendly stage dashboard and direct Planning/Word/PDF/blank starts.
+- Genuine evidence vs planned evidence separation, statistics, modelling and theoretical pathways.
+- First purposeful figure/calculation with *before* explanation and *after* real interpretation.
+- Repeatable previous real result → unanswered question → justified mathematical method → genuine result → local takeaway loop, plus a valid stop-and-conclude option.
+- Contextual Pearson/scatter guidance conditioned on confirmed real work and the relevant mathematical chain, not stale earlier plots.
+- Per-quantity accuracy decisions recalled when appropriate, student-described limitations, new mathematical learning and technology meaning.
+- Revision flags for later mathematics that depends on changed earlier results; original student work preserved for reconsideration.
+- Meaningful conclusion, presentation, teacher-draft and final review entry points, all explicitly non-grading.
+- Local autosave, JSON whole-project backups, and backwards-compatible project migrations.
 
-**Docx/PDF import restores the embedded exported plan, not subsequent visible-document edits.** If a document was modified later, changes must be confirmed or re-entered; absence of a reliable embedded snapshot triggers cautious manual recovery. A report does not include completed mathematical results; only the full JSON project backup carries all IA Studio work.
+## What remains partial
 
-No document import claims teacher approval, validates participant consent or converts tentative ratings into an IA score.
+Phase 4 implemented the **routed Completing backbone**, not full coverage of every nuanced worksheet prompt. In particular, Phase 5 should refine relevance and timing of contextual writing moments, detailed sampling and measurement advice, analysis-specific limitations, PMCC/subsequent-model branching, accuracy reminders tied to *each* mathematical quantity, and the quality/suppression of guidance.
 
-## Next phases
+Phase 6 should deepen criteria A–E and school feedback instructions, conduct classroom acceptance tests including long student answers and mobile/a11y QA, and check rendered PDF/Word exports across diverse projects. The website does **not** grade, verify consent, collect evidence, or automatically create a student's IA.
 
-- **Phase 4:** build the complete C-node Completing system and repeatable evidence → interpretation → next mathematical question loop.
-- **Phase 5:** exact contextual writing-moment, mathematical limitations, accuracy memory, outside-syllabus understanding and relevant prompts with suppression.
-- **Phase 6:** draft/final review, real classroom acceptance tests, accessibility and report visual QA against long and varied student responses.
+PDF/Word handovers contain a point-in-time **Planning snapshot**, not updated Word-body edits or mathematical results. Full JSON backups store the ongoing Completing workspace. Permission flags are not automatically cleared by importing a document.
 
-The interface should remain light even as its mathematical judgement becomes more nuanced.
+**Interpreting the audit:** Implemented refers to a connected, tested source-linked node or route. Partial means representative educational behaviour is functional but the complete conditional editorial content is still unfinished. Not implemented means the content is captured as source reference but not yet used in the student interface.
