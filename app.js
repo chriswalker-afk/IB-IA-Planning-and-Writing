@@ -68,12 +68,13 @@
     const type = opts.type || "text";
     const hint = opts.hint ? '<p class="field-hint">' + e(opts.hint) + '</p>' : "";
     const rows = opts.rows || 3;
+    const fieldId = "field-" + path.replace(/[^a-z0-9-]/gi, "-");
     const input = type === "textarea"
-      ? '<textarea class="field" data-bind="' + e(path) + '" rows="' + rows + '" placeholder="' + e(placeholder) + '">' + e(value) + '</textarea>'
+      ? '<textarea class="field" id="' + fieldId + '" data-bind="' + e(path) + '" rows="' + rows + '" placeholder="' + e(placeholder) + '">' + e(value) + '</textarea>'
       : type === "select"
-      ? '<select class="field" data-bind="' + e(path) + '">' + (opts.options || []).map(op => '<option value="' + e(op[0]) + '"' + (value === op[0] ? " selected" : "") + '>' + e(op[1]) + '</option>').join("") + '</select>'
-      : '<input class="field" type="' + e(type) + '" data-bind="' + e(path) + '" placeholder="' + e(placeholder) + '" value="' + e(value) + '">';
-    return '<div class="field-group"><label class="field-label">' + e(label) + '</label>' + input + hint + '</div>';
+      ? '<select class="field" id="' + fieldId + '" data-bind="' + e(path) + '">' + (opts.options || []).map(op => '<option value="' + e(op[0]) + '"' + (value === op[0] ? " selected" : "") + '>' + e(op[1]) + '</option>').join("") + '</select>'
+      : '<input class="field" type="' + e(type) + '" id="' + fieldId + '" data-bind="' + e(path) + '" placeholder="' + e(placeholder) + '" value="' + e(value) + '">';
+    return '<div class="field-group"><label class="field-label" for="' + fieldId + '">' + e(label) + '</label>' + input + hint + '</div>';
   };
   const getPath = path => path.split(".").reduce((o,k) => o == null ? undefined : o[k], state);
   const putPath = (path,value) => {
