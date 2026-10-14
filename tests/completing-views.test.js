@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {createProjectState} from "../src/core/project-state.js";
 import {createCompletingViews} from "../src/completing/views.js";
-import {C_NODE_IDS,setCompletionNode} from "../src/completing/engine.js";
+import {C_NODE_IDS,setCompletionNode,startFirstRepresentation} from "../src/completing/engine.js";
 const e=v=>String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");
 function fixture(){
  const state=createProjectState(),ctx={
@@ -47,6 +47,7 @@ test("theoretical branch contains actual mathematical objects instead of sample 
 });
 test("first representation has BEFORE purpose, genuine result and AFTER interpretation in separate nodes",()=>{
  const {state,view}=fixture();state.planning.fields.aim="A concrete question";
+ startFirstRepresentation(state);
  setCompletionNode(state,"C32");
  let html=view.viewCompleting();
  assert(html.includes("purpose BEFORE")||html.includes("Mathematical purpose BEFORE"));
@@ -76,7 +77,7 @@ test("conclusion and source-fit tips never state a grade, teacher approval or un
  const {state,view}=fixture();setCompletionNode(state,"C62");
  let html=view.viewCompleting();
  assert(html.includes("could reasonably"));
- assert(html.includes("actual results"));
+ assert(html.includes("evidence-supported"));
  assert(!html.includes("Guaranteed"));
  setCompletionNode(state,"C03");html=view.viewCompleting();
  assert(html.includes("consent"));
