@@ -1,3 +1,4 @@
+import {planningFlags,selectedMaths} from "../planning/engine.js";
 /** Home, student journey map and working-record views. */
 export function createProjectViews(ctx){
   const {icon,e,button,note,readableArea,summary,filled,sheetTitle,overline,hasPlan,hasStudio,demoFlag,studioSections}=ctx;
@@ -8,11 +9,26 @@ export function createProjectViews(ctx){
   }
   function viewPath() {
     const state = ctx.getState();
-    const active=state.route==="planning"?"planning":"completing";
+    const plan=state.planning||{}, f=plan.fields||{};
+    const completed=new Set(plan.completedNodes||[]);
+    const planNode=(title,desc,id)=>{
+      const stage=completed.has(id)?"done":plan.current===id?"current":"pending";
+      return pathNode(title,desc||"Not decided yet",stage,"plan-edit",'data-node="'+e(id)+'"');
+    };
+    const mathLabels=selectedMaths(state).map(x=>x.label).join("; ");
+    const dataNode=f.kind==="theoretical"?"N02T":"N03";
     let planningNodes=[
-      pathNode("Find an investigation idea",state.project.idea||"Explore a possible topic",filled(state.project.idea)||filled(state.project.aim)?"done":"current","path-plan",'data-index="0"'),
-      pathNode("Shape a meaningful aim",state.project.aim||"What would you like to find out?",filled(state.project.aim)?"done":"current","path-plan",'data-index="1"'),
-      pathNode("Make a feasible plan",readableArea(state.project.mathsArea),state.ui.planMax>=8?"done":"current","path-plan",'data-index="5"')
+      planNode("Starting idea",f.idea||f.interest||"Explore a possible topic","N00"),
+      planNode("Investigation aim",f.aim||"What mathematical question interests you?","N01"),
+      planNode("Meaning and beneficiary",f.beneficiary||f.intendedUse||"Why does this matter?","N01V"),
+      planNode("Investigation direction",f.kind||"Statistics, modelling or theoretical","N02"),
+      planNode("Sources or theoretical starting material",f.dataSource||f.theoreticalCase||"Where to begin? ",dataNode),
+      planNode("Feasibility and timeline",f.kind==="theoretical"?"Discuss scope with teacher":"Data readiness "+(f.dataReadiness||"—")+"/5 · Ease "+(f.practicalEase||"—")+"/5",f.kind==="theoretical"?"N08":"N03F"),
+      planNode("Course and mathematics",(f.course||"Course to confirm")+" · "+(mathLabels||f.otherMaths||f.otherCourseMaths||"To explore"),"N04"),
+      planNode("Prediction or conjecture",f.prediction||"Tentative expectation only","N01P"),
+      planNode("Purposeful first mathematics",f.firstAction||f.figurePurpose||"First useful mathematical step","N05V"),
+      planNode("Teacher questions",f.teacherQuestion||f.universalTeacherQuestion||"Optional conversation","N06T"),
+      planNode("Working planning summary",plan.completed?"Provisional plan recorded":"Review and record an initial plan","N06")
     ].join("");
     let mathsNodes=state.entries.map((st,i)=>pathNode(st.title||"Mathematical step "+(i+1),
       st.status==="completed"?(st.interpretation||st.result||"Actual work recorded"):(st.purpose||"Planned mathematical question"),
@@ -62,7 +78,77 @@ export function createProjectViews(ctx){
   function viewReport() {
     const state = ctx.getState();
     const p=state.project;
-    const pairs=[["Investigation aim",p.aim],["Why it matters",p.beneficiary],["Course",p.course],["Investigation route",p.kind],["Planned data or starting material",p.dataDetails],["Maths direction",readableArea(p.mathsArea)+(p.mathsCustom?" — "+p.mathsCustom:"")],["Prediction",p.prediction],["Why I predicted it",p.predictionWhy],["First mathematical move",p.firstMove],["Accuracy decisions",p.precision],["Data readiness /5",p.readiness?String(p.readiness):""],["Practical ease /5",p.ease?String(p.ease):""],["Permissions",p.permissions]];
+    const pfields=state.planning?.fields||{};
+    const chosen=selectedMaths(state),flags=planningFlags(state);
+    const pairs=[
+      ["Investigation aim",p.aim],["Motivation",pfields.motivation],["Who might benefit",pfields.beneficiary],
+      ["What the answer might help with",pfields.intendedUse],["Course",p.course],
+      ["Investigation route",p.kind],
+      ["Tentative mathematical techniques",chosen.map(x=>x.label).join("; ")+(pfields.otherMaths?" · "+pfields.otherMaths:"")+(pfields.otherCourseMaths?" · "+pfields.otherCourseMaths:"")],
+      ["My tentative prediction / conjecture",pfields.prediction||p.prediction],
+      ["WHY I expect this",pfields.predictionWhy||p.predictionWhy],
+      ["What it might mean IF TRUE (not an actual result)",pfields.predictionImplication],
+      ["First planned figure, calculation or case",pfields.figureOther||pfields.figureType],
+      ["Mathematical purpose of first representation",pfields.figurePurpose],
+      ["First mathematical action",pfields.firstAction||p.firstMove],
+      ["Units and intended accuracy",pfields.firstAccuracy||p.precision]
+    ];
+    const planningSection=(title,rows)=>{
+      const lines=rows.filter(([k,v])=>filled(v));
+      return lines.length?'<h2 style="margin-top:32px">'+e(title)+'</h2>'+lines.map(([name,value])=>summary(name,value)).join(""):"";
+    };
+    const primary=["primary","both"].includes(pfields.dataSource) ? planningSection("Primary-data plan",[
+      ["What will be recorded",pfields.primaryWhat],["Population or objects",pfields.primaryPopulation],
+      ["When",pfields.primaryWhen],["Where",pfields.primaryWhere],["How",pfields.primaryHow],
+      ["Equipment",pfields.primaryEquipment],["Sampling plan",pfields.primarySampling],
+      ["Data-plan confidence",pfields.primaryStatus]]) : "";
+    const secondary=["secondary","both"].includes(pfields.dataSource) ? planningSection("Secondary-data plan",[
+      ["Source link",pfields.secondaryUrl],["Publisher",pfields.secondaryPublisher],
+      ["Variables, units and definitions",pfields.secondaryVariables],
+      ["Population, dates or subset",pfields.secondaryScope],
+      ["Verified status (student report only)",pfields.secondaryVerified],
+      ["Data-plan confidence",pfields.secondaryStatus]]) : "";
+    const method=planningSection("Method and feasibility",[
+      ["Other method considered",pfields.alternativeMethod],["Why the method suits the aim",pfields.methodReason],
+      ["Anticipated method limitation",pfields.methodLimitation],
+      ["Possible mitigation or acceptable scope",pfields.methodMitigation],
+      ["First usable-data target",pfields.sourceFirstDate],["Full-data target",pfields.sourceFullDate],
+      ["Data readiness /5",pfields.kind==="theoretical"?"Not applicable":pfields.dataReadiness],
+      ["How to improve readiness",pfields.readinessImprovement],
+      ["Essential dependencies",pfields.dependencies],["Still unsecured",pfields.unsecured],
+      ["Permissions / consent status",pfields.permissionNeed||"Not confirmed"],
+      ["Permissions requiring discussion",pfields.permissionDetails],
+      ["Software readiness",pfields.softwareReady],["Data cleaning",pfields.cleaningBurden],
+      ["Estimated practical setup hours",pfields.workloadHours],["Practical ease /5",pfields.practicalEase],
+      ["Improvement to practical ease",pfields.easeImprovement],["Fallback plan",pfields.backupMethod]
+    ]);
+    const timeline=planningSection("Timeline and milestones",[
+      ["School teacher-draft deadline (student entered)",pfields.milestoneSchoolDraft],
+      ["School final deadline (student entered)",pfields.milestoneSchoolFinal],
+      ["Planning / introduction target",pfields.milestonePlan],
+      ["First graph / simplified case",pfields.milestoneFirstVisual],
+      ["Reflection on first representation",pfields.milestoneVisualReview],
+      ["First substantial mathematics",pfields.milestoneFirstMath],
+      ["Further mathematics / conclusion",pfields.milestoneFurtherMath],
+      ["Complete first draft",pfields.milestoneDraft],
+      ["Revision and final checks",pfields.milestoneReview]
+    ]);
+    const teacher=planningSection("Teacher discussion and unresolved questions",[
+      ["Theoretical starting point",pfields.theoreticalCase],
+      ["Provisional mathematics outside initial course scope",pfields.otherCourseMaths],
+      ["Suitability status (self-check only)",pfields.courseSuitability],
+      ["Mathematics familiarity / course level",pfields.mathsOutside],
+      ["What I want to ask my teacher",pfields.teacherQuestion],
+      ["Universal check-in question",pfields.universalTeacherQuestion],
+      ["Possible discussion date",pfields.teacherSchedule],
+      ["Safe action while awaiting feedback",pfields.teacherSafeAction],
+      ["What could change my approach",pfields.changeTrigger],
+      ["How I could adapt",pfields.changeAdaptation],
+      ["Credible evidence fallback",pfields.fallbackEvidence]
+    ]);
+    const flagSection=flags.length?'<h2 style="margin-top:32px">Points not yet confirmed</h2>'+
+      flags.map(x=>'<div class="summary-block"><strong>'+e(x.title)+'</strong><p>'+e(x.note)+'</p></div>').join("")+
+      '<p class="text-muted text-small">These flags are not teacher responses or formal approval decisions.</p>':"";
     return '<div class="page narrow print-report">'+tabletNav()+
       '<div class="no-print">'+sheetTitle("YOUR WORKING RECORD","My IA Pathfinder report","A readable summary of what you've recorded, not a completed IA or teacher-approved plan.")+
       '<div class="button-row" style="margin-bottom:22px">'+button("Print / save as PDF","print-report","btn-primary","", "download")+
@@ -70,7 +156,7 @@ export function createProjectViews(ctx){
       button("Back to my path","go-path","btn-quiet")+'</div></div>'+
       '<div class="content-card"><p class="section-eyebrow">IA PATHFINDER · STUDENT WORKING RECORD</p><h1 style="font-size:26px">My mathematical investigation</h1>'+
       (state.demo?note("<strong>DEMONSTRATION DATA:</strong> This report contains illustrative sample entries. Do not present them as real personal results.",true):"")+
-      pairs.map(([name,val])=>summary(name,val)).join("")+
+      pairs.map(([name,val])=>summary(name,val)).join("")+primary+secondary+method+timeline+teacher+flagSection+
       '<h2 style="margin-top:35px">My actual mathematical record</h2>'+
       (state.entries.length?state.entries.map((st,i)=>'<div style="margin:22px 0"><h3>'+(i+1)+'. '+e(st.title||"Untitled step")+'</h3>'+
        '<p class="text-xs text-muted">Status: '+(st.status==="completed"?"Student marked as completed":"Only planned")+'</p>'+
