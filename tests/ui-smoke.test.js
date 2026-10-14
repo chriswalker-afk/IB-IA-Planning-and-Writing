@@ -13,6 +13,11 @@ import {createCompletingViews} from "../src/completing/views.js";
 import {setCompletionNode,moveCompletionRoute,completionBack,markCompletionStage,setCompletionField,addAccuracyDecision,completionSuggestions,sectionForNode,targetForSection,completeEntry,latestRealResult,flagDependentMathematics,acknowledgeMathReview} from "../src/completing/engine.js";
 import {createProjectViews} from "../src/ui/project-views.js";
 import {createHandoverViews} from "../src/ui/handover-views.js";
+import {actOnWritingCue} from "../src/completing/guidance-actions.js";
+import {eligibleWritingCues} from "../src/completing/writing-guidance.js";
+import {selectLimitation,recordLimitation,limitationContextKey,relevantLimitations} from "../src/completing/limitation-guidance.js";
+import {relevantBivariateOptions} from "../src/completing/bivariate-guidance.js";
+
 import {createPlanningEnvelope,getFieldDiff,mergePlanningEnvelope} from "../src/handover/schema.js";
 import {modelFromEnvelope,suggestedFilename} from "../src/handover/report-model.js";
 
@@ -45,6 +50,7 @@ function createHarness(savedValue){
     referenceNodeForPrototypeStep,createPlanningViews,createStudioViews,createCompletingViews,createProjectViews,
     setCompletionNode,moveCompletionRoute,completionBack,markCompletionStage,setCompletionField,addAccuracyDecision,completionSuggestions,sectionForNode,targetForSection,completeEntry,latestRealResult,flagDependentMathematics,acknowledgeMathReview,
     createHandoverViews,createPlanningEnvelope,getFieldDiff,mergePlanningEnvelope,modelFromEnvelope,suggestedFilename,
+    actOnWritingCue,eligibleWritingCues,selectLimitation,recordLimitation,limitationContextKey,relevantLimitations,relevantBivariateOptions,
     planningMove,planAutoAdvance,planningBack,planningEdit,applyPlanningField,toggleMath,syncPlanningToProject,setPlanCurrent,planningFlags
   };
   runInNewContext(script,globals,{filename:"app.js",timeout:5000});
@@ -213,4 +219,42 @@ test("reopening IA Studio resumes the exact source C-node instead of resetting t
  assert(h.html.includes('data-source-node="C21M"'));
  h.action("studio-overview");
  assert(h.html.includes('data-source-node="C04"'));
+});
+
+test("Phase 5 writing advice respects student control instead of launching a queue of unwanted prompts",()=>{
+ const h=createHarness();
+ h.write("planning.fields.aim","How do changing measurements influence an outcome?");
+ h.write("planning.fields.motivation","My interest in realistic measurements");
+ h.nav("completing");
+ h.action("completion-open",{node:"C10"});
+ assert(h.html.includes("Useful writing moment"));
+ assert(h.html.includes("data-writing-cue="));
+ const match=h.html.match(/data-guidance-id="(W\d\d)" data-guidance-key="([^"]+)"/);
+ assert(match);
+ h.action("guidance-writing-action",{guidanceId:match[1],guidanceKey:match[2],guidanceEvent:"covered-start"});
+ assert(h.html.includes("Confirm already covered"));
+ h.write("completion.guidanceUi.locationDraft","Introduction, second paragraph");
+ h.action("guidance-writing-action",{guidanceId:match[1],guidanceKey:match[2],guidanceEvent:"covered"});
+ assert.equal(h.saved.writingLedger[match[2]].location,"Introduction, second paragraph");
+ assert(!h.html.includes("Useful writing moment")); // no instant replacement with another cue
+ h.action("guidance-more");
+ assert(h.html.includes("Useful writing moment")||h.html.includes("Review optional writing guidance"));
+});
+test("Phase 5 optional limitations never auto-record source possibilities as real weaknesses",()=>{
+ const h=createHarness();
+ h.write("planning.fields.kind","statistics");
+ h.nav("completing");
+ h.action("completion-open",{node:"C23"});
+ assert(h.html.includes("Would any mathematical limitation actually matter here?"));
+ assert.equal(h.saved.completion.confirmedLimitations.length,0);
+ h.action("guidance-limit-toggle");
+ h.action("guidance-limit-select",{limitId:"custom"});
+ h.write("completion.limitationDraft.explanation","The source contains only some respondents");
+ h.action("guidance-limit-record");
+ assert.equal(h.saved.completion.confirmedLimitations.length,0); // consequence required
+ h.write("completion.limitationDraft.consequence","The inference is limited to the source group");
+ h.action("guidance-limit-record");
+ assert.equal(h.saved.completion.confirmedLimitations.length,1);
+ h.action("completion-open",{node:"C60"});
+ assert(h.html.includes("Limitations you previously identified"));
 });
