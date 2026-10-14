@@ -1,46 +1,13 @@
+import { createProjectState as newState, normalizeProjectState as normalise, persistProjectState } from "./src/core/project-state.js";
+import { readRecordValue, updateRecordValue } from "./src/core/record-access.js";
+import { icon, escapeHtml, cleanUrl, button } from "./src/ui/primitives.js";
+import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
 /* IA Pathfinder — interactive design prototype
    Student-authored notes only; branching examples are illustrative, not the complete IA flowchart engine. */
 (() => {
   "use strict";
-  const KEY = "ia-pathfinder-prototype-v1";
-  const VERSION = 1;
   const $ = (s, root = document) => root.querySelector(s);
-  const icon = (name, extra = "") => '<svg class="icon ' + extra + '" aria-hidden="true"><use href="#i-' + name + '"></use></svg>';
-  const escapeHtml = value => String(value ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
   const e = escapeHtml;
-  const cleanUrl = url => { try { const u = new URL(String(url ?? "")); return ["https:","http:"].includes(u.protocol) ? u.href : ""; } catch { return ""; } };
-  const newState = () => ({
-    version: VERSION, updatedAt: null, demo: "",
-    route: "home",
-    project: {
-      ideaStatus:"", interest:"", idea:"", aim:"", beneficiaryType:"", beneficiary:"",
-      course:"", kind:"", dataSource:"", dataDetails:"", dataStatus:"not-started",
-      permissions:"unknown", readiness:0, ease:0, mathsArea:"", mathsCustom:"",
-      prediction:"", predictionWhy:"", firstMove:"", precision:"", documentUrl:""
-    },
-    ui: { planStep:0, planMax:0, studioSection:"overview", mathIndex:0, mathPhase:"work", helpKey:"", openCue:"", noteDraft:"" },
-    scratch: { introduction:"", dataNotes:"", conclusion:"", finalReview:"" },
-    entries: [], cues: {}, cueNotes: {}, cueLocations: {}
-  });
-  function normalise(value) {
-    if (!value || typeof value !== "object" || value.version !== VERSION ||
-        !value.project || typeof value.project !== "object") throw new Error("This is not a compatible Pathfinder project file.");
-    const blank = newState();
-    const next = {
-      ...blank, ...value,
-      project: { ...blank.project, ...value.project },
-      ui: { ...blank.ui, ...value.ui },
-      scratch: { ...blank.scratch, ...value.scratch },
-      entries: Array.isArray(value.entries) ? value.entries.filter(x => x && typeof x === "object").slice(0,120) : [],
-      cues: value.cues && typeof value.cues === "object" ? value.cues : {},
-      cueNotes: value.cueNotes && typeof value.cueNotes === "object" ? value.cueNotes : {},
-      cueLocations: value.cueLocations && typeof value.cueLocations === "object" ? value.cueLocations : {}
-    };
-    next.ui.planStep = Math.max(0, Math.min(9, Number(next.ui.planStep) || 0));
-    next.ui.planMax = Math.max(next.ui.planStep, Math.min(9, Number(next.ui.planMax) || 0));
-    if (!["home","planning","completing","path","report"].includes(next.route)) next.route = "home";
-    return next;
-  }
   let state = newState();
   let lastFocus = null;
   let lastDrawer = "";
@@ -76,21 +43,10 @@
       : '<input class="field" type="' + e(type) + '" id="' + fieldId + '" data-bind="' + e(path) + '" placeholder="' + e(placeholder) + '" value="' + e(value) + '">';
     return '<div class="field-group"><label class="field-label" for="' + fieldId + '">' + e(label) + '</label>' + input + hint + '</div>';
   };
-  const getPath = path => path.split(".").reduce((o,k) => o == null ? undefined : o[k], state);
-  const putPath = (path,value) => {
-    const parts=path.split(".");
-    if (parts.length > 5 || !["project","scratch","entries","ui","cueNotes","cueLocations"].includes(parts[0]) ||
-        parts.some(k => k === "__proto__" || k === "constructor" || k === "prototype")) return;
-    let obj=state;
-    for(let i=0;i<parts.length-1;i++){
-      if (obj[parts[i]] === undefined || obj[parts[i]] === null) return;
-      obj=obj[parts[i]];
-    }
-    if(obj && typeof obj === "object")obj[parts[parts.length-1]]=value;
-  };
+  const getPath = path => readRecordValue(state,path);
+  const putPath = (path,value) => updateRecordValue(state,path,value);
   function save() {
-    state.updatedAt = new Date().toISOString();
-    try { localStorage.setItem(KEY,JSON.stringify(state)); setSaveStatus("Saved on this device"); }
+    try { persistProjectState(state,localStorage); setSaveStatus("Saved on this device"); }
     catch { setSaveStatus("Could not save — export a backup",true); }
   }
   function setSaveStatus(message,error=false) {
@@ -100,9 +56,6 @@
   function toast(text) {
     const el=$("#toast");el.textContent=text;el.classList.add("show");
     clearTimeout(toastHandle);toastHandle=setTimeout(()=>el.classList.remove("show"),3000);
-  }
-  function button(text,action,cls="btn-secondary",more="",glyph="") {
-    return '<button class="btn ' + cls + '" type="button" data-action="' + action + '" ' + more + '>' + e(text) + (glyph ? icon(glyph) : "") + '</button>';
   }
   function choose(path, options, opts={}) {
     const value = getPath(path);
@@ -150,7 +103,7 @@
   }
   function planBanner() {
     const n=state.ui.planStep;
-    return '<div class="progress-top"><span class="progress-overview">'+icon("compass")+' Guided planning</span><span class="progress-counter">Step '+(n+1)+' of '+planTitles.length+'</span></div>'+
+    return '<div class="progress-top" data-source-node="'+e(referenceNodeForPrototypeStep(n))+'"><span class="progress-overview">'+icon("compass")+' Guided planning</span><span class="progress-counter">Step '+(n+1)+' of '+planTitles.length+'</span></div>'+
       '<div class="mini-progress" style="max-width:none;margin:0 0 27px"><span style="width:'+((n+1)/planTitles.length*100)+'%"></span></div>';
   }
   function planningBody(n) {
