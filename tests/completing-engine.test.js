@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import {createProjectState,normalizeProjectState} from "../src/core/project-state.js";
 import {C_NODES,C_ROUTES,C_PROMPTS} from "../src/completing/catalog.js";
 import {
- C_NODE_IDS,C_MAJOR_STAGES,C_STAGE_STATUS,createCompletionState,normalizeCompletionState,
+ C_NODE_IDS,C_MAJOR_STAGES,C_STAGE_STATUS,completionStage,createCompletionState,normalizeCompletionState,
  setCompletionNode,moveCompletionRoute,completionBack,markCompletionStage,setCompletionField,
  startFirstRepresentation,startNextMathematics,addAccuracyDecision,actualPmccExists,actualScatterExists,
  latestRealResult,sourceResultForNext,observedFeatureForNext,scatterForNext,canViewPmccFollowup,canViewScatterFollowup,
@@ -291,4 +291,23 @@ test("a student self-confirmation does not silently clear pre-existing teacher a
  setCompletionField(s,"permissionStatus","confirmed");
  assert.equal(s.teacher.pendingApproval,true);
  assert(completionFlags(s).some(x=>/teacher\/consent concern/i.test(x)));
+});
+
+test("first-figure interpretation is tracked under First Exploration; later reflection under Mathematics",()=>{
+ const s=state(),scatter=realScatter(s,"linear");
+ assert.equal(completionStage("C34",s),"C30");
+ move(s,"Observation made; check accuracy where new, then reconnect to aim/prediction","C34B");
+ assert.equal(completionStage("C34B",s),"C30");
+ assert.equal(s.completion.stages.C30,"working");
+ assert.equal(s.completion.stages.C40,"not-started");
+ scatter.interpretation="A linear shape appears in the observed data";
+ move(s,"Consistent with prediction, or no prediction, or sufficiently explained","C35");
+ assert.equal(completionStage("C35",s),"C30");
+ setCompletionField(s,"nextQuestion","Would a numerical correlation help?");
+ setCompletionField(s,"nextReason","The paired points appear roughly straight.");
+ move(s,"Begin FIRST justified mathematical section (or the next appropriate method)","C40");
+ assert.equal(completionStage("C40",s),"C40");
+ s.entries.at(-1).status="completed";s.entries.at(-1).result="Actual Pearson coefficient";
+ move(s,"Actual later mathematical result warrants reinterpretation","C34");
+ assert.equal(completionStage("C34",s),"C40");
 });
