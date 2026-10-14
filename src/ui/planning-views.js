@@ -1,6 +1,6 @@
 /** Legacy planning renderer isolated for replacement by the full N-node engine in Phase 2. */
 export function createPlanningViews(ctx){
-  const {icon,e,choose,field,numberPick,note,summary,button,readableArea,helpButton,helpBox,tabletNav,planTitles,referenceNodeForPrototypeStep}=ctx;
+  const {icon,e,choose,field,numberPick,note,summary,button,filled,readableArea,helpButton,helpBox,tabletNav,planTitles,referenceNodeForPrototypeStep}=ctx;
   function planBanner() {
     const state = ctx.getState();
     const n=state.ui.planStep;
