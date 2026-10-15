@@ -21,7 +21,7 @@ export const FIELD_GROUPS = Object.freeze({
  "Investigation and sources": ["kind","dataSource","statisticsContext","primaryWhat","primaryWhen","primaryWhere","primaryPopulation","primaryHow","primaryEquipment","primarySampling","primaryStatus","secondaryUrl","secondaryPublisher","secondaryVariables","secondaryScope","secondaryVerified","secondaryStatus","alternativeMethod","methodReason","methodLimitation","methodMitigation","sourceFirstDate","sourceFullDate","dataAvailability"],
  "Readiness, practicality and permissions": ["dataReadiness","readinessImprovement","dependencies","unsecured","permissionNeed","permissionDetails","softwareReady","workloadHours","cleaningBurden","externalRisks","minimumVersion","backupMethod","pilotReady","costIssue","sourceRights","dataSufficiency","negativeResultViable","presentationManageable","practicalEase","easeImprovement"],
  "Mathematics and prediction": ["course","mathsOutside","otherMaths","mathsWhy","predictionId","prediction","predictionWhy","predictionImplication","predictionExploration","courseSuitability","suitabilityWhy","mathsRevisedWhy","figureType","figureOther","figurePurpose","firstAction","firstAccuracy","theoreticalAim","theoreticalCase","theoreticalPrediction","theoreticalWhy","otherCourseMaths"],
- "Timeline and adaptations": ["milestoneSchoolDraft","milestoneSchoolFinal","milestonePlan","milestoneFirstVisual","milestoneVisualReview","milestoneFirstMath","milestoneFurtherMath","milestoneDraft","milestoneReview","milestoneAdjustment","changeTrigger","changeAdaptation","fallbackEvidence"],
+ "Timeline and adaptations": ["timelineWeeks","timelineEarly","timelineStart","milestoneSchoolDraft","milestoneSchoolFinal","milestonePlan","milestoneData","milestoneFirstVisual","milestoneVisualReview","milestoneFirstMath","milestoneFurtherMath","milestoneDraft","milestoneReview","milestoneAdjustment","changeTrigger","changeAdaptation","fallbackEvidence"],
  "Teacher conversation": ["teacherNeed","teacherQuestion","teacherSafeAction","teacherExtra","teacherSchedule","universalTeacherQuestion"],
  "Optional idea comparison": ["originalIdea","otherIdea1","otherIdea2","ideaSelected","ideaAccess","ideaValue","ideaStatus"]
 });
@@ -57,7 +57,8 @@ export const FIELD_LABELS = Object.freeze({
  theoreticalAim:"Theoretical question",theoreticalCase:"Small theoretical case",
  theoreticalPrediction:"Tentative conjecture",theoreticalWhy:"Reasons for conjecture",otherCourseMaths:"Provisional other-course mathematics",
  milestoneSchoolDraft:"School teacher-draft deadline",milestoneSchoolFinal:"School final deadline",
- milestonePlan:"Planning and introduction milestone",milestoneFirstVisual:"First figure / example milestone",
+ timelineWeeks:"Weeks available for my IA",timelineEarly:"Prefer to finish early",timelineStart:"My provisional start date",
+ milestonePlan:"Planning and introduction milestone",milestoneData:"Usable data / starting material milestone",milestoneFirstVisual:"First figure / example milestone",
  milestoneVisualReview:"Interpret first figure",milestoneFirstMath:"Initial mathematics milestone",
  milestoneFurtherMath:"Further mathematics and conclusion",milestoneDraft:"Written first draft",
  milestoneReview:"Revision and final checks",milestoneAdjustment:"Timeline adjustment",
