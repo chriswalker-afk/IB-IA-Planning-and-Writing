@@ -170,7 +170,8 @@ export function extendedAdvice(state,entry,{family,methods,signal}={}){
   const variant=selected==="expected-too-small"?["Test conditions may fail","Revisit category definitions, expected frequencies or test choice; do not merge groups simply to force significance.",["Are expected frequencies and independence assumptions adequate?","What defensible alternative could answer the question?"]]:
    selected==="evidence-against"?["Evidence against the null model","Interpret the evidence and practical meaning in context; a p-value is not an effect size or causal proof.",["Which categories appear responsible for the discrepancy?","How much can the sample justify generalising?"]]:
    selected==="sampling-question"?["Sampling limits the test conclusion","Independence of observations, selection bias and category definitions may matter more than the computed statistic.",["Which assumption could change the conclusion?","Can the study support a population claim?"]]:
-   ["Insufficient evidence is not proof","Explain what the test cannot establish and avoid claiming that categories or variables are certainly independent.",["Is a cautious conclusion sufficient?","Would sample size or category validity materially affect interpretation?"]];
+   selected==="insufficient-evidence"?["Insufficient evidence is not proof","Explain what the test cannot establish and avoid claiming that categories or variables are certainly independent.",["Is a cautious conclusion sufficient?","Would sample size or category validity materially affect interpretation?"]]:
+   ["Interpret the test cautiously","Choose what the calculated statistic and p-value actually indicate, after checking whether the test assumptions are met.",["Which hypothesis decision does the evidence warrant?"]];
   return a(variant[0],essential,variant[1],variant[2],testDepth);
  }
  case "expected-value":{
@@ -178,7 +179,8 @@ export function extendedAdvice(state,entry,{family,methods,signal}={}){
   const variant=selected==="large-variation"?["Risk matters alongside the expected value","Compare possible losses, spread or probabilities of extreme outcomes. A high mean return may still be undesirable.",["What is the probability of an unacceptable outcome?","Would a risk-aware decision differ from the highest expected return?"]]:
    selected==="approximately-fair"?["What does fair mean?","Check the exact expected net gain after all costs, then assess whether finite-play outcomes feel different from the long-run expectation.",["Does a strategy change probabilities or merely choices?","How many plays would make long-run reasoning relevant?"]]:
    selected==="probabilities-weak"?["A probability model needs justification","Check that probabilities are valid, conditional structure and independence are justified; avoid inventing frequencies.",["Which assumption changes the expected value most?","Could simulation test the internal model without pretending to collect real data?"]]:
-   ["Positive expectation is not a guaranteed win","A positive expected value does not guarantee a win on a particular attempt. Explain the distribution of outcomes as well as their long-run average.",["How likely is a loss despite positive expectation?","Does variation or risk change which option is preferable?"]];
+   selected==="positive-expectation"?["Positive expectation is not a guaranteed win","A positive expected value does not guarantee a win on a particular attempt. Explain the distribution of outcomes as well as their long-run average.",["How likely is a loss despite positive expectation?","Does variation or risk change which option is preferable?"]]:
+   ["Interpret the expected value","Explain the long-run average in context and decide if risks, costs or assumptions still affect the decision.",["Does this expectation answer the actual decision question?"]];
   return a(variant[0],essential,variant[1],variant[2],probDepth);
  }
  case "measurement":{
