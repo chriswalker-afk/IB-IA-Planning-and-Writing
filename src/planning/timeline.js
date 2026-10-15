@@ -34,7 +34,7 @@ export function addDays(iso,days){
 }
 export function timelineWeek(start,date){
  if(!validDate(start)||!validDate(date))return null;
- return Math.max(1,Math.ceil((ms(date)-ms(start)+86400000)/(7*86400000)));
+ return Math.max(1,Math.ceil((ms(date)-ms(start))/(7*86400000)));
 }
 /** Returns eight ordered dates in an available period of 1–52 weeks. */
 export function suggestTimeline({weeks,finishEarly,startDate}){
