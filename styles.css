@@ -284,3 +284,28 @@ h1,h2,h3,h4,p {margin-top:0} h1,h2,h3,h4 {font-family:Manrope, 'DM Sans', sans-s
 #source-manager .btn, #review-feedback .summary-block { overflow-wrap: anywhere; white-space: normal; }
 
 .completion-topline { flex-wrap: wrap; gap: 8px; }
+
+/* Problem-first support: optional depth, one action and a route back. */
+.stuck-support {min-width:0;overflow-wrap:anywhere}
+.stuck-intro {margin:0 0 10px}
+.stuck-context {font-size:.78rem;line-height:1.5;color:var(--muted,#536c77);margin:8px 0 16px}
+.stuck-topics {display:grid;gap:8px}
+.stuck-topic {display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:44px;padding:12px 14px;border:1px solid var(--line,#dce6e2);border-radius:12px;background:var(--paper,#f8fbf9);color:inherit;font:inherit;font-size:.87rem;font-weight:600;text-align:left;cursor:pointer}
+.stuck-topic svg {flex-shrink:0;width:18px;height:18px}
+.stuck-topic:hover {border-color:var(--teal,#138477)}
+.stuck-topic:focus-visible,.stuck-support summary:focus-visible {outline:3px solid var(--teal,#138477);outline-offset:3px}
+.stuck-support details {margin:14px 0;border-top:1px solid var(--line,#dce6e2);padding-top:12px}
+.stuck-support summary {min-height:32px;cursor:pointer;font-size:.86rem;font-weight:650;line-height:1.5}
+.stuck-topic-group h3 {font-size:.82rem;margin:16px 0 8px}
+.stuck-topic-group .stuck-topic {margin:6px 0}
+.stuck-heading {font-size:1.18rem;line-height:1.4;margin:22px 0 8px;outline:none}
+.stuck-next {padding:18px;border-radius:14px;background:#f0f7f3;border:1px solid #d8e9de}
+.stuck-next h4,.stuck-teacher h4 {font-size:.93rem;margin:0 0 10px}
+.stuck-next p {line-height:1.6;margin:9px 0}
+.stuck-why,.stuck-outcome {font-size:.84rem}
+.stuck-caption {font-size:.76rem;line-height:1.5;color:var(--muted,#536c77)}
+.stuck-boundary {font-size:.8rem;line-height:1.55;margin:14px 0;color:var(--muted,#536c77)}
+.stuck-teacher {margin-top:18px}.stuck-support .btn {white-space:normal;height:auto;min-height:40px;text-align:left}
+.stuck-footer {display:flex;flex-wrap:wrap;gap:8px;margin-top:20px;padding-top:14px;border-top:1px solid var(--line,#dce6e2)}
+.stuck-return-banner {display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:10px;padding:12px 18px;background:#f0f7f3;font-size:.82rem}
+@media print {.stuck-return-banner,.stuck-support {display:none!important}}

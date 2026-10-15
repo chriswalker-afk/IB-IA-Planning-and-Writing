@@ -1,3 +1,7 @@
+import {createStuckViews} from '../src/help/stuck-views.js';
+import {captureStuckOrigin,isStuckNode} from '../src/help/stuck-state.js';
+import {stuckAction} from '../src/help/stuck-actions.js';
+import {stuckContext} from '../src/help/stuck.js';
 import {conformanceAction} from "../src/completing/conformance-actions.js";
 import {reviewEditChanged} from "../src/completing/review.js";
 import test from "node:test";
@@ -43,7 +47,7 @@ function createHarness(savedValue){
   const storage={getItem:k=>store.get(k)??null,setItem:(k,v)=>store.set(k,v)};
   const window={scrollTo(){},confirm:()=>true,alert(){},print(){}};
   const script=read("../app.js").replace(/^import\s+.*;\s*$/gm,"");
-  const globals={
+  const globals={createStuckViews,captureStuckOrigin,isStuckNode,stuckAction,stuckContext,
     conformanceAction,reviewEditChanged,document,window,localStorage:storage,console,clearTimeout(){},setTimeout(){return 1;},
     createProjectState,normalizeProjectState,persistProjectState,
     newState:createProjectState,normalise:normalizeProjectState,
@@ -260,4 +264,19 @@ test("Phase 5 optional limitations never auto-record source possibilities as rea
  assert.equal(h.saved.completion.confirmedLimitations.length,1);
  h.action("completion-open",{node:"C60"});
  assert(h.html.includes("Limitations you previously identified"));
+});
+
+test('problem-first support opens over Planning and keeps its exact node and draft',()=>{
+ const s=createProjectState();s.route='planning';s.planning.current='N01';s.planning.fields.aim='An unfinished aim';const h=createHarness(s);
+ h.action('open-stuck');assert(h.drawer.includes('My question is too broad'));assert(h.html.includes('data-source-node="N01"'));
+ h.action('stuck-topic',{topic:'aim'});assert(h.drawer.includes('Try this now'));assert.equal(h.saved.planning.fields.aim,'An unfinished aim');
+ h.action('stuck-return');assert.equal(h.saved.planning.current,'N01');assert.equal(h.saved.route,'planning');
+});
+test('support work and return restores selected earlier result without marking it complete',()=>{
+ const s=createProjectState();s.route='completing';s.completion.current='C34B';s.entries=[{id:'a',phase:'first',status:'completed',result:'Original result',interpretation:'My original interpretation'},{id:'b',phase:'substantial',status:'planned',result:''}];s.completion.activeEntryIndex=0;
+ const h=createHarness(s);h.action('open-stuck');h.action('stuck-topic',{topic:'next'});h.action('stuck-work');assert.equal(h.saved.completion.current,'C35');assert.equal(h.saved.completion.nextFromEntryId,'a');
+ h.action('stuck-return');assert.equal(h.saved.completion.current,'C34B');assert.equal(h.saved.completion.activeEntryIndex,0);assert.equal(h.saved.entries[0].interpretation,'My original interpretation');assert.equal(h.saved.entries[1].status,'planned');
+});
+test('support action notes are private and do not overwrite IA notes',()=>{
+ const h=createHarness();h.action('open-stuck');h.action('stuck-topic',{topic:'aim'});h.write('completion.support.drafts.aim.action','Choose one quantity');h.action('stuck-save');assert.equal(h.saved.completion.support.task.status,'pending');assert.equal(h.saved.scratch.introduction,'');
 });

@@ -405,7 +405,7 @@ export function createPlanningViews(ctx){
    e(s.label)+'</span>').join("")+'</div>';
   return '<div class="page narrow">'+tabletNav()+
    '<div class="progress-top"><span class="progress-overview">'+icon("compass")+' Guided Planning</span>'+
-   '<span class="progress-counter">Your route · '+e(PROGRESS_GROUPS[stageI]?.label||"Review")+'</span></div>'+
+   '<button class="btn btn-quiet btn-sm" data-action="open-stuck">I am stuck</button><span class="progress-counter">Your route · '+e(PROGRESS_GROUPS[stageI]?.label||"Review")+'</span></div>'+
    milestones+
    '<div class="task-shell" data-source-node="'+e(n)+'"><div class="stage-label">'+icon("compass")+
    ' '+e(PROGRESS_GROUPS[stageI]?.label||"Planning")+'</div>'+

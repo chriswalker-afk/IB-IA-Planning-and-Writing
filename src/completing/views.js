@@ -1,3 +1,5 @@
+import {createStuckViews} from '../help/stuck-views.js';
+import {isStuckNode} from '../help/stuck-state.js';
 /**
  * Phase 4 — focused Completing screens keyed to the 52 C nodes.
  * The route actions use EXACT source-sheet condition strings. Students can
@@ -16,7 +18,7 @@ export function createCompletingViews(ctx){
  const {getState,e,icon,field,choose,button,summary,sheetTitle,tabletNav,filled}=ctx;
  const titleMap=new Map(C_NODES.map(x=>[x.id,x.label]));
  const F=(key,label,placeholder="",opts={})=>field("completion.fields."+key,label,placeholder,opts);
- const guides=createGuidanceViews(ctx),extra=createConformanceViews(ctx);
+ const guides=createGuidanceViews(ctx),extra=createConformanceViews(ctx),stuck=createStuckViews(ctx);
  const entryField=(key,label,placeholder="",opts={})=>{
   const state=getState(),i=state.completion.activeEntryIndex;
   return i>=0&&i<state.entries.length?field("entries."+i+"."+key,label,placeholder,opts):"";
@@ -161,6 +163,7 @@ export function createCompletingViews(ctx){
     e(st.localTakeaway||st.interpretation||st.observationText||st.result)+'</p></div></div>').join("")+'</div>';
  };
  const startOptions=(n)=>{
+  if(isStuckNode(n))return{intro:"Choose one useful way forward. Your original work is preserved.",html:stuck.render()};
   const s=getState(),f=s.completion.fields,p=s.planning.fields,st=completeEntry(s);
   switch(n){
   case "C00":return{
@@ -539,27 +542,6 @@ export function createCompletingViews(ctx){
      info("PDF/Word are Planning-only","Your downloadable JSON project contains actual mathematical steps, interpretations and writing notes. PDF/Word planning reports do not.")+
      info("Saved locally","Autosave is on this device only. Use the JSON file if you want to move to another device or safeguard your progress.")
   };
-  case "C95":return{intro:"What is blocking progress? Pick one useful action, not a long worksheet.",
-   html:choice("blocker",[["no-data","Still no usable data"],["limited-data","Some data are incomplete or unsuitable"],["alternate-source","Find another source"],["other","Another problem"]])+
-    F("blockedBy","What specifically is stopping me? (optional)","A source, permission, calculation, explanation or time",{type:"textarea",rows:2})+
-    info("You can make safe progress","An introduction, definitions, theoretical case or realistic source plan may be possible without pretending to have finished the mathematics.")
-  };
-  case "C95D":return{intro:"You can do useful mathematics-related writing while waiting for evidence.",
-   html:info("One useful step","Define what you intend to measure; draft your introduction from your real motivation; verify a candidate source; or sketch a clearly labelled theoretical example.")+
-    F("oneSafeAction","What is one safe action I will do next?","A specific manageable task",{type:"textarea",rows:2})};
-  case "C95A":return{intro:"Check whether an alternative source really answers your original mathematical question.",
-   html:F("alternateSource","Candidate source or method","Publisher, link or feasible collection method",{type:"textarea",rows:2})+
-    F("alternateFit","Does it cover the right variables, units, population and times?","State what fits and what does not",{type:"textarea",rows:3})+
-    info("Permission and provenance","A source candidate is not verified usable evidence; do not use restricted data without permission.")
-  };
-  case "C95L":return{intro:"What part of the available evidence is genuinely usable, and which conclusions would be unsafe?",
-   html:F("limitedDataIssue","Missing, biased or incompatible data","What is the actual limitation?",{type:"textarea",rows:3})+
-    F("oneSafeAction","One honest improvement or narrowing of the aim","Check range, correct a method or ask the teacher",{type:"textarea",rows:2})};
-  case "C95Q":return{intro:"Choose the closest mathematical or practical problem to return to the relevant stage.",
-   html:info("No extra maths for its own sake","It is acceptable to step back and check notation, a surprising result, course suitability or a draft issue.")};
-  case "C95N":return{intro:"One clear next action is enough. You can save the obstacle and resume later.",
-   html:F("oneSafeAction","My next safe action","A specific task with a destination stage",{type:"textarea",rows:2})+
-    F("stuckFollowup","When could I try it? (optional)","A date you choose; no automatic reminder",{type:"date"})};
   case "C96":return{intro:"A writing cue for the exact work you came from, using your actual choices and results.",
    html:info("Your current work is preserved","Use the optional cue below if it helps. If you have already addressed or dismissed the relevant guidance, no new writing is required. Return to your saved work when ready.")
   };
@@ -642,16 +624,16 @@ export function createCompletingViews(ctx){
     sheetTitle("PART 2 · COMPLETING","Your IA Studio","Build the actual investigation, one purposeful mathematical decision at a time.")+
     '<div class="completion-topline"><span>'+icon("route")+' '+e(node==="C04"?"Your choice":stage?C_MAJOR_STAGES.find(x=>x.id===stage)?.name||"Mathematical decision":"Focused decision")+'</span>'+
     (node!=="C96"?'<button class="btn btn-quiet btn-sm" data-action="completion-open" data-node="C96">'+icon("pencil")+' Where should I write this?</button>':"")+
-    '<button class="btn btn-quiet btn-sm" data-action="completion-open" data-node="C04">'+icon("layers")+' My stages</button></div>'+
+    '<button class="btn btn-quiet btn-sm" data-action="open-stuck">I am stuck</button><button class="btn btn-quiet btn-sm" data-action="completion-open" data-node="C04">'+icon("layers")+' My stages</button></div>'+
     topWarnings+
     '<div class="task-shell" data-source-node="'+e(node)+'"><div class="stage-label">'+
     icon(stage?C_MAJOR_STAGES.find(x=>x.id===stage)?.icon||"route":"route")+' '+
     e(stage?C_MAJOR_STAGES.find(x=>x.id===stage)?.name||"Completing":"MY MATHEMATICAL JOURNEY")+'</div>'+
     '<h2>'+e(label)+'</h2><p class="task-intro">'+e(screen.intro)+'</p>'+
     extra.returnToReview()+screen.html+(screen.extra||"")+
-    guides.writingMoment(node)+guides.mathsHelp(node)+guides.limitsHelp(node)+
+    (isStuckNode(node)?"":guides.writingMoment(node)+guides.mathsHelp(node)+guides.limitsHelp(node)+
     contextualPrompt(node)+statusControls+
-    allButtons(node,primaryByNode[node]||[])+'</div>'+
+    allButtons(node,primaryByNode[node]||[]))+'</div>'+
     '<p class="small-callout">Only actual mathematics supports a mathematical conclusion. Your planning, predictions and teacher questions remain separate from real findings. No compulsory number of calculations or IA grade.</p>'+
     miniList()+'</div>';
  }

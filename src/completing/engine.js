@@ -1,3 +1,4 @@
+import {createStuckState,normalizeStuckState,captureStuckOrigin,isStuckNode} from '../help/stuck-state.js';
 /**
  * Phase 4 — source-linked Completing journey.
  * The C node/route table is a verbatim index of the spreadsheet, but
@@ -59,7 +60,7 @@ const validNode=id=>C_NODE_IDS.includes(id);
 const hasOwn=(x,key)=>Object.prototype.hasOwnProperty.call(x,key);
 export function createCompletionState(){
  return {
-  current:"C00",history:[],visited:[],transitions:[],fields:{...C_FIELD_DEFAULTS},
+  support:createStuckState(),current:"C00",history:[],visited:[],transitions:[],fields:{...C_FIELD_DEFAULTS},
   stages:Object.fromEntries(C_MAJOR_STAGES.map(x=>[x.id,"not-started"])),
   activeEntryIndex:-1,nextFromEntryId:"",pairedDataForEntryId:"",pmccSignalForEntryId:"",scatterPatternForEntryId:"",scatterDetailForEntryId:"",returnTo:"",latestMeaningfulNode:"",
   guidanceUi:{writeKey:"",coveredKey:"",exampleKey:"",selectedKey:"",quietNode:"",quietId:"",quietScope:"",quietSignature:"",expanded:false,mathsExpanded:false,limitsExpanded:false,accuracyChanged:false,limitPage:0,limitDraftVisible:false,
@@ -85,7 +86,7 @@ export function normalizeCompletionState(data,project={}){
  const accuracy=Array.isArray(v.accuracyDecisions)?v.accuracyDecisions.filter(x=>x&&typeof x==="object")
   .slice(0,40).map(x=>({id:str(x.id),quantity:str(x.quantity),symbol:str(x.symbol),unit:str(x.unit),
   resolution:str(x.resolution),policy:str(x.policy),reason:str(x.reason),sourceId:str(x.sourceId)})):[];
- return {...base,current:validNode(v.current)?v.current:(project.aim?"C04":"C00"),
+ return {...base,support:normalizeStuckState(v.support),current:validNode(v.current)?v.current:(project.aim?"C04":"C00"),
   history:ids(v.history),visited:ids(v.visited),transitions,
   fields,stages:states,accuracyDecisions:accuracy,
   sourceRecords:normalizeSources(v.sourceRecords),activeSourceId:str(v.activeSourceId).slice(0,160),
@@ -243,6 +244,7 @@ export function setCompletionNode(state,id,{history=true,reason="revisit"}={}){
  if(!validNode(id))return{ok:false,error:"Unknown Completing stage."};
  const c=state.completion;
  const previous=c.current;
+ if(isStuckNode(id)&&!isStuckNode(previous)){captureStuckOrigin(state);c.support.selected=({C95D:"no-data",C95A:"source",C95L:"partial",C95Q:"unsure",C95N:"overwhelmed"})[id]||"";}
  const helperHop=id==="C96"||previous==="C96";
  if(id==="C96"&&previous!=="C96"){
   c.writingOrigin={node:previous,entryId:completeEntry(state)?.id||"",nextFromEntryId:c.nextFromEntryId};

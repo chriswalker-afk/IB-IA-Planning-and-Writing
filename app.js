@@ -1,3 +1,7 @@
+import {createStuckViews} from './src/help/stuck-views.js';
+import {captureStuckOrigin,isStuckNode} from './src/help/stuck-state.js';
+import {stuckAction} from './src/help/stuck-actions.js';
+import {stuckContext} from './src/help/stuck.js';
 import {conformanceAction} from "./src/completing/conformance-actions.js";
 import {reviewEditChanged} from "./src/completing/review.js";
 import {createPlanningEnvelope,getFieldDiff,mergePlanningEnvelope} from "./src/handover/schema.js";
@@ -62,6 +66,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       : '<input class="field" type="' + e(type) + '" id="' + fieldId + '" data-bind="' + e(path) + '" placeholder="' + e(placeholder) + '" value="' + e(value) + '">';
     return '<div class="field-group"><label class="field-label" for="' + fieldId + '">' + e(label) + '</label>' + input + hint + '</div>';
   };
+  const stuckViews=createStuckViews({getState:()=>state,e,icon,field});
   const handoverViews=createHandoverViews({getState:()=>state,icon,e,button,field});
   const getPath = path => readRecordValue(state,path);
   const putPath = (path,value) => updateRecordValue(state,path,value);
@@ -199,7 +204,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   }
   function render(opts={}) {
     const map={home:viewHome,planning:viewPlanning,completing:viewCompleting,path:viewPath,report:viewReport};
-    main.innerHTML=map[state.route]();
+    main.innerHTML=stuckViews.returnBanner()+map[state.route]();
     filterMathOptions();
     document.querySelectorAll("[data-nav]").forEach(b=>b.classList.toggle("active",b.dataset.nav===state.route));
     sideMilestones();
@@ -305,7 +310,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         '<button class="panel-link" data-action="open-files">How do I keep my work safe? '+icon("arrow-right")+'</button>'+
         '<button class="panel-link" data-action="open-demos">Try an illustrative sample '+icon("arrow-right")+'</button></div></section>'+
         '<section><h3>A useful rhythm</h3><p>Ask a mathematical question → do real mathematics → interpret the result in context → choose what genuinely follows. Repeat only when there is a reason.</p></section>'+
-        '<p class="drawer-footer">Planning and document handover are available. The detailed Completing logic is still being developed. Pathfinder does not calculate marks, validate sources, or approve permissions.</p>';
+        '<p class="drawer-footer">Planning and document handover are available. Use I am stuck for a specific obstacle, or the writing helper for where an explanation belongs. Pathfinder does not calculate marks, validate sources, or approve permissions.</p>';
     }else if(panel==="import-preview"){
       body=pendingImport?handoverViews.preview(pendingImport,importSelected):
         handoverViews.manual("No planning document has been selected.");
@@ -326,14 +331,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         '<button type="button" class="panel-link" data-action="load-demo" data-demo="'+key+'"><span><strong>'+e(label)+'</strong><br><span class="text-muted" style="font-weight:400">'+e(desc)+'</span></span>'+icon("arrow-right")+'</button>').join("")+'</div></section>'+
         note("Loading a sample replaces your current local project. Download a backup first if needed.",true);
     }else if(panel==="stuck"){
-      const noData=state.project.dataStatus==="not-started";
-      body='<section><p>You do not need to invent results or force a technique. Choose one small, useful action.</p><div class="panel-list">'+
-        '<button class="panel-link" data-action="studio-intro"><span>Write or refine a short introduction</span>'+icon("arrow-right")+'</button>'+
-        '<button class="panel-link" data-action="studio-data"><span>Check what evidence or assumptions are available</span>'+icon("arrow-right")+'</button>'+
-        '<button class="panel-link" data-action="go-planning"><span>Revisit my aim or planned method</span>'+icon("arrow-right")+'</button>'+
-        '<button class="panel-link" data-action="studio-math"><span>Explore a theoretical or preliminary case</span>'+icon("arrow-right")+'</button></div></section>'+
-        (noData?note("No data yet? Define variables or terms, check a genuine source, draft a prediction, or work on a small theoretical case clearly labelled as such."):"")+
-        '<p class="drawer-footer">If consent, privacy or safety is unresolved, discuss the affected activity with your teacher before proceeding.</p>';
+      body=stuckViews.render();
     }
     const titles={project:"My project",files:"Save & export",help:"Here to help",demos:"Choose a sample",stuck:"Find a way forward", "import-preview":"Review planning import","import-manual":"Recover a plan",handover:"Confirm your starting plan"};
     layer.hidden=false;document.body.classList.add("dialog-open");
@@ -461,13 +459,54 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     if(action==="go-report")return nav("report");
     if(action==="open-files")return openDrawer("files");
     if(action==="open-demos")return openDrawer("demos");
-    if(action==="open-stuck"){setCompletionNode(state,"C95");return nav("completing");}
+    if(action==="open-stuck"){captureStuckOrigin(state,{scrollY:window.scrollY||0,focusId:document.activeElement?.id||""});if(!el.closest(".drawer"))lastFocus=el;save();return openDrawer("stuck");}
     if(["studio-overview","studio-intro","studio-data","studio-math","studio-conclusion","studio-review"].includes(action))return nav("completing",{section:action.slice(7)});
     return false;
   }
   function clickAction(el) {
     const action=el.dataset.action||"";
     if(changeNavAction(action,el)!==false)return;
+    const support=stuckAction(state,action,el.dataset);
+    if(support){
+      if(!support.ok){toast(support.error);return;}
+      if(support.backup){exportJson();return;}
+      if(support.return){
+        if(!layer.hidden&&!state.completion.support.returnPending){closeDrawer();save();return;}
+        const o=state.completion.support.origin;state.completion.support.returnPending=false;
+        closeDrawer(false);
+        if(o){
+          if(o.route==="planning")setPlanCurrent(state,o.planNode,{history:false});
+          else if(o.route==="completing")setCompletionNode(state,o.node,{history:false});
+          state.completion.activeEntryIndex=state.entries.findIndex(e=>e.id===o.entryId);
+          if(state.completion.activeEntryIndex>=0)state.ui.mathIndex=state.completion.activeEntryIndex;
+          state.completion.nextFromEntryId=o.nextFromEntryId;state.route=o.route;
+        }else if(isStuckNode(state.completion.current)){setCompletionNode(state,"C04");}
+        save();render();window.scrollTo({top:o?.scrollY||0,behavior:"auto"});
+        const focus=o?.focusId?document.querySelector('[id="'+o.focusId.replace(/[^a-z0-9_-]/gi,"")+'"]'):null;
+        if(focus)focus.focus({preventScroll:true});else main.focus({preventScroll:true});return;
+      }
+      if(support.target){
+        const x=stuckContext(state),t=support.target;state.completion.support.returnPending=true;
+        closeDrawer(false);
+        if(t.panel){save();render();openDrawer(t.panel);return;}
+        if(t.route==="planning")setPlanCurrent(state,t.node);
+        else if(t.route==="completing"){
+          // A C35/C96 destination must refer to the result the student asked about.
+          state.completion.activeEntryIndex=x.index;if(x.index>=0)state.ui.mathIndex=x.index;
+          if(t.node==="C96")setCompletionNode(state,x.node,{history:false});
+          setCompletionNode(state,t.node);
+          if(x.entry)state.completion.nextFromEntryId=x.entry.id;
+        }
+        nav(t.route);return;
+      }
+      save();
+      if(support.stay)render();
+      else if(!layer.hidden){openDrawer("stuck");
+        if(support.saved){const details=layer.querySelector('.stuck-save');if(details)details.open=true;}
+        const heading=layer.querySelector('.stuck-heading');if(heading)heading.focus({preventScroll:true});
+      }else render();
+      if(support.message)toast(support.message);return;
+    }
     const conformance=conformanceAction(state,action,el.dataset);
     if(conformance){
       if(!conformance.ok){toast(conformance.error);return;}
@@ -733,10 +772,10 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   document.addEventListener("keydown",evt=>{
     if(evt.key==="Escape"&&!layer.hidden){evt.preventDefault();closeDrawer();}
     if(evt.key==="Tab"&&!layer.hidden){
-      const focusable=[...layer.querySelectorAll('button:not([disabled]),a[href],input:not([disabled]),textarea:not([disabled]),select:not([disabled])')];
+      const focusable=[...layer.querySelectorAll('button:not([disabled]),a[href],input:not([disabled]),textarea:not([disabled]),select:not([disabled]),summary')].filter(el=>el.getClientRects().length);
       if(!focusable.length)return;
       const first=focusable[0],last=focusable[focusable.length-1];
-      if(evt.shiftKey&&document.activeElement===first){evt.preventDefault();last.focus();}
+      if(evt.shiftKey&&(document.activeElement===first||document.activeElement===layer.querySelector(".drawer"))){evt.preventDefault();last.focus();}
       if(!evt.shiftKey&&document.activeElement===last){evt.preventDefault();first.focus();}
     }
   });
