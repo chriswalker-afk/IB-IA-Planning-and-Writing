@@ -376,7 +376,7 @@ export function createCompletingViews(ctx){
       {value:"curved",title:"Curved / nonlinear pattern",icon:"route"},
       {value:"unclear",title:"No clear pattern",icon:"circle"},
       {value:"unexpected",title:"Unexpected point or result",icon:"sparkles"}]):"")+
-    coachBlock(st,{allowChoices:st?.kind==="theory"})+
+    coachBlock(st,{allowChoices:st?.kind!=="scatter"})+
     entryField("observationText","What can you really observe?","Trend, feature, value, possible counterexample or inconclusive finding",{type:"textarea",rows:3})+
     F("firstResultSummary","What is the essential local takeaway?","Use this when deciding what mathematical question should follow",{type:"textarea",rows:2})+
     accuracyNote()
