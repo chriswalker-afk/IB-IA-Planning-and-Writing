@@ -185,3 +185,18 @@
 @media(prefers-reduced-motion:reduce){
  .advice-mode-toggle,.route-next-option{transition:none!important}
 }
+
+
+/* Course-appropriate depth guidance accompanies a genuine result, not optional help drawers. */
+.route-depth-check{margin-top:13px;border-top:1px solid #d9e6de;padding-top:10px;color:var(--ink)}
+.route-depth-check strong{font-size:12px;line-height:1.5;color:var(--teal-dark);display:block}
+.route-depth-check p{margin:4px 0 0;font-size:12px;line-height:1.55;color:var(--muted)}
+.route-coach-compact .route-depth-check{margin-top:9px;padding-top:8px}
+.route-coach-compact .route-depth-check strong{font-size:11px}
+.route-coach-compact .route-depth-check p{font-size:11px;line-height:1.5}
+.route-preflight{margin:14px 0 18px;padding:13px 15px;background:#f7faf8;border:1px solid var(--line);border-left:3px solid #8fb6a4;border-radius:12px}
+.route-preflight .route-coach-label{font-size:10px;margin-bottom:7px}
+.route-preflight>strong{display:block;font-size:13px;line-height:1.4;color:var(--ink)}
+.route-preflight>p{font-size:12px;line-height:1.6;margin:6px 0 0}
+.route-preflight>.field-hint{font-size:11px;line-height:1.55;margin-top:8px}
+@media(max-width:760px){.route-preflight{padding:11px 12px;margin:11px 0 16px}.route-depth-check{margin-top:11px}}
