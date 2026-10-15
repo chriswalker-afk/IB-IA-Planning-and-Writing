@@ -1,7 +1,6 @@
 """Exercise the actual bundled PDF and Word download buttons in Chromium."""
 import functools
 import json
-import os
 import threading
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -21,19 +20,19 @@ with sync_playwright() as p:
         context = browser.new_context(accept_downloads=True)
         page = context.new_page()
         logs = []
-        downloads = []
         page.on('console', lambda msg: logs.append({'type': msg.type, 'text': msg.text}))
         page.on('pageerror', lambda err: logs.append({'type': 'pageerror', 'text': str(err)}))
         page.on('requestfailed', lambda req: logs.append({'type': 'requestfailed', 'url': req.url, 'error': req.failure}))
         page.on('response', lambda res: logs.append({'type': 'http-error', 'url': res.url, 'status': res.status}) if res.status >= 400 else None)
         try:
             page.goto(url, wait_until='networkidle', timeout=45000)
-            page.locator('[data-nav="report"]').first.click()
+            page.locator('[data-action="open-files"]').first.click()
+            page.locator('[data-action="go-report"]').first.click()
             page.screenshot(path=str(OUT / (name + '-before.png')))
             for fmt in ['pdf', 'docx']:
                 item = {'site': name, 'format': fmt}
                 try:
-                    with page.expect_download(timeout=20000) as event:
+                    with page.expect_download(timeout=15000) as event:
                         page.locator('[data-action="export-plan-' + fmt + '"]').first.click()
                     download = event.value
                     download.save_as(str(OUT / (name + '-' + download.suggested_filename)))
@@ -47,6 +46,7 @@ with sync_playwright() as p:
         except Exception as err:
             results.append({'site': name, 'error': str(err)})
         (OUT / (name + '-console.json')).write_text(json.dumps(logs, indent=2))
+        print(name, json.dumps(logs, indent=2), flush=True)
         context.close()
     browser.close()
 server.shutdown()
