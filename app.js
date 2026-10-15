@@ -1,4 +1,5 @@
 import {createSamplePreview} from "./src/core/sample-preview.js";
+import {createIllustrativeSample,SAMPLE_CHOICES} from "./src/core/illustrative-samples.js";
 import {captureReturn,restoreReturn} from "./src/ui/return-context.js";
 import {STATUS_LABELS,resumeRoute,rememberCheckpoint} from "./src/ui/journey.js";
 import {journeyRail} from "./src/ui/journey-views.js";
@@ -272,50 +273,13 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     nav("completing");
   }
   function demo(kind) {
-    const next=newState();
-    next.demo=kind;
-    next.route="completing";next.ui.planStep=9;next.ui.planMax=9;next.ui.studioSection="math";next.ui.mathPhase="interpret";
-    const p=next.project;
-    Object.assign(p,{
-      ideaStatus:"yes", idea:"Sleep and reaction time",aim:"How does hours of sleep relate to reaction time in a sample dataset?",
-      beneficiaryType:"me",beneficiary:"Understand what the data could tell us about changes in reaction time.",
-      course:"AA SL",kind:"statistics",dataSource:"secondary",dataDetails:"An illustrative paired-variable dataset (sample only; not a real imported source).",
-      dataStatus:"ready",permissions:"unknown",readiness:3,ease:4,mathsArea:"relationships",
-      prediction:"Reaction time may improve with more sleep.",predictionWhy:"Sleep might influence alertness.",
-      firstMove:"graph",precision:"Report calculated values only to precision justified by source measurements."
-    });
-    const st=mathDefault(); st.status="completed";st.title="Inspect the first scatter graph";st.purpose="Identify whether the data suggest a useful relationship before choosing a model.";st.technique="Plot paired measurements on a scatter graph";st.kind="scatter";st.knowledge="syllabus";
-    if(kind==="linear"){st.observation="linear";st.result="Illustrative points appear to follow an approximately straight, downward pattern.";st.observationText="There is an approximately linear decrease in reaction time as sleep increases.";st.interpretation="This may be useful for the aim, but a scatter plot alone does not establish causation.";}
-    if(kind==="curved"){st.observation="curved";st.result="Illustrative points bend rather than following a straight line.";st.observationText="The apparent relationship is curved and may level off.";st.interpretation="A straight-line model may miss the structure; considering a suitable curved model could be meaningful.";}
-    if(kind==="unclear"){st.observation="unclear";st.result="Illustrative points show no obvious systematic relationship.";st.observationText="There is no clear apparent pattern.";st.interpretation="This suggests caution about predicting reaction time from sleep using these observations alone.";}
-    if(kind==="unexpected"){st.observation="unexpected";st.result="Most illustrative points cluster, with one unusual observation.";st.observationText="A single point lies noticeably outside the main cluster.";st.interpretation="It may be worth checking the point before using a fitted model or claiming an overall pattern.";}
-    if(kind==="theory"){
-      Object.assign(p,{idea:"Numerical patterns",aim:"Can a pattern observed in small cases be generalised and proved?",beneficiaryType:"curiosity",beneficiary:"Understand why a mathematical relationship holds.",kind:"theoretical",dataSource:"",dataDetails:"Small illustrative numerical cases.",dataStatus:"theoretical",mathsArea:"proof",prediction:"The pattern might generalise.",predictionWhy:"It appears in several cases.",firstMove:"theory"});
-      Object.assign(st,{title:"Explore initial numerical cases",purpose:"Look for a plausible mathematical conjecture.",technique:"Numerical reasoning",kind:"theory",observation:"",result:"Illustrative small cases suggest a repeatable pattern.",observationText:"Several numerical examples support a tentative conjecture.",interpretation:"Examples suggest a question but cannot establish a general theorem."});
-    }
-    // Sample projects also have a genuine Planning record for document export.
-    // These values remain labelled as fictional; the graph result stays separate.
-    for(const [key,value] of Object.entries({
-      idea:p.idea,aim:p.aim,beneficiaryType:p.beneficiaryType,
-      beneficiary:p.beneficiary,course:p.course,kind:p.kind,
-      dataSource:p.dataSource,prediction:p.prediction,predictionWhy:p.predictionWhy,
-      firstAction:p.firstMove,firstAccuracy:p.precision
-    })){
-      applyPlanningField(next,key,value);
-    }
-    if(kind!=="theory"){
-      applyPlanningField(next,"secondaryPublisher","Illustrative data only — no actual publisher");
-      applyPlanningField(next,"secondaryStatus","unsure");
-      applyPlanningField(next,"dataReadiness","3");
-      applyPlanningField(next,"practicalEase","4");
-    }else{
-      applyPlanningField(next,"theoreticalCase","Illustrative small-number cases");
-    }
-    next.entries=[st];next.ui.mathIndex=0;next.completion.activeEntryIndex=0;
-    setCompletionNode(next,"C34B",{history:false,reason:"fictional-example"});
+    // A labelled, isolated and fully populated fictional investigation.
+    // Loading/switching previews NEVER replaces the personal browser project.
+    const next=createIllustrativeSample(kind);
     const origin=drawerReturn||captureReturn();
     state=preview.begin(state,next,{scroll:origin.scroll,attributes:origin.attributes});
-    save();closeDrawer(false);render({top:true});toast("Sample preview opened. Your own investigation is safe.");
+    save();closeDrawer(false);render({top:true});
+    toast("Illustrative investigation opened. Your own project is safe.");
   }
   function openDrawer(panel) {
     if(layer.hidden){
@@ -375,17 +339,11 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     }else if(panel==="handover"){
       body=handoverViews.confirmation();
     }else if(panel==="demos"){
-      const choices=[
-        ["linear","An approximately linear pattern","Could modelling or quantifying correlation be useful?"],
-        ["curved","A curved pattern","What if a straight line isn't suitable?"],
-        ["unclear","No clear relationship","An inconclusive outcome can still be meaningful."],
-        ["unexpected","An unexpected outlier","How might that change the interpretation?"],
-        ["theory","A theoretical investigation","What follows from a tentative conjecture?"]
-      ];
-      body='<section><p>Explore how the guidance reacts to different actual findings. All examples are <strong>fictional demonstrations</strong>, not real student data.</p>'+
-        '<div class="panel-list">'+choices.map(([key,label,desc])=>
+      const choices=SAMPLE_CHOICES;
+      body='<section><p>Browse fully worked fictional investigations: a Planning record, mathematical steps with checked calculations, a justified next step, interpretation, limitations and draft self-review notes. <strong>These are invented teaching examples, not real IA submissions or evidence of a real dataset.</strong></p>'+
+        '<div class="panel-list">'+choices.map(({id:key,title:label,description:desc})=>
         '<button type="button" class="panel-link" data-action="load-demo" data-demo="'+key+'"><span><strong>'+e(label)+'</strong><br><span class="text-muted" style="font-weight:400">'+e(desc)+'</span></span>'+icon("arrow-right")+'</button>').join("")+'</div></section>'+
-        note("Samples open in a separate preview. Try things freely, then return to your own investigation unchanged.");
+        note("Each sample stays in a separate preview. It includes no real participants, published dataset, teacher approval or IB mark. Return to your own investigation unchanged, or choose another scenario.");
     }else if(panel==="stuck"){
       body=stuckViews.render();
     }
