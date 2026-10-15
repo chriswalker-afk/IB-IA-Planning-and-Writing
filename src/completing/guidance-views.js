@@ -1,3 +1,4 @@
+import {exampleButton,exampleInline} from "../examples/views.js";
 /** Phase 5: one contextual writing moment; maths and limitations only on request. */
 import {eligibleWritingCues} from "./writing-guidance.js";
 import {quietAutoWritingCue,writingStatusSummary} from "./guidance-actions.js";
@@ -22,11 +23,9 @@ export function createGuidanceViews(ctx){
       cueButton(cue,"write-now","Write now")+
       cueButton(cue,"covered-start","Already covered")+
       cueButton(cue,"not-relevant","Not relevant")+
-      cueButton(cue,"example","Show an example")+
+      exampleButton("Compare examples",{cue:cue.id})+
       cueButton(cue,"defer","Dismiss for now")+'</div>'+
-    (ui.exampleKey===cue.key?'<div class="guidance-example">'+
-      tiny("Illustrative structure only — do not copy fictional results or claim the suggested wording is your own.")+
-      '<p>'+e(cue.example)+'</p></div>':"")+
+    (ui.exampleKey===cue.key?exampleInline(s,{cue:cue.id}):"")+
     (ui.coveredKey===cue.key?'<div class="guidance-note-editor">'+
       tiny("If you have already addressed this in Word or Google Docs, you can note where. Pathfinder cannot verify the document.")+
       input("completion.guidanceUi.locationDraft","My IA location (optional)","e.g. Figure 1 / after Equation 4")+
@@ -76,7 +75,7 @@ export function createGuidanceViews(ctx){
     from=page*3,visible=matching.slice(from,from+3),draft=state.completion.limitationDraft;
   return '<section class="guidance-optional" aria-label="Optional limitations help">'+
     trigger("guidance-limit-toggle",show?"Hide limitations advice":"Would any mathematical limitation actually matter here?")+
-    (show?'<div class="guidance-limit-body">'+
+    (show?'<div class="guidance-limit-body">'+exampleButton("Compare limitation writing",{topic:"limitations"})+
       tiny("These are possible questions, NOT weaknesses Pathfinder has detected. Choose one only when you can describe a genuine consequence for your investigation.")+
       (visible.length?visible.map(x=>'<div class="guidance-limit-option">'+
         '<strong>'+e(x.question)+'</strong>'+

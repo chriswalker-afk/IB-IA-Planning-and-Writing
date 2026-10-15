@@ -45,7 +45,7 @@ test('the normal menu recommends at most five problems with deeper alternatives 
 });
 test('one support card has one primary action, with example and saving optional',()=>{
  const s=fixture();s.completion.support.selected='interpret';const html=view(s);
- assert.equal((html.match(/btn-primary/g)||[]).length,1);assert(html.includes('Show a small example'));assert(html.includes('Save my own next action (optional)'));assert(!html.includes(' open'));
+ assert.equal((html.match(/btn-primary/g)||[]).length,1);assert(html.includes('More thinking help'));assert(html.includes('data-action="example-open"'));assert(html.includes('Save my own next action (optional)'));assert(!html.includes(' open'));
 });
 test('every available advice card has a valid destination and at most two alternatives',()=>{
  for(const planning of [true,false])for(const real of [true,false]){

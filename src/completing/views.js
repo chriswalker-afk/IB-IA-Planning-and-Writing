@@ -1,3 +1,4 @@
+import {examplePrompt,exampleInline} from "../examples/views.js";
 import {resourcePrompt} from "../resources/views.js";
 import {createStuckViews} from '../help/stuck-views.js';
 import {isStuckNode} from '../help/stuck-state.js';
@@ -41,6 +42,7 @@ export function createCompletingViews(ctx){
  const routeList=(conditions)=>conditions.map(x=>sourceAction(x)).filter(Boolean).join("");
  const selectStage=(id)=>'<button type="button" class="btn btn-quiet btn-sm" data-action="completion-open" data-node="'+e(id)+'">'+e(titleMap.get(id)||id)+icon("arrow-right")+'</button>';
  const relevantRoute=(route)=>{
+  if(route.to==="C10E")return false; // Replaced by the visible, read-only comparison viewer.
   const s=getState(),f=s.completion.fields,prior=latestRealResult(s),entry=completeEntry(s),
   current=s.completion.current,kind=s.planning.fields.kind||s.project.kind;
   if(current==="C04"&&["C10","C20","C30","C40","C50","C60","C70","C80","C90"].includes(route.to))
@@ -217,9 +219,7 @@ export function createCompletingViews(ctx){
       info("A useful length","Often a few short paragraphs or less than a page are enough; this is guidance, not a prescribed IB word limit.")+
       info("Revisitable","Your introduction can evolve. Use 'Edit aim or beneficiary' below to revise Planning without losing this text.")
    };
-  case "C10E":return{intro:"Compare two possible styles, then write authentically about your own investigation.",
-   html:info("Example: a personal observation","Instead of 'This explores reaction time', a student might explain an observation that genuinely motivated their question. Never copy a made-up personal story.")+
-     info("Example: a modelling aim","Instead of 'An optimum will be found', try identifying the specific quantity to optimise and why it interests you.")};
+  case "C10E":return{intro:"Compare original fictional introductions, then return to your own investigation.",html:exampleInline(s,{topic:"introduction"})};
   case "C20":return{intro:"What data, measurements or mathematical objects are actually available now? This is different from the collection plan.",
    html:smallSummary("Planned evidence",p.dataSource==="secondary"?p.secondaryUrl||p.secondaryPublisher:p.primaryWhat||p.theoreticalCase)+
     choice("dataStatus",[
@@ -631,7 +631,7 @@ export function createCompletingViews(ctx){
     icon(stage?C_MAJOR_STAGES.find(x=>x.id===stage)?.icon||"route":"route")+' '+
     e(stage?C_MAJOR_STAGES.find(x=>x.id===stage)?.name||"Completing":"MY MATHEMATICAL JOURNEY")+'</div>'+
     '<h2>'+e(label)+'</h2><p class="task-intro">'+e(screen.intro)+'</p>'+
-    extra.returnToReview()+screen.html+(screen.extra||"")+
+    extra.returnToReview()+(isStuckNode(node)||node==="C10E"?"":examplePrompt(s))+screen.html+(screen.extra||"")+
     (isStuckNode(node)?"":guides.writingMoment(node)+guides.mathsHelp(node)+guides.limitsHelp(node)+
     contextualPrompt(node)+resourcePrompt(s)+statusControls+
     allButtons(node,primaryByNode[node]||[]))+'</div>'+

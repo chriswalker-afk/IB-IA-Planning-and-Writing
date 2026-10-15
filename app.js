@@ -1,3 +1,4 @@
+import {createExampleController} from "./src/examples/controller.js";
 import {ideaAction,ideaInput,chooseTopic} from './src/ideas/engine.js';
 import {resourceDrawer,resourceList} from './src/resources/views.js';
 import {resourceAction,resourceFilter,resourcePreference} from './src/resources/actions.js';
@@ -35,6 +36,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   const e = escapeHtml;
   let state = newState();
   const resourceSession = newResourceSession();
+  createExampleController(() => state); // Read-only, ephemeral examples; no student state writes.
   let lastFocus = null;
   let lastDrawer = "";
   let pendingImport = null;
