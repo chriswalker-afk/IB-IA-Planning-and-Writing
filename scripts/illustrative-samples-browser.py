@@ -68,7 +68,7 @@ def check(kind,p):
  assert p.locator(".sample-preview-banner").is_visible()
  assert "sample" in p.locator("#main").inner_text().lower()
  if kind in ["curved","theory"]:
-  action(p,"open-files")
+  p.locator('[data-action="open-panel"][data-panel="files"]:visible').first.click()
   with p.expect_download(timeout=45000) as dl:
    p.locator('.drawer [data-action="export-full-zip"]').click()
   f=OUT/("illustrative-"+kind+".zip");dl.value.save_as(str(f))
