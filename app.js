@@ -24,13 +24,14 @@ import {actOnWritingCue} from "./src/completing/guidance-actions.js";
 import {eligibleWritingCues} from "./src/completing/writing-guidance.js";
 import {selectLimitation,recordLimitation,limitationContextKey,relevantLimitations} from "./src/completing/limitation-guidance.js";
 import {relevantBivariateOptions} from "./src/completing/bivariate-guidance.js";
+import {resultFamily,routeNextQuestions} from "./src/completing/route-coach.js";
 
 import { planningMove, planAutoAdvance, planningBack, planningEdit, applyPlanningField, toggleMath, syncPlanningToProject, setPlanCurrent, planningFlags } from "./src/planning/engine.js";
 import { createPlanningViews } from "./src/ui/planning-views.js";
 import {applySuggestedTimeline,localToday,validDate,timelineWeek} from "./src/planning/timeline.js";
 import { createStudioViews } from "./src/ui/studio-views.js";
 import {createCompletingViews} from "./src/completing/views.js";
-import {C_MAJOR_STAGES,setCompletionNode,moveCompletionRoute,completionBack,markCompletionStage,setCompletionField,addAccuracyDecision,completionSuggestions,sectionForNode,targetForSection,completionStage,completeEntry,latestRealResult,flagDependentMathematics,acknowledgeMathReview} from "./src/completing/engine.js";
+import {C_MAJOR_STAGES,setCompletionNode,moveCompletionRoute,completionBack,markCompletionStage,setCompletionField,addAccuracyDecision,completionSuggestions,sectionForNode,targetForSection,completionStage,completeEntry,latestRealResult,sourceResultForNext,flagDependentMathematics,acknowledgeMathReview} from "./src/completing/engine.js";
 
 import { createProjectViews } from "./src/ui/project-views.js";
 import { createProjectState as newState, normalizeProjectState as normalise, persistProjectState, STORAGE_KEY as KEY } from "./src/core/project-state.js";
@@ -122,6 +123,23 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       "project.beneficiary":"beneficiary","project.precision":"firstAccuracy"};
     if(changed&&mirror[path])applyPlanningField(state,mirror[path],value);
     return changed;
+  }
+  // Explicit, result-scoped student decisions. No inference from a prediction or coefficient.
+  function syncOutcome(path,value){
+    const match=/^entries\.(\d+)\.(resultSignal|observation)$/.exec(path);
+    if(!match)return;
+    const entry=state.entries[Number(match[1])],c=state.completion;
+    if(!entry)return;
+    if(match[2]==="resultSignal"&&resultFamily(entry)==="pmcc"){
+      c.fields.pmccSignal=value;
+      c.pmccSignalForEntryId=entry.id;
+    }
+    if(match[2]==="observation"&&entry.kind==="scatter"){
+      c.fields.scatterPattern=value;
+      c.scatterPatternForEntryId=entry.id;
+      c.fields.scatterDetail="";
+      c.scatterDetailForEntryId="";
+    }
   }
   function save() {
     if(preview.active){preview.save(state);setSaveStatus("Sample preview only");refreshProgress();return;}
