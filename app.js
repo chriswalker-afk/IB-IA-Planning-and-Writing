@@ -965,7 +965,9 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
        ["completion.fields.scatterDetail","completion.fields.scatterAimRelevance",
         "entries."+state.completion.activeEntryIndex+".methodId",
         "entries."+state.completion.activeEntryIndex+".accuracyRef"].includes(path)||
-       /^entries\.\d+\.resultSignal$/.test(path)){
+       /^entries\.\d+\.resultSignal$/.test(path)||
+       (/^entries\.\d+\.result$/.test(path)&&["C40","C50"].includes(state.completion.current)&&
+        state.entries[Number(path.split(".")[1])]?.status==="completed")){
        render();
        if(/^entries\.\d+\.resultSignal$/.test(path)){
          const input=document.querySelector('[data-bind="'+path+'"]');

@@ -221,7 +221,7 @@ export function setCompletionField(state,key,value){
   const scatter=scatterForNext(state),index=state.entries.findIndex(x=>x.id===scatter?.id);
   if(key==="scatterPattern"){
    c.scatterPatternForEntryId=scatter?.id||"";
-   const valid={linear:["near-perfect","rough-linear"],curved:["monotonic","turning"],
+   const valid={linear:["near-perfect","rough-linear"],curved:["monotonic","turning","periodic"],
     unclear:["unclear"],unexpected:["unexpected"],unsure:["unsure"]};
    if(c.fields.scatterDetail&&!valid[value]?.includes(c.fields.scatterDetail)){
     c.fields.scatterDetail="";c.scatterDetailForEntryId="";
@@ -229,7 +229,7 @@ export function setCompletionField(state,key,value){
   }else{
    c.scatterDetailForEntryId=scatter?.id||"";
    const byDetail={"near-perfect":"linear","rough-linear":"linear","monotonic":"curved",
-    "turning":"curved","unclear":"unclear","unexpected":"unexpected","unsure":"unsure"};
+    "turning":"curved","periodic":"curved","unclear":"unclear","unexpected":"unexpected","unsure":"unsure"};
    if(byDetail[value]){c.fields.scatterPattern=byDetail[value];c.scatterPatternForEntryId=scatter?.id||"";}
   }
   // An updated choice revises the original observation rather than creating contradictory patterns.

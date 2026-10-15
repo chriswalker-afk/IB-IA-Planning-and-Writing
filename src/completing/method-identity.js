@@ -23,7 +23,13 @@ export function methodFamilies(entry,{allowPlanned=false}={}){
  add(/two.sample.t|\bt.test\b|\bt test\b/,"two-sample-t");
  add(/chi.independence|independence.test|chi.squared.independence/,"chi-independence");
  add(/chi.fit|chi.squared.goodness|goodness.of.fit/,"chi-fit");
- add(/conditional.probability|expected.value/,"probability");
+ add(/conditional.probability/,"probability");
+ add(/expected.value|expected.return|expected.gain/,"expected-value");
+ add(/break.even|revenue.and.cost|profit.model/,"finance-break-even");
+ add(/compound.interest|compound.growth|future.value/,"finance-compound");
+ add(/loan.repayment|amortisation|amortization|loan.balance|annuit/,"finance-loan");
+ add(/cash.flow|payback.period|cash.balance/,"finance-cashflow");
+ add(/triangulat|trigonometric.measurement|angle.measurement/,"triangulation");
  add(/voronoi/,"voronoi");
  add(/numerical.integration|trapez|trapezoid/,"numerical-integration");
  add(/rates.from.data|empirical.rates|estimated.rate|finite.difference/,"rates-from-data");
@@ -36,7 +42,7 @@ export function methodFamilies(entry,{allowPlanned=false}={}){
     families.has("exponential")||families.has("sinusoidal")||families.has("power"))families.add("fitted-model");
  if(families.has("pmcc")||families.has("spearman")||families.has("two-sample-t")||
    families.has("chi-independence")||families.has("chi-fit")||families.has("normal")||
-   families.has("binomial")||families.has("probability"))families.add("statistic");
+   families.has("binomial")||families.has("probability")||families.has("expected-value"))families.add("statistic");
  return families;
 }
 
