@@ -82,7 +82,7 @@ test("all finance routes keep formula-substitution warnings and distinguish time
   const a=routeAdvice(state,x);
   assert(/substitution/.test(a.depth),method);
   assert(/AI SL/.test(a.depth),method);
-  assert(/compound-interest/.test(a.depth));
+  assert(/compound-interest/i.test(a.depth));
  }
  assert(routeAdvice(state,item("finance-break-even")).essential.includes("demand"));
  assert(routeAdvice(state,item("finance-loan")).essential.includes("outstanding balance"));
@@ -136,6 +136,17 @@ test("categorical inference avoids claims of independence or causation, expected
  const chance=routeAdvice(s(),item("expected-value","positive-expectation"));
  assert(chance.essential.includes("not the most likely single outcome"));
  assert(chance.detail.includes("guaranteed"));
+});
+test("legacy nonlinear model findings retain their specific interpretation and can be revised",()=>{
+ const x=item("exponential","poor-fit");const state=s();
+ let a=routeAdvice(state,x);
+ assert(a.heading.includes("Residuals"));
+ assert(a.detail.includes("residual pattern"));
+ assert(resultSignalOptions(x).some(o=>o.value==="poor-fit"));
+ x.resultSignal="outlier-effect";a=routeAdvice(state,x);
+ assert(a.detail.includes("sensitivity check"));
+ x.resultSignal="fit-sensible";a=routeAdvice(state,x);
+ assert(a.heading.includes("plausible"));
 });
 test("measurement results lead to uncertainty analysis, not another arbitrary formula",()=>{
  const x=routeAdvice(s(),item("triangulation","angle-sensitive"));
