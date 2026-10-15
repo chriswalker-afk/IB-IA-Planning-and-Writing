@@ -56,6 +56,8 @@ else:
         sites.append((name, 'http://127.0.0.1:' + str(port) + PREFIX))
 
 def project_content(value):
+    if not value:
+        return None
     value = json.loads(value)
     value.pop('updatedAt', None)
     value.get('handover', {}).pop('lastExportAt', None)
@@ -114,6 +116,7 @@ with sync_playwright() as p:
                         item.update(error=str(err), toast=page.locator('#toast').inner_text())
                     results.append(item)
                 page.locator('[data-action="go-report"]').first.click()
+                before = project_content(page.evaluate('localStorage.getItem(' + json.dumps(KEY) + ')'))
                 for fmt in ['pdf', 'docx']:
                     item = {'site': label, 'format': fmt}
                     try:
