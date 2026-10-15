@@ -1,0 +1,94 @@
+name: Integrate and verify IA examples
+on:
+  push:
+    branches: [feature/paired-ia-examples-20261015]
+    paths:
+      - '.github/workflows/ia-examples-bootstrap.yml'
+      - 'scripts/ia-examples-part-*.b64'
+permissions:
+  contents: write
+concurrency:
+  group: ia-examples-integration
+  cancel-in-progress: true
+jobs:
+  integrate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/paired-ia-examples-20261015
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify authored source package
+        run: |
+          mkdir -p qa-output
+          python - <<'PY'
+          import base64,hashlib,io,tarfile
+          from pathlib import Path
+          parts=sorted(Path('scripts').glob('ia-examples-part-*.b64'))
+          assert len(parts)==5, 'Incomplete integration package'
+          raw=base64.b64decode(''.join(p.read_text().strip() for p in parts),validate=True)
+          assert hashlib.sha256(raw).hexdigest()=='c6fbf5f7d20d8da52e7fad4d60a284f43d9956ccf47696ec97dc241877ffa7ff', 'Source package checksum mismatch'
+          with tarfile.open(fileobj=io.BytesIO(raw),mode='r:xz') as archive:
+              for member in archive.getmembers():
+                  assert member.isfile() and not member.name.startswith('/') and '..' not in Path(member.name).parts
+              archive.extractall('.',filter='data')
+          PY
+      - name: Integrate using checked source anchors
+        run: node scripts/apply-examples.mjs | tee qa-output/integration.log
+      - name: Install project dependencies
+        run: npm install --no-audit --no-fund
+      - name: Full unit and regression suite
+        run: |
+          set -o pipefail
+          npm test | tee qa-output/unit-tests.log
+      - name: Build production website
+        run: |
+          set -o pipefail
+          npm run build | tee qa-output/build.log
+      - name: Install browser test runner
+        run: |
+          pip install playwright==1.57.0
+          python -m playwright install --with-deps chromium
+      - name: Verify examples on desktop and phones
+        run: |
+          node scripts/examples-fixtures.mjs
+          python -m http.server 8765 --directory dist > qa-output/server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID"' EXIT
+          python scripts/examples-browser.py
+      - name: Capture source and QA evidence
+        if: always()
+        run: |
+          mkdir -p qa-output
+          git diff > qa-output/integration.diff
+          git rev-parse HEAD > qa-output/tested-base.txt
+          python - <<'PY'
+          from pathlib import Path
+          import zipfile
+          excluded={'.git','node_modules','dist','qa-output','__pycache__'}
+          with zipfile.ZipFile('qa-output/source-snapshot.zip','w',zipfile.ZIP_DEFLATED) as z:
+              for p in Path('.').rglob('*'):
+                  if p.is_file() and not any(a in excluded for a in p.parts):
+                      z.write(p,p.as_posix())
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ia-examples-bootstrap-results
+          path: qa-output
+          retention-days: 7
+      - name: Commit validated source and remove integration scaffolding
+        run: |
+          rm scripts/ia-examples-part-*.b64 scripts/apply-examples.mjs .github/workflows/ia-examples-bootstrap.yml
+          git add app.js index.html README.md src/examples src/completing/views.js src/completing/guidance-views.js src/ui/planning-views.js src/help/stuck-views.js data/examples.css tests/examples.test.js scripts/examples-fixtures.mjs scripts/examples-browser.py docs/examples-2026-10-15.md .github/workflows/conformance-browser.yml
+          git add -u scripts .github/workflows/ia-examples-bootstrap.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Implement contextual paired examples with original visuals and read-only library'
+          git push origin HEAD:feature/paired-ia-examples-20261015
