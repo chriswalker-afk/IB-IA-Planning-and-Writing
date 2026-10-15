@@ -1,3 +1,4 @@
+import {examplePrompt} from "../examples/views.js";
 import {ideaExplorerView,ideaComparisonView,ideaFooter} from '../ideas/views.js';
 import {resourcePrompt} from "../resources/views.js";
 /**
@@ -404,7 +405,7 @@ export function createPlanningViews(ctx){
    '<div class="task-shell" data-source-node="'+e(n)+'"><div class="stage-label">'+icon("compass")+
    ' '+e(PROGRESS_GROUPS[stageI]?.label||"Planning")+'</div>'+
    '<h2>'+e(screen.title)+'</h2><p class="task-intro">'+e(screen.intro)+'</p>'+
-   screen.html+
+   examplePrompt(state)+screen.html+
    '<div class="example-row">'+helpButton("plan-"+n)+helpBox("plan-"+n,screen.help)+'</div>'+
    resourcePrompt(state)+footer(state,screen)+'</div>'+
    '<p class="small-callout">Your choices are provisional until evidence supports them. You can revisit earlier decisions. Teacher flags never prevent a provisional report.</p>'+
