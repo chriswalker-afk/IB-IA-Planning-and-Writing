@@ -63,3 +63,7 @@ The source 24-tab Google Sheet remains untouched. The optional detailed teacher-
 ## Optional Idea Explorer
 
 Planning's optional brainstorming branch now offers twelve broad topics, 48 starting directions, a three-idea shortlist, optional narrowing/first-step notes and safe idea adoption. The direct route for a clear idea is unchanged. See `docs/ideas-first-pass-2026-10-15.md` for the JIS guide basis, boundaries, verification and remaining work. Full JSON backups preserve explorer notes; the full shortlist is not yet part of the planning PDF/Word report.
+
+## IA essentials and assessment guidance
+
+**IA essentials** provides source-labelled formatting/length guidance, the complete A-E rubric (including both SL and HL Criterion E), and draft/final evidence-based self-review. A visible **Show the criteria here** panel connects the current task to relevant criteria and the shared example library. Optional self-marks are entered only by students, retain their rubric level, and survive full JSON backups; browsing never awards marks or completes work. See [implementation notes](docs/essentials-and-criteria-2026-10-15.md).

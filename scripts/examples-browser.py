@@ -8,7 +8,7 @@ URL=os.environ.get('IA_QA_URL','http://127.0.0.1:8765/');results=[]
 def saved(p):return p.evaluate('(k)=>localStorage.getItem(k)',KEY)
 def fixture(kind='modelling',node='C10'):
  s=copy.deepcopy(BASE);s['planning']['fields']['kind']=s['project']['kind']=kind;s['completion']['current']=node;return s
-def button(p):return p.locator('#main .ex-prompt [data-action="example-open"]').first
+def button(p):return p.locator('#main .criteria-actions [data-action="example-open"], #main .ex-prompt [data-action="example-open"]').first
 def open_example(p):button(p).click();assert p.locator('#exampleDialog').is_visible()
 def close(p):p.locator('#exampleDialog [data-example-close]').click();assert not p.locator('#exampleDialog').is_visible()
 def card(p,id):assert p.locator('#exampleDialog [data-example-card="'+id+'"]').count()==1,id
@@ -64,6 +64,8 @@ with sync_playwright() as pw:
  s=fixture('modelling','C40L');s['completion']['activeEntryIndex']=1
  run('examples-familiar-mathematics',s,familiar)
  def cue(p):
+  tools=p.locator('.criteria-writing-tools')
+  if tools.count() and not tools.evaluate('(n)=>n.open'):tools.locator('summary').first.click()
   before=saved(p);p.locator('.guidance-writing [data-action="example-open"]').first.click();card(p,'EX01');close(p);assert saved(p)==before
  run('examples-existing-writing-cue',fixture(),cue)
  def nested(p):

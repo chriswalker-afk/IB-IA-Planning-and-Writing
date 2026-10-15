@@ -1,4 +1,5 @@
 import {examplePrompt,exampleInline} from "../examples/views.js";
+import {criteriaPanel,essentialsNudge} from "../essentials/views.js";
 import {resourcePrompt} from "../resources/views.js";
 import {createStuckViews} from '../help/stuck-views.js';
 import {isStuckNode} from '../help/stuck-state.js';
@@ -631,8 +632,8 @@ export function createCompletingViews(ctx){
     icon(stage?C_MAJOR_STAGES.find(x=>x.id===stage)?.icon||"route":"route")+' '+
     e(stage?C_MAJOR_STAGES.find(x=>x.id===stage)?.name||"Completing":"MY MATHEMATICAL JOURNEY")+'</div>'+
     '<h2>'+e(label)+'</h2><p class="task-intro">'+e(screen.intro)+'</p>'+
-    extra.returnToReview()+(isStuckNode(node)||node==="C10E"?"":examplePrompt(s))+screen.html+(screen.extra||"")+
-    (isStuckNode(node)?"":guides.writingMoment(node)+guides.mathsHelp(node)+guides.limitsHelp(node)+
+    extra.returnToReview()+essentialsNudge(s)+(isStuckNode(node)||node==="C10E"?"":criteriaPanel(s,{writingTools:guides.writingMoment(node,{embedded:node!=="C96"})}))+screen.html+(screen.extra||"")+
+    (isStuckNode(node)?"":guides.mathsHelp(node)+guides.limitsHelp(node)+
     contextualPrompt(node)+resourcePrompt(s)+statusControls+
     allButtons(node,primaryByNode[node]||[]))+'</div>'+
     '<p class="small-callout">Only actual mathematics supports a mathematical conclusion. Your planning, predictions and teacher questions remain separate from real findings. No compulsory number of calculations or IA grade.</p>'+

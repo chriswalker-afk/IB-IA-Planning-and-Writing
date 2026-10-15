@@ -1,9 +1,10 @@
 """Synthetic browser acceptance for source-based essentials and criterion guidance."""
-import copy,json,os,traceback
+import copy,json,os,traceback,subprocess
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 OUT=Path(os.environ.get('IA_QA_OUTPUT','qa-output'));OUT.mkdir(exist_ok=True,parents=True)
-BASE=json.loads((OUT/'examples-fixture.json').read_text());KEY='ia-pathfinder-prototype-v1'
+normalize_js="import {normalizeProjectState} from './src/core/project-state.js';import fs from 'node:fs';console.log(JSON.stringify(normalizeProjectState(JSON.parse(fs.readFileSync(process.argv[1],'utf8')))));"
+BASE=json.loads(subprocess.check_output(['node','--input-type=module','-e',normalize_js,str(OUT/'examples-fixture.json')],text=True));KEY='ia-pathfinder-prototype-v1' 
 URL=os.environ.get('IA_QA_URL','http://127.0.0.1:8765/');results=[]
 def fixture(node='C10',course='AA SL',kind='modelling'):
  s=copy.deepcopy(BASE);s['completion']['current']=node;s['planning']['fields']['course']=s['project']['course']=course;s['planning']['fields']['kind']=s['project']['kind']=kind
@@ -40,8 +41,8 @@ with sync_playwright() as pw:
   assert 'Show good presentation here by' in panel.inner_text();assert 'Show good personal engagement here by' in panel.inner_text()
   assert panel.bounding_box()['y']<p.locator('[data-bind="scratch.introduction"]').bounding_box()['y'];assert p.locator('#main .guidance-writing').count()==1
   p.screenshot(path=str(OUT/'essentials-introduction-desktop.png'),full_page=True)
-  before=stored(p);panel.locator('[data-action="criteria-toggle"]').click();assert not panel.locator('.criteria-content').is_visible();assert panel.locator('[data-action="example-open"]').is_visible();assert stored(p)==before
-  panel.locator('[data-action="criteria-toggle"]').click();panel.locator('[data-action="essentials-open"]').click();assert p.locator('[data-rubric-criterion="A"]').count()==1;close_ess(p);assert stored(p)==before
+  before=stored(p);panel.locator('[data-action="criteria-toggle"]').click();assert not panel.locator('.criteria-content').is_visible();assert panel.locator('.criteria-actions [data-action="example-open"]').is_visible();assert stored(p)==before
+  panel.locator('[data-action="criteria-toggle"]').click();panel.locator('.criteria-actions [data-action="essentials-open"]').click();assert p.locator('[data-rubric-criterion="A"]').count()==1;close_ess(p);assert stored(p)==before
  run('criteria-visible-and-optional',fixture(),placement)
  def unknown(p):
   open_ess(p);tab(p,'rubric');p.locator('[data-essentials-criterion="E"]').click();assert 'Choose SL or HL' in p.locator('#ess-body').inner_text();assert p.locator('.ess-rubric-table').count()==0
@@ -84,5 +85,16 @@ with sync_playwright() as pw:
   assert p.locator('.ess-at-glance').count()==1;assert 'Planning guidance' in p.locator('.criteria-panel').inner_text();before=stored(p);open_ess(p);close_ess(p);assert stored(p)==before
  s=fixture();s['route']='planning';s['planning']['current']='N00'
  run('essentials-planning-at-a-glance',s,planning,390,844)
+ def repeated_reference(p):
+  before=stored(p);open_ess(p);tab(p,'rubric');p.locator('.ess-example-links [data-action="example-open"]').first.click()
+  p.locator('#exampleDialog .ex-criteria [data-action="essentials-open"]').first.click()
+  assert not p.locator('#exampleDialog').is_visible();assert p.locator('#essentialsDialog').evaluate('(n)=>n.contains(document.activeElement)')
+  p.keyboard.press('Escape');assert not p.locator('#essentialsDialog').is_visible();assert stored(p)==before
+ run('essentials-repeat-reference-without-hidden-dialog',fixture(),repeated_reference,390,844)
+ def repeated_example(p):
+  before=stored(p);p.locator('.criteria-actions [data-action="example-open"]').click();p.locator('#exampleDialog .ex-criteria [data-action="essentials-open"]').first.click()
+  p.locator('.ess-example-links [data-action="example-open"]').first.click();assert not p.locator('#essentialsDialog').is_visible();assert p.locator('#exampleDialog').evaluate('(n)=>n.contains(document.activeElement)')
+  p.keyboard.press('Escape');assert not p.locator('#exampleDialog').is_visible();assert stored(p)==before
+ run('examples-repeat-reference-without-hidden-dialog',fixture(),repeated_example)
  browser.close()
 (OUT/'essentials-results.json').write_text(json.dumps(results,indent=2));print(json.dumps(results,indent=2));assert all(r['status']=='passed' for r in results)

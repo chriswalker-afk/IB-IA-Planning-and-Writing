@@ -37,13 +37,13 @@ export function createGuidanceViews(ctx){
       '<div class="button-row">'+cueButton(cue,"save-note","Save idea in Pathfinder")+
       cueButton(cue,"written","I've updated my actual IA")+'</div></div>':"")+'</div>';
  }
- function writingMoment(node){
+ function writingMoment(node,{embedded=false}={}){
   const s=getState(),ui=s.completion.guidanceUi,all=eligibleWritingCues(s,node);
   if(!all.length)return"";
   const quiet=quietAutoWritingCue(s,node),expanded=ui.expanded;
   if(quiet&&!expanded)return '<div class="guidance-quiet">'+trigger("guidance-more","Review optional writing guidance")+'</div>';
   const selected=all.find(c=>c.key===ui.selectedKey)||all[0];
-  return '<section class="guidance-writing" aria-label="Contextual writing advice">'+
+  const html='<section class="guidance-writing" aria-label="Contextual writing advice">'+
     '<div class="guidance-heading"><strong>'+icon("pen-line")+' Useful writing moment</strong>'+
     '<span>Optional · in the right place</span></div>'+
     cueCard(selected)+
@@ -53,6 +53,8 @@ export function createGuidanceViews(ctx){
          '<button type="button" class="guidance-other-button" data-action="guidance-select" data-guidance-key="'+e(c.key)+'">'+
          '<strong>'+e(c.location)+'</strong><span>'+e(readable(c.message,135))+'</span></button>').join("")+'</div>':"")+'</div>':"")+
     '</section>';
+  const editing=ui.writeKey===selected.key||ui.coveredKey===selected.key||ui.expanded;
+  return embedded?'<details class="criteria-writing-tools"'+(editing?' open':'')+'><summary>Where to write this / keep my own note</summary>'+html+'</details>':html;
  }
  function mathsHelp(node){
   const state=getState(),list=relevantMathsGuidance(state,node);

@@ -25,6 +25,7 @@ export function createExampleController(getState){
  }
  function open(options={},trigger=document.activeElement){
   ensure();
+  if(dialog.open && trigger?.closest?.('#essentialsDialog'))document.querySelector('#essentialsDialog[open] [data-essentials-close]')?.click();
   const state=getState(),context=exampleContext(state,options),related=selectExamples(state,options);
   const card=exampleById(options.id)||related[0];
   session={context,related,id:options.browse?'':card?.id||'',variant:card?defaultVariant(card,context):'',query:'',category:'',kind:''};
@@ -53,6 +54,7 @@ export function createExampleController(getState){
     evt.preventDefault();evt.stopImmediatePropagation();open({topic:d.guidanceId?undefined:'introduction',cue:d.guidanceId},legacy);return;
    }
   }
+  if(evt.target.closest('[data-action="essentials-open"]'))return;
   if(!dialog?.open||!dialog.contains(evt.target))return;
   const btn=evt.target.closest('button');if(!btn)return;
   evt.preventDefault();evt.stopImmediatePropagation();
@@ -77,7 +79,7 @@ export function createExampleController(getState){
   }
  }
  function keydown(evt){
-  if(!dialog?.open)return;
+  if(!dialog?.open||document.activeElement?.closest('dialog')!==dialog)return;
   // The underlying app may have a drawer focus trap. Keep it out of this top-layer viewer.
   if(evt.key==='Escape'){evt.preventDefault();evt.stopImmediatePropagation();close();}
   else if(evt.key==='Tab'){

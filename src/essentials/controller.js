@@ -21,6 +21,8 @@ export function createEssentialsController({getState,onEdit=()=>false,onChangedC
  }
  function open(options={},trigger=document.activeElement){
   ensure();
+  // Returning to an existing parent reference must not leave it behind a modal child.
+  if(dialog.open && trigger?.closest?.('#exampleDialog'))document.querySelector('#exampleDialog[open] [data-example-close]')?.click();
   if(!dialog.open){
    session={tab:'format',criterion:'A',mode:/^C90/.test(getState().completion?.current||'')?'final':'draft',level:''};
    origin=trigger;originAttrs=trigger instanceof Element?[...trigger.attributes].filter(a=>a.name==='id'||a.name.startsWith('data-')).map(a=>[a.name,a.value]):[];
