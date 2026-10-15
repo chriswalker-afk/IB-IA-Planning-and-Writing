@@ -108,7 +108,11 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     if(changed&&before!==value){
       if(path.startsWith("entries.")){
         const [,index,key]=path.split(".");
-        if(/^\d+$/.test(index))flagDependentMathematics(state,Number(index),key,before,value);
+        if(/^\d+$/.test(index)){
+          flagDependentMathematics(state,Number(index),key,before,value);
+          syncOutcome(path,value);
+          if(before!==value&&["technique","methodId"].includes(key))state.entries[Number(index)].resultSignal="";
+         }
       }
       let stage=path==="scratch.introduction"?"C10":path==="scratch.conclusion"?"C60":
         path==="scratch.dataNotes"?"C20":path==="scratch.finalReview"?"C90":
@@ -870,7 +874,10 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         putPath(path,numeric?Number(choice.dataset.value):choice.dataset.value);
         if(path.startsWith("entries.")&&previous!==choice.dataset.value){
           const [,index,key]=path.split(".");
-          if(/^\d+$/.test(index))flagDependentMathematics(state,Number(index),key,previous,choice.dataset.value);
+          if(/^\d+$/.test(index)){
+           flagDependentMathematics(state,Number(index),key,previous,choice.dataset.value);
+           syncOutcome(path,choice.dataset.value);
+          }
           const stage=state.entries[Number(index)]?.phase==="first"?"C30":"C40";
           if(state.completion.stages[stage]==="complete")state.completion.stages[stage]="needs-review";
         }
@@ -956,8 +963,14 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       if(path==="planning.fields.course"||path==="planning.fields.ideaSelected"||
        ["completion.fields.scatterDetail","completion.fields.scatterAimRelevance",
         "entries."+state.completion.activeEntryIndex+".methodId",
-        "entries."+state.completion.activeEntryIndex+".accuracyRef"].includes(path))
+        "entries."+state.completion.activeEntryIndex+".accuracyRef"].includes(path)||
+       /^entries\.\d+\.resultSignal$/.test(path)){
        render();
+       if(/^entries\.\d+\.resultSignal$/.test(path)){
+         const input=document.querySelector('[data-bind="'+path+'"]');
+         if(input)input.focus({preventScroll:true});
+       }
+      }
       if(state.route==="planning"&&state.planning.current==="N03H"&&path.startsWith("planning.fields.milestone")){
         const key=path.slice("planning.fields.".length),f=state.planning.fields;
         const dateTarget=document.querySelector('[data-timeline-date="'+key+'"]');
