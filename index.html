@@ -9,6 +9,15 @@
   <link rel="stylesheet" href="./styles.css">
   <link rel="stylesheet" href="./data/examples.css">
   <link rel="stylesheet" href="./data/essentials.css">
+  <!-- Also support static/source hosting: browsers cannot resolve npm package names. -->
+  <script type="importmap">
+    {"imports":{
+      "pdf-lib":"./vendor/pdf-lib.js",
+      "docx":"./vendor/docx.js",
+      "jszip":"./vendor/jszip.js",
+      "pdfjs-dist/legacy/build/pdf.mjs":"./vendor/pdfjs.mjs"
+    }}
+  </script>
   <script type="module" src="./app.js"></script>
 </head>
 <body>
