@@ -38,6 +38,7 @@ jobs:
           python scripts/resources-browser.py
           python scripts/ideas-browser.py
           python scripts/examples-browser.py
+          python scripts/essentials-browser.py
       - uses: actions/upload-artifact@v4
         if: always()
         with:
