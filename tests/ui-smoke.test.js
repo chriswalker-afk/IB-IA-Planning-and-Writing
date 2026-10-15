@@ -1,3 +1,7 @@
+import {resourceDrawer,resourceList} from '../src/resources/views.js';
+import {resourceAction,resourceFilter,resourcePreference} from '../src/resources/actions.js';
+import {newResourceSession} from '../src/resources/state.js';
+import {PRACTICE_PAIRS} from '../src/resources/catalog.js';
 import {createStuckViews} from '../src/help/stuck-views.js';
 import {captureStuckOrigin,isStuckNode} from '../src/help/stuck-state.js';
 import {stuckAction} from '../src/help/stuck-actions.js';
@@ -47,7 +51,7 @@ function createHarness(savedValue){
   const storage={getItem:k=>store.get(k)??null,setItem:(k,v)=>store.set(k,v)};
   const window={scrollTo(){},confirm:()=>true,alert(){},print(){}};
   const script=read("../app.js").replace(/^import\s+.*;\s*$/gm,"");
-  const globals={createStuckViews,captureStuckOrigin,isStuckNode,stuckAction,stuckContext,
+  const globals={resourceDrawer,resourceList,resourceAction,resourceFilter,resourcePreference,newResourceSession,PRACTICE_PAIRS,createStuckViews,captureStuckOrigin,isStuckNode,stuckAction,stuckContext,
     conformanceAction,reviewEditChanged,document,window,localStorage:storage,console,clearTimeout(){},setTimeout(){return 1;},
     createProjectState,normalizeProjectState,persistProjectState,
     newState:createProjectState,normalise:normalizeProjectState,
@@ -279,4 +283,15 @@ test('support work and return restores selected earlier result without marking i
 });
 test('support action notes are private and do not overwrite IA notes',()=>{
  const h=createHarness();h.action('open-stuck');h.action('stuck-topic',{topic:'aim'});h.write('completion.support.drafts.aim.action','Choose one quantity');h.action('stuck-save');assert.equal(h.saved.completion.support.task.status,'pending');assert.equal(h.saved.scratch.introduction,'');
+});
+
+test('tools library opens over Planning and preserves its node, answers and progress',()=>{
+ const s=createProjectState();s.route='planning';s.planning.current='N01';s.planning.fields.aim='My own incomplete aim';const h=createHarness(s);
+ h.action('resource-browse');assert(h.drawer.includes('Search tasks'));assert(h.html.includes('data-source-node="N01"'));
+ h.action('resource-open',{resourceId:'sheets-pmcc'});assert(h.drawer.includes('=CORREL(A2:A7,B2:B7)'));assert(h.drawer.includes('Video walkthrough'));
+ h.action('resource-close');assert(h.html.includes('data-source-node="N01"'));
+ h.action('open-stuck');assert.equal(h.saved.planning.fields.aim,'My own incomplete aim');assert.equal(h.saved.planning.completed,false);
+});
+test('resource guide returns to the same stuck topic rather than another mathematical stage',()=>{
+ const h=createHarness();h.action('open-stuck');h.action('stuck-topic',{topic:'calculation'});h.action('resource-browse',{resourceHelp:'true'});h.action('resource-open',{resourceId:'desmos-start'});h.action('resource-close');assert(h.drawer.includes('My calculation or software is not working'));
 });

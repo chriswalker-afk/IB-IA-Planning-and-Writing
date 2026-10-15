@@ -34,6 +34,7 @@ jobs:
           trap 'kill "$SERVER_PID"' EXIT
           python scripts/conformance-browser.py
           python scripts/stuck-browser.py
+          python scripts/resources-browser.py
       - uses: actions/upload-artifact@v4
         if: always()
         with:

@@ -1,3 +1,4 @@
+import {resourcePrompt} from "../resources/views.js";
 /**
  * Full Planning student experience. Source node IDs are attached to UI for test
  * traceability but remain invisible to students. Actual graph movement lives in
@@ -412,7 +413,7 @@ export function createPlanningViews(ctx){
    '<h2>'+e(screen.title)+'</h2><p class="task-intro">'+e(screen.intro)+'</p>'+
    screen.html+
    '<div class="example-row">'+helpButton("plan-"+n)+helpBox("plan-"+n,screen.help)+'</div>'+
-   footer(state,screen)+'</div>'+
+   resourcePrompt(state)+footer(state,screen)+'</div>'+
    '<p class="small-callout">Your choices are provisional until evidence supports them. You can revisit earlier decisions. Teacher flags never prevent a provisional report.</p>'+
    (p.notices&&p.notices.length?'<div class="inline-note warning">'+icon("info")+'<p>'+e(p.notices.at(-1))+'</p></div>':"")+
    '</div>';

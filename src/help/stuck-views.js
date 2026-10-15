@@ -1,3 +1,4 @@
+import {resourcePrompt} from "../resources/views.js";
 import {suggestedTopics,availableTopics,adviceFor,stuckContext} from './stuck.js';
 import {topicById} from './stuck-catalog.js';
 /** The same help in the global drawer and legacy C95 routes. No automatic popups. */
@@ -18,7 +19,7 @@ export function createStuckViews({getState,e,icon,field}){
     (s.task?.status==='pending'?'<details class="stuck-saved"><summary>Your saved next action</summary><p>'+e(s.task.action)+'</p>'+action('resume','Review this action')+action('resolved','This got me moving')+'</details>':'')+
     '<div class="stuck-topics" aria-label="Suggested problems for your current work">'+suggestions.map(pick).join('')+'</div>'+
     '<details class="stuck-browse"'+(s.browse?' open':'')+'><summary>Other problems</summary>'+[...new Set(rest.map(t=>t.group))].map(group=>'<div class="stuck-topic-group"><h3>'+e(group)+'</h3>'+rest.filter(t=>t.group===group).map(pick).join('')+'</div>').join('')+'</details>'+
-    pick(topicById('unsure'))+footer+'</div>';
+    pick(topicById('unsure'))+'<div class="resource-quiet"><button type="button" class="btn btn-quiet" data-action="resource-browse" data-resource-help="true">Tools &amp; tutorials</button></div>'+footer+'</div>';
   }
   const draft='completion.support.drafts.'+a.id;
   return '<div class="stuck-support">'+action('menu','Back to problems')+
@@ -26,7 +27,7 @@ export function createStuckViews({getState,e,icon,field}){
    '<p class="stuck-context">'+e(context.slice(0,180))+'</p>'+
    '<section class="stuck-next"><h4>Try this now</h4><p>'+e(a.action)+'</p><p class="stuck-why">'+e(a.reason)+'</p><p class="stuck-outcome"><strong>A useful stopping point:</strong> '+e(a.outcome)+'</p>'+action('work',a.label,'',true)+'</section>'+
    '<details class="stuck-example"><summary>Show a small example</summary><p class="stuck-caption">Illustrative thinking only - not your findings or wording to copy.</p><p>'+e(a.example)+'</p></details>'+
-   '<p class="stuck-boundary">'+e(a.boundary)+'</p>'+
+   '<p class="stuck-boundary">'+e(a.boundary)+'</p>'+resourcePrompt(state,{help:true})+
    '<details id="stuck-alternatives"'+(s.more?' open':'')+'><summary>That did not help / try another route</summary><p>Choose a different way forward; none is compulsory.</p><div class="stuck-topics">'+a.alternatives.map(pick).join('')+'</div><div class="stuck-teacher"><h4>Make the question easier to answer</h4><p>Tell your teacher what you are trying to find, what you have tried, and the first step or idea you cannot justify. Refer to the relevant figure or working.</p>'+action('teacher','Prepare a teacher question')+'</div></details>'+
    '<details class="stuck-save"><summary>Save my own next action (optional)</summary><p>This is a private project note, not text added to your IA. Saving it does not mark the problem solved.</p>'+
     field(draft+'.action','The one thing I will do next','A small task I choose',{type:'textarea',rows:2})+

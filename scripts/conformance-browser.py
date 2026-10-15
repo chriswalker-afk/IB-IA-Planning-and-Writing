@@ -19,7 +19,9 @@ def route(p,origin,target):
 def assert_node(p,node):assert p.locator('[data-source-node="'+node+'"]').count()==1,(node,p.locator('#main').inner_text()[:300])
 def no_overflow(p):assert p.evaluate('document.documentElement.scrollWidth <= innerWidth+1'),p.evaluate('({width:innerWidth,scroll:document.documentElement.scrollWidth})')
 with sync_playwright() as pw:
- browser=pw.chromium.launch(headless=True,args=['--no-sandbox'])
+ options={'headless':True,'args':['--no-sandbox']}
+ if os.environ.get('IA_CHROMIUM_EXECUTABLE'):options['executable_path']=os.environ['IA_CHROMIUM_EXECUTABLE']
+ browser=pw.chromium.launch(**options)
  def run(name,s,fn,mobile=False):
   context=browser.new_context(viewport={'width':390 if mobile else 1440,'height':844 if mobile else 1000},accept_downloads=True)
   context.route('https://fonts.googleapis.com/**',lambda r:r.abort())

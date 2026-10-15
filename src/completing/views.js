@@ -1,3 +1,4 @@
+import {resourcePrompt} from "../resources/views.js";
 import {createStuckViews} from '../help/stuck-views.js';
 import {isStuckNode} from '../help/stuck-state.js';
 /**
@@ -632,7 +633,7 @@ export function createCompletingViews(ctx){
     '<h2>'+e(label)+'</h2><p class="task-intro">'+e(screen.intro)+'</p>'+
     extra.returnToReview()+screen.html+(screen.extra||"")+
     (isStuckNode(node)?"":guides.writingMoment(node)+guides.mathsHelp(node)+guides.limitsHelp(node)+
-    contextualPrompt(node)+statusControls+
+    contextualPrompt(node)+resourcePrompt(s)+statusControls+
     allButtons(node,primaryByNode[node]||[]))+'</div>'+
     '<p class="small-callout">Only actual mathematics supports a mathematical conclusion. Your planning, predictions and teacher questions remain separate from real findings. No compulsory number of calculations or IA grade.</p>'+
     miniList()+'</div>';

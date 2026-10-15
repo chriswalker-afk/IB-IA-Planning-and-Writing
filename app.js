@@ -1,3 +1,7 @@
+import {resourceDrawer,resourceList} from './src/resources/views.js';
+import {resourceAction,resourceFilter,resourcePreference} from './src/resources/actions.js';
+import {newResourceSession} from './src/resources/state.js';
+import {PRACTICE_PAIRS} from './src/resources/catalog.js';
 import {createStuckViews} from './src/help/stuck-views.js';
 import {captureStuckOrigin,isStuckNode} from './src/help/stuck-state.js';
 import {stuckAction} from './src/help/stuck-actions.js';
@@ -29,6 +33,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   const $ = (s, root = document) => root.querySelector(s);
   const e = escapeHtml;
   let state = newState();
+  const resourceSession = newResourceSession();
   let lastFocus = null;
   let lastDrawer = "";
   let pendingImport = null;
@@ -303,9 +308,12 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         button("Restore entire project backup","import-json","btn-secondary","", "upload")+'</section>'+
       '<section><h3>Start fresh</h3><p>Starting a new project replaces the local workspace. Export a full backup first if needed.</p>'+
         button("Start a new project","new-project","btn-danger","", "refresh")+'</section>';
+    }else if(panel==="resources"){
+      body=resourceDrawer(state,resourceSession);
     }else if(panel==="help"){
       body='<section><p>Pathfinder is a thinking and writing companion. You remain the author of your mathematics and explanations.</p><div class="panel-list">'+
         '<button class="panel-link" data-action="open-stuck">I am stuck '+icon("arrow-right")+'</button>'+
+        '<button class="panel-link" data-action="resource-browse">Tools &amp; tutorials '+icon("arrow-right")+'</button>'+
         '<button class="panel-link" data-action="go-path">How do I see my journey? '+icon("arrow-right")+'</button>'+
         '<button class="panel-link" data-action="open-files">How do I keep my work safe? '+icon("arrow-right")+'</button>'+
         '<button class="panel-link" data-action="open-demos">Try an illustrative sample '+icon("arrow-right")+'</button></div></section>'+
@@ -333,9 +341,9 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     }else if(panel==="stuck"){
       body=stuckViews.render();
     }
-    const titles={project:"My project",files:"Save & export",help:"Here to help",demos:"Choose a sample",stuck:"Find a way forward", "import-preview":"Review planning import","import-manual":"Recover a plan",handover:"Confirm your starting plan"};
+    const titles={resources:"Tools & tutorials",project:"My project",files:"Save & export",help:"Here to help",demos:"Choose a sample",stuck:"Find a way forward", "import-preview":"Review planning import","import-manual":"Recover a plan",handover:"Confirm your starting plan"};
     layer.hidden=false;document.body.classList.add("dialog-open");
-    layer.innerHTML='<aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle" tabindex="-1"><div class="drawer-header"><h2 id="drawerTitle">'+titles[panel]+'</h2>'+
+    layer.innerHTML='<aside class="drawer'+(panel==="resources"?" resource-drawer":"")+'" role="dialog" aria-modal="true" aria-labelledby="drawerTitle" tabindex="-1"><div class="drawer-header"><h2 id="drawerTitle">'+titles[panel]+'</h2>'+
       '<button class="icon-button" type="button" data-action="close-drawer" aria-label="Close panel">'+icon("x")+'</button></div>'+body+'</aside>';
     $(".drawer",layer).focus();
   }
@@ -465,6 +473,28 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   }
   function clickAction(el) {
     const action=el.dataset.action||"";
+    const resources=resourceAction(state,resourceSession,action,el.dataset,layer.hidden?"":lastDrawer);
+    if(resources){
+      if(!resources.ok){toast(resources.error);return;}
+      if(resources.save)save();
+      if(resources.render){render();if(!layer.hidden&&lastDrawer==="stuck")openDrawer("stuck");return;}
+      if(resources.open){if(layer.hidden)lastFocus=el;openDrawer("resources");return;}
+      if(resources.list){const target=$("#resource-results",layer);if(target)target.innerHTML=resourceList(resourceSession);return;}
+      if(resources.close){
+        if(resourceSession.parent==="stuck")openDrawer("stuck");
+        else {closeDrawer();if(!lastFocus||!document.contains(lastFocus))main.focus({preventScroll:true});}
+        return;
+      }
+      if(resources.copy){
+        const status=$("#resource-copy-status",layer),input=$("#resource-practice-data",layer);
+        const fallback=()=>{if(input){input.focus();input.select();}if(status)status.textContent="Select and copy the practice table above. It has not been added to your project.";};
+        if(typeof navigator!=="undefined"&&navigator.clipboard?.writeText){
+          navigator.clipboard.writeText(PRACTICE_PAIRS).then(()=>{if(status)status.textContent="Practice table copied. Your own data and results are unchanged.";}).catch(fallback);
+        }else fallback();
+        return;
+      }
+      return;
+    }
     if(changeNavAction(action,el)!==false)return;
     const support=stuckAction(state,action,el.dataset);
     if(support){
@@ -739,6 +769,12 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   });
   document.addEventListener("input",evt=>{
     const target=evt.target;
+    if(target.dataset.resourceFilter!==undefined){
+      if(resourceFilter(resourceSession,target.dataset.resourceFilter,target.value)){
+        const result=$("#resource-results",layer);if(result)result.innerHTML=resourceList(resourceSession);
+      }
+      return;
+    }
     if(target.dataset.planSearch!==undefined){
       state.planning.mathSearch=target.value.slice(0,90);filterMathOptions();return;
     }
@@ -749,6 +785,20 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   });
   document.addEventListener("change",evt=>{
     const target=evt.target;
+    if(target.dataset.resourceFilter!==undefined){
+      if(resourceFilter(resourceSession,target.dataset.resourceFilter,target.value)){
+        const result=$("#resource-results",layer);if(result)result.innerHTML=resourceList(resourceSession);
+      }
+      return;
+    }
+    if(target.dataset.resourcePref!==undefined){
+      if(resourcePreference(state,resourceSession,target.dataset.resourcePref,target.value)){
+        save();render();openDrawer("resources");
+        const details=$(".resource-preferences",layer);if(details)details.open=true;
+        const input=$("#resource-pref-"+target.dataset.resourcePref,layer);if(input)input.focus({preventScroll:true});
+      }
+      return;
+    }
     if(target.dataset.check){state.cues[target.dataset.check]=target.checked?"done":"open";save();}
     if(target.dataset.mergeKey!==undefined){
       const key=target.dataset.mergeKey;
@@ -769,6 +819,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
        render();
     }
   });
+  document.addEventListener("submit",evt=>{if(evt.target.closest(".resource-filter-form"))evt.preventDefault();});
   document.addEventListener("keydown",evt=>{
     if(evt.key==="Escape"&&!layer.hidden){evt.preventDefault();closeDrawer();}
     if(evt.key==="Tab"&&!layer.hidden){

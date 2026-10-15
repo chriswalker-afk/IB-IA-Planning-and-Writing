@@ -4,6 +4,12 @@
 
 IA Pathfinder is a responsive, device-local **planning and writing companion** for IB Mathematics Internal Assessments. Students author their actual IAs in Word or Google Docs; Pathfinder helps with meaningful aims, mathematically justified choices, authentic results, interpretation, precision and coherent mathematical transitions. It never fabricates observations, assigns grades or rewrites an IA on the student's behalf.
 
+## Tools & tutorials - 15 October 2026
+
+Optional task-based resources are available during Planning, beside the current mathematics and through "I am stuck". The searchable library has 31 written guides, 19 with externally hosted video routes. It separates software instructions from interpretation, and visual image fitting from regression on recorded coordinates. Task-specific tool/picture preferences and dismissed cards survive full JSON backups without counting as completed work.
+
+See [the resource catalogue, editorial boundaries and checks](docs/resources-2026-10-15.md). Videos are publisher-listed, not claimed to have been watched end to end or teacher-approved. Every task has written steps. Custom screen recordings remain a documented production backlog, not placeholder video buttons.
+
 ## Conformance pass - 15 October 2026
 
 The audit corrections are now integrated: authoritative actual-method identity, no assumed monotonicity, multiple relevant precision inputs, source-specific dependency review, an origin-aware writing helper, first-use unfamiliar-mathematics guidance, and optional D01-D21 draft/final checks with separately verified feedback actions. Student work, original source rows and the current visual design are preserved.

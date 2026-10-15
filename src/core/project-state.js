@@ -1,3 +1,4 @@
+import {createResourceState,normalizeResourceState} from "../resources/state.js";
 /**
  * Canonical versioned student-project record.
  * Preserves version-1 prototype files and browser localStorage without assuming
@@ -68,6 +69,7 @@ export function createProjectState() {
     teacher:{
       checkpoints:[],pendingApproval:false,feedbackStatus:"not-requested",concerns:[]
     },
+    resources:createResourceState(),
     writingLedger:{},
     changeLog:[],
     planning:createPlanningState(),
@@ -104,6 +106,7 @@ export function normalizeProjectState(value) {
     demo: str(value.demo),
     route:["home","planning","completing","path","report"].includes(value.route)?value.route:"home",
     project:p,ui:u,scratch:s,
+    resources:normalizeResourceState(value.resources),
     entries:Array.isArray(value.entries)?value.entries.filter(plain).slice(0,MAX_ENTRIES).map(normalizeEntry):[],
     cues:safeRecord(value.cues),cueNotes:safeRecord(value.cueNotes),cueLocations:safeRecord(value.cueLocations)
   };
