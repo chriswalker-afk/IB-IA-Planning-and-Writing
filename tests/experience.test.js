@@ -70,3 +70,9 @@ test('no-choice old projects remain loadable with optional experience metadata',
 test('experience stylesheet honours reduced motion and touch-sized support',()=>{
  const css=readFileSync(new URL('../data/experience.css',import.meta.url),'utf8');assert(css.includes('prefers-reduced-motion:reduce'));assert(css.includes('min-height:44px'));
 });
+
+test('fresh Studio overview starts in Set up and rejects unknown last-stage metadata',()=>{
+ const s=createProjectState();s.route='completing';s.completion.current='C04';assert.equal(currentGroup(s).id,'setup');
+ s.ui.lastStudioNode='not-a-stage';assert.equal(currentGroup(s).id,'setup');
+ s.completion.history=['C10','C90','C04'];assert.equal(currentGroup(s).id,'finish');
+});

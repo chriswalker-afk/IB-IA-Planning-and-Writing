@@ -30,6 +30,7 @@ jobs:
         run: |
           node scripts/conformance-fixtures.mjs
           node scripts/examples-fixtures.mjs
+          node scripts/experience-fixtures.mjs
           python -m http.server 8765 --directory dist > qa-output/server.log 2>&1 &
           SERVER_PID=$!
           trap 'kill "$SERVER_PID"' EXIT
@@ -39,6 +40,7 @@ jobs:
           python scripts/ideas-browser.py
           python scripts/examples-browser.py
           python scripts/essentials-browser.py
+          python scripts/experience-browser.py
       - uses: actions/upload-artifact@v4
         if: always()
         with:

@@ -24,8 +24,9 @@ export function resumeRoute(s){
 export function currentGroup(s){
  const route=['planning','completing'].includes(s.route)?s.route:resumeRoute(s);
  if(route==='planning')return JOURNEY_GROUPS[0];
- const recent=[...(s.completion.history||[])].reverse().find(n=>completionStage(n,s));
- const stage=completionStage(s.completion.current,s)||completionStage(s.ui?.lastStudioNode||recent||'',s);
+ const realStage=n=>C_NODES.some(x=>x.id===n)?completionStage(n,s):null;
+ const recent=[...(s.completion.history||[])].reverse().find(n=>realStage(n));
+ const stage=realStage(s.completion.current)||realStage(s.ui?.lastStudioNode)||realStage(recent);
  return JOURNEY_GROUPS.find(g=>g.stages.includes(stage))||JOURNEY_GROUPS.find(g=>g.id==='setup');
 }
 export function groupTarget(s,g){

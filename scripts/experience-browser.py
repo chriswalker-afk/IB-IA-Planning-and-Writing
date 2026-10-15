@@ -43,7 +43,9 @@ with sync_playwright() as pw:
    if trigger=='criteria-toggle':
     action(p,trigger);btn=p.locator('.criteria-content [data-action="essentials-open"]');btn.click();p.keyboard.press('Escape');assert p.evaluate('document.activeElement.dataset.action')=='essentials-open';continue
    btn=p.locator('.support-actions [data-action="'+trigger+'"]');btn.scroll_into_view_if_needed();before=raw(p);btn.click();p.keyboard.press('Escape');assert p.evaluate('document.activeElement.dataset.action')==trigger;assert raw(p)==before
-  action(p,'open-stuck');p.locator('[data-action="stuck-topic"][data-topic="calculation"]').click();p.locator('.drawer [data-action="resource-browse"]').first.click();p.keyboard.press('Escape');assert p.locator('.drawer').is_visible();assert 'My calculation or software' in p.locator('.drawer').inner_text();p.keyboard.press('Escape');assert not p.locator('.drawer').count();assert p.evaluate('document.activeElement.dataset.action')=='open-stuck'
+  action(p,'open-stuck');topic=p.locator('.drawer [data-action="stuck-topic"][data-topic="calculation"]');
+  if not topic.is_visible():p.locator('.drawer .stuck-browse > summary').click()
+  topic.click();p.locator('.drawer [data-action="resource-browse"]').first.click();p.keyboard.press('Escape');assert p.locator('.drawer').is_visible();assert 'My calculation or software' in p.locator('.drawer').inner_text();p.keyboard.press('Escape');assert not p.locator('.drawer').count();assert p.evaluate('document.activeElement.dataset.action')=='open-stuck'
  run('consistent-support-return-and-nested-escape',OWN,support,390,844)
  def preview(p):
   nav(p,'home');before=raw(p);action(p,'open-demos');p.locator('[data-demo="curved"]').click();assert p.locator('.sample-preview-banner').is_visible();assert raw(p)==before

@@ -22,6 +22,6 @@ No source Sheets, mathematical catalogues, example content, assessment descripto
 
 ## Verification
 
-The existing 291 unit tests, plus 16 new experience regression tests, pass locally. The thin DOM harness was updated for the new imports and intentional label changes; mathematical assertions are unchanged. Existing browser assertions were updated to open the deliberately collapsed criteria before inspecting them.
+The existing 291 unit tests, plus 17 new experience regression tests, pass locally. The thin DOM harness was updated for the new imports and intentional label changes; mathematical assertions are unchanged. Existing browser assertions were updated to open the deliberately collapsed criteria before inspecting them.
 
 The conformance workflow also runs `experience-browser.py`: first actions on 360/390/1440px screens, common status labels and editing, folding/unfolding the full path without changing work, focus return and nested Escape, safe sample editing/switching/reload/return, no phantom personal project, newer personal work, clearly labelled sample backups and guarded imports, checkpoint backups, and reduced motion. The browser suite produces machine-readable results and screenshots. This is regression/interaction testing, not a claim of measured student enjoyment or full accessibility certification.
