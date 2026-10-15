@@ -36,7 +36,7 @@
 .recent-checkpoint{display:flex;align-items:flex-start;gap:13px;border:1px solid #c7e0d4;background:var(--teal-pale);border-radius:17px;padding:18px 20px;margin:18px 0}
 .checkpoint-icon{display:grid;place-items:center;background:var(--surface);color:var(--teal);border-radius:12px;width:36px;height:36px;flex:none}
 .recent-checkpoint .section-eyebrow{font-size:9px;letter-spacing:.12em;margin:0 0 5px;display:block}
-.recent-checkpoint strong{font-size:14px;display:block;color:var(--teal-dark)}.recent-checkpoint p{font-size:12px;line-height:1.55;color:var(--muted);margin:5px 0 0}
+.recent-checkpoint strong{font-size:14px;display:block;color:var(--teal-dark)}.recent-checkpoint p{font-size:12px;line-height:1.5;color:var(--muted);margin:5px 0 0}
 .journey-map-tools{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:22px 0 12px}.journey-map-tools p{font-size:12px;color:var(--muted);margin:0}
 .journey-chapters{display:grid;gap:12px}.journey-chapter{border:1px solid var(--line);background:var(--surface);border-radius:var(--experience-radius);overflow:hidden}
 .journey-chapter>summary{cursor:pointer;display:flex;align-items:center;gap:14px;padding:19px 22px;list-style:none;min-height:80px}
@@ -56,7 +56,7 @@
 .sample-preview-banner{position:sticky;top:87px;z-index:20;max-width:1080px;margin:0 auto 22px;border:1px solid var(--gold);border-radius:17px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px;background:var(--surface-warm);box-shadow:var(--shadow)}
 .sample-preview-banner strong{display:flex;gap:8px;align-items:center;font-size:14px;color:var(--review-ink)}.sample-preview-banner p{font-size:12px;color:var(--muted);margin:5px 0 0}.sample-preview-banner .button-row{gap:8px}.sample-preview-banner .btn{font-size:12px;min-height:42px}
 .drawer-header .btn{flex:none;font-size:11px;min-height:44px}.drawer-header{gap:15px}.drawer-header h2{font-size:23px;margin:0}
-.toast.checkpoint-toast{display:flex;align-items:flex-start;gap:11px;max-width:min(480px,calc(100vw - 32px));padding:16px 20px;background:var(--teal-dark);text-align:left;pointer-events:none}.toast-check{flex:none;margin-top:2px}.checkpoint-toast strong{font-size:14px}.checkpoint-toast p{font-size:12px;line-height:1.5;margin:5px 0 0;color:#f2f8f5}
+.toast.checkpoint-toast{display:flex;align-items:flex-start;gap:11px;width:min(480px,calc(100vw - 32px));max-width:min(480px,calc(100vw - 32px));padding:16px 20px;background:var(--teal-dark);text-align:left;pointer-events:none}.toast-check{flex:none;margin-top:2px}.checkpoint-toast strong{font-size:14px}.checkpoint-toast p{font-size:12px;line-height:1.5;margin:5px 0 0;color:#f2f8f5}
 .journey-chapter summary:focus-visible,.journey-record:focus-visible,.journey-decision:focus-visible{outline:3px solid var(--teal);outline-offset:-3px}
 @media(max-width:760px){
  .main{padding-top:22px}.task-shell{padding:22px}.task-heading{font-size:27px}.task-intro{font-size:14px;margin-bottom:18px}
@@ -72,4 +72,4 @@
  .toast.checkpoint-toast{bottom:85px;padding:14px 16px}
 }
 @media(max-width:380px){.task-shell{padding:19px 16px}.task-heading{font-size:25px}.task-support .support-actions .btn{padding:8px 5px}.sample-preview-banner .button-row{flex-wrap:wrap}.chapter-marker{width:34px;height:34px}.recent-checkpoint .checkpoint-icon{display:none}}
-@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.page{animation:none}.btn,.choice,.journey-chapter>summary>.icon,.toast,.completion-stage-card{transition:none;animation:none}.btn:hover:not(:disabled){transform:none}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.page{animation:none}.btn,.choice,.journey-chapter>summary>.icon,.toast,.completion-stage-card{transition:none!important;animation:none!important}.btn:hover:not(:disabled){transform:none}}
