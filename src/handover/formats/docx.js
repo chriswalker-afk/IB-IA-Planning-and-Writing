@@ -82,8 +82,8 @@ async function embedPayload(docxBytes,payload){
  zip.file("[Content_Types].xml",types.replace("</Types>",contentType+"</Types>"));
  return zip.generateAsync({type:"uint8array",compression:"DEFLATE",compressionOptions:{level:6}});
 }
-export async function createDocxPlanningReport(envelope){
- const payload=normalizePlanningEnvelope(envelope),model=modelFromEnvelope(payload);
+export async function createDocxPlanningReport(envelope,fullProjectModel=null){
+ const payload=normalizePlanningEnvelope(envelope),model=fullProjectModel||modelFromEnvelope(payload);
  const paragraphs=[
    para([run("IA  /  PATHFINDER",{color:TEAL,bold:true,size:19})],{spacing:{after:210}}),
    title(model.title),
@@ -110,18 +110,18 @@ export async function createDocxPlanningReport(envelope){
    spacing:{after:210,line:280}}));
   for(const item of sec.rows)paragraphs.push(...field(item.label,item.value,item.link));
  }
- paragraphs.push(headline("About this planning document"));
+ paragraphs.push(headline(fullProjectModel?"About this full working record":"About this planning document"));
  paragraphs.push(para([run(model.footnote,{size:18,color:MUTED})],{spacing:{after:150}}));
  const doc=new Document({
   creator:"IA Pathfinder",title:model.title,
-  description:"Provisional student IB Mathematics planning record with importable snapshot.",
+  description:fullProjectModel?"Student-entered full working record with a Planning-only reimport snapshot.":"Provisional student IB Mathematics planning record with importable snapshot.",
   sections:[{
    properties:{page:{
     size:{width:12240,height:15840},
     margin:{top:920,right:1000,bottom:900,left:1000}
    }},
    footers:{default:new Footer({children:[
-    para([run("IA PATHFINDER  /  PROVISIONAL — NOT TEACHER APPROVAL",{size:15,color:MUTED})],{
+    para([run(fullProjectModel?"IA PATHFINDER / WORKING RECORD — NOT AN IA SUBMISSION":"IA PATHFINDER  /  PROVISIONAL — NOT TEACHER APPROVAL",{size:15,color:MUTED})],{
       alignment:AlignmentType.RIGHT,spacing:{before:90,after:0}
     })
    ]})},
