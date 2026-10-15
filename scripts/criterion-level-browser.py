@@ -27,14 +27,14 @@ with sync_playwright() as pw:
     page.locator('.topbar [data-action="essentials-open"]').click()
     dialog=page.locator('#essentialsDialog')
     assert dialog.locator('#ess-level').count()==0
-    dialog.locator('[data-essentials-tab="rubric"]').click()
+    dialog.locator('.ess-tabs [data-essentials-tab="rubric"]').click()
     for criterion in ['A','B','C','D']:
-     dialog.locator('[data-essentials-criterion="'+criterion+'"]').click()
+     dialog.locator('.ess-criteria-nav [data-essentials-criterion="'+criterion+'"]').click()
      assert dialog.locator('[data-rubric-criterion="'+criterion+'"]').count()==1
      assert dialog.locator('[data-essentials-level]').count()==0
-    dialog.locator('[data-essentials-criterion="A"]').click()
+    dialog.locator('.ess-criteria-nav [data-essentials-criterion="A"]').click()
     page.screenshot(path=str(OUT/(name+'-A.png')))
-    dialog.locator('[data-essentials-criterion="E"]').click()
+    dialog.locator('.ess-criteria-nav [data-essentials-criterion="E"]').click()
     picker=dialog.locator('[data-rubric-criterion="E"] #ess-level')
     assert picker.count()==1 and picker.is_visible()
     assert picker.input_value()==('HL' if course=='AA HL' else 'SL' if course=='AA SL' else '')
@@ -42,20 +42,20 @@ with sync_playwright() as pw:
     picker.select_option('HL')
     assert 'sophistication and rigour' in dialog.locator('.ess-rubric-table').inner_text()
     for criterion in ['A','B','C','D']:
-     dialog.locator('[data-essentials-criterion="'+criterion+'"]').click()
+     dialog.locator('.ess-criteria-nav [data-essentials-criterion="'+criterion+'"]').click()
      assert dialog.locator('[data-essentials-level]').count()==0
-    dialog.locator('[data-essentials-criterion="E"]').click()
+    dialog.locator('.ess-criteria-nav [data-essentials-criterion="E"]').click()
     assert picker.input_value()=='HL'
     picker.select_option('SL')
     assert 'Criterion E — SL' in dialog.locator('.ess-rubric-table caption').inner_text()
     page.screenshot(path=str(OUT/(name+'-E.png')))
-    dialog.locator('[data-essentials-tab="format"]').click()
+    dialog.locator('.ess-tabs [data-essentials-tab="format"]').click()
     assert dialog.locator('[data-essentials-level]').count()==0
-    dialog.locator('[data-essentials-tab="rubric"]').click()
+    dialog.locator('.ess-tabs [data-essentials-tab="rubric"]').click()
     assert dialog.locator('#ess-level').input_value()=='SL'
-    dialog.locator('[data-essentials-tab="submission"]').click()
+    dialog.locator('.ess-tabs [data-essentials-tab="submission"]').click()
     for mode in ['draft','final']:
-     dialog.locator('[data-essentials-mode="'+mode+'"]').click()
+     dialog.locator('.ess-review-modes [data-essentials-mode="'+mode+'"]').click()
      assert dialog.locator('[data-essentials-level]').count()==1
      for criterion in ['A','B','C','D']:
       assert dialog.locator('[data-evidence-criterion="'+criterion+'"] [data-essentials-level]').count()==0
