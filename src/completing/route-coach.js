@@ -49,6 +49,15 @@ export const resultSignalOptions=entry=>RESULT_SIGNALS[resultFamily(entry)]||[];
 export const isAdviceReduced=state=>state?.ui?.adviceMode==="reduced";
 
 const a=(heading,essential,detail="",questions=[])=>({heading,essential,detail,questions});
+function ancestralScatter(state,entry){
+ let cursor=entry,steps=0;const visited=new Set();
+ while(cursor&&steps++<120&&!visited.has(cursor.id)){
+  visited.add(cursor.id);
+  if(cursor.kind==="scatter")return cursor;
+  cursor=state.entries?.find(x=>x.id===cursor.fromEntryId);
+ }
+ return null;
+}
 function chosenShape(state,entry){
  const c=state.completion||{},f=c.fields||{};
  const scatter=entry?.kind==="scatter"?entry:null;
@@ -65,7 +74,7 @@ export function routeAdvice(state,entry,{shapeEntry}={}){
  const f=state?.completion?.fields||{};
  const confirmed=entry.resultSignal;
  const method=resultFamily(entry);
- const shape=chosenShape(state,shapeEntry||entry);
+ const shape=chosenShape(state,shapeEntry||ancestralScatter(state,entry)||entry);
  if(entry.kind==="scatter"&&!method){
   switch(shape){
    case "linear":case "near-perfect":case "rough-linear":
