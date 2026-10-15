@@ -376,6 +376,7 @@ export function createCompletingViews(ctx){
       {value:"curved",title:"Curved / nonlinear pattern",icon:"route"},
       {value:"unclear",title:"No clear pattern",icon:"circle"},
       {value:"unexpected",title:"Unexpected point or result",icon:"sparkles"}]):"")+
+    coachBlock(st,{allowChoices:st?.kind==="theory"})+
     entryField("observationText","What can you really observe?","Trend, feature, value, possible counterexample or inconclusive finding",{type:"textarea",rows:3})+
     F("firstResultSummary","What is the essential local takeaway?","Use this when deciding what mathematical question should follow",{type:"textarea",rows:2})+
     accuracyNote()
@@ -387,7 +388,7 @@ export function createCompletingViews(ctx){
     info("Avoid repeated precision essays","Once justified, apply the decision again only where relevant. Revisit C24 if the underlying source changes.")
   };
   case "C34B":return{intro:"Relate this actual result to your aim, your earlier prediction and its intended benefit.",
-   html:entryReviewAlert()+actualRecord()+smallSummary("Your current aim",currentAim())+
+   html:entryReviewAlert()+actualRecord()+coachBlock(st,{allowChoices:false})+smallSummary("Your current aim",currentAim())+
     smallSummary("Original prediction (tentative)",plannedPrediction())+
     smallSummary("Possible beneficiary",currentBenefit())+
     entryField("interpretation","What does this actual result mean for my aim?","An honest local conclusion based on mathematics I have done",{type:"textarea",rows:4})+
@@ -405,7 +406,7 @@ export function createCompletingViews(ctx){
     info("No forced result","You can record an unresolved surprise, save, or revise the mathematical plan while keeping the original observation intact.")
   };
   case "C35":return{intro:"One logical bridge from your last actual result to the next mathematics—or recognise that you have enough to conclude.",
-   html:bridgeFromPrior()+
+   html:bridgeFromPrior()+coachBlock(sourceResultForNext(s))+nextCoachQuestions()+
     F("nextQuestion","What worthwhile mathematical question remains unanswered?","It should arise from the previous local takeaway",{type:"textarea",rows:3})+
     F("nextMethod","Which technique might answer THAT question?","Course-appropriate if possible; it can be undecided")+
     F("nextReason","Why would this next technique follow from the previous result?","Explain the bridge BEFORE the new mathematics in your real IA",{type:"textarea",rows:3})+
@@ -428,17 +429,18 @@ export function createCompletingViews(ctx){
      ["unclear","No clear association"],
      ["unexpected","An unusual point or cluster"],
      ["unsure","Not sure — inspect the graph again"]])+
+    coachBlock(scatterForNext(s),{allowChoices:false})+
     info("Pearson's r has a specific purpose","It measures linear association between paired numerical variables. A small r does not establish that there is no relationship of any form.")+
-    guides.bivariateHelp(n)
+    guides.bivariateHelp(n,{reduced:isAdviceReduced(s)})
   };
   case "C35P":return{intro:"Use this only after you have actually calculated Pearson's correlation coefficient.",
-   html:bridgeFromPrior()+
+   html:bridgeFromPrior()+coachBlock(sourceResultForNext(s),{allowChoices:false})+
     F("pmccInterpretation","What value or finding did I calculate and what does it mean?","Describe actual direction and strength of LINEAR association",{type:"textarea",rows:3})+
     (f.scatterPattern?smallSummary("Observed scatter shape",f.scatterPattern):"")+
     F("nextQuestion","My next question, if another is needed","A model, outlier check, different explanation, or no further calculation",{type:"textarea",rows:2})+
     F("nextReason","Why would that next step help the aim?","The actual r and graph—not a planned coefficient—drive the choice",{type:"textarea",rows:2})+
     info("Association is not causation","Even a strong coefficient does not show that one variable caused another. Avoid forcing a straight-line regression on a curved pattern.")+
-    guides.bivariateHelp(n)
+    guides.bivariateHelp(n,{reduced:isAdviceReduced(s)})
   };
   case "C40":case "C50":{
    const active=completeEntry(s);
@@ -454,6 +456,7 @@ export function createCompletingViews(ctx){
          {value:"planned",title:"Only planned",icon:"clock"},
          {value:"completed",title:"Actual mathematics completed",icon:"check-circle"}])+
        entryField("result","What did you ACTUALLY establish?","A genuine value, equation, model, property or finding",{type:"textarea",rows:4})+
+    coachBlock(entry)+
        entryField("resultRef","Where is the full mathematics in my IA?","Equation number, figure, section or page")+
        accuracySelector()+
        entryChoice("knowledge",[
