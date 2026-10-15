@@ -22,7 +22,7 @@ export function relevantBivariateOptions(state,node=state.completion.current){
  if(hasPmcc){
   out.push(option("B09","What does the value of Pearson's r actually tell me about linear association?",
    "Consider the sign/size in context, the observed scatter's shape, scope of the sample and whether another calculation serves the aim."));
-  if(x.f.pmccSignal==="weak-linear"&&["monotonic","turning","curved-unspecified"].includes(ref))
+  if(x.f.pmccSignal==="weak-linear"&&["monotonic","turning","periodic","curved-unspecified"].includes(ref))
    out.push(option("B12","Could a justified nonlinear question explain the scatter despite weak linear association?",
     "Weak Pearson correlation does not rule out curved relationships. Do not invent a nonlinear model form."));
   if(x.f.pmccSignal==="weak-linear"&&(ref==="unclear"||ref==="unsure"))
@@ -52,6 +52,10 @@ export function relevantBivariateOptions(state,node=state.completion.current){
     x.course==="AI SL"?
      "If a rank association would serve the aim, Spearman may be an optional course-relevant idea after checking coverage; it is not a required calculation.":
      "A rank measure may be considered only after checking course suitability. Do not assume Spearman is on your course."));
+   break;
+  case "periodic":
+   out.push(option("B04","Could repeated peaks justify a periodic model with a meaningful period?",
+    "Several observed cycles and sensible parameter units are needed; a rank correlation does not explain periodic behaviour."));
    break;
   case "turning":
    out.push(option("B04","Does a turning-point or periodic model fit the observed structure for a good mathematical reason?",
