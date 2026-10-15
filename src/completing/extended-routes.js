@@ -97,7 +97,9 @@ function nonlinearParameters(methods){
  return "Interpret the fitted parameters in context and within the observed domain.";
 }
 export function extendedAdvice(state,entry,{family,methods,signal}={}){
- const selected=EXTENDED_SIGNALS[family]?.some(x=>x.value===signal)?signal:"";
+ const legacy=family==="nonlinear-model"?{"poor-fit":"residual-structure","fit-sensible":"model-fit",
+  "outlier-effect":"outlier-effect","uncertain":""}[signal]:undefined;
+ const selected=EXTENDED_SIGNALS[family]?.some(x=>x.value===signal)?signal:(legacy||"");
  switch(family){
  case "finance-break-even":{
   const essential="A break-even quantity answers when revenue equals modelled costs—not whether there is enough demand, capacity or cash. Define fixed/variable costs, units and realistic sales assumptions.";
@@ -151,7 +153,9 @@ export function extendedAdvice(state,entry,{family,methods,signal}={}){
  case "nonlinear-model":{
   const core=nonlinearParameters(methods);
   const essential="Interpret the actual model parameters and domain in context. Examine residuals and assumptions; a high R² or attractive graph alone does not validate a nonlinear model. "+core;
-  const variant=selected==="residual-structure"?["Residuals challenge the proposed curve","A systematic residual pattern suggests missing structure or changing variability. Reconsider the model for a mathematical reason.",["What pattern remains unexplained?","Would a justified alternative or narrower range resolve it?"]]:
+  const variant=selected==="model-fit"?["A plausible nonlinear model","The curve is a candidate description within the measured range, not a guarantee of prediction. Explain parameter meaning, assumptions and what the residuals show.",["Does it answer the aim within its justified domain?","Would any further calculation improve the conclusion?"]]:
+   selected==="outlier-effect"?["One point influences the nonlinear fit","A point may change fitted parameters substantially. Verify its source and compare models with and without it as a labelled sensitivity check; do not discard genuine observations to improve fit.",["How sensitive are the parameters to this observation?","Is exclusion defensible independently of the desired model?"]]:
+   selected==="residual-structure"?["Residuals challenge the proposed curve","A systematic residual pattern suggests missing structure or changing variability. Reconsider the model for a mathematical reason.",["What pattern remains unexplained?","Would a justified alternative or narrower range resolve it?"]]:
    selected==="competing-models"?["Choosing between defensible models","Compare residuals, plausible parameter meanings, assumptions and domain—not only the largest R².",["Which model provides the more meaningful answer?","How robust is that choice to the data range?"]]:
    selected==="extrapolation-fails"?["Do not extend an unsupported model","Restrict predictions to a justified domain; investigate asymptotes, turning behaviour, saturation or parameter assumptions where relevant.",["Why does the extrapolation fail mathematically?","What can the model reliably answer within the observed range?"]]:
    ["A curve is a model, not an explanation by itself","Explain why this functional form was chosen and what each parameter means; compare a justified model check rather than collecting equations.",["Do residuals support the functional form?","Would further mathematics materially improve the answer?"]];
@@ -174,7 +178,7 @@ export function extendedAdvice(state,entry,{family,methods,signal}={}){
   const variant=selected==="large-variation"?["Risk matters alongside the expected value","Compare possible losses, spread or probabilities of extreme outcomes. A high mean return may still be undesirable.",["What is the probability of an unacceptable outcome?","Would a risk-aware decision differ from the highest expected return?"]]:
    selected==="approximately-fair"?["What does fair mean?","Check the exact expected net gain after all costs, then assess whether finite-play outcomes feel different from the long-run expectation.",["Does a strategy change probabilities or merely choices?","How many plays would make long-run reasoning relevant?"]]:
    selected==="probabilities-weak"?["A probability model needs justification","Check that probabilities are valid, conditional structure and independence are justified; avoid inventing frequencies.",["Which assumption changes the expected value most?","Could simulation test the internal model without pretending to collect real data?"]]:
-   ["Positive expectation is not a guaranteed win","Explain the difference between average return across repeats and the distribution of one trial.",["How likely is a loss despite positive expectation?","Does variation or risk change which option is preferable?"]];
+   ["Positive expectation is not a guaranteed win","A positive expected value does not guarantee a win on a particular attempt. Explain the distribution of outcomes as well as their long-run average.",["How likely is a loss despite positive expectation?","Does variation or risk change which option is preferable?"]];
   return a(variant[0],essential,variant[1],variant[2],probDepth);
  }
  case "measurement":{
