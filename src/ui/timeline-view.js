@@ -55,9 +55,9 @@ export function renderTimelineStep(state,{e,icon,F,choice,callout}){
     (shown?"Update suggested timeline":"Make my suggested timeline")+'</button>'+
     '<span class="field-hint">Suggestions only — no school dates are invented.</span></div>'+
    schedule+'</div>'+
-   '<details class="timeline-advanced"><summary>'+icon("calendar")+
+   '<details class="timeline-advanced"><summary>'+icon("clock")+
     '<span><strong>Edit dates or add school deadlines</strong><small>Optional detailed planner</small></span>'+
-    icon("chevron-down")+'</summary><div class="timeline-advanced-body">'+
+    icon("chevron-right")+'</summary><div class="timeline-advanced-body">'+
     '<p class="field-hint">You can adjust any milestone. Regenerating suggestions keeps dates you changed yourself. Only enter official deadlines supplied by your school.</p>'+
     F("timelineStart","Date I am starting my plan","",{type:"date"})+
     '<div class="field-row">'+dateFields([["milestoneSchoolDraft","School teacher-draft deadline (if known)"],["milestoneSchoolFinal","School final submission date (if known)"]])+'</div>'+
