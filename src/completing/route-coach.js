@@ -48,7 +48,20 @@ export function resultFamily(entry){
  if(methods.has("proof")||entry?.kind==="theory")return "proof";
  return "";
 }
-export const resultSignalOptions=entry=>RESULT_SIGNALS[resultFamily(entry)]||[];
+export const resultSignalOptions=entry=>{
+ const family=resultFamily(entry),available=RESULT_SIGNALS[family]||[];
+ // Existing nonlinear IAs may use earlier fitted-model selections. Keep them
+ // interpretable and visible without presenting duplicate options to new users.
+ if(family==="nonlinear-model"){
+  const old={"poor-fit":"Earlier selection: the fit showed a problem",
+   "fit-sensible":"Earlier selection: the model looked suitable",
+   "outlier-effect":"Earlier selection: one point affected the fit",
+   "uncertain":"Earlier selection: fit not assessed"};
+  if(old[entry?.resultSignal])return [...available,
+    {value:entry.resultSignal,title:old[entry.resultSignal],desc:"Saved from an earlier version; you can change it."}];
+ }
+ return available;
+};
 export const isAdviceReduced=state=>state?.ui?.adviceMode==="reduced";
 
 const a=(heading,essential,detail="",questions=[])=>({heading,essential,detail,questions});
@@ -119,7 +132,7 @@ export function routeAdvice(state,entry,{shapeEntry}={}){
  if(method==="pmcc"){
   const initial="Interpret the sign and strength of Pearson's r for your actual variables. Check it against the scatter; correlation is not causation.";
   if(confirmed==="weak-linear"){
-   if(["curved","monotonic","turning"].includes(shape))
+   if(["curved","monotonic","turning","periodic"].includes(shape))
     return a("Weak linear association; curved graph",initial,
      "A small |r| does NOT rule out nonlinear structure. Say what the graph shows, then consider a justified model of its shape, or stop if more work would not help.",
      ["Does the curve suggest a mathematical model worth evaluating?",
