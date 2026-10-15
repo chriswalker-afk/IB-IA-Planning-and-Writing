@@ -1,3 +1,4 @@
+import {firstUnfamiliarUse} from "./method-identity.js";
 import {MATHS_GUIDANCE} from "./guidance-catalog.js";
 import {guidanceContext,isDone} from "./guidance-context.js";
 const str=v=>typeof v==="string"?v.trim():"";
@@ -12,7 +13,7 @@ function triggered(m,x){
   case "M02":return real&&maths&&matches(entry?.result,/=|\^|sqrt|integral|sum|frac/);
   case "M03":return real&&maths&&matches(entry?.result,/≈|approx|rounded|decimal|estimate|\d\.\d/);
   case "M04":return active&&maths&&(str(f.variableDefinitions)||str(f.firstDefinitions));
-  case "M05":return real&&maths&&accuracy.length>0&&!theoretical;
+  case "M05":return real&&maths&&x.matchingAccuracy.length>0&&!theoretical;
   case "M06":case "M07":return node==="C40T"&&!!actualTechnology;
   case "M08":return node==="C40T"&&!!actualTechnology&&method.has("fitted-model");
   case "M09":return node==="C40D"&&active;
@@ -27,8 +28,8 @@ function triggered(m,x){
   case "M18":return node==="C70N"&&x.actualResults.length>0;
   case "M19":return node==="C35"?!!str(f.nextMethod):node==="C40D"&&active;
   case "M20":return real&&entry?.knowledge==="syllabus"&&maths;
-  case "M21":return real&&entry?.knowledge==="outside"&&maths;
-  case "M22":return real&&entry?.knowledge==="mixed"&&maths;
+  case "M21":return active&&entry?.knowledge==="outside"&&maths&&firstUnfamiliarUse(x.state,entry);
+  case "M22":return active&&entry?.knowledge==="mixed"&&maths&&firstUnfamiliarUse(x.state,entry);
   case "M23":return active&&entry?.knowledge==="unsure"&&node==="C40D";
   case "M24":return real&&str(entry?.researchSource)&&node==="C40L";
   case "M25":return real&&entry?.knowledge==="outside"&&node==="C40L";

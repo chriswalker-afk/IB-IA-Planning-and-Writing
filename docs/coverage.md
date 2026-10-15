@@ -14,7 +14,8 @@
 | Phase 4 partial | **338** | Detailed Completing, data-method and next-step prompt inventories still needing editorial tuning |
 | Phase 5 implemented | **146** | **66 Writing Moments, 30 Maths & Technology, 38 Limitation Examples, 12 Bivariate Decisions** with actual-state relevance guards and student-controlled UI |
 | Phase 5 partial | **114** | Supporting examples, test cases and additional editorial/acceptance principles not individually validated in class |
-| Not implemented | **257** | Other reference material or future Phase 6 draft/final-review work |
+| Conformance implemented | **21** | D01-D21 milestone-gated draft, feedback and final self-review |
+| Not implemented | **236** | Other reference material or future Phase 6 draft/final-review work |
 | **Total** | **1,430** | Unique indexed source records across the 24 tabs |
 
 The original flowchart contains **84 nodes and 284 routes**, split as Planning 32 nodes/61 routes and Completing 52 nodes/223 routes. Source editorial states (Agreed / Working draft / Needs discussion) should not be confused with website implementation or student progress.
@@ -54,6 +55,6 @@ Mathematical depth: verified syllabus methods applied, unfamiliar out-of-course 
 
 ## Remaining work
 
-The **146 core Phase 5 rules are connected**, but 114 supporting case/example records are marked partial because they require classroom review; they are not represented as individually proven teaching outcomes. Some Phase 4 supplementary source pages also remain partial despite having functional foundational prompts. Phase 6 will cover stronger teacher-draft/final-review interactions, accessibility checks, long-answer layout/document QA, and real student acceptance scenarios.
+The **146 core Phase 5 rules are connected**, but 114 supporting case/example records are marked partial because they require classroom review; they are not represented as individually proven teaching outcomes. Some Phase 4 supplementary source pages also remain partial despite having functional foundational prompts. The 15 October conformance pass connects D01-D21 to optional milestone-specific review, evidence and verified revision interactions. Broader accessibility checks, long-answer layout/document QA and real student acceptance remain separate. See [conformance corrections and verification](conformance-2026-10-15.md).
 
 Pathfinder does **not** verify permissions, prove source reliability, automatically grade IAs, synchronise accounts or write whole IA documents. PDF/Word exports contain a point-in-time Planning snapshot only; the full JSON project backup carries actual mathematical and writing activity.

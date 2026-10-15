@@ -4,6 +4,12 @@
 
 IA Pathfinder is a responsive, device-local **planning and writing companion** for IB Mathematics Internal Assessments. Students author their actual IAs in Word or Google Docs; Pathfinder helps with meaningful aims, mathematically justified choices, authentic results, interpretation, precision and coherent mathematical transitions. It never fabricates observations, assigns grades or rewrites an IA on the student's behalf.
 
+## Conformance pass - 15 October 2026
+
+The audit corrections are now integrated: authoritative actual-method identity, no assumed monotonicity, multiple relevant precision inputs, source-specific dependency review, an origin-aware writing helper, first-use unfamiliar-mathematics guidance, and optional D01-D21 draft/final checks with separately verified feedback actions. Student work, original source rows and the current visual design are preserved.
+
+See [the conformance change and test map](docs/conformance-2026-10-15.md). Full JSON backups include input/source links and review evidence. Word/PDF reports are still planning-only. Automated checks do not certify external IA edits, teacher approval, all editorial examples or classroom outcomes.
+
 ## Current release — Phase 5: contextual mathematics and writing help
 
 The Phase 4 Completing journey has **52 source-linked Completing nodes and 223 directed transitions**, with eight revisitable stages. The repeatable mathematical process is:
@@ -40,4 +46,4 @@ Students' work is saved in their current browser/device by default, not synchron
 
 Build locally using Node.js 22 or later: run npm install, then npm test and npm run build. GitHub Actions validates, builds and publishes the static distribution to GitHub Pages.
 
-The source 24-tab Google Sheet remains untouched. **Phase 6** will refine complete teacher-draft/final-review criteria, accessibility, rendered document QA and real classroom acceptance testing. Phase 5 does not claim that every editorial example or all 24 tabs are fully implemented.
+The source 24-tab Google Sheet remains untouched. The optional detailed teacher-draft/final-review checks are now connected by the conformance pass. **Phase 6** still includes broader accessibility, rendered-document QA and real classroom acceptance testing. Phase 5 does not claim that every editorial example or all 24 tabs are fully implemented.

@@ -1,3 +1,5 @@
+import {createConformanceViews} from "../completing/conformance-views.js";
+import {linkedAccuracy,linkedSources} from "../completing/evidence-links.js";
 import {WRITING_MOMENTS} from "../completing/guidance-catalog.js";
 import {PLANNING_CATALOG} from "../planning/catalog.js";
 import {planningFlags,selectedMaths} from "../planning/engine.js";
@@ -208,8 +210,10 @@ export function createProjectViews(ctx){
        summary("Limitation",st.limitations)+summary("What I learned mathematically (optional)",st.mathsInsight)+
        summary("Beyond-course mathematical idea (only if genuinely used)",["outside","mixed"].includes(st.knowledge)?st.knowledgeNotes:"")+
        summary("Earlier-result link awaiting review",st.reviewNeeded==="yes"?st.reviewReason:"")+
+       summary("Linked source records",linkedSources(state,st).map(x=>x.fields.actualSource).join("; "))+
+       summary("Linked precision inputs",linkedAccuracy(state,st).map(x=>x.quantity).join("; "))+
        summary("Next question",st.nextQuestion)+'</div>').join(""):'<p class="text-muted">No mathematics recorded yet.</p>')+
-      accuracySection+limitsSection+writingMoments+
+      accuracySection+limitsSection+writingMoments+createConformanceViews(ctx).reviewReport()+
       '<h2 style="margin-top:35px">My writing notes</h2>'+summary("Introduction",state.scratch.introduction)+summary("Data & methods",state.scratch.dataNotes)+summary("Conclusion",state.scratch.conclusion)+summary("Revisions",state.scratch.finalReview)+
       '<p class="text-xs text-muted">Student-entered Planning and mathematical notes. This working record is not a mark prediction, approval or formal IA submission.</p></div></div>';
   }

@@ -15,14 +15,14 @@ export function relevantBivariateOptions(state,node=state.completion.current){
    "Pearson's r and a paired numerical scatter are not appropriate for categorical or unmatched observations.")];
  if(type!=="paired-numerical")return[]; // ask the student to confirm paired numeric source; never infer it from label.
  const detail=x.selectedDetail,pattern=x.selectedPattern,
-  ref=detail||(pattern==="linear"?"rough-linear":pattern==="curved"?"monotonic":
+  ref=detail||(pattern==="linear"?"rough-linear":pattern==="curved"?"curved-unspecified":
    pattern==="unexpected"?"unexpected":pattern==="unclear"?"unclear":"unsure");
  const hasPmcc=isPearsonResult(prior),actualModel=x.actualResults.find(y=>y.id===prior?.id&&familyOf(y).has("fitted-model"));
  const out=[];
  if(hasPmcc){
   out.push(option("B09","What does the value of Pearson's r actually tell me about linear association?",
    "Consider the sign/size in context, the observed scatter's shape, scope of the sample and whether another calculation serves the aim."));
-  if(x.f.pmccSignal==="weak-linear"&&(ref==="monotonic"||ref==="turning"))
+  if(x.f.pmccSignal==="weak-linear"&&["monotonic","turning","curved-unspecified"].includes(ref))
    out.push(option("B12","Could a justified nonlinear question explain the scatter despite weak linear association?",
     "Weak Pearson correlation does not rule out curved relationships. Do not invent a nonlinear model form."));
   if(x.f.pmccSignal==="weak-linear"&&(ref==="unclear"||ref==="unsure"))
@@ -42,6 +42,10 @@ export function relevantBivariateOptions(state,node=state.completion.current){
   case "rough-linear":
    out.push(option("B02","Would quantifying the strength and direction of this LINEAR pattern help?",
     "Pearson's r may be useful for actual paired quantitative data, but it is optional. A fitted line needs its own purpose."));
+   break;
+  case "curved-unspecified":
+   out.push(option("B06","Does this curve keep increasing/decreasing, or does it turn or reverse direction?",
+    "Curved does not necessarily mean monotonic. Inspect the actual shape before considering rank association or a justified nonlinear model."));
    break;
   case "monotonic":
    out.push(option("B03","What type of curved mathematical model might reasonably describe the changing rate?",

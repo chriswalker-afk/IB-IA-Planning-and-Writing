@@ -5,6 +5,7 @@
  */
 import {createPlanningState,normalizePlanningState} from "../planning/engine.js";
 import {createCompletionState,normalizeCompletionState} from "../completing/engine.js";
+import {migrateEvidenceLinks} from "../completing/evidence-links.js";
 import {normalizeEntry} from "../completing/entry-record.js";
 export const STATE_VERSION = 2;
 export const STORAGE_KEY = "ia-pathfinder-prototype-v1"; // Deliberately stable across upgrades.
@@ -135,6 +136,7 @@ export function normalizeProjectState(value) {
   if(!value.planning && next.journey.currentNodeId?.startsWith("N"))migrated.current=next.journey.currentNodeId;
   next.planning=migrated;
   next.completion=normalizeCompletionState(value.completion,next.project);
+  migrateEvidenceLinks(next,!Array.isArray(value.completion?.sourceRecords));
   if(!value.completion && next.entries.length){
     next.completion.activeEntryIndex=Math.min(next.entries.length-1,next.ui.mathIndex);
   }

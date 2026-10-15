@@ -1,3 +1,5 @@
+import {conformanceAction} from "../src/completing/conformance-actions.js";
+import {reviewEditChanged} from "../src/completing/review.js";
 import test from "node:test";
 import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
@@ -42,7 +44,7 @@ function createHarness(savedValue){
   const window={scrollTo(){},confirm:()=>true,alert(){},print(){}};
   const script=read("../app.js").replace(/^import\s+.*;\s*$/gm,"");
   const globals={
-    document,window,localStorage:storage,console,clearTimeout(){},setTimeout(){return 1;},
+    conformanceAction,reviewEditChanged,document,window,localStorage:storage,console,clearTimeout(){},setTimeout(){return 1;},
     createProjectState,normalizeProjectState,persistProjectState,
     newState:createProjectState,normalise:normalizeProjectState,
     KEY:"ia-pathfinder-prototype-v1",

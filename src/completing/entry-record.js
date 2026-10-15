@@ -1,10 +1,11 @@
+import {cleanRefs} from "./evidence-links.js";
 /** Canonical single mathematical-step shape, including pre-Phase-4 records. */
 export const ENTRY_BASE=Object.freeze({
  id:"",phase:"legacy",fromEntryId:"",previousTakeaway:"",
  title:"",purpose:"",technique:"",methodId:"",knowledge:"unsure",knowledgeNotes:"",unfamiliarComponent:"",researchSource:"",understandingExample:"",mathsInsight:"",methodChangeReason:"",priorLearningOnly:"",
  kind:"",status:"planned",result:"",resultRef:"",observation:"",observationText:"",
  interpretation:"",localTakeaway:"",limitations:"",nextQuestion:"",nextWhy:"",
- bridge:"",accuracyRef:"",reviewNeeded:"",reviewReason:"",reviewCheckedAt:"",createdAt:""
+ bridge:"",accuracyRef:"",accuracyRefs:Object.freeze([]),sourceRefs:Object.freeze([]),reviewNeeded:"",reviewReason:"",reviewCheckedAt:"",createdAt:""
 });
 export function normalizeEntry(raw){
  if(!raw||typeof raw!=="object"||Array.isArray(raw))return {...ENTRY_BASE};
@@ -18,5 +19,6 @@ export function normalizeEntry(raw){
    ["first","substantial","legacy"];
   if(!choices.includes(out[key]))out[key]=ENTRY_BASE[key];
  }
+ out.accuracyRefs=cleanRefs(raw.accuracyRefs);out.sourceRefs=cleanRefs(raw.sourceRefs);
  return out;
 }

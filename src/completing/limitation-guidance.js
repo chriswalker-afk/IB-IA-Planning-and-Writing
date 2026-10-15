@@ -38,7 +38,7 @@ const limitationRelevant=(id,x)=>{
   case "L21":return real&&includes(method,"probability");
   case "L22":return measurementHas(x,/stopwatch|manual.timing|hand.tim/);
   case "L23":return measurementHas(x,/video|frame.rate|frames.per.second|camera/);
-  case "L24":return real&&includes(method,"geometric-model")&&accuracy.some(x=>matches(x.quantity,/length|width|height|radius|diameter|distance|depth|side/))&&!theoretical;
+  case "L24":return real&&includes(method,"geometric-model")&&x.matchingAccuracy.some(x=>matches(x.quantity,/length|width|height|radius|diameter|distance|depth|side/))&&!theoretical;
   case "L25":return real&&includes(method,"exponential");
   case "L26":return real&&includes(method,"quadratic-fit")&&empirical;
   case "L27":return real&&includes(method,"sinusoidal");
@@ -53,8 +53,8 @@ const limitationRelevant=(id,x)=>{
   case "L36":return real&&includes(method,"algebra")&&matches(entry?.purpose+" "+entry?.technique+" "+entry?.interpretation,/domain|inverse|divid|root|restriction|exclu/);
   case "L37":return real&&(includes(method,"statistic")||includes(method,"fitted-model"))&&
    matches(f.actualMethod+" "+f.sourcePopulation+" "+f.actualSource,/time.series|repeated|longitudinal|same.person|each.day/);
-  case "L38":return empirical&&x.accuracy.length>0&&
-   matches(f.accuracyResolution+" "+f.actualMethod+" "+x.accuracy.map(a=>a.resolution).join(" "),/round|nearest|resolution|capp|censor|limited|threshold|digit/);
+  case "L38":return empirical&&x.sourceAccuracy.length>0&&
+   matches(f.accuracyResolution+" "+f.actualMethod+" "+x.sourceAccuracy.map(a=>a.resolution).join(" "),/round|nearest|resolution|capp|censor|limited|threshold|digit/);
   default:return false;
  }
 };

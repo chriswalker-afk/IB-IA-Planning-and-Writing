@@ -294,6 +294,8 @@ test("measured-geometry limitations require a relevant measured length, not arbi
  s.completion.accuracyDecisions=[{id:"a1",quantity:"Temperature",unit:"C",resolution:"1 C",policy:"Nearest degree"}];
  assert(!relevantLimitations(s).some(x=>x.id==="L24"));
  s.completion.accuracyDecisions.push({id:"a2",quantity:"Measured width",unit:"cm",resolution:"0.1 cm",policy:"Justified"});
+ assert(!relevantLimitations(s).some(x=>x.id==="L24"));
+ s.entries.at(-1).accuracyRefs=["a2"];
  assert(relevantLimitations(s).some(x=>x.id==="L24"));
 });
 test("course-level-only work is a student-declared condition, not inferred from 'other' technique names",()=>{

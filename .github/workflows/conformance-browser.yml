@@ -1,0 +1,41 @@
+name: Conformance browser acceptance
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: npm install --no-audit --no-fund
+      - name: Unit and regression tests
+        run: |
+          set -o pipefail
+          mkdir -p qa-output
+          npm test | tee qa-output/unit-tests.log
+      - run: npm run build
+      - run: pip install playwright==1.57.0
+      - run: python -m playwright install --with-deps chromium
+      - name: Desktop and phone acceptance journeys
+        run: |
+          node scripts/conformance-fixtures.mjs
+          python -m http.server 8765 --directory dist > qa-output/server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID"' EXIT
+          python scripts/conformance-browser.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: conformance-browser-results
+          path: qa-output
+          retention-days: 7

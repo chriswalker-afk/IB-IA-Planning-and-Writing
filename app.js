@@ -1,9 +1,11 @@
+import {conformanceAction} from "./src/completing/conformance-actions.js";
+import {reviewEditChanged} from "./src/completing/review.js";
 import {createPlanningEnvelope,getFieldDiff,mergePlanningEnvelope} from "./src/handover/schema.js";
 import {modelFromEnvelope,suggestedFilename} from "./src/handover/report-model.js";
 import {createHandoverViews} from "./src/ui/handover-views.js";
 import {actOnWritingCue} from "./src/completing/guidance-actions.js";
 import {eligibleWritingCues} from "./src/completing/writing-guidance.js";
-import {selectLimitation,recordLimitation,limitationContextKey} from "./src/completing/limitation-guidance.js";
+import {selectLimitation,recordLimitation,limitationContextKey,relevantLimitations} from "./src/completing/limitation-guidance.js";
 import {relevantBivariateOptions} from "./src/completing/bivariate-guidance.js";
 
 import { planningMove, planAutoAdvance, planningBack, planningEdit, applyPlanningField, toggleMath, syncPlanningToProject, setPlanCurrent, planningFlags } from "./src/planning/engine.js";
@@ -74,6 +76,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     }
     const before=getPath(path);
     const changed=putPath(path,value);
+    if(changed)reviewEditChanged(state,path,before,value);
     if(changed&&before!==value){
       if(path.startsWith("entries.")){
         const [,index,key]=path.split(".");
@@ -465,6 +468,17 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   function clickAction(el) {
     const action=el.dataset.action||"";
     if(changeNavAction(action,el)!==false)return;
+    const conformance=conformanceAction(state,action,el.dataset);
+    if(conformance){
+      if(!conformance.ok){toast(conformance.error);return;}
+      const open=[...document.querySelectorAll("details[open]")].map(x=>x.id).filter(Boolean);
+      save();render();
+      for(const id of open){const detail=document.querySelector("#"+id);if(detail)detail.open=true;}
+      const focus=[...document.querySelectorAll("[data-action]")].find(x=>Object.entries(el.dataset).every(([k,v])=>x.dataset[k]===v));
+      if(focus)focus.focus({preventScroll:true});
+      if(conformance.message)toast(conformance.message);
+      return;
+    }
     switch(action){
       case "start-planning": setPlanCurrent(state,state.planning.current||"N00");nav("planning");break;
       case "plan-next":

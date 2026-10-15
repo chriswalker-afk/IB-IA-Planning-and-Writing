@@ -3,6 +3,7 @@
  * The route actions use EXACT source-sheet condition strings. Students can
  * navigate freely and mark stage completion explicitly; a visit is not completion.
  */
+import {createConformanceViews} from "./conformance-views.js";
 import {C_NODES,C_PROMPTS} from "./catalog.js";
 import {createGuidanceViews} from "./guidance-views.js";
 import {METHOD_OPTIONS,COURSE_OPTIONS} from "./guidance-context.js";
@@ -15,7 +16,7 @@ export function createCompletingViews(ctx){
  const {getState,e,icon,field,choose,button,summary,sheetTitle,tabletNav,filled}=ctx;
  const titleMap=new Map(C_NODES.map(x=>[x.id,x.label]));
  const F=(key,label,placeholder="",opts={})=>field("completion.fields."+key,label,placeholder,opts);
- const guides=createGuidanceViews(ctx);
+ const guides=createGuidanceViews(ctx),extra=createConformanceViews(ctx);
  const entryField=(key,label,placeholder="",opts={})=>{
   const state=getState(),i=state.completion.activeEntryIndex;
   return i>=0&&i<state.entries.length?field("entries."+i+"."+key,label,placeholder,opts):"";
@@ -117,15 +118,7 @@ export function createCompletingViews(ctx){
  const currentAim=()=>getState().planning.fields.aim||getState().project.aim||"Still to decide";
  const currentBenefit=()=>getState().planning.fields.beneficiary||getState().project.beneficiary;
  const plannedPrediction=()=>getState().planning.fields.prediction||getState().project.prediction;
- const accuracySelector=()=>{
-  const state=getState(),accuracy=state.completion.accuracyDecisions,entry=completeEntry(state);
-  if(!accuracy.length||!entry||entry.kind==="theory")return"";
-  const options=[["","Not relevant to this calculation"],
-   ...accuracy.map(x=>[x.id,x.quantity+(x.unit?" ("+x.unit+")":"")])];
-  return '<div class="guidance-accuracy-select">'+
-    entryField("accuracyRef","Which previously justified input-accuracy decision affects THIS result, if any?","",
-      {type:"select",options})+'</div>';
- };
+ const accuracySelector=()=>extra.inputLinks("accuracy")+extra.inputLinks("source");
  const accuracyNote=()=>{
   const state=getState(),accuracy=state.completion.accuracyDecisions,entry=completeEntry(state);
   if(!accuracy.length){
@@ -138,14 +131,7 @@ export function createCompletingViews(ctx){
         ". Confirm it against your actual source before choosing graph scales or reporting digits.");
     return"";
   }
-  const relevant=accuracy.find(x=>x.id===entry?.accuracyRef||
-   x.quantity===entry?.accuracyRef);
-  if(relevant)return info("Accuracy from your earlier measurement/source decision",
-    relevant.quantity+(relevant.unit?" ("+relevant.unit+")":"")+": "+
-    relevant.policy+(relevant.resolution?". Original resolution: "+relevant.resolution:"")+
-    ". Apply only if this input limits the meaning of the actual result; avoid rounding each intermediate step.");
-  // No automatic reminder about all quantities on every mathematical screen.
-  return "";
+  return extra.accuracyNote();
  };
  const entryReviewAlert=()=>{
   const s=getState(),i=s.completion.activeEntryIndex,entry=completeEntry(s);
@@ -236,6 +222,8 @@ export function createCompletingViews(ctx){
      ["not-started","Not yet obtained"],["candidate","Candidate source — not verified"],
      ["partial","Some usable material"],["ready","Usable material confirmed"],
      ["theoretical","Theoretical mathematics — no dataset"]])+
+    extra.sourceManager()+
+    F("actualSourceType","Type of this actual source","",{type:"select",options:[["","To confirm"],["primary","Primary measurements / collection"],["secondary","Published secondary source"],["theoretical","Mathematical definitions / assumptions"]]})+
     F("actualSource","What evidence or mathematical starting material do I actually have?","Source or mathematical object, not a promised dataset",{type:"textarea",rows:3})+
     F("sourceCitation","Original published source and date (if relevant)","URL, publisher or citation")+
     F("actualMethod","How did I actually obtain or define it?","Describe the real procedure, never invented data collection",{type:"textarea",rows:3})+
@@ -325,7 +313,8 @@ export function createCompletingViews(ctx){
     entryField("technique","Mathematical technique being used","e.g. plot observed paired values")+
     entryField("resultRef","Where will the figure or work appear in my IA?","e.g. Figure 1 in my Word document")+
     F("firstDefinitions","Variables, units or assumptions the reader needs here","Only what is not already defined",{type:"textarea",rows:2})+
-    accuracyNote()
+    entryField("methodId","Identify an actual method for relevant help (optional)","",{type:"select",options:METHOD_OPTIONS})+
+    accuracySelector()+accuracyNote()
   };
   case "C33":return{intro:"Create the actual figure or short calculation in your IA document. Describe what you did here without copying an invented result.",
    html:entryReviewAlert()+actualRecord()+
@@ -525,14 +514,14 @@ export function createCompletingViews(ctx){
    html:choice("draftComplete",[["not-yet","My full IA draft is not ready"],["ready","I have a complete working draft"],
     ["unsure","I need to check requirements"]])+
     F("feedbackAction","One sensible next drafting or feedback action","Draft, seek permitted written comments, or revise",{type:"textarea",rows:2})+
-    info("Not automatic permission","The site does not deliver a draft to your teacher or assume another written feedback round is permitted.")
+    info("Not automatic permission","The site does not deliver a draft to your teacher or assume another written feedback round is permitted.")+extra.feedback()
   };
   case "C80D":return{intro:"A meaningful teacher draft should be complete enough for feedback, with an initial self-review.",
    html:F("draftCriteria","Evidence for presentation, communication, engagement, reflection and mathematics (A–E)","Short notes to where each appears in YOUR draft",{type:"textarea",rows:4})+
     choice("draftComplete",[["not-yet","Important sections still incomplete"],["ready","Complete draft for permitted teacher feedback"],
     ["unsure","Need to check"]])+
     F("writtenFeedback","What written feedback did I actually receive, if any?","Private revision notes; no invented teacher response",{type:"textarea",rows:4})+
-    F("feedbackAction","One specific correction and how I will verify it","Change the original passage or mathematics",{type:"textarea",rows:2})
+    F("feedbackAction","One specific correction and how I will verify it","Change the original passage or mathematics",{type:"textarea",rows:2})+extra.review("draft")+extra.feedback()
   };
   case "C90":return{intro:"This is a final self-check, not a predicted assessment mark.",
    html:actualList()+smallSummary("School final date from Planning",p.milestoneSchoolFinal)+
@@ -543,7 +532,7 @@ export function createCompletingViews(ctx){
    html:field("scratch.finalReview","My earlier review notes (editable)","Revisit what still needs correcting",{type:"textarea",rows:3})+
     F("finalCriteria","Where are the strongest examples of A presentation, B communication, C engagement, D reflection and E mathematics?","Your own evidence references; not a grade",{type:"textarea",rows:5})+
      F("finalProofread","What still needs proofreading or verifying?","Notation, ≈, units, diagrams, precision, source links, page numbers",{type:"textarea",rows:3})+
-     F("finalRequirements","Confirmed submission and formatting requirements","School guidance, not assumed IB deadlines",{type:"textarea",rows:2})
+     F("finalRequirements","Confirmed submission and formatting requirements","School guidance, not assumed IB deadlines",{type:"textarea",rows:2})+extra.review("final")+extra.feedback()
   };
   case "C91":return{intro:"Keep the whole project: the original plan, mathematical records, writing notes, and stage progress.",
    html:button("Download complete progress backup (.json)","export-json","btn-primary","", "download")+
@@ -571,13 +560,8 @@ export function createCompletingViews(ctx){
   case "C95N":return{intro:"One clear next action is enough. You can save the obstacle and resume later.",
    html:F("oneSafeAction","My next safe action","A specific task with a destination stage",{type:"textarea",rows:2})+
     F("stuckFollowup","When could I try it? (optional)","A date you choose; no automatic reminder",{type:"date"})};
-  case "C96":return{intro:"A writing-location guide: put each idea immediately where it helps the reader understand the mathematics.",
-   html:smallSummary("My current question or location",f.writingLocation)+
-    info("Before mathematics","State why the next figure, method or calculation is useful, then define symbols."),
-    extra:info("After mathematics","Explain the ACTUAL result for your aim and whether a new mathematical question follows.")+
-      info("Alongside the method","Discuss only relevant, consequential limitations and justified input accuracy.")+
-      info("In the conclusion","Synthesize the real findings and explain significance for the intended beneficiary—avoid repeating calculations.")+
-      choice("writingDecision",[["write","I'll write/edit at the relevant location"],["covered","Already addressed"],["not-relevant","Not relevant now"]])
+  case "C96":return{intro:"A writing cue for the exact work you came from, using your actual choices and results.",
+   html:info("Your current work is preserved","Use the optional cue below if it helps. If you have already addressed or dismissed the relevant guidance, no new writing is required. Return to your saved work when ready.")
   };
   default:return{intro:"Review a meaningful mathematical decision. Continue when you are ready.",html:""};
   }
@@ -657,13 +641,14 @@ export function createCompletingViews(ctx){
   return '<div class="page narrow completing-page">'+tabletNav()+
     sheetTitle("PART 2 · COMPLETING","Your IA Studio","Build the actual investigation, one purposeful mathematical decision at a time.")+
     '<div class="completion-topline"><span>'+icon("route")+' '+e(node==="C04"?"Your choice":stage?C_MAJOR_STAGES.find(x=>x.id===stage)?.name||"Mathematical decision":"Focused decision")+'</span>'+
+    (node!=="C96"?'<button class="btn btn-quiet btn-sm" data-action="completion-open" data-node="C96">'+icon("pencil")+' Where should I write this?</button>':"")+
     '<button class="btn btn-quiet btn-sm" data-action="completion-open" data-node="C04">'+icon("layers")+' My stages</button></div>'+
     topWarnings+
     '<div class="task-shell" data-source-node="'+e(node)+'"><div class="stage-label">'+
     icon(stage?C_MAJOR_STAGES.find(x=>x.id===stage)?.icon||"route":"route")+' '+
     e(stage?C_MAJOR_STAGES.find(x=>x.id===stage)?.name||"Completing":"MY MATHEMATICAL JOURNEY")+'</div>'+
     '<h2>'+e(label)+'</h2><p class="task-intro">'+e(screen.intro)+'</p>'+
-    screen.html+(screen.extra||"")+
+    extra.returnToReview()+screen.html+(screen.extra||"")+
     guides.writingMoment(node)+guides.mathsHelp(node)+guides.limitsHelp(node)+
     contextualPrompt(node)+statusControls+
     allButtons(node,primaryByNode[node]||[])+'</div>'+

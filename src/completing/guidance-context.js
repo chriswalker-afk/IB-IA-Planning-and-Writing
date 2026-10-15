@@ -1,3 +1,5 @@
+import {methodFamilies as familyOf} from "./method-identity.js";
+import {linkedAccuracy,sourceContextFields} from "./evidence-links.js";
 /** Context facts used by every Phase 5 pedagogical selector. */
 import {completeEntry,sourceResultForNext,scatterForNext,isPearsonResult,completionStage} from "./engine.js";
 
@@ -45,44 +47,15 @@ const str=v=>typeof v==="string"?v.trim():"";
 const lo=v=>str(v).toLowerCase();
 const joined=(...parts)=>parts.map(str).filter(Boolean).join(" ").toLowerCase();
 export const isDone=entry=>entry?.status==="completed"&&!!str(entry.result);
-export function familyOf(entry,{allowPlanned=false}={}){
- if(!entry||(!allowPlanned&&!isDone(entry)))return new Set();
- const words=joined(entry.methodId,entry.technique,entry.title);
- const families=new Set();
- const add=(test,kind)=>{if(test.test(words))families.add(kind)};
- add(/\b(pmcc|pearson|product.moment)\b/,"pmcc");
- add(/\b(spearman|rank correlation)\b/,"spearman");
- add(/linear.regression|line.of.best.fit|least.squares|\bfitted.line\b|\bstraight.line\b/,"linear-regression");
- add(/quadratic.fit|polynomial|cubic.fit|quadratic.regression/,"quadratic-fit");
- add(/exponential|growth.and.decay|compound.growth/,"exponential");
- add(/sinusoidal|sinusoid|periodic|sine.fit|cosine.fit/,"sinusoidal");
- add(/optimis|optimiz|stationary.point|maximum.minimum|critical.point/,"optimisation");
- add(/geometric.model|measured.(area|volume)|geometry|surface.area|volume/,"geometric-model");
- add(/normal.distribution|normal.model|\bz.score\b/,"normal");
- add(/binomial/,"binomial");
- add(/two.sample.t|\bt.test\b|\bt test\b/,"two-sample-t");
- add(/chi.independence|independence.test|chi.squared.independence/,"chi-independence");
- add(/chi.fit|chi.squared.goodness|goodness.of.fit/,"chi-fit");
- add(/conditional.probability|expected.value/,"probability");
- add(/voronoi/,"voronoi");
- add(/numerical.integration|trapez|trapezoid/,"numerical-integration");
- add(/rates.from.data|empirical.rates|estimated.rate|finite.difference/,"rates-from-data");
- add(/power.law|power.model|log.transform/,"power");
- add(/proof|counterexample|induction|conjecture/,"proof");
- add(/algebra|equation|roots|domain.restriction|inequality/,"algebra");
- // A student-selected method ID beats loose text matches; regex is a migration fallback.
- if(str(entry.methodId)&&entry.methodId!=="other")families.add(entry.methodId);
- if(families.has("linear-regression")||families.has("quadratic-fit")||
-    families.has("exponential")||families.has("sinusoidal")||families.has("power"))families.add("fitted-model");
- if(families.has("pmcc")||families.has("spearman")||families.has("two-sample-t")||
-   families.has("chi-independence")||families.has("chi-fit")||families.has("normal")||
-   families.has("binomial")||families.has("probability"))families.add("statistic");
- return families;
-}
+export {methodFamilies as familyOf} from "./method-identity.js";
 export function guidanceContext(state,node=state.completion.current){
- const c=state.completion,f=c.fields,p=state.planning?.fields||{},entry=completeEntry(state),
-  next=sourceResultForNext(state),scatter=scatterForNext(state),
+ const c=state.completion,next=sourceResultForNext(state),
+  entry=["C35","C35H","C35B","C35P"].includes(node)?next:completeEntry(state),
+  f={...sourceContextFields(state,entry,node)},p=state.planning?.fields||{},
+  scatter=scatterForNext(state),
   stage=completionStage(node,state);
+ if(c.pairedDataForEntryId!==scatter?.id){f.pairedDataType="";f.scatterAimRelevance="";}
+ if(c.pmccSignalForEntryId!==next?.id)f.pmccSignal="";
  const inMath=["C40","C50","C40T","C40D","C40L"].includes(node);
  const real=isDone(entry),method=familyOf(entry),plannedMethod=familyOf(entry,{allowPlanned:true});
  const methodText=joined(entry?.methodId,entry?.technique,entry?.title);
@@ -94,19 +67,17 @@ export function guidanceContext(state,node=state.completion.current){
  const hasActualSource=sourceStatus==="ready"||sourceStatus==="partial"||
    (theoretical&&sourceStatus==="theoretical");
  const hasActualSample=hasActualSource&&!!str(f.samplingMethod||f.sampleOrCensus);
- const sourceType=p.dataSource||state.project.dataSource;
+ const sourceType=f.actualSourceType||p.dataSource||state.project.dataSource;
  const accuracy=Array.isArray(c.accuracyDecisions)?c.accuracyDecisions:[];
- const matchingAccuracy=accuracy.filter(x=>{
-  const ref=lo(entry?.accuracyRef);
-  return !!ref&&(ref===lo(x.id)||ref.includes(lo(x.quantity))||ref.includes(lo(x.symbol)));
- });
- const latestAccuracy=matchingAccuracy.length?matchingAccuracy:accuracy;
+ const sourceAccuracy=c.sourceRecords.length?accuracy.filter(x=>x.sourceId===c.activeSourceId):accuracy;
+ const matchingAccuracy=linkedAccuracy(state,entry);
+ const latestAccuracy=matchingAccuracy;
  const paired=lo(f.pairedDataType)==="paired-numerical"||
    (!str(f.pairedDataType)&&!!scatter); // A real scatter gives a provisional lead, not verified pairing.
  return {
   node,stage,state,c,f,p,entry,next,scatter,real,inMath,method,plannedMethod,methodText,
   sample,statistical,modelling,theoretical,sourceType,sourceStatus,hasActualSource,
-  hasActualSample,accuracy,matchingAccuracy,latestAccuracy,
+  hasActualSample,accuracy,sourceAccuracy,matchingAccuracy,latestAccuracy,
   course:str(p.course||state.project.course),aim:str(p.aim||state.project.aim),
   beneficiary:str(p.beneficiary||state.project.beneficiary),
   prediction:str(p.prediction||state.project.prediction),
@@ -122,6 +93,7 @@ export function guidanceContext(state,node=state.completion.current){
 }
 export function guidanceScope(ctx,sourceId){
  const {node,entry,next,scatter}=ctx;
+ if(/^C2/.test(node)&&ctx.c.activeSourceId)return "source:"+ctx.c.activeSourceId;
  const after=/^W(?:16|17|18|19|23|24|25|26|27|28|38|43|47|48|49|51|52|53|56|57|64)$/.test(sourceId);
  const mathScope=after||/^W(?:20|21|39|40|41|42|45|50|54|58|59|60|61|62|63|65)$/.test(sourceId)||
   /^M/.test(sourceId);
@@ -130,14 +102,15 @@ export function guidanceScope(ctx,sourceId){
   return "entry:"+(entry?.id||next?.id||"none");
  return "stage:"+(ctx.stage||node);
 }
+const nodeForAccuracy=ctx=>/^C2/.test(ctx.node);
 const essential=strValue=>lo(strValue).replace(/\s+/g," ").slice(0,180);
 export function guidanceFingerprint(ctx,sourceId){
  const {p,f,entry,next,scatter,c}=ctx;
  const common=[p.aim,p.course,p.kind,p.beneficiary,p.dataSource,f.dataStatus];
  let fields=[];
  if(/^W0[1-2]$/.test(sourceId))fields=[p.motivation,p.prediction,p.predictionWhy];
- else if(/^W(?:0[3-9]|1[01]|35|36|46)$/.test(sourceId))fields=[f.samplingMethod,f.sampleOrCensus,f.actualMethod,f.actualSource,f.secondaryVerified,f.modelAssumptions,ctx.accuracy.length];
- else if(/^W(?:17|25|47|49|51|52|53|55|56|57)$/.test(sourceId))fields=[entry?.accuracyRef,ctx.accuracy.map(x=>[x.id,x.unit,x.resolution,x.policy].join(":")).join(";"),entry?.reviewNeeded];
+ else if(/^W(?:0[3-9]|1[01]|35|36|46)$/.test(sourceId))fields=[f.samplingMethod,f.sampleOrCensus,f.actualMethod,f.actualSource,f.secondaryVerified,f.modelAssumptions,ctx.sourceAccuracy.map(x=>x.id+":"+x.resolution+":"+x.policy).join(";")];
+ else if(/^W(?:17|25|47|49|51|52|53|55|56|57)$/.test(sourceId))fields=[entry?.accuracyRef,(nodeForAccuracy(ctx)?ctx.sourceAccuracy:ctx.matchingAccuracy).map(x=>[x.id,x.unit,x.resolution,x.policy].join(":")).join(";"),entry?.reviewNeeded];
  else if(/^W(?:58|59|60|61|62|63|64|65|66)$/.test(sourceId))fields=[entry?.knowledge,entry?.methodId,entry?.unfamiliarComponent,entry?.researchSource,entry?.mathsInsight,entry?.reviewNeeded];
  else fields=[entry?.id,entry?.methodId,entry?.technique,entry?.status,entry?.observation,entry?.reviewNeeded,next?.id,scatter?.id,
    f.scatterPattern,f.scatterDetail,f.pmccSignal,f.nextMethod];

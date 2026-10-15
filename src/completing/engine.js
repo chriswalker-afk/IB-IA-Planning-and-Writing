@@ -3,6 +3,9 @@
  * The C node/route table is a verbatim index of the spreadsheet, but
  * only student actions execute transitions. Predictions/plans are never results.
  */
+import {methodFamilies} from "./method-identity.js";
+import {beforeSourceChange,linkedAccuracy,flagInputDependents,normalizeSources} from "./evidence-links.js";
+import {createReviewState,normalizeReviewState} from "./review.js";
 import {C_NODES,C_ROUTES} from "./catalog.js";
 import {MAX_ENTRIES} from "../core/limits.js";
 
@@ -20,7 +23,7 @@ export const C_MAJOR_STAGES=Object.freeze([
 export const C_STAGE_STATUS=Object.freeze(["not-started","working","complete","needs-review"]);
 export const C_FIELD_DEFAULTS=Object.freeze({
  changedSincePlanning:"",permissionStatus:"",permissionNotes:"",courseConcern:"",
- dataStatus:"",actualSource:"",sourceCitation:"",actualMethod:"",methodAim:"",
+ dataStatus:"",actualSource:"",actualSourceType:"",sourceCitation:"",actualMethod:"",methodAim:"",
  actualDate:"",sourcePopulation:"",dataCount:"",collectionStatus:"",
  statisticalPopulation:"",sampleOrCensus:"",samplingMethod:"",samplingRationale:"",
  sampleSize:"",responseBias:"",pairing:"",groupFairness:"",dataCleaning:"",
@@ -58,11 +61,12 @@ export function createCompletionState(){
  return {
   current:"C00",history:[],visited:[],transitions:[],fields:{...C_FIELD_DEFAULTS},
   stages:Object.fromEntries(C_MAJOR_STAGES.map(x=>[x.id,"not-started"])),
-  activeEntryIndex:-1,nextFromEntryId:"",scatterPatternForEntryId:"",scatterDetailForEntryId:"",returnTo:"",latestMeaningfulNode:"",
+  activeEntryIndex:-1,nextFromEntryId:"",pairedDataForEntryId:"",pmccSignalForEntryId:"",scatterPatternForEntryId:"",scatterDetailForEntryId:"",returnTo:"",latestMeaningfulNode:"",
   guidanceUi:{writeKey:"",coveredKey:"",exampleKey:"",selectedKey:"",quietNode:"",quietId:"",quietScope:"",quietSignature:"",expanded:false,mathsExpanded:false,limitsExpanded:false,accuracyChanged:false,limitPage:0,limitDraftVisible:false,
    limitNoneKey:"",locationDraft:"",noteDraft:""},
   limitationDraft:{id:"",entryId:"",explanation:"",consequence:"",mitigation:"",location:""},
-  confirmedLimitations:[],
+  confirmedLimitations:[],sourceRecords:[],activeSourceId:"",
+  writingOrigin:{node:"",entryId:"",nextFromEntryId:""},review:createReviewState(),
   sourceVersion:"2026-10-14",helpersExpanded:false,stageExpanded:false,
   accuracyDecisions:[],confirmedCurrentAimAt:"",notices:[]
  };
@@ -80,12 +84,15 @@ export function normalizeCompletionState(data,project={}){
   (validNode(x.to)||x.to==="N06")).slice(-400).map(x=>({...x,condition:str(x.condition),sourceRow:Number.isInteger(x.sourceRow)?x.sourceRow:null})):[];
  const accuracy=Array.isArray(v.accuracyDecisions)?v.accuracyDecisions.filter(x=>x&&typeof x==="object")
   .slice(0,40).map(x=>({id:str(x.id),quantity:str(x.quantity),symbol:str(x.symbol),unit:str(x.unit),
-  resolution:str(x.resolution),policy:str(x.policy),reason:str(x.reason)})):[];
+  resolution:str(x.resolution),policy:str(x.policy),reason:str(x.reason),sourceId:str(x.sourceId)})):[];
  return {...base,current:validNode(v.current)?v.current:(project.aim?"C04":"C00"),
   history:ids(v.history),visited:ids(v.visited),transitions,
   fields,stages:states,accuracyDecisions:accuracy,
+  sourceRecords:normalizeSources(v.sourceRecords),activeSourceId:str(v.activeSourceId).slice(0,160),
+  writingOrigin:{node:validNode(v.writingOrigin?.node)?v.writingOrigin.node:"",entryId:str(v.writingOrigin?.entryId).slice(0,160),nextFromEntryId:str(v.writingOrigin?.nextFromEntryId).slice(0,160)},
+  review:normalizeReviewState(v.review),
   activeEntryIndex:Number.isInteger(v.activeEntryIndex)?Math.max(-1,Math.min(119,v.activeEntryIndex)):-1,
-  nextFromEntryId:str(v.nextFromEntryId).slice(0,160),scatterPatternForEntryId:str(v.scatterPatternForEntryId).slice(0,160),scatterDetailForEntryId:str(v.scatterDetailForEntryId).slice(0,160),
+  nextFromEntryId:str(v.nextFromEntryId).slice(0,160),pairedDataForEntryId:str(v.pairedDataForEntryId).slice(0,160),pmccSignalForEntryId:str(v.pmccSignalForEntryId).slice(0,160),scatterPatternForEntryId:str(v.scatterPatternForEntryId).slice(0,160),scatterDetailForEntryId:str(v.scatterDetailForEntryId).slice(0,160),
   returnTo:validNode(v.returnTo)?v.returnTo:"",
   latestMeaningfulNode:validNode(v.latestMeaningfulNode)?v.latestMeaningfulNode:"",
   confirmedCurrentAimAt:str(v.confirmedCurrentAimAt),
@@ -143,11 +150,10 @@ export function latestRealResult(state){
 }
 
 const genuinelyDone=entry=>entry?.status==="completed"&&str(entry.result).trim();
-export const isPearsonResult=entry=>!!(genuinelyDone(entry)&&
- /(?:\bpmcc\b|\bpearson(?:'s)?\b|product.moment correlation)/i.test(
-  str(entry.technique)+" "+str(entry.title)+" "+str(entry.methodId)));
-export const isScatterResult=entry=>!!(genuinelyDone(entry)&&
- (entry.kind==="scatter"||/\bscatter\b/i.test(str(entry.technique)+" "+str(entry.title))));
+export const isPearsonResult=entry=>methodFamilies(entry).has("pmcc");
+export const isScatterResult=entry=>!!(genuinelyDone(entry)&&(entry.kind==="scatter"||
+ (!entry.kind&&/^scatter (?:plot|graph)$/i.test(str(entry.technique).trim()))));
+
 /** The chosen real result to build upon, or the latest one on general entry. */
 export function sourceResultForNext(state){
  const id=state.completion.nextFromEntryId;
@@ -199,22 +205,10 @@ export function completionFlags(state){
 export function setCompletionField(state,key,value){
  if(!hasOwn(C_FIELD_DEFAULTS,key))return false;
  const c=state.completion,previous=c.fields[key];
+ beforeSourceChange(state,key,previous,str(value).slice(0,20000));
  c.fields[key]=str(value).slice(0,20000);
- if(previous!==c.fields[key]&&String(previous||"").trim()&&
-  ["actualSource","sourceCitation","actualMethod","samplingMethod","modelInputs","modelAssumptions",
-   "modelDomain","dataCleaning","statisticalPopulation"].includes(key)){
-  const affectsMath=state.entries.filter(x=>x.status==="completed"&&String(x.result||"").trim()&&
-   !(x.kind==="theory"&&!["modelInputs","modelAssumptions","modelDomain"].includes(key)));
-  for(const entry of affectsMath){
-   entry.reviewNeeded="yes";
-   entry.reviewReason="The source, sampling, model assumption or data definition used earlier has changed. Recheck the actual calculation, accuracy and interpretation before relying on it.";
-  }
-  if(affectsMath.length){
-   for(const stage of ["C20","C30","C40","C60"])
-    if(c.stages[stage]==="complete")c.stages[stage]="needs-review";
-   c.guidanceUi.accuracyChanged=true;
-  }
- }
+ if(key==="pairedDataType"||key==="scatterAimRelevance")c.pairedDataForEntryId=scatterForNext(state)?.id||"";
+ if(key==="pmccSignal")c.pmccSignalForEntryId=sourceResultForNext(state)?.id||"";
  if(key==="scatterPattern"){
   c.scatterPatternForEntryId=scatterForNext(state)?.id||"";
  }
@@ -249,6 +243,14 @@ export function setCompletionNode(state,id,{history=true,reason="revisit"}={}){
  if(!validNode(id))return{ok:false,error:"Unknown Completing stage."};
  const c=state.completion;
  const previous=c.current;
+ const helperHop=id==="C96"||previous==="C96";
+ if(id==="C96"&&previous!=="C96"){
+  c.writingOrigin={node:previous,entryId:completeEntry(state)?.id||"",nextFromEntryId:c.nextFromEntryId};
+ }
+ if(previous==="C96"&&id===c.writingOrigin?.node){
+  const index=state.entries.findIndex(x=>x.id===c.writingOrigin.entryId);
+  c.activeEntryIndex=index;c.nextFromEntryId=c.writingOrigin.nextFromEntryId;
+ }
  if(id==="C35"){
   if(["C34","C34A","C34B","C34U"].includes(previous)){
    const active=completeEntry(state);
@@ -260,7 +262,7 @@ export function setCompletionNode(state,id,{history=true,reason="revisit"}={}){
  if(c.current!==id&&history)c.history.push(c.current);
  c.history=c.history.slice(-350);
  c.current=id;
- if(previous!==id&&c.guidanceUi){
+ if(previous!==id&&c.guidanceUi&&!helperHop){
   c.guidanceUi.quietNode="";
   c.guidanceUi.quietId="";c.guidanceUi.quietScope="";c.guidanceUi.quietSignature="";
   c.guidanceUi.exampleKey="";
@@ -373,7 +375,7 @@ export function moveCompletionRoute(state,condition){
  if(route.to==="C02"&&from==="C10")c.returnTo="C10";
  if(["C24","C96","C95"].includes(route.to)&&!["C24","C96","C95"].includes(from))c.returnTo=from;
  if(from==="C96"&&condition.startsWith("Return to my original stage")) {
-  const target=c.returnTo||"C04";c.returnTo="";
+  const target=c.writingOrigin?.node||c.returnTo||"C04";c.returnTo="";
   addTransition(state,route);return setCompletionNode(state,target);
  }
  if(route.to==="N06"){
@@ -403,12 +405,12 @@ export function moveCompletionRoute(state,condition){
 export function flagDependentMathematics(state,index,key,before,after){
  const parent=state.entries[index];
  if(!parent||before===after||
-  !["result","status","interpretation","localTakeaway","observation","observationText","purpose","technique"].includes(key))
+  !["result","status","interpretation","localTakeaway","observation","observationText","purpose","technique","methodId"].includes(key))
   return [];
  // Preserve the initial input workflow: don't nag while a first result is being typed.
  const substantive=key==="status"||String(before??"").trim().length>0;
  if(!substantive)return[];
- if(["result","status","technique","observation"].includes(key)&&
+ if(["result","status","technique","methodId","observation"].includes(key)&&
   (parent.interpretation||parent.localTakeaway)){
   parent.reviewNeeded="yes";
   parent.reviewReason="Recheck this step's earlier interpretation against the revised mathematics.";
@@ -459,8 +461,8 @@ export function addAccuracyDecision(state){
   return{ok:false,error:"Name the quantity and your intended reporting-accuracy decision first."};
  const record={id:"accuracy-"+Date.now().toString(36)+"-"+state.completion.accuracyDecisions.length,
   quantity:f.accuracyQuantity,symbol:f.accuracySymbol,unit:f.accuracyUnit,
-  resolution:f.accuracyResolution,policy:f.accuracyPolicy,reason:f.accuracyReason};
- const idx=state.completion.accuracyDecisions.findIndex(x=>x.quantity.trim().toLowerCase()===record.quantity.trim().toLowerCase());
+  resolution:f.accuracyResolution,policy:f.accuracyPolicy,reason:f.accuracyReason,sourceId:state.completion.activeSourceId||""};
+ const idx=state.completion.accuracyDecisions.findIndex(x=>x.quantity.trim().toLowerCase()===record.quantity.trim().toLowerCase()&&(x.sourceId||"")===record.sourceId);
  if(idx>=0){
   const old=state.completion.accuracyDecisions[idx];
   record.id=old.id;
@@ -468,16 +470,8 @@ export function addAccuracyDecision(state){
   state.completion.accuracyDecisions[idx]=record;
   if(changed){
    state.completion.guidanceUi.accuracyChanged=true;
-   const linked=state.entries.filter(x=>x.status==="completed"&&
-    (x.accuracyRef===old.id||x.accuracyRef===old.quantity));
-   for(const entry of linked){
-    entry.reviewNeeded="yes";
-    entry.reviewReason="Earlier input precision, unit or source resolution changed. Recheck the affected calculation's reported accuracy and interpretation.";
-   }
-   if(linked.length){
-    for(const stage of ["C30","C40","C60"])if(state.completion.stages[stage]==="complete")
-     state.completion.stages[stage]="needs-review";
-   }
+   const linked=state.entries.filter(x=>linkedAccuracy(state,x).some(a=>a.id===old.id));
+   flagInputDependents(state,linked,"Earlier linked input precision, unit or source resolution changed. Recheck this calculation and dependent interpretations.");
   }
  }else if(state.completion.accuracyDecisions.length<40)state.completion.accuracyDecisions.push(record);
  else return{ok:false,error:"The accuracy list is full; edit an existing record."};
@@ -501,7 +495,7 @@ export function completionSuggestions(state){
   s.push(["Which curved function might fit the actual shape, if modelling serves my aim?","Do not force a straight line merely because a PMCC was planned."]);
   s.push(["Would checking a simplified case or residual pattern improve the model?","Use only if it helps the mathematical question."]);
  }else if(observed==="linear"){
-  const paired=f.pairedDataType==="paired-numerical"&&!!scatterForNext(state);
+  const paired=f.pairedDataType==="paired-numerical"&&!!scatterForNext(state)&&c.pairedDataForEntryId===scatterForNext(state).id;
   if(paired)
    s.push(["Would quantifying the observed LINEAR relationship genuinely help the aim?","Pearson's r or a fitted line may be optional next tools for actual paired numerical observations. Justify any method rather than treating it as compulsory."]);
   else

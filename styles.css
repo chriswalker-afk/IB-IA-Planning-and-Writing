@@ -272,3 +272,15 @@ h1,h2,h3,h4,p {margin-top:0} h1,h2,h3,h4 {font-family:Manrope, 'DM Sans', sans-s
  .guidance-limit-controls{flex-direction:column;align-items:flex-start}
 }
 @media(prefers-reduced-motion:reduce){.guidance-writing,.guidance-other-button{transition:none!important}}
+
+/* Conformance: evidence links and optional review remain subordinate to the task. */
+.input-links .choice { display: block; width: 100%; text-align: left; margin: 8px 0; white-space: normal; overflow-wrap: anywhere; }
+.input-links .choice[aria-checked="true"] { border-color: var(--teal); box-shadow: inset 4px 0 var(--teal); }
+.input-links .choice[aria-checked="true"]::before { content: "\2713  "; }
+.conformance-review { margin-top: 24px; }
+.review-check { margin: 12px 0; padding: 12px; border: 1px solid var(--line); border-radius: 12px; }
+.review-check > summary { cursor: pointer; overflow-wrap: anywhere; }
+.conformance-review .button-row, #review-feedback .button-row { flex-wrap: wrap; }
+#source-manager .btn, #review-feedback .summary-block { overflow-wrap: anywhere; white-space: normal; }
+
+.completion-topline { flex-wrap: wrap; gap: 8px; }

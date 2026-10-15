@@ -1,4 +1,5 @@
 /** Student-owned writing guidance progress. No action writes to the IA document. */
+import {writingOriginNode} from "./writing-origin.js";
 import {eligibleWritingCues} from "./writing-guidance.js";
 const actions=new Set(["write-now","covered-start","covered","not-relevant","defer","example","save-note","written"]);
 const savedStatus=new Set(["already-covered","not-relevant","deferred","noted","written"]);
@@ -42,7 +43,7 @@ export function actOnWritingCue(state,{id,key,action}){
  };
  state.writingLedger[key]=updated;
  // Dismissing one should never unleash an unwanted queue of other messages.
- ui.quietNode=node;
+ ui.quietNode=writingOriginNode(state,node);
  ui.quietId=cue.id;ui.quietScope=cue.scope;ui.quietSignature=cue.fingerprint;
  ui.writeKey="";ui.coveredKey="";ui.exampleKey="";
  if(["save-note","written","covered"].includes(action)){ui.locationDraft="";ui.noteDraft="";}
@@ -55,7 +56,7 @@ export function writingCueStatus(state,key){
 }
 export function quietAutoWritingCue(state,node=state.completion.current){
  const ui=state.completion.guidanceUi;
- if(ui.quietNode!==node||!ui.quietId)return false;
+ if(ui.quietNode!==writingOriginNode(state,node)||!ui.quietId)return false;
  const original=eligibleWritingCues(state,node,{includingAcknowledged:true})
   .find(x=>x.id===ui.quietId&&x.scope===ui.quietScope);
  return !!original&&original.fingerprint===ui.quietSignature;

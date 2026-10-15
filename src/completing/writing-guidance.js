@@ -1,3 +1,6 @@
+import {firstUnfamiliarUse} from "./method-identity.js";
+import {linkedAccuracy} from "./evidence-links.js";
+import {writingOriginNode,writingOriginState} from "./writing-origin.js";
 import {WRITING_MOMENTS} from "./guidance-catalog.js";
 import {
  guidanceContext,guidanceFingerprint,guidanceScope,hypotheticalExample,
@@ -21,7 +24,7 @@ const relevance=(id,x)=>{
  const derived=real&&!theoretical&&(method.has("fitted-model")||method.has("statistic")||
    method.has("optimisation")||method.has("geometric-model")||method.has("rates-from-data")||
    entry?.kind==="model");
- const accuracyRelated=accuracy.length>0&&(exists(entry?.accuracyRef)||exists(f.accuracyForResult));
+ const accuracyRelated=x.matchingAccuracy.length>0;
  const nextMath=exists(f.nextQuestion)&&exists(f.nextReason)&&!!next;
  const techUsed=exists(f.technologyTool)&&exists(f.technologyOutcome)&&real&&f.technologyForEntryId===entry?.id;
  const measured=exists(f.actualMethod)&&dataSafe &&
@@ -80,21 +83,21 @@ const relevance=(id,x)=>{
   case "W44":return actualResults.length>0&&
     x.state.completion.transitions.at(-1)?.from==="C35"&&
     x.state.completion.transitions.at(-1)?.to==="C60";
-  case "W46":return accuracy.length>0&&dataSafe;
+  case "W46":return x.sourceAccuracy.length>0&&dataSafe;
   case "W47":return real&&entry?.phase==="first"&&accuracyRelated;
   case "W49":return derived&&accuracyRelated;
   case "W50":return entry?.phase!=="first"&&entryMethod&&exists(entry?.purpose)&&accuracyRelated;
   case "W51":return derived&&accuracyRelated;
-  case "W52":return real&&method.has("fitted-model")&&(accuracy.length>0||exists(f.modelAssumptions));
+  case "W52":return real&&method.has("fitted-model")&&(accuracyRelated||exists(f.modelAssumptions));
   case "W53":return real&&(method.has("statistic")||isPearsonResult(entry));
-  case "W54":return !!next&&accuracy.length>0&&exists(next.accuracyRef);
-  case "W55":return actualResults.some(st=>exists(st.accuracyRef))&&accuracy.length>0;
+  case "W54":return !!next&&linkedAccuracy(x.state,next).length>0;
+  case "W55":return actualResults.some(st=>linkedAccuracy(x.state,st).length>0);
   case "W56":return real&&(theoretical||entry?.kind==="theory")&&!accuracyRelated;
-  case "W57":return x.c.guidanceUi?.accuracyChanged===true;
+  case "W57":return x.c.guidanceUi?.accuracyChanged===true&&(/^C2/.test(node)||entry?.reviewNeeded==="yes"&&accuracyRelated);
   case "W58":return node==="C35"?exists(f.nextMethod)&&!!next:entryMethod;
   case "W59":return applied&&entry.knowledge==="syllabus";
-  case "W60":return applied&&entry.knowledge==="outside";
-  case "W61":return applied&&entry.knowledge==="mixed";
+  case "W60":return entryMethod&&exists(entry?.purpose)&&entry.knowledge==="outside"&&firstUnfamiliarUse(x.state,entry);
+  case "W61":return entryMethod&&exists(entry?.purpose)&&entry.knowledge==="mixed"&&firstUnfamiliarUse(x.state,entry);
   case "W62":return entryMethod&&entry.knowledge==="unsure";
   case "W63":return real&&exists(entry?.researchSource);
   case "W64":return insight;
@@ -110,6 +113,7 @@ const priorities=Object.freeze({
  W02:76,W35:87,W51:93,W57:97,W58:93,W65:91,W66:93
 });
 export function personaliseWritingCue(def,ctx){
+ const relevantAccuracy=/^C2/.test(ctx.node)?ctx.sourceAccuracy:ctx.matchingAccuracy;
  const technique=readable(ctx.entry?.technique||ctx.entry?.methodId||ctx.f.nextMethod||"this method",95);
  const changes={
   "aim":ctx.aim||"your aim",
@@ -124,16 +128,17 @@ export function personaliseWritingCue(def,ctx){
   "chosen method":readable(ctx.f.chosenMethod||ctx.f.samplingMethod||"your chosen method"),
   "new technique":technique,
   "unfamiliar technique":technique,
-  "recorded c24 units/source precision":ctx.accuracy.map(x=>x.quantity+" ("+x.unit+", "+x.resolution+")").join("; ")||"previously recorded input precision",
-  "input precision/source":ctx.accuracy.map(x=>x.policy).join("; ")||"your recorded data precision",
+  "recorded c24 units/source precision":relevantAccuracy.map(x=>x.quantity+" ("+x.unit+", "+x.resolution+")").join("; ")||"previously recorded input precision",
+  "input precision/source":relevantAccuracy.map(x=>x.policy).join("; ")||"your recorded data precision",
   "previous result":readable(ctx.next?.localTakeaway||ctx.next?.result||"your previous finding"),
   "actual statistic":readable(ctx.entry?.result||"your calculated statistic"),
   "computed result":readable(ctx.entry?.result||"your calculation")
  };
  const cue=def.cue.replace(/\[([^\]]{1,100})\]/g,(_,key)=>{
   const label=key.toLowerCase();
-  for(const [name,value] of Object.entries(changes))if(label===name||label.includes(name))return value;
-  if(label.includes("quantity"))return ctx.accuracy[0]?.quantity||"the measured quantity";
+  if(Object.hasOwn(changes,label))return changes[label];
+  for(const [name,value] of Object.entries(changes).sort((a,b)=>b[0].length-a[0].length))if(label.includes(name))return value;
+  if(label.includes("quantity"))return relevantAccuracy[0]?.quantity||"the measured quantity";
   if(label.includes("new")||label.includes("method"))return technique;
   if(label.includes("result"))return "your actual finding";
   if(label.includes("programme")||label.includes("course"))return ctx.course||"your course";
@@ -142,7 +147,9 @@ export function personaliseWritingCue(def,ctx){
  return cue.length>600?cue.slice(0,600)+"…":cue;
 }
 export function eligibleWritingCues(state,node=state.completion.current,{includingAcknowledged=false}={}){
- const ctx=guidanceContext(state,node);
+ const origin=writingOriginNode(state,node);
+ const ctx=guidanceContext(writingOriginState(state,node),origin);
+ node=origin;
  const results=[];
  for(const def of WRITING_MOMENTS){
   if(!includesNode(def,node)||!relevance(def.id,ctx))continue;
@@ -157,7 +164,7 @@ export function eligibleWritingCues(state,node=state.completion.current,{includi
    title:ctx.inMath?"A useful writing moment":"Where this belongs in your IA",
    message:personaliseWritingCue(def,ctx),
    example:hypotheticalExample(def.id),record:same?record:null,
-   priority:priorities[def.id]||65
+   priority:!ctx.real&&["W60","W61"].includes(def.id)?105:priorities[def.id]||65
   });
  }
  return results.sort((a,b)=>b.priority-a.priority||Number(a.id.slice(1))-Number(b.id.slice(1)));
