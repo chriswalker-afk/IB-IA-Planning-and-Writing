@@ -298,6 +298,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     // A labelled, isolated and fully populated fictional investigation.
     // Loading/switching previews NEVER replaces the personal browser project.
     const next=createIllustrativeSample(kind);
+    next.ui.adviceMode=state.ui.adviceMode; // Keep each student’s help preference when trying a safe sample.
     const origin=drawerReturn||captureReturn();
     state=preview.begin(state,next,{scroll:origin.scroll,attributes:origin.attributes});
     save();closeDrawer(false);render({top:true});
