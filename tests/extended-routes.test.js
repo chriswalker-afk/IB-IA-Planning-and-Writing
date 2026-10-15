@@ -135,7 +135,7 @@ test("categorical inference avoids claims of independence or causation, expected
  assert(routeAdvice(s(),item("chi-independence","evidence-against")).essential.includes("causation"));
  const chance=routeAdvice(s(),item("expected-value","positive-expectation"));
  assert(chance.essential.includes("not the most likely single outcome"));
- assert(chance.detail.includes("guaranteed"));
+ assert(chance.detail.includes("guarantee"));
 });
 test("legacy nonlinear model findings retain their specific interpretation and can be revised",()=>{
  const x=item("exponential","poor-fit");const state=s();
