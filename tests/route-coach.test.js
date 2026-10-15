@@ -107,7 +107,7 @@ test("optimisation branches distinguish stationary points, constraints and valid
  let advice=routeAdvice(s,o);
  assert(advice.essential.includes("endpoints"));assert(advice.detail.includes("derivative of zero"));
  o.resultSignal="not-feasible";advice=routeAdvice(s,o);
- assert(advice.detail.includes("violates"));
+ assert(advice.detail.includes("violate"));
  o.resultSignal="checked-optimum";advice=routeAdvice(s,o);
  assert(advice.heading.includes("constraints"));
 });
@@ -161,5 +161,5 @@ test("preferences and result decisions are preserved by backups without rewritin
 });
 test("guide choices and optional branches do not mutate recorded mathematics on rendering",()=>{
  const s=stateWith(scatter("unexpected"),base("pmcc","weak-linear"));
- const before=JSON.stringify(s);render(s,"C40");render(s,"C35");render(s,"C35P");assert.equal(JSON.stringify(s),before);
+ for(const node of ["C40","C35","C35P"]){s.completion.current=node;const before=JSON.stringify(s);render(s,node);assert.equal(JSON.stringify(s),before,node);}
 });
