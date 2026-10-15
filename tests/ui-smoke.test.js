@@ -33,6 +33,8 @@ import {actOnWritingCue} from "../src/completing/guidance-actions.js";
 import {eligibleWritingCues} from "../src/completing/writing-guidance.js";
 import {selectLimitation,recordLimitation,limitationContextKey,relevantLimitations} from "../src/completing/limitation-guidance.js";
 import {relevantBivariateOptions} from "../src/completing/bivariate-guidance.js";
+import {resultFamily,routeNextQuestions} from "../src/completing/route-coach.js";
+import {sourceResultForNext} from "../src/completing/engine.js";
 
 import {createPlanningEnvelope,getFieldDiff,mergePlanningEnvelope} from "../src/handover/schema.js";
 import {modelFromEnvelope,suggestedFilename} from "../src/handover/report-model.js";
@@ -67,7 +69,7 @@ function createHarness(savedValue){
     referenceNodeForPrototypeStep,createPlanningViews,createStudioViews,createCompletingViews,createProjectViews,
     setCompletionNode,moveCompletionRoute,completionBack,markCompletionStage,setCompletionField,addAccuracyDecision,completionSuggestions,sectionForNode,targetForSection,completeEntry,latestRealResult,flagDependentMathematics,acknowledgeMathReview,
     createHandoverViews,createPlanningEnvelope,getFieldDiff,mergePlanningEnvelope,modelFromEnvelope,suggestedFilename,
-    actOnWritingCue,eligibleWritingCues,selectLimitation,recordLimitation,limitationContextKey,relevantLimitations,relevantBivariateOptions,
+    actOnWritingCue,eligibleWritingCues,selectLimitation,recordLimitation,limitationContextKey,relevantLimitations,relevantBivariateOptions,resultFamily,routeNextQuestions,sourceResultForNext,
     planningMove,planAutoAdvance,planningBack,planningEdit,applyPlanningField,toggleMath,syncPlanningToProject,setPlanCurrent,planningFlags
   };
   runInNewContext(script,globals,{filename:"app.js",timeout:5000});
