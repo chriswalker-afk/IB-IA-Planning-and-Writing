@@ -6,7 +6,7 @@
 import {createProjectState} from "./project-state.js";
 import {ENTRY_BASE} from "../completing/entry-record.js";
 import {applyPlanningField} from "../planning/engine.js";
-import {applySuggestedTimeline} from "../planning/timeline.js";
+import {applySuggestedTimeline,localToday} from "../planning/timeline.js";
 
 export const SAMPLE_CHOICES=Object.freeze([
  {id:"linear",title:"A nearly straight pattern",description:"Scatter plot → Pearson's r → line of best fit and residuals."},
@@ -414,7 +414,7 @@ export function createIllustrativeSample(kind,{today}={}){
  sample.planning.sourceBranches.secondary=!isTheory;
  sample.planning.current="N07";sample.planning.completed=true;
  if(today)applySuggestedTimeline(sample,applyPlanningField,{today});
- else applySuggestedTimeline(sample,applyPlanningField,{today:"2026-10-15"});
+ else applySuggestedTimeline(sample,applyPlanningField,{today:localToday()});
  sample.planning.completed=true;sample.planning.notices=[];
  sample.demo=kind;sample.route="completing";
  sample.ui.mathIndex=0;sample.ui.mathPhase="interpret";sample.ui.studioSection="math";
