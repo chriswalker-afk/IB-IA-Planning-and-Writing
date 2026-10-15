@@ -1,3 +1,4 @@
+import {ideaAction,ideaInput,chooseTopic} from './src/ideas/engine.js';
 import {resourceDrawer,resourceList} from './src/resources/views.js';
 import {resourceAction,resourceFilter,resourcePreference} from './src/resources/actions.js';
 import {newResourceSession} from './src/resources/state.js';
@@ -473,6 +474,16 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   }
   function clickAction(el) {
     const action=el.dataset.action||"";
+    const idea=ideaAction(state,action,el.dataset);
+    if(idea){
+      if(!idea.ok){toast(idea.error);return;}
+      save();
+      if(idea.navigate){nav("planning");return;}
+      if(idea.render)render();
+      if(idea.message){toast(idea.message);const status=$("#idea-save-status");if(status)status.textContent=idea.message;}
+      if(idea.focus){const target=$("#"+idea.focus);if(target)target.focus();}
+      return;
+    }
     const resources=resourceAction(state,resourceSession,action,el.dataset,layer.hidden?"":lastDrawer);
     if(resources){
       if(!resources.ok){toast(resources.error);return;}
@@ -769,6 +780,10 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   });
   document.addEventListener("input",evt=>{
     const target=evt.target;
+    if(target.dataset.ideaInput!==undefined){
+      if(ideaInput(state,target.dataset.ideaInput,target.value,{savedId:target.dataset.ideaSaved||""}))save();
+      return;
+    }
     if(target.dataset.resourceFilter!==undefined){
       if(resourceFilter(resourceSession,target.dataset.resourceFilter,target.value)){
         const result=$("#resource-results",layer);if(result)result.innerHTML=resourceList(resourceSession);
@@ -785,6 +800,14 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   });
   document.addEventListener("change",evt=>{
     const target=evt.target;
+    if(target.dataset.ideaTopic!==undefined){
+      if(chooseTopic(state,target.value)){save();render();const select=$("#idea-topic");if(select)select.focus({preventScroll:true});}
+      return;
+    }
+    if(target.dataset.ideaInput!==undefined){
+      if(ideaInput(state,target.dataset.ideaInput,target.value,{savedId:target.dataset.ideaSaved||""}))save();
+      return;
+    }
     if(target.dataset.resourceFilter!==undefined){
       if(resourceFilter(resourceSession,target.dataset.resourceFilter,target.value)){
         const result=$("#resource-results",layer);if(result)result.innerHTML=resourceList(resourceSession);

@@ -1,3 +1,4 @@
+import {ideaAction,ideaInput,chooseTopic} from '../src/ideas/engine.js';
 import {resourceDrawer,resourceList} from '../src/resources/views.js';
 import {resourceAction,resourceFilter,resourcePreference} from '../src/resources/actions.js';
 import {newResourceSession} from '../src/resources/state.js';
@@ -51,7 +52,7 @@ function createHarness(savedValue){
   const storage={getItem:k=>store.get(k)??null,setItem:(k,v)=>store.set(k,v)};
   const window={scrollTo(){},confirm:()=>true,alert(){},print(){}};
   const script=read("../app.js").replace(/^import\s+.*;\s*$/gm,"");
-  const globals={resourceDrawer,resourceList,resourceAction,resourceFilter,resourcePreference,newResourceSession,PRACTICE_PAIRS,createStuckViews,captureStuckOrigin,isStuckNode,stuckAction,stuckContext,
+  const globals={ideaAction,ideaInput,chooseTopic,resourceDrawer,resourceList,resourceAction,resourceFilter,resourcePreference,newResourceSession,PRACTICE_PAIRS,createStuckViews,captureStuckOrigin,isStuckNode,stuckAction,stuckContext,
     conformanceAction,reviewEditChanged,document,window,localStorage:storage,console,clearTimeout(){},setTimeout(){return 1;},
     createProjectState,normalizeProjectState,persistProjectState,
     newState:createProjectState,normalise:normalizeProjectState,

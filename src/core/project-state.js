@@ -1,3 +1,4 @@
+import {createIdeaState,normalizeIdeaState} from '../ideas/state.js';
 import {createResourceState,normalizeResourceState} from "../resources/state.js";
 /**
  * Canonical versioned student-project record.
@@ -70,6 +71,7 @@ export function createProjectState() {
       checkpoints:[],pendingApproval:false,feedbackStatus:"not-requested",concerns:[]
     },
     resources:createResourceState(),
+    ideaExplorer:createIdeaState(),
     writingLedger:{},
     changeLog:[],
     planning:createPlanningState(),
@@ -107,6 +109,7 @@ export function normalizeProjectState(value) {
     route:["home","planning","completing","path","report"].includes(value.route)?value.route:"home",
     project:p,ui:u,scratch:s,
     resources:normalizeResourceState(value.resources),
+    ideaExplorer:normalizeIdeaState(value.ideaExplorer),
     entries:Array.isArray(value.entries)?value.entries.filter(plain).slice(0,MAX_ENTRIES).map(normalizeEntry):[],
     cues:safeRecord(value.cues),cueNotes:safeRecord(value.cueNotes),cueLocations:safeRecord(value.cueLocations)
   };

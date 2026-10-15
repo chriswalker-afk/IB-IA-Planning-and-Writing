@@ -53,3 +53,7 @@ Students' work is saved in their current browser/device by default, not synchron
 Build locally using Node.js 22 or later: run npm install, then npm test and npm run build. GitHub Actions validates, builds and publishes the static distribution to GitHub Pages.
 
 The source 24-tab Google Sheet remains untouched. The optional detailed teacher-draft/final-review checks are now connected by the conformance pass. **Phase 6** still includes broader accessibility, rendered-document QA and real classroom acceptance testing. Phase 5 does not claim that every editorial example or all 24 tabs are fully implemented.
+
+## Optional Idea Explorer
+
+Planning's optional brainstorming branch now offers twelve broad topics, 48 starting directions, a three-idea shortlist, optional narrowing/first-step notes and safe idea adoption. The direct route for a clear idea is unchanged. See `docs/ideas-first-pass-2026-10-15.md` for the JIS guide basis, boundaries, verification and remaining work. Full JSON backups preserve explorer notes; the full shortlist is not yet part of the planning PDF/Word report.

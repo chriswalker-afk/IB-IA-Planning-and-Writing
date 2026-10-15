@@ -1,3 +1,4 @@
+import {ideaExplorerView,ideaComparisonView,ideaFooter} from '../ideas/views.js';
 import {resourcePrompt} from "../resources/views.js";
 /**
  * Full Planning student experience. Source node IDs are attached to UI for test
@@ -101,19 +102,10 @@ export function createPlanningViews(ctx){
     F("interest","My interests (optional)","A hobby, everyday decision or mathematical curiosity")+
     '<div class="button-row">'+route("Compare two or three possible ideas","Optional: compare more than one idea")+'</div>'),
     "<h4>A useful first question</h4><p>Look for something you can investigate mathematically with accessible evidence or a defensible mathematical starting point. One idea is enough.</p>");
-   case "N00B":return stepBody("Find a question worth exploring.","Think about a genuine interest, a recurring observation or a mathematical pattern.",
-    F("interest","Things I'm interested in","Sport, environment, music, games, transport, geometry, …",{type:"textarea",rows:2})+
-    F("idea","One possible mathematical investigation","You can keep it broad for now.")+
-    '<div class="task-section">'+route("Compare a few possible ideas","I brainstormed possible ideas")+route("Return to starting choices","Return")+'</div>',
-    "<h4>Possible directions</h4><p>Explore a changing measurement, a design to optimise, a surprising numerical pattern, a comparison you could actually make, or a relationship you can model. Avoid choosing complexity for its own sake.</p>");
-   case "N00C":return stepBody("Compare your possibilities.","A quick comparison is enough; you don't need three full IA plans.",
-    F("otherIdea1","Alternative idea 1 (optional)","Another promising question")+
-    F("otherIdea2","Alternative idea 2 (optional)","One more possible question")+
-    F("ideaAccess","Which idea is easiest to investigate, and why?","Access to data or a workable mathematical starting point",{type:"textarea",rows:2})+
-    F("ideaValue","Which is genuinely interesting and manageable?","What feels most meaningful to you?",{type:"textarea",rows:2})+
-    select("ideaSelected","Which idea will you develop?",[
-      ["original","My original idea"],["other1","Alternative idea 1"],["other2","Alternative idea 2"]]),
-    "<h4>Choosing well</h4><p>A question with accessible material and a mathematical purpose is better than a complicated topic you cannot investigate. A single idea is also fine.</p>");
+   case "N00B":return stepBody("Find a question worth exploring.","Use as much or as little help as you need. Your current plan stays unchanged until you choose a direction.",
+    ideaExplorerView(state),"<p>Accessible starting material, a mathematical purpose and one small first step. A single idea is enough.</p>");
+   case "N00C":return stepBody("Compare your possibilities.","A quick comparison is enough; you do not need three full IA plans.",
+    ideaComparisonView(state),"<p>Judge interest, access, mathematical purpose and one small first step. A single idea is also fine. Selecting a saved possibility asks before changing an existing topic.</p>");
    case "N01":return stepBody("What do you want to find out?","Describe your investigation aim. It can develop as you discover more.",
     F("aim","My current investigation aim","How does … relate to …? Can … be modelled? When is … optimal?",{type:"textarea",rows:3})+
     F("motivation","What sparked my interest?","An experience, observation or genuine mathematical curiosity",{type:"textarea",rows:3}),
@@ -390,6 +382,7 @@ export function createPlanningViews(ctx){
  }
  function footer(state,screen){
   const n=state.planning.current;
+  if(n==="N00B"||n==="N00C")return ideaFooter(state);
   if(n==="N03B")return '<div class="task-footer">'+button("Back","plan-back","btn-quiet","", "chevron-left")+
    (state.planning.sourceBranches.primary&&state.planning.sourceBranches.secondary?button("Compare methods","plan-advance","btn-primary","", "arrow-right"):button("Continue the other source","plan-advance","btn-primary","", "arrow-right"))+'</div>';
   if(n==="N07")return '<div class="task-footer">'+button("Back to review","plan-back","btn-quiet","", "chevron-left")+
