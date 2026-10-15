@@ -955,6 +955,15 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         "entries."+state.completion.activeEntryIndex+".methodId",
         "entries."+state.completion.activeEntryIndex+".accuracyRef"].includes(path))
        render();
+      if(state.route==="planning"&&state.planning.current==="N03H"&&path.startsWith("planning.fields.milestone")){
+        const key=path.slice("planning.fields.".length),f=state.planning.fields;
+        const dateTarget=document.querySelector('[data-timeline-date="'+key+'"]');
+        const weekTarget=document.querySelector('[data-timeline-week="'+key+'"]');
+        if(dateTarget)dateTarget.textContent=validDate(f[key])?
+          new Intl.DateTimeFormat("en-GB",{day:"numeric",month:"short",year:"numeric",timeZone:"UTC"}).format(new Date(f[key]+"T12:00:00Z")):"Date to decide";
+        if(weekTarget)weekTarget.textContent=validDate(f[key])&&validDate(f.timelineStart)?
+          "Week "+timelineWeek(f.timelineStart,f[key]):"Not scheduled";
+      }
     }
   });
   document.addEventListener("submit",evt=>{if(evt.target.closest(".resource-filter-form"))evt.preventDefault();});
