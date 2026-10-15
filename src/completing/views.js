@@ -649,14 +649,17 @@ export function createCompletingViews(ctx){
      ' aria-pressed="'+(progress===key)+'" class="'+(progress===key?"selected":"")+'">'+e(text)+'</button>').join("")+'</div></div>':"";
   return '<div class="page narrow completing-page">'+tabletNav()+
     '<div class="completion-topline"><span>'+icon("route")+' '+e(node==="C04"?"Your IA Studio":(JOURNEY_GROUPS.indexOf(currentGroup(s))+1)+'. '+currentGroup(s).name)+'</span>'+
-    (node==="C04"?"":'<button class="btn btn-quiet btn-sm" data-action="completion-open" data-node="C04">'+icon("layers")+' My stages</button>')+'</div>'+
+    '<div class="completion-top-actions"><button type="button" class="advice-mode-toggle" data-action="toggle-advice-mode" aria-pressed="'+isAdviceReduced(s)+'" aria-label="'+(isAdviceReduced(s)?"Show full advice":"Reduce optional advice")+'">'+
+      icon(isAdviceReduced(s)?"eye":"eye-off")+' '+(isAdviceReduced(s)?"Show full advice":"Reduce advice")+'</button>'+
+    (node==="C04"?"":'<button class="btn btn-quiet btn-sm" data-action="completion-open" data-node="C04">'+icon("layers")+' My stages</button>')+'</div></div>'+
     topWarnings+
     '<div class="task-shell" data-source-node="'+e(node)+'">'+
     '<h1 class="task-heading">'+e(label)+'</h1><p class="task-intro">'+e(screen.intro)+'</p>'+
-    extra.returnToReview()+(isStuckNode(node)||["C04","C10E"].includes(node)?"":criteriaPanel(s))+screen.html+(screen.extra||"")+essentialsNudge(s)+
-    (isStuckNode(node)||node==="C10E"?"":guides.writingMoment(node,{embedded:node!=="C96"}))+
-    (isStuckNode(node)?"":guides.mathsHelp(node)+guides.limitsHelp(node)+
-    (node==="C04"?"":contextualPrompt(node)+resourcePrompt(s))+statusControls+
+    extra.returnToReview()+(isStuckNode(node)||["C04","C10E"].includes(node)||isAdviceReduced(s)?"":criteriaPanel(s))+screen.html+(screen.extra||"")+
+    (isAdviceReduced(s)?"":essentialsNudge(s))+
+    (isStuckNode(node)||node==="C10E"||isAdviceReduced(s)?"":guides.writingMoment(node,{embedded:node!=="C96"}))+
+    (isStuckNode(node)||isAdviceReduced(s)?"":guides.mathsHelp(node)+guides.limitsHelp(node)+
+    (node==="C04"?"":contextualPrompt(node)+resourcePrompt(s)))+statusControls+
     allButtons(node,primaryByNode[node]||[]))+'</div>'+
     '<p class="small-callout">Only actual mathematics supports a mathematical conclusion. Your planning, predictions and teacher questions remain separate from real findings. No compulsory number of calculations or IA grade.</p>'+
     (node==="C04"?"":miniList())+'</div>';
