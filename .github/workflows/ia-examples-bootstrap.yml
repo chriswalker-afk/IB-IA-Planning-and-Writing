@@ -40,7 +40,17 @@ jobs:
               archive.extractall('.',filter='data')
           PY
       - name: Integrate using checked source anchors
-        run: node scripts/apply-examples.mjs | tee qa-output/integration.log
+        run: |
+          set -o pipefail
+          node scripts/apply-examples.mjs | tee qa-output/integration.log
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('tests/ui-smoke.test.js');s=p.read_text()
+          anchor='  const globals={ideaAction'
+          assert s.count(anchor)==1
+          s=s.replace(anchor,'  // The real browser suite exercises the independent native-dialog controller.\n  const globals={createExampleController:()=>({}),ideaAction')
+          p.write_text(s)
+          PY
       - name: Install project dependencies
         run: npm install --no-audit --no-fund
       - name: Full unit and regression suite
@@ -62,6 +72,16 @@ jobs:
           SERVER_PID=$!
           trap 'kill "$SERVER_PID"' EXIT
           python scripts/examples-browser.py
+      - name: Existing browser regression journeys
+        run: |
+          node scripts/conformance-fixtures.mjs
+          python -m http.server 8765 --directory dist >> qa-output/server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID"' EXIT
+          python scripts/conformance-browser.py
+          python scripts/stuck-browser.py
+          python scripts/resources-browser.py
+          python scripts/ideas-browser.py
       - name: Capture source and QA evidence
         if: always()
         run: |
@@ -71,7 +91,7 @@ jobs:
           python - <<'PY'
           from pathlib import Path
           import zipfile
-          excluded={'.git','node_modules','dist','qa-output','__pycache__'}
+          excluded={'.git','node_modules','qa-output','__pycache__'}
           with zipfile.ZipFile('qa-output/source-snapshot.zip','w',zipfile.ZIP_DEFLATED) as z:
               for p in Path('.').rglob('*'):
                   if p.is_file() and not any(a in excluded for a in p.parts):
@@ -86,7 +106,7 @@ jobs:
       - name: Commit validated source and remove integration scaffolding
         run: |
           rm scripts/ia-examples-part-*.b64 scripts/apply-examples.mjs .github/workflows/ia-examples-bootstrap.yml
-          git add app.js index.html README.md src/examples src/completing/views.js src/completing/guidance-views.js src/ui/planning-views.js src/help/stuck-views.js data/examples.css tests/examples.test.js scripts/examples-fixtures.mjs scripts/examples-browser.py docs/examples-2026-10-15.md .github/workflows/conformance-browser.yml
+          git add app.js index.html README.md src/examples src/completing/views.js src/completing/guidance-views.js src/ui/planning-views.js src/help/stuck-views.js data/examples.css tests/examples.test.js tests/ui-smoke.test.js scripts/examples-fixtures.mjs scripts/examples-browser.py docs/examples-2026-10-15.md .github/workflows/conformance-browser.yml
           git add -u scripts .github/workflows/ia-examples-bootstrap.yml
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
