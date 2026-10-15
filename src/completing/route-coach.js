@@ -3,6 +3,7 @@
  * matching of a prediction or numbers parsed from an IA draft.
  */
 import {methodFamilies} from "./method-identity.js";
+import {EXTENDED_SIGNALS,extendedFamily,extendedAdvice} from "./extended-routes.js";
 
 const options={
  pmcc:[
@@ -30,7 +31,7 @@ const options={
  ]
 };
 export const RESULT_SIGNALS=Object.freeze(Object.fromEntries(
- Object.entries(options).map(([key,value])=>[key,Object.freeze(value.map(x=>Object.freeze(x)))])));
+ [...Object.entries(options),...Object.entries(EXTENDED_SIGNALS)].map(([key,value])=>[key,Object.freeze(value.map(x=>Object.freeze(x)))])));
 export const ALL_RESULT_SIGNALS=Object.freeze(new Set(
  Object.values(RESULT_SIGNALS).flat().map(x=>x.value)));
 
@@ -39,6 +40,8 @@ const str=x=>typeof x==="string"?x.trim():"";
 export function resultFamily(entry){
  if(!isReal(entry))return "";
  const methods=methodFamilies(entry);
+ const extended=extendedFamily(methods);
+ if(extended)return extended;
  if(methods.has("pmcc"))return "pmcc";
  if(methods.has("optimisation"))return "optimisation";
  if(methods.has("fitted-model"))return "model";
@@ -66,7 +69,7 @@ function chosenShape(state,entry){
  const pattern=relevant?f.scatterPattern:"";
  const observed=pattern||entry?.observation||"";
  const effective=detail==="turning"?"turning":detail==="monotonic"?"monotonic":
-  detail==="unexpected"?"unexpected":detail==="unclear"?"unclear":observed;
+  detail==="unexpected"?"unexpected":detail==="unclear"?"unclear":detail==="periodic"?"periodic":observed;
  return effective;
 }
 export function routeAdvice(state,entry,{shapeEntry}={}){
@@ -75,6 +78,7 @@ export function routeAdvice(state,entry,{shapeEntry}={}){
  const confirmed=entry.resultSignal;
  const method=resultFamily(entry);
  const shape=chosenShape(state,shapeEntry||ancestralScatter(state,entry)||entry);
+ if(EXTENDED_SIGNALS[method])return extendedAdvice(state,entry,{family:method,methods:methodFamilies(entry),signal:confirmed});
  if(entry.kind==="scatter"&&!method){
   switch(shape){
    case "linear":case "near-perfect":case "rough-linear":
@@ -83,6 +87,10 @@ export function routeAdvice(state,entry,{shapeEntry}={}){
      "Pearson's r is optional. It quantifies LINEAR association, not a causal effect. A fitted line needs a separate predictive purpose.",
      ["Would a measure of linear association help answer my question?",
       "Would a line be useful for estimating a quantity in the observed range?"]);
+   case "periodic":
+    return a("A possible repeating pattern","Check that several cycles really occur before assuming periodicity.",
+     "Estimate period, amplitude and midline from observations before choosing a justified sinusoidal model; check its domain.",
+     ["Do repeated cycles justify a periodic model?","What would a fitted period mean in context?"]);
    case "curved":case "monotonic":case "turning":
     return a("A curved pattern",
      "Do not use a straight-line coefficient or regression as the default next step.",
