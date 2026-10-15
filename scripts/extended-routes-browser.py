@@ -74,6 +74,15 @@ def planned_scenario(p,method):
  assert p.locator(".route-preflight").is_visible()
  assert saved(p)["ui"]["adviceMode"]=="reduced"
  assert p.locator(".route-preflight").inner_text().count("Before applying")>0
+ # The essential check must appear when a real result is entered, not only on page reload.
+ p.locator('[data-choice="entries.0.status"][data-value="completed"]').click()
+ result=p.locator('[data-bind="entries.0.result"]')
+ result.fill("Calculated a genuine compound balance using a documented effective periodic rate.")
+ result.blur()
+ assert p.locator(".route-coach-compact").is_visible()
+ assert p.locator(".route-depth-check").is_visible()
+ assert saved(p)["entries"][0]["status"]=="completed"
+ assert "compound balance" in saved(p)["entries"][0]["result"]
 def periodic_scenario(p):
  assert p.locator('[data-bind="completion.fields.scatterDetail"]').is_visible()
  p.locator('[data-bind="completion.fields.scatterDetail"]').select_option("periodic")
