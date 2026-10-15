@@ -38,6 +38,11 @@ jobs:
               for member in archive.getmembers():
                   assert member.isfile() and not member.name.startswith('/') and '..' not in Path(member.name).parts
               archive.extractall('.',filter='data')
+          p=Path('scripts/apply-examples.mjs');lines=p.read_text().splitlines()
+          for i,line in enumerate(lines):
+              if 'pick(topicById' in line:
+                  lines[i]=''' s=once(s,"    pick(topicById('unsure'))+","    pick(topicById('unsure'))+exampleButton('Browse examples',{browse:true,help:true})+");'''
+          p.write_text('\n'.join(lines)+'\n')
           PY
       - name: Integrate using checked source anchors
         run: |
@@ -50,6 +55,10 @@ jobs:
           assert s.count(anchor)==1
           s=s.replace(anchor,'  // The real browser suite exercises the independent native-dialog controller.\n  const globals={createExampleController:()=>({}),ideaAction')
           p.write_text(s)
+          p=Path('tests/stuck.test.js');s=p.read_text()
+          old="assert(html.includes('Show a small example'))"
+          assert s.count(old)==1
+          p.write_text(s.replace(old,"assert(html.includes('More thinking help'));assert(html.includes('data-action=\"example-open\"'))"))
           PY
       - name: Install project dependencies
         run: npm install --no-audit --no-fund
@@ -106,7 +115,7 @@ jobs:
       - name: Commit validated source and remove integration scaffolding
         run: |
           rm scripts/ia-examples-part-*.b64 scripts/apply-examples.mjs .github/workflows/ia-examples-bootstrap.yml
-          git add app.js index.html README.md src/examples src/completing/views.js src/completing/guidance-views.js src/ui/planning-views.js src/help/stuck-views.js data/examples.css tests/examples.test.js tests/ui-smoke.test.js scripts/examples-fixtures.mjs scripts/examples-browser.py docs/examples-2026-10-15.md .github/workflows/conformance-browser.yml
+          git add app.js index.html README.md src/examples src/completing/views.js src/completing/guidance-views.js src/ui/planning-views.js src/help/stuck-views.js data/examples.css tests/examples.test.js tests/ui-smoke.test.js tests/stuck.test.js scripts/examples-fixtures.mjs scripts/examples-browser.py docs/examples-2026-10-15.md .github/workflows/conformance-browser.yml
           git add -u scripts .github/workflows/ia-examples-bootstrap.yml
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
