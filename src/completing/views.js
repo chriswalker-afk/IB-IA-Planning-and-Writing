@@ -13,6 +13,7 @@ import {isStuckNode} from '../help/stuck-state.js';
 import {createConformanceViews} from "./conformance-views.js";
 import {C_NODES,C_PROMPTS} from "./catalog.js";
 import {createGuidanceViews} from "./guidance-views.js";
+import {routeAdvice,resultSignalOptions,routeNextQuestions,isAdviceReduced} from "./route-coach.js";
 import {METHOD_OPTIONS,COURSE_OPTIONS} from "./guidance-context.js";
 import {
  C_MAJOR_STAGES,C_STAGE_STATUS,routesAt,completionStage,completionFlags,
@@ -160,6 +161,35 @@ export function createCompletingViews(ctx){
     smallSummary("Current mathematical purpose",st.purpose)+
     (st.status==="completed"&&st.result?smallSummary("Actual result",st.result):info("Planned, not performed","Record what you actually did before interpreting it."))+
     (st.resultRef?smallSummary("Location in my own IA document",st.resultRef):"")+'</div>';
+ };
+ const coachBlock=(entry,{allowChoices=true}={})=>{
+  const state=getState(),advice=routeAdvice(state,entry),index=state.entries.findIndex(x=>x.id===entry?.id);
+  if(!advice)return "";
+  const reduced=isAdviceReduced(state),options=index>=0&&allowChoices?resultSignalOptions(entry):[];
+  const choiceHtml=options.length?
+   '<div class="route-coach-choices"><p class="field-label">What does this actual result suggest?</p>'+
+   (reduced?field("entries."+index+".resultSignal","My interpretation so far","",{type:"select",
+      options:[["","Not yet decided"],...options.map(x=>[x.value,x.title])] }):
+    choose("entries."+index+".resultSignal",options,{tight:true,label:"Choose what the mathematical result suggests"}))+
+   '</div>':"";
+  return '<section class="route-coach '+(reduced?"route-coach-compact":"")+
+   '" aria-label="Important mathematical check" data-coach-family="'+e(entry.kind==="scatter"?"scatter":advice.heading)+'">'+
+   '<div class="route-coach-label">'+icon("lightbulb")+' <span>MATHEMATICAL CHECK · AT THIS RESULT</span></div>'+
+   '<h3>'+e(advice.heading)+'</h3>'+
+   choiceHtml+
+   '<p class="route-coach-essential">'+e(advice.essential)+'</p>'+
+   (!reduced&&advice.detail?'<p class="route-coach-detail">'+e(advice.detail)+'</p>':"")+
+   '</section>';
+ };
+ const nextCoachQuestions=()=>{
+  const state=getState();if(isAdviceReduced(state))return "";
+  const prior=sourceResultForNext(state),qs=routeNextQuestions(state,prior);
+  if(!qs.length)return "";
+  return '<div class="route-next-questions"><p class="field-label">Questions your result might raise (optional)</p>'+
+   '<div class="route-next-grid">'+qs.slice(0,2).map((q,i)=>
+     '<button type="button" class="route-next-option" data-action="route-coach-next" data-index="'+i+
+     '" data-entry-id="'+e(prior.id)+'">'+icon("arrow-right")+'<span>'+e(q)+'</span></button>').join("")+
+   '</div><p class="field-hint">Possibilities, not extra calculations you must do. You can also finish with an honest conclusion.</p></div>';
  };
  const actualList=()=>{
   const all=getState().entries.filter(x=>x.status==="completed"&&filled(x.result));
