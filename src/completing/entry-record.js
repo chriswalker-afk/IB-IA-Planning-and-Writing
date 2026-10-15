@@ -3,7 +3,7 @@ import {cleanRefs} from "./evidence-links.js";
 export const ENTRY_BASE=Object.freeze({
  id:"",phase:"legacy",fromEntryId:"",previousTakeaway:"",
  title:"",purpose:"",technique:"",methodId:"",knowledge:"unsure",knowledgeNotes:"",unfamiliarComponent:"",researchSource:"",understandingExample:"",mathsInsight:"",methodChangeReason:"",priorLearningOnly:"",
- kind:"",status:"planned",result:"",resultRef:"",observation:"",observationText:"",
+ kind:"",status:"planned",result:"",resultRef:"",observation:"",observationText:"",resultSignal:"",
  interpretation:"",localTakeaway:"",limitations:"",nextQuestion:"",nextWhy:"",
  bridge:"",accuracyRef:"",accuracyRefs:Object.freeze([]),sourceRefs:Object.freeze([]),reviewNeeded:"",reviewReason:"",reviewCheckedAt:"",createdAt:""
 });
