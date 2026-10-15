@@ -1,3 +1,7 @@
+import {createSamplePreview} from "./src/core/sample-preview.js";
+import {captureReturn,restoreReturn} from "./src/ui/return-context.js";
+import {STATUS_LABELS,resumeRoute,rememberCheckpoint} from "./src/ui/journey.js";
+import {journeyRail} from "./src/ui/journey-views.js";
 import {createExampleController} from "./src/examples/controller.js";
 import {createEssentialsController} from "./src/essentials/controller.js";
 import {editCriterionReview} from "./src/essentials/review.js";
@@ -24,7 +28,7 @@ import { planningMove, planAutoAdvance, planningBack, planningEdit, applyPlannin
 import { createPlanningViews } from "./src/ui/planning-views.js";
 import { createStudioViews } from "./src/ui/studio-views.js";
 import {createCompletingViews} from "./src/completing/views.js";
-import {setCompletionNode,moveCompletionRoute,completionBack,markCompletionStage,setCompletionField,addAccuracyDecision,completionSuggestions,sectionForNode,targetForSection,completionStage,completeEntry,latestRealResult,flagDependentMathematics,acknowledgeMathReview} from "./src/completing/engine.js";
+import {C_MAJOR_STAGES,setCompletionNode,moveCompletionRoute,completionBack,markCompletionStage,setCompletionField,addAccuracyDecision,completionSuggestions,sectionForNode,targetForSection,completionStage,completeEntry,latestRealResult,flagDependentMathematics,acknowledgeMathReview} from "./src/completing/engine.js";
 
 import { createProjectViews } from "./src/ui/project-views.js";
 import { createProjectState as newState, normalizeProjectState as normalise, persistProjectState, STORAGE_KEY as KEY } from "./src/core/project-state.js";
@@ -37,11 +41,14 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   const $ = (s, root = document) => root.querySelector(s);
   const e = escapeHtml;
   let state = newState();
+  const previewStorage=(()=>{try{return sessionStorage;}catch{return null;}})();
+  const preview=createSamplePreview(previewStorage,normalise);
   const resourceSession = newResourceSession();
   createExampleController(() => state); // Read-only, ephemeral examples; no student state writes.
   createEssentialsController({getState:()=>state,onEdit:data=>{if(!editCriterionReview(state,data))return false;save();return true;},onChangedClose:()=>render()});
   let lastFocus = null;
   let lastDrawer = "";
+  let drawerReturn=null;
   let pendingImport = null;
   let importSelected = new Set();
   let exportBusy = false;
@@ -50,6 +57,8 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     const saved = localStorage.getItem(KEY);
     if (saved) state = normalise(JSON.parse(saved));
   } catch(err) { console.warn("Unable to restore saved prototype", err); }
+  const resumedPreview=preview.resume();
+  if(resumedPreview)state=resumedPreview;
   const main = $("#main");
   const layer = $("#drawerLayer");
   const planTitles = ["Your starting point","Shape your question","Who might benefit?","Choose a direction","Your data or starting material","Is it feasible?","Plan your mathematics","Make a prediction","Your first mathematical move","Your planning snapshot"];
@@ -113,16 +122,30 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     return changed;
   }
   function save() {
-    try { persistProjectState(state,localStorage); setSaveStatus("Saved on this device"); }
+    if(preview.active){preview.save(state);setSaveStatus("Sample preview only");refreshProgress();return;}
+    try { persistProjectState(state,localStorage); setSaveStatus("Saved on this device"); refreshProgress(); }
     catch { setSaveStatus("Could not save — export a backup",true); }
   }
   function setSaveStatus(message,error=false) {
     const el=$("#saveStatus");
     if(el){el.innerHTML='<span class="save-dot"></span> ' + e(message);el.classList.toggle("error",error);}
   }
-  function toast(text) {
-    const el=$("#toast");el.textContent=text;el.classList.add("show");
-    clearTimeout(toastHandle);toastHandle=setTimeout(()=>el.classList.remove("show"),3000);
+  function toast(text,detail="") {
+    const el=$("#toast");
+    el.innerHTML=detail?'<span class="toast-check">'+icon("check-circle")+'</span><div><strong>'+e(text)+'</strong><p>'+e(detail)+'</p></div>':e(text);
+    el.classList.toggle("checkpoint-toast",!!detail);el.classList.add("show");
+    clearTimeout(toastHandle);toastHandle=setTimeout(()=>el.classList.remove("show"),detail?6500:3500);
+  }
+  function previewBanner(){
+    return preview.active?'<aside class="sample-preview-banner" aria-label="Sample preview"><div><strong>'+icon("sparkles")+' Sample preview</strong><p>Fictional work. Your own investigation is unchanged.</p></div><div class="button-row">'+button("Return to my investigation","leave-preview","btn-primary")+button("Another sample","open-demos","btn-quiet btn-sm")+'</div></aside>':"";
+  }
+  function leavePreview(){
+    if(!preview.active)return;
+    const origin=preview.position;
+    let latest=null;try{latest=localStorage.getItem(KEY);}catch{}
+    closeDrawer(false);state=preview.leave(latest);drawerReturn=null;
+    render();setSaveStatus("Your investigation restored");restoreReturn(origin);
+    toast("Back to your investigation. Sample changes were kept separate.");
   }
   function choose(path, options, opts={}) {
     const value = getPath(path);
@@ -182,17 +205,15 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   const {viewCompleting}=createCompletingViews(viewDependencies);
   const {viewHome,viewPath,viewReport,tabletNav}=createProjectViews(viewDependencies);
   function sideMilestones() {
-    const items=[
-      ["Your idea",filled(state.project.idea)||filled(state.project.aim),"plan",0],
-      ["Your purpose",filled(state.project.beneficiary),"plan",1],
-      ["Planning checkpoint",state.planning.completed,"plan",5],
-      ["Actual mathematics",state.entries.some(x=>x.status==="completed"&&filled(x.result)),"studio","math"],
-      ["Conclusion",state.completion.stages.C60==="complete","studio","conclusion"]
-    ];
-    $("#sideMilestones").innerHTML=items.map(([title,done,target,index],i)=>
-      '<button type="button" class="side-milestone '+(done?"done":i===0?"active":"")+'" data-action="'+(target==="plan"?"path-plan":"studio-"+index)+'" '+(target==="plan"?'data-index="'+index+'"':"")+'>'+
-      '<span class="dot">'+(done?icon("check"):i+1)+'</span><span>'+e(title)+'</span></button>').join("");
+    $("#sideMilestones").innerHTML=journeyRail(state);
     $("#pathCount").textContent=state.entries.length;
+  }
+  function refreshProgress(){
+    sideMilestones();
+    document.querySelectorAll('[data-action="completion-mark"]').forEach(b=>{
+      const active=state.completion.stages[b.dataset.stage]===b.dataset.status;
+      b.setAttribute('aria-pressed',String(active));b.classList.toggle('selected',active);
+    });
   }
   function filterMathOptions() {
     const query=(state.planning.mathSearch||"").toLocaleLowerCase("en").trim();
@@ -203,10 +224,13 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   function handlePlanningResult(result){
     if(!result?.ok){toast(result?.error||"Please review this answer.");return;}
     syncPlanningToProject(state);
+    const checkpoint=result.route?.from==="N06"&&result.route?.to==="N07";
+    if(checkpoint)rememberCheckpoint(state,"Your provisional plan is ready to take forward","Keep the question purposeful. You can revisit your plan as the evidence develops.","N07");
     if(result.route?.to==="C00"||result.completePlanning===true&&result.route?.to==="C00"){
       setCompletionNode(state,"C00");nav("completing");return;
     }
     nav("planning");
+    if(checkpoint)toast(state.ui.latestTitle,state.ui.latestDetail);
   }
   function handleCompletionResult(result){
     if(!result?.ok){toast(result?.error||"Please review this mathematical decision.");return;}
@@ -215,7 +239,8 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   }
   function render(opts={}) {
     const map={home:viewHome,planning:viewPlanning,completing:viewCompleting,path:viewPath,report:viewReport};
-    main.innerHTML=stuckViews.returnBanner()+map[state.route]();
+    main.innerHTML=previewBanner()+stuckViews.returnBanner()+map[state.route]();
+    if(preview.active)setSaveStatus("Sample preview only");
     filterMathOptions();
     document.querySelectorAll("[data-nav]").forEach(b=>b.classList.toggle("active",b.dataset.nav===state.route));
     sideMilestones();
@@ -223,6 +248,9 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   }
   function nav(route,opts={}) {
     state.route=route;
+    if(["planning","completing"].includes(route))state.ui.lastWorkRoute=route;
+    if(route==="completing"&&completionStage(state.completion.current,state))state.ui.lastStudioNode=state.completion.current;
+    drawerReturn=null;
     if(route==="completing"&&opts.section) {
       const target=targetForSection(opts.section);
       setCompletionNode(state,target,{reason:"stage-navigation"});
@@ -284,9 +312,16 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     }
     next.entries=[st];next.ui.mathIndex=0;next.completion.activeEntryIndex=0;
     setCompletionNode(next,"C34B",{history:false,reason:"fictional-example"});
-    state=next;save();closeDrawer();render({top:true});toast("Sample loaded — every result is clearly labelled as illustrative.");
+    const origin=drawerReturn||captureReturn();
+    state=preview.begin(state,next,{scroll:origin.scroll,attributes:origin.attributes});
+    save();closeDrawer(false);render({top:true});toast("Sample preview opened. Your own investigation is safe.");
   }
   function openDrawer(panel) {
+    if(layer.hidden){
+      const active=document.activeElement;
+      if(active?.matches?.('button,input,textarea,select,summary,a'))drawerReturn=captureReturn(active);
+      else if(!drawerReturn)drawerReturn=captureReturn(lastFocus||active);
+    }
     closeDrawer(false);
     lastDrawer=panel;
     const p=state.project;
@@ -343,27 +378,33 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       body='<section><p>Explore how the guidance reacts to different actual findings. All examples are <strong>fictional demonstrations</strong>, not real student data.</p>'+
         '<div class="panel-list">'+choices.map(([key,label,desc])=>
         '<button type="button" class="panel-link" data-action="load-demo" data-demo="'+key+'"><span><strong>'+e(label)+'</strong><br><span class="text-muted" style="font-weight:400">'+e(desc)+'</span></span>'+icon("arrow-right")+'</button>').join("")+'</div></section>'+
-        note("Loading a sample replaces your current local project. Download a backup first if needed.",true);
+        note("Samples open in a separate preview. Try things freely, then return to your own investigation unchanged.");
     }else if(panel==="stuck"){
       body=stuckViews.render();
     }
     const titles={resources:"Tools & tutorials",project:"My project",files:"Save & export",help:"Here to help",demos:"Choose a sample",stuck:"Find a way forward", "import-preview":"Review planning import","import-manual":"Recover a plan",handover:"Confirm your starting plan"};
     layer.hidden=false;document.body.classList.add("dialog-open");
+    document.querySelectorAll(".topbar,.app-grid,.mobile-nav").forEach(el=>el.inert=true);
     layer.innerHTML='<aside class="drawer'+(panel==="resources"?" resource-drawer":"")+'" role="dialog" aria-modal="true" aria-labelledby="drawerTitle" tabindex="-1"><div class="drawer-header"><h2 id="drawerTitle">'+titles[panel]+'</h2>'+
-      '<button class="icon-button" type="button" data-action="close-drawer" aria-label="Close panel">'+icon("x")+'</button></div>'+body+'</aside>';
+      '<button class="btn btn-secondary btn-sm" type="button" data-action="close-drawer">'+(panel==="resources"&&resourceSession.parent==="stuck"?"Back to I am stuck":"Return to my work")+' '+icon("x")+'</button></div>'+body+'</aside>';
     $(".drawer",layer).focus();
   }
   function closeDrawer(restore=true) {
     layer.hidden=true;layer.innerHTML="";document.body.classList.remove("dialog-open");
-    if(restore && lastFocus && document.contains(lastFocus))lastFocus.focus({preventScroll:true});
+    document.querySelectorAll(".topbar,.app-grid,.mobile-nav").forEach(el=>el.inert=false);
+    if(restore){restoreReturn(drawerReturn||captureReturn(lastFocus));drawerReturn=null;}
+  }
+  function dismissDrawer(){
+    if(lastDrawer==="resources"&&resourceSession.parent==="stuck")openDrawer("stuck");
+    else closeDrawer();
   }
   function exportJson() {
     try {
       const payload=JSON.stringify({...state,route:"home"},null,2);
       const blob=new Blob([payload],{type:"application/json"});
       const url=URL.createObjectURL(blob);
-      const a=document.createElement("a");a.href=url;a.download="ia-pathfinder-project.json";document.body.appendChild(a);a.click();a.remove();
-      setTimeout(()=>URL.revokeObjectURL(url),3000);toast("Project backup downloaded.");
+      const a=document.createElement("a");a.href=url;a.download=preview.active?"ia-pathfinder-sample.json":"ia-pathfinder-project.json";document.body.appendChild(a);a.click();a.remove();
+      setTimeout(()=>URL.revokeObjectURL(url),3000);toast(preview.active?"Fictional sample downloaded. Your own project is unchanged.":"Your whole investigation is backed up.");
     } catch(err) {toast("Backup could not be created. Please try again.");console.error(err);}
   }
 
@@ -380,6 +421,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     if(exportBusy){toast("A planning report is already being prepared.");return;}
     exportBusy=true;
     setSaveStatus("Creating planning document…");
+    const exportState=state,sampleExport=preview.active;
     try{
       const snapshot=createPlanningEnvelope(state),model=modelFromEnvelope(snapshot);
       let bytes,mime;
@@ -392,9 +434,8 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         bytes=await mod.createDocxPlanningReport(snapshot);
         mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document";
       }
-      downloadFile(bytes,suggestedFilename(model,format),mime);
-      state.handover.lastExportAt=snapshot.exportedAt;
-      save();
+      downloadFile(bytes,(sampleExport?"sample-":"")+suggestedFilename(model,format),mime);
+      if(state===exportState){state.handover.lastExportAt=snapshot.exportedAt;save();}
       toast(format==="pdf"?"Planning PDF downloaded.":"Editable planning Word document downloaded.");
     }catch(error){
       console.error("Planning report export failed",error);
@@ -466,6 +507,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   }
 
   function changeNavAction(action,el) {
+    if(action==="resume-work")return nav(resumeRoute(state));
     if(action==="go-home")return nav("home");
     if(action==="go-planning")return nav("planning");
     if(action==="go-studio")return nav("completing"); // Resume the saved C-stage; "Studio overview" remains a separate action.
@@ -479,6 +521,9 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   }
   function clickAction(el) {
     const action=el.dataset.action||"";
+    if(preview.active&&["import-json","import-report","new-project","merge-apply"].includes(action)){
+      toast("Return to your investigation before importing or starting a project.");return;
+    }
     const idea=ideaAction(state,action,el.dataset);
     if(idea){
       if(!idea.ok){toast(idea.error);return;}
@@ -565,6 +610,15 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       return;
     }
     switch(action){
+      case "leave-preview":leavePreview();break;
+      case "journey-open":
+        if(el.dataset.target==="plan")nav("planning");
+        else handleCompletionResult(setCompletionNode(state,el.dataset.target,{reason:"journey-navigation"}));
+        break;
+      case "journey-toggle-all":{
+        const nodes=[...main.querySelectorAll(".journey-chapter")],open=!nodes.every(x=>x.open);
+        nodes.forEach(x=>x.open=open);el.setAttribute("aria-expanded",String(open));el.textContent=open?"Collapse full path":"Show full path";break;
+      }
       case "start-planning": setPlanCurrent(state,state.planning.current||"N00");nav("planning");break;
       case "plan-next":
       case "plan-advance":handlePlanningResult(planAutoAdvance(state));break;
@@ -594,8 +648,14 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       case "completion-open":handleCompletionResult(setCompletionNode(state,el.dataset.node,{reason:"student-revisit"}));break;
       case "completion-back":handleCompletionResult(completionBack(state));break;
       case "completion-mark":{
-        if(!markCompletionStage(state,el.dataset.stage,el.dataset.status)){toast("Unknown stage status.");break;}
-        save();render();toast("Your own stage status was recorded.");break;
+        const id=el.dataset.stage,status=el.dataset.status,previous=state.completion.stages[id];
+        if(previous===status)return;
+        const origin=captureReturn(el);
+        if(!markCompletionStage(state,id,status)){toast("Unknown stage status.");break;}
+        const title=C_MAJOR_STAGES.find(x=>x.id===id)?.name||"Stage";
+        const text=status==="complete"?title+" marked ready for now":status==="needs-review"?title+" marked to revisit":title+": working on it";
+        const detail=status==="complete"?"Your notes are saved. Revisit them whenever your investigation develops.":status==="needs-review"?"Your existing work stays in place. Refining your thinking is part of the investigation.":"Pick one useful next action. Your work stays saved as you go.";
+        rememberCheckpoint(state,text,detail,id);save();render();restoreReturn(origin);toast(text,detail);break;
       }
       case "completion-review-import":
         setCompletionNode(state,"C02",{reason:"review-unchanged-import"});
@@ -603,7 +663,8 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       case "completion-entry-reviewed":{
         const index=Number(el.dataset.index);
         if(!Number.isInteger(index)||!acknowledgeMathReview(state,index)){toast("No mathematical link is awaiting review.");break;}
-        save();render();toast("Mathematical connection reviewed. Your writing remains unchanged.");break;
+        rememberCheckpoint(state,"Mathematical connection reviewed","Revising a connection is useful progress. Your actual IA writing remains yours to update.","",state.entries[index].id);
+        save();render();toast(state.ui.latestTitle,state.ui.latestDetail);break;
       }
       case "guidance-writing-action":{
         const result=actOnWritingCue(state,{id:el.dataset.guidanceId,
@@ -712,17 +773,18 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         setCompletionNode(state,"C35");
         nav("completing");break;
       }
-      case "toggle-help":
+      case "toggle-help":{
+        const origin=captureReturn(el);
         state.ui.helpKey=state.ui.helpKey===el.dataset.help?"":el.dataset.help;
-        save();render();break;
+        save();render();restoreReturn(origin);break;
+      }
       case "cue-write":state.ui.openCue=el.dataset.key;save();render();break;
       case "close-cue":state.ui.openCue="";save();render();break;
       case "cue-covered":state.cues[el.dataset.key]="done";state.ui.openCue="";save();render();toast("Noted — this reminder won't keep appearing.");break;
       case "cue-skip":state.cues[el.dataset.key]="not-relevant";state.ui.openCue="";save();render();toast("Okay — this cue is now hidden.");break;
       case "open-panel":lastFocus=el;openDrawer(el.dataset.panel);break;
-      case "close-drawer":closeDrawer();break;
+      case "close-drawer":dismissDrawer();break;
       case "load-demo":
-        if((hasPlan()||hasStudio()) && !window.confirm("Replace your current local project with an illustrative sample? Download a backup first if needed."))return;
         demo(el.dataset.demo);break;
       case "export-json":exportJson();break;
       case "export-plan-pdf":void exportPlanningDocument("pdf");break;
@@ -772,16 +834,25 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         }
       }
       if(path.endsWith(".status")&&path.startsWith("entries.")&&previous!==choice.dataset.value){state.ui.helpKey="";}
+      let resultMoment=false;
+      if(path.startsWith("entries.")&&path.endsWith(".status")&&previous!==choice.dataset.value&&choice.dataset.value==="completed"){
+        const entry=state.entries[Number(path.split(".")[1])];
+        if(entry?.result?.trim()){
+          rememberCheckpoint(state,"A mathematical result recorded",entry.interpretation?.trim()?"Your result and interpretation are on your path. Decide what question follows.":"Now connect this finding to your aim, then decide what question follows.","",entry.id);
+          resultMoment=true;
+        }
+      }
       save();render();
+      if(resultMoment)toast(state.ui.latestTitle,state.ui.latestDetail);
       const focusTarget=[...document.querySelectorAll("[data-choice]")].find(x=>x.dataset.choice===path&&x.dataset.value===choice.dataset.value);
       if(focusTarget)focusTarget.focus({preventScroll:true});
       return;
     }
     const action=evt.target.closest("[data-action]");
     if(action){if(action.closest(".drawer")&&action.dataset.action!=="close-drawer"&&
-      ["go-home","go-planning","go-path","go-report","go-studio","open-files","open-demos","open-stuck"].includes(action.dataset.action))closeDrawer(false);
+      ["resume-work","go-home","go-planning","go-path","go-report","go-studio","open-files","open-demos","open-stuck"].includes(action.dataset.action))closeDrawer(false);
       clickAction(action);return;}
-    if(evt.target===layer)closeDrawer();
+    if(evt.target===layer)dismissDrawer();
   });
   document.addEventListener("input",evt=>{
     const target=evt.target;
@@ -849,7 +920,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   });
   document.addEventListener("submit",evt=>{if(evt.target.closest(".resource-filter-form"))evt.preventDefault();});
   document.addEventListener("keydown",evt=>{
-    if(evt.key==="Escape"&&!layer.hidden){evt.preventDefault();closeDrawer();}
+    if(evt.key==="Escape"&&!layer.hidden&&!document.querySelector("dialog[open]")){evt.preventDefault();dismissDrawer();}
     if(evt.key==="Tab"&&!layer.hidden){
       const focusable=[...layer.querySelectorAll('button:not([disabled]),a[href],input:not([disabled]),textarea:not([disabled]),select:not([disabled]),summary')].filter(el=>el.getClientRects().length);
       if(!focusable.length)return;
@@ -859,6 +930,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     }
   });
   $("#importFile").addEventListener("change",async evt=>{
+    if(preview.active){evt.target.value="";toast("Return to your investigation before restoring a backup.");return;}
     const input=evt.target;const file=input.files&&input.files[0];
     if(!file)return;
     try{
@@ -870,11 +942,17 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     finally{input.value="";}
   });
   $("#reportImportFile").addEventListener("change",async event=>{
+    if(preview.active){event.target.value="";toast("Return to your investigation before importing a plan.");return;}
     const file=event.target.files?.[0];
     if(!file)return;
     try{await readPlanningDocument(file);}
     finally{event.target.value="";}
   });
+  document.addEventListener("toggle",evt=>{
+    if(!evt.target.matches?.(".journey-chapter"))return;
+    const control=main.querySelector('[data-action="journey-toggle-all"]');
+    if(control){const all=[...main.querySelectorAll('.journey-chapter')].every(x=>x.open);control.setAttribute('aria-expanded',String(all));control.textContent=all?'Collapse full path':'Show full path';}
+  },true);
   // Welcome: current route from a previous session should always remain reachable and understandable.
   render();
 })();

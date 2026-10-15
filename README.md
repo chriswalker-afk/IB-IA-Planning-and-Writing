@@ -4,6 +4,14 @@
 
 IA Pathfinder is a responsive, device-local **planning and writing companion** for IB Mathematics Internal Assessments. Students author their actual IAs in Word or Google Docs; Pathfinder helps with meaningful aims, mathematically justified choices, authentic results, interpretation, precision and coherent mathematical transitions. It never fabricates observations, assigns grades or rewrites an IA on the student's behalf.
 
+## Focus, progress and a cohesive journey - 15 October 2026
+
+Working tasks now use a compact, shared support dock. Criteria open on request, the first Planning choices come before IA essentials, and the sidebar, stage dashboard and unfolding path share four chapters and honest readiness labels. Small checkpoints acknowledge explicit student actions and improve the return/resume experience without grades or artificial rewards.
+
+Sample investigations now open in a separate, tab-local preview: experimenting, switching samples and reloading never replace the student's own workspace. Return restores their investigation; backups made inside the preview are clearly labelled samples. Help panels preserve focus/scroll and support nested Escape; reduced motion is respected.
+
+See [design principles, compatibility and regression checks](docs/experience-2026-10-15.md).
+
 ## Compare examples - 15 October 2026
 
 A shared optional viewer now offers **29 original fictional less-effective / more-effective comparisons**, with explanations and a transfer question. Visible links sit beside Planning and Completing tasks; the existing writing-cue and introduction routes use the same collection. The library is searchable by topic and exploration type. Original SVG graphs, residuals, diagrams and native tables are included. Viewing, filtering or closing examples never writes student results, marks a stage complete or changes an IA document.

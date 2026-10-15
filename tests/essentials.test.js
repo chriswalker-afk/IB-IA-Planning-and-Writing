@@ -38,10 +38,10 @@ test('all reference views and contextual/example panels are read-only',()=>{
 });
 test('two visible criterion actions accompany a uniform comparison and rubric route',()=>{
  const t=criteriaPanel(make());assert.equal((t.match(/class="criteria-row"/g)||[]).length,2);assert(t.includes('Show good presentation here by'));assert(t.includes('Show good personal engagement here by'));
- assert(!t.includes('class="criteria-content" hidden'));assert(t.includes('Compare introductions'));assert(t.includes('View these criteria'));
+ assert(/class="criteria-content"[^>]* hidden/.test(t));assert(t.includes('Compare examples'));assert(t.includes('View these criteria'));
 });
 test('dismissal changes only the UI and is scoped to the exact task and mathematical record',()=>{
- const s=make('C40'),before=JSON.stringify(s),k=criteriaContext(s).key;dismissCriteria(k,true);assert(criteriaPanel(s).includes('class="criteria-content" hidden'));
+ const s=make('C40'),before=JSON.stringify(s),k=criteriaContext(s).key;dismissCriteria(k,true);assert(/class="criteria-content"[^>]* hidden/.test(criteriaPanel(s)));
  s.completion.activeEntryIndex=1;assert.notEqual(criteriaContext(s).key,k);s.completion.activeEntryIndex=0;assert.equal(JSON.stringify(s),before);dismissCriteria(k,false);
 });
 test('an introduction and conclusion do not inherit a stale theoretical record',()=>{

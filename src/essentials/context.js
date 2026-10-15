@@ -44,6 +44,6 @@ export function criteriaContext(state,options={}){
  let h=2166136261;for(const ch of raw)h=Math.imul(h^ch.charCodeAt(0),16777619);
  return {...x,rows,policy,key:'criteria-'+(h>>>0).toString(16)};
 }
-const dismissed=new Set();
-export const isCriteriaDismissed=key=>dismissed.has(key);
-export function dismissCriteria(key,hidden){if(hidden)dismissed.add(key);else dismissed.delete(key);if(dismissed.size>300)dismissed.delete(dismissed.values().next().value);}
+const expanded=new Set();
+export const isCriteriaDismissed=key=>!expanded.has(key);
+export function dismissCriteria(key,hidden){if(hidden)expanded.delete(key);else expanded.add(key);if(expanded.size>300)expanded.delete(expanded.values().next().value);}

@@ -22,7 +22,7 @@ test("all 52 source-linked Completing stages render without throwing or exposing
   setCompletionNode(state,id);
   const html=view.viewCompleting();
   assert(html.includes('data-source-node="'+id+'"'),id);
-  assert(html.includes("Your IA Studio"),id);
+  assert(html.includes('class="task-heading"'),id);
   assert(html.includes("task-shell"),id);
   assert(!html.includes("[object Object]"),id);
  }

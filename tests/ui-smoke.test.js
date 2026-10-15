@@ -1,3 +1,7 @@
+import {createSamplePreview} from '../src/core/sample-preview.js';
+import {STATUS_LABELS,resumeRoute,rememberCheckpoint} from '../src/ui/journey.js';
+import {journeyRail} from '../src/ui/journey-views.js';
+import {C_MAJOR_STAGES,completionStage} from '../src/completing/engine.js';
 import {ideaAction,ideaInput,chooseTopic} from '../src/ideas/engine.js';
 import {resourceDrawer,resourceList} from '../src/resources/views.js';
 import {resourceAction,resourceFilter,resourcePreference} from '../src/resources/actions.js';
@@ -53,7 +57,7 @@ function createHarness(savedValue){
   const window={scrollTo(){},confirm:()=>true,alert(){},print(){}};
   const script=read("../app.js").replace(/^import\s+.*;\s*$/gm,"");
   // The real browser suite exercises the independent native-dialog controller.
-  const globals={createEssentialsController:()=>({}),editCriterionReview:()=>false,createExampleController:()=>({}),ideaAction,ideaInput,chooseTopic,resourceDrawer,resourceList,resourceAction,resourceFilter,resourcePreference,newResourceSession,PRACTICE_PAIRS,createStuckViews,captureStuckOrigin,isStuckNode,stuckAction,stuckContext,
+  const globals={createSamplePreview,STATUS_LABELS,resumeRoute,rememberCheckpoint,journeyRail,C_MAJOR_STAGES,completionStage,structuredClone,captureReturn:()=>({scroll:0,attributes:[]}),restoreReturn:()=>{},createEssentialsController:()=>({}),editCriterionReview:()=>false,createExampleController:()=>({}),ideaAction,ideaInput,chooseTopic,resourceDrawer,resourceList,resourceAction,resourceFilter,resourcePreference,newResourceSession,PRACTICE_PAIRS,createStuckViews,captureStuckOrigin,isStuckNode,stuckAction,stuckContext,
     conformanceAction,reviewEditChanged,document,window,localStorage:storage,console,clearTimeout(){},setTimeout(){return 1;},
     createProjectState,normalizeProjectState,persistProjectState,
     newState:createProjectState,normalise:normalizeProjectState,
@@ -199,14 +203,14 @@ test("map, report and sample discovery still render after refactoring",()=>{
  h.nav("report");assert(h.html.includes("My mathematical investigation"));
  h.action("open-demos");assert(h.drawer.includes("Choose a sample"));
  h.action("load-demo",{demo:"curved"});
- assert(h.html.includes("Sample investigation"));
+ assert(h.html.includes("Sample preview"));
  h.nav("report");assert(h.html.includes("DEMONSTRATION DATA"));
 });
 test("saved v1 browser project migrates on load without losing its real notes",()=>{
  const v1={version:1,route:"completing",project:{aim:"Old question",precision:"nearest 0.1",permissions:"pending"},
  ui:{planStep:3,planMax:4,studioSection:"overview"},scratch:{introduction:"My original text"},entries:[],cues:{}};
  const h=createHarness(v1);
- assert(h.html.includes("Your IA Studio"));
+ assert(h.html.includes('class="task-heading"'));
  h.action("open-files"); // opens save panel but has no unintended state reset
  h.nav("planning");h.action("plan-edit",{node:"N01"});
  assert.equal(h.saved.project.aim,"Old question");

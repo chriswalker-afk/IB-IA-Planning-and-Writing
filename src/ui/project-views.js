@@ -1,3 +1,5 @@
+import {journeyMap,checkpointCard} from "./journey-views.js";
+import {resumeLabel} from "./journey.js";
 import {createConformanceViews} from "../completing/conformance-views.js";
 import {linkedAccuracy,linkedSources} from "../completing/evidence-links.js";
 import {WRITING_MOMENTS} from "../completing/guidance-catalog.js";
@@ -6,61 +8,9 @@ import {planningFlags,selectedMaths} from "../planning/engine.js";
 /** Home, student journey map and working-record views. */
 export function createProjectViews(ctx){
   const {icon,e,button,note,readableArea,summary,filled,sheetTitle,overline,hasPlan,hasStudio,demoFlag,studioSections}=ctx;
-  function pathNode(title,desc,status,action,extra="") {
-    const state = ctx.getState();
-    return '<div class="path-node '+e(status)+'"><span class="path-gutter"><span class="path-circle">'+icon(status==="done"?"check":status==="current"?"sparkles":"circle")+'</span></span>'+
-      '<button class="path-node-body" type="button" data-action="'+e(action)+'" '+extra+'><strong>'+e(title)+'</strong><p>'+e(desc)+'</p><span class="status-tag '+(status==="done"?"":"pending")+'">'+(status==="done"?"Recorded":status==="current"?"Current / revisit":"Open when ready")+'</span></button></div>';
-  }
   function viewPath() {
-    const state = ctx.getState();
-    const plan=state.planning||{}, f=plan.fields||{};
-    const completed=new Set(plan.completedNodes||[]);
-    const planNode=(title,desc,id)=>{
-      const stage=completed.has(id)?"done":plan.current===id?"current":"pending";
-      return pathNode(title,desc||"Not decided yet",stage,"plan-edit",'data-node="'+e(id)+'"');
-    };
-    const mathLabels=selectedMaths(state).map(x=>x.label).join("; ");
-    const dataNode=f.kind==="theoretical"?"N02T":"N03";
-    let planningNodes=[
-      planNode("Starting idea",f.idea||f.interest||"Explore a possible topic","N00"),
-      planNode("Investigation aim",f.aim||"What mathematical question interests you?","N01"),
-      planNode("Meaning and beneficiary",f.beneficiary||f.intendedUse||"Why does this matter?","N01V"),
-      planNode("Investigation direction",f.kind||"Statistics, modelling or theoretical","N02"),
-      planNode("Sources or theoretical starting material",f.dataSource||f.theoreticalCase||"Where to begin? ",dataNode),
-      planNode("Feasibility and timeline",f.kind==="theoretical"?"Discuss scope with teacher":"Data readiness "+(f.dataReadiness||"—")+"/5 · Ease "+(f.practicalEase||"—")+"/5",f.kind==="theoretical"?"N08":"N03F"),
-      planNode("Course and mathematics",(f.course||"Course to confirm")+" · "+(mathLabels||f.otherMaths||f.otherCourseMaths||"To explore"),"N04"),
-      planNode("Prediction or conjecture",f.prediction||"Tentative expectation only","N01P"),
-      planNode("Purposeful first mathematics",f.firstAction||f.figurePurpose||"First useful mathematical step","N05V"),
-      planNode("Teacher questions",f.teacherQuestion||f.universalTeacherQuestion||"Optional conversation","N06T"),
-      planNode("Working planning summary",plan.completed?"Provisional plan recorded":"Review and record an initial plan","N06")
-    ].join("");
-    let mathsNodes=state.entries.map((st,i)=>pathNode(st.title||"Mathematical step "+(i+1),
-      st.status==="completed"&&filled(st.result)?(st.localTakeaway||st.interpretation||st.result):(st.purpose||"Planned mathematical question"),
-      st.status==="completed"&&filled(st.result)?"done":"current","edit-step",'data-index="'+i+'"')).join("");
-    return '<div class="page narrow">'+tabletNav()+sheetTitle("YOUR JOURNEY","My mathematical path","A view of the decisions and discoveries that belong to your investigation. Click any stage to revisit it.")+
-      '<div class="content-card"><div class="section-eyebrow">PART 1 · PLANNING</div><div class="path-roadmap">'+planningNodes+'</div>'+
-      '<div class="button-row">'+button("Revisit planning","go-planning","btn-light","", "compass")+'</div></div>'+
-      '<div class="content-card" style="margin-top:17px"><div class="section-eyebrow">PART 2 · COMPLETING</div>'+
-      '<div class="path-roadmap">'+
-      [["C10","Introduction",state.scratch.introduction||"Short, personal and revisitable"],
-       ["C20","Sources and methods",state.completion.fields.actualSource||"Actual sources, variables and method"],
-       ["C30","First purposeful exploration",state.entries.find(x=>x.phase==="first")?.title||"First graph, calculation or theoretical case"]]
-       .map(([id,title,desc])=>pathNode(title,desc,
-         state.completion.stages[id]==="complete"?"done":state.completion.stages[id]==="working"||state.completion.stages[id]==="needs-review"?"current":"pending",
-         "completion-open",'data-node="'+id+'"')).join("")+
-      mathsNodes+
-      [["C60","Conclusion",state.completion.fields.mainConclusion||state.scratch.conclusion||"Synthesis of actual results"],
-       ["C70","Mathematical communication",state.completion.fields.notationIssue||"Notation, figures, units and references"],
-       ["C80","Teacher draft and feedback",state.completion.fields.feedbackAction||"School's permitted feedback process"],
-       ["C90","Final checks",state.completion.fields.finalProofread||"Self-review, accuracy and proofread"]]
-       .map(([id,title,desc])=>pathNode(title,desc,
-         state.completion.stages[id]==="complete"?"done":state.completion.stages[id]==="working"||state.completion.stages[id]==="needs-review"?"current":"pending",
-         "completion-open",'data-node="'+id+'"')).join("")+
-      '</div><div class="button-row">'+
-      button(state.entries.length?"Decide what mathematics follows":"Start first exploration",
-        state.entries.length?"completion-next-from-map":"completion-first-from-map","btn-primary","", "arrow-right")+
-      button("Open IA Studio","go-studio","btn-secondary")+'</div></div>'+
-      '<p class="small-callout">The map reflects the stages you have chosen to review and your actual mathematical record. A stage marked complete is your own self-check, not an IA grade. There is no required number of calculations.</p></div>';
+    const state=ctx.getState();
+    return '<div class="page narrow">'+tabletNav()+sheetTitle("YOUR JOURNEY","My mathematical path","The decisions and discoveries that belong to your investigation.")+journeyMap(state)+'</div>';
   }
   function viewHome() {
     const state = ctx.getState();
@@ -68,9 +18,9 @@ export function createProjectViews(ctx){
     const resume=plan||studio;
     return '<div class="page wide">'+tabletNav()+
       (resume?'<div class="welcome-row"><div>'+overline("WELCOME BACK")+'<h2>Your mathematical journey is taking shape.</h2><p>Pick up where your thinking left off.</p></div>'+demoFlag()+'</div>'+
-      '<div class="resume-card"><div><span class="meta-pill">'+icon("route")+' Your investigation</span><h3>'+e(state.project.aim||"Your developing IA idea")+'</h3><p>'+e(state.entries.length?state.entries.length+" mathematical step(s) recorded":"Planning your mathematical investigation")+'</p></div>'+
-      button("Continue my journey",state.entries.length||state.ui.studioSection!=="overview"?"go-studio":"go-planning","btn-primary","", "arrow-right")+button("Import a planning document","import-report","btn-secondary","", "upload")+'</div>'+
-      '<div class="journey-tiles">'+
+      '<div class="resume-card"><div><span class="meta-pill">'+icon("route")+' Your investigation</span><h3>'+e(state.project.aim||"Your developing IA idea")+'</h3><p>'+e(state.entries.length?"Your mathematical work is taking shape":studio?"Developing your mathematical investigation":"Planning your mathematical investigation")+'</p></div>'+
+      button(resumeLabel(state),"resume-work","btn-primary","", "arrow-right")+button("Import a planning document","import-report","btn-secondary","", "upload")+'</div>'+
+      checkpointCard(state)+'<div class="journey-tiles">'+
       '<button class="journey-tile" data-nav="planning"><span class="feature-icon">'+icon("compass")+'</span><span><strong>My planning</strong><p>Revisit or refine your choices.</p></span></button>'+
       '<button class="journey-tile" data-nav="completing"><span class="feature-icon">'+icon("pencil")+'</span><span><strong>My IA Studio</strong><p>Record actual mathematics and reflect.</p></span></button></div>':
       '<section class="hero"><div class="hero-content"><span class="meta-pill kicker">'+icon("sparkles")+' YOUR IA ADVENTURE STARTS HERE</span>'+
@@ -80,14 +30,14 @@ export function createProjectViews(ctx){
       button("Explore a sample","open-demos","btn-secondary","", "sparkles")+button("Import an existing plan","import-report","btn-light","", "upload")+'</div></div>'+
       '<div class="hero-deco"><svg viewBox="0 0 400 430" fill="none" aria-hidden="true"><circle cx="250" cy="175" r="130" fill="#c9e5d5" opacity=".65"/><circle cx="325" cy="295" r="106" fill="#f4dfa6" opacity=".55"/><path d="M58 385 C245 368 79 183 288 180 C399 178 221 46 363 24" stroke="#82b6a4" stroke-width="3" stroke-linecap="round" stroke-dasharray="4 12"/><circle cx="105" cy="358" r="11" fill="#138477"/><circle cx="281" cy="180" r="12" fill="#fff" stroke="#138477" stroke-width="4"/><circle cx="323" cy="61" r="10" fill="#e9aa72"/></svg></div>'+
       '<span class="deco-bubble deco-one">'+icon("target")+'</span><span class="deco-bubble deco-two">'+icon("chart")+'</span><span class="deco-bubble deco-three">'+icon("sparkles")+'</span></section>')+
-      '<div class="section-title-row"><h2>Two parts. One investigation.</h2><span class="text-muted text-xs">Built around your thinking</span></div>'+
+      '<div class="section-title-row"><h2>Your thinking. One investigation.</h2><span class="text-muted text-xs">Built around your thinking</span></div>'+
       '<div class="card-grid">'+
       feature("compass","Find your direction","Shape a question that matters to you and check that your plan is feasible.")+
       feature("calculator","Follow the mathematics","Record a genuine result, interpret it, and decide what mathematical question follows.")+
       feature("pencil","Write with purpose","Get timely prompts for interpretation, accuracy and reflection—not a wall of advice.")+'</div>'+
       '<div class="home-actions button-row">'+(resume?button("Try another sample","open-demos","btn-light","", "sparkles"):button("Try a sample investigation","open-demos","btn-light","", "sparkles"))+
       button("Backups & reports","open-files","btn-secondary","", "download")+'</div>'+
-      '<div class="notice-strip">'+icon("shield")+'<div><strong>Your mathematics. Your words.</strong> Pathfinder is a planning and writing companion, not an IA generator or grading tool. Planning, document handover and Completing pathways are available. The finer contextual guidance and final assessment self-review are still being refined. Work is saved in this browser only.</div></div></div>';
+      '<div class="notice-strip">'+icon("shield")+'<div><strong>Your mathematics. Your words.</strong> Pathfinder is a planning and writing companion, not an IA generator or grading tool. Your work is saved in this browser only. Use a full project backup to safeguard your work or move to another device.</div></div></div>';
   }
   function feature(ic,title,text) {
     const state = ctx.getState();return '<div class="feature-card"><span class="feature-icon">'+icon(ic)+'</span><h3>'+e(title)+'</h3><p>'+e(text)+'</p></div>';}
