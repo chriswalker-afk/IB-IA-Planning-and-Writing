@@ -1,0 +1,61 @@
+import {CRITERIA,E_DESCRIPTORS,FORMAT_ITEMS,PROCESS_ITEMS,SOURCE_NOTE,HL_NOTE,BEST_FIT,REVIEW_IDS,courseLevel} from './catalog.js';
+import {criteriaContext,isCriteriaDismissed} from './context.js';
+import {exampleButton,examplePrompt,e} from '../examples/views.js';
+import {EXAMPLE_CRITERIA} from './example-criteria.js';
+export function essentialsButton(label='IA essentials',options={}){
+ const attrs=Object.entries(options).filter(([k,v])=>['tab','criterion','mode','level'].includes(k)&&v).map(([k,v])=>' data-essentials-'+k+'="'+e(v)+'"').join('');
+ return '<button type="button" class="btn btn-quiet essentials-trigger" data-action="essentials-open"'+attrs+'>'+e(label)+'</button>';
+}
+const source=x=>'<p class="ess-source"><span>'+e(x.label)+'</span> '+e(x.source)+'</p>';
+export function essentialsNudge(state){
+ const n=state.route==='planning'?state.planning.current:state.completion.current;
+ if(state.route==='planning'&&n==='N00')return '<aside class="ess-at-glance"><strong>Your IA at a glance</strong><p>Individual mathematical exploration · 20% of the course · 20 marks across five criteria.<br>Approximately 12–20 double-spaced pages. Quality matters more than length.</p>'+essentialsButton('Format & length',{tab:'format'})+essentialsButton('View rubric',{tab:'rubric'})+'</aside>';
+ if(state.route==='completing'&&n==='C10')return '<aside class="ess-setup"><strong>Set up your IA document</strong><span>Double spacing; cover title and page count; clear equations and source credits.</span>'+essentialsButton('Format & length',{tab:'format'})+'</aside>';
+ if(state.route==='completing'&&['C80','C90'].includes(n))return '<aside class="ess-setup"><strong>Check the actual document</strong><span>Review formatting, references, authenticity and the five criteria before submission.</span>'+essentialsButton('Before submission',{tab:'submission',mode:n==='C80'?'draft':'final'})+'</aside>';
+ return '';
+}
+export function criteriaPanel(state,{writingTools=''}={}){
+ const x=criteriaContext(state);
+ if(!x.rows.length)return examplePrompt(state)+writingTools;
+ const hidden=isCriteriaDismissed(x.key);
+ return '<section class="criteria-panel" data-criteria-key="'+e(x.key)+'" aria-label="Show the criteria here"><div class="criteria-head"><strong>Show the criteria here</strong><button type="button" class="criteria-dismiss" data-action="criteria-toggle" aria-expanded="'+!hidden+'">'+(hidden?'Show tips':'Hide tips for now')+'</button></div>'+
+ '<div class="criteria-content"'+(hidden?' hidden':'')+'>'+x.rows.map(r=>'<div class="criteria-row"><span class="criterion-letter" aria-hidden="true">'+r.id+'</span><p><strong>'+e(CRITERIA[r.id].name)+'</strong><br>Show good '+e(CRITERIA[r.id].name.toLowerCase())+' here by '+e(r.by)+'</p></div>').join('')+
+ (x.policy?'<p class="criteria-policy">'+e(x.policy)+'. Apply only where these inputs limit this result; keep guard digits.</p>':'')+
+ (x.route==='planning'?'<p class="ess-small">Planning guidance, not evidence that you have completed these actions.</p>':'')+'</div>'+
+ '<div class="criteria-actions">'+exampleButton('Compare '+({introduction:'introductions',conclusion:'conclusions',interpretation:'interpretations',next:'next steps',table:'tables',graph:'graphs',diagram:'diagrams',precision:'accuracy decisions'}[x.topic]||'examples'))+essentialsButton('View these criteria',{tab:'rubric',criterion:x.rows[0].id})+'</div>'+writingTools+'</section>';
+}
+export function formatView(){
+ return '<h3 class="ess-heading" tabindex="-1">Format & length</h3><div class="ess-facts"><div><strong>12–20</strong><span>approximate pages</span></div><div><strong>Double</strong><span>line spacing</span></div><div><strong>20%</strong><span>course assessment</span></div><div><strong>20</strong><span>maximum IA marks</span></div></div><p class="ess-emphasis">The quality of your mathematical writing matters more than length. Include graphs and diagrams in the stated page range; the bibliography is excluded.</p><p class="ess-small">IB extract, printed pp.81–84; JIS slide 2. This is not an automatic page-count pass/fail limit.</p><div class="ess-information">'+FORMAT_ITEMS.map(x=>'<section id="ess-format-'+x.id+'"><h4>'+e(x.title)+'</h4><p>'+e(x.text)+'</p><p class="ess-small">'+e(x.detail)+'</p>'+source(x)+'</section>').join('')+'</div>'+essentialsButton('Read the assessment criteria',{tab:'rubric'});
+}
+function descriptorTable(id,level){
+ const c=CRITERIA[id],rows=id==='E'?E_DESCRIPTORS[level]:c.descriptors;
+ if(!rows)return '<p class="ess-emphasis">Choose SL or HL above to view the correct Criterion E descriptors. Your course has not been assumed.</p>';
+ return '<table class="ess-rubric-table"><caption>Achievement descriptors · '+e(id==='E'?'Criterion E — '+level:'Criterion '+id+' — SL and HL')+'</caption><thead><tr><th scope="col">Mark</th><th scope="col">Descriptor</th></tr></thead><tbody>'+rows.map((t,i)=>'<tr><th scope="row">'+i+'</th><td>'+e(t)+'</td></tr>').join('')+'</tbody></table><p class="ess-small">Descriptor wording from the supplied IB guide extract. Explanations below are separate student-facing guidance.</p>';
+}
+export function levelPicker(state,session){
+ const confirmed=courseLevel(state),selected=session.level||confirmed;
+ return '<div class="ess-level"><label for="ess-level">Criterion E reference level</label><select id="ess-level" data-essentials-level><option value="">Choose level</option><option value="SL"'+(selected==='SL'?' selected':'')+'>SL</option><option value="HL"'+(selected==='HL'?' selected':'')+'>HL</option></select><p class="ess-small">'+(confirmed?'Recorded course level: '+confirmed+'.':'No unambiguous course level is recorded.')+' Switching this reference does not change your course. Criteria A–D are shared; E differs.</p></div>';
+}
+export function rubricView(state,session){
+ const id=Object.hasOwn(CRITERIA,session.criterion)?session.criterion:'A',c=CRITERIA[id],level=session.level||courseLevel(state);
+ const examples=Object.entries(EXAMPLE_CRITERIA).filter(([,v])=>Object.hasOwn(v,id)).slice(0,5);
+ return '<h3 class="ess-heading" tabindex="-1">Assessment criteria</h3><p class="ess-small">'+e(BEST_FIT)+'</p><div class="ess-criteria-nav" role="group" aria-label="Assessment criterion">'+Object.entries(CRITERIA).map(([key,v])=>'<button type="button" data-essentials-criterion="'+key+'" aria-pressed="'+(key===id)+'"><strong>'+key+' · '+e(v.name)+'</strong><span>Maximum '+v.max+'</span></button>').join('')+'</div>'+levelPicker(state,session)+'<section class="ess-criterion" data-rubric-criterion="'+id+'"><h3>'+id+' · '+e(c.name)+' <span class="ess-small">/ '+c.max+'</span></h3><p>'+e(c.summary)+'</p>'+descriptorTable(id,level)+'<h4>What this means</h4><p>'+e(c.meaning)+'</p><p>'+e(c.note)+'</p>'+(id==='E'&&level==='HL'?'<p class="ess-emphasis">'+e(HL_NOTE)+'</p>':'')+'<h4>Ways to show it</h4><p class="ess-small">Adapted from JIS slide '+({A:43,B:44,C:45,D:46,E:47}[id])+'. Opportunities, not a compulsory checklist.</p><ul class="ess-ways">'+c.ways.map(t=>'<li>'+e(t)+'</li>').join('')+'</ul><p class="ess-source">'+e(c.source)+'</p><div class="ess-example-links"><strong>Compare examples</strong>'+examples.map(([key])=>exampleButton(exampleTitle(key),{id:key})).join('')+'</div></section>'+essentialsButton('Record my own evidence',{tab:'submission',mode:session.mode||'draft'});
+}
+const exampleTitle=id=>({EX01:'Introduction',EX02:'Statistical introduction',EX03:'Theoretical introduction',EX04:'Aim and domain',EX05:'Choosing a method',EX06:'Sampling and scope',EX07:'Model assumptions',EX08:'Tables and precision',EX09:'Summarising results',EX10:'Graph presentation',EX11:'Model critique',EX12:'Labelled diagrams',EX13:'Mathematical presentation',EX14:'Explaining technology',EX15:'Interpreting a result',EX16:'Next mathematical step',EX17:'Limitations',EX18:'Accuracy',EX19:'Understanding mathematics',EX20:'Proof',EX21:'Authentic choices',EX22:'Conclusion',EX23:'Counterexample',EX24:'Coherence',EX25:'Statistical conclusion'}[id]||'Compare example');
+function evidenceFields(state,mode,id,level){
+ const c=CRITERIA[id],r=state.completion.review.records[mode+'-'+REVIEW_IDS[id]];
+ const input=(field,label,rows=2)=>'<label for="ess-'+mode+'-'+id+'-'+field+'">'+e(label)+'</label><textarea id="ess-'+mode+'-'+id+'-'+field+'" data-ess-review="'+field+'" data-ess-id="'+id+'" rows="'+rows+'" maxlength="5000">'+e(r[field]||'')+'</textarea>';
+ const oldLevel=id==='E'&&r.selfMark!==''?r.markLevel||'not recorded':'';
+ const canMark=id!=='E'||['SL','HL'].includes(level);
+ return '<section class="ess-evidence-card" data-evidence-criterion="'+id+'"><div class="ess-evidence-heading"><h4>'+id+' · '+e(c.name)+'</h4>'+essentialsButton('View rubric',{tab:'rubric',criterion:id,mode})+'</div><div class="ess-evidence-grid"><div>'+input('location','Page(s), figure(s) or section(s) in my actual IA')+input('note','My evidence / reason for my judgement')+'</div><div>'+input('action','One improvement I will make, if needed')+'<label for="ess-'+mode+'-'+id+'-mark">My provisional self-mark (optional, maximum '+c.max+')</label><select id="ess-'+mode+'-'+id+'-mark" data-ess-review="selfMark" data-ess-id="'+id+'"'+(!canMark?' disabled':'')+'><option value="">Not self-marked</option>'+Array.from({length:c.max+1},(_,i)=>'<option value="'+i+'"'+(String(r.selfMark)===String(i)?' selected':'')+'>'+i+'</option>').join('')+'</select>'+(id==='E'?'<p class="ess-small" data-evidence-level>'+(!canMark?'Choose the reference level above before entering a Criterion E self-mark.':oldLevel?'Existing self-mark recorded against '+e(oldLevel)+(oldLevel!==level?'. Revisit this judgement before using the '+level+' rubric.':'.'):'A self-mark entered here will be recorded against '+level+'.')+'</p>':'')+'</div></div></section>';
+}
+export function submissionView(state,session){
+ const mode=session.mode==='final'?'final':'draft',level=session.level||courseLevel(state),p=state.planning?.fields||{};
+ const date=mode==='draft'?p.milestoneSchoolDraft:p.milestoneSchoolFinal;
+ return '<h3 class="ess-heading" tabindex="-1">Before submission</h3><div class="ess-review-modes" role="group" aria-label="Self-review version"><button type="button" data-essentials-mode="draft" aria-pressed="'+(mode==='draft')+'">Before my teacher draft</button><button type="button" data-essentials-mode="final" aria-pressed="'+(mode==='final')+'">Before final submission</button></div><p>'+e(mode==='draft'?'Inspect the complete draft you will give to your teacher.':'Inspect the actual revised document, not only your earlier draft.')+' These are your own notes and optional provisional judgements, not automatic marks, teacher approval or a submission.</p>'+(date?'<p class="ess-small">Date in your plan: '+e(date)+'. Check this is your school’s agreed deadline.</p>':'<p class="ess-small">Confirm the deadline and submission method with your teacher; no date is assumed here.</p>')+essentialsButton('Check formatting & length',{tab:'format'})+levelPicker(state,session)+'<h4>My evidence for A–E</h4><p class="ess-small">These fields use the same records as your existing detailed self-review. Editing a note does not mark the stage complete. A changed checked record becomes due for review again. Back up the project JSON to keep these notes.</p><div role="status" class="ess-save-note" id="ess-review-status"></div>'+Object.keys(CRITERIA).map(id=>evidenceFields(state,mode,id,level)).join('')+'<h3>Working independently & getting feedback</h3><div class="ess-information">'+PROCESS_ITEMS.map(x=>'<section><h4>'+e(x.title)+'</h4><p>'+e(x.text)+'</p>'+source(x)+'</section>').join('')+'</div>';
+}
+export function reviewAccess(state,mode){
+ if(!['draft','final'].includes(mode))return '';
+ return '<aside class="ess-review-access"><strong>'+ (mode==='draft'?'Before my teacher draft':'Before final submission')+' · A–E evidence</strong><p>Use the full rubric, record page references and choose an improvement. Optional self-marks are your judgement, never an automatic score.</p>'+essentialsButton('Open criterion self-review',{tab:'submission',mode})+essentialsButton('Format & length',{tab:'format'})+'</aside>';
+}
+export const essentialsSourceNote=()=>'<p class="ess-provenance">'+e(SOURCE_NOTE)+'</p>';
