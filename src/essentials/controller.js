@@ -48,7 +48,7 @@ export function createEssentialsController({getState,onEdit=()=>false,onChangedC
   const toggle=evt.target.closest('[data-action="criteria-toggle"]');
   if(toggle){
    evt.preventDefault();evt.stopImmediatePropagation();const panel=toggle.closest('[data-criteria-key]'),body=panel?.querySelector('.criteria-content');if(!body)return;
-   body.hidden=!body.hidden;dismissCriteria(panel.dataset.criteriaKey,body.hidden);toggle.setAttribute('aria-expanded',String(!body.hidden));toggle.textContent=body.hidden?'Show tips':'Hide tips for now';return;
+   body.hidden=!body.hidden;dismissCriteria(panel.dataset.criteriaKey,body.hidden);toggle.setAttribute('aria-expanded',String(!body.hidden));return;
   }
   const trigger=evt.target.closest('[data-action="essentials-open"]');
   if(trigger){evt.preventDefault();evt.stopImmediatePropagation();const d=trigger.dataset;open({tab:d.essentialsTab,criterion:d.essentialsCriterion,mode:d.essentialsMode,level:d.essentialsLevel},trigger);return;}

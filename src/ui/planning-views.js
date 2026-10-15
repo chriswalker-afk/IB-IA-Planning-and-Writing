@@ -397,16 +397,15 @@ export function createPlanningViews(ctx){
   const state=ctx.getState(),p=state.planning,n=p.current,screen=nodePage(state);
   const stage=planningStage(n),stageI=PROGRESS_GROUPS.findIndex(x=>x.id===stage);
   const milestones='<div class="plan-stage-line" aria-label="Planning progress by stage">'+PROGRESS_GROUPS.map((s,i)=>
-   '<span class="plan-stage-chip '+(i<stageI?"done":i===stageI?"current":"")+'">'+(i<stageI?icon("check"):"")+
+   '<span class="plan-stage-chip '+(i===stageI?"current":s.nodes.some(id=>p.visited.includes(id))?"visited":"")+'"'+(i===stageI?' aria-current="step"':'')+'>'+
    e(s.label)+'</span>').join("")+'</div>';
   return '<div class="page narrow">'+tabletNav()+
    '<div class="progress-top"><span class="progress-overview">'+icon("compass")+' Guided Planning</span>'+
-   '<button class="btn btn-quiet btn-sm" data-action="open-stuck">I am stuck</button><span class="progress-counter">Your route · '+e(PROGRESS_GROUPS[stageI]?.label||"Review")+'</span></div>'+
+   '<span class="progress-counter">1. Planning · '+e(PROGRESS_GROUPS[stageI]?.label||"Review")+'</span></div>'+
    milestones+
-   '<div class="task-shell" data-source-node="'+e(n)+'"><div class="stage-label">'+icon("compass")+
-   ' '+e(PROGRESS_GROUPS[stageI]?.label||"Planning")+'</div>'+
-   '<h2>'+e(screen.title)+'</h2><p class="task-intro">'+e(screen.intro)+'</p>'+
-   essentialsNudge(state)+criteriaPanel(state)+screen.html+
+   '<div class="task-shell" data-source-node="'+e(n)+'">'+
+   '<h1 class="task-heading">'+e(screen.title)+'</h1><p class="task-intro">'+e(screen.intro)+'</p>'+
+   criteriaPanel(state)+screen.html+essentialsNudge(state)+
    '<div class="example-row">'+helpButton("plan-"+n)+helpBox("plan-"+n,screen.help)+'</div>'+
    resourcePrompt(state)+footer(state,screen)+'</div>'+
    '<p class="small-callout">Your choices are provisional until evidence supports them. You can revisit earlier decisions. Teacher flags never prevent a provisional report.</p>'+

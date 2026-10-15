@@ -82,7 +82,9 @@ with sync_playwright() as pw:
   assert p.locator('.drawer .stuck-heading').inner_text()=='My calculation or software is not working'
  run('resources-return-to-stuck-topic',state(),stuck)
  def writer(p):
-  p.locator('[data-action="completion-open"][data-node="C96"]').first.click();assert p.locator('[data-resource-suggestion="pmcc-meaning"]').count()==1
+  p.locator('[data-action="open-stuck"]').first.click();topic=p.locator('.drawer [data-action="stuck-topic"][data-topic="writing"]')
+  if not topic.is_visible():p.locator('.drawer .stuck-browse > summary').click()
+  topic.click();p.locator('.drawer [data-action="stuck-work"]').click();assert p.locator('[data-resource-suggestion="pmcc-meaning"]').count()==1
   p.locator('[data-resource-id="pmcc-meaning"]').first.click();close(p);assert p.locator('[data-source-node="C96"]').count()==1
  run('resources-writing-helper-origin',state(node='C34B',status='completed'),writer)
  def hide(p):
@@ -109,7 +111,7 @@ with sync_playwright() as pw:
  run('resources-preferences-backup-restore',state(),backup,1440,1000)
  def keyboard(p):
   open_library(p);p.locator('#resource-search').focus();p.keyboard.type('picture');assert p.evaluate('document.activeElement.id')=='resource-search';p.keyboard.press('Enter');assert overlay(p).count()==1
-  detail(p,'image-scale');p.locator('.resource-footer [data-action="resource-close"]').focus();p.keyboard.press('Tab');assert p.evaluate('document.activeElement.getAttribute("aria-label")')=='Close panel'
+  detail(p,'image-scale');p.locator('.resource-footer [data-action="resource-close"]').focus();p.keyboard.press('Tab');assert p.evaluate('document.activeElement.dataset.action')=='close-drawer'
   overlay(p).screenshot(path=str(OUT/'resources-image-scale-small-phone.png'),animations='disabled');p.keyboard.press('Escape');assert p.locator('#drawerLayer').is_hidden()
  run('resources-keyboard-small-phone',state(),keyboard,360,740)
  def preview(p):

@@ -11,6 +11,12 @@ def saved(p):return p.evaluate('(k)=>JSON.parse(localStorage.getItem(k))',KEY)
 def fill(p,path,value):p.locator('[data-bind="'+path+'"]').fill(value)
 def choose(p,path,value):p.locator('[data-choice="'+path+'"][data-value="'+value+'"]').click()
 def action(p,name,extra=''):p.locator('[data-action="'+name+'"]'+extra).first.click()
+def writing_help(p):
+ # Use the shared problem-first help route, rather than the removed duplicate shortcut.
+ if not p.locator('[data-action="stuck-topic"]').count():action(p,'open-stuck')
+ topic=p.locator('[data-action="stuck-topic"][data-topic="writing"]').first
+ if not topic.is_visible():p.locator('.stuck-browse > summary').first.click()
+ topic.click();action(p,'stuck-work')
 def route(p,origin,target):
  cond=next(x['condition'] for x in ROUTES if x['from']==origin and x['to']==target)
  button=p.locator('[data-action="completion-route"][data-condition='+json.dumps(cond)+']').first
@@ -65,7 +71,7 @@ with sync_playwright() as pw:
   assert s['entries'][0]['interpretation']=='The changing rate matters to the aim'
  run('source-specific-review',state('C20'),source_edit)
  def helper(p):
-  action(p,'completion-open','[data-node="C96"]');assert_node(p,'C96');assert p.locator('[data-writing-cue]').count()==1
+  writing_help(p);assert_node(p,'C96');assert p.locator('[data-writing-cue]').count()==1
   action(p,'guidance-writing-action','[data-guidance-event="write-now"]');fill(p,'completion.guidanceUi.noteDraft','My own observation explains why this result matters.')
   action(p,'guidance-writing-action','[data-guidance-event="save-note"]')
   route(p,'C96','C34B') if any(x['from']=='C96' and x['to']=='C34B' for x in ROUTES) else action(p,'completion-route','[data-condition="Return to my original stage (with cue status)"]')
@@ -73,7 +79,7 @@ with sync_playwright() as pw:
   ledger=saved(p)['writingLedger'];assert any(x['status']=='noted' and not x['claimedInIA'] for x in ledger.values())
  run('origin-aware-helper',state('C34B',0),helper)
  def waiting(p):
-  action(p,'completion-open','[data-node="C96"]');assert_node(p,'C96');assert p.locator('[data-writing-cue="W13"]').count()==1
+  writing_help(p);assert_node(p,'C96');assert p.locator('[data-writing-cue="W13"]').count()==1
   assert 'PLANS, not results' in p.locator('#main').inner_text()
  s=state('C95D');s['completion']['fields']['dataStatus']='not-started';s['completion']['activeEntryIndex']=-1;s['entries']=[];s['completion']['sourceRecords']=[]
  run('waiting-helper',s,waiting)

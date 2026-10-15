@@ -37,12 +37,14 @@ with sync_playwright() as pw:
   assert p.evaluate('document.activeElement.dataset.action')=='essentials-open'
  run('essentials-reference-is-readonly',fixture(),readonly)
  def placement(p):
-  panel=p.locator('#main .criteria-panel');assert panel.count()==1;assert panel.locator('.criteria-row').count()==2;assert panel.locator('.criteria-content').is_visible()
-  assert 'Show good presentation here by' in panel.inner_text();assert 'Show good personal engagement here by' in panel.inner_text()
+  panel=p.locator('#main .criteria-panel');assert panel.count()==1;assert panel.locator('.criteria-row').count()==2;assert not panel.locator('.criteria-content').is_visible()
+  assert panel.locator('.support-actions button').count()==4
   assert panel.bounding_box()['y']<p.locator('[data-bind="scratch.introduction"]').bounding_box()['y'];assert p.locator('#main .guidance-writing').count()==1
+  before=stored(p);panel.locator('[data-action="criteria-toggle"]').click();assert panel.locator('.criteria-content').is_visible()
+  assert 'Show good presentation here by' in panel.inner_text();assert 'Show good personal engagement here by' in panel.inner_text()
   p.screenshot(path=str(OUT/'essentials-introduction-desktop.png'),full_page=True)
-  before=stored(p);panel.locator('[data-action="criteria-toggle"]').click();assert not panel.locator('.criteria-content').is_visible();assert panel.locator('.criteria-actions [data-action="example-open"]').is_visible();assert stored(p)==before
-  panel.locator('[data-action="criteria-toggle"]').click();panel.locator('.criteria-actions [data-action="essentials-open"]').click();assert p.locator('[data-rubric-criterion="A"]').count()==1;close_ess(p);assert stored(p)==before
+  panel.locator('[data-action="criteria-toggle"]').click();assert not panel.locator('.criteria-content').is_visible();assert panel.locator('.criteria-actions [data-action="example-open"]').is_visible();assert stored(p)==before
+  panel.locator('[data-action="criteria-toggle"]').click();panel.locator('.criteria-content [data-action="essentials-open"]').click();assert p.locator('[data-rubric-criterion="A"]').count()==1;close_ess(p);assert stored(p)==before
  run('criteria-visible-and-optional',fixture(),placement)
  def unknown(p):
   open_ess(p);tab(p,'rubric');p.locator('[data-essentials-criterion="E"]').click();assert 'Choose SL or HL' in p.locator('#ess-body').inner_text();assert p.locator('.ess-rubric-table').count()==0
@@ -72,9 +74,11 @@ with sync_playwright() as pw:
   open_ess(p);overflow(p);p.screenshot(path=str(OUT/'essentials-format-phone.png'),full_page=True);tab(p,'submission');overflow(p);assert p.locator('[data-evidence-criterion]').count()==5;close_ess(p)
  run('essentials-format-and-review-small-phone',fixture(),phones,360,740)
  def theory(p):
+  p.locator('[data-action="criteria-toggle"]').click()
   text=p.locator('.criteria-content').inner_text().lower();assert 'domain' in text;assert 'sampling' not in text;assert 'human error' not in text
  run('criteria-theoretical-context',fixture('C20',kind='theoretical'),theory,390,844)
  def pending(p):
+  p.locator('[data-action="criteria-toggle"]').click()
   text=p.locator('.criteria-content').inner_text();assert 'genuine result' in text;assert 'this actual result means' not in text
  s=fixture('C34B');s['entries'][0]['status']='planned'
  run('criteria-never-invents-results',s,pending)
@@ -82,7 +86,7 @@ with sync_playwright() as pw:
   tools=p.locator('.criteria-writing-tools');tools.locator('summary').first.click();p.locator('[data-guidance-event="write-now"]').first.click();field=p.locator('[data-bind="completion.guidanceUi.noteDraft"]');assert field.is_visible();field.fill('My own meaningful thought');p.locator('[data-guidance-event="save-note"]').click();assert p.locator('.criteria-panel').count()==1
  run('criteria-retains-private-writing-tools',fixture(),writing)
  def planning(p):
-  assert p.locator('.ess-at-glance').count()==1;assert 'Planning guidance' in p.locator('.criteria-panel').inner_text();before=stored(p);open_ess(p);close_ess(p);assert stored(p)==before
+  assert p.locator('.ess-at-glance').count()==1;p.locator('[data-action="criteria-toggle"]').click();assert 'Planning guidance' in p.locator('.criteria-panel').inner_text();before=stored(p);open_ess(p);close_ess(p);assert stored(p)==before
  s=fixture();s['route']='planning';s['planning']['current']='N00'
  run('essentials-planning-at-a-glance',s,planning,390,844)
  def repeated_reference(p):

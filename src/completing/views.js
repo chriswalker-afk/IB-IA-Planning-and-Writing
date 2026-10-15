@@ -1,3 +1,5 @@
+import {STATUS_LABELS,currentGroup,JOURNEY_GROUPS} from "../ui/journey.js";
+import {groupedDashboard} from "../ui/journey-views.js";
 import {examplePrompt,exampleInline} from "../examples/views.js";
 import {criteriaPanel,essentialsNudge} from "../essentials/views.js";
 import {resourcePrompt} from "../resources/views.js";
@@ -114,7 +116,7 @@ export function createCompletingViews(ctx){
    items.map((st,i)=>'<button type="button" data-action="completion-edit-entry" data-index="'+i+'" class="'+
     (i===state.completion.activeEntryIndex?"current":"")+'"><span>'+(i+1)+'. '+e(st.title||"A mathematical step")+'</span>'+
     '<span class="status-tag '+(st.status==="completed"&&filled(st.result)?"":"pending")+'">'+
-    (st.reviewNeeded==="yes"?"Review link":st.status==="completed"&&filled(st.result)?"Actual result":"Planned")+'</span></button>').join("")+'</div>';
+    (st.reviewNeeded==="yes"?"Needs review":st.status==="completed"&&filled(st.result)?"Actual result recorded":"Planned, not performed")+'</span></button>').join("")+'</div>';
  };
  const contextualPrompt=(node)=>{
   const entries=C_PROMPTS.filter(p=>p.node===node);
@@ -565,17 +567,7 @@ export function createCompletingViews(ctx){
     '<span class="choice-title">'+e(title)+'</span><span class="choice-subtitle">'+e(desc)+'</span></span>'+
     icon("arrow-right")+'</button>').join("")+'</div>':info("Record a real result first","These ideas respond to actual evidence, not to your original prediction.");
  }
- function stageDashboard(){
-  const s=getState();
-  return '<div class="completion-stage-grid">'+C_MAJOR_STAGES.map((stage)=>{
-   const progress=s.completion.stages[stage.id],label=progress==="complete"?"Student-marked complete":
-      progress==="working"?"In progress":progress==="needs-review"?"Review again":"Not started";
-   return '<button class="completion-stage-card" data-action="completion-open" data-node="'+e(stage.id)+'">'+
-     '<span class="feature-icon">'+icon(stage.icon)+'</span>'+
-     '<span class="completion-stage-body"><strong>'+e(stage.name)+'</strong>'+
-     '<small>'+e(label)+'</small></span>'+icon("chevron-right")+'</button>';
-  }).join("")+'</div>';
- }
+ function stageDashboard(){return groupedDashboard(getState());}
  const primaryByNode={
   C00:[],C01:["Unreadable/scanned/unsupported file"],C02:["Confirm or update carried-forward information"],C03:["Idea and permissions reviewed"],
   C04:[],C10:["Continue / choose another stage","Edit aim, audience or prediction while writing introduction"],
@@ -619,25 +611,22 @@ export function createCompletingViews(ctx){
   const statusControls=stage&&C_MAJOR_STAGES.some(x=>x.id===stage)&&[stage,"C40","C50"].includes(node)?
     '<div class="completion-status"><span class="field-label">My assessment of this stage (not automatically graded)</span>'+
     '<div class="completion-status-options">'+[
-      ["working","Working on it"],["complete","Complete for now"],["needs-review","Needs another look"]].map(([key,text])=>
+      ["working",STATUS_LABELS.working],["complete",STATUS_LABELS.complete],["needs-review",STATUS_LABELS["needs-review"]]].map(([key,text])=>
      '<button data-action="completion-mark" data-stage="'+e(stage)+'" data-status="'+key+'"'+
      ' aria-pressed="'+(progress===key)+'" class="'+(progress===key?"selected":"")+'">'+e(text)+'</button>').join("")+'</div></div>':"";
   return '<div class="page narrow completing-page">'+tabletNav()+
-    sheetTitle("PART 2 · COMPLETING","Your IA Studio","Build the actual investigation, one purposeful mathematical decision at a time.")+
-    '<div class="completion-topline"><span>'+icon("route")+' '+e(node==="C04"?"Your choice":stage?C_MAJOR_STAGES.find(x=>x.id===stage)?.name||"Mathematical decision":"Focused decision")+'</span>'+
-    (node!=="C96"?'<button class="btn btn-quiet btn-sm" data-action="completion-open" data-node="C96">'+icon("pencil")+' Where should I write this?</button>':"")+
-    '<button class="btn btn-quiet btn-sm" data-action="open-stuck">I am stuck</button><button class="btn btn-quiet btn-sm" data-action="completion-open" data-node="C04">'+icon("layers")+' My stages</button></div>'+
+    '<div class="completion-topline"><span>'+icon("route")+' '+e(node==="C04"?"Your IA Studio":(JOURNEY_GROUPS.indexOf(currentGroup(s))+1)+'. '+currentGroup(s).name)+'</span>'+
+    (node==="C04"?"":'<button class="btn btn-quiet btn-sm" data-action="completion-open" data-node="C04">'+icon("layers")+' My stages</button>')+'</div>'+
     topWarnings+
-    '<div class="task-shell" data-source-node="'+e(node)+'"><div class="stage-label">'+
-    icon(stage?C_MAJOR_STAGES.find(x=>x.id===stage)?.icon||"route":"route")+' '+
-    e(stage?C_MAJOR_STAGES.find(x=>x.id===stage)?.name||"Completing":"MY MATHEMATICAL JOURNEY")+'</div>'+
-    '<h2>'+e(label)+'</h2><p class="task-intro">'+e(screen.intro)+'</p>'+
-    extra.returnToReview()+essentialsNudge(s)+(isStuckNode(node)||node==="C10E"?"":criteriaPanel(s,{writingTools:guides.writingMoment(node,{embedded:node!=="C96"})}))+screen.html+(screen.extra||"")+
+    '<div class="task-shell" data-source-node="'+e(node)+'">'+
+    '<h1 class="task-heading">'+e(label)+'</h1><p class="task-intro">'+e(screen.intro)+'</p>'+
+    extra.returnToReview()+(isStuckNode(node)||["C04","C10E"].includes(node)?"":criteriaPanel(s))+screen.html+(screen.extra||"")+essentialsNudge(s)+
+    (isStuckNode(node)||node==="C10E"?"":guides.writingMoment(node,{embedded:node!=="C96"}))+
     (isStuckNode(node)?"":guides.mathsHelp(node)+guides.limitsHelp(node)+
-    contextualPrompt(node)+resourcePrompt(s)+statusControls+
+    (node==="C04"?"":contextualPrompt(node)+resourcePrompt(s))+statusControls+
     allButtons(node,primaryByNode[node]||[]))+'</div>'+
     '<p class="small-callout">Only actual mathematics supports a mathematical conclusion. Your planning, predictions and teacher questions remain separate from real findings. No compulsory number of calculations or IA grade.</p>'+
-    miniList()+'</div>';
+    (node==="C04"?"":miniList())+'</div>';
  }
  return {viewCompleting:render};
 }

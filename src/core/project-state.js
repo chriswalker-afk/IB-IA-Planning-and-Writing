@@ -52,7 +52,7 @@ export function createProjectState() {
     },
     ui: {
       planStep:0,planMax:0,studioSection:"overview",mathIndex:0,mathPhase:"work",
-      helpKey:"",openCue:"",noteDraft:""
+      helpKey:"",openCue:"",noteDraft:"",lastWorkRoute:"",lastStudioNode:"",latestTitle:"",latestDetail:"",latestNode:"",latestEntry:"",latestAt:""
     },
     scratch: {introduction:"",dataNotes:"",conclusion:"",finalReview:""},
     entries:[], cues:{},cueNotes:{},cueLocations:{},
