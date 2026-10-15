@@ -38,9 +38,9 @@ def report_checks(p,name):
  d.value.save_as(str(file))
  with zipfile.ZipFile(file) as z:
   xml=z.read("word/document.xml").decode()
-  assert "Time available for the project" in xml
+  assert "TIME AVAILABLE FOR THE PROJECT" in xml
   assert "8 weeks" in xml
-  assert "Usable data / source material" in xml
+  assert "USABLE DATA / SOURCE MATERIAL" in xml
  with p.expect_download(timeout=45000) as d:
   tap(p,"export-full-zip")
  f=OUT/(name+"-project.zip");d.value.save_as(str(f))
