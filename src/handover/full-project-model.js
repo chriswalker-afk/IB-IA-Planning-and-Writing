@@ -24,7 +24,7 @@ const entryLabels=[
  ['understandingExample','Student demonstration of understanding'],['mathsInsight','What I learned mathematically'],
  ['methodChangeReason','Why I changed direction'],['priorLearningOnly','Previously learned mathematics'],
  ['result','Student-entered mathematical result'],['resultRef','Location in actual IA'],
- ['observation','Pattern category'],['observationText','What I observed'],
+ ['observation','Pattern category'],['observationText','What I observed'],['resultSignal','My own interpretation of this mathematical outcome'],
  ['interpretation','Interpretation in context of aim'],['localTakeaway','What this establishes'],
  ['limitations','Limitations of this step'],['nextQuestion','What follows mathematically'],
  ['nextWhy','Why that step follows'],['bridge','Link to next step'],

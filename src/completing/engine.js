@@ -209,12 +209,35 @@ export function setCompletionField(state,key,value){
  beforeSourceChange(state,key,previous,str(value).slice(0,20000));
  c.fields[key]=str(value).slice(0,20000);
  if(key==="pairedDataType"||key==="scatterAimRelevance")c.pairedDataForEntryId=scatterForNext(state)?.id||"";
- if(key==="pmccSignal")c.pmccSignalForEntryId=sourceResultForNext(state)?.id||"";
- if(key==="scatterPattern"){
-  c.scatterPatternForEntryId=scatterForNext(state)?.id||"";
+ if(key==="pmccSignal"){
+  const prior=sourceResultForNext(state);
+  c.pmccSignalForEntryId=prior?.id||"";
+  if(isPearsonResult(prior)&&prior.resultSignal!==value){
+   const item=state.entries.find(x=>x.id===prior.id);
+   if(item){const before=item.resultSignal;item.resultSignal=value;flagDependentMathematics(state,state.entries.indexOf(item),"resultSignal",before,value);}
+  }
  }
- if(key==="scatterDetail"){
-  c.scatterDetailForEntryId=scatterForNext(state)?.id||"";
+ if(key==="scatterPattern"||key==="scatterDetail"){
+  const scatter=scatterForNext(state),index=state.entries.findIndex(x=>x.id===scatter?.id);
+  if(key==="scatterPattern"){
+   c.scatterPatternForEntryId=scatter?.id||"";
+   const valid={linear:["near-perfect","rough-linear"],curved:["monotonic","turning"],
+    unclear:["unclear"],unexpected:["unexpected"],unsure:["unsure"]};
+   if(c.fields.scatterDetail&&!valid[value]?.includes(c.fields.scatterDetail)){
+    c.fields.scatterDetail="";c.scatterDetailForEntryId="";
+   }
+  }else{
+   c.scatterDetailForEntryId=scatter?.id||"";
+   const byDetail={"near-perfect":"linear","rough-linear":"linear","monotonic":"curved",
+    "turning":"curved","unclear":"unclear","unexpected":"unexpected","unsure":"unsure"};
+   if(byDetail[value]){c.fields.scatterPattern=byDetail[value];c.scatterPatternForEntryId=scatter?.id||"";}
+  }
+  // An updated choice revises the original observation rather than creating contradictory patterns.
+  if(index>=0&&c.fields.scatterPattern&&state.entries[index].observation!==c.fields.scatterPattern){
+   const before=state.entries[index].observation;
+   state.entries[index].observation=c.fields.scatterPattern;
+   flagDependentMathematics(state,index,"observation",before,c.fields.scatterPattern);
+  }
  }
  const stage=completionStage(c.current,state);
  if(stage&&c.stages[stage]==="complete"&&previous!==c.fields[key])
@@ -407,7 +430,7 @@ export function moveCompletionRoute(state,condition){
 export function flagDependentMathematics(state,index,key,before,after){
  const parent=state.entries[index];
  if(!parent||before===after||
-  !["result","status","interpretation","localTakeaway","observation","observationText","purpose","technique","methodId"].includes(key))
+  !["result","status","interpretation","localTakeaway","observation","observationText","resultSignal","purpose","technique","methodId"].includes(key))
   return [];
  // Preserve the initial input workflow: don't nag while a first result is being typed.
  const substantive=key==="status"||String(before??"").trim().length>0;

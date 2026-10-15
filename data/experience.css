@@ -135,3 +135,53 @@
 @media(prefers-reduced-motion:reduce){
  .timeline-advanced>summary .icon:last-child{transition:none!important}
 }
+
+
+/* Result-led IA mathematical checks: prominent near the actual calculation, unobtrusive elsewhere. */
+.completion-top-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+.advice-mode-toggle{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 12px;border:1px solid var(--line);border-radius:11px;background:#fff;color:var(--teal-dark);font-size:12px;font-weight:750;min-height:40px;cursor:pointer}
+.advice-mode-toggle[aria-pressed="true"]{background:#edf5f1;border-color:#bbd5c9}
+.advice-mode-toggle .icon{width:16px;height:16px}
+.advice-mode-toggle:hover{border-color:#8fbcb0}
+.advice-mode-toggle:focus-visible,.route-next-option:focus-visible{outline:3px solid #9dc7b3;outline-offset:3px}
+.route-coach{margin:16px 0 21px;border:1px solid #c7ddd0;border-left:4px solid #498f7b;border-radius:12px;background:#fbfdfb;padding:15px 18px;max-width:100%;overflow-wrap:anywhere}
+.route-coach-label{display:flex;align-items:center;gap:6px;font-size:10px;font-weight:800;letter-spacing:.07em;color:var(--teal-dark);margin-bottom:7px}
+.route-coach-label .icon{width:15px;height:15px}
+.route-coach h3{font-size:16px;line-height:1.35;margin:0 0 7px;color:var(--ink)}
+.route-coach-essential{font-size:13px;font-weight:650;color:var(--ink);line-height:1.6;margin:8px 0 0}
+.route-coach-detail{font-size:12px;line-height:1.6;margin:7px 0 0;color:var(--muted)}
+.route-coach-choices{margin:13px 0}
+.route-coach-choices>.field-label{margin-bottom:8px;font-size:12px}
+.route-coach-choices .choice-grid{gap:8px;grid-template-columns:repeat(2,minmax(0,1fr))}
+.route-coach-choices .choice{min-height:54px;padding:10px 11px;gap:8px}
+.route-coach-choices .choice .choice-title{font-size:12px}
+.route-coach-choices .choice .choice-subtitle{font-size:11px;line-height:1.42}
+.route-coach-choices .choice-marker{width:17px;height:17px}
+.route-coach-compact{border-left-width:3px;background:#fff;padding:11px 14px;margin:12px 0 17px}
+.route-coach-compact .route-coach-label{font-size:9px;margin-bottom:4px}
+.route-coach-compact h3{font-size:14px;margin-bottom:4px}
+.route-coach-compact .route-coach-essential{font-size:12px;font-weight:550;margin-top:4px}
+.route-coach-compact .route-coach-choices{margin:9px 0 8px}
+.route-coach-compact .route-coach-choices .field-group{margin:0}
+.route-coach-compact .route-coach-choices .field{max-width:100%;min-height:42px;font-size:12px}
+.route-coach-compact .route-coach-choices .field-label{font-size:11px}
+.route-next-questions{margin:17px 0 21px}
+.route-next-questions>.field-label{font-size:12px}
+.route-next-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.route-next-option{display:flex;align-items:start;gap:8px;min-width:0;padding:12px 13px;border:1px solid var(--line);border-radius:12px;background:#fff;text-align:left;color:var(--ink);font-size:12px;line-height:1.5;cursor:pointer}
+.route-next-option:hover{background:#f5faf7;border-color:#a7cabb}
+.route-next-option .icon{height:15px;width:15px;flex:none;margin-top:2px;color:var(--teal-dark)}
+.route-next-option span{min-width:0}
+@media(max-width:760px){
+ .completion-topline{flex-wrap:wrap;align-items:flex-start}
+ .completion-top-actions{gap:6px;width:100%;justify-content:space-between}
+ .advice-mode-toggle{min-height:36px;padding:7px 10px;font-size:11px}
+ .route-coach{padding:13px 12px;margin:12px 0 16px}
+ .route-coach h3{font-size:15px}
+ .route-coach-choices .choice-grid,.route-next-grid{grid-template-columns:1fr}
+ .route-coach-choices .choice{min-height:49px}
+ .route-coach-compact{padding:10px 11px}
+}
+@media(prefers-reduced-motion:reduce){
+ .advice-mode-toggle,.route-next-option{transition:none!important}
+}

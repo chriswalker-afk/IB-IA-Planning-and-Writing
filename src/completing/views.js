@@ -13,6 +13,7 @@ import {isStuckNode} from '../help/stuck-state.js';
 import {createConformanceViews} from "./conformance-views.js";
 import {C_NODES,C_PROMPTS} from "./catalog.js";
 import {createGuidanceViews} from "./guidance-views.js";
+import {routeAdvice,resultSignalOptions,routeNextQuestions,isAdviceReduced} from "./route-coach.js";
 import {METHOD_OPTIONS,COURSE_OPTIONS} from "./guidance-context.js";
 import {
  C_MAJOR_STAGES,C_STAGE_STATUS,routesAt,completionStage,completionFlags,
@@ -160,6 +161,35 @@ export function createCompletingViews(ctx){
     smallSummary("Current mathematical purpose",st.purpose)+
     (st.status==="completed"&&st.result?smallSummary("Actual result",st.result):info("Planned, not performed","Record what you actually did before interpreting it."))+
     (st.resultRef?smallSummary("Location in my own IA document",st.resultRef):"")+'</div>';
+ };
+ const coachBlock=(entry,{allowChoices=true}={})=>{
+  const state=getState(),advice=routeAdvice(state,entry),index=state.entries.findIndex(x=>x.id===entry?.id);
+  if(!advice)return "";
+  const reduced=isAdviceReduced(state),options=index>=0&&allowChoices?resultSignalOptions(entry):[];
+  const choiceHtml=options.length?
+   '<div class="route-coach-choices"><p class="field-label">What does this actual result suggest?</p>'+
+   (reduced?field("entries."+index+".resultSignal","My interpretation so far","",{type:"select",
+      options:[["","Not yet decided"],...options.map(x=>[x.value,x.title])] }):
+    choose("entries."+index+".resultSignal",options,{tight:true,label:"Choose what the mathematical result suggests"}))+
+   '</div>':"";
+  return '<section class="route-coach '+(reduced?"route-coach-compact":"")+
+   '" aria-label="Important mathematical check" data-coach-family="'+e(entry.kind==="scatter"?"scatter":advice.heading)+'">'+
+   '<div class="route-coach-label">'+icon("lightbulb")+' <span>MATHEMATICAL CHECK · AT THIS RESULT</span></div>'+
+   '<h3>'+e(advice.heading)+'</h3>'+
+   choiceHtml+
+   '<p class="route-coach-essential">'+e(advice.essential)+'</p>'+
+   (!reduced&&advice.detail?'<p class="route-coach-detail">'+e(advice.detail)+'</p>':"")+
+   '</section>';
+ };
+ const nextCoachQuestions=()=>{
+  const state=getState();if(isAdviceReduced(state))return "";
+  const prior=sourceResultForNext(state),qs=routeNextQuestions(state,prior);
+  if(!qs.length)return "";
+  return '<div class="route-next-questions"><p class="field-label">Questions your result might raise (optional)</p>'+
+   '<div class="route-next-grid">'+qs.slice(0,2).map((q,i)=>
+     '<button type="button" class="route-next-option" data-action="route-coach-next" data-index="'+i+
+     '" data-entry-id="'+e(prior.id)+'">'+icon("arrow-right")+'<span>'+e(q)+'</span></button>').join("")+
+   '</div><p class="field-hint">Possibilities, not extra calculations you must do. You can also finish with an honest conclusion.</p></div>';
  };
  const actualList=()=>{
   const all=getState().entries.filter(x=>x.status==="completed"&&filled(x.result));
@@ -346,6 +376,7 @@ export function createCompletingViews(ctx){
       {value:"curved",title:"Curved / nonlinear pattern",icon:"route"},
       {value:"unclear",title:"No clear pattern",icon:"circle"},
       {value:"unexpected",title:"Unexpected point or result",icon:"sparkles"}]):"")+
+    coachBlock(st,{allowChoices:st?.kind!=="scatter"})+
     entryField("observationText","What can you really observe?","Trend, feature, value, possible counterexample or inconclusive finding",{type:"textarea",rows:3})+
     F("firstResultSummary","What is the essential local takeaway?","Use this when deciding what mathematical question should follow",{type:"textarea",rows:2})+
     accuracyNote()
@@ -357,7 +388,7 @@ export function createCompletingViews(ctx){
     info("Avoid repeated precision essays","Once justified, apply the decision again only where relevant. Revisit C24 if the underlying source changes.")
   };
   case "C34B":return{intro:"Relate this actual result to your aim, your earlier prediction and its intended benefit.",
-   html:entryReviewAlert()+actualRecord()+smallSummary("Your current aim",currentAim())+
+   html:entryReviewAlert()+actualRecord()+coachBlock(st,{allowChoices:false})+smallSummary("Your current aim",currentAim())+
     smallSummary("Original prediction (tentative)",plannedPrediction())+
     smallSummary("Possible beneficiary",currentBenefit())+
     entryField("interpretation","What does this actual result mean for my aim?","An honest local conclusion based on mathematics I have done",{type:"textarea",rows:4})+
@@ -375,7 +406,7 @@ export function createCompletingViews(ctx){
     info("No forced result","You can record an unresolved surprise, save, or revise the mathematical plan while keeping the original observation intact.")
   };
   case "C35":return{intro:"One logical bridge from your last actual result to the next mathematics—or recognise that you have enough to conclude.",
-   html:bridgeFromPrior()+
+   html:bridgeFromPrior()+coachBlock(sourceResultForNext(s))+nextCoachQuestions()+
     F("nextQuestion","What worthwhile mathematical question remains unanswered?","It should arise from the previous local takeaway",{type:"textarea",rows:3})+
     F("nextMethod","Which technique might answer THAT question?","Course-appropriate if possible; it can be undecided")+
     F("nextReason","Why would this next technique follow from the previous result?","Explain the bridge BEFORE the new mathematics in your real IA",{type:"textarea",rows:3})+
@@ -398,17 +429,18 @@ export function createCompletingViews(ctx){
      ["unclear","No clear association"],
      ["unexpected","An unusual point or cluster"],
      ["unsure","Not sure — inspect the graph again"]])+
+    coachBlock(scatterForNext(s),{allowChoices:false})+
     info("Pearson's r has a specific purpose","It measures linear association between paired numerical variables. A small r does not establish that there is no relationship of any form.")+
-    guides.bivariateHelp(n)
+    guides.bivariateHelp(n,{reduced:isAdviceReduced(s)})
   };
   case "C35P":return{intro:"Use this only after you have actually calculated Pearson's correlation coefficient.",
-   html:bridgeFromPrior()+
+   html:bridgeFromPrior()+coachBlock(sourceResultForNext(s),{allowChoices:false})+
     F("pmccInterpretation","What value or finding did I calculate and what does it mean?","Describe actual direction and strength of LINEAR association",{type:"textarea",rows:3})+
     (f.scatterPattern?smallSummary("Observed scatter shape",f.scatterPattern):"")+
     F("nextQuestion","My next question, if another is needed","A model, outlier check, different explanation, or no further calculation",{type:"textarea",rows:2})+
     F("nextReason","Why would that next step help the aim?","The actual r and graph—not a planned coefficient—drive the choice",{type:"textarea",rows:2})+
     info("Association is not causation","Even a strong coefficient does not show that one variable caused another. Avoid forcing a straight-line regression on a curved pattern.")+
-    guides.bivariateHelp(n)
+    guides.bivariateHelp(n,{reduced:isAdviceReduced(s)})
   };
   case "C40":case "C50":{
    const active=completeEntry(s);
@@ -424,6 +456,7 @@ export function createCompletingViews(ctx){
          {value:"planned",title:"Only planned",icon:"clock"},
          {value:"completed",title:"Actual mathematics completed",icon:"check-circle"}])+
        entryField("result","What did you ACTUALLY establish?","A genuine value, equation, model, property or finding",{type:"textarea",rows:4})+
+    coachBlock(entry)+
        entryField("resultRef","Where is the full mathematics in my IA?","Equation number, figure, section or page")+
        accuracySelector()+
        entryChoice("knowledge",[
@@ -616,15 +649,18 @@ export function createCompletingViews(ctx){
      ' aria-pressed="'+(progress===key)+'" class="'+(progress===key?"selected":"")+'">'+e(text)+'</button>').join("")+'</div></div>':"";
   return '<div class="page narrow completing-page">'+tabletNav()+
     '<div class="completion-topline"><span>'+icon("route")+' '+e(node==="C04"?"Your IA Studio":(JOURNEY_GROUPS.indexOf(currentGroup(s))+1)+'. '+currentGroup(s).name)+'</span>'+
-    (node==="C04"?"":'<button class="btn btn-quiet btn-sm" data-action="completion-open" data-node="C04">'+icon("layers")+' My stages</button>')+'</div>'+
+    '<div class="completion-top-actions"><button type="button" class="advice-mode-toggle" data-action="toggle-advice-mode" aria-pressed="'+isAdviceReduced(s)+'" aria-label="'+(isAdviceReduced(s)?"Show full advice":"Reduce optional advice")+'">'+
+      icon(isAdviceReduced(s)?"eye":"eye-off")+' '+(isAdviceReduced(s)?"Show full advice":"Reduce advice")+'</button>'+
+    (node==="C04"?"":'<button class="btn btn-quiet btn-sm" data-action="completion-open" data-node="C04">'+icon("layers")+' My stages</button>')+'</div></div>'+
     topWarnings+
     '<div class="task-shell" data-source-node="'+e(node)+'">'+
     '<h1 class="task-heading">'+e(label)+'</h1><p class="task-intro">'+e(screen.intro)+'</p>'+
-    extra.returnToReview()+(isStuckNode(node)||["C04","C10E"].includes(node)?"":criteriaPanel(s))+screen.html+(screen.extra||"")+essentialsNudge(s)+
-    (isStuckNode(node)||node==="C10E"?"":guides.writingMoment(node,{embedded:node!=="C96"}))+
-    (isStuckNode(node)?"":guides.mathsHelp(node)+guides.limitsHelp(node)+
-    (node==="C04"?"":contextualPrompt(node)+resourcePrompt(s))+statusControls+
-    allButtons(node,primaryByNode[node]||[]))+'</div>'+
+    extra.returnToReview()+(isStuckNode(node)||["C04","C10E"].includes(node)||isAdviceReduced(s)?"":criteriaPanel(s))+screen.html+(screen.extra||"")+
+    (isAdviceReduced(s)?"":essentialsNudge(s))+
+    (isStuckNode(node)||node==="C10E"||isAdviceReduced(s)?"":guides.writingMoment(node,{embedded:node!=="C96"}))+
+    (isStuckNode(node)||isAdviceReduced(s)?"":guides.mathsHelp(node)+guides.limitsHelp(node)+
+    (node==="C04"?"":contextualPrompt(node)+resourcePrompt(s)))+statusControls+
+    allButtons(node,primaryByNode[node]||[])+'</div>'+
     '<p class="small-callout">Only actual mathematics supports a mathematical conclusion. Your planning, predictions and teacher questions remain separate from real findings. No compulsory number of calculations or IA grade.</p>'+
     (node==="C04"?"":miniList())+'</div>';
  }

@@ -110,7 +110,7 @@ export function createGuidanceViews(ctx){
    '<div>'+records.slice(0,9).map(x=>'<p><strong>'+e(readable(x.explanation,140))+'</strong> — '+e(readable(x.consequence,180))+
     (x.location?' <span class="guidance-small">('+e(x.location)+')</span>':"")+'</p>').join("")+'</div></div>';
  }
- function bivariateHelp(node){
+ function bivariateHelp(node,{reduced=false}={}){
   const s=getState(),context=guidanceContext(s,node);
   if(!["C35B","C35P"].includes(node)||!context.scatter)return"";
   const type=context.f.pairedDataType,pattern=context.selectedPattern,detail=context.selectedDetail;
@@ -133,7 +133,7 @@ export function createGuidanceViews(ctx){
       {value:"meaningful-linear",title:"I interpret my actual r as meaningful linear association"},
       {value:"uncertain",title:"I need to interpret my actual r more carefully"}],{tight:true});
   }
-  if(ideas.length){
+  if(ideas.length&&!reduced){
     html+=tiny("Optional next QUESTIONS, not instructions to perform a technique:")+
       ideas.slice(0,3).map((x,i)=>'<div class="guidance-bivariate-idea"><p>'+e(x.question)+'</p>'+
         tiny(x.reason)+
@@ -141,7 +141,7 @@ export function createGuidanceViews(ctx){
   }else if(type==="paired-numerical")html+=tiny("First record the actual pattern, then choose only mathematics that addresses a real unanswered question.");
   else if(type!=="categorical"&&type!=="unpaired")html+=tiny("Confirm the data type before asking Pathfinder for Pearson or modelling suggestions.");
   return html+
-    tiny("Correlation alone cannot establish causation. A small Pearson coefficient measures weak LINEAR association; it cannot rule out a curved pattern.")+
+    (reduced?"":tiny("Correlation alone cannot establish causation. A small Pearson coefficient measures weak LINEAR association; it cannot rule out a curved pattern."))+
     '</div>';
  }
  return{writingMoment,mathsHelp,limitsHelp,bivariateHelp,conclusionLimitations};

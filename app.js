@@ -24,13 +24,14 @@ import {actOnWritingCue} from "./src/completing/guidance-actions.js";
 import {eligibleWritingCues} from "./src/completing/writing-guidance.js";
 import {selectLimitation,recordLimitation,limitationContextKey,relevantLimitations} from "./src/completing/limitation-guidance.js";
 import {relevantBivariateOptions} from "./src/completing/bivariate-guidance.js";
+import {resultFamily,routeNextQuestions} from "./src/completing/route-coach.js";
 
 import { planningMove, planAutoAdvance, planningBack, planningEdit, applyPlanningField, toggleMath, syncPlanningToProject, setPlanCurrent, planningFlags } from "./src/planning/engine.js";
 import { createPlanningViews } from "./src/ui/planning-views.js";
 import {applySuggestedTimeline,localToday,validDate,timelineWeek} from "./src/planning/timeline.js";
 import { createStudioViews } from "./src/ui/studio-views.js";
 import {createCompletingViews} from "./src/completing/views.js";
-import {C_MAJOR_STAGES,setCompletionNode,moveCompletionRoute,completionBack,markCompletionStage,setCompletionField,addAccuracyDecision,completionSuggestions,sectionForNode,targetForSection,completionStage,completeEntry,latestRealResult,flagDependentMathematics,acknowledgeMathReview} from "./src/completing/engine.js";
+import {C_MAJOR_STAGES,setCompletionNode,moveCompletionRoute,completionBack,markCompletionStage,setCompletionField,addAccuracyDecision,completionSuggestions,sectionForNode,targetForSection,completionStage,completeEntry,latestRealResult,sourceResultForNext,flagDependentMathematics,acknowledgeMathReview} from "./src/completing/engine.js";
 
 import { createProjectViews } from "./src/ui/project-views.js";
 import { createProjectState as newState, normalizeProjectState as normalise, persistProjectState, STORAGE_KEY as KEY } from "./src/core/project-state.js";
@@ -107,7 +108,11 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     if(changed&&before!==value){
       if(path.startsWith("entries.")){
         const [,index,key]=path.split(".");
-        if(/^\d+$/.test(index))flagDependentMathematics(state,Number(index),key,before,value);
+        if(/^\d+$/.test(index)){
+          flagDependentMathematics(state,Number(index),key,before,value);
+          syncOutcome(path,value);
+          if(before!==value&&["technique","methodId"].includes(key))state.entries[Number(index)].resultSignal="";
+         }
       }
       let stage=path==="scratch.introduction"?"C10":path==="scratch.conclusion"?"C60":
         path==="scratch.dataNotes"?"C20":path==="scratch.finalReview"?"C90":
@@ -122,6 +127,23 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       "project.beneficiary":"beneficiary","project.precision":"firstAccuracy"};
     if(changed&&mirror[path])applyPlanningField(state,mirror[path],value);
     return changed;
+  }
+  // Explicit, result-scoped student decisions. No inference from a prediction or coefficient.
+  function syncOutcome(path,value){
+    const match=/^entries\.(\d+)\.(resultSignal|observation)$/.exec(path);
+    if(!match)return;
+    const entry=state.entries[Number(match[1])],c=state.completion;
+    if(!entry)return;
+    if(match[2]==="resultSignal"&&resultFamily(entry)==="pmcc"){
+      c.fields.pmccSignal=value;
+      c.pmccSignalForEntryId=entry.id;
+    }
+    if(match[2]==="observation"&&entry.kind==="scatter"){
+      c.fields.scatterPattern=value;
+      c.scatterPatternForEntryId=entry.id;
+      c.fields.scatterDetail="";
+      c.scatterDetailForEntryId="";
+    }
   }
   function save() {
     if(preview.active){preview.save(state);setSaveStatus("Sample preview only");refreshProgress();return;}
@@ -276,6 +298,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     // A labelled, isolated and fully populated fictional investigation.
     // Loading/switching previews NEVER replaces the personal browser project.
     const next=createIllustrativeSample(kind);
+    next.ui.adviceMode=state.ui.adviceMode; // Keep each student’s help preference when trying a safe sample.
     const origin=drawerReturn||captureReturn();
     state=preview.begin(state,next,{scroll:origin.scroll,attributes:origin.attributes});
     save();closeDrawer(false);render({top:true});
@@ -639,6 +662,32 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         save();break;
       }
       case "studio-tab":nav("completing",{section:el.dataset.section});break;
+      case "toggle-advice-mode":{
+        const where=captureReturn(el);
+        state.ui.adviceMode=state.ui.adviceMode==="reduced"?"guided":"reduced";
+        save();render();restoreReturn(where);
+        toast(state.ui.adviceMode==="reduced"?
+         "Optional advice reduced. Essential mathematical checks remain visible.":"Full contextual advice restored.");
+        break;
+      }
+      case "route-coach-next":{
+        const prior=state.completion.current==="C35"?sourceResultForNext(state):null;
+        if(!prior||prior.id!==el.dataset.entryId){toast("Review the latest actual result before selecting a next question.");break;}
+        const question=routeNextQuestions(state,prior)[Number(el.dataset.index)];
+        if(!question){toast("That next-question suggestion is no longer applicable.");break;}
+        const current=state.completion.fields.nextQuestion.trim();
+        if(current&&current!==question&&!window.confirm("Replace your existing next mathematical question? Your previous result will not change."))break;
+        setCompletionField(state,"nextQuestion",question);
+        if(current!==question){
+          setCompletionField(state,"nextMethod","");
+          setCompletionField(state,"nextReason","");
+        }
+        save();render();
+        const target=document.querySelector('[data-bind="completion.fields.nextQuestion"]');
+        if(target)target.focus({preventScroll:true});
+        toast("Question selected as a possibility. Write your own mathematical reason before starting.");
+        break;
+      }
       case "completion-route":handleCompletionResult(moveCompletionRoute(state,el.dataset.condition));break;
       case "completion-open":handleCompletionResult(setCompletionNode(state,el.dataset.node,{reason:"student-revisit"}));break;
       case "completion-back":handleCompletionResult(completionBack(state));break;
@@ -826,7 +875,10 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         putPath(path,numeric?Number(choice.dataset.value):choice.dataset.value);
         if(path.startsWith("entries.")&&previous!==choice.dataset.value){
           const [,index,key]=path.split(".");
-          if(/^\d+$/.test(index))flagDependentMathematics(state,Number(index),key,previous,choice.dataset.value);
+          if(/^\d+$/.test(index)){
+           flagDependentMathematics(state,Number(index),key,previous,choice.dataset.value);
+           syncOutcome(path,choice.dataset.value);
+          }
           const stage=state.entries[Number(index)]?.phase==="first"?"C30":"C40";
           if(state.completion.stages[stage]==="complete")state.completion.stages[stage]="needs-review";
         }
@@ -912,8 +964,14 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       if(path==="planning.fields.course"||path==="planning.fields.ideaSelected"||
        ["completion.fields.scatterDetail","completion.fields.scatterAimRelevance",
         "entries."+state.completion.activeEntryIndex+".methodId",
-        "entries."+state.completion.activeEntryIndex+".accuracyRef"].includes(path))
+        "entries."+state.completion.activeEntryIndex+".accuracyRef"].includes(path)||
+       /^entries\.\d+\.resultSignal$/.test(path)){
        render();
+       if(/^entries\.\d+\.resultSignal$/.test(path)){
+         const input=document.querySelector('[data-bind="'+path+'"]');
+         if(input)input.focus({preventScroll:true});
+       }
+      }
       if(state.route==="planning"&&state.planning.current==="N03H"&&path.startsWith("planning.fields.milestone")){
         const key=path.slice("planning.fields.".length),f=state.planning.fields;
         const dateTarget=document.querySelector('[data-timeline-date="'+key+'"]');
