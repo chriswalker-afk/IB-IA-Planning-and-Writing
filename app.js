@@ -139,7 +139,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     clearTimeout(toastHandle);toastHandle=setTimeout(()=>el.classList.remove("show"),detail?6500:3500);
   }
   function previewBanner(){
-    return preview.active?'<aside class="sample-preview-banner" aria-label="Sample preview"><div><strong>'+icon("sparkles")+' Sample preview</strong><p>Fictional work. Your own investigation is unchanged.</p></div><div class="button-row">'+button("Return to my investigation","leave-preview","btn-primary")+button("Another sample","open-demos","btn-quiet btn-sm")+'</div></aside>':"";
+    return preview.active?'<aside class="sample-preview-banner" aria-label="Sample preview"><div><strong>'+icon("sparkles")+' Fully worked fictional sample</strong><p>Three linked mathematical steps, Planning and review notes. Invented teaching material only; your investigation is unchanged.</p></div><div class="button-row">'+button("See the sample journey","sample-journey","btn-secondary btn-sm")+button("Return to my investigation","leave-preview","btn-primary")+button("Another sample","open-demos","btn-quiet btn-sm")+'</div></aside>':"";
   }
   function leavePreview(){
     if(!preview.active)return;
@@ -593,6 +593,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     }
     switch(action){
       case "leave-preview":leavePreview();break;
+      case "sample-journey":nav("path");break;
       case "journey-open":
         if(el.dataset.target==="plan")nav("planning");
         else handleCompletionResult(setCompletionNode(state,el.dataset.target,{reason:"journey-navigation"}));
