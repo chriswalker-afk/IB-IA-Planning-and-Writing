@@ -1,4 +1,6 @@
 import {createExampleController} from "./src/examples/controller.js";
+import {createEssentialsController} from "./src/essentials/controller.js";
+import {editCriterionReview} from "./src/essentials/review.js";
 import {ideaAction,ideaInput,chooseTopic} from './src/ideas/engine.js';
 import {resourceDrawer,resourceList} from './src/resources/views.js';
 import {resourceAction,resourceFilter,resourcePreference} from './src/resources/actions.js';
@@ -37,6 +39,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   let state = newState();
   const resourceSession = newResourceSession();
   createExampleController(() => state); // Read-only, ephemeral examples; no student state writes.
+  createEssentialsController({getState:()=>state,onEdit:data=>{if(!editCriterionReview(state,data))return false;save();return true;},onChangedClose:()=>render()});
   let lastFocus = null;
   let lastDrawer = "";
   let pendingImport = null;

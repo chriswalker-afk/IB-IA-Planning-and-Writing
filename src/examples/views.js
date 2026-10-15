@@ -1,6 +1,7 @@
 import {EXAMPLES,NUMERICAL_EXAMPLE,exampleById} from './catalog.js';
 import {CATEGORIES,TOPICS,exampleContext,selectExamples,defaultVariant,filterExamples} from './context.js';
 import {visualFor} from './visuals.js';
+import {exampleCriteria} from '../essentials/example-criteria.js';
 export const e=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const strongText=t=>e(t).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
 export function prose(text){
@@ -32,7 +33,7 @@ export function renderCard(card,{context={},variant='',inline=false}={}){
  return '<article class="ex-card" data-example-card="'+e(card.id)+'"><div class="ex-eyebrow">'+e(CATEGORIES[card.category])+' · Original teaching example</div><h3 class="ex-heading" tabindex="-1">'+e(card.title)+'</h3>'+
  '<p class="ex-fiction">Fictional illustration, not your findings or wording to submit. A stronger excerpt is not a predicted IA grade.</p>'+
  (inline?'':variantPicker(card,variant))+'<div class="ex-pair">'+side(false)+side(true)+'</div>'+
- '<section class="ex-changes"><h4>What changed?</h4>'+prose(card.why)+'</section><section class="ex-transfer"><h4>Check your own work</h4><p>'+e(card.question)+'</p></section>'+
+ exampleCriteria(card)+'<section class="ex-changes"><h4>What changed?</h4>'+prose(card.why)+'</section><section class="ex-transfer"><h4>Check your own work</h4><p>'+e(card.question)+'</p></section>'+
  (['EX01','EX05','EX07','EX08','EX09','EX10','EX11','EX13','EX14','EX15','EX17','EX18','EX19','EX21','EX22','EX24'].includes(card.id)?'<details class="ex-data"><summary>Fictional data behind the cooling examples</summary><p>No observations below belong to your project. In-sample model comparisons are not independent validation.</p><div class="ex-table-wrap"><table><caption>Eleven invented readings; surrounding temperature fixed at 23°C for the example model.</caption><thead><tr><th scope="col">Time / min</th><th scope="col">Temperature / °C</th></tr></thead><tbody>'+NUMERICAL_EXAMPLE.time_min.map((t,i)=>'<tr><td>'+t+'</td><td>'+NUMERICAL_EXAMPLE.temperature_degC[i].toFixed(1)+'</td></tr>').join('')+'</tbody></table></div></details>':'')+'</article>';
 }
 export function exampleInline(state,options={}){

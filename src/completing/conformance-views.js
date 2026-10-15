@@ -1,6 +1,7 @@
 /** Small opt-in controls using the existing visual vocabulary. */
 import {linkedAccuracy,linkedSources} from './evidence-links.js';
 import {reviewChecksFor} from './review.js';
+import {reviewAccess} from '../essentials/views.js';
 export function createConformanceViews(ctx){
  const {getState,e,field,button,summary}=ctx;
  const input=(p,l,help='',opts={})=>field(p,l,help,opts);
@@ -35,7 +36,7 @@ export function createConformanceViews(ctx){
    (s.entries.some(x=>x.priorLearningOnly==='yes')?small('You recorded a prior-learning-only concern. Revisit the course-level mathematics with your teacher rather than adding complexity for its own sake.'):'')+
    (mode==='draft'&&s.completion.fields.draftComplete==='not-yet'?small('Your draft is marked incomplete. Finish the missing work before using the permitted complete-draft feedback opportunity.'):'')+
    (mode==='final'&&r.feedbackItems.some(x=>x.status!=='verified')?small('Some feedback actions have not yet been marked implemented and checked. Revisit those actions before declaring your own final file ready.'):'')+
-   '<details id="review-checklist-'+mode+'" class="completion-help"><summary>Optional detailed checks and A-E evidence ('+count+' checked)</summary>'+checks.map(x=>{
+   reviewAccess(s,mode)+'<details id="review-checklist-'+mode+'" class="completion-help"><summary>Optional detailed checks and A-E evidence ('+count+' checked)</summary>'+checks.map(x=>{
     const key=mode+'-'+x.id,rec=r.records[key],p='completion.review.records.'+key+'.';
     return '<details id="review-'+mode+'-'+x.id+'" class="review-check" data-review-check="'+x.id+'"><summary>'+e(x.area)+' - '+e(rec.status.replaceAll('-',' '))+'</summary><p>'+e(x.question)+'</p>'+small('Look for: '+x.evidence)+small(x.action)+small(x.guardrail)+
      input(p+'location','Where in my actual IA?','Page, figure, equation or section')+
@@ -66,10 +67,10 @@ export function createConformanceViews(ctx){
   return c.review.returnTo&&c.current!==c.review.returnTo?'<div class="button-row">'+act('conformance-review-return','Return to my saved review')+small('Your evidence and repair notes are preserved. Revisiting work does not automatically mark a check complete.')+'</div>':'';
  }
  function reviewReport(){
-  const s=getState(),r=s.completion.review,records=Object.entries(r.records).filter(([,v])=>v.note||v.location||v.action);
+  const s=getState(),r=s.completion.review,records=Object.entries(r.records).filter(([,v])=>v.note||v.location||v.action||v.selfMark!==''&&v.selfMark!==undefined);
   if(!records.length&&!r.feedbackItems.length)return'';
-  return '<h2>My draft and final self-review</h2>'+small('Student evidence and revision declarations, not assessment marks or teacher approval.')+
-   records.map(([key,v])=>'<div class="summary-block"><strong>'+e(key)+'</strong>'+summary('Status',v.status)+summary('Evidence location',v.location)+summary('My evidence',v.note)+summary('Repair action',v.action)+'</div>').join('')+
+  return '<h2>My draft and final self-review</h2>'+small('Student evidence and optional provisional self-marks, not teacher assessment or approval.')+
+   records.map(([key,v])=>'<div class="summary-block"><strong>'+e(key)+'</strong>'+summary('Status',v.status)+summary('Evidence location',v.location)+summary('My evidence',v.note)+summary('Repair action',v.action)+(v.selfMark!==''&&v.selfMark!==undefined?summary('My provisional self-mark'+(v.markLevel?' ('+v.markLevel+')':''),v.selfMark):'')+'</div>').join('')+
    r.feedbackItems.map(x=>'<div class="summary-block"><strong>'+e(x.action)+'</strong>'+summary('Actual feedback',x.note)+summary('Status',x.status)+summary('Revision verification',x.verification)+'</div>').join('');
  }
  return{sourceManager,inputLinks,accuracyNote,review,feedback,returnToReview,reviewReport};

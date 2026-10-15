@@ -53,7 +53,7 @@ function createHarness(savedValue){
   const window={scrollTo(){},confirm:()=>true,alert(){},print(){}};
   const script=read("../app.js").replace(/^import\s+.*;\s*$/gm,"");
   // The real browser suite exercises the independent native-dialog controller.
-  const globals={createExampleController:()=>({}),ideaAction,ideaInput,chooseTopic,resourceDrawer,resourceList,resourceAction,resourceFilter,resourcePreference,newResourceSession,PRACTICE_PAIRS,createStuckViews,captureStuckOrigin,isStuckNode,stuckAction,stuckContext,
+  const globals={createEssentialsController:()=>({}),editCriterionReview:()=>false,createExampleController:()=>({}),ideaAction,ideaInput,chooseTopic,resourceDrawer,resourceList,resourceAction,resourceFilter,resourcePreference,newResourceSession,PRACTICE_PAIRS,createStuckViews,captureStuckOrigin,isStuckNode,stuckAction,stuckContext,
     conformanceAction,reviewEditChanged,document,window,localStorage:storage,console,clearTimeout(){},setTimeout(){return 1;},
     createProjectState,normalizeProjectState,persistProjectState,
     newState:createProjectState,normalise:normalizeProjectState,
