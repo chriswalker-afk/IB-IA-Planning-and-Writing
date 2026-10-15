@@ -660,7 +660,7 @@ export function createCompletingViews(ctx){
     (isStuckNode(node)||node==="C10E"||isAdviceReduced(s)?"":guides.writingMoment(node,{embedded:node!=="C96"}))+
     (isStuckNode(node)||isAdviceReduced(s)?"":guides.mathsHelp(node)+guides.limitsHelp(node)+
     (node==="C04"?"":contextualPrompt(node)+resourcePrompt(s)))+statusControls+
-    allButtons(node,primaryByNode[node]||[]))+'</div>'+
+    allButtons(node,primaryByNode[node]||[])+'</div>'+
     '<p class="small-callout">Only actual mathematics supports a mathematical conclusion. Your planning, predictions and teacher questions remain separate from real findings. No compulsory number of calculations or IA grade.</p>'+
     (node==="C04"?"":miniList())+'</div>';
  }
