@@ -98,9 +98,13 @@ export function modelFromEnvelope(envelope){
     row("Measurement accuracy or symbolic precision",f.firstAccuracy)
   ],"Purpose comes before the mathematics; interpretation should follow the actual result."),
   section("Timeline and review",[
+    row("Time available for the project",f.timelineWeeks?f.timelineWeeks+" "+(f.timelineWeeks==="1"?"week":"weeks"):""),
+    row("Preference for finishing early",f.timelineEarly==="yes"?"Yes — leave a breathing-space buffer":f.timelineEarly==="no"?"No — use the available weeks":""),
+    row("Provisional start of the timeline",f.timelineStart),
     row("School teacher-draft deadline (student entered)",f.milestoneSchoolDraft),
     row("School final deadline (student entered)",f.milestoneSchoolFinal),
     row("Planning and introduction",f.milestonePlan),
+    row(f.kind==="theoretical"?"Definitions and starting examples":"Usable data / source material",f.milestoneData),
     row("First representation",f.milestoneFirstVisual),
     row("Interpret first representation",f.milestoneVisualReview),
     row("First substantial maths",f.milestoneFirstMath),

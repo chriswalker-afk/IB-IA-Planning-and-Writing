@@ -26,6 +26,7 @@ import {relevantBivariateOptions} from "./src/completing/bivariate-guidance.js";
 
 import { planningMove, planAutoAdvance, planningBack, planningEdit, applyPlanningField, toggleMath, syncPlanningToProject, setPlanCurrent, planningFlags } from "./src/planning/engine.js";
 import { createPlanningViews } from "./src/ui/planning-views.js";
+import {applySuggestedTimeline,localToday,validDate,timelineWeek} from "./src/planning/timeline.js";
 import { createStudioViews } from "./src/ui/studio-views.js";
 import {createCompletingViews} from "./src/completing/views.js";
 import {C_MAJOR_STAGES,setCompletionNode,moveCompletionRoute,completionBack,markCompletionStage,setCompletionField,addAccuracyDecision,completionSuggestions,sectionForNode,targetForSection,completionStage,completeEntry,latestRealResult,flagDependentMathematics,acknowledgeMathReview} from "./src/completing/engine.js";
@@ -643,6 +644,18 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         nodes.forEach(x=>x.open=open);el.setAttribute("aria-expanded",String(open));el.textContent=open?"Collapse full path":"Show full path";break;
       }
       case "start-planning": setPlanCurrent(state,state.planning.current||"N00");nav("planning");break;
+      case "timeline-generate":
+      case "timeline-reset":{
+        const force=action==="timeline-reset";
+        if(force&&!window.confirm("Replace your edited milestone dates with fresh suggestions? School deadlines will not change."))break;
+        const result=applySuggestedTimeline(state,applyPlanningField,{today:localToday(),force});
+        if(!result.ok){toast(result.error);break;}
+        save();render();
+        const target=$("#timeline-suggestion");
+        if(target)target.scrollIntoView({block:"nearest",behavior:"auto"});
+        toast(result.preserved.length&&!force?"Timeline updated; "+result.preserved.length+" manually edited date(s) were kept.":"Your suggested milestones are ready. Dates can be changed in the optional detailed planner.");
+        break;
+      }
       case "plan-next":
       case "plan-advance":handlePlanningResult(planAutoAdvance(state));break;
       case "plan-route":handlePlanningResult(planningMove(state,el.dataset.condition));break;
@@ -942,6 +955,15 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         "entries."+state.completion.activeEntryIndex+".methodId",
         "entries."+state.completion.activeEntryIndex+".accuracyRef"].includes(path))
        render();
+      if(state.route==="planning"&&state.planning.current==="N03H"&&path.startsWith("planning.fields.milestone")){
+        const key=path.slice("planning.fields.".length),f=state.planning.fields;
+        const dateTarget=document.querySelector('[data-timeline-date="'+key+'"]');
+        const weekTarget=document.querySelector('[data-timeline-week="'+key+'"]');
+        if(dateTarget)dateTarget.textContent=validDate(f[key])?
+          new Intl.DateTimeFormat("en-GB",{day:"numeric",month:"short",year:"numeric",timeZone:"UTC"}).format(new Date(f[key]+"T12:00:00Z")):"Date to decide";
+        if(weekTarget)weekTarget.textContent=validDate(f[key])&&validDate(f.timelineStart)?
+          "Week "+timelineWeek(f.timelineStart,f[key]):"Not scheduled";
+      }
     }
   });
   document.addEventListener("submit",evt=>{if(evt.target.closest(".resource-filter-form"))evt.preventDefault();});

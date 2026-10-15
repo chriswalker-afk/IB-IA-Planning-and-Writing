@@ -4,6 +4,7 @@
  */
 import { PLANNING_ROUTES } from "./route-table.js";
 import { PLANNING_CATALOG } from "./catalog.js";
+import {TIMELINE_KEYS} from "./timeline.js";
 
 export const PLANNING_NODE_IDS = Object.freeze([...new Set(PLANNING_ROUTES.flatMap(r=>[r.from,r.to]).filter(n=>n.startsWith("N")))]);
 export const PROGRESS_GROUPS = Object.freeze([
@@ -32,7 +33,8 @@ export const PLANNING_FIELD_DEFAULTS = Object.freeze({
  changeTrigger:"",changeAdaptation:"",fallbackEvidence:"",
  teacherNeed:"",teacherQuestion:"",teacherSafeAction:"",teacherExtra:"",teacherSchedule:"",
  theoreticalAim:"",theoreticalCase:"",theoreticalPrediction:"",theoreticalWhy:"",otherCourseMaths:"",universalTeacherQuestion:"",
- milestonePlan:"",milestoneFirstVisual:"",milestoneVisualReview:"",milestoneFirstMath:"",
+ timelineWeeks:"",timelineEarly:"",timelineStart:"",
+ milestonePlan:"",milestoneData:"",milestoneFirstVisual:"",milestoneVisualReview:"",milestoneFirstMath:"",
  milestoneFurtherMath:"",milestoneDraft:"",milestoneReview:"",milestoneSchoolDraft:"",
  milestoneSchoolFinal:"",milestoneAdjustment:""
 });
@@ -41,7 +43,7 @@ export function createPlanningState(){
   current:"N00", fields:{...PLANNING_FIELD_DEFAULTS}, mathSelected:[],
   history:[], visited:[], completedNodes:[], sourceBranches:{primary:false,secondary:false},
   teacherFlagsAcknowledged:[], returnToPrediction:false, sourceSnapshot:"2026-10-14",
-  completed:false, notices:[], mathSearch:"", mathsReviewVersion:0
+  completed:false, notices:[], mathSearch:"", mathsReviewVersion:0,timelineAuto:{}
  };
 }
 export function normalizePlanningState(value,project={}){
@@ -76,6 +78,7 @@ export function normalizePlanningState(value,project={}){
   completed:v.completed===true,
   notices:[],mathSearch:typeof v.mathSearch==="string"?v.mathSearch.slice(0,90):"",
   mathsReviewVersion:Number.isInteger(v.mathsReviewVersion)?v.mathsReviewVersion:0,
+  timelineAuto:Object.fromEntries(["weeks","early","start",...TIMELINE_KEYS].filter(key=>typeof v.timelineAuto?.[key]==="string").map(key=>[key,v.timelineAuto[key].slice(0,24)])),
   sourceSnapshot:"2026-10-14"
  };
 }

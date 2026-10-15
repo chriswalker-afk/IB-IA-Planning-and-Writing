@@ -73,3 +73,65 @@
 }
 @media(max-width:380px){.task-shell{padding:19px 16px}.task-heading{font-size:25px}.task-support .support-actions .btn{padding:8px 5px}.sample-preview-banner .button-row{flex-wrap:wrap}.chapter-marker{width:34px;height:34px}.recent-checkpoint .checkpoint-icon{display:none}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.page{animation:none}.btn,.choice,.journey-chapter>summary>.icon,.toast,.completion-stage-card{transition:none!important;animation:none!important}#toast.toast{transition:none!important;animation:none!important}.btn:hover:not(:disabled){transform:none}}
+
+
+/* Timeline: two calm questions first, optional detailed schedule second. */
+.timeline-simple{padding:2px 0 0}
+.timeline-two-questions{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:20px;align-items:start}
+.timeline-two-questions .field-group{min-width:0}
+.timeline-two-questions .choice-stack{gap:8px}
+.timeline-two-questions .choice{min-height:56px;padding:11px 13px}
+.timeline-two-questions .choice-title{font-size:13px}
+.timeline-two-questions .choice-subtitle{font-size:11px}
+.timeline-two-questions #timeline-weeks{max-width:230px}
+.timeline-generate-row{margin:5px 0 22px;align-items:center}
+.timeline-generate-row .field-hint{margin:0}
+.timeline-result{background:#f6faf8;border:1px solid #d7e5de;border-radius:17px;padding:18px 19px 14px;margin:13px 0 20px}
+.timeline-result:focus{outline:2px solid var(--teal);outline-offset:3px}
+.timeline-result-heading{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:13px}
+.timeline-result-heading h3{font-size:18px;line-height:1.35;margin:0 0 5px;color:var(--ink)}
+.timeline-result-heading p{font-size:12px;line-height:1.55;color:var(--muted);margin:0}
+.timeline-result-heading .meta-pill{flex:none}
+.timeline-milestones{list-style:none;margin:0;padding:0}
+.timeline-milestones li{display:grid;grid-template-columns:28px minmax(0,1fr) 126px;gap:12px;align-items:center;padding:10px 2px;border-top:1px solid #e2ebe5}
+.timeline-step-number{display:grid;place-items:center;font-size:11px;font-weight:800;color:var(--teal-dark);background:#e1f1e9;border-radius:50%;width:25px;height:25px}
+.timeline-step-name{font-size:13px;font-weight:700;line-height:1.45}
+.timeline-step-time{text-align:right;display:grid;gap:2px}
+.timeline-step-time span{font-size:11px;font-weight:700;color:var(--teal)}
+.timeline-step-time strong{font-size:12px;font-weight:700;color:var(--ink)}
+.timeline-buffer{display:flex;gap:7px;align-items:center;color:var(--teal-dark);font-size:12px;margin:14px 0 2px;line-height:1.5;font-weight:650}
+.timeline-buffer .icon{width:16px;height:16px;flex:none}
+.timeline-advanced{margin-top:17px;border:1px solid var(--line);border-radius:15px;background:white;overflow:hidden}
+.timeline-advanced>summary{list-style:none;cursor:pointer;display:flex;gap:12px;align-items:center;padding:16px 18px;color:var(--teal-dark)}
+.timeline-advanced>summary::-webkit-details-marker{display:none}
+.timeline-advanced>summary:hover{background:#f6faf8}
+.timeline-advanced>summary:focus-visible{outline:3px solid #83b8a9;outline-offset:-3px}
+.timeline-advanced>summary .icon{flex:none;width:18px;height:18px}
+.timeline-advanced>summary .icon:last-child{margin-left:auto;transition:transform .18s}
+.timeline-advanced[open]>summary .icon:last-child{transform:rotate(180deg)}
+.timeline-advanced>summary span{display:block;min-width:0}
+.timeline-advanced>summary strong{display:block;font-size:13px}
+.timeline-advanced>summary small{display:block;font-size:11px;font-weight:500;color:var(--muted);margin-top:2px}
+.timeline-advanced-body{border-top:1px solid var(--line);padding:20px 18px 23px}
+.timeline-advanced-body>.field-hint:first-child{margin:0 0 18px}
+.timeline-advanced-body .field-row{margin-bottom:8px}
+.timeline-advanced-body .btn-sm{margin-top:12px}
+.timeline-disclaimer{color:var(--muted);font-size:12px;line-height:1.6;margin:13px 0 0}
+@media(max-width:760px){
+ .timeline-two-questions{grid-template-columns:1fr;gap:4px}
+ .timeline-two-questions #timeline-weeks{max-width:190px}
+ .timeline-milestones li{grid-template-columns:24px minmax(0,1fr) 105px;gap:8px}
+ .timeline-result{padding:17px 13px 12px}
+ .timeline-result-heading h3{font-size:17px}
+ .timeline-step-name{font-size:12px}
+ .timeline-step-time strong{font-size:11px}
+ .timeline-advanced-body{padding:17px 14px 20px}
+}
+@media(max-width:380px){
+ .timeline-milestones li{grid-template-columns:23px minmax(0,1fr);gap:6px 10px}
+ .timeline-step-time{grid-column:2;text-align:left;display:flex;gap:8px;align-items:baseline}
+ .timeline-result-heading{align-items:flex-start}
+}
+@media(prefers-reduced-motion:reduce){
+ .timeline-advanced>summary .icon:last-child{transition:none!important}
+}

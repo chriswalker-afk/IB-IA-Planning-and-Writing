@@ -2,6 +2,7 @@ import {examplePrompt} from "../examples/views.js";
 import {criteriaPanel,essentialsNudge} from "../essentials/views.js";
 import {ideaExplorerView,ideaComparisonView,ideaFooter} from '../ideas/views.js';
 import {resourcePrompt} from "../resources/views.js";
+import {renderTimelineStep} from "./timeline-view.js";
 /**
  * Full Planning student experience. Source node IDs are attached to UI for test
  * traceability but remain invisible to students. Actual graph movement lives in
@@ -244,13 +245,9 @@ export function createPlanningViews(ctx){
     '<div class="button-row">'+route("Reduce workload or resolve obstacles","Reduce workload or resolve blockers")+
     route("I need teacher help with obstacles","Practical obstacles not yet resolved")+'</div>',
     "<h4>Practical ≠ mathematical</h4><p>Even a mathematically promising idea may need its administrative burden reduced. It is okay to proceed provisionally while seeking advice.</p>");
-   case "N03H":return stepBody("Build a realistic IA timeline.","Only enter school deadlines that you have been given; other dates are your provisional targets.",
-    '<div class="field-row">'+dates([["milestoneSchoolDraft","School teacher-draft deadline (if known)"],["milestoneSchoolFinal","School final submission date (if known)"]])+'</div>'+
-    limitedTimeline(state)+timelineFlags(state)+
-    (f.milestoneDraft&&f.milestoneSchoolFinal&&f.milestoneDraft>f.milestoneSchoolFinal?
-      F("milestoneAdjustment","How could you adjust your schedule?","Start earlier or simplify the plan",{type:"textarea",rows:2}):"")+
-    callout("Leave breathing room","Keep space for interpretation, writing, checking and any feedback your school permits."),
-    "<h4>Never fabricate dates</h4><p>Ask your teacher to confirm school deadlines. A provisional milestone isn't an official submission date.</p>");
+   case "N03H":return stepBody("Plan your IA time.","Two quick questions are enough to start. We can suggest milestones for data, mathematics, writing and review.",
+    renderTimelineStep(state,{e,icon,F,choice,callout}),
+    "<h4>Keep it flexible</h4><p>These are suggestions, not school deadlines. Aim for usable starting material early, mathematical investigation and reflection along the way, then a complete draft with time to check it. The plan can change.</p>");
    case "N04":return stepBody("Which IB Mathematics course are you studying?","The mathematical menu is course-specific. Other courses can still prepare a provisional plan for teacher review.",
     choice("course",[
       {value:"AI SL",title:"Mathematics AI SL",icon:"chart"},

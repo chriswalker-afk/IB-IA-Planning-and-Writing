@@ -2,6 +2,8 @@
 
 **Live website:** https://chriswalker-afk.github.io/IB-IA-Planning-and-Writing/
 
+**IA timeline:** By default, students answer only how many weeks they have and whether they want to finish early. Pathfinder suggests a sequence for evidence, mathematics, drafting and review; each date can be edited in the optional detailed planner. Student-set weeks, buffer preference and dates appear in Planning and full-project PDF/Word exports. See [timeline design and safeguards](docs/simple-timeline-2026-10-15.md).
+
 **Whole-project export:** Backups & reports offers readable full project PDF, editable Word and a ZIP containing both reports and the restorable full-project JSON. These include actual mathematical records, sources, interpretations, accuracy decisions, limitations, writing and review notes as well as Planning. The reports are working records, not a finished IA or an assessed grade. PDF/Word reimport remains planning-only; the full project is restored from JSON. Existing Planning-only exports are preserved.
 
 IA Pathfinder is a responsive, device-local **planning and writing companion** for IB Mathematics Internal Assessments. Students author their actual IAs in Word or Google Docs; Pathfinder helps with meaningful aims, mathematically justified choices, authentic results, interpretation, precision and coherent mathematical transitions. It never fabricates observations, assigns grades or rewrites an IA on the student's behalf.
