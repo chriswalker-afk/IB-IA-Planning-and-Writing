@@ -14,6 +14,7 @@ import {createConformanceViews} from "./conformance-views.js";
 import {C_NODES,C_PROMPTS} from "./catalog.js";
 import {createGuidanceViews} from "./guidance-views.js";
 import {routeAdvice,resultSignalOptions,routeNextQuestions,isAdviceReduced} from "./route-coach.js";
+import {extendedPlanningCheck} from "./extended-routes.js";
 import {METHOD_OPTIONS,COURSE_OPTIONS} from "./guidance-context.js";
 import {
  C_MAJOR_STAGES,C_STAGE_STATUS,routesAt,completionStage,completionFlags,
@@ -162,7 +163,17 @@ export function createCompletingViews(ctx){
     (st.status==="completed"&&st.result?smallSummary("Actual result",st.result):info("Planned, not performed","Record what you actually did before interpreting it."))+
     (st.resultRef?smallSummary("Location in my own IA document",st.resultRef):"")+'</div>';
  };
- const coachBlock=(entry,{allowChoices=true}={})=>{
+ const preflight=(entry)=>{
+  const advice=extendedPlanningCheck(getState(),entry);
+  if(!advice)return "";
+  const reduced=isAdviceReduced(getState());
+  return '<section class="route-preflight" aria-label="Before using this mathematical method">'+
+    '<div class="route-coach-label">'+icon("lightbulb")+' <span>BEFORE THE MATHEMATICS</span></div>'+
+    '<strong>'+e(advice.heading)+'</strong><p>'+e(advice.essential)+'</p>'+
+    (!reduced&&advice.depth?'<p class="field-hint">'+e(advice.depth)+'</p>':"")+
+    '</section>';
+ };
+ const coachBlock=(entry,{allowChoices=true,showDepth=true}={})=>{
   const state=getState(),advice=routeAdvice(state,entry),index=state.entries.findIndex(x=>x.id===entry?.id);
   if(!advice)return "";
   const reduced=isAdviceReduced(state),options=index>=0&&allowChoices?resultSignalOptions(entry):[];
@@ -178,6 +189,7 @@ export function createCompletingViews(ctx){
    '<h3>'+e(advice.heading)+'</h3>'+
    choiceHtml+
    '<p class="route-coach-essential">'+e(advice.essential)+'</p>'+
+   (showDepth&&advice.depth?'<div class="route-depth-check"><strong>Mathematical development</strong><p>'+e(advice.depth)+'</p></div>':"")+
    (!reduced&&advice.detail?'<p class="route-coach-detail">'+e(advice.detail)+'</p>':"")+
    '</section>';
  };
@@ -351,6 +363,7 @@ export function createCompletingViews(ctx){
     entryField("resultRef","Where will the figure or work appear in my IA?","e.g. Figure 1 in my Word document")+
     F("firstDefinitions","Variables, units or assumptions the reader needs here","Only what is not already defined",{type:"textarea",rows:2})+
     entryField("methodId","Identify an actual method for relevant help (optional)","",{type:"select",options:METHOD_OPTIONS})+
+    preflight(st)+
     accuracySelector()+accuracyNote()
   };
   case "C33":return{intro:"Create the actual figure or short calculation in your IA document. Describe what you did here without copying an invented result.",
@@ -406,7 +419,7 @@ export function createCompletingViews(ctx){
     info("No forced result","You can record an unresolved surprise, save, or revise the mathematical plan while keeping the original observation intact.")
   };
   case "C35":return{intro:"One logical bridge from your last actual result to the next mathematics—or recognise that you have enough to conclude.",
-   html:bridgeFromPrior()+coachBlock(sourceResultForNext(s))+nextCoachQuestions()+
+   html:bridgeFromPrior()+coachBlock(sourceResultForNext(s),{showDepth:false})+nextCoachQuestions()+
     F("nextQuestion","What worthwhile mathematical question remains unanswered?","It should arise from the previous local takeaway",{type:"textarea",rows:3})+
     F("nextMethod","Which technique might answer THAT question?","Course-appropriate if possible; it can be undecided")+
     F("nextReason","Why would this next technique follow from the previous result?","Explain the bridge BEFORE the new mathematics in your real IA",{type:"textarea",rows:3})+
@@ -452,6 +465,7 @@ export function createCompletingViews(ctx){
        entryField("purpose","Why this technique belongs here, BEFORE the work","Link to the previous result and aim",{type:"textarea",rows:3})+
        entryField("technique","Mathematical technique actually intended or used","e.g. differentiation, regression, algebraic argument")+
        entryField("methodId","Identify the method for relevant help (optional)","",{type:"select",options:METHOD_OPTIONS})+
+       preflight(entry)+
        entryChoice("status",[
          {value:"planned",title:"Only planned",icon:"clock"},
          {value:"completed",title:"Actual mathematics completed",icon:"check-circle"}])+
