@@ -423,6 +423,15 @@ export function createIllustrativeSample(kind,{today}={}){
  const theory=isTheory;
  const first=theory?story.first:story.scatter,second=story.second,third=story.third;
  sample.entries=[first,second,third];
+ // Student-style route choices are demonstrated, never calculated or inserted into real work.
+ const sampleSignals={
+  linear:["","meaningful-linear","fit-sensible"],
+  curved:["","poor-fit","fit-sensible"],
+  unclear:["","weak-linear",""],
+  unexpected:["","uncertain","outlier-effect"],
+  theory:["pattern-only","proof-established","proof-established"]
+ };
+ sample.entries.forEach((step,i)=>{step.resultSignal=sampleSignals[kind][i]||"";});
  sample.completion.current="C34B";sample.completion.activeEntryIndex=0;
  sample.completion.history=["C10","C20","C30","C33","C34","C40","C60"];
  sample.completion.visited=["C10","C20","C30","C31","C32","C33","C34B","C35","C40","C60","C70","C80"];
