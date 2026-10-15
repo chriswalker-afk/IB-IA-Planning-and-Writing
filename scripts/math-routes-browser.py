@@ -129,7 +129,7 @@ with sync_playwright() as pw:
    p=context.new_page();p.set_default_timeout(9000);errors=[]
    p.on("pageerror",lambda err:errors.append(str(err)))
    raw=fixture(family)
-   p.add_init_script("localStorage.setItem("+json.dumps(KEY)+","+json.dumps(json.dumps(raw))+");")
+   p.add_init_script("if(!localStorage.getItem("+json.dumps(KEY)+"))localStorage.setItem("+json.dumps(KEY)+","+json.dumps(json.dumps(raw))+");")
    try:
     p.goto(URL,wait_until="networkidle")
     run_case(p,family,width)
