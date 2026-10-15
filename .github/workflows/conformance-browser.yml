@@ -35,7 +35,7 @@ jobs:
           SERVER_PID=$!
           trap 'kill "$SERVER_PID"' EXIT
           status=0
-          for suite in conformance stuck resources ideas examples essentials experience timeline; do
+          for suite in conformance stuck resources ideas examples essentials experience timeline criterion-level; do
             python "scripts/$suite-browser.py" || status=1
           done
           exit "$status"
