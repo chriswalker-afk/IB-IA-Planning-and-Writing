@@ -31,7 +31,7 @@ def build(p,weeks,early):
  tap(p,"timeline-generate")
  assert p.locator(".timeline-milestones li").count()==8
 def report_checks(p,name):
- tap(p,"open-files")
+ p.locator('[data-action="open-panel"][data-panel="files"]').first.click()
  with p.expect_download(timeout=45000) as d:
   tap(p,"export-plan-docx")
  file=OUT/(name+"-plan.docx")
