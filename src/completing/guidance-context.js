@@ -12,6 +12,10 @@ export const METHOD_OPTIONS=Object.freeze([
  ["exponential","Exponential growth/decay model"],
  ["sinusoidal","Trigonometric / periodic model"],
  ["optimisation","Differentiation / optimisation"],
+ ["finance-break-even","Business revenue, costs, profit and break-even"],
+ ["finance-compound","Compound interest / growth of an investment"],
+ ["finance-loan","Loan repayments, annuities and amortisation"],
+ ["finance-cashflow","Cumulative cash flow, business viability and sensitivity"],
  ["geometric-model","Measured geometric area/volume model"],
  ["normal","Normal-distribution model"],
  ["binomial","Binomial-probability model"],
@@ -20,6 +24,8 @@ export const METHOD_OPTIONS=Object.freeze([
  ["chi-fit","Chi-squared goodness-of-fit test"],
  ["probability","Conditional probability / expected value"],
  ["voronoi","Voronoi diagram"],
+ ["triangulation","Triangulation, surveying and measurement accuracy"],
+ ["expected-value","Expected value and risk-based decisions"],
  ["numerical-integration","Trapezoidal rule / numerical integration"],
  ["rates-from-data","Empirical rates of change"],
  ["power","Power law or transformed model"],
@@ -41,6 +47,7 @@ export const SCATTER_DETAILS=Object.freeze([
  ["turning","Curved with a turning point, reversal or repeated cycle"],
  ["unclear","No identifiable consistent pattern"],
  ["unexpected","Genuine unusual point or cluster"],
+ ["periodic","Repeating peaks and troughs across several cycles"],
  ["unsure","I cannot yet identify its shape"]
 ]);
 const str=v=>typeof v==="string"?v.trim():"";
