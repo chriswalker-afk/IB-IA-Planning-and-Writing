@@ -337,7 +337,13 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         (cleanUrl(p.documentUrl)?'<a class="btn btn-secondary" href="'+e(cleanUrl(p.documentUrl))+'" target="_blank" rel="noopener noreferrer">Open my IA document '+icon("arrow-up-right")+'</a>':"")+
         '</section><div class="panel-list">'+button("Review my plan","go-planning","btn-secondary")+button("See my journey","go-path","btn-light")+'</div>';
     }else if(panel==="files"){
-      body='<section><h3>Planning document · take it with you</h3>'+
+      body='<section><h3>Whole project · Planning and IA Studio</h3>'+
+        '<p>Download a readable record of your Planning, mathematical steps, results, interpretations, sources, accuracy decisions, limitations, reflections and review notes. These are working records, not your finished IA.</p>'+
+        '<div class="panel-list">'+button("Download full project PDF","export-full-pdf","btn-primary","", "download")+
+        button("Download editable full project Word","export-full-docx","btn-secondary","", "download")+
+        button("Download complete project bundle (.zip)","export-full-zip","btn-secondary","", "download")+'</div>'+
+        '<p class="field-hint">The ZIP includes both readable reports plus the full restorable JSON backup. PDF/Word can only reimport Planning fields. Edits to downloaded documents never update Pathfinder. Keep your project files private.</p></section>'+
+      '<section><h3>Planning document · take it with you</h3>'+
         '<p>Create a personalised PDF or editable Word plan. Each Pathfinder export includes an importable snapshot of the answers that existed at the time of export.</p>'+
         '<div class="panel-list">'+button("Download planning PDF","export-plan-pdf","btn-primary","", "download")+
         button("Download editable Word plan","export-plan-docx","btn-secondary","", "download")+
@@ -406,6 +412,23 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       const a=document.createElement("a");a.href=url;a.download=preview.active?"ia-pathfinder-sample.json":"ia-pathfinder-project.json";document.body.appendChild(a);a.click();a.remove();
       setTimeout(()=>URL.revokeObjectURL(url),3000);toast(preview.active?"Fictional sample downloaded. Your own project is unchanged.":"Your whole investigation is backed up.");
     } catch(err) {toast("Backup could not be created. Please try again.");console.error(err);}
+  }
+
+  async function exportFullProjectDocument(format){
+    if(exportBusy){toast("An export is already being prepared.");return;}
+    exportBusy=true;
+    setSaveStatus("Creating full project export…");
+    try{
+      const mod=await import("./src/handover/full-export.js");
+      const result=await mod.createFullProjectExport(state,format);
+      downloadFile(result.bytes,(preview.active?"sample-":"")+result.name,result.mime);
+      setSaveStatus("Saved on this device");
+      toast(format==="zip"?"Complete project bundle downloaded, including the restorable backup.":format==="pdf"?"Full working record PDF downloaded.":"Editable full working record downloaded.");
+    }catch(error){
+      console.error("Full project export failed",error);
+      setSaveStatus("Export failed — your existing work is unchanged",true);
+      toast("Could not create that full project export. Your work is unchanged; you can still download JSON.");
+    }finally{exportBusy=false;}
   }
 
   function downloadFile(bytes,name,mime){
@@ -789,6 +812,9 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       case "export-json":exportJson();break;
       case "export-plan-pdf":void exportPlanningDocument("pdf");break;
       case "export-plan-docx":void exportPlanningDocument("docx");break;
+      case "export-full-pdf":void exportFullProjectDocument("pdf");break;
+      case "export-full-docx":void exportFullProjectDocument("docx");break;
+      case "export-full-zip":void exportFullProjectDocument("zip");break;
       case "import-report":{
         const target=$("#reportImportFile");
         if(target)target.click();else toast("The document upload control is unavailable.");

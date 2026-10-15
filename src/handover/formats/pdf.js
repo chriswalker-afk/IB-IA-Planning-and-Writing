@@ -64,11 +64,11 @@ function addPdfLink(doc,page,x,y,width,height,url){
   page.node.addAnnot(ref);
  }catch{/* Invalid student-entered URLs remain plain text. */}
 }
-export async function createPdfPlanningReport(envelope){
- const payload=normalizePlanningEnvelope(envelope),model=modelFromEnvelope(payload);
+export async function createPdfPlanningReport(envelope,fullProjectModel=null){
+ const payload=normalizePlanningEnvelope(envelope),model=fullProjectModel||modelFromEnvelope(payload);
  const doc=await PDFDocument.create();
  doc.setTitle(model.title);doc.setAuthor("IA Pathfinder");
- doc.setSubject("Provisional student planning record, with a versioned Pathfinder attachment");
+ doc.setSubject(fullProjectModel?"Full student-owned working record, with planning-only reimport attachment":"Provisional student planning record, with a versioned Pathfinder attachment");
  doc.setKeywords(["IA Pathfinder","planning","provisional","reimportable"]);
  doc.setLanguage("en");
  const regular=await doc.embedFont(StandardFonts.Helvetica),
@@ -79,7 +79,7 @@ export async function createPdfPlanningReport(envelope){
   page.drawRectangle({x:0,y:PAGE[1]-10,width:PAGE[0],height:10,color:TEAL});
   page.drawText("IA  /  PATHFINDER",{x:MARGIN,y:PAGE[1]-35,size:8,font:bold,color:TEAL,characterSpacing:1.2});
   page.drawLine({start:{x:MARGIN,y:42},end:{x:PAGE[0]-MARGIN,y:42},thickness:.8,color:STROKE});
-  page.drawText("PROVISIONAL PLANNING RECORD",{x:MARGIN,y:28,size:8,font:regular,color:MUTED});
+  page.drawText(fullProjectModel?"FULL PROJECT WORKING RECORD":"PROVISIONAL PLANNING RECORD",{x:MARGIN,y:28,size:8,font:regular,color:MUTED});
   page.drawText(String(number),{x:PAGE[0]-MARGIN-10,y:28,size:8,font:regular,color:MUTED});
  };
  const requireSpace=points=>{if(y-points<62)newPage();};
@@ -145,7 +145,7 @@ export async function createPdfPlanningReport(envelope){
    }
   }
  }
- heading("What this document is — and is not");
+ heading(fullProjectModel?"About this full working record":"What this document is — and is not");
  write(model.footnote,{font:regular,size:9,color:MUTED,lineHeight:13});
  const json=JSON.stringify(payload);
  if(new TextEncoder().encode(json).length>REPORT_MAX_BYTES)throw new Error("Planning snapshot exceeds export size limit.");

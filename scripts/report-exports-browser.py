@@ -56,6 +56,8 @@ else:
         sites.append((name, 'http://127.0.0.1:' + str(port) + PREFIX))
 
 def project_content(value):
+    if not value:
+        return None
     value = json.loads(value)
     value.pop('updatedAt', None)
     value.get('handover', {}).pop('lastExportAt', None)
@@ -78,6 +80,41 @@ with sync_playwright() as p:
             try:
                 page.goto(url, wait_until='networkidle', timeout=45000)
                 page.locator('[data-action="open-files"]').first.click()
+                before = project_content(page.evaluate('localStorage.getItem(' + json.dumps(KEY) + ')'))
+                for fmt in ['pdf', 'docx', 'zip']:
+                    item = {'site': label, 'format': 'full-' + fmt}
+                    try:
+                        with page.expect_download(timeout=45000) as event:
+                            page.locator('[data-action="export-full-' + fmt + '"]').first.click()
+                        download = event.value
+                        target = OUT / (label + '-full-' + fmt + '.' + fmt)
+                        download.save_as(str(target))
+                        raw = target.read_bytes()
+                        assert len(raw) > 2000 and raw.startswith(b'%PDF-' if fmt == 'pdf' else b'PK')
+                        assert before == project_content(page.evaluate('localStorage.getItem(' + json.dumps(KEY) + ')'))
+                        if fmt in ['docx', 'zip']:
+                            import io, zipfile
+                            with zipfile.ZipFile(target) as archive:
+                                if fmt == 'zip':
+                                    assert 'ia-pathfinder-project.json' in archive.namelist()
+                                    assert any(p.endswith('.docx') for p in archive.namelist())
+                                    assert any(p.endswith('.pdf') for p in archive.namelist())
+                                    restored = json.loads(archive.read('ia-pathfinder-project.json'))
+                                    assert restored['route'] == 'home'
+                                    if scenario != 'empty':
+                                        assert restored['entries'][0]['result'] == 'Existing work must not be overwritten.'
+                                    word_name = next(p for p in archive.namelist() if p.endswith('.docx'))
+                                    with zipfile.ZipFile(io.BytesIO(archive.read(word_name))) as word:
+                                        xml = word.read('word/document.xml').decode()
+                                else:
+                                    xml = archive.read('word/document.xml').decode()
+                                if scenario != 'empty':
+                                    assert 'Original introduction notes must remain unchanged.' in xml
+                                    assert 'Existing work must not be overwritten.' in xml
+                        item.update(download=download.suggested_filename, bytes=len(raw), state_preserved=True)
+                    except Exception as err:
+                        item.update(error=str(err), toast=page.locator('#toast').inner_text())
+                    results.append(item)
                 page.locator('[data-action="go-report"]').first.click()
                 before = project_content(page.evaluate('localStorage.getItem(' + json.dumps(KEY) + ')'))
                 for fmt in ['pdf', 'docx']:
@@ -118,5 +155,5 @@ for server in servers:
     server.shutdown()
 (OUT / ('live-results.json' if args.live else 'results.json')).write_text(json.dumps(results, indent=2))
 print(json.dumps(results, indent=2))
-assert len(results) == len(sites) * 6
+assert len(results) == len(sites) * 15
 assert all('error' not in row for row in results), 'Report downloads failed'
