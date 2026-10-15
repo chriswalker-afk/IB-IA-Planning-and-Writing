@@ -10,6 +10,15 @@
   <link rel="stylesheet" href="./data/examples.css">
   <link rel="stylesheet" href="./data/essentials.css">
   <link rel="stylesheet" href="./data/experience.css">
+  <!-- Also support static/source hosting: browsers cannot resolve npm package names. -->
+  <script type="importmap">
+    {"imports":{
+      "pdf-lib":"./vendor/pdf-lib.js",
+      "docx":"./vendor/docx.js",
+      "jszip":"./vendor/jszip.js",
+      "pdfjs-dist/legacy/build/pdf.mjs":"./vendor/pdfjs.mjs"
+    }}
+  </script>
   <script type="module" src="./app.js"></script>
 </head>
 <body>
@@ -77,7 +86,7 @@
         <div id="sideMilestones" class="side-milestones"></div>
         <div class="sidebar-bottom">
           <div class="rail-tip"><span class="rail-tip-sparkle"><svg class="icon"><use href="#i-sparkles"></use></svg></span><strong>Little steps. Bigger ideas.</strong><p>A useful IA grows from questions worth exploring.</p></div>
-          <span class="prototype-label">YOUR MATHEMATICS. YOUR WORDS.</span>
+          <span class="prototype-label">IA PATHFINDER · PHASE 3</span>
         </div>
       </aside>
       <main id="main" class="main" tabindex="-1"></main>

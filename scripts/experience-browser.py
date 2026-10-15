@@ -70,7 +70,12 @@ with sync_playwright() as pw:
   file=OUT/'experience-project.json';d.value.save_as(str(file));data=json.loads(file.read_text());assert data['ui']['latestTitle']=='Introduction marked ready for now';assert data['scratch']['introduction']==OWN['scratch']['introduction'];p.keyboard.press('Escape');p.reload(wait_until='networkidle');nav(p,'home');assert p.locator('.recent-checkpoint').is_visible();shot(p,'return-home')
  run('checkpoint-backup-and-return-home',OWN,backup)
  def motion(p):
-  assert p.locator('.page').evaluate('(el)=>getComputedStyle(el).animationName')=='none';p.locator('[data-action="completion-mark"][data-status="complete"]').click();assert p.locator('#toast').evaluate('(el)=>getComputedStyle(el).transitionDuration')=='0s';shot(p,'reduced-motion-phone')
+  assert p.locator('.page').evaluate('(el)=>getComputedStyle(el).animationName')=='none';p.locator('[data-action="completion-mark"][data-status="complete"]').click();durations=p.locator('#toast').evaluate('(el)=>getComputedStyle(el).transitionDuration')
+  def seconds(value):
+   value=value.strip()
+   return float(value[:-2])/1000 if value.endswith('ms') else float(value[:-1]) if value.endswith('s') else float('inf')
+  assert durations and all(seconds(v)<0.001 for v in durations.split(',')),f'Reduced-motion toast transition lasted {durations}'
+  shot(p,'reduced-motion-phone')
  run('reduced-motion-keeps-static-feedback',OWN,motion,360,740,True)
  b.close()
 (OUT/'experience-results.json').write_text(json.dumps(results,indent=2));print(json.dumps(results,indent=2));assert all(r['status']=='passed' for r in results)

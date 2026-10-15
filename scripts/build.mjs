@@ -1,14 +1,17 @@
+import {buildBrowserVendor} from "./build-browser-vendor.mjs";
 import {build} from "esbuild";
 import {copyFile,cp,mkdir,rm,stat} from "node:fs/promises";
 import path from "node:path";
 
 const cwd=process.cwd(),out=path.join(cwd,"dist");
+await buildBrowserVendor(cwd);
 await rm(out,{recursive:true,force:true});
 await mkdir(out,{recursive:true});
 await Promise.all([
  copyFile(path.join(cwd,"index.html"),path.join(out,"index.html")),
  copyFile(path.join(cwd,"styles.css"),path.join(out,"styles.css")),
- cp(path.join(cwd,"data"),path.join(out,"data"),{recursive:true})
+ cp(path.join(cwd,"data"),path.join(out,"data"),{recursive:true}),
+ cp(path.join(cwd,"vendor"),path.join(out,"vendor"),{recursive:true})
 ]);
 await build({
  entryPoints:[path.join(cwd,"app.js")],

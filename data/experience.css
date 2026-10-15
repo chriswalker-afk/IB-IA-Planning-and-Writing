@@ -72,4 +72,4 @@
  .toast.checkpoint-toast{bottom:85px;padding:14px 16px}
 }
 @media(max-width:380px){.task-shell{padding:19px 16px}.task-heading{font-size:25px}.task-support .support-actions .btn{padding:8px 5px}.sample-preview-banner .button-row{flex-wrap:wrap}.chapter-marker{width:34px;height:34px}.recent-checkpoint .checkpoint-icon{display:none}}
-@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.page{animation:none}.btn,.choice,.journey-chapter>summary>.icon,.toast,.completion-stage-card{transition:none!important;animation:none!important}.btn:hover:not(:disabled){transform:none}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.page{animation:none}.btn,.choice,.journey-chapter>summary>.icon,.toast,.completion-stage-card{transition:none!important;animation:none!important}#toast.toast{transition:none!important;animation:none!important}.btn:hover:not(:disabled){transform:none}}
