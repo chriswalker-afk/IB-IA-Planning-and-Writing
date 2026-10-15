@@ -26,8 +26,9 @@ s=s.replace(anchor,''' def repeated_reference(p):
  run('examples-repeat-reference-without-hidden-dialog',fixture(),repeated_example)
  browser.close()''');p.write_text(s)
 replace('scripts/essentials-browser.py',"panel.locator('[data-action=\"essentials-open\"]').click()", "panel.locator('.criteria-actions [data-action=\"essentials-open\"]').click()")
-# An old minimal fixture is normalized on browser boot. Start with the same normalized
-# representation so preservation assertions compare work, not added empty schema defaults.
+replace('scripts/essentials-browser.py',"panel.locator('[data-action=\"example-open\"]').is_visible()", "panel.locator('.criteria-actions [data-action=\"example-open\"]').is_visible()")
+# Old minimal fixtures are normalized on boot. Use the same normalized representation
+# so preservation checks compare work, not the addition of empty schema defaults.
 replace('scripts/essentials-browser.py','import copy,json,os,traceback','import copy,json,os,traceback,subprocess')
-replace('scripts/essentials-browser.py',"BASE=json.loads((OUT/'examples-fixture.json').read_text());KEY='ia-pathfinder-prototype-v1'",'''normalize_js="import {normalizeProjectState} from './src/core/project-state.js';import fs from 'node:fs';console.log(JSON.stringify(normalizeProjectState(JSON.parse(fs.readFileSync(process.argv[1],'utf8'))))));"
-BASE=json.loads(subprocess.check_output(['node','--input-type=module','-e',normalize_js,str(OUT/'examples-fixture.json')],text=True));KEY='ia-pathfinder-prototype-v1' '''.replace('))))',')))'))
+replace('scripts/essentials-browser.py',"BASE=json.loads((OUT/'examples-fixture.json').read_text());KEY='ia-pathfinder-prototype-v1'",'''normalize_js="import {normalizeProjectState} from './src/core/project-state.js';import fs from 'node:fs';console.log(JSON.stringify(normalizeProjectState(JSON.parse(fs.readFileSync(process.argv[1],'utf8')))));"
+BASE=json.loads(subprocess.check_output(['node','--input-type=module','-e',normalize_js,str(OUT/'examples-fixture.json')],text=True));KEY='ia-pathfinder-prototype-v1' ''')
