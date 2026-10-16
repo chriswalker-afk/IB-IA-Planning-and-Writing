@@ -161,7 +161,8 @@ export function insightEcho(s,node){
 }
 export function insightToolkit(s,{compact=false}={}){
  const all=insightItems(s);
- const visible=compact?all.filter(x=>!x.planned).slice(-5):all.slice(-10);
+ const forHome=all.filter(x=>!x.planned),pinned=forHome.find(x=>x.id==='aim');
+ const visible=compact?(pinned?[pinned,...forHome.filter(x=>x.id!=='aim').slice(-4)]:forHome.slice(-5)):all.slice(-10);
  const earlier=compact?[]:all.slice(0,-10);
  const card=x=>'<button type="button" class="insight-toolkit-card insight-'+e(x.type)+'"'+jumpAttrs(x)+'>'+
   insightToken(x,{compact:true})+'<strong>'+e(short(x.title,62))+'</strong>'+
@@ -188,6 +189,6 @@ export function insightThreadMap(s){
   '<div class="insight-thread-links">'+connected.slice(-8).map(x=>
    '<div class="insight-thread-row insight-'+e(x.type)+'"><span class="insight-thread-origin">'+insightToken(x,{compact:true})+
    '<strong>'+e(short(x.title,70))+'</strong></span>'+
-   '<span class="insight-thread-flow" aria-hidden="true">···· '+icon('arrow-right')+'</span>'+
+   '<span class="insight-thread-flow" aria-hidden="true"><svg viewBox="0 0 104 34" focusable="false"><path d="M3 17 C32 1 70 33 100 17" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="3 5"/><path d="m93 12 7 5 -7 5" stroke="currentColor" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>'+
    '<span>'+x.linked.length+' linked mathematical '+(x.linked.length===1?'record':'records')+'</span></div>').join('')+'</div></section>';
 }
