@@ -98,7 +98,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   function refreshSavedSpark(path){
     // Update only the read-only indicators. Never rerender a focused text field.
     const node=state.route==="planning"?state.planning.current:state.route==="completing"?state.completion.current:"";
-    if(!node)return;
+    if(!node||typeof main?.querySelector!=="function")return;
     const current=main.querySelector(".task-shell .insight-capture");
     if(current&&/^(planning\.fields\.|completion\.fields\.|entries\.)/.test(path)){
       const html=insightCapture(state,node);
