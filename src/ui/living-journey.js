@@ -112,7 +112,7 @@ export function mathConstellation(s,{compact=false}={}){
   '<span class="math-constellation-count">'+actual+' actual result'+(actual===1?'':'s')+'</span></div>'+
   '<p class="math-constellation-intro">Every genuine result adds a star. Lines appear only where you explicitly connect one mathematical step to another.</p>'+
   (shown.length?
-   '<svg viewBox="0 0 356 155" class="math-constellation-svg" aria-hidden="true" focusable="false">'+
+   '<div class="constellation-sky-wrap"><svg viewBox="0 0 356 155" class="math-constellation-svg" aria-hidden="true" focusable="false">'+
    '<path d="M18 126 Q168 14 338 125" class="constellation-horizon"/>'+
    '<circle cx="76" cy="18" r="2" class="constellation-sky"/><circle cx="301" cy="146" r="2.5" class="constellation-sky"/>'+
    lines+shown.map((x,i)=>{
@@ -123,6 +123,13 @@ export function mathConstellation(s,{compact=false}={}){
      (status==='actual'?'<path class="constellation-sparkle" d="M'+p.x+' '+(p.y-16)+' v-6 M'+(p.x-16)+' '+p.y+' h-6"/>':'')+
      '</g>';
    }).join('')+'</svg>'+
+   shown.map((x,i)=>{
+    const p=positions[i],n=start+i;
+    const status=x.reviewNeeded==='yes'?'Needs review':real(x)?'Actual result':'Planned';
+    return '<button type="button" class="constellation-star-hit" data-action="completion-edit-entry" data-index="'+n+
+     '" style="left:'+(p.x/356*100).toFixed(2)+'%;top:'+(p.y/155*100).toFixed(2)+'%"'+
+     ' aria-label="Open '+e(x.title||'mathematical step '+(n+1))+': '+status+'" title="'+e(x.title||'Mathematical step '+(n+1))+'"></button>';
+   }).join('')+'</div>'+
    '<div class="constellation-interact"><span>Explore a star</span><span>Choose a mathematical record below to revisit it.</span></div><div class="constellation-key"><span><i class="star-key actual"></i> Actual result</span>'+
    '<span><i class="star-key planned"></i> Planned</span><span><i class="star-key review"></i> Needs review</span></div>'+
    '<div class="constellation-records">'+shown.slice(-6).map(x=>{
