@@ -135,8 +135,9 @@ export function insightCapture(s,node){
  if(!kind)return'';
  const existing=all.filter(x=>ids.includes(x.id));
  const spark=existing.at(-1);
- const meta=INSIGHT_FAMILIES[spark?.type||(/Accuracy|accuracy/.test(kind)?'accuracy':/source|evidence|method/.test(kind.toLowerCase())?'evidence':/mathematical|result/.test(kind.toLowerCase())?'discovery':'aim')];
- return '<aside class="insight-capture '+(spark?'is-captured':'is-pending')+'" aria-label="Remembered decision">'+
+ const family=spark?.type||(/Accuracy|accuracy/.test(kind)?'accuracy':/source|evidence|method/.test(kind.toLowerCase())?'evidence':/mathematical|result/.test(kind.toLowerCase())?'discovery':'aim');
+ const meta=INSIGHT_FAMILIES[family];
+ return '<aside class="insight-capture insight-'+family+' '+(spark?'is-captured':'is-pending')+'" aria-label="Remembered decision">'+
   '<span class="insight-capture-mark">'+icon(meta.icon)+'</span><div><strong>'+
   (spark?'Spark saved · '+e(kind):'A spark for later · '+e(kind))+'</strong><p>'+
   (spark?'Pathfinder can bring this back when it is relevant. '+e(short(spark.value,115)):
@@ -160,18 +161,21 @@ export function insightEcho(s,node){
 }
 export function insightToolkit(s,{compact=false}={}){
  const all=insightItems(s);
- const shown=compact?all.filter(x=>!x.planned).slice(-5):all;
+ const visible=compact?all.filter(x=>!x.planned).slice(-5):all.slice(-10);
+ const earlier=compact?[]:all.slice(0,-10);
+ const card=x=>'<button type="button" class="insight-toolkit-card insight-'+e(x.type)+'"'+jumpAttrs(x)+'>'+
+  insightToken(x,{compact:true})+'<strong>'+e(short(x.title,62))+'</strong>'+
+  '<span class="insight-toolkit-value">'+e(short(x.value,105))+'</span>'+
+  '<small>'+e(x.needsReview?'Needs review · '+x.where:x.planned?'Planned · not performed':x.where)+'</small>'+
+  '</button>';
  return '<section class="insight-toolkit" aria-label="My Toolkit">'+
   '<div class="insight-toolkit-top"><div><span class="section-eyebrow">'+icon('sparkles')+
   ' INSIGHT THREADS</span><h3>My Toolkit</h3><p>Your earlier decisions and real findings, ready when they matter again.</p></div>'+
   '<span class="insight-toolkit-count">'+all.length+' saved</span></div>'+
-  (shown.length?'<div class="insight-toolkit-grid">'+shown.map(x=>'<button type="button" class="insight-toolkit-card insight-'+e(x.type)+'"'+jumpAttrs(x)+'>'+
-  insightToken(x,{compact:true})+'<strong>'+e(short(x.title,62))+'</strong>'+
-  '<span class="insight-toolkit-value">'+e(short(x.value,105))+'</span>'+
-  '<small>'+e(x.needsReview?'Needs review · '+x.where:x.planned?'Planned · not performed':x.where)+'</small>'+
-  '</button>').join('')+'</div>':
-  '<div class="insight-toolkit-empty">'+icon('sparkles')+' Your toolkit grows from your own decisions. Start by recording an investigation aim.</div>')+
-  (compact&&all.length>shown.length?'<button type="button" class="insight-link" data-nav="path">See all '+all.length+' sparks on My Path '+icon('arrow-right')+'</button>':'')+
+  (visible.length?'<div class="insight-toolkit-grid">'+visible.map(card).join('')+'</div>':
+   '<div class="insight-toolkit-empty">'+icon('sparkles')+' Your toolkit grows from your own decisions. Start by recording an investigation aim.</div>')+
+  (earlier.length?'<details class="insight-toolkit-more"><summary>Explore '+earlier.length+' earlier sparks</summary><div class="insight-toolkit-grid">'+earlier.map(card).join('')+'</div></details>':'')+
+  (compact&&all.length>visible.length?'<button type="button" class="insight-link" data-nav="path">See all '+all.length+' sparks on My Path '+icon('arrow-right')+'</button>':'')+
   '<p class="insight-toolkit-note">Saved notes and decisions are not grades, verified results or edits to your own IA document.</p></section>';
 }
 export function insightThreadMap(s){
