@@ -12,7 +12,8 @@ export const INSIGHT_FAMILIES=Object.freeze({
  evidence:{label:'My evidence',icon:'flask',verb:'A source or method to revisit'},
  accuracy:{label:'My accuracy choices',icon:'layers',verb:'A decision to apply when relevant'},
  discovery:{label:'My discoveries',icon:'chart',verb:'A mathematical finding to build upon'},
- reflection:{label:'My reflections',icon:'lightbulb',verb:'Something to consider later'}
+ reflection:{label:'My reflections',icon:'lightbulb',verb:'Something to consider later'},
+ learning:{label:'My mathematical learning',icon:'book',verb:'Mathematics independently understood'}
 });
 const item=(type,id,title,value,where,go,extras={})=>({
  type,id,title,value:String(value).trim(),where,go,...extras
@@ -71,6 +72,13 @@ export function insightItems(s){
     usage:follow.length?'Explicitly connects to '+follow.length+' later mathematical record'+(follow.length===1?'':'s')+'.':'Consider what the result actually establishes before choosing another method.',
     linked:follow.map(y=>y.id)}));
  }
+ for(let i=0;i<math.length;i++){
+  const x=math[i];
+  const learned=x.mathsInsight||x.understandingExample||x.knowledgeNotes;
+  if(!has(learned)||!has(x.result)||x.status!=='completed'||!['outside','mixed'].includes(x.knowledge))continue;
+  out.push(item('learning','learning:'+x.id,'Mathematics I learned: '+(x.title||'My technique'),learned,'IA Studio · Mathematical learning',{type:'entry',index:i},
+   {usage:'You recorded this understanding while using a technique outside or partly outside your course. Explain genuine new mathematics in your own words.'}));
+ }
  for(const x of limitations(s)){
   if(!has(x.explanation)||!has(x.consequence))continue;
   const index=math.findIndex(v=>v.id===x.entryId);
@@ -95,6 +103,7 @@ export function insightForCurrent(s,node){
    out.push(...real.slice(-1));
   }
   if(/^C6/.test(node))out.push(...get('reflection').slice(-2));
+  if(/^C6/.test(node))out.push(...get('learning').slice(-1));
   return [...new Map(out.map(x=>[x.id,x])).values()].slice(0,3);
  }
  if(['C20','C21S','C21M','C21T','C22','C23','C24','C25','C26','C30','C31'].includes(node)){
@@ -108,6 +117,7 @@ export function insightForCurrent(s,node){
    contextual.push(...real.slice(-1));
   }
   if(['C34','C34A','C40','C50'].includes(node))contextual.push(...get('aim').slice(0,1));
+  if(['C40','C50','C40T'].includes(node)&&active?.fromEntryId)contextual.push(...get('learning').filter(x=>x.id==='learning:'+active.fromEntryId));
   return [...new Map(contextual.map(x=>[x.id,x])).values()].slice(0,3);
  }
  return [];
@@ -132,10 +142,14 @@ export function insightCapture(s,node){
  else if(['C34','C40','C50','C40T'].includes(node)){
   const x=entries(s)[c.activeEntryIndex];if(x)ids=['result:'+x.id];kind='Your actual mathematical result';
  }
+ if(['C35','C60','C61','C62','C64'].includes(node)){
+  ids=all.filter(x=>x.type==='reflection'||x.type==='learning').slice(-1).map(x=>x.id);
+  kind=ids.length?'Your mathematical reflections':'';
+ }
  if(!kind)return'';
  const existing=all.filter(x=>ids.includes(x.id));
  const spark=existing.at(-1);
- const family=spark?.type||(/Accuracy|accuracy/.test(kind)?'accuracy':/source|evidence|method/.test(kind.toLowerCase())?'evidence':/mathematical|result/.test(kind.toLowerCase())?'discovery':'aim');
+ const family=spark?.type||(/Accuracy|accuracy/.test(kind)?'accuracy':/source|evidence|method/.test(kind.toLowerCase())?'evidence':/mathematical|result/.test(kind.toLowerCase())?'discovery' :/reflection/.test(kind.toLowerCase())?'reflection':'aim');
  const meta=INSIGHT_FAMILIES[family];
  return '<aside class="insight-capture insight-'+family+' '+(spark?'is-captured':'is-pending')+'" aria-label="Remembered decision">'+
   '<span class="insight-capture-mark">'+icon(meta.icon)+'</span><div><strong>'+
