@@ -70,7 +70,7 @@ test('exact accuracy and source links create grounded echoes and shared threads'
  assert(inMath.some(x=>x.id==='accuracy:acc-one'));
  assert(inMath.some(x=>x.id==='source:source-one'));
  assert(inMath.some(x=>x.id==='result:r1')===false); // current result is not an echo of itself
- assert(insightThreadMap(s).includes('Explicitly'));
+ assert(insightThreadMap(s).includes('explicit links'));
  assert(insightEcho(s,'C40').includes('Nearest centimetre'));
  const sky=mathConstellation(s);
  assert(sky.includes('constellation-link'));
