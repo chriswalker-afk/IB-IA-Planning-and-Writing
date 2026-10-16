@@ -63,3 +63,11 @@
  .living-thread-line,.insight-capture.is-captured .insight-capture-mark{animation:none!important;transition:none!important}
  .insight-trail-disclosure>summary .icon:last-child{transition:none!important}
 }
+
+.constellation-sky-wrap{position:relative;aspect-ratio:356 / 155;margin-top:14px}
+.constellation-sky-wrap .math-constellation-svg{margin-top:0;max-height:none;height:100%}
+.constellation-star-hit{position:absolute;transform:translate(-50%,-50%);border:2px solid transparent;background:transparent;width:32px;height:32px;border-radius:50%;cursor:pointer;z-index:2}
+.constellation-star-hit:hover{border-color:#08766e;background:#a3d3bd45}
+.constellation-star-hit:focus-visible{outline:3px solid #9b722f;outline-offset:2px;background:#fff6d657}
+.math-constellation.is-compact .constellation-sky-wrap{margin-top:10px}
+@media(prefers-reduced-motion:reduce){.constellation-star-hit{transition:none}}
