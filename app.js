@@ -3,6 +3,8 @@ import {createIllustrativeSample,SAMPLE_CHOICES} from "./src/core/illustrative-s
 import {captureReturn,restoreReturn} from "./src/ui/return-context.js";
 import {STATUS_LABELS,resumeRoute,rememberCheckpoint} from "./src/ui/journey.js";
 import {journeyRail} from "./src/ui/journey-views.js";
+import {insightCapture} from "./src/ui/insight-threads.js";
+import {planningProgress} from "./src/ui/living-journey.js";
 import {createExampleController} from "./src/examples/controller.js";
 import {createEssentialsController} from "./src/essentials/controller.js";
 import {editCriterionReview} from "./src/essentials/review.js";
@@ -93,6 +95,20 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   const handoverViews=createHandoverViews({getState:()=>state,icon,e,button,field});
   const getPath = path => readRecordValue(state,path);
   const putPath = (path,value) => updateRecordValue(state,path,value);
+  function refreshSavedSpark(path){
+    // Update only the read-only indicators. Never rerender a focused text field.
+    const node=state.route==="planning"?state.planning.current:state.route==="completing"?state.completion.current:"";
+    if(!node||typeof main?.querySelector!=="function")return;
+    const current=main.querySelector(".task-shell .insight-capture");
+    if(current&&/^(planning\.fields\.|completion\.fields\.|entries\.)/.test(path)){
+      const html=insightCapture(state,node);
+      if(html)current.outerHTML=html;
+    }
+    if(state.route==="planning"){
+      const progress=main.querySelector(".planning-sparks-mini");
+      if(progress)progress.outerHTML=planningProgress(state,{compact:true});
+    }
+  }
   function updateBoundField(path,value) {
     if(path.startsWith("planning.fields.")){
       const before=getPath(path),ok=applyPlanningField(state,path.slice("planning.fields.".length),value);
@@ -622,6 +638,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       if(!conformance.ok){toast(conformance.error);return;}
       const open=[...document.querySelectorAll("details[open]")].map(x=>x.id).filter(Boolean);
       save();render();
+      if(conformance.message&&/source|method|accuracy/i.test(conformance.message))toast("A useful decision saved",conformance.message);
       for(const id of open){const detail=document.querySelector("#"+id);if(detail)detail.open=true;}
       const focus=[...document.querySelectorAll("[data-action]")].find(x=>Object.entries(el.dataset).every(([k,v])=>x.dataset[k]===v));
       if(focus)focus.focus({preventScroll:true});
@@ -631,6 +648,17 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     switch(action){
       case "leave-preview":leavePreview();break;
       case "sample-journey":nav("path");break;
+      case "insight-focus":{
+        const trail=el.closest(".living-trail"),id=el.dataset.threadId;
+        if(!trail)break;
+        const buttons=[...trail.querySelectorAll('[data-action="insight-focus"]')];
+        const was=el.getAttribute("aria-pressed")==="true";
+        buttons.forEach(b=>b.setAttribute("aria-pressed",String(!was&&b===el)));
+        trail.querySelectorAll("[data-thread-id].living-thread-line").forEach(line=>line.classList.toggle("is-active",!was&&line.dataset.threadId===id));
+        trail.querySelectorAll("[data-thread-detail]").forEach(d=>d.hidden=was||d.dataset.threadDetail!==id);
+        const note=trail.querySelector("[data-thread-instruction]");if(note)note.hidden=!was;
+        break;
+      }
       case "insight-jump":{
         // Sparks link back to the original student-owned record without changing it.
         const type=el.dataset.insightType;
@@ -804,7 +832,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       case "completion-record-accuracy":{
         const result=addAccuracyDecision(state);
         if(!result.ok){toast(result.error);break;}
-        save();render();toast("Quantity and precision decision recorded.");break;
+        save();render();toast("Accuracy spark saved","This accuracy policy can reappear wherever you explicitly link it to later mathematics.");break;
       }
       case "completion-edit-entry":editMath(Number(el.dataset.index));break;
       case "completion-suggest":{
@@ -951,7 +979,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     }
     if(target.dataset.bind){
       updateBoundField(target.dataset.bind,target.value);
-      save();
+      save();refreshSavedSpark(target.dataset.bind);
     }
   });
   document.addEventListener("change",evt=>{

@@ -1,7 +1,8 @@
 import {journeyMap,checkpointCard} from "./journey-views.js";
 import {discoveryTrail,mathConstellation} from "./living-journey.js";
 import {insightToolkit} from "./insight-threads.js";
-import {resumeLabel} from "./journey.js";
+import {resumeLabel,latestCheckpoint} from "./journey.js";
+import {insightItems} from "./insight-threads.js";
 import {createConformanceViews} from "../completing/conformance-views.js";
 import {linkedAccuracy,linkedSources} from "../completing/evidence-links.js";
 import {WRITING_MOMENTS} from "../completing/guidance-catalog.js";
@@ -18,8 +19,15 @@ export function createProjectViews(ctx){
     const state = ctx.getState();
     const plan=hasPlan(), studio=hasStudio();
     const resume=plan||studio;
+    const last=latestCheckpoint(state);
+    const recentReal=state.entries?.filter(x=>x.status==="completed"&&x.result?.trim()).at(-1);
+    const prompt=recentReal?.reviewNeeded==="yes"?
+      "A mathematical connection needs review before relying on it further.":
+      recentReal?(recentReal.localTakeaway||recentReal.interpretation||"You recorded an actual mathematical result."):
+      state.planning?.fields?.aim?"You shaped your investigation question. It can guide your next decision.":"Your starting ideas are still here.";
+    const welcomeText=last?last.title+" · "+last.detail:prompt;
     return '<div class="page wide">'+tabletNav()+
-      (resume?'<div class="welcome-row"><div>'+overline("WELCOME BACK")+'<h2>Your mathematical journey is taking shape.</h2><p>Pick up where your thinking left off.</p></div>'+demoFlag()+'</div>'+
+      (resume?'<div class="welcome-row"><div>'+overline("WELCOME BACK")+'<h2>Your mathematical journey is taking shape.</h2><p class="welcome-personal">'+e(welcomeText)+'</p></div>'+demoFlag()+'</div>'+
       '<div class="resume-card"><div><span class="meta-pill">'+icon("route")+' Your investigation</span><h3>'+e(state.project.aim||"Your developing IA idea")+'</h3><p>'+e(state.entries.length?"Your mathematical work is taking shape":studio?"Developing your mathematical investigation":"Planning your mathematical investigation")+'</p></div>'+
       button(resumeLabel(state),"resume-work","btn-primary","", "arrow-right")+button("Import a planning document","import-report","btn-secondary","", "upload")+'</div>'+
       checkpointCard(state)+discoveryTrail(state,{compact:true})+'<div class="journey-tiles">'+

@@ -403,7 +403,7 @@ export function createPlanningViews(ctx){
    milestones+
    '<div class="task-shell" data-source-node="'+e(n)+'">'+
    '<h1 class="task-heading">'+e(screen.title)+'</h1><p class="task-intro">'+e(screen.intro)+'</p>'+
-   insightEcho(state,n)+insightCapture(state,n)+criteriaPanel(state)+screen.html+essentialsNudge(state)+
+   insightEcho(state,n)+criteriaPanel(state)+screen.html+insightCapture(state,n)+essentialsNudge(state)+
    '<div class="example-row">'+helpButton("plan-"+n)+helpBox("plan-"+n,screen.help)+'</div>'+
    resourcePrompt(state)+footer(state,screen)+'</div>'+
    '<p class="small-callout">Your choices are provisional until evidence supports them. You can revisit earlier decisions. Teacher flags never prevent a provisional report.</p>'+

@@ -5,6 +5,7 @@ import {createProjectState,normalizeProjectState} from '../src/core/project-stat
 import {planningAnchors,chapterStats,chapterRibbon,discoveryTrail,planningProgress,mathConstellation} from '../src/ui/living-journey.js';
 import {insightItems,insightForCurrent,insightCapture,insightEcho,insightToolkit,insightThreadMap} from '../src/ui/insight-threads.js';
 import {JOURNEY_GROUPS} from '../src/ui/journey.js';
+import {insightConnections,insightTrailLines,insightTrailControls} from '../src/ui/insight-network.js';
 import {journeyMap,journeyRail,groupedDashboard} from '../src/ui/journey-views.js';
 
 test('a fresh project gets a journey, but no invented milestones or result stars',()=>{
@@ -124,4 +125,51 @@ test('responsive styles respect reduced-motion preferences',()=>{
  assert(css.includes('@media(prefers-reduced-motion:reduce)'));
  assert(css.includes('@media(max-width:760px)'));
  assert(css.includes('focus-visible'));
+});
+
+test('thread overlays show only explicit source-to-mathematics relationships, without changing project state',()=>{
+ const s=createProjectState();
+ s.planning.fields.aim='Does this model work?';
+ s.completion.sourceRecords=[{id:'source-one',fields:{actualSource:'Fictional data'}}];
+ s.completion.accuracyDecisions=[{id:'acc-one',quantity:'Length',unit:'cm',policy:'Nearest cm'}];
+ s.entries=[{id:'step-one',status:'completed',title:'First plot',result:'Curved pattern',sourceRefs:['source-one'],accuracyRefs:['acc-one']},
+ {id:'step-two',status:'planned',title:'Next model',result:'',fromEntryId:'step-one'}];
+ const before=JSON.stringify(s), links=insightConnections(s);
+ assert(links.some(x=>x.id==='source:source-one'));
+ assert(links.some(x=>x.id==='accuracy:acc-one'));
+ assert(links.some(x=>x.id==='result:step-one'));
+ assert(insightTrailLines(s).includes('data-thread-id="source:source-one"'));
+ assert(insightTrailControls(s).includes('data-action="insight-focus"'));
+ assert(discoveryTrail(s).includes('Follow your Insight Threads'));
+ assert.equal(JSON.stringify(s),before);
+ s.entries[0].sourceRefs=[];
+ assert(!insightConnections(s).some(x=>x.id==='source:source-one'));
+});
+test('stars link directly to mathematical records, with distinct review and plan state',()=>{
+ const s=createProjectState();
+ s.entries=[{id:'one',title:'Graph',status:'completed',result:'A real observation'},
+ {id:'two',title:'Possible extension',status:'planned',result:''}];
+ const html=mathConstellation(s);
+ assert.equal((html.match(/class="constellation-star-hit"/g)||[]).length,2);
+ assert(html.includes('aria-label="Open Graph: Actual result"'));
+ assert(html.includes('aria-label="Open Possible extension: Planned"'));
+ assert(html.includes('data-action="completion-edit-entry"'));
+});
+test('mathematical learning is sparked only when a genuine completed result accompanies recorded understanding',()=>{
+ const s=createProjectState();
+ s.entries=[{id:'learn',title:'Transformations',status:'completed',result:'Derived an identity',
+  knowledge:'outside',mathsInsight:'I independently understood this mathematical step.'},
+ {id:'unearned',title:'Just a plan',status:'planned',result:'',knowledge:'outside',mathsInsight:'Not done'}];
+ const x=insightItems(s);
+ assert(x.some(t=>t.id==='learning:learn'));
+ assert(!x.some(t=>t.id==='learning:unearned'));
+ assert(insightToolkit(s).includes('My mathematical learning'));
+ assert(insightEcho(s,'C60').includes('independently understood'));
+});
+test('interaction styles support focus, phone layouts and reduced motion',()=>{
+ const css=readFileSync(new URL('../data/interaction-pass.css',import.meta.url),'utf8');
+ assert(css.includes('.living-thread-line.is-active'));
+ assert(css.includes('.constellation-star-hit:focus-visible'));
+ assert(css.includes('@media(max-width:760px)'));
+ assert(css.includes('@media(prefers-reduced-motion:reduce)'));
 });
