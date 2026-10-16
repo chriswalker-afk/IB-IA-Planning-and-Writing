@@ -622,6 +622,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       if(!conformance.ok){toast(conformance.error);return;}
       const open=[...document.querySelectorAll("details[open]")].map(x=>x.id).filter(Boolean);
       save();render();
+      if(conformance.message&&/source|method|accuracy/i.test(conformance.message))toast("A useful decision saved",conformance.message);
       for(const id of open){const detail=document.querySelector("#"+id);if(detail)detail.open=true;}
       const focus=[...document.querySelectorAll("[data-action]")].find(x=>Object.entries(el.dataset).every(([k,v])=>x.dataset[k]===v));
       if(focus)focus.focus({preventScroll:true});
@@ -631,6 +632,17 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     switch(action){
       case "leave-preview":leavePreview();break;
       case "sample-journey":nav("path");break;
+      case "insight-focus":{
+        const trail=el.closest(".living-trail"),id=el.dataset.threadId;
+        if(!trail)break;
+        const buttons=[...trail.querySelectorAll('[data-action="insight-focus"]')];
+        const was=el.getAttribute("aria-pressed")==="true";
+        buttons.forEach(b=>b.setAttribute("aria-pressed",String(!was&&b===el)));
+        trail.querySelectorAll("[data-thread-id].living-thread-line").forEach(line=>line.classList.toggle("is-active",!was&&line.dataset.threadId===id));
+        trail.querySelectorAll("[data-thread-detail]").forEach(d=>d.hidden=was||d.dataset.threadDetail!==id);
+        const note=trail.querySelector("[data-thread-instruction]");if(note)note.hidden=!was;
+        break;
+      }
       case "insight-jump":{
         // Sparks link back to the original student-owned record without changing it.
         const type=el.dataset.insightType;
@@ -804,7 +816,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       case "completion-record-accuracy":{
         const result=addAccuracyDecision(state);
         if(!result.ok){toast(result.error);break;}
-        save();render();toast("Quantity and precision decision recorded.");break;
+        save();render();toast("Accuracy spark saved","This accuracy policy can reappear wherever you explicitly link it to later mathematics.");break;
       }
       case "completion-edit-entry":editMath(Number(el.dataset.index));break;
       case "completion-suggest":{
