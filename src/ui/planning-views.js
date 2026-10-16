@@ -395,8 +395,9 @@ export function createPlanningViews(ctx){
  function viewPlanning(){
   const state=ctx.getState(),p=state.planning,n=p.current,screen=nodePage(state);
   const stage=planningStage(n),stageI=PROGRESS_GROUPS.findIndex(x=>x.id===stage);
-  const milestones=planningProgress(state);
-  return '<div class="page narrow">'+tabletNav()+chapterRibbon(state)+
+  const kickoff=n==="N00";
+  const milestones=kickoff?"":planningProgress(state,{compact:true});
+  return '<div class="page narrow">'+tabletNav()+(kickoff?'':chapterRibbon(state))+
    '<div class="progress-top"><span class="progress-overview">'+icon("compass")+' Guided Planning</span>'+
    '<span class="progress-counter">1. Planning · '+e(PROGRESS_GROUPS[stageI]?.label||"Review")+'</span></div>'+
    milestones+
