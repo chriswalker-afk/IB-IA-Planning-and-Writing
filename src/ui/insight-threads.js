@@ -83,6 +83,7 @@ export function insightItems(s){
 export function insightForCurrent(s,node){
  const all=insightItems(s),active=entries(s)[s?.completion?.activeEntryIndex];
  const get=type=>all.filter(x=>x.type===type);
+ if(/^N(?:03|04|05|06)/.test(node))return all.filter(x=>x.id==='aim'||(node==='N06'&&x.id==='planned-evidence')).slice(0,2);
  const result=active?.fromEntryId?all.filter(x=>x.id==='result:'+active.fromEntryId):[];
  const related=kind=>all.filter(x=>x.id.startsWith(kind+':')&&active&&(
    kind==='accuracy'?linkedAccuracy(s,active).some(a=>'accuracy:'+a.id===x.id):
