@@ -1,3 +1,5 @@
+import {chapterRibbon} from '../ui/living-journey.js';
+import {insightCapture,insightEcho} from '../ui/insight-threads.js';
 import {STATUS_LABELS,currentGroup,JOURNEY_GROUPS} from "../ui/journey.js";
 import {groupedDashboard} from "../ui/journey-views.js";
 import {examplePrompt,exampleInline} from "../examples/views.js";
@@ -661,7 +663,7 @@ export function createCompletingViews(ctx){
       ["working",STATUS_LABELS.working],["complete",STATUS_LABELS.complete],["needs-review",STATUS_LABELS["needs-review"]]].map(([key,text])=>
      '<button data-action="completion-mark" data-stage="'+e(stage)+'" data-status="'+key+'"'+
      ' aria-pressed="'+(progress===key)+'" class="'+(progress===key?"selected":"")+'">'+e(text)+'</button>').join("")+'</div></div>':"";
-  return '<div class="page narrow completing-page">'+tabletNav()+
+  return '<div class="page narrow completing-page">'+tabletNav()+chapterRibbon(s)+
     '<div class="completion-topline"><span>'+icon("route")+' '+e(node==="C04"?"Your IA Studio":(JOURNEY_GROUPS.indexOf(currentGroup(s))+1)+'. '+currentGroup(s).name)+'</span>'+
     '<div class="completion-top-actions"><button type="button" class="advice-mode-toggle" data-action="toggle-advice-mode" aria-pressed="'+isAdviceReduced(s)+'" aria-label="'+(isAdviceReduced(s)?"Show full advice":"Reduce optional advice")+'">'+
       icon(isAdviceReduced(s)?"eye":"eye-off")+' '+(isAdviceReduced(s)?"Show full advice":"Reduce advice")+'</button>'+
@@ -669,7 +671,7 @@ export function createCompletingViews(ctx){
     topWarnings+
     '<div class="task-shell" data-source-node="'+e(node)+'">'+
     '<h1 class="task-heading">'+e(label)+'</h1><p class="task-intro">'+e(screen.intro)+'</p>'+
-    extra.returnToReview()+(isStuckNode(node)||["C04","C10E"].includes(node)||isAdviceReduced(s)?"":criteriaPanel(s))+screen.html+(screen.extra||"")+
+    insightEcho(s,node)+insightCapture(s,node)+extra.returnToReview()+(isStuckNode(node)||["C04","C10E"].includes(node)||isAdviceReduced(s)?"":criteriaPanel(s))+screen.html+(screen.extra||"")+
     (isAdviceReduced(s)?"":essentialsNudge(s))+
     (isStuckNode(node)||node==="C10E"||isAdviceReduced(s)?"":guides.writingMoment(node,{embedded:node!=="C96"}))+
     (isStuckNode(node)||isAdviceReduced(s)?"":guides.mathsHelp(node)+guides.limitsHelp(node)+
