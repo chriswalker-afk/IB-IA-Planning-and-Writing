@@ -671,7 +671,7 @@ export function createCompletingViews(ctx){
     topWarnings+
     '<div class="task-shell" data-source-node="'+e(node)+'">'+
     '<h1 class="task-heading">'+e(label)+'</h1><p class="task-intro">'+e(screen.intro)+'</p>'+
-    insightEcho(s,node)+insightCapture(s,node)+extra.returnToReview()+(isStuckNode(node)||["C04","C10E"].includes(node)||isAdviceReduced(s)?"":criteriaPanel(s))+screen.html+(screen.extra||"")+
+    insightEcho(s,node)+extra.returnToReview()+(isStuckNode(node)||["C04","C10E"].includes(node)||isAdviceReduced(s)?"":criteriaPanel(s))+screen.html+(screen.extra||"")+insightCapture(s,node)+
     (isAdviceReduced(s)?"":essentialsNudge(s))+
     (isStuckNode(node)||node==="C10E"||isAdviceReduced(s)?"":guides.writingMoment(node,{embedded:node!=="C96"}))+
     (isStuckNode(node)||isAdviceReduced(s)?"":guides.mathsHelp(node)+guides.limitsHelp(node)+
