@@ -2,6 +2,7 @@
  * No points, grades, streaks, required result counts or inferred document completion.
  */
 import {escapeHtml as e,icon} from './primitives.js';
+import {insightTrailLines,insightTrailControls} from './insight-network.js';
 import {JOURNEY_GROUPS,groupStatus,stageStatus,currentGroup,groupTarget,STATUS_LABELS} from './journey.js';
 
 export function planningAnchors(s){
@@ -70,6 +71,7 @@ export function discoveryTrail(s,{compact=false}={}){
   ' DISCOVERY TRAIL</span><h3>Follow your mathematical journey</h3></div>'+
   '<span class="living-trail-tag">One investigation · Four chapters</span></div>'+
   '<svg class="living-trail-svg" viewBox="0 0 356 153" aria-hidden="true" focusable="false">'+
+  insightTrailLines(s)+
   curves.map((path,i)=>'<path d="'+path+'" class="living-trail-road"/>'+
    (stages[i].status==='complete'?'<path d="'+path+'" class="living-trail-done"/>':'')).join('')+
   coordinates.map((p,i)=>{
@@ -88,7 +90,7 @@ export function discoveryTrail(s,{compact=false}={}){
    '" data-action="journey-open" data-target="'+e(groupTarget(s,g))+'">'+
    '<strong>'+e(g.name)+'</strong><small>'+e(STATUS_LABELS[status])+'</small>'+
    chapterMini(s,g)+'</button>').join('')+'</div>'+
-  '<p class="living-trail-note">Your stages are always revisitable. “Ready for now” is your own checkpoint, not an IA grade.</p></section>';
+  insightTrailControls(s)+'<p class="living-trail-note">Your stages are always revisitable. “Ready for now” is your own checkpoint, not an IA grade.</p></section>';
 }
 const real=e=>e?.status==='completed'&&typeof e.result==='string'&&!!e.result.trim();
 export function mathConstellation(s,{compact=false}={}){
@@ -121,7 +123,7 @@ export function mathConstellation(s,{compact=false}={}){
      (status==='actual'?'<path class="constellation-sparkle" d="M'+p.x+' '+(p.y-16)+' v-6 M'+(p.x-16)+' '+p.y+' h-6"/>':'')+
      '</g>';
    }).join('')+'</svg>'+
-   '<div class="constellation-key"><span><i class="star-key actual"></i> Actual result</span>'+
+   '<div class="constellation-interact"><span>Explore a star</span><span>Choose a mathematical record below to revisit it.</span></div><div class="constellation-key"><span><i class="star-key actual"></i> Actual result</span>'+
    '<span><i class="star-key planned"></i> Planned</span><span><i class="star-key review"></i> Needs review</span></div>'+
    '<div class="constellation-records">'+shown.slice(-6).map(x=>{
     const i=entries.indexOf(x),status=x.reviewNeeded==='yes'?'Needs review':real(x)?'Actual result':'Planned';
