@@ -3,6 +3,8 @@ import {createIllustrativeSample,SAMPLE_CHOICES} from "./src/core/illustrative-s
 import {captureReturn,restoreReturn} from "./src/ui/return-context.js";
 import {STATUS_LABELS,resumeRoute,rememberCheckpoint} from "./src/ui/journey.js";
 import {journeyRail} from "./src/ui/journey-views.js";
+import {insightCapture} from "./src/ui/insight-threads.js";
+import {planningProgress} from "./src/ui/living-journey.js";
 import {createExampleController} from "./src/examples/controller.js";
 import {createEssentialsController} from "./src/essentials/controller.js";
 import {editCriterionReview} from "./src/essentials/review.js";
@@ -93,6 +95,20 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   const handoverViews=createHandoverViews({getState:()=>state,icon,e,button,field});
   const getPath = path => readRecordValue(state,path);
   const putPath = (path,value) => updateRecordValue(state,path,value);
+  function refreshSavedSpark(path){
+    // Update only the read-only indicators. Never rerender a focused text field.
+    const node=state.route==="planning"?state.planning.current:state.route==="completing"?state.completion.current:"";
+    if(!node)return;
+    const current=main.querySelector(".task-shell .insight-capture");
+    if(current&&/^(planning\.fields\.|completion\.fields\.|entries\.)/.test(path)){
+      const html=insightCapture(state,node);
+      if(html)current.outerHTML=html;
+    }
+    if(state.route==="planning"){
+      const progress=main.querySelector(".planning-sparks-mini");
+      if(progress)progress.outerHTML=planningProgress(state,{compact:true});
+    }
+  }
   function updateBoundField(path,value) {
     if(path.startsWith("planning.fields.")){
       const before=getPath(path),ok=applyPlanningField(state,path.slice("planning.fields.".length),value);
@@ -963,7 +979,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     }
     if(target.dataset.bind){
       updateBoundField(target.dataset.bind,target.value);
-      save();
+      save();refreshSavedSpark(target.dataset.bind);
     }
   });
   document.addEventListener("change",evt=>{
