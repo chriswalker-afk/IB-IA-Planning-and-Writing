@@ -8,6 +8,14 @@
 
 IA Pathfinder is a responsive, device-local **planning and writing companion** for IB Mathematics Internal Assessments. Students author their actual IAs in Word or Google Docs; Pathfinder helps with meaningful aims, mathematically justified choices, authentic results, interpretation, precision and coherent mathematical transitions. It never fabricates observations, assigns grades or rewrites an IA on the student's behalf.
 
+## Living Journey & Insight Threads — 16 October 2026
+
+The site now shares a **Discovery Trail** and compact chapter markers across Planning, IA Studio, the returning student homepage, and My Path. The Planning journey displays four provisional anchors; IA Studio readiness still comes only from explicit stage statuses. A **Growing Constellation** distinguishes real mathematical results, planned mathematics and work needing review, and draws connections only where an explicit `fromEntryId` exists. There is no required calculation count.
+
+**Insight Threads** visually carry a student's saved aim, proposed evidence, recorded actual source/method, linked accuracy policy, actual mathematical discovery and confirmed limitation into relevant later contexts. The same spark family appears when information is recorded, when it echoes later, and inside **My Toolkit**. Echo links go back to their original section or mathematical step. Input links refer only to explicit evidence IDs; unrelated decisions are not presented as calculation inputs. The toolkit shows a small selection of recent or pinned sparks first, with earlier ones expandable.
+
+The new presentation introduces no points, grades, streaks, compulsory content or automatic document edits. It stays browser-local, respects reduced motion and retains existing JSON storage and imports. See [Living Journey design, logic, and test notes](docs/living-journey-2026-10-16.md).
+
 ## Focus, progress and a cohesive journey - 15 October 2026
 
 Working tasks now use a compact, shared support dock. Criteria open on request, the first Planning choices come before IA essentials, and the sidebar, stage dashboard and unfolding path share four chapters and honest readiness labels. Small checkpoints acknowledge explicit student actions and improve the return/resume experience without grades or artificial rewards.
