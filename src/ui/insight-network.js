@@ -46,7 +46,7 @@ export function insightTrailControls(s){
  const all=insightConnections(s),links=all.slice(-7);
  if(!links.length)return'';
  return '<details class="insight-trail-disclosure" aria-label="Connected decisions">'+
-  '<summary>'+icon('git-branch')+' <strong>Follow your Insight Threads</strong>'+
+  '<summary>'+icon('route')+' <strong>Follow your Insight Threads</strong>'+
   '<span>'+all.length+' explicitly linked '+(all.length===1?'spark':'sparks')+'</span>'+icon('chevron-right')+'</summary>'+
   '<p class="insight-trail-caption">Tap a spark to light its thread. Every connection comes from a link you recorded; faint threads never imply a grade or proof.</p>'+
   '<div class="insight-thread-picker" role="group" aria-label="Choose a connection">'+
