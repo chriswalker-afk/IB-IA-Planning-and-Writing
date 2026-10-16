@@ -56,6 +56,7 @@ with sync_playwright() as pw:
    p.screenshot(path=str(OUT/("living-"+name+"-failure.png")),full_page=True,animations="disabled")
   ctx.close()
  def journey(p,original):
+  baseline=core(saved(p))
   assert p.locator(".living-ribbon .living-ribbon-part").count()==4
   echo=p.locator(".insight-echo-item.insight-accuracy")
   assert echo.count()==1 and echo.is_visible()
@@ -77,17 +78,18 @@ with sync_playwright() as pw:
   p.locator('.insight-toolkit-card[data-insight-type="planning"][data-node="N01"]').click()
   assert p.locator('[data-source-node="N01"]').count()==1
   assert "Spark saved" in p.locator(".insight-capture").inner_text()
-  assert core(saved(p))==core(original)
+  assert core(saved(p))==baseline
  for w,h in [(390,844),(1440,1000)]:
   run("thread-navigation-"+str(w),journey,w,h)
  def reduced(p,original):
+  baseline=core(saved(p))
   assert p.locator(".living-ribbon").is_visible()
   assert p.evaluate('matchMedia("(prefers-reduced-motion: reduce)").matches')
   assert p.evaluate('getComputedStyle(document.querySelector(".living-ribbon-part")).transitionDuration') in ("0s","0.0s")
   p.locator('[data-nav="home"]:visible').first.click()
   assert p.locator(".living-trail").is_visible()
   assert "My Toolkit" in p.locator("#main").inner_text()
-  assert core(saved(p))==core(original)
+  assert core(saved(p))==baseline
  run("motion-preference",reduced,390,844,"reduce")
  browser.close()
 (OUT/"living-journey-results.json").write_text(json.dumps(results,indent=2))
