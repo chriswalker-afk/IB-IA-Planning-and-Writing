@@ -1,4 +1,6 @@
 import {journeyMap,checkpointCard} from "./journey-views.js";
+import {discoveryTrail,mathConstellation} from "./living-journey.js";
+import {insightToolkit} from "./insight-threads.js";
 import {resumeLabel} from "./journey.js";
 import {createConformanceViews} from "../completing/conformance-views.js";
 import {linkedAccuracy,linkedSources} from "../completing/evidence-links.js";
@@ -20,9 +22,9 @@ export function createProjectViews(ctx){
       (resume?'<div class="welcome-row"><div>'+overline("WELCOME BACK")+'<h2>Your mathematical journey is taking shape.</h2><p>Pick up where your thinking left off.</p></div>'+demoFlag()+'</div>'+
       '<div class="resume-card"><div><span class="meta-pill">'+icon("route")+' Your investigation</span><h3>'+e(state.project.aim||"Your developing IA idea")+'</h3><p>'+e(state.entries.length?"Your mathematical work is taking shape":studio?"Developing your mathematical investigation":"Planning your mathematical investigation")+'</p></div>'+
       button(resumeLabel(state),"resume-work","btn-primary","", "arrow-right")+button("Import a planning document","import-report","btn-secondary","", "upload")+'</div>'+
-      checkpointCard(state)+'<div class="journey-tiles">'+
+      checkpointCard(state)+discoveryTrail(state,{compact:true})+'<div class="journey-tiles">'+
       '<button class="journey-tile" data-nav="planning"><span class="feature-icon">'+icon("compass")+'</span><span><strong>My planning</strong><p>Revisit or refine your choices.</p></span></button>'+
-      '<button class="journey-tile" data-nav="completing"><span class="feature-icon">'+icon("pencil")+'</span><span><strong>My IA Studio</strong><p>Record actual mathematics and reflect.</p></span></button></div>':
+      '<button class="journey-tile" data-nav="completing"><span class="feature-icon">'+icon("pencil")+'</span><span><strong>My IA Studio</strong><p>Record actual mathematics and reflect.</p></span></button></div>'+insightToolkit(state,{compact:true})+(state.entries.length?mathConstellation(state,{compact:true}):''):
       '<section class="hero"><div class="hero-content"><span class="meta-pill kicker">'+icon("sparkles")+' YOUR IA ADVENTURE STARTS HERE</span>'+
       '<h1>Big questions.<br><em>Meaningful maths.</em></h1>'+
       '<p>Turn something that makes you curious into a mathematical investigation worth exploring. One thoughtful step at a time.</p>'+
