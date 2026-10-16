@@ -41,8 +41,13 @@ export function chapterRibbon(s){
    chapterMini(s,g)+'<span class="visually-hidden">'+e(label)+'</span></button>';
  }).join('')+'</nav>';
 }
-export function planningProgress(s){
+export function planningProgress(s,{compact=false}={}){
  const a=planningAnchors(s),ready=a.filter(x=>x.recorded).length;
+ if(compact)return '<div class="planning-sparks-mini" aria-label="'+ready+' of '+a.length+' planning anchors recorded">'+
+  '<span>'+icon('sparkles')+' '+ready+' / '+a.length+' planning anchors</span>'+
+  '<span class="planning-sparks-mini-bars" aria-hidden="true">'+
+  a.map(x=>'<i class="'+(x.recorded?'recorded':'waiting')+'" title="'+e(x.name)+'"></i>').join('')+
+  '</span><small>Provisional, not graded</small></div>';
  return '<section class="planning-sparks" aria-label="Planning decisions recorded"><div class="planning-sparks-title">'+
   icon('sparkles')+' <strong>'+ready+' of '+a.length+' planning anchors recorded</strong>'+
   '<span>Little decisions become useful later</span></div><div class="planning-sparks-grid">'+
