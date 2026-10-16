@@ -29,7 +29,7 @@ def core(s):
  c=s["completion"]
  return json.dumps({
   "aim":s["planning"]["fields"]["aim"],
-  "math":[(x.get("id"),x.get("result"),x.get("status"),x.get("fromEntryId"),x.get("sourceRefs"),x.get("accuracyRefs")) for x in s["entries"]],
+  "math":[(x.get("id"),x.get("result"),x.get("status"),x.get("fromEntryId") or "",x.get("sourceRefs") or [],x.get("accuracyRefs") or []) for x in s["entries"]],
   "source":[(x["id"],x["fields"].get("actualSource"),x["fields"].get("dataStatus")) for x in c["sourceRecords"]],
   "accuracy":[(x["id"],x["quantity"],x["policy"],x.get("sourceId")) for x in c["accuracyDecisions"]],
   "limit":[(x["id"],x["explanation"],x["consequence"]) for x in c["confirmedLimitations"]]
