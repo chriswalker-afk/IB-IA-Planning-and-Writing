@@ -255,6 +255,20 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     }
     nav("planning");
     if(checkpoint)toast(state.ui.latestTitle,state.ui.latestDetail);
+    else {
+      const from=result.route?.from;
+      const sparks={
+        N01:["A question worth investigating","Your aim is saved and can help you interpret real findings later."],
+        N03:["A possible evidence route","This is your plan for getting started, not a claim that evidence has been collected."],
+        N05V:["Your first mathematical move","You've recorded an intended action. The actual discovery comes after the mathematics."]
+      };
+      if(sparks[from]&&result.route&&
+         (from!=="N01"||state.planning.fields.aim?.trim())&&
+         (from!=="N03"||state.planning.fields.dataSource?.trim())&&
+         (from!=="N05V"||(state.planning.fields.firstAction||state.planning.fields.figurePurpose)?.trim())){
+        toast(...sparks[from]);
+      }
+    }
   }
   function handleCompletionResult(result){
     if(!result?.ok){toast(result?.error||"Please review this mathematical decision.");return;}
@@ -617,6 +631,22 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     switch(action){
       case "leave-preview":leavePreview();break;
       case "sample-journey":nav("path");break;
+      case "insight-jump":{
+        // Sparks link back to the original student-owned record without changing it.
+        const type=el.dataset.insightType;
+        if(type==="entry"){
+          const i=Number(el.dataset.index);
+          if(!Number.isInteger(i)||i<0||i>=state.entries.length){toast("That mathematical record is no longer available.");break;}
+          editMath(i);break;
+        }
+        if(type==="planning"){
+          handlePlanningResult(planningEdit(state,el.dataset.node));break;
+        }
+        if(type==="completion"){
+          handleCompletionResult(setCompletionNode(state,el.dataset.node,{reason:"insight-original"}));break;
+        }
+        break;
+      }
       case "journey-open":
         if(el.dataset.target==="plan")nav("planning");
         else handleCompletionResult(setCompletionNode(state,el.dataset.target,{reason:"journey-navigation"}));

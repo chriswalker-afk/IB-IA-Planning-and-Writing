@@ -1,10 +1,12 @@
 import {escapeHtml as e,icon,button} from './primitives.js';
 import {JOURNEY_GROUPS,STATUS_LABELS,stageStatus,groupStatus,currentGroup,groupTarget,resumeLabel,latestCheckpoint} from './journey.js';
 import {C_MAJOR_STAGES} from '../completing/engine.js';
+import {chapterMini,discoveryTrail,mathConstellation} from './living-journey.js';
+import {insightToolkit,insightThreadMap} from './insight-threads.js';
 export function journeyRail(s){
  const active=currentGroup(s);
  return JOURNEY_GROUPS.map((g,i)=>{const status=groupStatus(s,g),target=groupTarget(s,g);
-  return '<button type="button" class="side-milestone journey-milestone '+(status==='complete'?'done ':'')+(active.id===g.id?'active':'')+'" data-action="journey-open" data-target="'+target+'"'+(active.id===g.id?' aria-current="step"':'')+'><span class="dot">'+icon(status==='complete'?'check':g.icon)+'</span><span><strong>'+e(g.name)+'</strong><small>'+e(STATUS_LABELS[status])+'</small></span></button>';
+  return '<button type="button" class="side-milestone journey-milestone '+(status==='complete'?'done ':'')+(active.id===g.id?'active':'')+'" data-action="journey-open" data-target="'+target+'"'+(active.id===g.id?' aria-current="step"':'')+'><span class="dot">'+icon(status==='complete'?'check':g.icon)+'</span><span class="journey-milestone-text"><strong>'+e(g.name)+'</strong><small>'+e(STATUS_LABELS[status])+'</small>'+chapterMini(s,g)+'</span></button>';
  }).join('');
 }
 export function checkpointCard(s){
@@ -16,7 +18,7 @@ export function stageCard(s,stage){
  return '<button type="button" class="completion-stage-card stage-'+status+'" data-action="completion-open" data-node="'+stage.id+'"><span class="feature-icon">'+icon(status==='complete'?'check':stage.icon)+'</span><span class="completion-stage-body"><strong>'+e(stage.name)+'</strong><small>'+e(STATUS_LABELS[status])+'</small></span>'+icon('chevron-right')+'</button>';
 }
 export function groupedDashboard(s){
- return '<div class="dashboard-plan"><span>1. Planning <span class="status-tag">'+e(STATUS_LABELS[stageStatus(s,'plan')])+'</span></span>'+button('Revisit planning','go-planning','btn-quiet btn-sm')+'</div>'+JOURNEY_GROUPS.slice(1).map((g,i)=>'<section class="journey-stage-group"><h3>'+(i+2)+'. '+e(g.name)+'</h3><div class="completion-stage-grid">'+g.stages.map(id=>stageCard(s,C_MAJOR_STAGES.find(x=>x.id===id))).join('')+'</div></section>').join('');
+ return discoveryTrail(s,{compact:true})+'<div class="dashboard-plan"><span>1. Planning <span class="status-tag">'+e(STATUS_LABELS[stageStatus(s,'plan')])+'</span></span>'+button('Revisit planning','go-planning','btn-quiet btn-sm')+'</div>'+JOURNEY_GROUPS.slice(1).map((g,i)=>'<section class="journey-stage-group"><h3>'+(i+2)+'. '+e(g.name)+' '+chapterMini(s,g)+'</h3><div class="completion-stage-grid">'+g.stages.map(id=>stageCard(s,C_MAJOR_STAGES.find(x=>x.id===id))).join('')+'</div></section>').join('');
 }
 const planningRows=s=>{
  const f=s.planning.fields,complete=new Set(s.planning.completedNodes);
@@ -34,11 +36,11 @@ function mathRecords(s){
 }
 export function journeyMap(s){
  const current=currentGroup(s);
- return '<div class="journey-focus"><div><span class="section-eyebrow">CURRENT FOCUS</span><h2>'+e(current.name)+'</h2><p>'+e(s.project.aim||s.planning.fields.aim||'One thoughtful step at a time.')+'</p></div>'+button(resumeLabel(s),'resume-work','btn-primary','','arrow-right')+'</div>'+checkpointCard(s)+
+ return '<div class="journey-focus"><div><span class="section-eyebrow">CURRENT FOCUS</span><h2>'+e(current.name)+'</h2><p>'+e(s.project.aim||s.planning.fields.aim||'One thoughtful step at a time.')+'</p></div>'+button(resumeLabel(s),'resume-work','btn-primary','','arrow-right')+'</div>'+checkpointCard(s)+discoveryTrail(s)+
  '<div class="journey-map-tools"><p>Four parts of the same investigation. Revisit any part.</p><button type="button" class="btn btn-quiet btn-sm" data-action="journey-toggle-all" aria-expanded="false">Show full path</button></div><div class="journey-chapters">'+
  JOURNEY_GROUPS.map((g,i)=>{const status=groupStatus(s,g);
-  return '<details class="journey-chapter" data-journey-group="'+g.id+'"'+(g.id===current.id?' open':'')+'><summary><span class="chapter-marker '+status+'">'+icon(status==='complete'?'check':g.icon)+'</span><span><strong>'+(i+1)+'. '+e(g.name)+'</strong><small>'+e(STATUS_LABELS[status])+'</small></span>'+icon('chevron-right')+'</summary><div class="chapter-body">'+
+  return '<details class="journey-chapter" data-journey-group="'+g.id+'"'+(g.id===current.id?' open':'')+'><summary><span class="chapter-marker '+status+'">'+icon(status==='complete'?'check':g.icon)+'</span><span><strong>'+(i+1)+'. '+e(g.name)+'</strong><small>'+e(STATUS_LABELS[status])+'</small>'+chapterMini(s,g)+'</span>'+icon('chevron-right')+'</summary><div class="chapter-body">'+
    (g.id==='plan'?planningRows(s):'<div class="completion-stage-grid">'+g.stages.map(id=>stageCard(s,C_MAJOR_STAGES.find(x=>x.id===id))).join('')+'</div>')+
-   (g.id==='explore'?mathRecords(s)+'<div class="button-row">'+button(s.entries.length?'Decide what mathematics follows':'Start first exploration',s.entries.length?'completion-next-from-map':'completion-first-from-map','btn-light','','arrow-right')+'</div>':'')+'</div></details>';
- }).join('')+'</div><p class="small-callout">Ready for now is your own checkpoint, not an IA grade. A recorded decision is not a completed calculation. All stages stay available.</p>';
+   (g.id==='explore'?mathConstellation(s)+mathRecords(s)+'<div class="button-row">'+button(s.entries.length?'Decide what mathematics follows':'Start first exploration',s.entries.length?'completion-next-from-map':'completion-first-from-map','btn-light','','arrow-right')+'</div>':'')+'</div></details>';
+ }).join('')+'</div>'+insightToolkit(s)+insightThreadMap(s)+'<p class="small-callout">Ready for now is your own checkpoint, not an IA grade. A recorded decision is not a completed calculation. All stages stay available.</p>';
 }
