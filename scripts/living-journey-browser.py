@@ -70,11 +70,23 @@ with sync_playwright() as pw:
   p.locator('[data-nav="path"]:visible').first.click()
   assert p.locator(".living-trail").is_visible()
   assert p.locator(".insight-toolkit").is_visible()
+  trail=p.locator(".living-trail").first
+  choices=trail.locator(".insight-trail-disclosure")
+  assert choices.count()==1
+  choices.locator("summary").first.click()
+  chosen=choices.locator('[data-action="insight-focus"]').first
+  chosen.click()
+  assert chosen.get_attribute("aria-pressed")=="true"
+  assert choices.locator(".insight-trail-detail:visible").count()==1
+  assert trail.locator("svg .living-thread-line.is-active").count()==1
+  chosen.click()
+  assert chosen.get_attribute("aria-pressed")=="false"
   # Explore is a collapsible chapter, with actual and planned stars.
   p.locator('[data-journey-group="explore"] > summary').click()
   sky=p.locator(".math-constellation")
   assert sky.is_visible()
   assert sky.locator("svg .constellation-link").count()==1
+  assert sky.locator('[data-action="completion-edit-entry"].constellation-star-hit').count()==2
   assert "1 actual result" in sky.inner_text()
   assert "Only a narrow range was measured" in p.locator(".insight-toolkit").inner_text()
   p.screenshot(path=str(OUT/("living-journey-"+str(p.viewport_size["width"])+".png")),full_page=True,animations="disabled")
