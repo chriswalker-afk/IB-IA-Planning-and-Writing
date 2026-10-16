@@ -47,7 +47,10 @@ with sync_playwright() as pw:
   p=ctx.new_page();p.set_default_timeout(10000);errors=[];p.on("pageerror",lambda err:errors.append(str(err)))
   own=fixture();p.add_init_script("if(!localStorage.getItem("+json.dumps(KEY)+"))localStorage.setItem("+json.dumps(KEY)+","+json.dumps(json.dumps(own))+");")
   try:
-   p.goto(URL,wait_until="networkidle");fn(p,own)
+   p.goto(URL,wait_until="networkidle")
+   # A navigation persists the in-memory normalized fixture before comparing student content.
+   p.locator('[data-nav="completing"]:visible').first.click()
+   fn(p,own)
    overflow(p);assert not errors,errors
    results.append({"name":name,"status":"passed","viewport":str(width)+"x"+str(height)})
   except Exception as ex:
@@ -78,7 +81,7 @@ with sync_playwright() as pw:
   p.locator('.insight-toolkit-card[data-insight-type="planning"][data-node="N01"]').click()
   assert p.locator('[data-source-node="N01"]').count()==1
   assert "Spark saved" in p.locator(".insight-capture").inner_text()
-  assert core(saved(p))==baseline
+  assert core(saved(p))==baseline,(baseline,core(saved(p)))
  for w,h in [(390,844),(1440,1000)]:
   run("thread-navigation-"+str(w),journey,w,h)
  def reduced(p,original):
@@ -89,7 +92,7 @@ with sync_playwright() as pw:
   p.locator('[data-nav="home"]:visible').first.click()
   assert p.locator(".living-trail").is_visible()
   assert "My Toolkit" in p.locator("#main").inner_text()
-  assert core(saved(p))==baseline
+  assert core(saved(p))==baseline,(baseline,core(saved(p)))
  run("motion-preference",reduced,390,844,"reduce")
  browser.close()
 (OUT/"living-journey-results.json").write_text(json.dumps(results,indent=2))
