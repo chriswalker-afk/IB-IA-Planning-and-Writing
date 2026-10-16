@@ -71,3 +71,11 @@
 .constellation-star-hit:focus-visible{outline:3px solid #9b722f;outline-offset:2px;background:#fff6d657}
 .math-constellation.is-compact .constellation-sky-wrap{margin-top:10px}
 @media(prefers-reduced-motion:reduce){.constellation-star-hit{transition:none}}
+
+.insight-thread-destinations{display:flex;align-items:center;flex-wrap:wrap;gap:6px;min-width:0}
+.insight-thread-destinations button{background:var(--teal-pale);color:var(--teal-dark);border:1px solid #b9d9ca;border-radius:9px;display:inline-flex;align-items:center;gap:5px;font-size:10px;line-height:1.3;text-align:left;padding:6px 8px}
+.insight-thread-destinations button:hover{background:#d8eee1}
+.insight-thread-destinations button:focus-visible{outline:3px solid #b8863b;outline-offset:2px}
+.insight-thread-destinations button .icon{width:11px;height:11px;flex:none}
+.insight-toolkit-used{font-weight:750;color:var(--teal-dark)!important}
+@media(max-width:760px){.insight-thread-destinations{width:100%}.insight-thread-destinations button{max-width:100%}}
