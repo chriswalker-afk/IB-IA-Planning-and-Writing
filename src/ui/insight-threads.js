@@ -158,6 +158,29 @@ export function insightCapture(s,node){
    'Your own decision can be carried forward as contextual advice when it becomes relevant.')+
   '</p></div>'+icon(spark?'check-circle':'sparkles')+'</aside>';
 }
+export function insightMeaning(s,node,x){
+ const active=entries(s)[s?.completion?.activeEntryIndex];
+ if(x.type==='accuracy'&&['C34','C34A','C40','C50','C40T','C40L'].includes(node)){
+  return 'This is the precision policy you linked to the active mathematics. Use it when these measurements actually limit the accuracy of this result; retain guard digits during calculations.';
+ }
+ if(x.type==='evidence'&&['C32','C33','C34','C40','C50','C40T'].includes(node)&&x.id.startsWith('source:')){
+  return 'You explicitly linked this source to your mathematics. Check the original values, units and method before relying on the finding.';
+ }
+ if(x.id==='aim'&&['C34','C34A','C35','C40','C50','C60','C61','C62','C64'].includes(node)){
+  return 'Connect what your mathematics actually established to this precise investigation question. Does the result answer all of it, or only a narrower part?';
+ }
+ if(x.type==='discovery'&&['C35','C35H','C35B','C35P','C40','C50'].includes(node)){
+  return 'Use this genuine earlier result to decide whether another mathematical question logically follows. An extra calculation is not necessary unless it develops your aim.';
+ }
+ if(x.type==='reflection'&&/^C6/.test(node)){
+  return 'You confirmed this limitation earlier. State how its mathematical consequence restricts the answer to your aim, rather than adding an unrelated generic weakness.';
+ }
+ if(x.type==='learning'){
+  return 'You recorded independently developed understanding of this mathematical method. If it lies outside your course, explain the mathematics accurately in your own words; familiar syllabus techniques normally just need clear use.';
+ }
+ if(x.id==='planned-evidence')return 'This was a proposed starting route. Check whether the material was actually obtained before presenting it as evidence.';
+ return x.usage||INSIGHT_FAMILIES[x.type].verb;
+}
 export function insightEcho(s,node){
  const items=insightForCurrent(s,node);
  if(!items.length)return'';
@@ -168,7 +191,7 @@ export function insightEcho(s,node){
    '<summary>'+insightToken(x,{compact:true})+'<span class="insight-echo-title">'+e(short(x.title,54))+
    '</span>'+icon('chevron-right')+'</summary><div class="insight-echo-body">'+
    '<p class="insight-original">'+e(short(x.value,280))+'</p>'+
-   '<p>'+e(x.usage||INSIGHT_FAMILIES[x.type].verb)+'</p>'+
+   '<p>'+e(insightMeaning(s,node,x))+'</p>'+
    '<button type="button" class="insight-link"'+jumpAttrs(x)+'>'+icon('arrow-up-right')+
    ' Go to my original decision</button></div></details>').join('')+
   '</aside>';
@@ -181,7 +204,7 @@ export function insightToolkit(s,{compact=false}={}){
  const card=x=>'<button type="button" class="insight-toolkit-card insight-'+e(x.type)+'"'+jumpAttrs(x)+'>'+
   insightToken(x,{compact:true})+'<strong>'+e(short(x.title,62))+'</strong>'+
   '<span class="insight-toolkit-value">'+e(short(x.value,105))+'</span>'+
-  '<small>'+e(x.needsReview?'Needs review · '+x.where:x.planned?'Planned · not performed':x.where)+'</small>'+
+  '<small>'+e(x.needsReview?'Needs review · '+x.where:x.planned?'Planned · not performed':x.where)+'</small>'+ (x.linked?.length?'<small class="insight-toolkit-used">Connected to '+x.linked.length+' mathematical '+(x.linked.length===1?'step':'steps')+'</small>':'')+
   '</button>';
  return '<section class="insight-toolkit" aria-label="My Toolkit">'+
   '<div class="insight-toolkit-top"><div><span class="section-eyebrow">'+icon('sparkles')+
@@ -204,5 +227,11 @@ export function insightThreadMap(s){
    '<div class="insight-thread-row insight-'+e(x.type)+'"><span class="insight-thread-origin">'+insightToken(x,{compact:true})+
    '<strong>'+e(short(x.title,70))+'</strong></span>'+
    '<span class="insight-thread-flow" aria-hidden="true"><svg viewBox="0 0 104 34" focusable="false"><path d="M3 17 C32 1 70 33 100 17" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="3 5"/><path d="m93 12 7 5 -7 5" stroke="currentColor" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>'+
-   '<span>'+x.linked.length+' linked mathematical '+(x.linked.length===1?'record':'records')+'</span></div>').join('')+'</div></section>';
+   '<span class="insight-thread-destinations">'+x.linked.map(id=>{
+    const i=entries(s).findIndex(v=>v.id===id);
+    if(i<0)return '';
+    const record=entries(s)[i];
+    return '<button type="button" data-action="completion-edit-entry" data-index="'+i+'">'+
+     e(short(record.title||'Mathematical step '+(i+1),55))+' '+icon('arrow-up-right')+'</button>';
+   }).join('')+'</span></div>').join('')+'</div></section>';
 }
