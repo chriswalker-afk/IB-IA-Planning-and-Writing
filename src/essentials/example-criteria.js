@@ -3,6 +3,9 @@ const e=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt
 /** Editorial connections, not marks awarded to an isolated excerpt. */
 export const EXAMPLE_CRITERIA=Object.freeze({
  EX30:{A:'A focused title points towards an answerable investigation without claiming a result.',C:'The mathematical direction can evolve when the student responds to their own findings.'},
+ EX31:{A:'A clear purpose links the investigation question to a decision and supports coherence.',C:'A genuine reason guides choices rather than simply displaying a technique.',D:'The later conclusion should discuss what the result actually says about this purpose.'},
+ EX32:{A:'The statistical question connects to what a comparison would mean.',C:'A student-owned decision motivates the data and analysis.',D:'Later reflection must consider variability and sampling before claiming a useful recommendation.'},
+ EX33:{A:'A precise conjecture and reason make the investigation coherent.',C:'The mathematical question can be genuine without a fabricated personal story.',D:'Later reasoning must assess whether the argument actually resolved the original uncertainty.'},
  EX01:{A:'A precise aim gives the opening a direction.',C:'A genuine observation motivates a mathematical choice.'},
  EX02:{A:'The aim identifies the quantities and scope.',D:'The investigation distinguishes association from a causal conclusion.'},
  EX03:{A:'A conjecture establishes an answerable purpose.',C:'Mathematical curiosity needs no invented personal story.'},
