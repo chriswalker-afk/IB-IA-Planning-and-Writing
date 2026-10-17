@@ -13,7 +13,7 @@ import {createPlanningEnvelope,normalizePlanningEnvelope,getFieldDiff,mergePlann
 import {modelFromEnvelope} from '../src/handover/report-model.js';
 
 const s=()=>{const x=createProjectState();x.route='planning';x.planning.current='N03P';x.planning.fields.kind='statistics';x.planning.fields.course='AI SL';return x;};
-const lastStep=()=>{const x=s();x.planning.current='N03P';return x;};
+const lastStep=()=>{const x=s();x.planning.current='N03P2';return x;};
 const set=(state,key,value)=>assert(applyPlanningField(state,key,value));
 const escape=v=>String(v??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('"','&quot;');
 const render=state=>{
