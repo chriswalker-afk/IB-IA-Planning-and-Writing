@@ -29,7 +29,7 @@ import {selectLimitation,recordLimitation,limitationContextKey,relevantLimitatio
 import {relevantBivariateOptions} from "./src/completing/bivariate-guidance.js";
 import {resultFamily,routeNextQuestions} from "./src/completing/route-coach.js";
 
-import { planningMove, planAutoAdvance, planningBack, planningEdit, applyPlanningField, toggleMath, syncPlanningToProject, setPlanCurrent, planningFlags } from "./src/planning/engine.js";
+import { planningMove, planAutoAdvance, planningBack, planningEdit, applyPlanningField, toggleMath, selectedMaths, exploreMathRoute, chooseMathRoute, syncPlanningToProject, setPlanCurrent, planningFlags } from "./src/planning/engine.js";
 import { createPlanningViews } from "./src/ui/planning-views.js";
 import {applySuggestedTimeline,localToday,validDate,timelineWeek} from "./src/planning/timeline.js";
 import { createStudioViews } from "./src/ui/studio-views.js";
@@ -739,23 +739,68 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         const map={"0":"N00","1":"N01","5":"N03F"};
         handlePlanningResult(planningEdit(state,map[el.dataset.index]||"N00"));break;
       }
+      case "math-mode":{
+        if(!exploreMathRoute(state,{mode:el.dataset.mode})){toast("That way of exploring mathematics is unavailable.");break;}
+        save();render();
+        const tab=document.getElementById("journey-tab-"+el.dataset.mode);
+        tab?.focus({preventScroll:true});
+        break;
+      }
+      case "math-family":{
+        if(!exploreMathRoute(state,{family:el.dataset.family})){toast("That route category is unavailable.");break;}
+        save();render();
+        const chosen=document.querySelector('[data-action="math-family"][data-family="'+el.dataset.family+'"]');
+        chosen?.focus({preventScroll:true});
+        break;
+      }
+      case "math-open-route":{
+        const id=el.dataset.routeId;
+        const currentlyOpen=state.planning.routeExplorer.openRoute===id;
+        if(!exploreMathRoute(state,{openRoute:currentlyOpen?'':id})){toast("That route is unavailable.");break;}
+        save();render();
+        if(!currentlyOpen){
+          const heading=document.getElementById("journey-detail-title");
+          heading?.focus({preventScroll:true});
+          document.getElementById("journey-detail")?.scrollIntoView({block:"nearest",behavior:"auto"});
+        }else{
+          const trigger=document.querySelector('[data-action="math-open-route"][data-route-id="'+id+'"]');
+          trigger?.focus({preventScroll:true});
+        }
+        break;
+      }
+      case "math-select-route":
+      case "math-remove-route":{
+        const removing=action==="math-remove-route";
+        const id=removing?"":el.dataset.routeId;
+        if(!chooseMathRoute(state,id)){toast("That investigative route could not be saved.");break;}
+        save();render();
+        const detail=document.getElementById("journey-detail");
+        if(detail)detail.scrollIntoView({block:"nearest",behavior:"auto"});
+        toast(removing?"Your route spark was removed; selected mathematics is unchanged.":
+          "Route spark saved. Branches remain optional until supported by your mathematics.");
+        break;
+      }
       case "plan-toggle-math":{
         const id=el.dataset.mathId;
         if(!toggleMath(state,id)){toast("Choose a technique from your selected course.");break;}
         const selected=state.planning.mathSelected.includes(id);
         // Preserve search, keyboard focus and scroll position while multiple options are chosen.
-        document.querySelectorAll(".plan-math-option, .math-route-option").forEach(node=>{
+        document.querySelectorAll(".plan-math-option, .math-route-option, .journey-technique").forEach(node=>{
           if(node.dataset.mathId!==id)return;
           node.classList.toggle("selected",selected);
           node.setAttribute("aria-pressed",String(selected));
           const marker=node.querySelector("[data-math-route-status]");
-          if(marker)marker.textContent=selected?"Added to my plan":"Add this possibility";
+          if(marker)marker.textContent=selected?(node.classList.contains("journey-technique")?"In my mathematics plan":"Added to my plan"):
+            (node.classList.contains("journey-technique")?"Add this technique":"Add this possibility");
           const markIcon=node.querySelector(".math-route-select > .icon");
           if(markIcon)markIcon.outerHTML=icon(selected?"check-circle":"plus-circle");
         });
         const count=document.querySelector(".plan-math-count strong");
         if(count)count.textContent=state.planning.mathSelected.length;
-        const local=[...document.querySelectorAll(".plan-math-option.selected .choice-title")].map(node=>node.textContent.trim());
+        const local=selectedMaths(state).filter(item=>item.course===state.planning.fields.course).map(item=>item.label);
+        document.querySelectorAll(".journey-maths-current > span:last-child").forEach(node=>{
+          node.textContent=local.length+" technique"+(local.length===1?"":"s")+" chosen";
+        });
         const selectedCount=document.querySelector("[data-math-selected-count]");
         if(selectedCount)selectedCount.textContent=local.length;
         const selectedSummary=document.querySelector("[data-math-selection-summary]");
