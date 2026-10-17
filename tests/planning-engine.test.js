@@ -22,7 +22,7 @@ test("all 61 source-sheet routes are preserved alongside explicit later UX route
  const source=PLANNING_ROUTES.filter(r=>Number.isInteger(r.sourceRow));
  const extra=PLANNING_ROUTES.filter(r=>r.sourceRow===null);
  assert.equal(source.length,61);
- assert.equal(extra.length,14);
+ assert.equal(extra.length,17);
  for(const route of PLANNING_ROUTES){
   assert(PLANNING_NODE_IDS.includes(route.from));
   if(route.to.startsWith("N"))assert(PLANNING_NODE_IDS.includes(route.to));
@@ -109,14 +109,14 @@ test("permission concerns flag only restricted activities; report remains access
  set(s,"permissionNeed","yes");
  assert(planningFlags(s).some(f=>f.id==="permission"&&f.needsApproval));
  assert.equal(s.teacher.pendingApproval,true);
- s.planning.current="N03E";
+ s.planning.current="N03D";
  const r=planningMove(s,"Safety / privacy / consent unresolved");
  assert.equal(r.ok,true);assert.equal(s.planning.current,"N02T");
  advance(s,"N08");advance(s,"N06T");advance(s,"N06");advance(s,"N07");
  assert.equal(s.teacher.pendingApproval,true);
  set(s,"permissionNeed","no");assert.equal(s.teacher.pendingApproval,false);
 });
-test("the standard data path bypasses both retired questionnaires and preserves the practical check",()=>{
+test("single evidence checkpoint replaces readiness and manageability with explicit consent and access",()=>{
  const s=newPlan();
  set(s,"kind","statistics");set(s,"dataSource","primary");
  s.planning.current="N03P";
@@ -124,19 +124,31 @@ test("the standard data path bypasses both retired questionnaires and preserves 
  advance(s,"N03P2");
  set(s,"primarySamplingMethod","convenience");set(s,"primaryStatus","unsure");
  advance(s,"N03D");
- advance(s,"N03E");
- assert(!planAutoAdvance(s).ok); // An unanswered permission check is not a tacit no.
+ assert(!planAutoAdvance(s).ok); // Don't assume actual evidence access without a decision.
+ set(s,"dataAvailability","soon");
+ assert(!planAutoAdvance(s).ok); // Unanswered consent is never interpreted as consent.
  set(s,"permissionNeed","no");
- assert(!planAutoAdvance(s).ok); // An unanswered access check is not a tacit no.
+ assert(!planAutoAdvance(s).ok); // Nor is missing resource access tacitly cleared.
  set(s,"practicalBlocker","no");
- advance(s,"N03G");
- assert(s.planning.completedNodes.includes("N03E"));
- assert(!s.planning.completedNodes.includes("N03J"));
- assert(!s.planning.completedNodes.includes("N03F"));
- assert(!s.planning.visited.includes("N03J"));
- assert(!s.planning.visited.includes("N03F"));
- assert(planningMove(s,"Revisit practical checks").ok);
- assert.equal(s.planning.current,"N03E");
+ advance(s,"N03H");
+ assert(s.planning.completedNodes.includes("N03D"));
+ for(const id of ["N03J","N03F","N03E","N03G"]){
+  assert(!s.planning.completedNodes.includes(id));
+  assert(!s.planning.visited.includes(id));
+ }
+ assert(!planningFlags(s).some(x=>x.id==="permission"||x.id==="practical-access"));
+});
+test("uncertain consent and access permit provisional planning but retain teacher warnings",()=>{
+ const s=newPlan();s.planning.current="N03D";
+ set(s,"dataAvailability","unsure");
+ set(s,"permissionNeed","unsure");set(s,"practicalBlocker","yes");
+ assert(planningFlags(s).some(x=>x.id==="permission"&&x.needsApproval));
+ assert(planningFlags(s).some(x=>x.id==="practical-access"));
+ assert(planAutoAdvance(s).ok);
+ assert.equal(s.planning.current,"N03H");
+ assert.equal(s.teacher.pendingApproval,true);
+ set(s,"dataReadiness","1");set(s,"practicalEase","1");
+ assert(!planningFlags(s).some(x=>x.id==="readiness"||x.id==="practical"));
 });
 test("historical method and feasibility answers survive moving old checkpoints",()=>{
  const legacy=newPlan();
@@ -152,8 +164,8 @@ test("historical method and feasibility answers survive moving old checkpoints",
   workloadHours:"4"
  });
  legacy.planning.current="N03J";
- legacy.planning.history=["N03P2","N03J","N03F"];
- legacy.planning.completedNodes=["N03J","N03F","N03P2"];
+ legacy.planning.history=["N03P2","N03J","N03E","N03F","N03G"];
+ legacy.planning.completedNodes=["N03J","N03E","N03F","N03G","N03P2"];
  let restored=normalizeProjectState(JSON.parse(JSON.stringify(legacy)));
  assert.equal(restored.planning.current,"N03D");
  assert.deepEqual(restored.planning.history,["N03P2"]);
@@ -166,8 +178,9 @@ test("historical method and feasibility answers survive moving old checkpoints",
  assert(!restored.planning.completedNodes.includes("N03F"));
  legacy.planning.current="N03F";
  restored=normalizeProjectState(JSON.parse(JSON.stringify(legacy)));
- assert.equal(restored.planning.current,"N03E");
+ assert.equal(restored.planning.current,"N03D");
  assert.equal(restored.planning.fields.permissionDetails,"Teacher must confirm survey approval");
+ for(const previous of ["N03E","N03G"]){legacy.planning.current=previous;assert.equal(normalizeProjectState(JSON.parse(JSON.stringify(legacy))).planning.current,"N03D");}
 });
 test("optional idea comparison retains selected idea and can be skipped entirely",()=>{
  const s=newPlan();
