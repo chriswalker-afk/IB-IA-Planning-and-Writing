@@ -22,7 +22,7 @@ export function groupedDashboard(s){
 }
 const planningRows=s=>{
  const f=s.planning.fields,complete=new Set(s.planning.completedNodes);
- const rows=[['N00','Starting idea',f.idea||f.interest],['N01','Investigation aim',f.aim],['N01V','Meaning and beneficiary',f.beneficiary],['N02','Investigation direction',f.kind],
+ const rows=[['N00','Starting idea',f.idea||f.interest],['N01','Working title and question',f.provisionalTitle||f.aim],['N01V','Meaning and beneficiary',f.beneficiary],['N02','Investigation direction',f.kind],
  [f.kind==='theoretical'?'N02T':'N03','Sources or starting material',f.dataSource||f.theoreticalCase],
  [f.kind==='theoretical'?'N08':'N03F','Feasibility and timeline',''],['N04','Course and mathematics',f.course],['N01P','Prediction or conjecture',f.prediction],['N05V','Purposeful first mathematics',f.firstAction||f.figurePurpose],['N06T','Teacher questions',f.teacherQuestion],['N06','Working planning summary',s.planning.completed?'Your provisional plan is ready to revisit.':'']];
  return rows.map(([id,title,text])=>'<button type="button" class="journey-decision" data-action="plan-edit" data-node="'+id+'"'+(s.planning.current===id?' aria-current="step"':'')+'><span><strong>'+e(title)+'</strong><small>'+e(text||'Open when useful')+'</small></span><span class="decision-state">'+(s.planning.current===id?'Current focus':complete.has(id)?'Decision recorded':'Not recorded')+'</span>'+icon('chevron-right')+'</button>').join('');
