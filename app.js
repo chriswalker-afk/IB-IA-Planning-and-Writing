@@ -744,13 +744,20 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         if(!toggleMath(state,id)){toast("Choose a technique from your selected course.");break;}
         const selected=state.planning.mathSelected.includes(id);
         // Preserve search, keyboard focus and scroll position while multiple options are chosen.
-        document.querySelectorAll(".plan-math-option").forEach(node=>{
+        document.querySelectorAll(".plan-math-option, .math-route-option").forEach(node=>{
           if(node.dataset.mathId!==id)return;
           node.classList.toggle("selected",selected);
           node.setAttribute("aria-pressed",String(selected));
+          const marker=node.querySelector("[data-math-route-status]");
+          if(marker)marker.textContent=selected?"Added to my plan":"Add this possibility";
         });
         const count=document.querySelector(".plan-math-count strong");
         if(count)count.textContent=state.planning.mathSelected.length;
+        const local=[...document.querySelectorAll(".plan-math-option.selected .choice-title")].map(node=>node.textContent.trim());
+        const selectedCount=document.querySelector("[data-math-selected-count]");
+        if(selectedCount)selectedCount.textContent=local.length;
+        const selectedSummary=document.querySelector("[data-math-selection-summary]");
+        if(selectedSummary)selectedSummary.textContent=local.length?" · "+local.join(" · "):" · Nothing selected yet — that is okay";
         save();break;
       }
       case "studio-tab":nav("completing",{section:el.dataset.section});break;
@@ -1023,6 +1030,12 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
           preview.textContent=value?(value.length>90?value.slice(0,89)+"…":value):"Your aim is still developing";
         }
       }
+      // Updating a returned Planning spark edits the same canonical field.
+      main.querySelectorAll?.("[data-spark-preview-path]").forEach(preview=>{
+        if(preview.dataset.sparkPreviewPath!==target.dataset.bind)return;
+        const value=target.value.trim();
+        preview.textContent=value.length>90?value.slice(0,89)+"…":value||"Still developing";
+      });
     }
   });
   document.addEventListener("change",evt=>{
