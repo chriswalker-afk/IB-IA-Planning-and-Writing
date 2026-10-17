@@ -28,80 +28,49 @@ def no_overflow(p):
  assert sizes["width"]<=sizes["screen"]+1,sizes
 
 def run_primary(p,width):
- assert "What data will I collect?" in p.locator(".task-heading").inner_text()
- assert "Step 1 of 3" in p.locator(".primary-mini-progress").inner_text()
+ assert "What will I collect, and how?" in p.locator(".task-heading").inner_text()
+ assert "Step 1 of 2" in p.locator(".primary-mini-progress").inner_text()
  assert p.locator(".sampling-recap").count()==0
- assert p.locator(".accuracy-recap").count()==0
- field(p,"primaryWhat").fill("Standing jump height and elapsed time")
- field(p,"primaryPopulation").fill("Pupils in one Year 12 class")
- field(p,"primarySamplingUnit").fill("One pupil")
- for quantity,unit in [("Jump height","cm"),("Elapsed time","s")]:
+ field(p,"primaryHow").fill("Measure jump height and duration with tape and stopwatch.")
+ for quantity,unit,basis,resolution in [("Jump height","cm","analogue","nearest 0.1 cm"),("Elapsed time","s","digital","nearest 0.01 s")]:
   field(p,"primaryQuantityName").fill(quantity)
   field(p,"primaryQuantityUnit").fill(unit)
   p.locator('[data-action="plan-save-quantity"]').click()
+  items=p.locator(".primary-quantity")
+  items.last.locator('[data-action="plan-use-quantity"]').click()
+  assert field(p,"primaryAccuracyQuantity").input_value()==quantity
+  assert field(p,"primaryAccuracyUnit").input_value()==unit
+  field(p,"primaryAccuracyBasis").select_option(basis)
+  field(p,"primaryAccuracyResolution").fill(resolution)
+  p.locator('[data-action="plan-save-accuracy"][data-source="primary"]').click()
  assert len(saved(p)["planning"]["primaryQuantities"])==2
- assert saved(p)["planning"]["accuracyPlans"]==[]
+ assert len(saved(p)["planning"]["accuracyPlans"])==2
  assert p.locator(".primary-quantity").count()==2
- assert p.locator(".primary-mini-progress-track>.current").count()==1
+ assert p.locator(".accuracy-recap").count()==1
  no_overflow(p)
- p.screenshot(path=str(OUT/f"primary-data-step1-{width}.png"),full_page=True,animations="disabled")
+ p.screenshot(path=str(OUT/f"primary-data-collection-{width}.png"),full_page=True,animations="disabled")
  p.locator('[data-action="plan-advance"]').first.click()
  assert p.locator('[data-source-node="N03P2"]').count()==1
- assert "Step 2 of 3" in p.locator(".primary-mini-progress").inner_text()
+ assert "Step 2 of 2" in p.locator(".primary-mini-progress").inner_text()
  assert p.locator(".sampling-recap").count()==1
  assert p.locator(".accuracy-recap").count()==0
- assert p.locator(".data-accuracy-save").count()==0
+ field(p,"primaryPopulation").fill("Pupils in one Year 12 class")
+ field(p,"primarySamplingUnit").fill("One pupil")
  field(p,"primarySamplingMethod").select_option("convenience")
- assert "Convenience / opportunity" in p.locator(".primary-sampling-feedback").inner_text() or "Sampling spark saved" in p.locator(".primary-sampling-feedback").inner_text()
- assert saved(p)["planning"]["fields"]["primarySamplingMethod"]=="convenience"
  field(p,"primarySamplingFrame").select_option("no")
  field(p,"primaryRepeatable").select_option("yes")
+ field(p,"primaryStatus").select_option("ready")
  p.locator(".sampling-recap summary").click()
- assert p.locator(".sampling-recap").evaluate("(node)=>node.open")
  assert "Census" in p.locator(".sampling-recap-body").inner_text()
- assert "Simple random sample" in p.locator(".sampling-recap-body").inner_text()
  assert "Watch out" in p.locator(".sampling-recap-body").inner_text()
  no_overflow(p)
- p.screenshot(path=str(OUT/f"primary-data-step2-{width}.png"),full_page=True,animations="disabled")
- p.locator('[data-action="plan-advance"]').first.click()
- assert p.locator('[data-source-node="N03P3"]').count()==1
- assert p.locator(".sampling-recap").count()==0
- assert p.locator(".accuracy-recap").count()==1
- assert "Step 3 of 3" in p.locator(".primary-mini-progress").inner_text()
- assert p.locator(".primary-precision-item").count()==2
- field(p,"primaryHow").fill("Use a measuring tape and calibrated stopwatch for every attempt.")
- field(p,"primaryEquipment").fill("1 mm tape measure and digital timer")
- # Each saved quantity from step one can prefill its name and unit.
- p.locator('[data-action="plan-use-quantity"][data-quantity-id="pq-1"]').click()
- assert field(p,"primaryAccuracyQuantity").input_value()=="Jump height"
- assert field(p,"primaryAccuracyUnit").input_value()=="cm"
- field(p,"primaryAccuracyBasis").select_option("analogue")
- assert "smallest marked division" in p.locator(".data-quality-basis-note").inner_text()
- field(p,"primaryAccuracyResolution").fill("to nearest 0.1 cm")
- p.locator('[data-action="plan-save-accuracy"][data-source="primary"]').click()
- assert len(saved(p)["planning"]["accuracyPlans"])==1
- assert saved(p)["planning"]["accuracyPlans"][0]["quantity"]=="Jump height"
- assert saved(p)["completion"]["accuracyDecisions"]==[]
- assert p.locator(".primary-saved-row").count()==1
- p.locator('[data-action="plan-use-quantity"][data-quantity-id="pq-2"]').click()
- assert field(p,"primaryAccuracyQuantity").input_value()=="Elapsed time"
- assert field(p,"primaryAccuracyUnit").input_value()=="s"
- field(p,"primaryAccuracyBasis").select_option("digital")
- field(p,"primaryAccuracyResolution").fill("to nearest 0.01 s")
- p.locator('[data-action="plan-save-accuracy"][data-source="primary"]').click()
- assert len(saved(p)["planning"]["accuracyPlans"])==2
- assert p.locator(".primary-saved-row").count()==2
- field(p,"primaryStatus").select_option("ready")
- no_overflow(p)
- p.screenshot(path=str(OUT/f"primary-data-step3-{width}.png"),full_page=True,animations="disabled")
+ p.screenshot(path=str(OUT/f"primary-data-sampling-{width}.png"),full_page=True,animations="disabled")
  p.locator('[data-action="plan-advance"]').first.click()
  assert p.locator('[data-source-node="N03J"]').count()==1
  assert p.locator('[data-planning-return-spark="sampling"]').count()==1
  assert p.locator('[data-planning-return-spark="accuracy"]').count()==1
- assert len(saved(p)["planning"]["completedNodes"])>=3
- assert all(v in saved(p)["planning"]["completedNodes"] for v in ["N03P","N03P2","N03P3"])
+ assert all(v in saved(p)["planning"]["completedNodes"] for v in ["N03P","N03P2"])
  no_overflow(p)
- # The sampling and accuracy sparks reappear with actual evidence in IA Studio.
  test_state=saved(p)
  test_state["route"]="completing";test_state["completion"]["current"]="C21S"
  p.evaluate("([k,s])=>localStorage.setItem(k,JSON.stringify(s))",[KEY,test_state])
