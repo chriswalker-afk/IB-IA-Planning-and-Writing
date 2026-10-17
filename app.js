@@ -750,6 +750,8 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
           node.setAttribute("aria-pressed",String(selected));
           const marker=node.querySelector("[data-math-route-status]");
           if(marker)marker.textContent=selected?"Added to my plan":"Add this possibility";
+          const markIcon=node.querySelector(".math-route-select > .icon");
+          if(markIcon)markIcon.outerHTML=icon(selected?"check-circle":"plus-circle");
         });
         const count=document.querySelector(".plan-math-count strong");
         if(count)count.textContent=state.planning.mathSelected.length;
