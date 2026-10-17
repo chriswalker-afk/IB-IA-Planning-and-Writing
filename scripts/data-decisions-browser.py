@@ -76,16 +76,33 @@ def run_primary(p,width):
  assert p.locator('[data-spark-library]').count()==1
  assert p.locator('[data-spark-id^="planned-accuracy:"]').count()>=1
  assert all(v in saved(p)["planning"]["completedNodes"] for v in ["N03P","N03P2"])
+ assert not any(v in saved(p)["planning"]["completedNodes"] for v in ["N03J","N03F"])
  no_overflow(p)
+ p.locator('[data-action="plan-advance"]').first.click()
+ assert p.locator('[data-source-node="N03E"]').count()==1
+ assert field(p,"permissionNeed").count()==1
+ assert field(p,"practicalBlocker").count()==1
+ assert "Before you start" in p.locator(".practical-quick-check").inner_text()
+ field(p,"permissionNeed").select_option("yes")
+ assert p.locator('[data-condition="Safety / privacy / consent unresolved"]').count()==1
+ assert saved(p)["teacher"]["pendingApproval"]==True
+ field(p,"practicalBlocker").select_option("yes")
+ field(p,"unsecured").fill("Borrow a ruler before a small test")
+ assert saved(p)["planning"]["fields"]["unsecured"]=="Borrow a ruler before a small test"
+ no_overflow(p)
+ p.screenshot(path=str(OUT/f"practical-quick-check-{width}.png"),full_page=True,animations="disabled")
+ p.locator('[data-action="plan-advance"]').first.click()
+ assert p.locator('[data-source-node="N03G"]').count()==1
+ assert not any(v in saved(p)["planning"]["visited"] for v in ["N03J","N03F"])
  test_state=saved(p)
  test_state["route"]="completing";test_state["completion"]["current"]="C21S"
  p.evaluate("([k,s])=>localStorage.setItem(k,JSON.stringify(s))",[KEY,test_state])
  p.reload(wait_until="networkidle")
- assert "My planned sampling approach" in p.locator(".insight-echo").inner_text()
+ assert p.locator('[data-spark-shelf="studio"] .spark-shelf-featured[data-spark-id="sampling-plan"]').count()==1
  test_state=saved(p);test_state["completion"]["current"]="C24"
  p.evaluate("([k,s])=>localStorage.setItem(k,JSON.stringify(s))",[KEY,test_state])
  p.reload(wait_until="networkidle")
- assert "Planned accuracy" in p.locator(".insight-echo").inner_text()
+ assert p.locator('[data-spark-shelf="studio"] [data-spark-id^="planned-accuracy:"]').count()>=1
  no_overflow(p)
 def run_secondary(p,width):
  assert "Plan your secondary data" in p.locator(".task-heading").inner_text()
