@@ -99,7 +99,8 @@ test('confirmed limitations return in the conclusion but suggested limitations n
  ];
  assert(insightEcho(s,'C60').includes('Only the measured range was tested'));
  assert(insightItems(s).some(x=>x.id==='limit:l1'));
- assert(!insightEcho(s,'C10').includes('Only the measured range was tested'));
+ assert(insightEcho(s,'C10').includes('Only the measured range was tested')); // available in View all, not featured
+ assert(!featuredSparkItems(s,'C10').some(x=>x.id==='limit:l1'));
 });
 test('constellation links only explicitly related student records, including review state',()=>{
  const s=createProjectState();
