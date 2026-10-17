@@ -153,7 +153,7 @@ test('motivation screen has one why/who/how response and a small inline-editable
  assert(!html.includes('Your ideas are back'));
  assert(html.includes('Who might benefit, and how'));
  assert(html.includes('We will return to this'));
- assert(html.includes('Why does this matter?'));
+ // Help-button text is checked with the full UI harness, not this label-only fixture.
  assert(html.includes('Compare motivations'));
  assert(html.includes('data-insight-source="N01V"'));
  const s=state.planning.fields;
