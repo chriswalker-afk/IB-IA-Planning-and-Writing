@@ -23,8 +23,8 @@ test("all 32 normalized Planning nodes render without throwing, with exact node 
   state.planning.current=node;
   const html=view.viewPlanning();
   assert(html.includes('data-source-node="'+node+'"'),node);
-  assert(html.includes('class="task-shell"'),node);
-  assert(html.includes("Back")||html.includes("Home"),node);
+  assert(html.includes('class="task-shell'),node);
+  assert(html.includes("Back")||html.includes("Home")||(node==="N00"&&html.includes("Let's go")),node);
   assert(!html.includes("undefined"),node);
  }
 });
@@ -82,4 +82,28 @@ test("phase two planning uses route-progress milestones rather than a compulsory
  assert(html.includes("Find your question"));
  assert(html.includes("Plan your evidence"));
  assert(!html.includes("Step 1 of 10"));
+});
+
+test("first Planning screen asks one three-way question and keeps support for later",()=>{
+ const {state,view}=screenFixture();
+ const start=view.viewPlanning();
+ for(const label of ["I have an idea","I'm choosing between ideas","Help me find an idea"]){
+  assert(start.includes(label),label);
+ }
+ assert(start.includes('planning-kickoff'));
+ assert(start.includes('planning-learning-trail'));
+ assert(start.includes("Let's go"));
+ assert(!start.includes("A possible topic or question"));
+ assert(!start.includes("My interests (optional)"));
+ assert(!start.includes("Compare two or three possible ideas"));
+ assert(!start.includes("Your IA at a glance"));
+ assert(!start.includes("Help me think"));
+ assert(!start.includes("Tools & tutorials"));
+ assert(!start.includes("criteria-panel"));
+ state.planning.current="N01";
+ const next=view.viewPlanning();
+ assert(next.includes("My starting topic or idea (optional)"));
+ assert(next.includes("My current investigation aim"));
+ assert(next.includes("Other interests I might explore (optional)"));
+ assert(!next.includes('planning-kickoff'));
 });
