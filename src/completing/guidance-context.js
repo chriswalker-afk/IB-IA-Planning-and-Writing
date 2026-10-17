@@ -115,7 +115,7 @@ export function guidanceFingerprint(ctx,sourceId){
  const {p,f,entry,next,scatter,c}=ctx;
  const common=[p.aim,p.course,p.kind,p.beneficiary,p.dataSource,f.dataStatus];
  let fields=[];
- if(/^W0[1-2]$/.test(sourceId))fields=[p.motivation,p.prediction,p.predictionWhy];
+ if(/^W0[1-2]$/.test(sourceId))fields=[p.beneficiary||p.motivation,p.prediction,p.predictionWhy];
  else if(/^W(?:0[3-9]|1[01]|35|36|46)$/.test(sourceId))fields=[f.samplingMethod,f.sampleOrCensus,f.actualMethod,f.actualSource,f.secondaryVerified,f.modelAssumptions,ctx.sourceAccuracy.map(x=>x.id+":"+x.resolution+":"+x.policy).join(";")];
  else if(/^W(?:17|25|47|49|51|52|53|55|56|57)$/.test(sourceId))fields=[entry?.accuracyRef,(nodeForAccuracy(ctx)?ctx.sourceAccuracy:ctx.matchingAccuracy).map(x=>[x.id,x.unit,x.resolution,x.policy].join(":")).join(";"),entry?.reviewNeeded];
  else if(/^W(?:58|59|60|61|62|63|64|65|66)$/.test(sourceId))fields=[entry?.knowledge,entry?.methodId,entry?.unfamiliarComponent,entry?.researchSource,entry?.mathsInsight,entry?.reviewNeeded];
