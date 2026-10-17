@@ -687,6 +687,20 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         const note=trail.querySelector("[data-thread-instruction]");if(note)note.hidden=!was;
         break;
       }
+      case "spark-edit-accuracy":{
+        const record=state.planning?.accuracyPlans?.find(x=>x.id===el.dataset.accuracyId);
+        if(!record){toast("This accuracy spark is no longer saved.");break;}
+        const target=record.source==="secondary"?"N03S":"N03P3";
+        const move=planningEdit(state,target);
+        if(!move.ok){toast(move.error||"That Planning section is not available.");break;}
+        const source=editPlannedAccuracy(state,record.id);
+        if(!source){toast("That quantity could not be loaded for editing.");break;}
+        handlePlanningResult(move);
+        const input=document.querySelector('[data-bind="planning.fields.'+source+'AccuracyQuantity"]');
+        if(input){input.scrollIntoView({block:"center",behavior:"auto"});input.focus({preventScroll:true});}
+        toast("Edit your original accuracy spark","Save the edited rule to update it everywhere.");
+        break;
+      }
       case "insight-jump":{
         // Sparks link back to the original student-owned record without changing it.
         const type=el.dataset.insightType;
