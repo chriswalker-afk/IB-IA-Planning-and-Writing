@@ -83,6 +83,7 @@ export function ideaAction(state,action,data={}){
  switch(action){
   case 'idea-map-mode':{
    if(!['interests','data'].includes(data.mode))return{ok:false,error:'That map is unavailable.'};
+   if(s.map.mode===data.mode)return{ok:true};
    s.map={mode:data.mode,root:'',topic:'',subtopic:'',dataBranch:''};s.active='';s.pending=null;
    return{ok:true,render:true,focus:'idea-map-heading'};
   }
@@ -100,12 +101,12 @@ export function ideaAction(state,action,data={}){
    const topic=IDEA_TOPICS.find(x=>x.id===s.map.topic);
    if(!topic?.subtopics.includes(data.subtopic))return{ok:false,error:'Choose a visible detail to grow this branch.'};
    s.map.subtopic=data.subtopic;s.subtopic=data.subtopic;
-   return{ok:true,render:true,focus:'idea-map-leaf-'+topic.subtopics.indexOf(data.subtopic)};
+   return{ok:true,render:true,focus:'idea-map-directions-heading'};
   }
   case 'idea-map-access':{
    if(!ideaMapBranches(ideaMapRoot(s.map.mode,s.map.root)).some(x=>x.id===data.branch))return{ok:false,error:'Choose a visible data direction.'};
    s.map.dataBranch=data.branch;
-   return{ok:true,render:true,focus:'idea-map-access-'+data.branch};
+   return{ok:true,render:true,focus:'idea-map-directions-heading'};
   }
   case 'idea-map-reset':{
    s.map.root='';s.map.topic='';s.map.subtopic='';s.map.dataBranch='';
