@@ -104,6 +104,7 @@ export function modelFromEnvelope(envelope){
     row("Minimum viable investigation",f.minimumVersion),
     row("Contingency / backup data source",f.backupMethod),
     row("Permissions / privacy need",f.permissionNeed||"To confirm"),
+    row("Essential access blocker",f.practicalBlocker),
     row("Permissions questions",f.permissionDetails),
     row("Rights to use source material",f.sourceRights)
   ],"The /5 assessments concern practical planning only, never predicted IA marks or teacher approval."),
