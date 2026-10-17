@@ -7,11 +7,12 @@ import { PLANNING_CATALOG } from "./catalog.js";
 import {TIMELINE_KEYS} from "./timeline.js";
 import {createRouteExplorer,normalizeRouteExplorer,routeById} from "./investigative-routes.js";
 import {normalizePlanningAccuracy,samplingMethod} from "./data-decisions.js";
+import {normalizePrimaryQuantities} from "./primary-quantities.js";
 
 export const PLANNING_NODE_IDS = Object.freeze([...new Set(PLANNING_ROUTES.flatMap(r=>[r.from,r.to]).filter(n=>n.startsWith("N")))]);
 export const PROGRESS_GROUPS = Object.freeze([
  {id:"direction",label:"Find your question",nodes:["N00","N00B","N00C","N01","N01V","N02","N02M","N02U","N02T"]},
- {id:"practical",label:"Plan your evidence",nodes:["N03","N03B","N03P","N03S","N03J","N03D","N03E","N03R","N03F","N03G","N03H"]},
+ {id:"practical",label:"Plan your evidence",nodes:["N03","N03B","N03P","N03P2","N03P3","N03S","N03J","N03D","N03E","N03R","N03F","N03G","N03H"]},
  {id:"mathematical",label:"Plan your mathematics",nodes:["N04","N04T","N04S","N01P","N04R","N04M","N05V","N05"]},
  {id:"review",label:"Review your idea",nodes:["N06E","N06T","N08","N06","N07"]}
 ]);
@@ -23,6 +24,7 @@ export const PLANNING_FIELD_DEFAULTS = Object.freeze({
  kind:"",statisticsContext:"",dataSource:"",primaryWhat:"",primaryWhen:"",primaryWhere:"",
  primaryPopulation:"",primaryHow:"",primaryEquipment:"",primaryStatus:"",primarySampling:"",
  primarySamplingMethod:"",primarySamplingUnit:"",primarySamplingFrame:"",primarySamplingFrameDetails:"",primaryRepeatable:"",
+ primaryQuantityName:"",primaryQuantityUnit:"",
  secondaryUrl:"",secondaryPublisher:"",secondaryVariables:"",secondaryScope:"",secondaryVerified:"",
  secondarySamplingOrigin:"",
  primaryAccuracyQuantity:"",primaryAccuracyUnit:"",primaryAccuracyResolution:"",primaryAccuracyBasis:"",primaryAccuracyUncertainty:"",
@@ -47,6 +49,7 @@ export const PLANNING_FIELD_DEFAULTS = Object.freeze({
 export function createPlanningState(){
  return {
   current:"N00", fields:{...PLANNING_FIELD_DEFAULTS}, mathSelected:[],accuracyPlans:[],accuracyEditId:"",
+  primaryQuantities:[],primaryQuantityEditId:"",
   history:[], visited:[], completedNodes:[], sourceBranches:{primary:false,secondary:false},
   teacherFlagsAcknowledged:[], returnToPrediction:false, sourceSnapshot:"2026-10-14",
   completed:false, notices:[], mathSearch:"", mathsReviewVersion:0,timelineAuto:{},routeExplorer:createRouteExplorer()
@@ -74,7 +77,9 @@ export function normalizePlanningState(value,project={}){
  const current=PLANNING_NODE_IDS.includes(v.current)?v.current:"N00";
  return {
   ...base,fields,mathSelected:cleanIds,accuracyPlans:normalizePlanningAccuracy(v.accuracyPlans),
-  accuracyEditId:(v.accuracyPlans||[]).some?.(x=>x?.id===v.accuracyEditId)?v.accuracyEditId:"",current,
+  accuracyEditId:(v.accuracyPlans||[]).some?.(x=>x?.id===v.accuracyEditId)?v.accuracyEditId:"",
+  primaryQuantities:normalizePrimaryQuantities(v.primaryQuantities,v.accuracyPlans),
+  primaryQuantityEditId:(v.primaryQuantities||[]).some?.(x=>x?.id===v.primaryQuantityEditId)?v.primaryQuantityEditId:"",current,
   history:entries(v.history),visited:entries(v.visited),
   completedNodes:entries(v.completedNodes),
   sourceBranches:{
@@ -284,11 +289,14 @@ export function planningMove(state,condition) {
  const from=state.planning.current;
  const route=routeCondition(from,condition);
  if(!route)return{ok:false,error:"That transition isn't defined for this question."};
+ // Legacy source-sheet edge is retained in the route table for provenance,
+ // but continuing the old one-page primary form enters the new 3-step flow.
+ if(from==="N03P"&&condition==="Complete")return planningMove(state,"Continue to choosing data");
  const to=route.to,f=state.planning.fields;
  if(from==="N03B"&&to==="N03J"&&!(state.planning.sourceBranches.primary&&state.planning.sourceBranches.secondary))
   return{ok:false,error:"Answer both primary and secondary source questions first."};
- if(["N03P","N03S"].includes(from)&&to==="N03J"&&f.dataSource==="both"){
-  const branch=from==="N03P"?"primary":"secondary";
+ if(["N03P3","N03S"].includes(from)&&to==="N03J"&&f.dataSource==="both"){
+  const branch=from==="N03P3"?"primary":"secondary";
   const statusKey=branch+"Status";
   if(!["ready","unsure"].includes(f[statusKey]))
    return{ok:false,error:"Select whether your "+branch+" data plan is ready or still uncertain."};
@@ -299,7 +307,11 @@ export function planningMove(state,condition) {
     return setPlanCurrent(state,"N03B",{internal:true});
   }
  }
- if(from==="N03P"&&f.primaryStatus==="ready"){
+ if(from==="N03P"&&!f.primaryWhat.trim()&&!state.planning.primaryQuantities.length)
+  return{ok:false,error:"Describe what you plan to record, or add at least one quantity. A tentative answer is fine."};
+ if(from==="N03P2"&&f.kind==="statistics"&&!samplingMethod(f.primarySamplingMethod))
+  return{ok:false,error:"Choose a census or sampling approach, including Not sure yet or Not applicable, before continuing."};
+ if(from==="N03P3"&&f.primaryStatus==="ready"){
   if(!f.primaryWhat.trim()||!f.primaryHow.trim())
    return{ok:false,error:"Before marking your collection plan ready, record what you will measure and how. Or select Still uncertain."};
   if(f.kind==="statistics"&&(!f.primarySamplingFrame||!f.primaryRepeatable))
@@ -312,15 +324,15 @@ export function planningMove(state,condition) {
   if(accuracy.length&&accuracy.every(x=>x.basis==="unknown"&&!x.resolution)&&!f.firstAccuracy.trim())
    return{ok:false,error:"Your measurement precision is still unknown. Mark the source plan uncertain until you can confirm a recording rule."};
  }
- if(from==="N03P"&&f.kind==="statistics"&&!samplingMethod(f.primarySamplingMethod))
+ if(from==="N03P3"&&f.kind==="statistics"&&!samplingMethod(f.primarySamplingMethod))
   return{ok:false,error:"Before collecting data, choose a sample or census approach (including Not applicable or Not sure yet). You can revise this later."};
- if(from==="N03P"&&f.kind==="statistics"&&f.primaryStatus==="ready"&&f.primarySamplingMethod==="unsure")
+ if(from==="N03P3"&&f.kind==="statistics"&&f.primaryStatus==="ready"&&f.primarySamplingMethod==="unsure")
   return{ok:false,error:"Sampling is still undecided. Mark this source plan as uncertain, or choose a feasible approach first."};
  if(from==="N03P"&&f.kind==="statistics"&&f.primaryStatus==="ready"&&
     !["not-applicable","unsure"].includes(f.primarySamplingMethod)&&
     (!f.primaryPopulation.trim()||!f.primarySamplingUnit.trim()))
   return{ok:false,error:"To mark this sample plan ready, identify your population and sampling unit. Or choose Still uncertain."};
- if(from==="N03P"&&to==="N03J"&&!["ready","unsure"].includes(f.primaryStatus))return{ok:false,error:"Confirm whether your primary data plan is ready or uncertain."};
+ if(from==="N03P3"&&to==="N03J"&&!["ready","unsure"].includes(f.primaryStatus))return{ok:false,error:"Confirm whether your primary data plan is ready or uncertain."};
  if(from==="N03S"&&to==="N03J"&&!["ready","unsure"].includes(f.secondaryStatus))return{ok:false,error:"Confirm whether your secondary source plan is ready or uncertain."};
  if(from==="N03F"&&to==="N02T"&&!["yes","unsure"].includes(f.permissionNeed))
   return{ok:false,error:"This checkpoint is for unresolved permission or safety concerns."};
@@ -368,7 +380,10 @@ export function planAutoAdvance(state){
   case "N03":if(!f.dataSource)return{ok:false,error:"Choose primary, secondary or both data sources."};return go(f.dataSource==="secondary"?"Secondary":f.dataSource==="both"?"Both":"Primary");
   case "N03B":return go(state.planning.sourceBranches.primary&&state.planning.sourceBranches.secondary?"Both data sources complete":
    !state.planning.sourceBranches.primary?"Primary questions":"Secondary questions");
-  case "N03P":case "N03S":return go("Complete");
+  case "N03P":return go("Continue to choosing data");
+  case "N03P2":return go("Continue to recording accuracy");
+  case "N03P3":return go("Complete primary plan");
+  case "N03S":return go("Complete");
   case "N03J":return go("Method justification or 'not sure'");
   case "N03D":return go("Continue");
   case "N03E":if(Number(f.dataReadiness)===5&&f.dataAvailability!=="in-hand")return{ok:false,error:"A readiness rating of 5 means usable data are already in hand. Please adjust the rating or confirm the evidence is available."};return go("Continue");
