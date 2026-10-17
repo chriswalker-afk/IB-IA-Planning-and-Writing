@@ -142,6 +142,7 @@ export function primaryDataSampling(state,{F,select,e,icon}){
  '<div class="primary-step-extra-content">'+
  F('primarySamplingFrameDetails','Describe the frame or difficulty','e.g. a class list, or no complete list')+
  F('primarySampling','Why might this method work?','Consider access, speed, bias and follow-up observations',{type:'textarea',rows:2})+
+ F('alternativeMethod','Another method or source considered (optional)','One realistic alternative, if you considered one',{type:'textarea',rows:2})+
  '</div></details>'+
  samplingRecap(e,icon)+'</section>'+
  '<section class="primary-focus-block primary-readiness">'+
