@@ -13,7 +13,7 @@ import {createPlanningEnvelope,normalizePlanningEnvelope,getFieldDiff,mergePlann
 import {modelFromEnvelope} from '../src/handover/report-model.js';
 
 const s=()=>{const x=createProjectState();x.route='planning';x.planning.current='N03P';x.planning.fields.kind='statistics';x.planning.fields.course='AI SL';return x;};
-const lastStep=()=>{const x=s();x.planning.current='N03P3';return x;};
+const lastStep=()=>{const x=s();x.planning.current='N03P';return x;};
 const set=(state,key,value)=>assert(applyPlanningField(state,key,value));
 const escape=v=>String(v??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('"','&quot;');
 const render=state=>{
@@ -160,27 +160,17 @@ test('incomplete degree-of-accuracy drafts are not saved; unknown and exact are 
  ss.planning.accuracyPlans=sanitized;
  assert(!render(ss).includes('<script>'));
 });
-test('primary data is split into three focused screens, with optional help on steps two and three',()=>{
- const x=s();
- let html=render(x);
- for(const term of ['What data will I collect?','Step 1 of 3','What will you record?','primaryQuantityName','Add quantity'])
-  assert(html.includes(term),term);
+test('collection and accuracy share screen one, sampling and readiness share screen two',()=>{
+ const x=s();let html=render(x);
+ for(const term of ['What will I collect, and how?','Step 1 of 2','primaryQuantityName',
+ 'Set or review recording accuracy','primary-accuracy-editor'])assert(html.includes(term),term);
  assert(!html.includes('Sampling and census: quick recap'));
- assert(!html.includes('data-action="plan-save-accuracy"'));
  x.planning.current='N03P2';set(x,'primarySamplingMethod','simple-random');set(x,'primarySamplingFrame','no');
  html=render(x);
- for(const term of ['How will I choose my data?','Step 2 of 3','sampling approach',
-  'Sampling and census: quick recap','Could you start quickly',
-  'This method normally needs a suitable sampling frame'])
-  assert(html.includes(term),term);
+ for(const term of ['How will I choose my data?','Step 2 of 2',
+ 'Sampling and census: quick recap','This method normally needs a suitable sampling frame',
+ 'Is your primary-data plan ready to try?'])assert(html.includes(term),term);
  assert(!html.includes('data-action="plan-save-accuracy"'));
- x.planning.current='N03P3';
- html=render(x);
- for(const term of ['How will I collect it accurately?','Step 3 of 3','primary-accuracy-step',
-  'How do I judge a measuring device','Save accuracy spark','Can you start collecting data'])
-  assert(html.includes(term),term);
- assert(html.includes('data-action="plan-save-accuracy" data-source="primary"'));
- assert(!html.includes('Sampling and census: quick recap'));
 });
 test('old project backup and embedded documents remain readable; new provisional rules travel safely',()=>{
  const original=s();
