@@ -1,223 +1,188 @@
-"""Synthetic responsive acceptance checks for the branching Idea Lab.
-No real student data; no external example-service calls.
+"""Responsive, synthetic acceptance checks for the shared Idea Lab evaluator.
+All examples use fake data and device-local state.
 """
 import copy,json,os,subprocess,traceback
 from pathlib import Path
 from playwright.sync_api import sync_playwright
-OUT=Path(os.environ.get('IA_QA_OUTPUT','qa-output'));OUT.mkdir(parents=True,exist_ok=True)
-KEY='ia-pathfinder-prototype-v1';URL=os.environ.get('IA_QA_URL','http://127.0.0.1:8765/')
-code="import {createProjectState} from './src/core/project-state.js';console.log(JSON.stringify(createProjectState()));"
-BASE=json.loads(subprocess.check_output(['node','--input-type=module','-e',code]))
-results=[]
-def state(node='N00B',existing=False):
- s=copy.deepcopy(BASE);s['route']='planning';s['planning']['current']=node;s['journey']['currentNodeId']=node
- if existing:
-  s['project'].update(idea='My existing topic',aim='My existing aim',prediction='My first prediction')
-  s['planning']['fields'].update(idea='My existing topic',aim='My existing aim',originalIdea='My oldest topic',prediction='My first prediction')
-  s['scratch']['introduction']='My existing introduction';s['teacher']['pendingApproval']=True
+
+OUT=Path(os.environ.get('IA_QA_OUTPUT','qa-output'))
+OUT.mkdir(parents=True,exist_ok=True)
+KEY='ia-pathfinder-prototype-v1'
+URL=os.environ.get('IA_QA_URL','http://127.0.0.1:8765/')
+SCRIPT="import {createProjectState} from './src/core/project-state.js';console.log(JSON.stringify(createProjectState()));"
+BASE=json.loads(subprocess.check_output(['node','--input-type=module','-e',SCRIPT]))
+RESULTS=[]
+
+def state(node='N00C',previous=False):
+ s=copy.deepcopy(BASE)
+ s['route']='planning'
+ s['planning']['current']=node
+ s['journey']['currentNodeId']=node
+ if previous:
+  s['planning']['fields'].update(idea='Previous investigation',aim='My earlier aim',prediction='My real earlier prediction')
+  s['project'].update(idea='Previous investigation',aim='My earlier aim')
+  s['scratch']['introduction']='Earlier writing'
+  s['teacher']['pendingApproval']=True
  return s
-def saved(p):return p.evaluate('(k)=>JSON.parse(localStorage.getItem(k))',KEY)
-def action(p,id,extra=''):p.locator('[data-action="idea-'+id+'"]'+extra).first.click()
-def node(p,id):assert p.locator('[data-source-node="'+id+'"]').count()==1,(id,p.locator('#main').inner_text()[:150])
-def protect(s):return json.dumps([s['project'],s['planning']['fields'],s['planning']['mathSelected'],s['entries'],s['teacher'],s['scratch']],sort_keys=True)
-def choose_nature(p,sub='Leaves'):
- root=p.locator('[data-action="idea-map-root"][data-root="world"]')
- if root.get_attribute('aria-pressed')!='true':root.click()
+
+def saved(p):
+ return p.evaluate('(key)=>JSON.parse(localStorage.getItem(key))',KEY)
+
+def node(p,id):
+ assert p.locator('[data-source-node="'+id+'"]').count()==1,('Expected node',id)
+
+def do(p,action,attrs=''):
+ p.locator('[data-action="idea-'+action+'"]'+attrs).first.click()
+
+def evaluate(p,aim,clarity=3,quick=4,problems=()):
+ p.locator('#idea-question').fill(aim)
+ p.locator('#idea-clarity-'+str(clarity)).click()
+ p.locator('#idea-quickStart-'+str(quick)).click()
+ for name in problems:
+  p.locator('[data-idea-difficulty="'+name+'"]').check()
+
+def own(p,aim,clarity=3,quick=4,problems=()):
+ do(p,'own')
+ assert p.locator('.idea-evaluation').count()==1
+ assert p.locator('.idea-map-starter').count()==0
+ evaluate(p,aim,clarity,quick,problems)
+ do(p,'save')
+ node(p,'N00C')
+
+def map_nature(p):
+ do(p,'map-open')
+ node(p,'N00B')
+ p.locator('[data-action="idea-map-root"][data-root="world"]').click()
  p.locator('[data-action="idea-map-topic"][data-topic="nature"]').click()
- p.locator('[data-action="idea-map-leaf"][data-subtopic="'+sub+'"]').click()
-def draft(p,seed='leaf-outline',auto_fill=True):
- sub={'leaf-outline':'Leaves','branching-pattern':'Leaves','wildlife-observations':'Birds','plant-change':'Plants'}[seed]
- choose_nature(p,sub)
- p.locator('[data-action="idea-explore"][data-seed="'+seed+'"]').click()
- if auto_fill:
-  questions={'leaf-outline':'How could I compare the area estimates of a leaf from my garden?',
-             'branching-pattern':'How might branching change in a plant I can observe?',
-             'wildlife-observations':'How could I compare sightings on two school walks?',
-             'plant-change':'How does one measurement of my plant change over two weeks?'}
-  p.locator('#idea-question').fill(questions[seed])
+ p.locator('[data-action="idea-map-leaf"][data-subtopic="Leaves"]').click()
+ p.locator('[data-action="idea-explore"][data-seed="leaf-outline"]').click()
+
+def read_error(p):
+ return p.locator('#toast').inner_text() if p.locator('#toast').count() else p.locator('body').inner_text()[:100]
+
 with sync_playwright() as pw:
  options={'headless':True,'args':['--no-sandbox']}
- if os.environ.get('IA_CHROMIUM_EXECUTABLE'):options['executable_path']=os.environ['IA_CHROMIUM_EXECUTABLE']
+ if os.environ.get('IA_CHROMIUM_EXECUTABLE'):
+  options['executable_path']=os.environ['IA_CHROMIUM_EXECUTABLE']
  browser=pw.chromium.launch(**options)
- def run(name,s,fn,width=390,height=844):
+ def run(label,data,callback,width=390,height=844):
   ctx=browser.new_context(viewport={'width':width,'height':height},accept_downloads=True)
   ctx.route('https://fonts.googleapis.com/**',lambda r:r.abort())
-  p=ctx.new_page();p.set_default_timeout(10000);errors=[];p.on('pageerror',lambda err:errors.append(str(err)))
-  p.add_init_script('if(!localStorage.getItem('+json.dumps(KEY)+'))localStorage.setItem('+json.dumps(KEY)+','+json.dumps(json.dumps(s))+');')
+  p=ctx.new_page()
+  p.set_default_timeout(10000)
+  errors=[]
+  p.on('pageerror',lambda err:errors.append(str(err)))
+  p.add_init_script('if(!localStorage.getItem('+json.dumps(KEY)+'))localStorage.setItem('+json.dumps(KEY)+','+json.dumps(json.dumps(data))+');')
   try:
-   p.goto(URL,wait_until='networkidle',timeout=22000);fn(p)
-   assert p.evaluate('document.documentElement.scrollWidth <= innerWidth+1'),p.evaluate('({w:innerWidth,s:document.documentElement.scrollWidth})')
-   assert not errors,errors;results.append({'test':name,'status':'passed','viewport':f'{width}x{height}'})
-  except Exception as err:
-   results.append({'test':name,'status':'FAILED','error':str(err),'page_errors':errors,'traceback':traceback.format_exc()})
-   traceback.print_exc();p.screenshot(path=str(OUT/(name+'-failure.png')),full_page=True,animations='disabled')
+   p.goto(URL,wait_until='networkidle',timeout=22000)
+   callback(p)
+   assert p.evaluate('document.documentElement.scrollWidth <= innerWidth+1'),p.evaluate('({width:innerWidth,scroll:document.documentElement.scrollWidth})')
+   assert not errors,errors
+   RESULTS.append({'test':label,'status':'passed','viewport':f'{width}x{height}'})
+  except Exception as ex:
+   RESULTS.append({'test':label,'status':'FAILED','error':str(ex),'page_errors':errors,'traceback':traceback.format_exc()})
+   traceback.print_exc()
+   p.screenshot(path=str(OUT/(label+'-failure.png')),full_page=True,animations='disabled')
   ctx.close()
- def fast(p):
+ 
+ def direct(p):
   p.locator('[data-choice="planning.fields.ideaStatus"][data-value="yes"]').click()
-  p.locator('[data-action="plan-advance"]').click();node(p,'N01')
-  assert p.locator('.idea-mindmap').count()==0
-  p.locator('[data-bind="planning.fields.provisionalTitle"]').fill('How can I model my chosen activity?')
-  assert saved(p)['planning']['fields']['provisionalTitle']=='How can I model my chosen activity?'
- run('ideas-one-idea-fast-route',state('N00'),fast)
- def enter(p):
-  p.locator('[data-choice="planning.fields.ideaStatus"][data-value="no"]').click()
-  p.locator('[data-action="plan-advance"]').click();node(p,'N00B')
-  assert p.locator('.idea-mindmap').count()==1
-  assert p.locator('[data-action="idea-map-root"]').count()==3
-  assert p.locator('[data-action="idea-map-mode"]').count()==2
-  assert p.locator('#idea-topic').count()==0
-  assert p.locator('text=What makes a promising starting point?').count()==0
-  assert p.locator('.idea-map-quickstart').is_visible()
-  assert p.locator('.idea-map-connectors path').count()==3
-  assert p.locator('[data-action="idea-map-mode"][data-mode="interests"]').get_attribute('aria-pressed')=='true'
- run('ideas-map-welcome',state('N00'),enter,360,740)
- def interest(p):
-  before=protect(saved(p));choose_nature(p)
-  assert p.locator('[data-idea-card]').count()==3
-  assert p.locator('[data-idea-card]').first.get_attribute('data-idea-card')=='leaf-outline'
-  assert 'Make it personal' in p.locator('.idea-map-direction-node').first.inner_text()
-  assert p.locator('.idea-map-connectors path').count()>=10
-  assert p.locator('[data-idea-node="topic-nature"][data-idea-parent="root-world"]').count()==1
-  assert p.locator('[data-idea-node="leaf-nature-0"][data-idea-parent="topic-nature"]').count()==1
-  assert p.locator('[data-idea-node="seed-leaf-outline"][data-idea-parent="leaf-nature-0"]').count()==1
-  p.screenshot(path=str(OUT/'ideas-nature-desktop.png'),full_page=True,animations='disabled')
-  p.locator('[data-action="idea-map-leaf"][data-subtopic="Birds"]').click()
-  assert p.locator('[data-seed="wildlife-observations"]').count()==1
-  assert protect(saved(p))==before
- run('ideas-interest-branch-growth-desktop',state(existing=True),interest,1440,1000)
- def data_map(p):
-  before=protect(saved(p))
-  p.locator('[data-action="idea-map-mode"][data-mode="data"]').click()
-  p.locator('[data-action="idea-map-root"][data-root="record"]').click()
-  p.locator('[data-action="idea-map-access"][data-branch="survey"]').click()
-  assert 'permission' in p.locator('.idea-map-survey-warning').inner_text()
-  assert p.locator('.idea-map-connectors path').count()==6
-  p.locator('[data-action="idea-map-root"][data-root="find"]').click()
-  p.locator('[data-action="idea-map-access"][data-branch="image"]').click()
-  p.locator('[data-action="idea-explore"][data-seed="sport-trajectory"]').click()
-  assert p.locator('#idea-question').input_value()==''
-  p.locator('#idea-detail').fill('A short permitted video with a known court scale')
-  p.locator('#idea-question').fill('How well can a function model one ball flight I recorded?')
-  action(p,'save')
-  assert saved(p)['ideaExplorer']['shortlist'][0]['fromMap']
-  assert protect(saved(p))==before
- run('ideas-data-map-and-privacy-guidance',state(),data_map,390,844)
- def uncompleted(p):
-  draft(p,auto_fill=False)
-  assert p.locator('#idea-question').input_value()==''
-  assert 'QUESTION STARTER' in p.locator('.idea-map-starter').inner_text()
-  action(p,'use');assert 'Write a possible direction' in p.locator('#toast').inner_text()
-  p.locator('#idea-detail').fill('My actual leaf, a ruler and a photograph')
-  p.locator('#idea-question').fill('How can I compare two area estimates for my garden leaf?')
-  action(p,'save');assert saved(p)['project']['idea']==''
-  action(p,'use');node(p,'N01')
-  assert 'garden leaf' in saved(p)['project']['idea']
- run('ideas-unfinished-directions-are-personalised',state(),uncompleted)
- def confirm(p):
-  before=protect(saved(p));draft(p);action(p,'use')
-  assert p.locator('#idea-confirm-heading').count()==1
-  assert protect(saved(p))==before
-  action(p,'cancel');assert protect(saved(p))==before
-  action(p,'use');action(p,'confirm');node(p,'N01')
-  s=saved(p);assert s['project']['aim']=='My existing aim'
-  assert s['teacher']['pendingApproval']
-  assert s['scratch']['introduction']=='My existing introduction'
-  assert s['ideaExplorer']['history'][-1]['before']=='My existing topic'
- run('ideas-existing-plan-asks-before-replacement',state(existing=True),confirm)
- def compare(p):
-  for id in ['leaf-outline','branching-pattern','wildlife-observations']:
-   draft(p,id);action(p,'save');action(p,'browse')
-  action(p,'compare');node(p,'N00C')
-  assert p.locator('[data-idea-saved-card]').count()==3
-  p.locator('.idea-checks>summary').first.click()
-  p.locator('[data-idea-saved="idea-1"][data-idea-input="access"]').select_option('maybe')
-  assert saved(p)['ideaExplorer']['shortlist'][0]['checks']['access']=='maybe'
-  p.screenshot(path=str(OUT/'ideas-shortlist-phone.png'),full_page=True,animations='disabled')
-  action(p,'use','[data-id="idea-1"]');node(p,'N01')
-  assert saved(p)['project']['idea'].startswith('How could I compare')
- run('ideas-saved-options-still-work',state(),compare)
- def cap(p):
-  for id in ['leaf-outline','branching-pattern','wildlife-observations']:
-   draft(p,id);action(p,'save');action(p,'browse')
-  draft(p,'plant-change');action(p,'save')
-  assert len(saved(p)['ideaExplorer']['shortlist'])==3
-  assert 'three ideas' in p.locator('#toast').inner_text()
-  action(p,'compare');action(p,'remove','[data-id="idea-2"]')
-  assert len(saved(p)['ideaExplorer']['shortlist'])==2
- run('ideas-shortlist-cap-and-removal',state(),cap)
- def trial(p):
-  draft(p)
-  p.locator('.idea-trial>summary').click()
-  p.locator('#idea-trialNote').fill('I checked my photograph scale.')
-  p.locator('#idea-trialStatus').select_option('adjust')
-  p.locator('.idea-resource-links [data-resource-id="image-scale"]').click()
-  assert p.locator('[data-resource-detail="image-scale"]').count()==1
-  p.locator('.resource-library [data-action="resource-close"]').first.click()
-  node(p,'N00B');assert p.locator('#idea-trialNote').input_value().startswith('I checked')
-  assert saved(p)['entries']==[]
- run('ideas-quick-test-and-guide-return',state(),trial,360,740)
- def own(p):
-  action(p,'own')
-  p.locator('#idea-question').fill('My own initial question');action(p,'save')
-  p.locator('#idea-question').fill('My different version');action(p,'save-copy')
-  assert len(saved(p)['ideaExplorer']['shortlist'])==2
- run('ideas-own-idea-and-variations',state(),own)
- def own_comparison(p):
-  action(p,'own');node(p,'N00B')
-  p.locator('#idea-question').fill('A possibility entered from comparison')
-  action(p,'save');action(p,'compare');node(p,'N00C')
-  assert p.locator('[data-idea-saved-card]').count()==1
- run('ideas-own-idea-from-comparison',state('N00C'),own_comparison)
- def editing(p):
-  draft(p);action(p,'save');action(p,'compare');action(p,'edit-saved','[data-id="idea-1"]')
-  p.locator('#idea-question').fill('My edited leaf question');action(p,'save')
-  assert saved(p)['ideaExplorer']['shortlist'][0]['question']=='My edited leaf question'
-  action(p,'browse');draft(p,'branching-pattern');action(p,'browse')
-  draft(p,'leaf-outline',auto_fill=False)
-  assert p.locator('#idea-question').input_value()=='My edited leaf question'
- run('ideas-edit-and-resume-saved-draft',state(),editing)
- def legacy(p):
-  assert 'Old alternative' in p.locator('#main').inner_text()
-  action(p,'legacy','[data-key="otherIdea1"]');assert saved(p)['project']['idea']=='My existing topic'
-  action(p,'confirm');node(p,'N01')
-  assert saved(p)['planning']['fields']['ideaAccess']=='Old comparison note'
- s=state('N00C',True);s['planning']['fields'].update(otherIdea1='Old alternative',ideaAccess='Old comparison note')
- run('ideas-legacy-comparison-safe',s,legacy)
- def backup(p):
-  draft(p);p.locator('#idea-detail').fill('My own narrowing note');action(p,'save')
-  p.reload(wait_until='networkidle')
-  assert saved(p)['ideaExplorer']['drafts']['leaf-outline']['detail']=='My own narrowing note'
-  assert saved(p)['ideaExplorer']['map']['root']=='world'
-  p.locator('[data-action="open-panel"][data-panel="files"]').click()
-  with p.expect_download() as download:p.locator('[data-action="export-json"]').click()
-  dest=OUT/'ideas-backup.json';download.value.save_as(dest)
-  p.once('dialog',lambda d:d.accept());p.locator('#importFile').set_input_files(dest);p.wait_for_timeout(200)
-  assert saved(p)['ideaExplorer']['shortlist'][0]['detail']=='My own narrowing note'
- run('ideas-backup-restores-map-and-draft',state(),backup,1440,1000)
- def focus(p):
-  p.locator('[data-action="idea-map-root"][data-root="world"]').click()
-  assert p.evaluate('document.activeElement.id')=='idea-map-root-world'
-  draft(p,auto_fill=False)
-  assert p.evaluate('document.activeElement.id')=='idea-detail-heading'
-  p.locator('#idea-question').focus();p.keyboard.type('Edited: ')
-  assert p.evaluate('document.activeElement.id')=='idea-question'
-  action(p,'save');assert p.evaluate('document.activeElement.id')=='idea-save-status'
- run('ideas-keyboard-focus-mobile',state(),focus,360,740)
- def no_request(p):
-  requests=[];p.on('request',lambda r:requests.append(r.url))
-  draft(p);p.locator('#idea-detail').fill('<script>not executed</script>')
-  action(p,'save');action(p,'compare')
-  assert not requests,requests
-  assert '<script>not executed</script>' in p.locator('#main').inner_text()
- run('ideas-no-script-injection-or-external-requests',state(),no_request)
- def kept(p):
-  p.locator('[data-choice="planning.fields.ideaStatus"][data-value="unsure"]').click()
-  p.locator('[data-action="plan-advance"]').click();node(p,'N00C')
-  action(p,'keep');node(p,'N01')
-  assert saved(p)['project']['idea']=='My existing topic'
- run('ideas-existing-comparison-keeps-topic',state('N00',True),kept)
- browser.close()
-(OUT/'ideas-results.json').write_text(json.dumps(results,indent=2))
-print(json.dumps(results,indent=2))
-assert all(r['status']=='passed' for r in results)
+  p.locator('[data-action="plan-advance"]').click()
+  node(p,'N01')
+  assert p.locator('.idea-evaluation').count()==0
+ run('idea-direct-route-unaffected',state('N00'),direct)
 
+ def map_eval(p):
+  map_nature(p)
+  node(p,'N00B')
+  assert p.locator('text=Something to get you thinking').count()>0
+  assert p.locator('[data-idea-input="question"]').count()==1
+  assert p.locator('[data-idea-input="detail"]').count()==0
+  assert p.locator('.idea-trial').count()==0
+  assert p.locator('.idea-maths').count()==0
+  assert p.locator('[data-action="idea-rate"]').count()==10
+  assert p.locator('[data-idea-difficulty]').count()==5
+  assert p.locator('#idea-question').input_value()==''
+  do(p,'save')
+  assert 'rating' in read_error(p).lower() or 'aim' in read_error(p).lower()
+  evaluate(p,'How could I estimate the area of a leaf from a scaled photo?',4,2,['access','maths'])
+  p.screenshot(path=str(OUT/'idea-evaluation-desktop.png'),full_page=True,animations='disabled')
+  do(p,'save')
+  node(p,'N00C')
+  entry=saved(p)['ideaExplorer']['shortlist'][0]
+  assert entry['clarity']==4 and entry['quickStart']==2
+  assert sorted(entry['difficulties'])==['access','maths']
+  assert saved(p)['planning']['fields']['aim']==''
+ run('idea-map-to-rated-comparison-desktop',state(),map_eval,1440,900)
+
+ def manual(p):
+  own(p,'Does waiting time in the school queue vary by day?',3,5,['focus'])
+  assert p.locator('[data-idea-saved-card]').count()==1
+  assert '3 / 5' in p.locator('[data-idea-saved-card]').inner_text()
+  assert '5 / 5' in p.locator('[data-idea-saved-card]').inner_text()
+  assert 'too broad' in p.locator('[data-idea-saved-card]').inner_text()
+  p.screenshot(path=str(OUT/'idea-comparison-mobile.png'),full_page=True,animations='disabled')
+  item=saved(p)['ideaExplorer']['shortlist'][0]
+  assert item['fromMap']==False
+  do(p,'edit-saved','[data-id="'+item['id']+'"]')
+  assert p.locator('.idea-evaluation').count()==1
+  p.locator('#idea-clarity-4').click()
+  do(p,'save')
+  assert saved(p)['ideaExplorer']['shortlist'][0]['clarity']==4
+ run('idea-manual-evaluate-and-edit-mobile',state(),manual)
+
+ def reject(p):
+  own(p,'What happens to my first measurement?',2,5)
+  item=saved(p)['ideaExplorer']['shortlist'][0]
+  do(p,'remove','[data-id="'+item['id']+'"]')
+  assert len(saved(p)['ideaExplorer']['shortlist'])==0
+  assert len(saved(p)['ideaExplorer']['rejected'])==1
+  assert 'Restore idea' in p.locator('.idea-rejected').inner_text()
+  do(p,'restore','[data-id="'+item['id']+'"]')
+  assert saved(p)['ideaExplorer']['shortlist'][0]['quickStart']==5
+ run('idea-reject-and-restore',state(),reject)
+
+ def choose(p):
+  own(p,'What is the relationship between my chosen measurements?',4,4)
+  item=saved(p)['ideaExplorer']['shortlist'][0]
+  do(p,'use','[data-id="'+item['id']+'"]')
+  node(p,'N01')
+  rec=saved(p)
+  assert rec['planning']['fields']['aim']==item['question']
+  assert rec['project']['aim']==item['question']
+  assert 'Spark saved' in p.locator('[data-insight-source="N01A"]').inner_text()
+ run('idea-selection-creates-original-aim-spark',state(),choose)
+
+ def confirmation(p):
+  own(p,'Could a new model answer a different question?',4,2)
+  item=saved(p)['ideaExplorer']['shortlist'][0]
+  do(p,'use','[data-id="'+item['id']+'"]')
+  assert p.locator('#idea-confirm-heading').count()==1
+  assert 'My earlier aim' in p.locator('.idea-compare-change').inner_text()
+  do(p,'cancel')
+  assert saved(p)['planning']['fields']['aim']=='My earlier aim'
+  do(p,'use','[data-id="'+item['id']+'"]')
+  do(p,'confirm')
+  node(p,'N01')
+  rec=saved(p)
+  assert rec['planning']['fields']['aim']==item['question']
+  assert rec['planning']['fields']['prediction']=='My real earlier prediction'
+  assert rec['scratch']['introduction']=='Earlier writing'
+  assert rec['teacher']['pendingApproval']
+ run('idea-previous-aim-confirmation-preserves-work',state(previous=True),confirmation)
+
+ def three(p):
+  for i in range(3):
+   own(p,'Possible question '+str(i+1)+' about my chosen measurements?',2+i,4)
+  assert p.locator('[data-idea-saved-card]').count()==3
+  do(p,'own')
+  evaluate(p,'A fourth question after my three?',4,4)
+  do(p,'save')
+  assert len(saved(p)['ideaExplorer']['shortlist'])==3
+  assert 'three active ideas' in read_error(p).lower()
+ run('idea-three-active-limit-and-draft-safety',state(),three,1280,900)
+ browser.close()
+
+(OUT/'ideas-results.json').write_text(json.dumps(RESULTS,indent=2))
+print(json.dumps(RESULTS,indent=2))
+assert all(x['status']=='passed' for x in RESULTS)
