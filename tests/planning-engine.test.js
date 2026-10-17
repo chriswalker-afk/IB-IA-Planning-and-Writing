@@ -167,3 +167,17 @@ test("catalog matches the relevant source references for all prompt groups",()=>
  assert.equal(ids.size,51);
  assert.equal(planningSourceRouteCovered(newPlan(),"N03B","N03J"),true);
 });
+
+test("a provisional title is retained and its revision affects writing stages, not finished calculations",()=>{
+ const s=newPlan();
+ s.planning.current="N01";
+ assert(set(s,"provisionalTitle","How well does a model describe my observations?")!==false);
+ assert.equal(s.planning.fields.provisionalTitle,"How well does a model describe my observations?");
+ s.completion.stages.C10="complete";s.completion.stages.C40="complete";s.completion.stages.C60="complete";
+ s.entries=[{id:"math1",status:"completed",result:"A genuine observation"}];
+ set(s,"provisionalTitle","Which model better describes my observations?");
+ assert.equal(s.completion.stages.C10,"needs-review");
+ assert.equal(s.completion.stages.C60,"needs-review");
+ assert.equal(s.completion.stages.C40,"complete");
+ assert.equal(s.entries[0].result,"A genuine observation");
+});
