@@ -1,0 +1,59 @@
+/* Motivation: the student's why, not simply a mathematical outcome.
+   Green/warm spark styling is reserved for actually stored reminders. */
+.task-shell[data-source-node="N01V"] .task-intro{margin-bottom:17px}
+.motivation-aim-spark{box-sizing:border-box;width:min(100%,355px);max-width:100%;margin:0 0 20px;border:1px solid #bfd9cd;background:#f4faf6;border-radius:14px;box-shadow:0 5px 13px #1e513810;transition:width .18s ease}
+.motivation-aim-spark[open]{width:min(100%,565px);background:#f8fcf9}
+.motivation-aim-spark>summary{display:flex;align-items:center;gap:10px;min-height:53px;cursor:pointer;padding:10px 12px;list-style:none}
+.motivation-aim-spark>summary::-webkit-details-marker{display:none}
+.motivation-aim-symbol{display:grid;place-items:center;flex:none;width:31px;height:31px;border-radius:10px;background:#e3f3eb;color:#08736a}
+.motivation-aim-symbol .icon{width:18px;height:18px}
+.motivation-aim-copy{flex:1;display:flex;flex-direction:column;min-width:0;gap:3px}
+.motivation-aim-copy strong{color:#175d55;font-size:11px;font-weight:850;letter-spacing:.005em}
+.motivation-aim-copy small{font-size:11px;line-height:1.4;color:#52726b;white-space:normal;overflow-wrap:anywhere}
+.motivation-aim-toggle{display:flex;align-items:center;flex:none;gap:4px;color:#27766a;font-size:10px;font-weight:800}
+.motivation-aim-toggle .icon{height:14px;width:14px}
+.motivation-aim-spark[open] .motivation-aim-toggle{color:#175d55}
+.motivation-aim-details{padding:0 15px 14px;border-top:1px solid #dbe9e0}
+.motivation-aim-details>p{font-size:11px;line-height:1.55;color:#54766e;margin:11px 0}
+.motivation-aim-details .field-group{margin:0}
+.motivation-aim-details .field-label{font-size:11px}
+.motivation-aim-details textarea{min-height:80px;font-size:12px;background:#fff}
+.motivation-aim-spark>summary:focus-visible{outline:3px solid #43857b;outline-offset:3px;border-radius:12px}
+
+.motivation-purpose-note{display:flex;align-items:flex-start;gap:11px;padding:15px 16px;margin:0 0 18px;background:#f4f6fa;border:1px solid #e1e7ef;border-radius:14px}
+.motivation-purpose-note>.icon{width:21px;height:21px;flex:none;color:#6c83a6;margin-top:2px}
+.motivation-purpose-note strong{font-size:13px;color:#25465f}
+.motivation-purpose-note p{font-size:12px;line-height:1.65;color:#597181;margin:5px 0 0}
+.motivation-who{margin:7px 0 16px}
+.motivation-who h3{font-size:14px;line-height:1.35;letter-spacing:-.015em;margin:0 0 5px}
+.motivation-who>p{font-size:11px;line-height:1.6;color:#667e83;margin:0 0 11px}
+.motivation-who .choice-grid{gap:8px;grid-template-columns:repeat(2,minmax(0,1fr))}
+.motivation-who .choice.tight{padding:9px 10px;min-height:48px;gap:7px;border-radius:11px}
+.motivation-who .choice.tight .choice-title{font-size:11px;line-height:1.35}
+.motivation-who .choice.tight .choice-symbol{width:29px;height:29px;flex:none}
+.motivation-who .choice.tight .choice-symbol .icon{width:16px;height:16px}
+.motivation-who .choice-marker{width:15px;height:15px}
+.motivation-who .choice-marker .icon{height:10px;width:10px}
+.task-shell[data-source-node="N01V"]>.field-group .field-hint{max-width:67ch;line-height:1.6}
+.task-shell[data-source-node="N01V"] textarea[data-bind="planning.fields.beneficiary"]{min-height:106px;line-height:1.6}
+.motivation-older-note{font-size:11px;margin:9px 0;border:1px solid #e8e9e4;border-radius:10px;padding:10px 13px}
+.motivation-older-note summary{cursor:pointer;color:#5b716c;font-weight:700}
+.motivation-older-note p{color:#5d7270;line-height:1.55;overflow-wrap:anywhere}
+.motivation-later-echo{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;margin:15px 0;background:#f8fafc;border-left:3px solid #9bafc3;border-radius:0 11px 11px 0;color:#607789}
+.motivation-later-echo>.icon{height:17px;width:17px;flex:none;margin-top:2px}
+.motivation-later-echo span{font-size:11px;line-height:1.57}
+.motivation-later-echo strong{color:#355878}
+.insight-token.insight-motivation{background:#fff0d8;color:#826126}
+.insight-capture.insight-motivation.is-captured{background:#fffaf1;border-color:#e9d8b9}
+.insight-capture.insight-motivation .insight-capture-mark{background:#fff0d8;color:#826126}
+.task-shell[data-source-node="N01V"] .insight-capture[data-insight-source="N01V"]{max-width:460px;padding:9px 11px;margin:0 0 15px}
+.task-shell[data-source-node="N01V"] .insight-capture[data-insight-source="N01V"] p{font-size:10px;line-height:1.5}
+.task-shell[data-source-node="N01V"] .insight-capture[data-insight-source="N01V"] strong{font-size:11px}
+@media(max-width:540px){
+ .motivation-who .choice-grid{grid-template-columns:1fr}
+ .motivation-who .choice.tight{min-height:44px;padding:8px 10px}
+ .motivation-purpose-note{padding:13px 12px}
+ .motivation-aim-spark[open],.motivation-aim-spark{width:100%}
+ .motivation-aim-copy small{font-size:10px}
+}
+@media(prefers-reduced-motion:reduce){.motivation-aim-spark{transition:none!important}}
