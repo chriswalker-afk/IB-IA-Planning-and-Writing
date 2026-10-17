@@ -76,6 +76,7 @@ with sync_playwright() as pw:
   assert p.locator('#main [data-example-card]').count()==1;assert 'What changed?' in p.locator('#main').inner_text()
  run('examples-legacy-introduction-route',fixture('modelling','C10E'),legacy,390,844)
  def planning(p):
+  p.locator('.planning-trail-help-toggle').click()
   before=saved(p);open_example(p);card(p,'EX30');assert 'Planning preview' in p.locator('#exampleDialog').inner_text()
   assert 'Provisional IA titles' in p.locator('#exampleDialog').inner_text()
   close(p);assert saved(p)==before
