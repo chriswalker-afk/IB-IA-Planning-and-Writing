@@ -302,6 +302,8 @@ export function planAutoAdvance(state){
     f.kind==="modelling"?"Choose maths after modelling":
     f.kind==="theoretical"?"Choose maths after theoretical route":"Unsure");
   case "N02M":
+   if(!["statistics","modelling","theoretical"].includes(f.kind))
+    return{ok:false,error:"Choose your investigation type before exploring course mathematics."};
    if(!f.course)return{ok:false,error:"Choose your IB Mathematics course before continuing. It is okay to be unsure about techniques."};
    return go(f.kind==="theoretical"?"Discuss theoretical maths with teacher":"Proceed to evidence planning");
   case "N02U":return go("Return");
