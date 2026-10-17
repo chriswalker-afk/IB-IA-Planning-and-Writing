@@ -432,5 +432,8 @@ export const PLANNING_ROUTES = Object.freeze([
   {"from":"N02","answer":"Choose maths after theoretical route","to":"N02M","sourceRow":null,"editorial":"UX 2026-10-17: record course and tentative mathematics before theoretical teacher checkpoint"},
   {"from":"N02M","answer":"Proceed to evidence planning","to":"N03","sourceRow":null,"editorial":"UX 2026-10-17: continue data-first routes after early maths review"},
   {"from":"N02M","answer":"Discuss theoretical maths with teacher","to":"N02T","sourceRow":null,"editorial":"UX 2026-10-17: theoretical routes retain existing teacher consultation"},
-  {"from":"N03H","answer":"Continue with mathematics already explored","to":"N01P","sourceRow":null,"editorial":"UX 2026-10-17: no duplicate course/technique screen after evidence planning; prediction then maths refinement"}
+  {"from":"N03H","answer":"Continue with mathematics already explored","to":"N01P","sourceRow":null,"editorial":"UX 2026-10-17: no duplicate course/technique screen after evidence planning; prediction then maths refinement"},
+  {"from":"N03P","answer":"Continue to choosing data","to":"N03P2","sourceRow":null,"editorial":"UX 2026-10-17: three short primary-data screens, part 1: what will be measured"},
+  {"from":"N03P2","answer":"Continue to recording accuracy","to":"N03P3","sourceRow":null,"editorial":"UX 2026-10-17: part 2: sampling method, frame and possible follow-up data"},
+  {"from":"N03P3","answer":"Complete primary plan","to":"N03J","sourceRow":null,"editorial":"UX 2026-10-17: part 3: collection procedure, measurement accuracy, and source readiness"}
 ]);
