@@ -70,7 +70,7 @@ export function planningLearningTrail(s,{support=''}={}){
  const stage=PROGRESS_GROUPS[stageIndex];
  const screenLabels={
   N00:'Chose a starting route',N00B:'Explored possible ideas',N00C:'Compared possible ideas',
-  N01:'Worked on the title and question',N01V:'Considered my motivation',
+  N01:'Worked on the title and question',N01V:'Considered my motivation',N02M:'Explored course and mathematics',
   N02:'Chose an investigation direction',N02U:'Explored mathematical routes',N02T:'Prepared a teacher conversation',
   N03:'Chose a starting-material route',N03B:'Planned two evidence routes',
   N03P:'Planned primary evidence',N03S:'Planned secondary evidence',
@@ -80,7 +80,7 @@ export function planningLearningTrail(s,{support=''}={}){
  const activeNode=s?.planning?.current||'N00';
  const currentLabels={
   N00:'Choose a starting point',N00B:'Find a promising idea',N00C:'Compare your ideas',
-  N01:'Give your idea a working title',N01V:'Have a clear motivation',
+  N01:'Give your idea a working title',N01V:'Have a clear motivation',N02M:'Choose possible mathematics',
   N02:'Choose an investigation type',N02U:'Explore types',N02T:'Prepare a teacher discussion',
   N03:'Choose starting material',N04:'Consider the maths',N05V:'Plan the first move',
   N06:'Review your provisional plan'
