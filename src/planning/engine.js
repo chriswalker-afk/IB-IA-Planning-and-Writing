@@ -295,6 +295,37 @@ export function planningMove(state,condition) {
  const to=route.to,f=state.planning.fields;
  if(from==="N03B"&&to==="N03J"&&!(state.planning.sourceBranches.primary&&state.planning.sourceBranches.secondary))
   return{ok:false,error:"Answer both primary and secondary source questions first."};
+ if(from==="N03P"&&!f.primaryWhat.trim()&&!state.planning.primaryQuantities.length)
+  return{ok:false,error:"Describe what you plan to record, or add at least one quantity. A tentative answer is fine."};
+ if(from==="N03P2"&&f.kind==="statistics"&&!samplingMethod(f.primarySamplingMethod))
+  return{ok:false,error:"Choose a census or sampling approach, including Not sure yet or Not applicable, before continuing."};
+ if(from==="N03P3"&&f.primaryStatus==="ready"){
+  if((!f.primaryWhat.trim()&&!state.planning.primaryQuantities.length)||!f.primaryHow.trim())
+   return{ok:false,error:"Before marking your collection plan ready, record what you will measure and how. Or select Still uncertain."};
+  if(f.kind==="statistics"&&(!f.primarySamplingFrame||!f.primaryRepeatable))
+   return{ok:false,error:"Before collecting a statistical sample, consider your sampling frame and whether follow-up observations are possible."};
+  if(["simple-random","systematic","stratified","cluster"].includes(f.primarySamplingMethod)&&f.primarySamplingFrame!=="yes")
+   return{ok:false,error:"Your chosen probability sampling method requires a workable sampling frame. Review the method or mark your plan uncertain."};
+  const accuracy=(state.planning.accuracyPlans||[]).filter(x=>x.source==="primary");
+  if(!accuracy.length&&!f.firstAccuracy.trim())
+   return{ok:false,error:"Before measuring, save at least one degree-of-accuracy rule (including Exact count for categorical data), or mark your plan uncertain."};
+  if(accuracy.length&&accuracy.every(x=>x.basis==="unknown"&&!x.resolution)&&!f.firstAccuracy.trim())
+   return{ok:false,error:"Your measurement precision is still unknown. Mark the source plan uncertain until you can confirm a recording rule."};
+  const missing=state.planning.primaryQuantities.filter(q=>
+   !accuracy.some(x=>x.quantity.toLowerCase()===q.name.toLowerCase()&&x.basis!=="unknown"));
+  if(missing.length&&!f.firstAccuracy.trim())
+   return{ok:false,error:"Before marking your data plan ready, decide the recording precision or exact-count rule for "+missing.map(x=>x.name).slice(0,2).join(", ")+". Otherwise choose uncertain."};
+ }
+ if(from==="N03P3"&&f.kind==="statistics"&&!samplingMethod(f.primarySamplingMethod))
+  return{ok:false,error:"Before collecting data, choose a sample or census approach (including Not applicable or Not sure yet). You can revise this later."};
+ if(from==="N03P3"&&f.kind==="statistics"&&f.primaryStatus==="ready"&&f.primarySamplingMethod==="unsure")
+  return{ok:false,error:"Sampling is still undecided. Mark this source plan as uncertain, or choose a feasible approach first."};
+ if(from==="N03P3"&&f.kind==="statistics"&&f.primaryStatus==="ready"&&
+    !["not-applicable","unsure"].includes(f.primarySamplingMethod)&&
+    (!f.primaryPopulation.trim()||!f.primarySamplingUnit.trim()))
+  return{ok:false,error:"To mark this sample plan ready, identify your population and sampling unit. Or choose Still uncertain."};
+ if(from==="N03P3"&&to==="N03J"&&!["ready","unsure"].includes(f.primaryStatus))return{ok:false,error:"Confirm whether your primary data plan is ready or uncertain."};
+ if(from==="N03S"&&to==="N03J"&&!["ready","unsure"].includes(f.secondaryStatus))return{ok:false,error:"Confirm whether your secondary source plan is ready or uncertain."};
  if(["N03P3","N03S"].includes(from)&&to==="N03J"&&f.dataSource==="both"){
   const branch=from==="N03P3"?"primary":"secondary";
   const statusKey=branch+"Status";
@@ -307,33 +338,7 @@ export function planningMove(state,condition) {
     return setPlanCurrent(state,"N03B",{internal:true});
   }
  }
- if(from==="N03P"&&!f.primaryWhat.trim()&&!state.planning.primaryQuantities.length)
-  return{ok:false,error:"Describe what you plan to record, or add at least one quantity. A tentative answer is fine."};
- if(from==="N03P2"&&f.kind==="statistics"&&!samplingMethod(f.primarySamplingMethod))
-  return{ok:false,error:"Choose a census or sampling approach, including Not sure yet or Not applicable, before continuing."};
- if(from==="N03P3"&&f.primaryStatus==="ready"){
-  if(!f.primaryWhat.trim()||!f.primaryHow.trim())
-   return{ok:false,error:"Before marking your collection plan ready, record what you will measure and how. Or select Still uncertain."};
-  if(f.kind==="statistics"&&(!f.primarySamplingFrame||!f.primaryRepeatable))
-   return{ok:false,error:"Before collecting a statistical sample, consider your sampling frame and whether follow-up observations are possible."};
-  if(["simple-random","systematic","stratified","cluster"].includes(f.primarySamplingMethod)&&f.primarySamplingFrame!=="yes")
-   return{ok:false,error:"Your chosen probability sampling method requires a workable sampling frame. Review the method or mark your plan uncertain."};
-  const accuracy=(state.planning.accuracyPlans||[]).filter(x=>x.source==="primary");
-  if(!accuracy.length&&!f.firstAccuracy.trim())
-   return{ok:false,error:"Before measuring, save at least one degree-of-accuracy rule (including Exact count for categorical data), or mark your plan uncertain."};
-  if(accuracy.length&&accuracy.every(x=>x.basis==="unknown"&&!x.resolution)&&!f.firstAccuracy.trim())
-   return{ok:false,error:"Your measurement precision is still unknown. Mark the source plan uncertain until you can confirm a recording rule."};
- }
- if(from==="N03P3"&&f.kind==="statistics"&&!samplingMethod(f.primarySamplingMethod))
-  return{ok:false,error:"Before collecting data, choose a sample or census approach (including Not applicable or Not sure yet). You can revise this later."};
- if(from==="N03P3"&&f.kind==="statistics"&&f.primaryStatus==="ready"&&f.primarySamplingMethod==="unsure")
-  return{ok:false,error:"Sampling is still undecided. Mark this source plan as uncertain, or choose a feasible approach first."};
- if(from==="N03P"&&f.kind==="statistics"&&f.primaryStatus==="ready"&&
-    !["not-applicable","unsure"].includes(f.primarySamplingMethod)&&
-    (!f.primaryPopulation.trim()||!f.primarySamplingUnit.trim()))
-  return{ok:false,error:"To mark this sample plan ready, identify your population and sampling unit. Or choose Still uncertain."};
- if(from==="N03P3"&&to==="N03J"&&!["ready","unsure"].includes(f.primaryStatus))return{ok:false,error:"Confirm whether your primary data plan is ready or uncertain."};
- if(from==="N03S"&&to==="N03J"&&!["ready","unsure"].includes(f.secondaryStatus))return{ok:false,error:"Confirm whether your secondary source plan is ready or uncertain."};
+
  if(from==="N03F"&&to==="N02T"&&!["yes","unsure"].includes(f.permissionNeed))
   return{ok:false,error:"This checkpoint is for unresolved permission or safety concerns."};
  if(from==="N04"&&condition==="AI SL / AA SL"&&!["AI SL","AA SL"].includes(f.course))
