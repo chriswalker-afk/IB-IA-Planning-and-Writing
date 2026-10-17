@@ -56,13 +56,13 @@ export function insightItems(s){
   {usage:'A plan is not yet evidence collected or a confirmed actual source.'}));
  const sampling=samplingMethod(p.primarySamplingMethod);
  if(sampling)out.push(item('sampling','sampling-plan','My planned sampling approach',
-  samplingSparkValue(p),'Planning · Primary data sampling',{type:'planning',node:'N03P'},
+  samplingSparkValue(p),'Planning · Primary data sampling',{type:'planning',node:'N03P2'},
   {planned:true,usage:'A proposed approach only. Check the real sample, sampling frame, participation and which population the data genuinely represent.'}));
  for(const plan of Array.isArray(s?.planning?.accuracyPlans)?s.planning.accuracyPlans:[]){
   if(!plan.quantity)continue;
   out.push(item('accuracy','planned-accuracy:'+plan.id,'Planned accuracy · '+plan.quantity,
    plannedAccuracyText(plan),'Planning · '+(plan.source==='secondary'?'Published data':'Primary measurements'),
-   {type:'planning',node:plan.source==='secondary'?'N03S':'N03P'},
+   {type:'planning',node:plan.source==='secondary'?'N03S':'N03P3'},
    {planned:true,plannedSource:plan.source,
     usage:'This is a planned recording or rounding rule, not verified measurement accuracy. Confirm the original instrument or published methodology before calculating or reporting results.'}));
  }
@@ -181,9 +181,12 @@ export function insightCapture(s,node){
   else if(node==='N01A'){ids=['aim'];kind='Your investigation aim';}
   else if(node==='N01V'){ids=['motivation'];kind='Your motivation';}
  else if(node==='N01P'){ids=['prediction'];kind='Your conjecture';}
- else if(node==='N03P'){
-  ids=['sampling-plan',...all.filter(x=>x.id.startsWith('planned-accuracy:')&&x.plannedSource==='primary').map(x=>x.id)];
-  kind='Your planned sampling and accuracy';
+ else if(node==='N03P2'){
+  ids=['sampling-plan'];kind='Your planned sampling method';
+ }
+ else if(node==='N03P3'){
+  ids=all.filter(x=>x.id.startsWith('planned-accuracy:')&&x.plannedSource==='primary').map(x=>x.id);
+  kind='Your planned recording accuracy';
  }
  else if(node==='N03S'){
   ids=all.filter(x=>x.id.startsWith('planned-accuracy:')&&x.plannedSource==='secondary').map(x=>x.id);
