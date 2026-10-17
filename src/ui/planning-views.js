@@ -234,9 +234,9 @@ export function createPlanningViews(ctx){
      '<div style="margin-top:12px">'+route(p.sourceBranches.primary?"Edit primary questions":"Answer primary questions","Primary questions","btn-light")+'</div></div>'+
      '<div class="content-card"><strong>Secondary data</strong><p class="text-small text-muted">Source, variables, population and validation</p>'+statusValue(p.sourceBranches.secondary)+
      '<div style="margin-top:12px">'+route(p.sourceBranches.secondary?"Edit secondary questions":"Answer secondary questions","Secondary questions","btn-light")+'</div></div></div>'+
-     (!p.sourceBranches.primary||!p.sourceBranches.secondary?callout("Complete each source plan","A source is addressed when you have recorded whether it is ready or still uncertain. We will not pretend to have collected either dataset."):callout("Both question sets addressed","You can now consider why you need both sources and how to compare them.")),
+     (!p.sourceBranches.primary||!p.sourceBranches.secondary?callout("Complete each source plan","A source is addressed when you have recorded whether it is ready or still uncertain. We will not pretend to have collected either dataset."):callout("Both question sets addressed","You can now continue with a short readiness check; explain what the actual methods achieved later in IA Studio.")),
     "<h4>Why this extra step?</h4><p>A combined-data investigation needs two defensible source plans. Switching between the panels here does not mean you've actually gathered observations.</p>",
-    "Continue to method comparison");
+    "Continue to evidence timing");
    case "N03P":return stepBody("What will I collect, and how?",
     "Describe your method once, add the quantities you need, and decide their recording accuracy when possible.",
     primaryDataWhat(state,{F,select,e,icon}),
@@ -264,67 +264,59 @@ export function createPlanningViews(ctx){
      ["ready","I have a credible and workable plan"],
      ["unsure","My source, sampling information or precision remains uncertain"]]),
     "<h4>Reporting precision is not instrument accuracy</h4><p>If a table shows two decimal places, you may infer how the published value was rounded. Do not assume the original instrument was accurate to the same degree. Look for documentation; when unknown, record that honestly.</p>");
-   case "N03J":return stepBody("Why is this method worth choosing?","Compare with one realistic alternative. There is no need for a generic essay on sampling.",
-    F("alternativeMethod","Another possible method or source","An alternative you genuinely considered",{type:"textarea",rows:2})+
-    F("methodReason","Why does your preferred approach suit your aim?","What would make this evidence useful?",{type:"textarea",rows:3})+
-    F("methodLimitation","What is its most important likely limitation?","Measurement uncertainty, selection, source coverage …",{type:"textarea",rows:2})+
-    F("methodMitigation","Could you reduce or accept that limitation? (optional)","One feasible adjustment or an honest scope qualification",{type:"textarea",rows:2})+
-    (f.primarySamplingMethod?'<div class="primary-review-link">'+
-      callout("Your sampling spark","Your choice is saved. Revisit it if actual collection changes.")+
-      edit('N03P2','Review my sampling approach')+'</div>':''),
-    "<h4>A targeted comparison</h4><p>Don't recite every sampling method. The question is why your chosen approach serves this particular aim better than a plausible alternative.</p>");
+   case "N03J":return stepBody("Method justification is now optional.",
+    "You no longer need a separate essay about a method you have not tried yet.",
+    callout("Saved answers preserved","Earlier alternatives, reasons and limitations remain in your Planning report. In IA Studio you can justify your actual approach and evaluate real limitations."),
+    "<h4>Why was this removed?</h4><p>The source and sampling pages already capture the proposed method. Write about limitations when you know which ones genuinely matter.</p>",
+    "Continue to evidence timing");
    case "N03D":return stepBody("When can you start doing useful mathematics?","An early small dataset can be more valuable than waiting for everything to be complete.",
     dates([["sourceFirstDate","Target for first usable evidence"],["sourceFullDate","Target for complete dataset"]])+
     select("dataAvailability","What evidence is available now?",[
      ["in-hand","I already have usable evidence"],["some","I have part of it"],["soon","A credible route to obtaining it"],["inaccessible","Access currently looks difficult"],["unsure","Not sure yet"]])+
     timelineFlags(state),
     "<h4>Useful evidence first</h4><p>Plan to produce a small first graph or example before the entire dataset is ready, provided you clearly label provisional work.</p>");
-   case "N03E":return stepBody("How ready is your data plan?","This is a self-check of access and source confidence, not a prediction of your IB grade.",
-    rating("dataReadiness","Rate data readiness /5","1 = little access; 5 = actual usable data in hand. A credible near-term plan may justify 4.")+
-    (Number(f.dataReadiness)===5&&f.dataAvailability!=="in-hand"?callout("Check this rating","A 5/5 means usable data are already available. If not, consider a lower provisional rating.",true):"")+
-    (Number(f.dataReadiness)>0&&Number(f.dataReadiness)<4?F("readinessImprovement","One specific step that would improve readiness","An early pilot, usable source link, narrowed scope or confirmed dates",{type:"textarea",rows:2}):"")+
+   case "N03E":return stepBody("How ready is your data plan?",
+    "Rate how accessible your evidence is, then complete two quick checks before you begin collecting it.",
+    rating("dataReadiness","Rate data readiness /5","1 = little access; 5 = usable data already in hand. This is not an IA mark.")+
+    (Number(f.dataReadiness)===5&&f.dataAvailability!=="in-hand"?callout("Check this rating","5/5 means actual usable data are already available. Otherwise, choose a lower provisional rating.",true):"")+
+    (Number(f.dataReadiness)>0&&Number(f.dataReadiness)<4?F("readinessImprovement","What would most improve access? (optional)","e.g. a small pilot or confirmed source",{type:"textarea",rows:2}):"")+
+    '<section class="practical-quick-check" aria-label="Two checks before data collection">'+
+    '<div class="primary-section-title">'+icon("clipboard-check")+
+      '<div><h3>Before you start</h3><p>Two quick checks. Choose “not sure” rather than guessing.</p></div></div>'+
+    select("permissionNeed","Could permissions, consent, privacy or safety matter?",[
+      ["no","No concerns identified"],["yes","Yes — I need to check or seek approval"],
+      ["unsure","Not sure — I need advice"]])+
+    (["yes","unsure"].includes(f.permissionNeed)?
+      callout("Check before collecting","Do not begin affected collection or use restricted data until relevant school requirements are resolved.",true)+
+      '<details class="primary-step-extra"><summary>'+icon("pencil")+' What needs discussion? (optional) '+icon("chevron-down")+'</summary>'+
+      '<div class="primary-step-extra-content">'+
+      F("permissionDetails","Brief note for my teacher","Avoid entering private student details",{type:"textarea",rows:2})+
+      '</div></details>'+
+      '<div class="button-row">'+route("Discuss permissions with my teacher","Safety / privacy / consent unresolved")+'</div>':"")+
+    select("practicalBlocker","Is anything essential stopping you getting started?",[
+      ["no","No — I can begin a small safe step"],["yes","Yes — something still needs arranging"],
+      ["unsure","I'm not sure what I can access yet"]])+
+    (["yes","unsure"].includes(f.practicalBlocker)?
+      F("unsecured","What needs arranging? (optional)","One practical obstacle and a realistic next step",{type:"textarea",rows:2}):"")+
+    (["secondary","both"].includes(f.dataSource)?
+      '<p class="primary-hint">If you use published data, check that the source is legitimate, can be cited and can be used appropriately. Keep a source link in your secondary-data plan.</p>':"")+
+    '</section>'+
     '<div class="button-row">'+route("Reconsider my data route","Revise")+'</div>',
-    "<h4>Two independent ratings</h4><p>This one concerns usable evidence. The next questions consider how manageable the rest of the project will be.</p>");
+    "<h4>What happens to the long checklist?</h4><p>Extended feasibility planning is optional. The two checks preserve teacher warnings and access concerns without requiring an equipment-and-workload questionnaire. Evaluate the method and its limitations when using real data in IA Studio.</p>",
+    "Continue to manageability");
    case "N03R":return stepBody("Improve the data route.","Changing a plan now is a strength if your original data are not accessible.",
     F("readinessImprovement","What might make the data plan more realistic?","Try a pilot, alternative source, smaller scope or a revised method",{type:"textarea",rows:3})+
     '<div class="button-row">'+route("I need teacher advice about access","No accessible data; request teacher guidance")+'</div>',
     "<h4>No dead ends</h4><p>If your source is inaccessible, speak to your teacher and save the rest of your plan. Do not invent data or treat a practical delay as a mathematical limitation.</p>","Return to source choices");
-   case "N03F":return stepBody("Could you complete the practical work?","Check resources, approvals and workload separately from whether the mathematics is interesting.",
-    F("dependencies","What people, locations, software or equipment are essential?","Only the essentials (or none)",{type:"textarea",rows:2})+
-    F("unsecured","What essential access is not yet arranged?","Who or what, and a realistic plan for access",{type:"textarea",rows:2})+
-    select("permissionNeed","Could permissions, consent or private information matter?",[
-     ["no","No such issues identified"],["yes","Yes — I need to check or seek approval"],["unsure","I'm unsure; I need advice"]])+
-    (["yes","unsure"].includes(f.permissionNeed)?F("permissionDetails","What needs discussion? (no personal details)","A survey, restricted source or safety issue",{type:"textarea",rows:2}):"")+
-    select("softwareReady","Can you use the necessary tools for a small test?",[
-     ["yes","Yes"],["notyet","Not yet, but I can learn or test"],["unsure","I'm not sure"]])+
-    select("cleaningBurden","How much data processing might be needed?",[
-     ["none","Very little"],["some","Some manageable cleaning"],["lots","Potentially substantial work"],["unsure","I don't know yet"]])+
-    F("workloadHours","Rough non-mathematical setup time (hours, optional)","e.g. 4")+
-    F("externalRisks","Any time-sensitive event or dependency on others?","Weather, events, responses or travel",{type:"textarea",rows:2})+
-    ((f.cleaningBurden==="lots"||f.unsecured||f.externalRisks)?F("backupMethod","A credible backup if something fails","A suitable alternate method, not invented observations",{type:"textarea",rows:2}):"")+
-    '<details class="plan-details"><summary>Relevant further feasibility checks (optional)</summary><div class="task-section">'+
-    ((f.unsecured||f.cleaningBurden==="lots"||f.externalRisks)?
-      F("minimumVersion","Smallest workable version of this investigation","A narrower scope, simpler method or smaller permitted sample",{type:"textarea",rows:2}):"")+
-    (f.softwareReady!=="yes"?select("pilotReady","Have you tried one data point all the way to a graph or calculation?",[
-      ["yes","Yes — a small complete test"],["no","Not yet"],["unsure","Not yet possible or unsure"]]):"")+
-    (f.dependencies||f.unsecured?select("costIssue","Are cost, travel or specialist access an issue?",[
-      ["no","No"],["yes","Yes"],["unsure","Possibly"]]):"")+
-    (["secondary","both"].includes(f.dataSource)?select("sourceRights","Can the source materials be cited and used appropriately?",[
-      ["yes","Yes"],["no","Not yet"],["unsure","I need to check"]]):"")+
-    select("dataSufficiency","Does the proposed dataset seem adequate for your aim?",[
-      ["yes","Yes, provisionally"],["no","Probably not"],["unsure","An initial sample may help"]])+
-    (["statistics","modelling"].includes(f.kind)?select("negativeResultViable","Could the investigation still be worthwhile if no hoped-for pattern appears?",[
-      ["yes","Yes"],["no","I may need to revise the question"],["unsure","I will check"]]):"")+
-    select("presentationManageable","Can the important data and figures be presented concisely?",[
-      ["yes","Yes"],["no","I need a simpler presentation plan"],["unsure","I'll check"]])+
-    '</div></details>'+
-    (["yes","unsure"].includes(f.permissionNeed)?small(callout("Safety, privacy and consent","You can save and continue planning, but do not begin affected data collection until requirements are resolved.",true)+
-     '<div class="button-row">'+route("Discuss permissions with my teacher","Safety / privacy / consent unresolved")+'</div>'):""),
-    "<h4>Practical risks aren't mathematical limitations</h4><p>Waiting for permission belongs in the project plan. Measurement uncertainty or sampling bias belongs beside the relevant mathematical method.</p>");
+   case "N03F":return stepBody("The long practical checklist has moved.",
+    "Only the essential consent and access questions remain in the normal Planning journey.",
+    callout("Your earlier answers are safe","Old resource, workload, permission and fallback notes are still saved in your Planning report. Continue from the short readiness check."),
+    "<h4>Keep it manageable</h4><p>You can refine practical arrangements when required, rather than completing a long checklist before starting useful mathematics.</p>",
+    "Continue to manageability");
    case "N03G":return stepBody("How manageable is the project?","This is a separate practical ease rating—not an IB mark.",
     rating("practicalEase","Rate completion ease /5","1 = major unresolved operational barriers; 5 = independent and manageable.")+
     (Number(f.practicalEase)>0&&Number(f.practicalEase)<4?F("easeImprovement","What one change would make the project more manageable?","Smaller pilot, simpler tools, less manual cleaning, confirmed access",{type:"textarea",rows:2}):"")+
-    '<div class="button-row">'+route("Reduce workload or resolve obstacles","Reduce workload or resolve blockers")+
+    '<div class="button-row">'+route("Revisit practical checks","Revisit practical checks")+
     route("I need teacher help with obstacles","Practical obstacles not yet resolved")+'</div>',
     "<h4>Practical ≠ mathematical</h4><p>Even a mathematically promising idea may need its administrative burden reduced. It is okay to proceed provisionally while seeking advice.</p>");
    case "N03H":return stepBody("Plan your IA time.","Two quick questions are enough to start. We can suggest milestones for data, mathematics, writing and review.",
@@ -472,7 +464,7 @@ export function createPlanningViews(ctx){
    '<div class="button-row">'+button("Let's go","plan-advance","btn-primary","", "arrow-right")+'</div></div>';
   if(n==="N00B"||n==="N00C")return ideaFooter(state);
   if(n==="N03B")return '<div class="task-footer">'+button("Back","plan-back","btn-quiet","", "chevron-left")+
-   (state.planning.sourceBranches.primary&&state.planning.sourceBranches.secondary?button("Compare methods","plan-advance","btn-primary","", "arrow-right"):button("Continue the other source","plan-advance","btn-primary","", "arrow-right"))+'</div>';
+   (state.planning.sourceBranches.primary&&state.planning.sourceBranches.secondary?button("Continue to evidence timing","plan-advance","btn-primary","", "arrow-right"):button("Continue the other source","plan-advance","btn-primary","", "arrow-right"))+'</div>';
   if(n==="N07")return '<div class="task-footer">'+button("Back to review","plan-back","btn-quiet","", "chevron-left")+
    button("View report","go-report","btn-primary","", "arrow-right")+'</div>';
   const only=N=>N==="N08"?"Continue to review":N==="N02U"?"Back to route":N==="N03R"?"Retry source plan":N==="N00C"?"Use this idea":screen.label;
