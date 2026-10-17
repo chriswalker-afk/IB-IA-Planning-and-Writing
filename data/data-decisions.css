@@ -71,3 +71,6 @@
 @media(prefers-reduced-motion:reduce){
  .sampling-recap>summary .icon:last-child,.accuracy-recap>summary .icon:last-child{transition:none}
 }
+
+.data-ready-rule{display:flex;align-items:start;gap:8px;font-size:10px;line-height:1.6;color:#617970;margin:11px 0;padding:9px 11px;border-top:1px solid #e2eae5}
+.data-ready-rule .icon{width:15px;height:15px;flex:none;margin-top:1px;color:#4d8072}
