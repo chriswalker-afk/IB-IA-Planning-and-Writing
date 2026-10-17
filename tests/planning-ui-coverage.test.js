@@ -18,7 +18,7 @@ function screenFixture(){
 }
 test("all 34 normalized Planning nodes render without throwing, with exact node trace",()=>{
  const {state,view}=screenFixture();
- assert.equal(PLANNING_NODE_IDS.length,35);
+ assert.equal(PLANNING_NODE_IDS.length,34);
  for(const node of PLANNING_NODE_IDS){
   state.planning.current=node;
   const html=view.viewPlanning();
