@@ -13,14 +13,14 @@ export function renderInvestigativeRoutes(state,{e,icon,catalogue}){
  const counts=p.mathSelected.filter(id=>course==='AI SL'?id.startsWith('AI'):course==='AA SL'?id.startsWith('AA'):false).length;
  const modeTabs='<div class="journey-mode-tabs" role="tablist" aria-label="Ways to explore mathematics">'+modes.map(item=>
   '<button type="button" class="journey-mode-tab'+(mode===item.id?' active':'')+'" role="tab" aria-selected="'+(mode===item.id)+'"'+
-  ' id="journey-tab-'+item.id+'" aria-controls="journey-panel-'+item.id+'" data-action="math-mode" data-mode="'+item.id+'">'+
+  ' id="journey-tab-'+item.id+'" aria-controls="journey-mode-panel" data-action="math-mode" data-mode="'+item.id+'">'+
   icon(item.icon)+'<span>'+item.label+'</span></button>').join('')+'</div>';
  const courseNotice=!supported?'<p class="journey-course-note">'+icon('info')+
   ' These journeys are examples of mathematical thinking, not course recommendations. We only have a detailed topic catalogue for AI SL and AA SL; ask your teacher before choosing specific mathematics for '+e(course||'your course')+'.</p>':'';
  const saved=selected?'<aside class="journey-route-spark" aria-label="Your saved investigative route">'+
   icon('sparkles')+'<span><strong>Route spark saved: '+e(selected.title)+'</strong>'+
   '<small>Provisional first step: '+e(selected.first[0])+'. Later branches depend on real results.</small></span>'+
-  '<button type="button" data-action="math-open-route" data-route-id="'+e(selected.id)+'">Revisit</button>'+
+  '<button type="button" data-action="math-open-route" data-revisit="true" data-route-id="'+e(selected.id)+'">Revisit</button>'+
   '<button type="button" data-action="math-remove-route" aria-label="Remove saved route">Remove</button></aside>':'';
  let body='';
  if(mode==='all')body='<div class="journey-mode-intro"><h3>Browse every technique</h3>'+
@@ -54,7 +54,7 @@ export function renderInvestigativeRoutes(state,{e,icon,catalogue}){
   '<div class="journey-maths-current"><span>'+icon('calculator')+' '+e(course||'Course not chosen')+'</span>'+
   '<span>'+counts+' technique'+(counts===1?'':'s')+' chosen</span></div>'+
   modeTabs+saved+courseNotice+
-  '<div class="journey-mode-panel" role="tabpanel" id="journey-panel-'+mode+'" aria-labelledby="journey-tab-'+mode+'" data-journey-mode-panel="'+mode+'">'+body+'</div>'+
+  '<div class="journey-mode-panel" role="tabpanel" id="journey-mode-panel" aria-labelledby="journey-tab-'+mode+'" data-journey-mode-panel="'+mode+'">'+body+'</div>'+
   '<p class="journey-inquiry-note">Nothing here is a required IA structure. A worthwhile question, genuine mathematics, interpretation and reflection matter more than the number of techniques.</p></section>';
 }
 function renderRouteCard(route,{e,icon,selected,opened,mode}){
