@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createProjectState,normalizeProjectState} from '../src/core/project-state.js';
 import {planningAnchors,chapterStats,chapterRibbon,discoveryTrail,planningProgress,planningLearningTrail,mathConstellation} from '../src/ui/living-journey.js';
-import {insightItems,insightForCurrent,insightCapture,insightEcho,insightToolkit,insightThreadMap} from '../src/ui/insight-threads.js';
+import {insightItems,insightForCurrent,insightCapture,insightEcho,insightToolkit,insightThreadMap,featuredSparkItems} from '../src/ui/insight-threads.js';
 import {JOURNEY_GROUPS} from '../src/ui/journey.js';
 import {insightConnections,insightTrailLines,insightTrailControls} from '../src/ui/insight-network.js';
 import {journeyMap,journeyRail,groupedDashboard} from '../src/ui/journey-views.js';
