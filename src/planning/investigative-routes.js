@@ -201,13 +201,18 @@ export function matchingInvestigativeRoutes(state,{limit=4}={}){
  const aim=[fields.aim,fields.idea,fields.provisionalTitle,fields.beneficiary].join(' ').toLowerCase().slice(0,2600);
  if(!kind||kind==='unsure')return [];
  const ranked=INVESTIGATIVE_ROUTES.map((r,index)=>{
-  let score=r.kinds.includes(kind)?4:-3;
-  if(r.contexts.includes(context)&&kind==='statistics')score+=9;
+  if(!r.kinds.includes(kind))return null;
   const hits=r.keywords.filter(word=>aim.includes(word.toLowerCase()));
-  score+=Math.min(12,hits.length*4);
-  if(kind==='theoretical'&&r.family==='reasoning')score+=3;
-  return {r,index,score,hits};
- }).filter(x=>x.score>=4).sort((a,b)=>b.score-a.score||a.index-b.index);
+  const dataMatch=kind==='statistics'&&r.contexts.includes(context);
+  // A familiar broad technique is allowed as ONE complementary suggestion,
+  // but should not fill the panel with irrelevant routes merely by category.
+  const broad=(kind==='modelling'&&r.id==='fitted-models')||
+   (kind==='statistics'&&r.id==='variation'&&['Paired numerical','Two groups','One numerical variable',''].includes(context))||
+   (kind==='theoretical'&&r.family==='reasoning');
+  if(!hits.length&&!dataMatch&&!broad)return null;
+  const score=(dataMatch?16:0)+Math.min(18,hits.length*6)+(broad?2:0);
+  return {r,index,score,hits,dataMatch};
+ }).filter(Boolean).sort((a,b)=>b.score-a.score||a.index-b.index);
  return ranked.slice(0,Math.max(1,Math.min(4,limit))).map(x=>({
   ...x.r,
   matchReason:x.hits.length?'Your question mentions '+x.hits.slice(0,2).map(w=>'“'+w+'”').join(' and ')+'.':
