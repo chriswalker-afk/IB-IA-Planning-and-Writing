@@ -220,6 +220,24 @@ export function createPlanningViews(ctx){
      ["Two categorical variables","Two categorical variables"],
      ["Repeated yes/no trials","Repeated trials with two outcomes"]])):""),
     "<h4>Three useful directions</h4><p>Statistics works with observations; modelling represents a situation with mathematical assumptions; theoretical explorations develop conjectures or mathematical reasoning. A no-data route needs teacher advice on suitability.</p>");
+   case "N02M":{
+    const hasCourse=!!f.course,eligible=['AI SL','AA SL'].includes(f.course);
+    return stepBody("Choose your course and explore possible mathematics.",
+     "A good investigation uses mathematics with a purpose. Explore plausible starting routes instead of collecting an impressive list of techniques.",
+     '<div class="math-course-picker"><h3>Which IB Mathematics course are you studying?</h3>'+
+     choice("course",[
+      {value:"AI SL",title:"Mathematics AI SL",icon:"chart"},
+      {value:"AA SL",title:"Mathematics AA SL",icon:"calculator"},
+      {value:"AA HL",title:"Mathematics AA HL · teacher review",icon:"book"},
+      {value:"AI HL",title:"Mathematics AI HL · teacher review",icon:"book"},
+      {value:"other",title:"Another course / unsure",icon:"lightbulb"}],{tight:true,label:"My IB Mathematics course"})+'</div>'+
+     (eligible?mathRouteCards(state)+mathChoices(state,false,true)+
+      '<p class="math-scope-honesty">'+icon('info')+' This catalogue is a planning reference, not formal syllabus verification. Your teacher should confirm mathematical depth and suitability.</p>':
+      hasCourse?mathChoices(state)+
+       '<p class="math-scope-honesty">'+icon('info')+' We have not assigned another course’s techniques. Discuss your provisional mathematical direction with your teacher.</p>':
+       '<p class="math-course-next">'+icon('arrow-down')+' Select your course to see possible mathematical routes. It is fine to leave techniques undecided.</p>'),
+     "<h4>Start with something workable</h4><p>Choose mathematics that might answer your question and can be started with accessible observations, data or simple mathematical cases. Later, revisit your choices in response to your prediction and actual results.</p>");
+   }
    case "N02U":return stepBody("Explore your investigation type.","This is a short explanation, not an extra compulsory activity.",
     bullet("Statistics","Explore actual data through graphs, distributions, relationships or comparison.")+
     bullet("Modelling","Build and test mathematical representations with clear variables, parameters and assumptions.")+
@@ -347,7 +365,7 @@ export function createPlanningViews(ctx){
     callout("Provisional plan","You can still develop your aim, mathematics and safe first step. Teacher validation remains outstanding.",true),
     "<h4>Proceed provisionally</h4><p>Do not interpret an exported report as approval of out-of-course mathematics.</p>");
    case "N04S":return stepBody("Which mathematics might help answer your aim?","Choose possible techniques, not a checklist of things you must do.",
-    mathChoices(state),
+    mathRouteCards(state)+mathChoices(state,false,true),
     "<h4>What's a good selection?</h4><p>A few purposeful techniques beat many disconnected ones. Routine syllabus maths can be used without tutorial-style explanations. Research beyond the syllabus should show your understanding when actually used.</p>");
    case "N01P":{
     const choices=relevantPredictionOptions(state);
@@ -365,8 +383,9 @@ export function createPlanningViews(ctx){
       callout("Your result might surprise you","A different finding is not failure. Your later interpretation should be based on actual evidence."),
       "<h4>A meaningful prediction</h4><p>Separate WHAT you expect, WHY, and what it would mean for the person or purpose you selected IF TRUE. Do not turn a prediction into a statement of fact.</p>");
    }
-   case "N04R":return stepBody("Does your predicted pattern change your maths plan?","Revisit your earlier options. Keep, add or remove only what serves the investigation.",
-    mathChoices(state,true)+
+   case "N04R":return stepBody("Does your prediction change your maths plan?","Revisit your earlier choices but don't assume your predicted pattern will occur.",
+    edit("N02M","Review my course and initial maths choices")+mathRouteCards(state,{afterPrediction:true})+
+    mathChoices(state,true,true)+
     F("mathsRevisedWhy","Why might this mathematics be useful? (optional)","Connect a selected method to the question you want to answer",{type:"textarea",rows:2}),
     "<h4>Keep it flexible</h4><p>These suggestions respond to a prediction, not a demonstrated pattern. Once you have real results, you may need to choose a different method or end the investigation.</p>");
    case "N04M":return stepBody("Is the mathematics likely to answer your question?","Check purpose, course suitability and potential interpretation. If the mathematical suitability is unclear, note a question for your teacher without blocking your plan.",
