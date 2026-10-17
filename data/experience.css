@@ -217,3 +217,24 @@
  .planning-kickoff-footer{align-items:center}
  .planning-kickoff-footer .btn{min-width:120px}
 }
+
+/* One clear idea: keep the title and aim central, with visible reusable sparks. */
+.planning-title-step .task-intro{max-width:55ch}
+.planning-title-step .field-group{margin-bottom:14px}
+.planning-title-step .insight-capture{padding:9px 12px;margin:0 0 20px;border-radius:11px;min-height:41px}
+.planning-title-step .insight-capture.is-captured{background:#f2faf5}
+.planning-title-step .insight-capture.insight-title.is-captured{background:#fff9ed;border-color:#ead9ab}
+.planning-title-step .insight-capture strong{font-size:11px}
+.planning-title-step .insight-capture p{font-size:11px;line-height:1.45;margin-top:2px}
+.planning-title-step .insight-capture.is-pending strong{font-size:11px}
+.planning-idea-recall{background:var(--surface-soft);padding:13px 15px;border:1px solid var(--line);border-radius:13px;margin:0 0 21px}
+.planning-idea-recall>span{display:flex;align-items:center;gap:7px;font-size:10px;font-weight:800;letter-spacing:.06em;color:var(--teal-dark)}
+.planning-idea-recall .icon{width:14px;height:14px}
+.planning-idea-recall p{margin:7px 0 0;color:var(--ink);font-size:13px;overflow-wrap:anywhere}
+.planning-engagement-note{color:var(--muted);font-size:12px;line-height:1.55;margin:0 0 11px;padding:12px 0 12px 14px;border-left:3px solid #9ac8b8}
+.planning-engagement-note strong{color:var(--teal-dark)}
+.planning-title-step .planning-extra-interest{margin:14px 0 0}
+@media(max-width:760px){
+ .planning-title-step .insight-capture{padding:8px 10px;margin-bottom:17px}
+ .planning-engagement-note{font-size:11px}
+}
