@@ -221,7 +221,12 @@ export function ideaAction(state,action,data={}){
   case 'idea-use':return requestIdeaUse(state,data.id||'');
   case 'idea-confirm':return confirmIdeaUse(state);
   case 'idea-cancel':s.pending=null;s.active='';setPlanCurrent(state,'N00C');return{ok:true,render:true,focus:'idea-compare-heading'};
-  case 'idea-keep':{if(!(state.planning.fields.idea||state.project.idea).trim())return{ok:false,error:'There is no current idea yet. Write your own or explore a direction.'};s.pending=null;return{...planningMove(state,state.planning.current==='N00B'?'Ready with one idea':'Keep original idea'),navigate:true};}
+  case 'idea-keep':{
+   const current=state.planning.fields.aim||state.project.aim||state.planning.fields.idea||state.project.idea;
+   if(!current.trim())return{ok:false,error:'There is no current idea or aim yet. Explore or write one first.'};
+   s.pending=null;
+   return{...planningMove(state,state.planning.current==='N00B'?'Ready with one idea':'Keep original idea'),navigate:true};
+  }
   default:return{ok:false,error:'That idea action is unavailable.'};
  }
 }
