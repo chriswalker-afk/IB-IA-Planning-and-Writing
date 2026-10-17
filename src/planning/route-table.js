@@ -440,5 +440,8 @@ export const PLANNING_ROUTES = Object.freeze([
   {"from":"N03B","answer":"Continue to evidence timing","to":"N03D","sourceRow":null,"editorial":"UX 2026-10-17: combine both validated source branches without a second comparison essay"},
   {"from":"N03E","answer":"Continue to manageability","to":"N03G","sourceRow":null,"editorial":"UX 2026-10-17: essential consent and access checks live on data readiness, bypass lengthy feasibility questionnaire"},
   {"from":"N03E","answer":"Safety / privacy / consent unresolved","to":"N02T","sourceRow":null,"editorial":"UX 2026-10-17: teacher discussion reachable directly from the short consent check"},
-  {"from":"N03G","answer":"Revisit practical checks","to":"N03E","sourceRow":null,"editorial":"UX 2026-10-17: return to quick feasibility checks instead of retired long form"}
+  {"from":"N03G","answer":"Revisit practical checks","to":"N03E","sourceRow":null,"editorial":"UX 2026-10-17: return to quick feasibility checks instead of retired long form"},
+  {"from":"N03D","answer":"Continue after evidence checks","to":"N03H","sourceRow":null,"editorial":"UX 2026-10-17: merge two readiness ratings and their checklists into source availability and safeguards"},
+  {"from":"N03D","answer":"Safety / privacy / consent unresolved","to":"N02T","sourceRow":null,"editorial":"UX 2026-10-17: keep permission and teacher guidance available without separate readiness screens"},
+  {"from":"N03D","answer":"Reconsider my data route","to":"N03R","sourceRow":null,"editorial":"UX 2026-10-17: offer targeted help for inaccessible evidence"}
 ]);
