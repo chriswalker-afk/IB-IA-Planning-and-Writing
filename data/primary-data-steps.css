@@ -107,3 +107,11 @@
 .primary-saved-precision{border:1px solid #dce9e2;border-radius:10px;padding:10px 13px}
 .primary-saved-precision>summary{cursor:pointer;font-size:11px;font-weight:750;color:#376d5e}
 @media(max-width:650px){.primary-quantity{flex-wrap:wrap}.primary-quantity>button:first-of-type{margin-left:34px}}
+
+/* Compact readiness safety/access checks replace the long feasibility questionnaire. */
+.practical-quick-check{margin:18px 0 12px;padding:18px 0 4px;border-top:1px solid #e1ebe5}
+.practical-quick-check .field-group{margin-bottom:13px}
+.practical-quick-check .primary-section-title{margin-bottom:14px}
+.practical-quick-check .primary-hint{margin:4px 0 13px}
+.practical-quick-check .button-row{margin:6px 0 15px}
+.practical-quick-check .inline-note{margin:8px 0 12px}
