@@ -127,6 +127,16 @@ test("adaptive Planning follows genuine spreadsheet source nodes and retains stu
  assert(h.html.includes('data-math-id="AA15"'));
  h.action("plan-toggle-math",{mathId:"AA15"});
  assert(h.saved.planning.mathSelected.includes("AA15"));
+ h.action("math-select-route",{routeId:"relationships"});
+ assert.equal(h.saved.planning.routeExplorer.selectedRoute,"relationships");
+ assert(h.html.includes("Route spark saved"));
+ h.action("math-mode",{mode:"routes"});
+ assert(h.html.includes("Data &amp; statistics")||h.html.includes("Data & statistics"));
+ assert(h.html.includes("Explore 16 mathematical journeys"));
+ h.action("math-mode",{mode:"all"});
+ assert(h.html.includes("Search AA SL mathematics"));
+ assert(h.html.includes("Linear regression"));
+ assert(h.saved.planning.mathSelected.includes("AA15"));
  h.action("plan-advance");assert(h.html.includes('data-source-node="N03"'));
  h.choose("planning.fields.dataSource","secondary");
  h.action("plan-advance");assert(h.html.includes('data-source-node="N03S"'));
