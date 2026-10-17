@@ -2,6 +2,7 @@ import {CRITERIA} from './catalog.js';
 const e=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 /** Editorial connections, not marks awarded to an isolated excerpt. */
 export const EXAMPLE_CRITERIA=Object.freeze({
+ EX30:{A:'A focused title points towards an answerable investigation without claiming a result.',C:'The mathematical direction can evolve when the student responds to their own findings.'},
  EX01:{A:'A precise aim gives the opening a direction.',C:'A genuine observation motivates a mathematical choice.'},
  EX02:{A:'The aim identifies the quantities and scope.',D:'The investigation distinguishes association from a causal conclusion.'},
  EX03:{A:'A conjecture establishes an answerable purpose.',C:'Mathematical curiosity needs no invented personal story.'},
