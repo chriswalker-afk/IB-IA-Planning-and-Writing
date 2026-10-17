@@ -13,6 +13,7 @@ import {createPlanningEnvelope,normalizePlanningEnvelope,getFieldDiff,mergePlann
 import {modelFromEnvelope} from '../src/handover/report-model.js';
 
 const s=()=>{const x=createProjectState();x.route='planning';x.planning.current='N03P';x.planning.fields.kind='statistics';x.planning.fields.course='AI SL';return x;};
+const lastStep=()=>{const x=s();x.planning.current='N03P3';return x;};
 const set=(state,key,value)=>assert(applyPlanningField(state,key,value));
 const escape=v=>String(v??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('"','&quot;');
 const render=state=>{
@@ -38,13 +39,13 @@ test('census, five probability approaches, convenience, voluntary and not applic
  assert.equal(samplingMethod('invalid'),null);
 });
 test('students choose a sampling approach before a statistical primary route can be marked as addressed',()=>{
- const x=s();set(x,'primaryStatus','ready');
+ const x=lastStep();set(x,'primaryStatus','ready');
  assert(!planAutoAdvance(x).ok);
  set(x,'primarySamplingMethod','unsure');
  assert(!planAutoAdvance(x).ok);
  set(x,'primaryStatus','unsure');
  assert(planAutoAdvance(x).ok);
- const ready=s();set(ready,'primarySamplingMethod','simple-random');set(ready,'primaryStatus','ready');
+ const ready=lastStep();set(ready,'primarySamplingMethod','simple-random');set(ready,'primaryStatus','ready');
  assert(!planAutoAdvance(ready).ok);
  set(ready,'primaryPopulation','Students in Year 12');
  set(ready,'primarySamplingUnit','One student');
@@ -59,11 +60,11 @@ test('students choose a sampling approach before a statistical primary route can
  assert(save(ready,'primary','Reaction time','s','digital','nearest 0.01 s').ok);
  assert(planAutoAdvance(ready).ok);
  assert.equal(ready.evidence.sources.length,0);
- const model=s();model.planning.fields.kind='modelling';set(model,'primaryStatus','unsure');
+ const model=lastStep();model.planning.fields.kind='modelling';set(model,'primaryStatus','unsure');
  assert(planAutoAdvance(model).ok);
 });
 test('the sampling plan saves actual student choices and does not claim representativeness',()=>{
- const x=s();
+ const x=s();x.planning.current='N03P2';
  for(const [key,v] of Object.entries({
   primarySamplingMethod:'convenience',primaryPopulation:'Accessible club members',
   primarySamplingUnit:'One member',primarySamplingFrame:'no',
@@ -76,7 +77,7 @@ test('the sampling plan saves actual student choices and does not claim represen
  assert(spark&&spark.planned&&spark.type==='sampling');
  assert(insightForCurrent(x,'C21S').some(v=>v.id==='sampling-plan'));
  assert(insightMeaning(x,'C21S',spark).includes('Convenience'));
- assert(insightCapture(x,'N03P').includes('Spark saved'));
+ assert(insightCapture(x,'N03P2').includes('Spark saved'));
  assert(render(x).includes('Sampling spark saved'));
  assert(render(x).includes('Your chosen method normally needs')===false);
 });
@@ -125,7 +126,7 @@ test('edit and remove work on exact record identity even when quantity changes',
  assert(!removePlannedAccuracy(x,first));
 });
 test('recording unknown precision creates an honest spark, not a falsely ready plan',()=>{
- const x=s();
+ const x=lastStep();
  set(x,'primaryStatus','ready');
  set(x,'primaryWhat','Height in metres');
  set(x,'primaryHow','Record readings from measuring equipment');
@@ -155,21 +156,31 @@ test('incomplete degree-of-accuracy drafts are not saved; unknown and exact are 
  assert.equal(sanitized.length,2);
  assert(sanitized[1].id.startsWith('pa-primary-'));
  assert.equal(sanitized[1].basis,'unknown');
- const ss=s();
+ const ss=lastStep();
  ss.planning.accuracyPlans=sanitized;
  assert(!render(ss).includes('<script>'));
 });
-test('the primary screen provides optional sampling definitions, a selected-method warning and optional accuracy guide',()=>{
- const x=s();set(x,'primarySamplingMethod','simple-random');set(x,'primarySamplingFrame','no');
- const html=render(x);
- for(const part of ['Plan your primary data','My target population','What is one sampling unit',
-  'How will you select units','Sampling and census: quick recap',
-  'Sampling frame','follow-up observations','How accurately will you record',
-  'How do I judge a measuring device','Recording increment / degree of accuracy',
-  'Save this accuracy spark','Your chosen method normally needs'])
-  assert(html.includes(part),part);
+test('primary data is split into three focused screens, with optional help on steps two and three',()=>{
+ const x=s();
+ let html=render(x);
+ for(const term of ['What data will I collect?','Step 1 of 3','What will you record?','primaryQuantityName','Add quantity'])
+  assert(html.includes(term),term);
+ assert(!html.includes('Sampling and census: quick recap'));
+ assert(!html.includes('data-action="plan-save-accuracy"'));
+ x.planning.current='N03P2';set(x,'primarySamplingMethod','simple-random');set(x,'primarySamplingFrame','no');
+ html=render(x);
+ for(const term of ['How will I choose my data?','Step 2 of 3','sampling approach',
+  'Sampling and census: quick recap','Could you start quickly',
+  'This method normally needs a suitable sampling frame'])
+  assert(html.includes(term),term);
+ assert(!html.includes('data-action="plan-save-accuracy"'));
+ x.planning.current='N03P3';
+ html=render(x);
+ for(const term of ['How will I collect it accurately?','Step 3 of 3','data-primary-accuracy',
+  'How do I judge a measuring device','Save accuracy spark','Can you start collecting data'])
+  assert(html.includes(term),term);
  assert(html.includes('data-action="plan-save-accuracy" data-source="primary"'));
- assert(!html.includes('data-source-node="N03S"'));
+ assert(!html.includes('Sampling and census: quick recap'));
 });
 test('old project backup and embedded documents remain readable; new provisional rules travel safely',()=>{
  const original=s();
