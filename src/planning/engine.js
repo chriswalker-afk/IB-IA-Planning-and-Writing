@@ -6,6 +6,7 @@ import { PLANNING_ROUTES } from "./route-table.js";
 import { PLANNING_CATALOG } from "./catalog.js";
 import {TIMELINE_KEYS} from "./timeline.js";
 import {createRouteExplorer,normalizeRouteExplorer,routeById} from "./investigative-routes.js";
+import {normalizePlanningAccuracy,samplingMethod} from "./data-decisions.js";
 
 export const PLANNING_NODE_IDS = Object.freeze([...new Set(PLANNING_ROUTES.flatMap(r=>[r.from,r.to]).filter(n=>n.startsWith("N")))]);
 export const PROGRESS_GROUPS = Object.freeze([
@@ -21,7 +22,11 @@ export const PLANNING_FIELD_DEFAULTS = Object.freeze({
  aim:"",motivation:"",beneficiaryType:"",beneficiary:"",intendedUse:"",
  kind:"",statisticsContext:"",dataSource:"",primaryWhat:"",primaryWhen:"",primaryWhere:"",
  primaryPopulation:"",primaryHow:"",primaryEquipment:"",primaryStatus:"",primarySampling:"",
+ primarySamplingMethod:"",primarySamplingUnit:"",primarySamplingFrame:"",primarySamplingFrameDetails:"",primaryRepeatable:"",
  secondaryUrl:"",secondaryPublisher:"",secondaryVariables:"",secondaryScope:"",secondaryVerified:"",
+ secondarySamplingOrigin:"",
+ primaryAccuracyQuantity:"",primaryAccuracyUnit:"",primaryAccuracyResolution:"",primaryAccuracyBasis:"",primaryAccuracyUncertainty:"",
+ secondaryAccuracyQuantity:"",secondaryAccuracyUnit:"",secondaryAccuracyResolution:"",secondaryAccuracyBasis:"",secondaryAccuracyUncertainty:"",
  secondaryStatus:"",alternativeMethod:"",methodReason:"",methodLimitation:"",methodMitigation:"",
  sourceFirstDate:"",sourceFullDate:"",dataAvailability:"",dataReadiness:"",readinessImprovement:"",
  dependencies:"",unsecured:"",permissionNeed:"",permissionDetails:"",softwareReady:"",
@@ -41,7 +46,7 @@ export const PLANNING_FIELD_DEFAULTS = Object.freeze({
 });
 export function createPlanningState(){
  return {
-  current:"N00", fields:{...PLANNING_FIELD_DEFAULTS}, mathSelected:[],
+  current:"N00", fields:{...PLANNING_FIELD_DEFAULTS}, mathSelected:[],accuracyPlans:[],
   history:[], visited:[], completedNodes:[], sourceBranches:{primary:false,secondary:false},
   teacherFlagsAcknowledged:[], returnToPrediction:false, sourceSnapshot:"2026-10-14",
   completed:false, notices:[], mathSearch:"", mathsReviewVersion:0,timelineAuto:{},routeExplorer:createRouteExplorer()
@@ -68,7 +73,7 @@ export function normalizePlanningState(value,project={}){
  const entries=arr=>Array.isArray(arr)?arr.filter(x=>typeof x==="string"&&PLANNING_NODE_IDS.includes(x)).slice(-450):[];
  const current=PLANNING_NODE_IDS.includes(v.current)?v.current:"N00";
  return {
-  ...base,fields,mathSelected:cleanIds,current,
+  ...base,fields,mathSelected:cleanIds,accuracyPlans:normalizePlanningAccuracy(v.accuracyPlans),current,
   history:entries(v.history),visited:entries(v.visited),
   completedNodes:entries(v.completedNodes),
   sourceBranches:{
@@ -293,6 +298,14 @@ export function planningMove(state,condition) {
     return setPlanCurrent(state,"N03B",{internal:true});
   }
  }
+ if(from==="N03P"&&f.kind==="statistics"&&!samplingMethod(f.primarySamplingMethod))
+  return{ok:false,error:"Before collecting data, choose a sample or census approach (including Not applicable or Not sure yet). You can revise this later."};
+ if(from==="N03P"&&f.kind==="statistics"&&f.primaryStatus==="ready"&&f.primarySamplingMethod==="unsure")
+  return{ok:false,error:"Sampling is still undecided. Mark this source plan as uncertain, or choose a feasible approach first."};
+ if(from==="N03P"&&f.kind==="statistics"&&f.primaryStatus==="ready"&&
+    !["not-applicable","unsure"].includes(f.primarySamplingMethod)&&
+    (!f.primaryPopulation.trim()||!f.primarySamplingUnit.trim()))
+  return{ok:false,error:"To mark this sample plan ready, identify your population and sampling unit. Or choose Still uncertain."};
  if(from==="N03P"&&to==="N03J"&&!["ready","unsure"].includes(f.primaryStatus))return{ok:false,error:"Confirm whether your primary data plan is ready or uncertain."};
  if(from==="N03S"&&to==="N03J"&&!["ready","unsure"].includes(f.secondaryStatus))return{ok:false,error:"Confirm whether your secondary source plan is ready or uncertain."};
  if(from==="N03F"&&to==="N02T"&&!["yes","unsure"].includes(f.permissionNeed))
