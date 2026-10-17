@@ -78,11 +78,12 @@ def run_primary(p,width):
  assert all(v in saved(p)["planning"]["completedNodes"] for v in ["N03P","N03P2"])
  assert not any(v in saved(p)["planning"]["completedNodes"] for v in ["N03J","N03F"])
  no_overflow(p)
- p.locator('[data-action="plan-advance"]').first.click()
- assert p.locator('[data-source-node="N03E"]').count()==1
+ assert field(p,"dataAvailability").count()==1
  assert field(p,"permissionNeed").count()==1
  assert field(p,"practicalBlocker").count()==1
- assert "Before you start" in p.locator(".practical-quick-check").inner_text()
+ assert "Two quick checks" in p.locator(".practical-quick-check").inner_text()
+ assert "Set evidence target dates (optional)" in p.locator("[data-evidence-timing]").inner_text()
+ field(p,"dataAvailability").select_option("some")
  field(p,"permissionNeed").select_option("yes")
  assert "Do not begin affected collection" in p.locator(".practical-quick-check").inner_text()
  assert p.locator('[data-condition="Safety / privacy / consent unresolved"]').count()==1
@@ -94,8 +95,8 @@ def run_primary(p,width):
  no_overflow(p)
  p.screenshot(path=str(OUT/f"practical-quick-check-{width}.png"),full_page=True,animations="disabled")
  p.locator('[data-action="plan-advance"]').first.click()
- assert p.locator('[data-source-node="N03G"]').count()==1
- assert not any(v in saved(p)["planning"]["visited"] for v in ["N03J","N03F"])
+ assert p.locator('[data-source-node="N03H"]').count()==1
+ assert not any(v in saved(p)["planning"]["visited"] for v in ["N03J","N03F","N03E","N03G"])
  test_state=saved(p)
  test_state["route"]="completing";test_state["completion"]["current"]="C21S"
  p.evaluate("([k,s])=>localStorage.setItem(k,JSON.stringify(s))",[KEY,test_state])
