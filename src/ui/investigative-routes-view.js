@@ -32,12 +32,18 @@ export function renderInvestigativeRoutes(state,{e,icon,catalogue}){
    [{id:'all',title:'All 16'},...ROUTE_FAMILIES.map(f=>({id:f.id,title:f.title}))].map(f=>
    '<button type="button" class="journey-family-filter'+((x.family||'all')===f.id?' active':'')+
    '" data-action="math-family" data-family="'+e(f.id)+'" aria-pressed="'+((x.family||'all')===f.id)+'">'+e(f.title)+'</button>').join('')+'</div>':'';
+  const routeCards=recommended.length?(mode==='routes'?(x.family==='all'?ROUTE_FAMILIES.map(f=>
+    '<section class="journey-family-section" aria-label="'+e(f.title)+'">'+
+    '<div class="journey-family-heading">'+icon(f.icon)+'<span><h4>'+e(f.title)+'</h4><p>'+e(f.description)+'</p></span></div>'+
+    '<div class="journey-cards">'+recommended.filter(t=>t.family===f.id).map(t=>renderRouteCard(t,{e,icon,selected,opened,mode})).join('')+'</div></section>').join(''):
+    '<div class="journey-cards">'+recommended.map(t=>renderRouteCard(t,{e,icon,selected,opened,mode})).join('')+'</div>'):
+    '<div class="journey-cards">'+recommended.map(t=>renderRouteCard(t,{e,icon,selected,opened,mode})).join('')+'</div>'):'';
   body='<div class="journey-mode-intro"><h3>'+(mode==='aim'?'Possible routes for your question':'Explore 16 mathematical journeys')+'</h3>'+
     '<p>'+(mode==='aim'?'These are a few editorial matches to your investigation type, data and the words in your aim. They are suggestions, not analysis of real results.':
      'Four families, sixteen exploratory journeys. Each begins with a small step, then branches depending on what the mathematics actually reveals.')+'</p></div>'+
     filtering+
     (opened?renderRouteDetail(opened,state,{e,icon}):'')+
-    (recommended.length?'<div class="journey-cards" aria-label="Investigative routes">'+recommended.map(r=>renderRouteCard(r,{e,icon,selected,opened,mode})).join('')+'</div>':
+    (recommended.length?routeCards:
     '<div class="journey-no-matches">'+icon('compass')+' Your investigation type is still undecided. You can browse the typical routes instead.'+
     '<button type="button" data-action="math-mode" data-mode="routes">Explore all 16 routes '+icon('arrow-right')+'</button></div>')+
     (mode==='aim'?'<p class="journey-all-link">Not what you had in mind? <button type="button" data-action="math-mode" data-mode="routes">Explore all 16 investigative routes '+icon('arrow-right')+'</button></p>':'');
