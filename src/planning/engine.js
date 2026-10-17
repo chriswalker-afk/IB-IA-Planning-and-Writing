@@ -12,7 +12,7 @@ import {normalizePrimaryQuantities} from "./primary-quantities.js";
 export const PLANNING_NODE_IDS = Object.freeze([...new Set(PLANNING_ROUTES.flatMap(r=>[r.from,r.to]).filter(n=>n.startsWith("N")))]);
 export const PROGRESS_GROUPS = Object.freeze([
  {id:"direction",label:"Find your question",nodes:["N00","N00B","N00C","N01","N01V","N02","N02M","N02U","N02T"]},
- {id:"practical",label:"Plan your evidence",nodes:["N03","N03B","N03P","N03P2","N03S","N03D","N03E","N03R","N03G","N03H"]},
+ {id:"practical",label:"Plan your evidence",nodes:["N03","N03B","N03P","N03P2","N03S","N03D","N03R","N03H"]},
  {id:"mathematical",label:"Plan your mathematics",nodes:["N04","N04T","N04S","N01P","N04R","N04M","N05V","N05"]},
  {id:"review",label:"Review your idea",nodes:["N06E","N06T","N08","N06","N07"]}
 ]);
@@ -77,16 +77,17 @@ export function normalizePlanningState(value,project={}){
  const cleanIds = Array.isArray(v.mathSelected) ?
   [...new Set(v.mathSelected.filter(id=>PLANNING_CATALOG.math.some(m=>m.id===id)))].slice(0,55) : [];
  const entries=arr=>Array.isArray(arr)?arr.filter(x=>typeof x==="string"&&PLANNING_NODE_IDS.includes(x)).slice(-450):[];
- const obsoleteNode=id=>id==="N03P3"?"N03P":id==="N03J"?"N03D":id==="N03F"?"N03E":id;
+ const obsoleteNode=id=>id==="N03P3"?"N03P":
+  ["N03J","N03F","N03E","N03G"].includes(id)?"N03D":id;
  const current=PLANNING_NODE_IDS.includes(obsoleteNode(v.current))?obsoleteNode(v.current):"N00";
  return {
   ...base,fields,mathSelected:cleanIds,accuracyPlans:normalizePlanningAccuracy(v.accuracyPlans),
   accuracyEditId:(v.accuracyPlans||[]).some?.(x=>x?.id===v.accuracyEditId)?v.accuracyEditId:"",
   primaryQuantities:normalizePrimaryQuantities(v.primaryQuantities,v.accuracyPlans),
   primaryQuantityEditId:(v.primaryQuantities||[]).some?.(x=>x?.id===v.primaryQuantityEditId)?v.primaryQuantityEditId:"",current,
-  history:entries(v.history).filter(x=>x!=="N03J"&&x!=="N03F"),
-  visited:entries(v.visited).filter(x=>x!=="N03J"&&x!=="N03F"),
-  completedNodes:entries(v.completedNodes).filter(x=>!["N03P3","N03J","N03F"].includes(x)),
+  history:entries(v.history).filter(x=>!["N03J","N03F","N03E","N03G"].includes(x)),
+  visited:entries(v.visited).filter(x=>!["N03J","N03F","N03E","N03G"].includes(x)),
+  completedNodes:entries(v.completedNodes).filter(x=>!["N03P3","N03J","N03F","N03E","N03G"].includes(x)),
   sourceBranches:{
    primary:v.sourceBranches?.primary===true,secondary:v.sourceBranches?.secondary===true
   },
@@ -141,9 +142,9 @@ export function planningFlags(state){
   add("two-sources","Both source plans need attention","The primary and secondary question sets must both be addressed.");
  if(f.mathsOutside==="outside"||f.mathsOutside==="unsure")add("outside-maths","Mathematics suitability to check","Ask about techniques beyond or not clearly within your course.");
  if(f.courseSuitability==="unsure"||f.courseSuitability==="no")add("depth","Mathematical suitability remains open","Discuss the mathematical purpose and level, without treating this as an IA grade.");
- if(Number(f.dataReadiness)>0&&Number(f.dataReadiness)<3)add("readiness","Data plan needs strengthening","Consider a smaller pilot, confirmed source or earlier usable material.");
+ // Prior /5 ratings are historical snapshots, not live teacher flags now that the rating screens are retired.
  if(f.practicalBlocker==="yes")add("practical-access","Important practical access to arrange","Agree a realistic next action for missing people, equipment, locations or resources before relying on them.");
- if(Number(f.practicalEase)>0&&Number(f.practicalEase)<3)add("practical","Practical workload may be high","Reduce dependencies and try a small end-to-end test.");
+ // Use actual access and permission responses to identify obstacles; never infer them from an old score.
  if(m.some(id=>mathIds.get(id)?.course!==c)&&["AI SL","AA SL"].includes(c))add("different-course-maths","Selected techniques from another course","Review which options suit your current course; do not silently discard them.");
  return flags;
 }
@@ -263,8 +264,7 @@ export function toggleMath(state,id){
  syncPlanningToProject(state);return true;
 }
 export function setPlanCurrent(state,id,{history=true,internal=false}={}){
- if(id==="N03J")id="N03D";
- if(id==="N03F")id="N03E";
+ if(["N03J","N03F","N03E","N03G"].includes(id))id="N03D";
  if(!PLANNING_NODE_IDS.includes(id))return {ok:false,error:"Unknown planning stage."};
  const current=state.planning.current;
  if(history&&current!==id)state.planning.history.push(current);
@@ -277,7 +277,7 @@ export function setPlanCurrent(state,id,{history=true,internal=false}={}){
 }
 export function planningBack(state){
  // Old snapshots may contain obsolete route entries before normalization.
- while(["N03J","N03F"].includes(state.planning.history.at(-1)))state.planning.history.pop();
+ while(["N03J","N03F","N03E","N03G"].includes(state.planning.history.at(-1)))state.planning.history.pop();
  const old=state.planning.history.pop();
  if(!old)return{ok:false,error:"This is the first stage. Use Home to leave."};
  return setPlanCurrent(state,old,{history:false});
@@ -303,7 +303,8 @@ export function planningMove(state,condition) {
   N03P2:{"Complete primary plan":"Finish primary data plan"},
   N03S:{"Complete":"Finish secondary data plan"},
   N03B:{"Both data sources complete":"Continue to evidence timing"},
-  N03E:{"Continue":"Continue to manageability"},
+  N03D:{"Continue":"Continue after evidence checks"},
+  N03E:{"Continue":"Continue after evidence checks"},
   N03G:{"Reduce workload or resolve blockers":"Revisit practical checks"}
  };
  condition=shortRoute[from]?.[condition]||condition;
@@ -357,10 +358,14 @@ export function planningMove(state,condition) {
   }
  }
 
- if(from==="N03E"&&to==="N03G"&&(!f.permissionNeed||!f.practicalBlocker))
-  return{ok:false,error:"Complete the two quick checks about permission and practical access. Choose 'Not sure' if needed."};
- if(["N03F","N03E"].includes(from)&&to==="N02T"&&!["yes","unsure"].includes(f.permissionNeed))
-  return{ok:false,error:"This checkpoint is for unresolved permission or safety concerns."};
+ if(from==="N03D"&&to==="N03H"){
+  if(!["in-hand","some","soon","inaccessible","unsure"].includes(f.dataAvailability))
+   return{ok:false,error:"Choose what evidence is available now, including Not sure yet."};
+  if(!["no","yes","unsure"].includes(f.permissionNeed)||!["no","yes","unsure"].includes(f.practicalBlocker))
+   return{ok:false,error:"Answer the two quick checks about permission and access. Not sure is an acceptable answer."};
+ }
+ if(["N03D","N03E","N03F"].includes(from)&&to==="N02T"&&!["yes","unsure"].includes(f.permissionNeed))
+  return{ok:false,error:"This teacher checkpoint is for unresolved permission or safety concerns."};
  if(from==="N04"&&condition==="AI SL / AA SL"&&!["AI SL","AA SL"].includes(f.course))
   return{ok:false,error:"Select AI SL or AA SL before using this course-specific menu."};
  if(from==="N04S"&&!f.course)return{ok:false,error:"Choose a course or request teacher guidance."};
@@ -409,8 +414,8 @@ export function planAutoAdvance(state){
   case "N03P2":return go("Finish primary data plan");
   case "N03S":return go("Finish secondary data plan");
   case "N03J":return go("Method justification or 'not sure'");
-  case "N03D":return go("Continue");
-  case "N03E":if(Number(f.dataReadiness)===5&&f.dataAvailability!=="in-hand")return{ok:false,error:"A readiness rating of 5 means usable data are already in hand. Please adjust the rating or confirm the evidence is available."};return go("Continue to manageability");
+  case "N03D":return go("Continue after evidence checks");
+  case "N03E":return go("Continue after evidence checks");
   case "N03R":return go("Retry");
   case "N03F":return go("Feasibility questions answered");
   case "N03G":return go("Practical plan is workable");
