@@ -1,5 +1,6 @@
 import {IDEA_TOPICS,IDEA_CHECKS,seedById,topicById,OWN_PROMPT} from './catalog.js';
 import {ideaState,ideaChoices,currentSeed} from './engine.js';
+import {IDEA_MAP_ROOTS,DATA_BRANCHES,IDEA_DATA_PROMISE,IDEA_THEORY_CAUTION,ideaMapRoots,ideaMapRoot,ideaMapTopics,ideaMapBranches,ideaMapIdeas} from './mindmap.js';
 import {escapeHtml as e,icon} from '../ui/primitives.js';
 const button=(action,label,attrs='',primary=false)=>'<button type="button" class="btn '+(primary?'btn-primary':'btn-secondary')+'" data-action="idea-'+action+'" '+attrs+'>'+e(label)+'</button>';
 const input=(key,label,value,{rows=2,savedId='',placeholder=''}={})=>'<div class="field-group"><label class="field-label" for="idea-'+e(savedId?savedId+'-'+key:key)+'">'+e(label)+'</label><textarea class="field" id="idea-'+e(savedId?savedId+'-'+key:key)+'" data-idea-input="'+e(key)+'"'+(savedId?' data-idea-saved="'+e(savedId)+'"':'')+' rows="'+rows+'" maxlength="1600" placeholder="'+e(placeholder)+'">'+e(value||'')+'</textarea></div>';
@@ -8,19 +9,84 @@ function controls(state){
  const s=ideaState(state);
  return '<div class="idea-toolbar">'+button('own','Use my own idea instead')+button('compare','Compare saved ideas ('+s.shortlist.length+'/3)')+'</div>';
 }
-function sourceNote(){return '<details class="idea-source"><summary>What makes a promising starting point?</summary><p>The JIS SL Maths IA Guide 2025 (pages 8-11) asks you to consider accessible data, a connection to course mathematics and something you can start quickly. It encourages ideas from everyday life, hobbies and organisations you already belong to.</p><p>These categories and directions are new Pathfinder prompts, not prescribed IA titles from the guide. Theoretical ideas use a defined mathematical starting point and still need a course check. One idea is enough; this explorer is optional.</p></details>';}
+
+const mapAction=(act,label,attrs='',css='')=>'<button type="button" class="'+css+'" data-action="idea-'+act+'" '+attrs+'>'+label+'</button>';
+const mapRoot=(r,selected)=>mapAction('map-root',
+ '<span class="idea-map-root-icon">'+icon(r.icon)+'</span><strong>'+e(r.label)+'</strong><small>'+e(r.description)+'</small>'+
+ '<span class="idea-map-root-arrow" aria-hidden="true">'+icon('chevron-right')+'</span>',
+ 'id="idea-map-root-'+e(r.id)+'" data-root="'+e(r.id)+'" aria-pressed="'+selected+'"',
+ 'idea-map-root idea-map-root-'+e(r.id)+(selected?' selected':''));
+function ideaMapBranchesView(state){
+ const s=ideaState(state),m=s.map,root=ideaMapRoot(m.mode,m.root);
+ if(!root)return '<p class="idea-map-first-prompt">Choose one of the floating branches to see where it can lead.</p>';
+ const topic=ideaMapTopics(root).find(t=>t.id===m.topic);
+ const branch=ideaMapBranches(root).find(x=>x.id===m.dataBranch);
+ const nodes=m.mode==='interests'?ideaMapTopics(root).map(t=>mapAction('map-topic',
+  '<span>'+e(t.label)+'</span>'+icon('chevron-right'),
+  'id="idea-map-topic-'+e(t.id)+'" data-topic="'+e(t.id)+'" aria-pressed="'+(topic?.id===t.id)+'"',
+  'idea-map-branch-node'+(topic?.id===t.id?' selected':''))).join(''):
+  ideaMapBranches(root).map(x=>mapAction('map-access',
+  '<strong>'+e(x.label)+'</strong><small>'+e(x.desc)+'</small>'+icon('chevron-right'),
+  'id="idea-map-access-'+e(x.id)+'" data-branch="'+e(x.id)+'" aria-pressed="'+(branch?.id===x.id)+'"',
+  'idea-map-branch-node idea-map-access-node'+(branch?.id===x.id?' selected':''))).join('');
+ const subtopics=topic?'<div class="idea-map-grow idea-map-leaf-grow"><div class="idea-map-branch-caption"><span>2 · Choose a smaller detail</span><small>Tap a branch to grow it.</small></div>'+
+  '<div class="idea-map-subtopic-list">'+topic.subtopics.map((name,i)=>mapAction('map-leaf',
+  e(name)+icon('chevron-right'),
+  'id="idea-map-leaf-'+i+'" data-subtopic="'+e(name)+'" aria-pressed="'+(m.subtopic===name)+'"',
+  'idea-map-subtopic'+(m.subtopic===name?' selected':''))).join('')+'</div></div>':'';
+ const selectedSubtopic=m.mode==='interests'&&m.subtopic;
+ const selectedData=m.mode==='data'&&branch;
+ const ideas=selectedSubtopic||selectedData?ideaMapIdeas(m):[];
+ const directions=(selectedSubtopic||selectedData)?'<div class="idea-map-grow idea-map-directions">'+
+  '<div class="idea-map-branch-caption"><span>'+((m.mode==='interests')?'3':'2')+' · Grow it into your own idea</span>'+
+  '<small>These are directions to develop, not completed IA titles.</small></div>'+
+  (branch?.warning?'<p class="idea-map-survey-warning">'+icon('info')+' '+e(branch.warning)+'</p>':'')+
+  '<div class="idea-map-direction-list" id="idea-map-directions-heading" tabindex="-1">'+ideas.map(seed=>
+   '<article class="idea-map-direction" data-idea-card="'+e(seed.id)+'">'+
+    '<div class="idea-map-direction-icon">'+icon('compass')+'</div>'+
+    '<div class="idea-map-direction-content"><h4>'+e(seed.title)+'</h4>'+
+    '<p><strong>Your missing detail:</strong> '+e(seed.narrow)+'</p>'+
+    '<p class="idea-map-first-test">'+icon('clock')+' A small first try: '+e(seed.first)+'</p>'+
+    '<div class="idea-map-direction-action">'+
+    mapAction('explore','Make this idea mine '+icon('arrow-right'),
+      'data-seed="'+e(seed.id)+'" data-map="true"','idea-map-customise')+'</div></div></article>').join('')+'</div>'+
+  '<p class="idea-map-draft-note">You provide the specifics. Nothing here automatically selects a title, dataset or technique.</p></div>':'';
+ return '<div class="idea-map-growth" aria-live="polite">'+
+  '<div class="idea-map-path">'+icon('route')+' <strong>'+e(root.label)+'</strong>'+
+  (topic?'<span>'+icon('chevron-right')+' '+e(topic.label)+'</span>':'')+
+  (selectedSubtopic?'<span>'+icon('chevron-right')+' '+e(m.subtopic)+'</span>':'')+
+  (branch?'<span>'+icon('chevron-right')+' '+e(branch.label)+'</span>':'')+'</div>'+
+  '<div class="idea-map-grow"><div class="idea-map-branch-caption"><span>1 · Follow a branch</span><small>Pick something you can really access.</small></div>'+
+  '<div class="idea-map-branch-list">'+nodes+'</div></div>'+subtopics+directions+'</div>';
+}
 export function ideaExplorerView(state){
  const s=ideaState(state);
  if(s.pending)return ideaConfirmationView(state);
  if(s.active)return ideaDetailView(state);
- const choices=ideaChoices(state),topic=topicById(s.topic);
- return '<section class="idea-explorer" aria-label="Optional Idea Explorer">'+controls(state)+
-  '<div class="idea-start"><span class="idea-eyebrow">START WITH SOMETHING THAT INTERESTS YOU</span>'+select('topic','What interests you?',s.topic,[['','Not sure yet - show a mixture'],...IDEA_TOPICS.map(t=>[t.id,t.label]),['other','Something else - my own interest']],'data-idea-topic')+
-  (topic?'<div class="idea-subtopics" role="group" aria-label="Optional subtopics">'+topic.subtopics.map((t,i)=>'<button id="idea-subtopic-'+i+'" type="button" class="idea-chip" data-action="idea-subtopic" data-subtopic="'+e(t)+'" aria-pressed="'+(s.subtopic===t)+'">'+e(t)+'</button>').join('')+'</div>':'')+
-  '<label class="idea-select" for="idea-focus"><span>My own specific interest (optional)</span><input class="field" id="idea-focus" data-idea-input="focus" maxlength="160" value="'+e(s.focus)+'" placeholder="A particular activity, object or observation"></label><p class="field-hint">Your own wording is kept with a direction you open. It is not automatically matched to a new investigation.</p></div>'+
-  (s.topic==='other'?'<div class="idea-empty"><h3>Start from your own observation</h3><p>What could you compare, measure, model or explain about it? You do not need to fit a suggested category.</p>'+button('own','Shape my own direction','',true)+'</div>':
-  '<div class="idea-section-heading"><h3 id="idea-directions-heading" tabindex="-1">Three possible directions</h3><p>Starting points to adapt, not finished IA titles. '+(s.subtopic?'Related angles are shown first; not every card is a match for '+e(s.subtopic)+'.':'')+'</p></div><div class="idea-grid">'+choices.items.map(seed=>'<article class="idea-card" data-idea-card="'+e(seed.id)+'"><span class="idea-eyebrow">'+e(topicById(seed.topic).label)+'</span><h4>'+e(seed.title)+'</h4><p>'+e(seed.question)+'</p><div class="idea-material"><strong>Possible starting material</strong><p>'+e(seed.material)+'</p></div>'+button('explore','Explore this','data-seed="'+e(seed.id)+'"',true)+'</article>').join('')+'</div><div class="idea-more-row">'+button('more','Show other directions')+'<span class="field-hint">'+choices.total+' starting directions '+(s.topic?'in this topic':'across all topics')+'. Nothing is selected for you.</span></div>')+
-  sourceNote()+'</section>';
+ const m=s.map||{mode:'interests',root:'',topic:'',subtopic:'',dataBranch:''},roots=ideaMapRoots(m.mode);
+ return '<section class="idea-explorer idea-mindmap" aria-label="Explore an IA idea">'+
+  '<div class="idea-map-head"><span class="idea-map-overline">'+icon('route')+' IDEA LAB</span>'+
+  '<h3 id="idea-map-heading" tabindex="-1">Grow an idea from a starting point</h3>'+
+  '<p>Choose a branch, follow what catches your attention, then make the idea yours. You do not need a finished question yet.</p></div>'+
+  '<div class="idea-map-mode" role="group" aria-label="Choose how to start exploring ideas">'+
+  mapAction('map-mode',icon('layers')+' Start with my world','data-mode="interests" aria-pressed="'+(m.mode==='interests')+'"','idea-map-mode-button'+(m.mode==='interests'?' selected':''))+
+  mapAction('map-mode',icon('calculator')+' Start with data I can get','data-mode="data" aria-pressed="'+(m.mode==='data')+'"','idea-map-mode-button'+(m.mode==='data'?' selected':''))+'</div>'+
+  '<div class="idea-map-quickstart">'+icon('clock')+' <p><strong>Make a quick start.</strong> '+e(IDEA_DATA_PROMISE)+'</p></div>'+
+  '<div class="idea-map-canvas"><div class="idea-map-orbit" aria-label="Three possible starting branches">'+
+  '<svg class="idea-map-links" viewBox="0 0 620 240" preserveAspectRatio="none" aria-hidden="true" focusable="false">'+
+  '<path d="M310 101 C235 58 215 63 117 65 M310 101 C385 58 405 63 503 65 M310 101 C310 145 310 157 310 198" />'+
+  '<circle cx="310" cy="101" r="5"/></svg>'+
+  '<div class="idea-map-centre">'+icon('compass')+'<strong>Start with<br>you</strong><small>Find your maths</small></div>'+
+  roots.map(root=>mapRoot(root,m.root===root.id)).join('')+'</div>'+
+  ideaMapBranchesView(state)+'</div>'+
+  '<div class="idea-map-lower"><div class="idea-map-own"><span>'+icon('pencil')+'</span><div><strong>Got something different in mind?</strong>'+
+  '<p>You can start with your own observation, even if none of these branches fits.</p></div>'+
+  button('own','Shape my own idea')+'</div>'+
+  '<div class="idea-map-shortlist">'+button('compare','Compare saved ideas ('+s.shortlist.length+'/3)')+'</div></div>'+
+  '<details class="idea-map-theory-warning"><summary>'+icon('info')+' Thinking about a pure mathematical pattern?</summary>'+
+  '<p>'+e(IDEA_THEORY_CAUTION)+'</p>'+
+  '<p>For most students, a measurable or observable question with available evidence is an easier way to begin.</p></details>'+
+  '</section>';
 }
 export function ideaDetailView(state){
  const s=ideaState(state),seed=currentSeed(state),d=s.drafts[s.active],saved=s.shortlist.find(x=>x.id===d.savedId);
