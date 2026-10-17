@@ -690,7 +690,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       case "spark-edit-accuracy":{
         const record=state.planning?.accuracyPlans?.find(x=>x.id===el.dataset.accuracyId);
         if(!record){toast("This accuracy spark is no longer saved.");break;}
-        const target=record.source==="secondary"?"N03S":"N03P3";
+        const target=record.source==="secondary"?"N03S":"N03P";
         const move=planningEdit(state,target);
         if(!move.ok){toast(move.error||"That Planning section is not available.");break;}
         const source=editPlannedAccuracy(state,record.id);
