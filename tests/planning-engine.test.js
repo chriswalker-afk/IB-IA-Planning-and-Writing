@@ -67,7 +67,6 @@ test("combined primary+secondary plans cannot bypass either question set",()=>{
  advance(s,"N03P2");
  assert.equal(planAutoAdvance(s).ok,false);
  set(s,"primarySamplingMethod","unsure");
- advance(s,"N03P3");
  assert.equal(planAutoAdvance(s).ok,false);
  set(s,"primaryStatus","unsure");
  advance(s,"N03B");
@@ -88,7 +87,6 @@ test("primary-only and secondary-only branches reach the join without false data
   if(source==="primary"){
    set(s,"primaryWhat","A short planned measurement");
    advance(s,"N03P2");set(s,"primarySamplingMethod","unsure");
-   advance(s,"N03P3");
   }
   set(s,statusKey,"unsure");advance(s,"N03J");
   assert.equal(s.evidence.sources.length,0);
