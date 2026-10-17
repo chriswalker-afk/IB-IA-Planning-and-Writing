@@ -125,9 +125,13 @@ export function savePlannedAccuracy(state,source){
  const current=found>=0?list[found]:null;
  const id=current?.id||'pa-'+source+'-'+(1+Math.max(0,...list.filter(x=>x.source===source)
   .map(x=>Number((x.id||'').match(/\d+$/)?.[0]||0))));
- const item=clean({id,source,quantity,unit,resolution,basis:basis||'unknown',uncertainty},list.length);
- if(current&&JSON.stringify(current)===JSON.stringify(item))
+ const item=clean({id,source,quantity,unit,resolution:basis==='exact'?'':resolution,
+  basis:basis||'unknown',uncertainty},list.length);
+ if(current&&JSON.stringify(current)===JSON.stringify(item)){
+  for(const key of ACCURACY_DRAFT_FIELDS[source])fields[key]='';
+  state.planning.accuracyEditId='';
   return{ok:true,updated:true,record:current};
+ }
  if(found>=0)list[found]=item;else list.push(item);
  state.planning.accuracyPlans=list;
  for(const k of ACCURACY_DRAFT_FIELDS[source])fields[k]='';
