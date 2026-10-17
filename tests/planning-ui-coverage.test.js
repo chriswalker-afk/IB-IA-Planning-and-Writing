@@ -16,9 +16,9 @@ function screenFixture(){
  };
  return {state,view:createPlanningViews(ctx)};
 }
-test("all 33 normalized Planning nodes render without throwing, with exact node trace",()=>{
+test("all 35 normalized Planning nodes render without throwing, with exact node trace",()=>{
  const {state,view}=screenFixture();
- assert.equal(PLANNING_NODE_IDS.length,33);
+ assert.equal(PLANNING_NODE_IDS.length,35);
  for(const node of PLANNING_NODE_IDS){
   state.planning.current=node;
   const html=view.viewPlanning();
