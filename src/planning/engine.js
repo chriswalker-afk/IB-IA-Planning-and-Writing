@@ -46,7 +46,7 @@ export const PLANNING_FIELD_DEFAULTS = Object.freeze({
 });
 export function createPlanningState(){
  return {
-  current:"N00", fields:{...PLANNING_FIELD_DEFAULTS}, mathSelected:[],accuracyPlans:[],
+  current:"N00", fields:{...PLANNING_FIELD_DEFAULTS}, mathSelected:[],accuracyPlans:[],accuracyEditId:"",
   history:[], visited:[], completedNodes:[], sourceBranches:{primary:false,secondary:false},
   teacherFlagsAcknowledged:[], returnToPrediction:false, sourceSnapshot:"2026-10-14",
   completed:false, notices:[], mathSearch:"", mathsReviewVersion:0,timelineAuto:{},routeExplorer:createRouteExplorer()
@@ -73,7 +73,8 @@ export function normalizePlanningState(value,project={}){
  const entries=arr=>Array.isArray(arr)?arr.filter(x=>typeof x==="string"&&PLANNING_NODE_IDS.includes(x)).slice(-450):[];
  const current=PLANNING_NODE_IDS.includes(v.current)?v.current:"N00";
  return {
-  ...base,fields,mathSelected:cleanIds,accuracyPlans:normalizePlanningAccuracy(v.accuracyPlans),current,
+  ...base,fields,mathSelected:cleanIds,accuracyPlans:normalizePlanningAccuracy(v.accuracyPlans),
+  accuracyEditId:(v.accuracyPlans||[]).some?.(x=>x?.id===v.accuracyEditId)?v.accuracyEditId:"",current,
   history:entries(v.history),visited:entries(v.visited),
   completedNodes:entries(v.completedNodes),
   sourceBranches:{
