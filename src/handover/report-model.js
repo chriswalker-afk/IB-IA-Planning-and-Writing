@@ -49,6 +49,7 @@ export function modelFromEnvelope(envelope){
   ],"This is a hypothesis or conjecture. The actual mathematics must decide what can be concluded."),
   prim&&section("04 · Primary data collection plan",[
     row("Proposed measurements or observations",f.primaryWhat),
+    row("Individual quantities and units",(payload.planning.primaryQuantities||[]).map(q=>q.name+(q.unit?' ('+q.unit+')':'')).join('; ')),
     row("Target population or objects",f.primaryPopulation),
     row("Collection date (planned)",f.primaryWhen),
     row("Location or setting",f.primaryWhere),
