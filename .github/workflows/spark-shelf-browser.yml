@@ -1,0 +1,48 @@
+name: Spark shelf browser acceptance
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'src/ui/insight-threads.js'
+      - 'src/ui/planning-views.js'
+      - 'src/completing/views.js'
+      - 'data/spark-shelf.css'
+      - 'scripts/spark-shelf-browser.py'
+      - '.github/workflows/spark-shelf-browser.yml'
+permissions:
+  contents: read
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies and build website
+        run: |
+          npm install --no-audit --no-fund
+          npm test
+          npm run build
+      - name: Install Chromium
+        run: |
+          pip install playwright==1.57.0
+          python -m playwright install --with-deps chromium
+      - name: Verify responsive contextual sparks and edits
+        run: |
+          mkdir -p qa-output
+          python -m http.server 8765 --directory dist > qa-output/server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID"' EXIT
+          python scripts/spark-shelf-browser.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: spark-shelf-browser-results
+          path: qa-output
+          retention-days: 7
