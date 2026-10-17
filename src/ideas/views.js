@@ -1,4 +1,4 @@
-import {IDEA_TOPICS,IDEA_CHECKS,seedById,topicById,OWN_PROMPT} from './catalog.js';
+import {IDEA_TOPICS,IDEA_CHECKS,IDEA_DIFFICULTIES,IDEA_RATING_LABELS,seedById,topicById,OWN_PROMPT} from './catalog.js';
 import {ideaState,ideaChoices,currentSeed} from './engine.js';
 import {IDEA_MAP_ROOTS,DATA_BRANCHES,IDEA_DATA_PROMISE,IDEA_THEORY_CAUTION,ideaMapRoots,ideaMapRoot,ideaMapTopics,ideaMapBranches,ideaMapIdeas} from './mindmap.js';
 import {escapeHtml as e,icon} from '../ui/primitives.js';
@@ -94,74 +94,118 @@ export function ideaExplorerView(state){
   '<p>For most students, an observable question with accessible evidence is an easier way to begin.</p></details>'+
   '</section>';
 }
+const ratingScale=(field,title,value)=>'<div class="idea-evaluation-scale">'+
+ '<div class="idea-scale-head"><strong>'+e(title)+'</strong><span aria-live="polite">'+
+  e(IDEA_RATING_LABELS[field][value]||'Not rated yet')+'</span></div>'+
+ '<div class="idea-rating-buttons" role="group" aria-label="'+e(title)+', from one to five">'+
+ Array.from({length:5},(_,i)=>{const n=i+1;return '<button type="button" id="idea-'+field+'-'+n+
+  '" class="idea-rating-point'+(value===n?' selected':'')+
+  '" data-action="idea-rate" data-field="'+field+'" data-value="'+n+'" aria-pressed="'+(value===n)+'" '+
+  'aria-label="'+n+' out of 5: '+e(IDEA_RATING_LABELS[field][n])+'">'+n+'</button>';}).join('')+'</div>'+
+ '<div class="idea-scale-ends"><span>'+e(field==='clarity'?'Vague':'Difficult to start')+
+ '</span><span>'+e(field==='clarity'?'Clear and focused':'Can start now')+'</span></div></div>';
+const difficultiesView=d=>'<fieldset class="idea-evaluation-difficulties"><legend>What might make this difficult?</legend>'+
+ '<p>Tick anything that concerns you. These are possible obstacles, not confirmed limitations.</p>'+
+ '<div class="idea-difficulty-grid">'+IDEA_DIFFICULTIES.map(x=>'<label class="idea-difficulty-option">'+
+  '<input type="checkbox" data-idea-difficulty="'+e(x.id)+'"'+(d.difficulties.includes(x.id)?' checked':'')+'>'+
+  '<span>'+e(x.label)+'</span></label>').join('')+'</div>'+
+ '<p class="field-hint">Nothing to tick? That is fine. You can review these later.</p></fieldset>';
+
 export function ideaDetailView(state){
- const s=ideaState(state),seed=currentSeed(state),d=s.drafts[s.active],saved=s.shortlist.find(x=>x.id===d.savedId);
- const fromMap=d.fromMap&&seed.id!=='own';
- return '<section class="idea-explorer idea-detail'+(fromMap?' idea-map-detail':'')+'" data-idea-detail="'+e(seed.id)+'">'+
-  '<div class="idea-toolbar">'+button('browse','Back to my idea map')+
-  (!fromMap&&seed.id!=='own'?button('angle','Try a different angle'):'')+
-  button('compare','Saved ideas ('+s.shortlist.length+'/3)')+'</div>'+
-  '<div class="idea-detail-head"><span class="idea-map-overline">'+icon('route')+' MAKE IT YOURS</span>'+
-  '<h3 id="idea-detail-heading" tabindex="-1">'+e(seed.title)+'</h3>'+
-  '<p>Take this direction somewhere personal and manageable. It is not a finished IA question.</p></div>'+
-  (d.focus?'<p class="idea-focus-note"><strong>Your note:</strong> '+e(d.focus)+'</p>':'')+
-  (fromMap?'<div class="idea-map-starter"><span>'+icon('lightbulb')+' QUESTION STARTER · NOT A TITLE TO COPY</span>'+
-   '<p>'+e(seed.question)+'</p><small>Which real example would you use to make this yours?</small></div>'+
-   input('detail','One detail only I can choose: '+seed.narrow,d.detail,{rows:2,placeholder:'A real object, location, measurement, timeframe or comparison I can access'})+
-   input('question','My own working investigation question',d.question,{rows:3,placeholder:'Write a question using your specific detail. You can change it later.'})+
-   '<div class="idea-map-first-step">'+icon('clock')+' <div><strong>Can you begin this week?</strong>'+
-   '<p>'+e(seed.first)+'</p><small>Possible material: '+e(seed.material)+'</small></div></div>':
-   '<p class="field-hint">'+(seed.id==='own'?'Write a possible question in your own words. What could you actually measure, count, compare or check?':'This is a suggested direction. Adapt it rather than assuming it is a finished IA title.')+'</p>'+
-   input('question','My version of this idea',d.question,{rows:3,placeholder:'What would I like to investigate?'})+
-   '<details class="idea-narrow"><summary>Make it more specific (optional)</summary>'+
-   input('detail',seed.narrow,d.detail,{placeholder:'A detail for developing the aim'})+'</details>')+
-  '<div class="idea-primary-actions">'+button('use','Continue with my question','',true)+
-   button('save',saved?'Update saved possibility':'Save as a possibility')+
-   (saved?button('save-copy','Save a separate variation'):'')+'</div>'+
-  '<p id="idea-save-status" role="status" tabindex="-1" class="field-hint">'+
-  (saved?'Your shortlist includes this version. Changes remain a draft until you update it.':
-  'Saving a possibility does not replace your current plan. Only Continue with my question does that.')+'</p>'+
-  '<details class="idea-trial"><summary>Try a small first step (optional)</summary>'+
-  '<p class="idea-small-step">'+e(seed.first)+'</p><p><strong>Starting material:</strong> '+e(seed.material)+'</p>'+
-  '<p class="idea-caution">'+e(seed.caution)+'</p>'+
-  input('trialNote','What did I actually check? (private note)',d.trialNote,{placeholder:'An honest check, not invented evidence'})+
-  select('trialStatus','My judgement so far',d.trialStatus,[['','Not tried / undecided'],['workable','This seems workable'],['adjust','I need to adjust it'],['possible','Keep it as a possibility']],'data-idea-input="trialStatus"')+
-  (seed.resources.length?'<div class="idea-resource-links"><p class="field-hint">Guides are optional. Opening a tool does not select a method.</p>'+
-   seed.resources.map(id=>'<button type="button" class="btn btn-light" data-action="resource-open" data-resource-id="'+e(id)+'">'+e(resourceLabel(id))+' '+icon('chevron-right')+'</button>').join('')+'</div>':'')+'</details>'+
-  '<details class="idea-maths"><summary>Possible mathematics and a useful check</summary>'+
-  '<p>'+e(seed.maths)+'</p><p>'+e(seed.caution)+'</p>'+
-  '<p class="field-hint">A mathematical connection is not proof of course suitability. Discuss depth and scope with your teacher.</p></details>'+
+ const s=ideaState(state),seed=currentSeed(state),d=s.drafts[s.active];
+ if(!d)return '';
+ const saved=s.shortlist.find(x=>x.id===d.savedId),fromMap=d.fromMap&&seed.id!=='own';
+ const back=s.editorReturn==='N00C'?'Back to my possible ideas':'Back to my mind map';
+ return '<section class="idea-explorer idea-evaluation" aria-label="Shape and evaluate an idea" data-idea-detail="'+e(seed.id)+'">'+
+  '<div class="idea-toolbar">'+button('browse',back)+
+   '<span class="idea-evaluation-progress">IDEA LAB · SHAPE & EVALUATE</span></div>'+
+  '<h3 id="idea-detail-heading" tabindex="-1">'+(seed.id==='own'?'Add an idea of my own':'Make this idea yours')+'</h3>'+
+  '<p class="idea-evaluation-intro">Your question can change. You are deciding whether this could be a manageable starting point, not proving it will earn a particular mark.</p>'+
+  (fromMap?'<div class="idea-map-starter"><span>'+icon('lightbulb')+' Something to get you thinking</span>'+
+   '<p>'+e(seed.question)+'</p><small>You can use this prompt, change it, or ignore it entirely.</small></div>':'')+
+  '<div class="idea-evaluation-aim"><p>Either using the thinking prompt or otherwise, write your own possible aim here.</p>'+
+  input('question','Your possible investigation aim',d.question,{rows:3,placeholder:'I would like to investigate…'})+'</div>'+
+  '<div class="idea-evaluation-ratings"><h4>How promising does this idea feel?</h4>'+
+   '<p>Rate it for yourself. These scales are planning reflections, not IA marks or a mathematical suitability check.</p>'+
+   ratingScale('clarity','How clear is my aim?',d.clarity)+
+   ratingScale('quickStart','How quickly could I get started?',d.quickStart)+'</div>'+
+  difficultiesView(d)+
   (seed.topic==='patterns'?'<p class="idea-map-theory-note">'+icon('info')+' '+e(IDEA_THEORY_CAUTION)+'</p>':'')+
+  '<div class="idea-primary-actions">'+
+   button('save',saved?'Save updated evaluation':'Add to my possible ideas','',true)+'</div>'+
+  '<p class="field-hint" id="idea-save-status" tabindex="-1" role="status">'+
+  (saved?'Your existing possibility will be updated without changing the current investigation.':
+   'Saving adds this idea to your comparison. It will not replace your current investigation aim.')+'</p>'+
   '</section>';
 }
-const resourceNames={'image-scale':'Check an image scale','image-route':'Visual fit or recorded coordinates?','desmos-start':'Get started in Desmos','organise':'Organise observations','distribution-graphs':'Compare distributions','chart-choice':'Choose a suitable graph','model-check':'Check a fitted model','summary-stats':'Summary statistics','image-points':'Record image coordinates','binomial':'Preview a probability tool','derivatives':'Preview derivative tools','desmos-table':'Work with a table in Desmos','desmos-regression':'Fit a selected model','restrictions':'Restrict a curve','reporting-precision':'Check reporting precision','secondary-data':'Check a secondary-data source','forms':'Plan a form and responses'};
-const resourceLabel=id=>resourceNames[id]||'Open a related written guide';
+const difficultyBadge=id=>IDEA_DIFFICULTIES.find(x=>x.id===id)?.label||'';
+const ratingSummary=(field,value,label)=>'<div class="idea-compare-rating"><div class="idea-compare-scoreline">'+
+ '<span>'+e(label)+'</span><strong>'+(value?value+' / 5':'Not rated')+'</strong></div>'+
+ '<div class="idea-compare-bar" role="img" aria-label="'+e(label)+': '+(value?value+' out of 5':'not rated')+'">'+
+ Array.from({length:5},(_,i)=>'<span'+(value>i?' class="active"':'')+'></span>').join('')+'</div></div>';
+const compareCard=(d,selected)=>'<article class="idea-card idea-saved idea-comparison-card" data-idea-saved-card="'+e(d.id)+'">'+
+ '<div class="idea-compare-card-top"><span class="idea-source-pill">'+icon(d.fromMap?'route':'pencil')+
+  (d.fromMap?'From my mind map':'Added by me')+'</span>'+
+  (selected?'<span class="idea-selected-indicator">'+icon('check-circle')+' Currently selected</span>':'')+'</div>'+
+ '<h4>'+e(d.question)+'</h4>'+
+ '<div class="idea-compare-ratings">'+
+  ratingSummary('clarity',d.clarity,'Aim clarity')+
+  ratingSummary('quickStart',d.quickStart,'Quick start')+'</div>'+
+ (d.difficulties.length?'<div class="idea-compare-difficulties"><strong>Possible difficulties</strong>'+
+ d.difficulties.map(id=>'<span>'+e(difficultyBadge(id))+'</span>').join('')+'</div>':
+ '<p class="idea-no-difficulties">No concerns recorded yet.</p>')+
+ (!d.clarity||!d.quickStart?'<p class="idea-old-unrated">This idea was saved before ratings were introduced. Edit and rate it before selecting.</p>':'')+
+ '<div class="idea-saved-actions">'+
+ button('edit-saved','Edit & rate','data-id="'+e(d.id)+'"')+
+ button('remove','Reject idea','data-id="'+e(d.id)+'"')+
+ button('use','Select as my idea','data-id="'+e(d.id)+'"',true)+'</div></article>';
 export function ideaComparisonView(state){
- const s=ideaState(state);if(s.pending)return ideaConfirmationView(state);
- return '<section class="idea-explorer idea-comparison"><div class="idea-toolbar">'+button('browse','Explore more directions')+button('own','Add my own idea')+'</div><h3 id="idea-compare-heading" tabindex="-1">My saved possibilities</h3><p>Keep up to three. These are your judgements, not scores or automatic approval. One promising idea is enough.</p>'+
-  (!s.shortlist.length?'<p class="idea-empty">No saved cards yet. Explore a direction, add your own idea, or keep your current one.</p>':'<div class="idea-grid">'+s.shortlist.map(d=>{
-   const seed=seedById(d.seedId)||OWN_PROMPT;
-   return '<article class="idea-card idea-saved" data-idea-saved-card="'+e(d.id)+'"><h4>'+e(d.question)+'</h4>'+(d.detail?'<p>'+e(d.detail)+'</p>':'')+
-    '<details class="idea-checks"><summary>My four quick checks (optional)</summary>'+IDEA_CHECKS.map(c=>select(d.id+'-'+c.id,c.label,d.checks[c.id],[['','Not checked'],...c.options],'data-idea-input="'+e(c.id)+'" data-idea-saved="'+e(d.id)+'"')).join('')+'<p class="field-hint">'+e(seed.maths)+'</p></details>'+
-    (d.trialNote?'<details><summary>My first-step note</summary><p>'+e(d.trialNote)+'</p></details>':'')+
-    '<div class="idea-saved-actions">'+button('use','Develop this idea','data-id="'+e(d.id)+'"',true)+button('edit-saved','Edit possibility','data-id="'+e(d.id)+'"')+button('remove','Remove from shortlist','data-id="'+e(d.id)+'"')+'</div></article>';
-  }).join('')+'</div>')+
+ const s=ideaState(state);
+ if(s.pending)return ideaConfirmationView(state);
+ if(s.active)return ideaDetailView(state);
+ return '<section class="idea-explorer idea-comparison">'+
+  '<div class="idea-compare-intro"><span class="idea-map-overline">'+icon('layers')+' IDEA LAB · COMPARE</span>'+
+  '<h3 id="idea-compare-heading" tabindex="-1">My possible ideas</h3>'+
+  '<p>Look at your judgements side by side. A quick start is useful, but it does not guarantee mathematical depth or IA suitability.</p>'+
+  '<span class="idea-compare-count">'+s.shortlist.length+' of '+3+' active ideas</span></div>'+
+  '<div class="idea-grid idea-comparison-grid">'+
+    (s.shortlist.length?s.shortlist.map(d=>compareCard(d,s.selectedId===d.id)).join(''):
+    '<p class="idea-empty">Your comparison is empty. Add a possibility using the mind map or write your own.</p>')+
+  '</div>'+
+  '<div class="idea-compare-add"><h4>Add another possibility</h4>'+
+  '<div class="idea-compare-add-actions">'+button('map-open','Add a possible idea from my mind map')+
+    button('own','Add an idea manually')+'</div>'+
+   (s.shortlist.length>=3?'<p class="field-hint">You have three active ideas. You can reject one temporarily to make space, then restore it later.</p>':'')+'</div>'+
+  (s.rejected?.length?'<details class="idea-rejected"><summary>Rejected ideas ('+s.rejected.length+') · Restore if you change your mind</summary>'+
+  '<div class="idea-rejected-list">'+s.rejected.map(d=>'<div class="idea-rejected-item">'+
+   '<p>'+e(d.question)+'</p><small>Clarity '+(d.clarity||'?')+'/5 · Quick start '+(d.quickStart||'?')+'/5</small>'+
+   button('restore','Restore idea','data-id="'+e(d.id)+'"')+'</div>').join('')+'</div></details>':'')+
   legacyComparison(state)+
-  (s.history.length?'<details class="idea-source"><summary>Earlier idea choices ('+s.history.length+')</summary>'+s.history.slice().reverse().map(h=>'<div><p><strong>Earlier topic:</strong> '+e(h.before||'No earlier topic')+'</p><p><strong>Selected direction:</strong> '+e(h.after)+'</p><p class="field-hint">The aim at that choice: '+e(h.aimAtChoice||'Not written yet')+'</p></div>').join('')+'</details>':'')+'</section>';
+  (s.history.length?'<details class="idea-source"><summary>Earlier selected ideas ('+s.history.length+')</summary>'+
+   s.history.slice().reverse().map(h=>'<div><p><strong>Earlier topic:</strong> '+e(h.before||'Not recorded')+'</p>'+
+    '<p><strong>New aim:</strong> '+e(h.after)+'</p></div>').join('')+'</details>':'')+
+  '</section>';
 }
 export function ideaConfirmationView(state){
  const p=ideaState(state).pending;
- return '<section class="idea-explorer idea-confirm"><h3 id="idea-confirm-heading" tabindex="-1">Review before using this idea</h3><div class="idea-compare-change"><div><strong>Current topic</strong><p>'+e(p.origin.idea||p.origin.projectIdea||'Not recorded')+'</p></div><div><strong>Proposed direction</strong><p>'+e(p.draft.question)+'</p></div></div>'+
-  '<p><strong>Your existing aim stays unchanged.</strong> '+e(p.origin.aim||p.origin.projectAim||'There is no aim written yet.')+'</p><p>Only the topic is selected here. Refine the aim on the next page. Your previous topic, original prediction, methods, data and results are retained. No new method or source is selected.</p>'+
-  (state.entries.length?'<p class="idea-caution">You already have mathematical work. Refine the current investigation where possible rather than starting over. Discuss a substantial change with your teacher; completed introduction, mathematics and conclusion stages will be flagged for review, not erased.</p>':'')+
-  '<div class="idea-primary-actions">'+button('confirm','Confirm idea and review aim','',true)+button('cancel','Cancel - keep my current plan')+'</div></section>';
+ return '<section class="idea-explorer idea-confirm">'+
+  '<h3 id="idea-confirm-heading" tabindex="-1">Confirm your new investigation aim</h3>'+
+  '<div class="idea-compare-change">'+
+  '<div><strong>Your current aim</strong><p>'+e(p.origin.aim||p.origin.projectAim||'Not recorded')+'</p></div>'+
+  '<div><strong>Your selected possibility</strong><p>'+e(p.draft.question)+'</p></div></div>'+
+  '<p>This will save the selected question as your <strong>provisional investigation aim</strong> and create its reusable aim spark. You can refine it on the next screen.</p>'+
+  '<p>Existing mathematics, notes and evidence stay in your project. A changed aim may flag related completed writing for review, rather than erase it. No teacher approval or results are implied.</p>'+
+  (state.entries.length?'<p class="idea-caution">You already have mathematical work. Consider discussing a major change of direction with your teacher before proceeding.</p>':'')+
+  '<div class="idea-primary-actions">'+button('confirm','Confirm this aim','',true)+button('cancel','Keep my current aim')+'</div></section>';
 }
 export function ideaFooter(state){
- const s=ideaState(state);if(s.pending)return '';
- const current=state.planning.fields.idea||state.project.idea;
- return '<div class="task-footer idea-footer"><button class="btn btn-quiet" type="button" data-action="plan-edit" data-node="N00">Back to starting choices</button>'+(current?button('keep','Keep my current idea and continue'):'')+'</div>';
+ const s=ideaState(state);
+ if(s.pending||s.active)return '';
+ const current=state.planning.fields.aim||state.project.aim||state.planning.fields.idea||state.project.idea;
+ return '<div class="task-footer idea-footer">'+
+  '<button class="btn btn-quiet" type="button" data-action="plan-edit" data-node="N00">Back to starting choices</button>'+
+  (current?button('keep','Keep my current aim and continue'):'')+'</div>';
 }
-
 function legacyComparison(state){
  const f=state.planning.fields,seen=new Set();
  const rows=[['idea','Current topic'],['originalIdea','First recorded idea'],['otherIdea1','Earlier alternative 1'],['otherIdea2','Earlier alternative 2']].filter(([key])=>{const v=f[key]?.trim();if(!v||seen.has(v))return false;seen.add(v);return true;});
