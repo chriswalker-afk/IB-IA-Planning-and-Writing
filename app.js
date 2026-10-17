@@ -67,7 +67,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   if(resumedPreview)state=resumedPreview;
   const main = $("#main");
   const layer = $("#drawerLayer");
-  const planTitles = ["Your starting point","Shape your question","Who might benefit?","Choose a direction","Your data or starting material","Is it feasible?","Plan your mathematics","Make a prediction","Your first mathematical move","Your planning snapshot"];
+  const planTitles = ["Your starting point","Shape your question","Have a clear motivation","Choose a direction","Your data or starting material","Is it feasible?","Plan your mathematics","Make a prediction","Your first mathematical move","Your planning snapshot"];
   const studioSections = [
     {id:"intro",name:"Introduction",sub:"Set out your purpose and motivation",icon:"pencil"},
     {id:"data",name:"Data & methods",sub:"Record what you actually have and did",icon:"flask"},
@@ -1014,6 +1014,15 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     if(target.dataset.bind){
       updateBoundField(target.dataset.bind,target.value);
       save();refreshSavedSpark(target.dataset.bind);
+      // Keep the compact, editable motivation-page aim spark in sync without
+      // rerendering (which would steal focus from the student's textarea).
+      if(target.dataset.bind==="planning.fields.aim"){
+        const preview=main.querySelector?.("[data-motivation-aim-preview]");
+        if(preview){
+          const value=target.value.trim();
+          preview.textContent=value?(value.length>90?value.slice(0,89)+"…":value):"Your aim is still developing";
+        }
+      }
     }
   });
   document.addEventListener("change",evt=>{
