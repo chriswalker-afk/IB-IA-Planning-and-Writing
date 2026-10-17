@@ -299,6 +299,19 @@ export function planningMove(state,condition) {
     return setPlanCurrent(state,"N03B",{internal:true});
   }
  }
+ if(from==="N03P"&&f.primaryStatus==="ready"){
+  if(!f.primaryWhat.trim()||!f.primaryHow.trim())
+   return{ok:false,error:"Before marking your collection plan ready, record what you will measure and how. Or select Still uncertain."};
+  if(f.kind==="statistics"&&(!f.primarySamplingFrame||!f.primaryRepeatable))
+   return{ok:false,error:"Before collecting a statistical sample, consider your sampling frame and whether follow-up observations are possible."};
+  if(["simple-random","systematic","stratified","cluster"].includes(f.primarySamplingMethod)&&f.primarySamplingFrame!=="yes")
+   return{ok:false,error:"Your chosen probability sampling method requires a workable sampling frame. Review the method or mark your plan uncertain."};
+  const accuracy=(state.planning.accuracyPlans||[]).filter(x=>x.source==="primary");
+  if(!accuracy.length&&!f.firstAccuracy.trim())
+   return{ok:false,error:"Before measuring, save at least one degree-of-accuracy rule (including Exact count for categorical data), or mark your plan uncertain."};
+  if(accuracy.length&&accuracy.every(x=>x.basis==="unknown"&&!x.resolution)&&!f.firstAccuracy.trim())
+   return{ok:false,error:"Your measurement precision is still unknown. Mark the source plan uncertain until you can confirm a recording rule."};
+ }
  if(from==="N03P"&&f.kind==="statistics"&&!samplingMethod(f.primarySamplingMethod))
   return{ok:false,error:"Before collecting data, choose a sample or census approach (including Not applicable or Not sure yet). You can revise this later."};
  if(from==="N03P"&&f.kind==="statistics"&&f.primaryStatus==="ready"&&f.primarySamplingMethod==="unsure")
