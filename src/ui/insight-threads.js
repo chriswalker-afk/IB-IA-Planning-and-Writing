@@ -66,6 +66,10 @@ export function insightItems(s){
    {planned:true,plannedSource:plan.source,
     usage:'This is a planned recording or rounding rule, not verified measurement accuracy. Confirm the original instrument or published methodology before calculating or reporting results.'}));
  }
+ if(has(p.firstAccuracy))out.push(item('accuracy','planned-precision-policy',
+  'Planned accuracy convention',p.firstAccuracy,
+  'Planning · First mathematical move',{type:'planning',node:'N05'},
+  {planned:true,usage:'An intended policy for rounding or displaying values. Confirm actual measurement or source resolution before presenting numerical results.'}));
  const first=p.firstAction||p.figurePurpose;
  if(has(first))out.push(item('discovery','planned-maths','Planned first mathematics',first,'Planning · Mathematical direction',
   {type:'planning',node:'N05V'}, {planned:true,usage:'A proposed action, not a performed calculation.'}));
@@ -116,7 +120,7 @@ export function insightItems(s){
    'IA Studio · Limitation and consequence',index>=0?{type:'entry',index}:{type:'completion',node:x.stage||'C20'},
    {usage:'Mathematical consequence: '+short(x.consequence,250),entryId:x.entryId||'',consequence:x.consequence}));
  }
- return out.slice(0,230);
+ return out; // Every saved spark remains discoverable; visible highlights are capped separately.
 }
 export function insightForCurrent(s,node){
  const all=insightItems(s),active=entries(s)[s?.completion?.activeEntryIndex];
