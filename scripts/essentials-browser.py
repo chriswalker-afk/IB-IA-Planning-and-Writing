@@ -91,7 +91,16 @@ with sync_playwright() as pw:
   p.locator('[data-choice="planning.fields.ideaStatus"][data-value="yes"]').click()
   p.locator('[data-action="plan-advance"]').click()
   assert p.locator('[data-source-node="N01"]').count()==1
-  assert p.locator('.ess-at-glance').count()==1;p.locator('[data-action="criteria-toggle"]').click();assert 'Planning guidance' in p.locator('.criteria-panel').inner_text();before=stored(p);open_ess(p);close_ess(p);assert stored(p)==before
+  assert p.locator('#main .criteria-panel').count()==1
+  assert p.locator('#main .planning-trail-support .criteria-panel').count()==1
+  assert p.locator('.ess-at-glance').count()==0
+  panel=p.locator('.planning-trail-support')
+  assert panel.locator('[data-example-id="EX30"]').count()==1
+  panel.locator('.planning-trail-help-toggle').click()
+  assert panel.locator('.planning-trail-help-toggle').get_attribute('aria-expanded')=='true'
+  panel.locator('[data-action="criteria-toggle"]').click()
+  assert 'Planning guidance' in panel.inner_text()
+  before=stored(p);open_ess(p);close_ess(p);assert stored(p)==before
  s=fixture();s['route']='planning';s['planning']['current']='N00'
  run('essentials-planning-after-kickoff',s,planning,390,844)
  def repeated_reference(p):
