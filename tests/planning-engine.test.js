@@ -116,6 +116,59 @@ test("permission concerns flag only restricted activities; report remains access
  assert.equal(s.teacher.pendingApproval,true);
  set(s,"permissionNeed","no");assert.equal(s.teacher.pendingApproval,false);
 });
+test("the standard data path bypasses both retired questionnaires and preserves the practical check",()=>{
+ const s=newPlan();
+ set(s,"kind","statistics");set(s,"dataSource","primary");
+ s.planning.current="N03P";
+ set(s,"primaryHow","Measure each item carefully");
+ advance(s,"N03P2");
+ set(s,"primarySamplingMethod","convenience");set(s,"primaryStatus","unsure");
+ advance(s,"N03D");
+ advance(s,"N03E");
+ assert(!planAutoAdvance(s).ok); // An unanswered permission check is not a tacit no.
+ set(s,"permissionNeed","no");
+ assert(!planAutoAdvance(s).ok); // An unanswered access check is not a tacit no.
+ set(s,"practicalBlocker","no");
+ advance(s,"N03G");
+ assert(s.planning.completedNodes.includes("N03E"));
+ assert(!s.planning.completedNodes.includes("N03J"));
+ assert(!s.planning.completedNodes.includes("N03F"));
+ assert(!s.planning.visited.includes("N03J"));
+ assert(!s.planning.visited.includes("N03F"));
+ assert(planningMove(s,"Revisit practical checks").ok);
+ assert.equal(s.planning.current,"N03E");
+});
+test("historical method and feasibility answers survive moving old checkpoints",()=>{
+ const legacy=newPlan();
+ Object.assign(legacy.planning.fields,{
+  methodReason:"Compare measurements in the relevant population",
+  methodLimitation:"Only one local class is accessible",
+  methodMitigation:"Avoid generalising beyond the class",
+  dependencies:"Teacher equipment cupboard",
+  unsecured:"Need to borrow the school's tape measure",
+  permissionNeed:"yes",
+  permissionDetails:"Teacher must confirm survey approval",
+  sourceRights:"unsure",
+  workloadHours:"4"
+ });
+ legacy.planning.current="N03J";
+ legacy.planning.history=["N03P2","N03J","N03F"];
+ legacy.planning.completedNodes=["N03J","N03F","N03P2"];
+ let restored=normalizeProjectState(JSON.parse(JSON.stringify(legacy)));
+ assert.equal(restored.planning.current,"N03D");
+ assert.deepEqual(restored.planning.history,["N03P2"]);
+ assert.equal(restored.planning.fields.methodReason,legacy.planning.fields.methodReason);
+ assert.equal(restored.planning.fields.methodLimitation,legacy.planning.fields.methodLimitation);
+ assert.equal(restored.planning.fields.unsecured,legacy.planning.fields.unsecured);
+ assert.equal(restored.planning.fields.practicalBlocker,"yes");
+ assert.equal(restored.planning.fields.permissionNeed,"yes");
+ assert(!restored.planning.completedNodes.includes("N03J"));
+ assert(!restored.planning.completedNodes.includes("N03F"));
+ legacy.planning.current="N03F";
+ restored=normalizeProjectState(JSON.parse(JSON.stringify(legacy)));
+ assert.equal(restored.planning.current,"N03E");
+ assert.equal(restored.planning.fields.permissionDetails,"Teacher must confirm survey approval");
+});
 test("optional idea comparison retains selected idea and can be skipped entirely",()=>{
  const s=newPlan();
  set(s,"idea","Original question");set(s,"ideaStatus","unsure");
