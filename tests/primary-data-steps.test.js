@@ -42,7 +42,7 @@ test('primary collection and sampling use two screens while keeping provenance',
  assert(!PLANNING_NODE_IDS.includes('N03P3'));
  const route=(from,to)=>PLANNING_ROUTES.find(x=>x.from===from&&x.to===to);
  assert.equal(route('N03P','N03P2').sourceRow,null);
- assert.equal(route('N03P2','N03J').sourceRow,null);
+ assert.equal(route('N03P2','N03D').sourceRow,null);
  assert.equal(route('N03P','N03J').sourceRow,19);
  const state=s();
  assert(!planAutoAdvance(state).ok);
@@ -53,7 +53,7 @@ test('primary collection and sampling use two screens while keeping provenance',
  set(state,'primarySamplingMethod','convenience');
  set(state,'primaryStatus','unsure');
  assert(planAutoAdvance(state).ok);
- assert.equal(state.planning.current,'N03J');
+ assert.equal(state.planning.current,'N03D');
  assert.deepEqual(['N03P','N03P2'].map(id=>state.planning.completedNodes.includes(id)),[true,true]);
  assert(planningBack(state).ok);
  assert.equal(state.planning.current,'N03P2');
