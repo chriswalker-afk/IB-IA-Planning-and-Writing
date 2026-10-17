@@ -12,7 +12,7 @@ import {normalizeEntry} from "../completing/entry-record.js";
 export const STATE_VERSION = 2;
 export const STORAGE_KEY = "ia-pathfinder-prototype-v1"; // Deliberately stable across upgrades.
 export const MAX_ENTRIES = 120;
-const planningIds = ["N00","N01","N01V","N02","N03","N03E","N04S","N01P","N05V","N07"];
+const planningIds = ["N00","N01","N01V","N02","N03","N03D","N04S","N01P","N05V","N07"];
 const plain = v => v && typeof v === "object" && !Array.isArray(v);
 const str = v => typeof v === "string" ? v : "";
 function copyKnown(defaults, input) {
