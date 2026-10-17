@@ -84,9 +84,11 @@ def run_primary(p,width):
  assert field(p,"practicalBlocker").count()==1
  assert "Before you start" in p.locator(".practical-quick-check").inner_text()
  field(p,"permissionNeed").select_option("yes")
+ assert "Do not begin affected collection" in p.locator(".practical-quick-check").inner_text()
  assert p.locator('[data-condition="Safety / privacy / consent unresolved"]').count()==1
  assert saved(p)["teacher"]["pendingApproval"]==True
  field(p,"practicalBlocker").select_option("yes")
+ assert field(p,"unsecured").count()==1
  field(p,"unsecured").fill("Borrow a ruler before a small test")
  assert saved(p)["planning"]["fields"]["unsecured"]=="Borrow a ruler before a small test"
  no_overflow(p)
