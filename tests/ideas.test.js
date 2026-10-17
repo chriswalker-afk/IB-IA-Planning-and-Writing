@@ -68,7 +68,12 @@ test('Choosing roots, topics and subtopics grows a connected, unfinished editori
  assert(ideaAction(s,'idea-map-leaf',{subtopic:'Leaves'}).ok);
  const html=ideaExplorerView(s);
  assert(html.includes('data-seed="leaf-outline"'));
- assert(html.includes('Your missing detail'));
+ assert(html.includes('Make it personal'));
+ assert(!html.includes('Your missing detail:'));
+ assert(html.includes('data-idea-map-network'));
+ assert(html.includes('data-idea-map-connectors'));
+ for(const [child,parent] of [['topic-nature','root-world'],['leaf-nature-0','topic-nature'],['seed-leaf-outline','leaf-nature-0']])
+  assert(html.includes('data-idea-node="'+child+'" data-idea-parent="'+parent+'"'),child);
  assert(html.includes('A small first try'));
  assert(!html.includes('data-seed="pattern-sequence"'));
  assert(!ideaAction(s,'idea-map-topic',{topic:'patterns'}).ok);
@@ -135,9 +140,11 @@ test('Old dropdown-based interests become map branches without losing drafts',()
 test('Idea Lab CSS is neutral and has mobile and reduced-motion arrangements',async()=>{
  const {readFileSync}=await import('node:fs');
  const css=readFileSync(new URL('../data/idea-map.css',import.meta.url),'utf8');
- assert(css.includes('.idea-map-orbit'));
- assert(css.includes('.idea-map-direction-list'));
- assert(css.includes('@media(max-width:680px)'));
+ assert(css.includes('.idea-map-network'));
+ assert(css.includes('.idea-map-connectors'));
+ assert(css.includes('.idea-map-seeds'));
+ assert(css.includes('ideaTierAppear'));
+ assert(css.includes('@media(max-width:720px)'));
  assert(css.includes('prefers-reduced-motion:reduce'));
  assert(!/\.idea-map-quickstart\{[^}]*background:var\(--teal-pale\)/.test(css));
 });
@@ -147,4 +154,28 @@ test('opening an empty comparison does not manufacture a completed Planning scre
  assert(ideaAction(s,'idea-compare').ok);
  assert.equal(s.planning.current,'N00C');
  assert.equal(s.planning.completedNodes.includes('N00B'),false);
+});
+
+test('Data route draws parent-child graph nodes rather than a disconnected result section',()=>{
+ const s=make();
+ ideaAction(s,'idea-map-mode',{mode:'data'});
+ ideaAction(s,'idea-map-root',{root:'find'});
+ ideaAction(s,'idea-map-access',{branch:'image'});
+ const html=ideaExplorerView(s);
+ assert(html.includes('data-idea-node="access-image" data-idea-parent="root-find"'));
+ assert(html.includes('data-idea-node="seed-sport-trajectory" data-idea-parent="access-image"'));
+ assert(html.includes('Make it personal'));
+ assert(!html.includes('idea-map-growth'));
+ assert(!html.includes('idea-map-canvas'));
+ assert(html.indexOf('idea-map-roots')<html.indexOf('idea-map-topics')||html.indexOf('idea-map-topics')<0);
+});
+test('Map connectors are drawn from real DOM coordinates and attached to responsive render',async()=>{
+ const {readFileSync}=await import('node:fs');
+ const layout=readFileSync(new URL('../src/ideas/map-layout.js',import.meta.url),'utf8');
+ const app=readFileSync(new URL('../app.js',import.meta.url),'utf8');
+ assert(layout.includes('getBoundingClientRect'));
+ assert(layout.includes('ResizeObserver'));
+ assert(layout.includes('data-idea-parent'));
+ assert(layout.includes('idea-map-wire'));
+ assert(app.includes('detachIdeaMapGraph=attachIdeaMapGraph(main)'));
 });
