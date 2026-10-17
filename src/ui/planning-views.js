@@ -3,7 +3,6 @@ import {insightCapture,insightEcho} from './insight-threads.js';
 import {examplePrompt} from "../examples/views.js";
 import {criteriaPanel,essentialsNudge} from "../essentials/views.js";
 import {ideaExplorerView,ideaComparisonView,ideaFooter} from '../ideas/views.js';
-import {resourcePrompt} from "../resources/views.js";
 import {renderTimelineStep} from "./timeline-view.js";
 /**
  * Full Planning student experience. Source node IDs are attached to UI for test
@@ -109,13 +108,16 @@ export function createPlanningViews(ctx){
     ideaExplorerView(state),"<p>Accessible starting material, a mathematical purpose and one small first step. A single idea is enough.</p>");
    case "N00C":return stepBody("Compare your possibilities.","A quick comparison is enough; you do not need three full IA plans.",
     ideaComparisonView(state),"<p>Judge interest, access, mathematical purpose and one small first step. A single idea is also fine. Selecting a saved possibility asks before changing an existing topic.</p>");
-   case "N01":return stepBody("What do you want to find out?","Turn your starting idea into a question you could investigate mathematically. Both can change as you explore.",
-    F("idea","My starting topic or idea (optional)","e.g. patterns in a sport, design or natural phenomenon")+
-    F("aim","My current investigation aim","How does … relate to …? Can … be modelled? When is … optimal?",{type:"textarea",rows:3})+
-    F("motivation","What sparked my interest?","An experience, observation or genuine mathematical curiosity",{type:"textarea",rows:3})+
-    '<details class="planning-extra-interest"'+(f.interest?' open':'')+'><summary>Other interests I might explore (optional)</summary>'+
-    F("interest","My interests","A hobby, everyday decision or mathematical curiosity")+'</details>',
-    "<h4>What makes a good aim?</h4><p>It should invite meaningful mathematics and an interpretable answer. Avoid promising a result before any work has been done.</p>");
+   case "N01":return stepBody("Give your idea a working title.","This is a starting point, not a final decision. Your title can change as your investigation develops.",
+    (f.idea?'<div class="planning-idea-recall"><span>'+icon("compass")+' YOUR STARTING IDEA</span><p>'+e(f.idea)+'</p></div>':'')+
+    F("provisionalTitle","My provisional IA title","e.g. How well can a model describe ...?",{hint:"A focused question or short descriptive title. You do not need to choose a technique yet."})+
+    insightCapture(state,"N01")+
+    F("aim","What do I want to find out mathematically?","What relationship, pattern or problem could my mathematics help me explore?",{type:"textarea",rows:2,hint:"Say what you want to investigate, rather than the answer you hope to prove."})+
+    insightCapture(state,"N01A")+
+    '<p class="planning-engagement-note"><strong>Personal engagement is not how much you love the topic.</strong> It grows when you explain choices in your own words, follow interesting results, change direction thoughtfully and reflect on the mathematics as you go.</p>'+
+    (f.idea?'<details class="planning-extra-interest"><summary>Revise my original idea (optional)</summary>'+
+    F("idea","My starting idea","The topic or observation that brought me here")+'</details>':''),
+    "<h4>A title worth exploring</h4><p>Be specific enough to guide your mathematics without deciding the conclusion in advance. Your title can change after you have real results.</p>");
    case "N01V":return stepBody("Who might benefit from knowing the answer?","Personal curiosity is a meaningful purpose. You do not need to invent a grand real-world impact.",
     choice("beneficiaryType",[
      {value:"me",title:"It would help me",desc:"A question I want to answer or decision I might make.",icon:"target"},
@@ -398,18 +400,18 @@ export function createPlanningViews(ctx){
  }
  function viewPlanning(){
   const state=ctx.getState(),p=state.planning,n=p.current,screen=nodePage(state);
-  const stage=planningStage(n),stageI=PROGRESS_GROUPS.findIndex(x=>x.id===stage),kickoff=n==="N00";
+  const stage=planningStage(n),stageI=PROGRESS_GROUPS.findIndex(x=>x.id===stage),kickoff=n==="N00",titleStep=n==="N01";
   return '<div class="page planning-page">'+tabletNav()+
-   '<div class="planning-page-layout">'+planningLearningTrail(state)+
+   '<div class="planning-page-layout">'+planningLearningTrail(state,{support:kickoff?'':criteriaPanel(state)})+
    '<div class="planning-page-main">'+
    '<div class="progress-top"><span class="progress-overview">'+icon("compass")+' Guided Planning</span>'+
    '<span class="progress-counter">1. Planning · '+e(PROGRESS_GROUPS[stageI]?.label||"Review")+'</span></div>'+
-   '<div class="task-shell'+(kickoff?' planning-kickoff':'')+'" data-source-node="'+e(n)+'">'+
+   '<div class="task-shell'+(kickoff?' planning-kickoff':'')+(titleStep?' planning-title-step':'')+'" data-source-node="'+e(n)+'">'+
    '<h1 class="task-heading">'+e(screen.title)+'</h1><p class="task-intro">'+e(screen.intro)+'</p>'+
-   (kickoff?'':insightEcho(state,n)+criteriaPanel(state))+screen.html+
-   (kickoff?'':insightCapture(state,n)+essentialsNudge(state)+
-   '<div class="example-row">'+helpButton("plan-"+n)+helpBox("plan-"+n,screen.help)+'</div>'+
-   resourcePrompt(state))+footer(state,screen)+'</div>'+
+   (kickoff?'':insightEcho(state,n))+screen.html+
+   (kickoff||titleStep?'':insightCapture(state,n))+(!kickoff&&titleStep?'':essentialsNudge(state))+
+   (kickoff||titleStep?'':'<div class="example-row">'+helpButton("plan-"+n)+helpBox("plan-"+n,screen.help)+'</div>')+
+   footer(state,screen)+'</div>'+
    (kickoff?'':'<p class="small-callout">Your choices are provisional until evidence supports them. You can revisit earlier decisions. Teacher flags never prevent a provisional report.</p>')+
    (p.notices&&p.notices.length?'<div class="inline-note warning">'+icon("info")+'<p>'+e(p.notices.at(-1))+'</p></div>':"")+
    '</div></div></div>';
