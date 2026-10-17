@@ -326,9 +326,9 @@ export function featuredSparkItems(s,node){
  return selected.slice(0,2);
 }
 const sparkLibraryGroups=[
- {label:'Your question and intentions',test:x=>['title','aim','motivation','pathway'].includes(x.type)},
+ {label:'Your question and intentions',test:x=>['title','aim','motivation','pathway'].includes(x.type)||x.id==='planned-maths'},
  {label:'Data, sources and accuracy',test:x=>['evidence','sampling','accuracy'].includes(x.type)},
- {label:'Mathematical discoveries and learning',test:x=>['discovery','learning'].includes(x.type)},
+ {label:'Mathematical discoveries and learning',test:x=>(x.type==='discovery'&&!x.planned)||x.type==='learning'},
  {label:'Reflections and limitations',test:x=>x.type==='reflection'}
 ];
 const inlineSparkKey=(s,x)=>{
