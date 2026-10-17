@@ -70,7 +70,7 @@ test('old mathematical records do not override an introduction or conclusion',()
 test('planning previews do not infer course familiarity from old entries',()=>{
  const s=state('statistics');s.route='planning';s.entries[0].kind='theory';s.entries[0].knowledge='outside';
  const x=exampleContext(s);assert.equal(x.mode,'Planning preview');assert.equal(x.knowledge,'');assert.equal(x.real,false);
- assert.equal(selectExamples(s)[0].id,'EX02');
+ assert.equal(selectExamples(s)[0].id,'EX30');
 });
 test('mathematical presentation defines variables before the calculation',()=>{
  const html=renderCard(exampleById('EX13'));assert(html.indexOf('Let t be')<html.indexOf('<math '));
