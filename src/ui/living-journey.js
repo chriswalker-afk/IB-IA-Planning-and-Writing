@@ -4,6 +4,7 @@
 import {escapeHtml as e,icon} from './primitives.js';
 import {insightTrailLines,insightTrailControls} from './insight-network.js';
 import {JOURNEY_GROUPS,groupStatus,stageStatus,currentGroup,groupTarget,STATUS_LABELS} from './journey.js';
+import {PROGRESS_GROUPS,planningStage} from '../planning/engine.js';
 
 export function planningAnchors(s){
  const p=s?.planning?.fields||{};
@@ -57,6 +58,65 @@ export function planningProgress(s,{compact=false}={}){
   '<span>'+e(x.name)+'</span></span>').join('')+
   '</div><p>These are provisional decisions, not a score or completed IA mathematics.</p></section>';
 }
+/** A responsive companion to the four-chapter Discovery Trail for Planning screens.
+ * Chapter readiness and saved planning anchors are derived from existing state;
+ * moving through a route alone never implies that its decisions are complete.
+ */
+export function planningLearningTrail(s){
+ const anchors=planningAnchors(s),recorded=anchors.filter(x=>x.recorded).length;
+ const activeStage=planningStage(s?.planning?.current||'N00');
+ const stageIndex=Math.max(0,PROGRESS_GROUPS.findIndex(x=>x.id===activeStage));
+ const stage=PROGRESS_GROUPS[stageIndex];
+ const chapters=JOURNEY_GROUPS.map(g=>({g,status:groupStatus(s,g)}));
+ const pathSegments=[
+  'M29 37 C53 53 5 94 29 111',
+  'M29 111 C53 133 5 165 29 185',
+  'M29 185 C53 213 5 243 29 259'
+ ];
+ const chapterButtons='<div class="planning-trail-chapters">'+
+  '<svg viewBox="0 0 64 296" class="planning-trail-roadmap" aria-hidden="true" focusable="false">'+
+  pathSegments.map((d,i)=>'<path d="'+d+'" class="living-trail-road"/>'+
+   (chapters[i].status==='complete'?'<path d="'+d+'" class="living-trail-done"/>':'')).join('')+
+  '</svg>'+
+  chapters.map(({g,status},i)=>{
+   const current=g.id==='plan',label=current&&status==='not-started'?'Getting started':STATUS_LABELS[status];
+   return '<button type="button" class="planning-trail-chapter '+e(status)+(current?' current':'')+
+    '" data-action="journey-open" data-target="'+e(groupTarget(s,g))+'"'+
+    (current?' aria-current="step"':'')+' aria-label="'+e(g.name+', '+label)+'">'+
+    '<span class="planning-trail-point">'+(status==='complete'?icon('check'):i+1)+'</span>'+
+    '<span class="planning-trail-chapter-copy"><strong>'+e(g.name)+'</strong>'+
+    '<small>'+e(label)+'</small>'+chapterMini(s,g)+'</span></button>';
+  }).join('')+'</div>';
+ const stageTrack='<div class="planning-trail-stage-track" role="img" aria-label="'+
+  e('Planning route, step '+(stageIndex+1)+' of '+PROGRESS_GROUPS.length+': '+stage.label)+'">'+
+  PROGRESS_GROUPS.map((g,i)=>'<span class="'+(i<stageIndex?'earlier':i===stageIndex?'now':'later')+
+   '" title="'+e(g.label)+'"></span>').join('')+'</div>';
+ const milestones='<div class="planning-trail-within">'+
+  '<div class="planning-trail-within-head"><strong>Within Planning</strong>'+
+  '<span>Step '+(stageIndex+1)+' of '+PROGRESS_GROUPS.length+'</span></div>'+
+  '<p class="planning-trail-stage-name">'+e(stage.label)+'</p>'+stageTrack+
+  '<div class="planning-trail-saved">'+icon('sparkles')+' <strong>'+recorded+' of '+anchors.length+
+  ' decisions saved</strong></div>'+
+  '<details class="planning-trail-checkpoints"><summary>See planning checkpoints '+icon('chevron-down')+'</summary>'+
+  '<ol>'+anchors.map(x=>'<li class="'+(x.recorded?'recorded':'waiting')+'">'+
+   '<span>'+icon(x.recorded?'check':'circle')+'</span><span>'+e(x.name)+'</span></li>').join('')+
+  '</ol></details>'+
+  '<p class="planning-trail-honesty">These are provisional decisions, not IA marks or completed mathematics.</p></div>';
+ const full='<div class="planning-trail-card"><div class="planning-trail-heading">'+
+  '<span class="section-eyebrow">'+icon('route')+' DISCOVERY TRAIL</span>'+
+  '<h2>Your mathematical journey</h2><p>One investigation · Four chapters</p></div>'+
+  chapterButtons+milestones+'</div>';
+ return '<aside class="planning-learning-trail" aria-label="Your learning trail">'+
+  '<div class="planning-trail-desktop">'+full+'</div>'+
+  '<details class="planning-trail-compact"><summary>'+
+  '<span class="planning-trail-compact-text">'+
+  '<strong>'+icon('route')+' Your learning trail</strong>'+
+  '<small>Planning · '+e(stage.label)+' ('+(stageIndex+1)+' of '+PROGRESS_GROUPS.length+')</small>'+
+  '</span><span class="planning-trail-compact-end">'+stageTrack+
+  '<small>'+recorded+'/'+anchors.length+' decisions saved</small></span>'+icon('chevron-down')+
+  '</summary><div class="planning-trail-compact-body">'+full+'</div></details></aside>';
+}
+
 const coordinates=[{x:31,y:122},{x:126,y:42},{x:229,y:97},{x:326,y:28}];
 const curves=[
  'M31 122 C81 122 77 42 126 42',
