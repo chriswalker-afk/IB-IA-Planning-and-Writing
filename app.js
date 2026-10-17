@@ -32,6 +32,7 @@ import {resultFamily,routeNextQuestions} from "./src/completing/route-coach.js";
 import { planningMove, planAutoAdvance, planningBack, planningEdit, applyPlanningField, toggleMath, selectedMaths, exploreMathRoute, chooseMathRoute, syncPlanningToProject, setPlanCurrent, planningFlags } from "./src/planning/engine.js";
 import { createPlanningViews } from "./src/ui/planning-views.js";
 import {savePlannedAccuracy,editPlannedAccuracy,removePlannedAccuracy} from "./src/planning/data-decisions.js";
+import {updatePrimaryQuantity,editPrimaryQuantity,removePrimaryQuantity,reusePrimaryQuantity} from "./src/planning/primary-quantities.js";
 import {applySuggestedTimeline,localToday,validDate,timelineWeek} from "./src/planning/timeline.js";
 import { createStudioViews } from "./src/ui/studio-views.js";
 import {createCompletingViews} from "./src/completing/views.js";
@@ -781,6 +782,48 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         if(detail)detail.scrollIntoView({block:"nearest",behavior:"auto"});
         toast(removing?"Your route spark was removed; selected mathematics is unchanged.":
           "Route spark saved. Branches remain optional until supported by your mathematics.");
+        break;
+      }
+      case "plan-save-quantity":{
+        const where=captureReturn(el);
+        const result=updatePrimaryQuantity(state);
+        if(!result.ok){toast(result.error);break;}
+        save();render();restoreReturn(where);
+        toast(result.updated?"Quantity updated":"Quantity added",
+         "This quantity will be available when you plan its recording accuracy.");
+        break;
+      }
+      case "plan-edit-quantity":{
+        if(!editPrimaryQuantity(state,el.dataset.quantityId)){toast("Quantity not found.");break;}
+        save();render();
+        const name=document.querySelector('[data-bind="planning.fields.primaryQuantityName"]');
+        name?.scrollIntoView({block:"center",behavior:"auto"});
+        name?.focus({preventScroll:true});
+        break;
+      }
+      case "plan-cancel-quantity":{
+        state.planning.primaryQuantityEditId="";
+        state.planning.fields.primaryQuantityName="";
+        state.planning.fields.primaryQuantityUnit="";
+        const where=captureReturn(el);
+        save();render();restoreReturn(where);break;
+      }
+      case "plan-remove-quantity":{
+        if(!window.confirm("Remove this provisional quantity from your collection list? Existing accuracy sparks and actual mathematical work will be preserved."))break;
+        const where=captureReturn(el);
+        if(!removePrimaryQuantity(state,el.dataset.quantityId)){toast("Quantity not found.");break;}
+        save();render();restoreReturn(where);
+        toast("Quantity removed","Separately saved recording-accuracy sparks were preserved.");
+        break;
+      }
+      case "plan-use-quantity":{
+        if(!reusePrimaryQuantity(state,el.dataset.quantityId)){toast("Quantity not found.");break;}
+        save();render();
+        const editor=document.querySelector("[data-primary-accuracy-editor]");
+        if(editor)editor.open=true;
+        const input=document.querySelector('[data-bind="planning.fields.primaryAccuracyBasis"]');
+        input?.scrollIntoView({block:"center",behavior:"auto"});
+        input?.focus({preventScroll:true});
         break;
       }
       case "plan-save-accuracy":{
