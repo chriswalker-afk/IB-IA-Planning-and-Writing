@@ -204,12 +204,14 @@ export function mergePlanningEnvelope(current,envelope,selectedKeys=[],{origin="
   // Keep every result and student-written paragraph, but ask the student to
   // recheck only sections affected by meaningful imported differences.
   const affected=new Set();
-  const aimKeys=new Set(["provisionalTitle","aim","motivation","beneficiaryType","beneficiary","intendedUse","prediction","predictionWhy","predictionImplication"]);
+  const titleChanged=applied.includes("provisionalTitle");
+  const aimKeys=new Set(["aim","motivation","beneficiaryType","beneficiary","intendedUse","prediction","predictionWhy","predictionImplication"]);
   const mathsKeys=new Set(["course","kind","mathSelected","mathsOutside","otherMaths","otherCourseMaths","firstAction","figureType","figurePurpose","firstAccuracy"]);
   const sourceKeys=new Set(["dataSource","secondaryUrl","secondaryVariables","primaryWhat","primaryHow","primarySampling","methodReason","methodLimitation","methodMitigation"]);
   const changesAim=applied.some(k=>aimKeys.has(k));
   const changesMaths=applied.some(k=>mathsKeys.has(k));
   const changesSource=applied.some(k=>sourceKeys.has(k));
+  if(titleChanged){["C10","C60"].forEach(k=>affected.add(k));}
   if(changesAim){["C10","C30","C40","C60"].forEach(k=>affected.add(k));}
   if(changesMaths){["C30","C40","C60"].forEach(k=>affected.add(k));}
   if(changesSource){["C20","C30","C40","C60"].forEach(k=>affected.add(k));}
