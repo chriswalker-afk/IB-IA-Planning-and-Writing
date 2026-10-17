@@ -41,8 +41,8 @@ with sync_playwright() as pw:
   p.locator('[data-choice="planning.fields.ideaStatus"][data-value="yes"]').click()
   assert p.locator('[data-bind="planning.fields.idea"]').count()==0
   p.locator('[data-action="plan-advance"]').click();node(p,'N01')
-  p.locator('[data-bind="planning.fields.idea"]').fill('I already know my topic')
-  assert saved(p)['planning']['fields']['idea']=='I already know my topic'
+  p.locator('[data-bind="planning.fields.provisionalTitle"]').fill('How might a simple model explain my topic?')
+  assert saved(p)['planning']['fields']['provisionalTitle']=='How might a simple model explain my topic?'
   assert p.locator('.idea-explorer').count()==0;assert saved(p)['ideaExplorer']['shortlist']==[]
  run('ideas-clear-idea-fast-route',state('N00'),fast)
  def enter(p):
