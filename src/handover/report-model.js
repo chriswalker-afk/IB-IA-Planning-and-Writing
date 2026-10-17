@@ -1,5 +1,6 @@
 /** A shared document model: PDF and Word render precisely the same student-owned plan. */
 import {PLANNING_CATALOG} from "../planning/catalog.js";
+import {routeById} from '../planning/investigative-routes.js';
 import {normalizePlanningEnvelope} from "./schema.js";
 
 const trim=x=>String(x??"").trim();
@@ -15,6 +16,7 @@ export function modelFromEnvelope(envelope){
   sec=data&&["secondary","both"].includes(f.dataSource);
  const chosen=payload.planning.mathSelected.map(id=>PLANNING_CATALOG.math.find(m=>m.id===id)?.label||"").filter(Boolean);
  const predictionPrompt=PLANNING_CATALOG.predictions.find(p=>p.id===f.predictionId)?.question||"";
+ const route=routeById(payload.planning.routeExplorer?.selectedRoute);
  const flags=payload.teacher.openFlags;
  const main=[
   section("01 · The question and its purpose",[
@@ -29,6 +31,8 @@ export function modelFromEnvelope(envelope){
     row("Course",f.course,{required:true}),
     row("Investigation approach",f.kind,{required:true}),
     row("Possible mathematical techniques",chosen.join("; ") + (f.otherMaths?(chosen.length?"; ":"")+f.otherMaths:"") + (f.otherCourseMaths?"; "+f.otherCourseMaths:"")),
+    row("Provisional investigative route",route?.title),
+    row("Suggested first mathematical step (not completed)",route?.first[0]),
     row("Mathematical suitability self-check",f.courseSuitability),
     row("Mathematics beyond / uncertain within syllabus",f.mathsOutside),
     row("Why this mathematics could help",f.suitabilityWhy||f.mathsRevisedWhy)
