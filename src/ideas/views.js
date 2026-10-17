@@ -90,16 +90,43 @@ export function ideaExplorerView(state){
 }
 export function ideaDetailView(state){
  const s=ideaState(state),seed=currentSeed(state),d=s.drafts[s.active],saved=s.shortlist.find(x=>x.id===d.savedId);
- return '<section class="idea-explorer idea-detail" data-idea-detail="'+e(seed.id)+'"><div class="idea-toolbar">'+button('browse','Back to directions')+(seed.id!=='own'?button('angle','Try a different angle'):'')+button('compare','Saved ideas ('+s.shortlist.length+'/3)')+'</div>'+
-  '<h3 id="idea-detail-heading" tabindex="-1">'+e(seed.title)+'</h3>'+(d.focus?'<p class="idea-focus-note"><strong>Your interest:</strong> '+e(d.focus)+'. Adapt this direction or choose another when it does not fit.</p>':'')+
-  '<p class="field-hint">'+(seed.id==='own'?'Write a possible topic or question in your own words.':'The box starts with a suggested question. Edit or replace it; choosing it does not establish your motivation, source or mathematical method.')+'</p>'+
-  input('question','My version of this idea',d.question,{rows:3,placeholder:'What would I like to investigate?'})+
-  '<details class="idea-narrow"><summary>Make it more specific (optional)</summary>'+input('detail',seed.narrow,d.detail,{placeholder:'A note for developing the aim, not a compulsory answer'})+(saved?button('save-copy','Save this variation as a separate possibility'):'')+'</details>'+ 
-  '<div class="idea-primary-actions">'+button('use','Continue with this idea','',true)+button('save',saved?'Update saved possibility':'Save as a possibility')+'</div><p id="idea-save-status" role="status" tabindex="-1" class="field-hint">'+(saved?'A saved version is on your shortlist. Changes here are saved to that version only when you choose Update.':'Saving a possibility does not replace your current topic or aim.')+'</p>'+
-  '<details class="idea-trial"><summary>Try a small first step (optional)</summary><p class="idea-small-step">'+e(seed.first)+'</p><p><strong>Starting material:</strong> '+e(seed.material)+'</p><p class="idea-caution">'+e(seed.caution)+'</p>'+input('trialNote','What did I check or find out? (private planning note)',d.trialNote,{placeholder:'An honest check of access or feasibility, not an invented result'})+
+ const fromMap=d.fromMap&&seed.id!=='own';
+ return '<section class="idea-explorer idea-detail'+(fromMap?' idea-map-detail':'')+'" data-idea-detail="'+e(seed.id)+'">'+
+  '<div class="idea-toolbar">'+button('browse','Back to my idea map')+
+  (!fromMap&&seed.id!=='own'?button('angle','Try a different angle'):'')+
+  button('compare','Saved ideas ('+s.shortlist.length+'/3)')+'</div>'+
+  '<div class="idea-detail-head"><span class="idea-map-overline">'+icon('route')+' MAKE IT YOURS</span>'+
+  '<h3 id="idea-detail-heading" tabindex="-1">'+e(seed.title)+'</h3>'+
+  '<p>Take this direction somewhere personal and manageable. It is not a finished IA question.</p></div>'+
+  (d.focus?'<p class="idea-focus-note"><strong>Your note:</strong> '+e(d.focus)+'</p>':'')+
+  (fromMap?'<div class="idea-map-starter"><span>'+icon('lightbulb')+' QUESTION STARTER · NOT A TITLE TO COPY</span>'+
+   '<p>'+e(seed.question)+'</p><small>Which real example would you use to make this yours?</small></div>'+
+   input('detail','One detail only I can choose: '+seed.narrow,d.detail,{rows:2,placeholder:'A real object, location, measurement, timeframe or comparison I can access'})+
+   input('question','My own working investigation question',d.question,{rows:3,placeholder:'Write a question using your specific detail. You can change it later.'})+
+   '<div class="idea-map-first-step">'+icon('clock')+' <div><strong>Can you begin this week?</strong>'+
+   '<p>'+e(seed.first)+'</p><small>Possible material: '+e(seed.material)+'</small></div></div>':
+   '<p class="field-hint">'+(seed.id==='own'?'Write a possible question in your own words. What could you actually measure, count, compare or check?':'This is a suggested direction. Adapt it rather than assuming it is a finished IA title.')+'</p>'+
+   input('question','My version of this idea',d.question,{rows:3,placeholder:'What would I like to investigate?'})+
+   '<details class="idea-narrow"><summary>Make it more specific (optional)</summary>'+
+   input('detail',seed.narrow,d.detail,{placeholder:'A detail for developing the aim'})+'</details>')+
+  '<div class="idea-primary-actions">'+button('use','Continue with my question','',true)+
+   button('save',saved?'Update saved possibility':'Save as a possibility')+
+   (saved?button('save-copy','Save a separate variation'):'')+'</div>'+
+  '<p id="idea-save-status" role="status" tabindex="-1" class="field-hint">'+
+  (saved?'Your shortlist includes this version. Changes remain a draft until you update it.':
+  'Saving a possibility does not replace your current plan. Only Continue with my question does that.')+'</p>'+
+  '<details class="idea-trial"><summary>Try a small first step (optional)</summary>'+
+  '<p class="idea-small-step">'+e(seed.first)+'</p><p><strong>Starting material:</strong> '+e(seed.material)+'</p>'+
+  '<p class="idea-caution">'+e(seed.caution)+'</p>'+
+  input('trialNote','What did I actually check? (private note)',d.trialNote,{placeholder:'An honest check, not invented evidence'})+
   select('trialStatus','My judgement so far',d.trialStatus,[['','Not tried / undecided'],['workable','This seems workable'],['adjust','I need to adjust it'],['possible','Keep it as a possibility']],'data-idea-input="trialStatus"')+
-  (seed.resources.length?'<div class="idea-resource-links"><p class="field-hint">Tool guides for this small step. Opening one does not choose the method.</p>'+seed.resources.map(id=>'<button type="button" class="btn btn-light" data-action="resource-open" data-resource-id="'+e(id)+'">'+e(resourceLabel(id))+' '+icon('chevron-right')+'</button>').join('')+'</div>':'')+'</details>'+
-  '<details class="idea-maths"><summary>Possible mathematics and a useful check</summary><p>'+e(seed.maths)+'</p><p>'+e(seed.caution)+'</p><p class="field-hint">These are possible connections, not a course-suitability judgement. A small first step is not the whole investigation. Check the mathematical depth with your teacher.</p></details>'+sourceNote()+'</section>';
+  (seed.resources.length?'<div class="idea-resource-links"><p class="field-hint">Guides are optional. Opening a tool does not select a method.</p>'+
+   seed.resources.map(id=>'<button type="button" class="btn btn-light" data-action="resource-open" data-resource-id="'+e(id)+'">'+e(resourceLabel(id))+' '+icon('chevron-right')+'</button>').join('')+'</div>':'')+'</details>'+
+  '<details class="idea-maths"><summary>Possible mathematics and a useful check</summary>'+
+  '<p>'+e(seed.maths)+'</p><p>'+e(seed.caution)+'</p>'+
+  '<p class="field-hint">A mathematical connection is not proof of course suitability. Discuss depth and scope with your teacher.</p></details>'+
+  (seed.topic==='patterns'?'<p class="idea-map-theory-note">'+icon('info')+' '+e(IDEA_THEORY_CAUTION)+'</p>':'')+
+  '</section>';
 }
 const resourceNames={'image-scale':'Check an image scale','image-route':'Visual fit or recorded coordinates?','desmos-start':'Get started in Desmos','organise':'Organise observations','distribution-graphs':'Compare distributions','chart-choice':'Choose a suitable graph','model-check':'Check a fitted model','summary-stats':'Summary statistics','image-points':'Record image coordinates','binomial':'Preview a probability tool','derivatives':'Preview derivative tools','desmos-table':'Work with a table in Desmos','desmos-regression':'Fit a selected model','restrictions':'Restrict a curve','reporting-precision':'Check reporting precision','secondary-data':'Check a secondary-data source','forms':'Plan a form and responses'};
 const resourceLabel=id=>resourceNames[id]||'Open a related written guide';
