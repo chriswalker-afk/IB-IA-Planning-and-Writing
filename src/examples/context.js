@@ -28,7 +28,7 @@ export function exampleContext(state,options={}){
  const method=str(entry?.methodId);
  const representation=str(c.fields?.firstType||p.figureType);
  let topic=nodeTopics[node]||'coherence';
- if(route==='planning')topic=node==='N01'?'title':node==='N01V'?'motivation':/^N03/.test(node)?'source':/^N04/.test(node)?'method':['N05','N05V'].includes(node)?'graph':/^N0[678]/.test(node)?'coherence':'aim';
+ if(route==='planning')topic=node==='N01'?'title':node==='N01V'?'motivation':node==='N02M'?'method':/^N03/.test(node)?'source':/^N04/.test(node)?'method':['N05','N05V'].includes(node)?'graph':/^N0[678]/.test(node)?'coherence':'aim';
  if(['C30','C31','C33'].includes(node)||route==='planning'&&topic==='graph'){
   if(representation==='table')topic='table';
   else if(representation==='diagram')topic='diagram';
