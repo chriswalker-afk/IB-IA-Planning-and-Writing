@@ -5,6 +5,7 @@
  * made to the human-readable PDF/Word body.
  */
 import { PLANNING_FIELD_DEFAULTS, normalizePlanningState, planningFlags, syncPlanningToProject } from "../planning/engine.js";
+import {routeById} from '../planning/investigative-routes.js';
 
 export const REPORT_KIND = "ia-pathfinder-planning-report";
 export const REPORT_SCHEMA = 1;
@@ -86,6 +87,7 @@ export function createPlanningEnvelope(state,{exportedAt=new Date().toISOString(
  const p=normalizePlanningState(state.planning,state.project);
  const exportData={
   current:p.current,fields:{...p.fields},mathSelected:[...p.mathSelected],
+  routeExplorer:{selectedRoute:p.routeExplorer.selectedRoute,firstStep:p.routeExplorer.firstStep,status:'provisional'},
   sourceBranches:{...p.sourceBranches},completedNodes:[...p.completedNodes],
   // Current Planning work only: no actual mathematics, no teacher approval record.
   completed:!!p.completed,sourceSnapshot:p.sourceSnapshot
@@ -125,6 +127,7 @@ export function normalizePlanningEnvelope(value){
   source:{app:"IA Pathfinder",snapshot:text(value.source?.snapshot).slice(0,40),stateVersion:2,format:"planning-only"},
   status:"PROVISIONAL",demo:value.demo===true,
   planning:{current:clean.current,fields:clean.fields,mathSelected:clean.mathSelected,
+   routeExplorer:clean.routeExplorer,
    sourceBranches:clean.sourceBranches,completedNodes:clean.completedNodes,
    completed:clean.completed,sourceSnapshot:clean.sourceSnapshot},
   teacher:{openFlags,pendingReview:value.teacher?.pendingReview===true||openFlags.length>0}, // no imported document establishes approval
@@ -169,6 +172,12 @@ export function getFieldDiff(current,envelope){
    old:oldSelected.join(", ")||"",next:newSelected.join(", "),
    recommended:!oldSelected.length});
  }
+ const routeNew=routeById(incoming.planning.routeExplorer?.selectedRoute);
+ const routeOld=routeById(current.planning?.routeExplorer?.selectedRoute);
+ if(routeNew&&routeNew.id!==routeOld?.id)
+  changes.push({key:'routeExplorer',label:'Provisional investigative route',
+   group:'Mathematics and prediction',old:routeOld?.title||'',next:routeNew.title,
+   recommended:!routeOld});
  return changes;
 }
 export function mergePlanningEnvelope(current,envelope,selectedKeys=[],{origin="document"}={}){
@@ -181,6 +190,13 @@ export function mergePlanningEnvelope(current,envelope,selectedKeys=[],{origin="
  for(const key of requested){
   if(key==="mathSelected"){
    state.planning.mathSelected=[...imported.planning.mathSelected];
+  }else if(key==='routeExplorer'){
+   const match=routeById(imported.planning.routeExplorer?.selectedRoute);
+   if(match){
+    state.planning.routeExplorer.selectedRoute=match.id;
+    state.planning.routeExplorer.firstStep=match.first[0];
+    state.planning.routeExplorer.status='provisional';
+   }
   }else if(key==="teacherConcerns"){
    const notes=imported.teacher.openFlags.map(x=>x.title+": "+x.note);
    const present=new Set(state.teacher.concerns||[]);
@@ -206,7 +222,7 @@ export function mergePlanningEnvelope(current,envelope,selectedKeys=[],{origin="
   const affected=new Set();
   const titleChanged=applied.includes("provisionalTitle");
   const aimKeys=new Set(["aim","motivation","beneficiaryType","beneficiary","intendedUse","prediction","predictionWhy","predictionImplication"]);
-  const mathsKeys=new Set(["course","kind","mathSelected","mathsOutside","otherMaths","otherCourseMaths","firstAction","figureType","figurePurpose","firstAccuracy"]);
+  const mathsKeys=new Set(["course","kind","mathSelected","routeExplorer","mathsOutside","otherMaths","otherCourseMaths","firstAction","figureType","figurePurpose","firstAccuracy"]);
   const sourceKeys=new Set(["dataSource","secondaryUrl","secondaryVariables","primaryWhat","primaryHow","primarySampling","methodReason","methodLimitation","methodMitigation"]);
   const changesAim=applied.some(k=>aimKeys.has(k));
   const changesMaths=applied.some(k=>mathsKeys.has(k));
