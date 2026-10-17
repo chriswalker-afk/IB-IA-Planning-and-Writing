@@ -142,11 +142,12 @@ test("adaptive Planning follows genuine spreadsheet source nodes and retains stu
  h.choose("planning.fields.dataSource","secondary");
  h.action("plan-advance");assert(h.html.includes('data-source-node="N03S"'));
  h.choose("planning.fields.secondaryStatus","ready");
- h.action("plan-advance");assert(h.html.includes('data-source-node="N03J"'));
  h.action("plan-advance");assert(h.html.includes('data-source-node="N03D"'));
  h.action("plan-advance");assert(h.html.includes('data-source-node="N03E"'));
+ assert(h.html.includes("Before you start"));
  h.choose("planning.fields.dataReadiness","4");
- h.action("plan-advance");assert(h.html.includes('data-source-node="N03F"'));
+ h.choose("planning.fields.permissionNeed","no");
+ h.choose("planning.fields.practicalBlocker","no");
  h.action("plan-advance");assert(h.html.includes('data-source-node="N03G"'));
  h.choose("planning.fields.practicalEase","3");
  h.action("plan-advance");assert(h.html.includes('data-source-node="N03H"'));
