@@ -24,8 +24,16 @@ with sync_playwright() as pw:
   c.close()
  def first_task(p):
   action(p,'start-planning');p.wait_for_timeout(400);first=p.locator('[data-choice="planning.fields.ideaStatus"]').first.bounding_box();h=p.viewport_size['height'];assert first['y']+first['height'] < h-(75 if p.viewport_size['width']<761 else 0),first
-  assert p.locator('.task-heading').count()==1;assert not p.locator('.criteria-content').is_visible();assert not p.locator('.ess-at-glance').get_attribute('open');assert p.locator('.support-actions button').count()==4
-  before=raw(p);action(p,'criteria-toggle');assert p.locator('.criteria-content').is_visible();action(p,'criteria-toggle');assert raw(p)==before;shot(p,'first-choice-'+str(p.viewport_size['width']))
+  assert p.locator('.task-heading').count()==1
+  assert p.locator('.planning-learning-trail').count()==1
+  assert p.locator('[data-choice="planning.fields.ideaStatus"]').count()==3
+  assert p.locator('.planning-kickoff [data-action="plan-advance"]').is_visible()
+  assert p.locator('[data-bind="planning.fields.idea"]').count()==0
+  assert p.locator('[data-bind="planning.fields.interest"]').count()==0
+  assert p.locator('#main .criteria-panel').count()==0
+  assert p.locator('#main .ess-at-glance').count()==0
+  assert p.locator('#main .resource-prompt').count()==0
+  shot(p,'first-choice-'+str(p.viewport_size['width']))
  for w,h in [(360,740),(390,844),(1440,1000)]:run('first-action-visible-'+str(w),None,first_task,w,h)
  def checkpoint(p):
   p.locator('[data-action="completion-mark"][data-status="complete"]').click();assert 'Introduction marked ready for now' in p.locator('#toast').inner_text();assert saved(p)['completion']['stages']['C10']=='complete'
