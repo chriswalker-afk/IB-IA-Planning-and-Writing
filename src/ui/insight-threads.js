@@ -8,6 +8,7 @@ import {linkedAccuracy,linkedSources} from '../completing/evidence-links.js';
 const has=v=>typeof v==='string'&&!!v.trim();
 const short=(v,n=160)=>{const t=String(v??'').trim();return t.length>n?t.slice(0,n-1)+'…':t;};
 export const INSIGHT_FAMILIES=Object.freeze({
+ title:{label:'My working title',icon:'bookmark',verb:'A provisional direction to reconsider'},
  aim:{label:'My question',icon:'target',verb:'A purpose to return to'},
  evidence:{label:'My evidence',icon:'flask',verb:'A source or method to revisit'},
  accuracy:{label:'My accuracy choices',icon:'layers',verb:'A decision to apply when relevant'},
@@ -26,6 +27,9 @@ const limitations=s=>Array.isArray(s?.completion?.confirmedLimitations)?s.comple
 export function insightItems(s){
  const p=s?.planning?.fields||{},c=s?.completion||{},out=[],math=entries(s);
  const aim=p.aim||s?.project?.aim;
+ if(has(p.provisionalTitle))out.push(item('title','working-title','Provisional IA title',p.provisionalTitle,
+  'Planning · Working title',{type:'planning',node:'N01'},
+  {usage:'This title is provisional. Review whether it still describes the mathematical question you really explored.'}));
  if(has(aim))out.push(item('aim','aim','Investigation aim',aim,'Planning · Investigation aim',{type:'planning',node:'N01'},
   {usage:'Keeps mathematical interpretations connected to the original question.'}));
  if(has(p.prediction||s?.project?.prediction))out.push(item('aim','prediction','Prediction or conjecture',p.prediction||s.project.prediction,
@@ -91,13 +95,14 @@ export function insightItems(s){
 export function insightForCurrent(s,node){
  const all=insightItems(s),active=entries(s)[s?.completion?.activeEntryIndex];
  const get=type=>all.filter(x=>x.type===type);
- if(/^N(?:03|04|05|06)/.test(node))return all.filter(x=>x.id==='aim'||(node==='N06'&&x.id==='planned-evidence')).slice(0,2);
+ if(/^N(?:02|03|04|05|06)/.test(node))return all.filter(x=>x.id==='working-title'||x.id==='aim'||(node==='N06'&&x.id==='planned-evidence')).slice(0,2);
  const result=active?.fromEntryId?all.filter(x=>x.id==='result:'+active.fromEntryId):[];
  const related=kind=>all.filter(x=>x.id.startsWith(kind+':')&&active&&(
    kind==='accuracy'?linkedAccuracy(s,active).some(a=>'accuracy:'+a.id===x.id):
    linkedSources(s,active).some(a=>'source:'+a.id===x.id)));
  if(['C10','C10E','C34B','C35','C60','C61','C62','C64'].includes(node)){
   const out=[...get('aim')];
+  if(['C10','C10E','C60'].includes(node))out.unshift(...get('title'));
   if(['C35','C60','C61','C64'].includes(node)){
    const real=get('discovery').filter(x=>!x.planned&&!x.needsReview);
    out.push(...real.slice(-1));
@@ -133,7 +138,8 @@ export function insightToken(x,{compact=false}={}){
 export function insightCapture(s,node){
  const p=s?.planning?.fields||{},c=s?.completion||{},all=insightItems(s);
  let ids=[],kind='';
- if(['N01','N01V'].includes(node)){ids=['aim'];kind='Your investigation aim';}
+ if(node==='N01'){ids=['working-title'];kind='Your provisional title';}
+  else if(node==='N01A'||node==='N01V'){ids=['aim'];kind='Your investigation aim';}
  else if(node==='N01P'){ids=['prediction'];kind='Your conjecture';}
  else if(/^N03/.test(node)||node==='N02T'){ids=['planned-evidence'];kind='Your intended evidence';}
  else if(['N05V','N05'].includes(node)){ids=['planned-maths'];kind='Your first mathematical intention';}
@@ -151,7 +157,8 @@ export function insightCapture(s,node){
  const spark=existing.at(-1);
  const family=spark?.type||(/Accuracy|accuracy/.test(kind)?'accuracy':/source|evidence|method/.test(kind.toLowerCase())?'evidence':/mathematical|result/.test(kind.toLowerCase())?'discovery' :/reflection/.test(kind.toLowerCase())?'reflection':'aim');
  const meta=INSIGHT_FAMILIES[family];
- return '<aside class="insight-capture insight-'+family+' '+(spark?'is-captured':'is-pending')+'" aria-label="Remembered decision">'+
+ return '<aside class="insight-capture insight-'+family+' '+(spark?'is-captured':'is-pending')+
+   '" data-insight-source="'+e(node)+'" aria-label="Remembered decision">'+
   '<span class="insight-capture-mark">'+icon(meta.icon)+'</span><div><strong>'+
   (spark?'Spark saved · '+e(kind):'A spark for later · '+e(kind))+'</strong><p>'+
   (spark?'Pathfinder can bring this back when it is relevant. '+e(short(spark.value,115)):
@@ -166,7 +173,8 @@ export function insightMeaning(s,node,x){
  if(x.type==='evidence'&&['C32','C33','C34','C40','C50','C40T'].includes(node)&&x.id.startsWith('source:')){
   return 'You explicitly linked this source to your mathematics. Check the original values, units and method before relying on the finding.';
  }
- if(x.id==='aim'&&['C34','C34A','C35','C40','C50','C60','C61','C62','C64'].includes(node)){
+ if(x.id==='working-title')return 'This is a provisional signpost, not a result. Adapt your title if the actual mathematics leads to a more precise question.';
+  if(x.id==='aim'&&['C34','C34A','C35','C40','C50','C60','C61','C62','C64'].includes(node)){
   return 'Connect what your mathematics actually established to this precise investigation question. Does the result answer all of it, or only a narrower part?';
  }
  if(x.type==='discovery'&&['C35','C35H','C35B','C35P','C40','C50'].includes(node)){
@@ -198,8 +206,8 @@ export function insightEcho(s,node){
 }
 export function insightToolkit(s,{compact=false}={}){
  const all=insightItems(s);
- const forHome=all.filter(x=>!x.planned),pinned=forHome.find(x=>x.id==='aim');
- const visible=compact?(pinned?[pinned,...forHome.filter(x=>x.id!=='aim').slice(-4)]:forHome.slice(-5)):all.slice(-10);
+ const forHome=all.filter(x=>!x.planned),pinned=forHome.filter(x=>x.id==='working-title'||x.id==='aim');
+ const visible=compact?[...pinned,...forHome.filter(x=>!['working-title','aim'].includes(x.id)).slice(-(5-pinned.length))]:all.slice(-10);
  const earlier=compact?[]:all.slice(0,-10);
  const card=x=>'<button type="button" class="insight-toolkit-card insight-'+e(x.type)+'"'+jumpAttrs(x)+'>'+
   insightToken(x,{compact:true})+'<strong>'+e(short(x.title,62))+'</strong>'+
@@ -211,7 +219,7 @@ export function insightToolkit(s,{compact=false}={}){
   ' INSIGHT THREADS</span><h3>My Toolkit</h3><p>Your earlier decisions and real findings, ready when they matter again.</p></div>'+
   '<span class="insight-toolkit-count">'+all.length+' saved</span></div>'+
   (visible.length?'<div class="insight-toolkit-grid">'+visible.map(card).join('')+'</div>':
-   '<div class="insight-toolkit-empty">'+icon('sparkles')+' Your toolkit grows from your own decisions. Start by recording an investigation aim.</div>')+
+   '<div class="insight-toolkit-empty">'+icon('sparkles')+' Your toolkit grows from your own decisions. Start by recording a provisional title or question.</div>')+
   (earlier.length?'<details class="insight-toolkit-more"><summary>Explore '+earlier.length+' earlier sparks</summary><div class="insight-toolkit-grid">'+earlier.map(card).join('')+'</div></details>':'')+
   (compact&&all.length>visible.length?'<button type="button" class="insight-link" data-nav="path">See all '+all.length+' sparks on My Path '+icon('arrow-right')+'</button>':'')+
   '<p class="insight-toolkit-note">Saved notes and decisions are not grades, verified results or edits to your own IA document.</p></section>';
