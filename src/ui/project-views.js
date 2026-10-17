@@ -57,7 +57,7 @@ export function createProjectViews(ctx){
     const pfields=state.planning?.fields||{};
     const chosen=selectedMaths(state),flags=planningFlags(state);
     const pairs=[
-      ["Investigation aim",p.aim],["Motivation",pfields.motivation],["Who might benefit",pfields.beneficiary],
+      ["Provisional IA title",pfields.provisionalTitle],["Investigation aim",p.aim],["Motivation",pfields.motivation],["Who might benefit",pfields.beneficiary],
       ["What the answer might help with",pfields.intendedUse],["Course",p.course],
       ["Investigation route",p.kind],
       ["Tentative mathematical techniques",chosen.map(x=>x.label).join("; ")+(pfields.otherMaths?" · "+pfields.otherMaths:"")+(pfields.otherCourseMaths?" · "+pfields.otherCourseMaths:"")],
