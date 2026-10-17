@@ -125,6 +125,9 @@ test("the idea-map starting page focuses on branches instead of the old help and
  assert(html.includes("My world"));
  assert(html.includes("Start with data I can get"));
  assert(html.includes('idea-map-quickstart'));
+ assert(html.includes('data-idea-map-network'));
+ assert(html.includes('data-idea-map-connectors'));
+ assert(html.includes('data-idea-node="hub"'));
  assert(!html.includes('id="idea-topic"'));
  assert(!html.includes('What makes a promising starting point?'));
  assert(!html.includes('Help me think'));
