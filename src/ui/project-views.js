@@ -81,7 +81,9 @@ export function createProjectViews(ctx){
       return lines.length?'<h2 style="margin-top:32px">'+e(title)+'</h2>'+lines.map(([name,value])=>summary(name,value)).join(""):"";
     };
     const primary=pfields.kind!=="theoretical"&&["primary","both"].includes(pfields.dataSource) ? planningSection("Primary-data plan",[
-      ["What will be recorded",pfields.primaryWhat],["Population or objects",pfields.primaryPopulation],
+      ["What will be recorded",pfields.primaryWhat],
+      ["Quantities and units",(state.planning.primaryQuantities||[]).map(q=>q.name+(q.unit?' ('+q.unit+')':'')).join('; ')],
+      ["Population or objects",pfields.primaryPopulation],
       ["When",pfields.primaryWhen],["Where",pfields.primaryWhere],["How",pfields.primaryHow],
       ["Equipment",pfields.primaryEquipment],
       ["Sampling strategy",samplingMethod(pfields.primarySamplingMethod)?.label||""],
