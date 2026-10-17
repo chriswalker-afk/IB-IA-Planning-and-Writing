@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createProjectState,normalizeProjectState} from '../src/core/project-state.js';
-import {planningAnchors,chapterStats,chapterRibbon,discoveryTrail,planningProgress,mathConstellation} from '../src/ui/living-journey.js';
+import {planningAnchors,chapterStats,chapterRibbon,discoveryTrail,planningProgress,planningLearningTrail,mathConstellation} from '../src/ui/living-journey.js';
 import {insightItems,insightForCurrent,insightCapture,insightEcho,insightToolkit,insightThreadMap} from '../src/ui/insight-threads.js';
 import {JOURNEY_GROUPS} from '../src/ui/journey.js';
 import {insightConnections,insightTrailLines,insightTrailControls} from '../src/ui/insight-network.js';
@@ -172,4 +172,32 @@ test('interaction styles support focus, phone layouts and reduced motion',()=>{
  assert(css.includes('.constellation-star-hit:focus-visible'));
  assert(css.includes('@media(max-width:760px)'));
  assert(css.includes('@media(prefers-reduced-motion:reduce)'));
+});
+
+test('Planning trail has all chapters, a live planning step and honest provisional anchors',()=>{
+ const s=createProjectState();s.route='planning';
+ const fresh=planningLearningTrail(s);
+ assert(fresh.includes('planning-learning-trail'));
+ assert(fresh.includes('planning-trail-desktop'));
+ assert(fresh.includes('planning-trail-compact'));
+ assert(fresh.includes('Step 1 of 4'));
+ assert(fresh.includes('0 of 4 decisions saved'));
+ assert(fresh.includes('aria-label="Your learning trail"'));
+ for(const g of JOURNEY_GROUPS)assert(fresh.includes(g.name.replace('&','&amp;')));
+ assert(fresh.includes('data-action="journey-open"'));
+ s.planning.current='N05';
+ s.planning.fields.aim='How does this pattern change?';
+ s.planning.fields.firstAction='Plot the first graph';
+ const later=planningLearningTrail(s);
+ assert(later.includes('Step 3 of 4'));
+ assert(later.includes('2 of 4 decisions saved'));
+ assert(later.includes('Plan your mathematics'));
+ assert(!later.includes('100%'));
+});
+test('Planning trail includes responsive column and compact disclosure styles',()=>{
+ const css=readFileSync(new URL('../data/living-journey.css',import.meta.url),'utf8');
+ assert(css.includes('grid-template-areas:"task trail"'));
+ assert(css.includes('.planning-trail-desktop{position:sticky'));
+ assert(css.includes('@media(max-width:980px)'));
+ assert(css.includes('.planning-trail-compact{display:block'));
 });
