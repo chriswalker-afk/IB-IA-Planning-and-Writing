@@ -255,3 +255,7 @@
  .idea-rating-point{transition:none!important}
  .idea-rating-point.selected{transform:none}
 }
+
+.idea-evaluation-origin{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:-7px 0 16px;padding:8px 11px;border-left:2px solid #9eb4d3;background:#f7f9fd;color:#647b98;font-size:11px;line-height:1.45}
+.idea-evaluation-origin strong{color:#3d5c81}
+.idea-evaluation-origin .icon{height:14px;width:14px;flex:none}
