@@ -17,14 +17,18 @@ function newPlan(){
 }
 function set(s,key,val){assert.equal(applyPlanningField(s,key,val),true)}
 function advance(s,id){const r=planAutoAdvance(s);assert.equal(r.ok,true,r.error||"");if(id)assert.equal(s.planning.current,id);return r}
-test("all 32 Planning nodes and all 61 source-defined routes are preserved",()=>{
- assert.equal(PLANNING_NODE_IDS.length,32);
- assert.equal(PLANNING_ROUTES.length,61);
+test("all 61 source-sheet routes are preserved alongside explicit later UX routes",()=>{
+ assert.equal(PLANNING_NODE_IDS.length,33);
+ const source=PLANNING_ROUTES.filter(r=>Number.isInteger(r.sourceRow));
+ const extra=PLANNING_ROUTES.filter(r=>r.sourceRow===null);
+ assert.equal(source.length,61);
+ assert.equal(extra.length,6);
  for(const route of PLANNING_ROUTES){
-   assert(PLANNING_NODE_IDS.includes(route.from));
-   if(route.to.startsWith("N"))assert(PLANNING_NODE_IDS.includes(route.to));
-   assert(Number.isInteger(route.sourceRow));
+  assert(PLANNING_NODE_IDS.includes(route.from));
+  if(route.to.startsWith("N"))assert(PLANNING_NODE_IDS.includes(route.to));
+  assert(Number.isInteger(route.sourceRow)||route.sourceRow===null);
  }
+ assert(extra.every(r=>/UX 2026/.test(r.editorial)));
 });
 test("all course maths options are source-specific and editable independently of technique completion",()=>{
  assert.equal(PLANNING_CATALOG.math.length,51);
@@ -82,7 +86,9 @@ test("primary-only and secondary-only branches reach the join without false data
 test("no-data exploration can request teacher advice, obtain a provisional summary and never fake approval",()=>{
  const s=newPlan();set(s,"ideaStatus","yes");advance(s,"N01");advance(s,"N01V");
  set(s,"beneficiaryType","unsure");advance(s,"N02");
- set(s,"kind","theoretical");advance(s,"N02T");advance(s,"N08");
+ set(s,"kind","theoretical");advance(s,"N02M");
+ set(s,"course","AA SL");assert(!planningFlags(s).some(f=>f.id==="other-course"));
+ advance(s,"N02T");advance(s,"N08");
  assert(planningFlags(s).some(f=>f.id==="theoretical"));
  advance(s,"N06T");advance(s,"N06");advance(s,"N07");
  assert(s.planning.completed);
