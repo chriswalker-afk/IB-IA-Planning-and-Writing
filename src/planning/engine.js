@@ -8,7 +8,7 @@ import {TIMELINE_KEYS} from "./timeline.js";
 
 export const PLANNING_NODE_IDS = Object.freeze([...new Set(PLANNING_ROUTES.flatMap(r=>[r.from,r.to]).filter(n=>n.startsWith("N")))]);
 export const PROGRESS_GROUPS = Object.freeze([
- {id:"direction",label:"Find your question",nodes:["N00","N00B","N00C","N01","N01V","N02","N02U","N02T"]},
+ {id:"direction",label:"Find your question",nodes:["N00","N00B","N00C","N01","N01V","N02","N02M","N02U","N02T"]},
  {id:"practical",label:"Plan your evidence",nodes:["N03","N03B","N03P","N03S","N03J","N03D","N03E","N03R","N03F","N03G","N03H"]},
  {id:"mathematical",label:"Plan your mathematics",nodes:["N04","N04T","N04S","N01P","N04R","N04M","N05V","N05"]},
  {id:"review",label:"Review your idea",nodes:["N06E","N06T","N08","N06","N07"]}
@@ -296,7 +296,14 @@ export function planAutoAdvance(state){
    f.beneficiaryType==="others"?"I could offer advice to someone else":
    f.beneficiaryType==="both"?"Both personal benefit and advice":
    f.beneficiaryType==="unsure"?"I'm not sure yet":"The results could help me directly");
-  case "N02":if(!f.kind)return{ok:false,error:"Choose an investigation route, including Not sure yet."};return go(f.kind==="statistics"?"Statistics":f.kind==="modelling"?"Modelling":f.kind==="unsure"?"Unsure":"No data");
+  case "N02":
+   if(!f.kind)return{ok:false,error:"Choose an investigation route, including Not sure yet."};
+   return go(f.kind==="statistics"?"Choose maths after statistics":
+    f.kind==="modelling"?"Choose maths after modelling":
+    f.kind==="theoretical"?"Choose maths after theoretical route":"Unsure");
+  case "N02M":
+   if(!f.course)return{ok:false,error:"Choose your IB Mathematics course before continuing. It is okay to be unsure about techniques."};
+   return go(f.kind==="theoretical"?"Discuss theoretical maths with teacher":"Proceed to evidence planning");
   case "N02U":return go("Return");
   case "N02T":return go("Continue with provisional plan");
   case "N03":if(!f.dataSource)return{ok:false,error:"Choose primary, secondary or both data sources."};return go(f.dataSource==="secondary"?"Secondary":f.dataSource==="both"?"Both":"Primary");
@@ -309,7 +316,7 @@ export function planAutoAdvance(state){
   case "N03R":return go("Retry");
   case "N03F":return go("Feasibility questions answered");
   case "N03G":return go("Practical plan is workable");
-  case "N03H":return go("Milestones recorded or pending");
+  case "N03H":return go("Continue with mathematics already explored");
   case "N04":if(!f.course)return{ok:false,error:"Choose your course, or select Another course / unsure."};return go(["AI SL","AA SL"].includes(f.course)?"AI SL / AA SL":"Other / AA HL");
   case "N04T":return go("Record tentative maths and teacher question");
   case "N04S":return go("Techniques selected or unsure");
