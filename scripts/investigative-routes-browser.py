@@ -83,7 +83,9 @@ def check(p,width):
  p.locator('[data-choice="planning.fields.course"][data-value="AA SL"]').click()
  assert state(p)["planning"]["mathSelected"]==["AI05"]
  assert state(p)["planning"]["routeExplorer"]["selectedRoute"]=="trajectories"
- assert 'course' in p.locator(".math-route-empty,.inline-note.warning,.math-route-grid,.journey-course-note").first.inner_text().lower() or p.locator('.journey-maths-current').inner_text().find('AA SL')>=0
+ assert 'AA SL' in p.locator('.journey-maths-current').inner_text()
+ assert p.locator('.journey-course-switch-note').is_visible()
+ assert 'preserved' in p.locator('.journey-course-switch-note').inner_text()
  assert p.locator('[data-action="plan-toggle-math"][data-math-id="AA06"]').count()>=1
  assert p.evaluate("document.documentElement.scrollWidth <= window.innerWidth + 1"),p.evaluate("({inner:innerWidth,doc:document.documentElement.scrollWidth})")
  assert not any('undefined' in h.lower() for h in p.locator('.journey-detail h3').all_inner_texts())
