@@ -5,6 +5,7 @@
 import { PLANNING_ROUTES } from "./route-table.js";
 import { PLANNING_CATALOG } from "./catalog.js";
 import {TIMELINE_KEYS} from "./timeline.js";
+import {createRouteExplorer,normalizeRouteExplorer,routeById} from "./investigative-routes.js";
 
 export const PLANNING_NODE_IDS = Object.freeze([...new Set(PLANNING_ROUTES.flatMap(r=>[r.from,r.to]).filter(n=>n.startsWith("N")))]);
 export const PROGRESS_GROUPS = Object.freeze([
@@ -43,7 +44,7 @@ export function createPlanningState(){
   current:"N00", fields:{...PLANNING_FIELD_DEFAULTS}, mathSelected:[],
   history:[], visited:[], completedNodes:[], sourceBranches:{primary:false,secondary:false},
   teacherFlagsAcknowledged:[], returnToPrediction:false, sourceSnapshot:"2026-10-14",
-  completed:false, notices:[], mathSearch:"", mathsReviewVersion:0,timelineAuto:{}
+  completed:false, notices:[], mathSearch:"", mathsReviewVersion:0,timelineAuto:{},routeExplorer:createRouteExplorer()
  };
 }
 export function normalizePlanningState(value,project={}){
@@ -79,7 +80,7 @@ export function normalizePlanningState(value,project={}){
   notices:[],mathSearch:typeof v.mathSearch==="string"?v.mathSearch.slice(0,90):"",
   mathsReviewVersion:Number.isInteger(v.mathsReviewVersion)?v.mathsReviewVersion:0,
   timelineAuto:Object.fromEntries(["weeks","early","start",...TIMELINE_KEYS].filter(key=>typeof v.timelineAuto?.[key]==="string").map(key=>[key,v.timelineAuto[key].slice(0,24)])),
-  sourceSnapshot:"2026-10-14"
+  sourceSnapshot:"2026-10-14",routeExplorer:normalizeRouteExplorer(v.routeExplorer)
  };
 }
 const refFields = Object.freeze({
@@ -203,6 +204,35 @@ export function applyPlanningField(state,key,value){
   state.planning.notices=["Your intended beneficiary changed. Revisit what the prediction might mean for them."];
  }
  syncPlanningToProject(state);
+ return true;
+}
+/** Browsing is safe; the selected route is only a provisional spark. */
+export function exploreMathRoute(state,{mode,family,openRoute}={}){
+ const x=state?.planning?.routeExplorer;
+ if(!x)return false;
+ if(mode!==undefined&&!['aim','routes','all'].includes(mode))return false;
+ if(family!==undefined&&!['all','data','models','decisions','reasoning'].includes(family))return false;
+ if(openRoute!==undefined&&openRoute!==''&&!routeById(openRoute))return false;
+ if(mode!==undefined)x.mode=mode;
+ if(family!==undefined)x.family=family;
+ if(openRoute!==undefined)x.openRoute=openRoute;
+ return true;
+}
+export function chooseMathRoute(state,id){
+ const x=state?.planning?.routeExplorer;
+ if(!x||(id!==''&&!routeById(id)))return false;
+ if(x.selectedRoute===id)return true;
+ x.selectedRoute=id;
+ x.firstStep=routeById(id)?.first[0]||'';
+ x.status='provisional';
+ if(state.completion?.stages)
+  for(const stage of ['C20','C30','C40','C60'])
+   if(state.completion.stages[stage]==='complete')state.completion.stages[stage]='needs-review';
+ if(state.handover?.confirmedAt){state.handover.confirmedAt='';state.handover.needsReview=true;}
+ if(state.planning.completed){
+  state.planning.completed=false;
+  state.planning.notices=['Your provisional route changed. Review your mathematics plan before using it.'];
+ }
  return true;
 }
 export function toggleMath(state,id){
