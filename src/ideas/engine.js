@@ -125,7 +125,10 @@ export function ideaAction(state,action,data={}){
   case 'idea-save-copy':return {...saveIdea(state,{asNew:true}),render:true,focus:'idea-save-status'};
   case 'idea-legacy':{const f=state.planning.fields;if(!['idea','originalIdea','otherIdea1','otherIdea2'].includes(data.key)||!f[data.key]?.trim())return{ok:false,error:'That earlier idea is unavailable.'};return requestIdeaUse(state,'',cleanDraft({seedId:'own',question:f[data.key]}));}
   case 'idea-save':return {...saveIdea(state),render:true,focus:'idea-save-status'};
-  case 'idea-compare':s.pending=null;if(state.planning.current==='N00B')planningMove(state,'I brainstormed possible ideas');return{ok:true,render:true,focus:'idea-compare-heading'};
+  case 'idea-compare':s.pending=null;if(state.planning.current==='N00B'){
+   if(s.shortlist.length)planningMove(state,'I brainstormed possible ideas');
+   else setPlanCurrent(state,'N00C'); // Browsing an empty comparison is not completion.
+  }return{ok:true,render:true,focus:'idea-compare-heading'};
   case 'idea-edit-saved':{const d=s.shortlist.find(x=>x.id===data.id);if(!d)return{ok:false,error:'That saved possibility is no longer here.'};s.drafts[d.seedId]=cleanDraft({...d,savedId:d.id});s.active=d.seedId;s.pending=null;setPlanCurrent(state,'N00B');return{ok:true,render:true,focus:'idea-question'};}
   case 'idea-remove':s.shortlist=s.shortlist.filter(x=>x.id!==data.id);s.pending=null;return{ok:true,render:true,focus:'idea-compare-heading',message:'Removed from the shortlist. Your current plan is unchanged.'};
   case 'idea-use':return requestIdeaUse(state,data.id||'');
