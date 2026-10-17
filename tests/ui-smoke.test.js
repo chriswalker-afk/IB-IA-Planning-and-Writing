@@ -25,7 +25,7 @@ import {readRecordValue,updateRecordValue} from "../src/core/record-access.js";
 import {icon,escapeHtml,cleanUrl,button} from "../src/ui/primitives.js";
 import {referenceNodeForPrototypeStep} from "../src/core/prototype-bridge.js";
 import {createPlanningViews} from "../src/ui/planning-views.js";
-import {planningMove,planAutoAdvance,planningBack,planningEdit,applyPlanningField,toggleMath,syncPlanningToProject,setPlanCurrent,planningFlags} from "../src/planning/engine.js";
+import {planningMove,planAutoAdvance,planningBack,planningEdit,applyPlanningField,toggleMath,selectedMaths,exploreMathRoute,chooseMathRoute,syncPlanningToProject,setPlanCurrent,planningFlags} from "../src/planning/engine.js";
 import {createStudioViews} from "../src/ui/studio-views.js";
 import {createCompletingViews} from "../src/completing/views.js";
 import {setCompletionNode,moveCompletionRoute,completionBack,markCompletionStage,setCompletionField,addAccuracyDecision,completionSuggestions,sectionForNode,targetForSection,completeEntry,latestRealResult,flagDependentMathematics,acknowledgeMathReview} from "../src/completing/engine.js";
@@ -53,6 +53,7 @@ function createHarness(savedValue){
   elements["#drawerLayer"].querySelector=()=>({focus(){}});
   const document={
     querySelector:q=>elements[q]??null,
+    getElementById:()=>null,
     querySelectorAll:()=>[],
     addEventListener:(n,cb)=>events[n]=cb,
     contains:()=>true,
@@ -73,7 +74,7 @@ function createHarness(savedValue){
     setCompletionNode,moveCompletionRoute,completionBack,markCompletionStage,setCompletionField,addAccuracyDecision,completionSuggestions,sectionForNode,targetForSection,completeEntry,latestRealResult,flagDependentMathematics,acknowledgeMathReview,
     createHandoverViews,createPlanningEnvelope,getFieldDiff,mergePlanningEnvelope,modelFromEnvelope,suggestedFilename,
     actOnWritingCue,eligibleWritingCues,selectLimitation,recordLimitation,limitationContextKey,relevantLimitations,relevantBivariateOptions,resultFamily,routeNextQuestions,sourceResultForNext,
-    planningMove,planAutoAdvance,planningBack,planningEdit,applyPlanningField,toggleMath,syncPlanningToProject,setPlanCurrent,planningFlags
+    planningMove,planAutoAdvance,planningBack,planningEdit,applyPlanningField,toggleMath,selectedMaths,exploreMathRoute,chooseMathRoute,syncPlanningToProject,setPlanCurrent,planningFlags
   };
   runInNewContext(script,globals,{filename:"app.js",timeout:5000});
   function click(type,dataset){
@@ -119,7 +120,10 @@ test("adaptive Planning follows genuine spreadsheet source nodes and retains stu
  h.action("plan-advance");assert(h.html.includes('data-source-node="N02M"'));
  assert(h.html.includes("Mathematics AI SL")&&h.html.includes("Mathematics AA SL"));
  h.choose("planning.fields.course","AA SL");
- assert(h.html.includes("Mathematics worth considering"));
+ assert(h.html.includes("Three ways to explore mathematics"));
+ assert(h.html.includes("Relationships between two variables"));
+ h.action("math-open-route",{routeId:"relationships"});
+ assert(h.html.includes("What pattern, if any, is supported"));
  assert(h.html.includes('data-math-id="AA15"'));
  h.action("plan-toggle-math",{mathId:"AA15"});
  assert(h.saved.planning.mathSelected.includes("AA15"));
