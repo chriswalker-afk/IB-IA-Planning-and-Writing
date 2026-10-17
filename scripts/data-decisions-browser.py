@@ -66,9 +66,10 @@ def run_primary(p,width):
  no_overflow(p)
  p.screenshot(path=str(OUT/f"primary-data-sampling-{width}.png"),full_page=True,animations="disabled")
  p.locator('[data-action="plan-advance"]').first.click()
- assert p.locator('[data-source-node="N03J"]').count()==1
- assert p.locator('[data-planning-return-spark="sampling"]').count()==1
- assert p.locator('[data-planning-return-spark="accuracy"]').count()==1
+ assert p.locator('[data-source-node="N03D"]').count()==1
+ # No repeated method-justification essay; sampling and precision sparks stay accessible.
+ assert p.locator('[data-spark-library]').count()==1
+ assert p.locator('[data-spark-id^="planned-accuracy:"]').count()>=1
  assert all(v in saved(p)["planning"]["completedNodes"] for v in ["N03P","N03P2"])
  no_overflow(p)
  test_state=saved(p)
