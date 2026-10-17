@@ -81,6 +81,8 @@ def run_primary(p,width):
  assert field(p,"dataAvailability").count()==1
  assert field(p,"permissionNeed").count()==1
  assert field(p,"practicalBlocker").count()==1
+ assert field(p,"dataReadiness").count()==0
+ assert field(p,"practicalEase").count()==0
  assert "Two quick checks" in p.locator(".practical-quick-check").inner_text()
  assert "Set evidence target dates (optional)" in p.locator("[data-evidence-timing]").inner_text()
  field(p,"dataAvailability").select_option("some")
