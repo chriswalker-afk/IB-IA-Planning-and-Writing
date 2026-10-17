@@ -72,6 +72,24 @@ export function createPlanningViews(ctx){
     '<div class="motivation-aim-details"><p>Provisional first step: '+e(selectedRoute.first[0])+
     '. This is a possible pathway, not an agreed sequence or work already completed.</p>'+
     edit('N02M','Revisit my route')+'</div></details>');
+  if(['N03J','N03D','N05V','N05','N06E'].includes(current)){
+   const sampling=samplingMethod(fields.primarySamplingMethod);
+   if(sampling)cards.push('<details class="motivation-aim-spark planning-return-spark insight-sampling" data-planning-return-spark="sampling">'+
+     '<summary><span class="motivation-aim-symbol">'+icon('layers')+'</span>'+
+     '<span class="motivation-aim-copy"><strong>My sampling choice</strong><small>'+e(sampling.label)+'</small></span>'+
+     '<span class="motivation-aim-toggle">'+icon('chevron-down')+' View</span></summary>'+
+     '<div class="motivation-aim-details"><p>Planned population: '+e(fields.primaryPopulation||'to confirm')+
+     '; sampling unit: '+e(fields.primarySamplingUnit||'to confirm')+
+     '. Check real coverage and possible bias before making claims.</p>'+
+     edit('N03P','Revise sampling')+'</div></details>');
+   const plans=state.planning.accuracyPlans||[];
+   if(plans.length)cards.push('<details class="motivation-aim-spark planning-return-spark insight-planned-accuracy" data-planning-return-spark="accuracy">'+
+     '<summary><span class="motivation-aim-symbol">'+icon('target')+'</span>'+
+     '<span class="motivation-aim-copy"><strong>My accuracy plans</strong><small>'+e(plans.length+(plans.length===1?' provisional quantity':' provisional quantities'))+'</small></span>'+
+     '<span class="motivation-aim-toggle">'+icon('chevron-down')+' View</span></summary>'+
+     '<div class="motivation-aim-details">'+plans.map(x=>'<p>'+e(plannedAccuracyText(x))+' · Original accuracy not yet verified.</p>').join('')+
+     edit('N03'+(plans[0].source==='secondary'?'S':'P'),'Review source accuracy')+'</div></details>');
+  }
   return cards.length?'<section class="planning-compact-recall" aria-label="Earlier ideas you can refine">'+
     '<p class="planning-compact-recall-label">'+icon('sparkles')+' Your sparks are back <span>Open to revisit or edit</span></p>'+
     '<div class="planning-compact-sparks">'+cards.join('')+'</div></section>':'';
