@@ -309,7 +309,8 @@ export function featuredSparkItems(s,node){
  // Unknown screens still get relevant existing insights, then a useful fallback.
  for(const x of linked){if(selected.length===2)break;id(x.id);}
  id('aim');id('motivation');id('working-title');
- if(selected.length<2)for(const x of all.slice().reverse()){if(selected.length===2)break;id(x.id);}
+ // Never elevate an unrelated later limitation or discovery merely because it
+ // happens to be the only recorded spark. It remains available in View all.
  return selected.slice(0,2);
 }
 const sparkLibraryGroups=[
