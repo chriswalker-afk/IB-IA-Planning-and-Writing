@@ -1,11 +1,11 @@
 import {planningLearningTrail} from './living-journey.js';
 import {earlyMathRecommendations} from '../planning/math-recommendations.js';
 import {renderInvestigativeRoutes} from './investigative-routes-view.js';
-import {routeById} from '../planning/investigative-routes.js';
+
 import {accuracyPlanner} from './data-decisions-view.js';
 import {primaryDataWhat,primaryDataSampling,primaryDataAccuracy} from './primary-data-steps.js';
-import {samplingMethod,plannedAccuracyText} from '../planning/data-decisions.js';
-import {insightCapture} from './insight-threads.js';
+
+import {insightCapture,renderSparkShelf} from './insight-threads.js';
 import {examplePrompt} from "../examples/views.js";
 import {criteriaPanel,essentialsNudge} from "../essentials/views.js";
 import {ideaExplorerView,ideaComparisonView,ideaFooter} from '../ideas/views.js';
@@ -45,55 +45,6 @@ export function createPlanningViews(ctx){
    '<div class="motivation-aim-details"><p>Your aim can change. Editing here updates the same aim used across your investigation.</p>'+
    F("aim","Refine my investigation aim","What mathematical question am I trying to answer?",{type:"textarea",rows:2})+
    '</div></details>';
- }
- /** All later screens use small, expandable, editable versions of the original
-  * sparks. They write into the same Planning fields, never a second copy. */
- function planningReturnSparks(state){
-  const fields=state.planning.fields;
-  const specs=[
-   {key:'aim',title:'My question',symbol:'target',kind:'aim',hint:'Refine the question in your own words. This will update the same saved aim throughout your IA.',label:'Refine my investigation aim'},
-   {key:'beneficiary',title:'My motivation',symbol:'compass',kind:'motivation',hint:'Update why finding the answer matters to you or someone else; the mathematical results must still support any advice.',label:'Refine why this answer matters'}
-  ];
-  const cards=specs.filter(x=>String(fields[x.key]||'').trim()).map(x=>{
-   const content=String(fields[x.key]).trim(),preview=content.length>90?content.slice(0,89)+'…':content;
-   return '<details class="motivation-aim-spark planning-return-spark insight-'+x.kind+'" data-planning-return-spark="'+e(x.key)+'">'+
-    '<summary><span class="motivation-aim-symbol">'+icon(x.symbol)+'</span>'+
-    '<span class="motivation-aim-copy"><strong>'+e(x.title)+'</strong><small data-spark-preview-path="planning.fields.'+e(x.key)+'">'+e(preview)+'</small></span>'+
-    '<span class="motivation-aim-toggle">'+icon('pencil')+' Edit</span></summary>'+
-    '<div class="motivation-aim-details"><p>'+e(x.hint)+'</p>'+
-    F(x.key,x.label,'Write in your own words',{type:'textarea',rows:2})+'</div></details>';
-  });
-  const current=state.planning.current;
-  const selectedRoute=routeById(state.planning.routeExplorer?.selectedRoute);
-  if(selectedRoute&& !['N02M','N04R','N04S'].includes(current))
-   cards.push('<details class="motivation-aim-spark planning-return-spark insight-pathway" data-planning-return-spark="route">'+
-    '<summary><span class="motivation-aim-symbol">'+icon('route')+'</span>'+
-    '<span class="motivation-aim-copy"><strong>My investigative route</strong><small>'+e(selectedRoute.title)+'</small></span>'+
-    '<span class="motivation-aim-toggle">'+icon('chevron-down')+' View</span></summary>'+
-    '<div class="motivation-aim-details"><p>Provisional first step: '+e(selectedRoute.first[0])+
-    '. This is a possible pathway, not an agreed sequence or work already completed.</p>'+
-    edit('N02M','Revisit my route')+'</div></details>');
-  if(['N03J','N03D','N05V','N05','N06E'].includes(current)){
-   const sampling=samplingMethod(fields.primarySamplingMethod);
-   if(sampling)cards.push('<details class="motivation-aim-spark planning-return-spark insight-sampling" data-planning-return-spark="sampling">'+
-     '<summary><span class="motivation-aim-symbol">'+icon('layers')+'</span>'+
-     '<span class="motivation-aim-copy"><strong>My sampling choice</strong><small>'+e(sampling.label)+'</small></span>'+
-     '<span class="motivation-aim-toggle">'+icon('chevron-down')+' View</span></summary>'+
-     '<div class="motivation-aim-details"><p>Planned population: '+e(fields.primaryPopulation||'to confirm')+
-     '; sampling unit: '+e(fields.primarySamplingUnit||'to confirm')+
-     '. Check real coverage and possible bias before making claims.</p>'+
-     edit('N03P2','Revise sampling')+'</div></details>');
-   const plans=state.planning.accuracyPlans||[];
-   if(plans.length)cards.push('<details class="motivation-aim-spark planning-return-spark insight-planned-accuracy" data-planning-return-spark="accuracy">'+
-     '<summary><span class="motivation-aim-symbol">'+icon('target')+'</span>'+
-     '<span class="motivation-aim-copy"><strong>My accuracy plans</strong><small>'+e(plans.length+(plans.length===1?' provisional quantity':' provisional quantities'))+'</small></span>'+
-     '<span class="motivation-aim-toggle">'+icon('chevron-down')+' View</span></summary>'+
-     '<div class="motivation-aim-details">'+plans.map(x=>'<p>'+e(plannedAccuracyText(x))+' · Original accuracy not yet verified.</p>').join('')+
-     edit(plans[0].source==='secondary'?'N03S':'N03P3','Review source accuracy')+'</div></details>');
-  }
-  return cards.length?'<section class="planning-compact-recall" aria-label="Earlier ideas you can refine">'+
-    '<p class="planning-compact-recall-label">'+icon('sparkles')+' Your sparks are back <span>Open to revisit or edit</span></p>'+
-    '<div class="planning-compact-sparks">'+cards.join('')+'</div></section>':'';
  }
  const route=(label,condition,cls="btn-secondary")=>'<button type="button" class="btn '+cls+'" data-action="plan-route" data-condition="'+e(condition)+'">'+e(label)+icon("arrow-right")+'</button>';
  const edit=(id,label)=>'<button type="button" class="btn btn-quiet btn-sm" data-action="plan-edit" data-node="'+e(id)+'">'+e(label)+icon("chevron-right")+'</button>';
@@ -556,7 +507,7 @@ export function createPlanningViews(ctx){
    '<span class="progress-counter">1. Planning · '+e(PROGRESS_GROUPS[stageI]?.label||"Review")+'</span></div>'+
    '<div class="task-shell'+(kickoff?' planning-kickoff':'')+(titleStep?' planning-title-step':'')+'" data-source-node="'+e(n)+'">'+
    '<h1 class="task-heading">'+e(screen.title)+'</h1><p class="task-intro">'+e(screen.intro)+'</p>'+
-   (!kickoff&&!titleStep&&n!=="N01V"&&!["N00B","N00C"].includes(n)?planningReturnSparks(state):"")+screen.html+
+   renderSparkShelf(state,n,{surface:'planning'})+screen.html+
    (kickoff||titleStep?'':insightCapture(state,n))+(kickoff||titleStep?'':essentialsNudge(state))+
    (kickoff||titleStep||ideaMapStep?'':'<div class="example-row">'+helpButton("plan-"+n,n==="N01V"?"Why does this matter?":"Help me think")+helpBox("plan-"+n,screen.help)+'</div>')+
    footer(state,screen)+'</div>'+
