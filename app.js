@@ -4,7 +4,7 @@ import {captureReturn,restoreReturn} from "./src/ui/return-context.js";
 import {STATUS_LABELS,resumeRoute,rememberCheckpoint} from "./src/ui/journey.js";
 import {journeyRail} from "./src/ui/journey-views.js";
 import {insightCapture} from "./src/ui/insight-threads.js";
-import {planningProgress} from "./src/ui/living-journey.js";
+import {planningLearningTrail} from "./src/ui/living-journey.js";
 import {createExampleController} from "./src/examples/controller.js";
 import {createEssentialsController} from "./src/essentials/controller.js";
 import {editCriterionReview} from "./src/essentials/review.js";
@@ -99,14 +99,36 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     // Update only the read-only indicators. Never rerender a focused text field.
     const node=state.route==="planning"?state.planning.current:state.route==="completing"?state.completion.current:"";
     if(!node||typeof main?.querySelector!=="function")return;
-    const current=main.querySelector(".task-shell .insight-capture");
-    if(current&&/^(planning\.fields\.|completion\.fields\.|entries\.)/.test(path)){
-      const html=insightCapture(state,node);
+    const captures=main.querySelectorAll(".task-shell .insight-capture");
+    if(/^(planning\.fields\.|completion\.fields\.|entries\.)/.test(path))for(const current of captures){
+      const html=insightCapture(state,current.dataset.insightSource||node);
       if(html)current.outerHTML=html;
     }
     if(state.route==="planning"){
-      const progress=main.querySelector(".planning-sparks-mini");
-      if(progress)progress.outerHTML=planningProgress(state,{compact:true});
+      const currentTrail=main.querySelector(".planning-learning-trail");
+      if(currentTrail){
+        // Refresh only read-only progress: never replace the student's focused input
+        // or the active support controls next to the trail.
+        const wrapper=document.createElement("div");
+        wrapper.innerHTML=planningLearningTrail(state);
+        const updated=wrapper.querySelector(".planning-learning-trail");
+        const oldChapters=currentTrail.querySelector(".planning-trail-desktop");
+        const newChapters=updated?.querySelector(".planning-trail-desktop");
+        const oldCompact=currentTrail.querySelector(".planning-trail-compact");
+        const newCompact=updated?.querySelector(".planning-trail-compact");
+        if(oldChapters&&newChapters){
+          const wasOpen=oldChapters.querySelector(".planning-trail-checkpoints")?.open;
+          if(wasOpen)newChapters.querySelector(".planning-trail-checkpoints").open=true;
+          oldChapters.replaceWith(newChapters);
+        }
+        if(oldCompact&&newCompact){
+          const wasOpen=oldCompact.open;
+          const wasCheckpointsOpen=oldCompact.querySelector(".planning-trail-checkpoints")?.open;
+          newCompact.open=wasOpen;
+          if(wasCheckpointsOpen)newCompact.querySelector(".planning-trail-checkpoints").open=true;
+          oldCompact.replaceWith(newCompact);
+        }
+      }
     }
   }
   function updateBoundField(path,value) {
@@ -274,12 +296,12 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     else {
       const from=result.route?.from;
       const sparks={
-        N01:["A question worth investigating","Your aim is saved and can help you interpret real findings later."],
+        N01:["Your working title is taking shape","Your provisional title and question can guide this investigation. Revise them if the mathematics develops."],
         N03:["A possible evidence route","This is your plan for getting started, not a claim that evidence has been collected."],
         N05V:["Your first mathematical move","You've recorded an intended action. The actual discovery comes after the mathematics."]
       };
       if(sparks[from]&&result.route&&
-         (from!=="N01"||state.planning.fields.aim?.trim())&&
+         (from!=="N01"||(state.planning.fields.provisionalTitle||state.planning.fields.aim)?.trim())&&
          (from!=="N03"||state.planning.fields.dataSource?.trim())&&
          (from!=="N05V"||(state.planning.fields.firstAction||state.planning.fields.figurePurpose)?.trim())){
         toast(...sparks[from]);
@@ -694,6 +716,14 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         const target=$("#timeline-suggestion");
         if(target)target.scrollIntoView({block:"nearest",behavior:"auto"});
         toast(result.preserved.length&&!force?"Timeline updated; "+result.preserved.length+" manually edited date(s) were kept.":"Your suggested milestones are ready. Dates can be changed in the optional detailed planner.");
+        break;
+      }
+      case "planning-help-toggle":{
+        const panel=el.closest(".planning-trail-support");
+        if(panel){
+          const open=panel.classList.toggle("is-open");
+          el.setAttribute("aria-expanded",String(open));
+        }
         break;
       }
       case "plan-next":
