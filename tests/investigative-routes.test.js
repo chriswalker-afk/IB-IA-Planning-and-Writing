@@ -146,11 +146,12 @@ test('a saved route spark travels into later Planning and remains editable by na
   choose:()=>'',numberPick:()=>'',note:()=>'',summary:()=>'',helpButton:()=>'',helpBox:()=>'',tabletNav:()=>''
  };
  const v=createPlanningViews(ctx).viewPlanning();
- assert(v.includes('data-planning-return-spark="route"'));
+ assert(v.includes('data-spark-id="investigative-route"'));
  assert(v.includes('My investigative route'));
- assert(v.includes('Revisit my route'));
+ assert(v.includes('data-node="N02M"'));
  assert(v.includes('data-planning-return-spark="aim"'));
- assert(v.includes('data-planning-return-spark="beneficiary"'));
+ assert(v.includes('data-spark-id="motivation"'));
+ assert(v.includes('data-spark-library'));
 });
 test('old backups are normalised without mutating earlier decisions; invalid or forged route IDs are rejected',()=>{
  const older=setup();delete older.planning.routeExplorer;
