@@ -149,6 +149,7 @@ test('the primary screen provides optional sampling definitions, a selected-meth
 });
 test('old project backup and embedded documents remain readable; new provisional rules travel safely',()=>{
  const original=s();
+ set(original,'dataSource','primary');
  assert(save(original,'primary','Length','cm','analogue','nearest 1 mm').ok);
  set(original,'primarySamplingMethod','census');
  set(original,'primarySamplingUnit','One section of material');
