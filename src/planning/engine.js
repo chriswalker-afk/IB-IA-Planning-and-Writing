@@ -16,7 +16,7 @@ export const PROGRESS_GROUPS = Object.freeze([
 const val = x => String(x??"").trim();
 const now = () => new Date().toISOString();
 export const PLANNING_FIELD_DEFAULTS = Object.freeze({
- planIdentifier:"",ideaStatus:"",idea:"",originalIdea:"",interest:"",otherIdea1:"",otherIdea2:"",ideaSelected:"",ideaAccess:"",ideaValue:"",
+ planIdentifier:"",provisionalTitle:"",ideaStatus:"",idea:"",originalIdea:"",interest:"",otherIdea1:"",otherIdea2:"",ideaSelected:"",ideaAccess:"",ideaValue:"",
  aim:"",motivation:"",beneficiaryType:"",beneficiary:"",intendedUse:"",
  kind:"",statisticsContext:"",dataSource:"",primaryWhat:"",primaryWhen:"",primaryWhere:"",
  primaryPopulation:"",primaryHow:"",primaryEquipment:"",primaryStatus:"",primarySampling:"",
