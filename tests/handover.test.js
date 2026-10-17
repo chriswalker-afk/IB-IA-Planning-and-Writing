@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import JSZip from "jszip";
 import {PDFDocument} from "pdf-lib";
 import {createProjectState,normalizeProjectState} from "../src/core/project-state.js";
-import {applyPlanningField,planningFlags,toggleMath} from "../src/planning/engine.js";
+import {applyPlanningField,planningFlags,toggleMath,chooseMathRoute} from "../src/planning/engine.js";
 import {createPlanningEnvelope,normalizePlanningEnvelope,getFieldDiff,mergePlanningEnvelope,createPartialEnvelope,validateDocumentFile,REPORT_ATTACHMENT} from "../src/handover/schema.js";
 import {modelFromEnvelope,suggestedFilename} from "../src/handover/report-model.js";
 import {createPdfPlanningReport,importEmbeddedPdfReport} from "../src/handover/formats/pdf.js";
@@ -202,4 +202,42 @@ test("importing only a deadline does not question unrelated completed mathematic
  const applied=mergePlanningEnvelope(current,envelope,["milestoneSchoolFinal"]);
  assert.equal(applied.state.completion.stages.C40,"complete");
  assert.equal(applied.state.entries[0].reviewNeeded,undefined);
+});
+
+test("portable PDF/Word snapshot includes the provisional mathematical journey and first step",()=>{
+ const state=example();
+ assert(chooseMathRoute(state,"relationships"));
+ const envelope=createPlanningEnvelope(state);
+ assert.equal(envelope.schemaVersion,1); // same backwards-compatible format
+ assert.equal(envelope.planning.routeExplorer.selectedRoute,"relationships");
+ assert.equal(envelope.planning.routeExplorer.firstStep,"Plot paired measurements");
+ const recovered=normalizePlanningEnvelope(JSON.parse(JSON.stringify(envelope)));
+ assert.equal(recovered.planning.routeExplorer.selectedRoute,"relationships");
+ const output=modelFromEnvelope(envelope);
+ const maths=output.sections.find(x=>x.title.includes("Intended mathematical investigation"));
+ assert(maths.rows.some(x=>x.label==="Provisional investigative route"&&x.value==="Relationships between two variables"));
+ assert(maths.rows.some(x=>x.label.includes("first mathematical step")&&x.value==="Plot paired measurements"));
+ assert.equal(state.entries[0].result,"An actual result I do not want overwritten");
+});
+test("a reviewed route-spark import preserves all real work and is never automatically applied",()=>{
+ const original=example();
+ original.completion.stages.C40="complete";
+ const proposed=example();
+ assert(chooseMathRoute(proposed,"relationships"));
+ const incoming=createPlanningEnvelope(proposed);
+ const proposedChanges=getFieldDiff(original,incoming);
+ assert(proposedChanges.some(x=>x.key==="routeExplorer"&&x.recommended));
+ const untouched=mergePlanningEnvelope(original,incoming,[]);
+ assert.equal(untouched.state.planning.routeExplorer.selectedRoute,"");
+ assert.equal(untouched.state.completion.stages.C40,"complete");
+ const imported=mergePlanningEnvelope(original,incoming,["routeExplorer"]);
+ assert.equal(imported.state.planning.routeExplorer.selectedRoute,"relationships");
+ assert.equal(imported.state.entries[0].result,"An actual result I do not want overwritten");
+ assert.equal(imported.state.completion.stages.C40,"needs-review");
+ assert.equal(imported.state.teacher.pendingApproval,true);
+ const prior=createPlanningEnvelope(original);
+ delete prior.planning.routeExplorer; // older document without route metadata
+ const oldRecovered=normalizePlanningEnvelope(prior);
+ assert.equal(oldRecovered.planning.routeExplorer.selectedRoute,"");
+ assert(!getFieldDiff(imported.state,oldRecovered).some(x=>x.key==="routeExplorer"));
 });
