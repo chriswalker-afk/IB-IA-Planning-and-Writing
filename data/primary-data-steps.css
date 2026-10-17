@@ -1,9 +1,9 @@
-/* Three small primary-data decisions, with one task per screen.
+/* Two primary-data decisions; compact measurement rows share their accuracy rules.
    Saved-spark gold is limited to actual saved sampling/accuracy decisions. */
 .primary-mini-progress{margin:2px 0 21px;padding:11px 13px 12px;border:1px solid #d8e7df;border-radius:13px;background:#f8faf8}
 .primary-mini-progress-top{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:10px;line-height:1.4;color:#69827a}
 .primary-mini-progress-top strong{font-size:9px;letter-spacing:.09em;color:#42756c}
-.primary-mini-progress-track{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:10px}
+.primary-mini-progress-track{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:10px}
 .primary-mini-progress-track>span{display:flex;align-items:center;justify-content:center;gap:5px;min-width:0;padding:7px 4px;border:1px solid #dfe9e4;border-radius:8px;background:#fff;color:#879c94;font-size:11px;font-weight:900;text-align:center}
 .primary-mini-progress-track>span.done{background:#edf7f1;border-color:#beded0;color:#136c5e}
 .primary-mini-progress-track>span.current{background:#dceddf;border-color:#8cbeaa;color:#075f56;box-shadow:inset 0 0 0 1px #bad9c8}
@@ -99,3 +99,11 @@
 @media(prefers-reduced-motion:reduce){
  .primary-step-extra>summary .icon:last-child,.primary-accuracy-editor>summary .icon:last-child{transition:none!important}
 }
+
+.primary-quantity.has-accuracy{border-color:#d4e6db;background:#f5faf6}
+.primary-quantity-rule{font-weight:500}
+.primary-accuracy-target{margin:0 0 12px;font-size:12px;color:#315b52}
+.primary-editor-prompt{padding:0 13px 10px}
+.primary-saved-precision{border:1px solid #dce9e2;border-radius:10px;padding:10px 13px}
+.primary-saved-precision>summary{cursor:pointer;font-size:11px;font-weight:750;color:#376d5e}
+@media(max-width:650px){.primary-quantity{flex-wrap:wrap}.primary-quantity>button:first-of-type{margin-left:34px}}
