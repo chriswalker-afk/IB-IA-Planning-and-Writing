@@ -16,6 +16,18 @@ export const IDEA_TOPICS = [
  ['school','School & everyday life',['Queues','Events','Space','Timetables']],
  ['patterns','Mathematical patterns',['Sequences','Geometry','Number patterns','Proof']]
 ].map(([id,label,subtopics])=>({id,label,subtopics}));
+/** Potential barriers are prompts for reflection, never predicted limitations or IA grades. */
+export const IDEA_DIFFICULTIES = Object.freeze([
+ {id:'focus',label:'My question may be too broad or unclear'},
+ {id:'access',label:'I may struggle to collect or verify suitable data'},
+ {id:'maths',label:'I am not sure what mathematics I would use'},
+ {id:'practical',label:'I might need permission, equipment or extra time'},
+ {id:'teacher',label:'I should discuss the scope with a teacher'}
+]);
+export const IDEA_RATING_LABELS = Object.freeze({
+ clarity:['','Very vague','Needs refining','Taking shape','Mostly clear','Clear and focused'],
+ quickStart:['','Significant obstacles','Needs preparation','Some checks needed','Quite soon','I could start now']
+});
 export const IDEA_CHECKS = [
  {id:'interest',label:'Does this genuinely interest me?',options:[['yes','Yes'],['maybe','Maybe'],['no','Not really']]},
  {id:'access',label:'Can I access the starting material?',options:[['yes','Available'],['maybe','Needs checking'],['no','Difficult']]},
