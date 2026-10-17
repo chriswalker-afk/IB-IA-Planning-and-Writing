@@ -108,7 +108,8 @@ test("adaptive Planning follows genuine spreadsheet source nodes and retains stu
  h.write("planning.fields.aim","How does X relate to Y?");
  h.action("plan-advance");assert(h.html.includes('data-source-node="N01V"'));
  assert(h.html.includes('Why does this matter?'));
- assert(h.html.includes('data-motivation-aim-spark'));
+ assert(h.html.includes('data-spark-editor="aim"'));
+ assert(h.html.includes('data-spark-library'));
  assert(h.html.includes('data-bind="planning.fields.aim"'));
  assert(h.html.includes('data-bind="planning.fields.beneficiary"'));
  assert(h.html.includes('Compare motivations'));
