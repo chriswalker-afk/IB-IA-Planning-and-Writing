@@ -118,3 +118,26 @@ test('Map state reloads safely, incorrect forged routes are discarded',()=>{
  ideaAction(mode,'idea-map-access',{branch:'weather'});
  assert.equal(normalizeProjectState(clone(mode)).ideaExplorer.map.dataBranch,'weather');
 });
+
+test('Old dropdown-based interests become map branches without losing drafts',()=>{
+ const input={topic:'sport',subtopic:'Badminton',focus:'My own sport',
+  active:'',drafts:{},shortlist:[],history:[]};
+ const restored=normalizeIdeaState(input);
+ assert.equal(restored.map.mode,'interests');
+ assert.equal(restored.map.root,'hobbies');
+ assert.equal(restored.map.topic,'sport');
+ assert.equal(restored.map.subtopic,'Badminton');
+ assert.equal(restored.focus,'My own sport');
+ const caution=normalizeIdeaState({...input,topic:'patterns',subtopic:'Proof'});
+ assert.equal(caution.map.topic,'');
+ assert.equal(caution.map.root,'');
+});
+test('Idea Lab CSS is neutral and has mobile and reduced-motion arrangements',async()=>{
+ const {readFileSync}=await import('node:fs');
+ const css=readFileSync(new URL('../data/idea-map.css',import.meta.url),'utf8');
+ assert(css.includes('.idea-map-orbit'));
+ assert(css.includes('.idea-map-direction-list'));
+ assert(css.includes('@media(max-width:680px)'));
+ assert(css.includes('prefers-reduced-motion:reduce'));
+ assert(!/\.idea-map-quickstart\{[^}]*background:var\(--teal-pale\)/.test(css));
+});
