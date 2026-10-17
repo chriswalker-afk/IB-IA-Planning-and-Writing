@@ -8,7 +8,7 @@ import {planningLearningTrail} from "./src/ui/living-journey.js";
 import {createExampleController} from "./src/examples/controller.js";
 import {createEssentialsController} from "./src/essentials/controller.js";
 import {editCriterionReview} from "./src/essentials/review.js";
-import {ideaAction,ideaInput,chooseTopic} from './src/ideas/engine.js';
+import {ideaAction,ideaInput,ideaDifficultyInput,chooseTopic} from './src/ideas/engine.js';
 import {attachIdeaMapGraph} from './src/ideas/map-layout.js';
 import {resourceDrawer,resourceList} from './src/resources/views.js';
 import {resourceAction,resourceFilter,resourcePreference} from './src/resources/actions.js';
@@ -1018,6 +1018,10 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   });
   document.addEventListener("change",evt=>{
     const target=evt.target;
+    if(target.dataset.ideaDifficulty!==undefined){
+      if(ideaDifficultyInput(state,target.dataset.ideaDifficulty,target.checked))save();
+      return;
+    }
     if(target.dataset.ideaTopic!==undefined){
       if(chooseTopic(state,target.value)){save();render();const select=$("#idea-topic");if(select)select.focus({preventScroll:true});}
       return;
