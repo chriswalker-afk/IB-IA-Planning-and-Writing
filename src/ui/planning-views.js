@@ -308,6 +308,7 @@ export function createPlanningViews(ctx){
     accuracyPlanner(state,"primary",{F,select,e,icon})+'</section>'+
     '<div class="field-row">'+F("primaryWhen","When could you start?","",{type:"date"})+
     F("primaryWhere","Where could you do this?","Setting without private details")+'</div>'+
+    '<p class="data-ready-rule">'+icon('info')+' Mark your plan workable only when you know what and how you will record and have saved an appropriate degree of accuracy (or exact count). Otherwise choose uncertain and continue planning.</p>'+ 
     select("primaryStatus","How certain is your primary-data plan?",[
      ["ready","I have a workable collection plan"],
      ["unsure","Parts of the collection, sampling or accuracy plan are uncertain"]]),
