@@ -5,7 +5,11 @@ on:
     branches: [main]
     paths:
       - 'src/planning/data-decisions.js'
+      - 'src/planning/primary-quantities.js'
       - 'src/ui/data-decisions-view.js'
+      - 'src/ui/primary-data-steps.js'
+      - 'data/primary-data-steps.css'
+      - 'tests/primary-data-steps.test.js'
       - 'data/data-decisions.css'
       - 'scripts/data-decisions-browser.py'
       - '.github/workflows/data-decisions-browser.yml'
