@@ -90,22 +90,58 @@ export function createPlanningViews(ctx){
    '<span class="choice-subtitle">'+e(x.purpose)+'</span><span class="plan-math-topic">'+e(x.topic)+'</span></span>'+
    '<span class="choice-marker">'+icon("check")+'</span></button>').join("")+'</div>';
  }
- function mathChoices(state,suggested=false){
+ function mathRouteCards(state,{afterPrediction=false}={}){
+  const course=state.planning.fields.course;
+  if(!['AI SL','AA SL'].includes(course))return '';
+  const inferred=afterPrediction?predictionMathSuggestions(state).map(x=>({...x,
+   origin:'After your provisional prediction',why:'Your tentative prediction suggests this might be worth checking IF the actual data support that pattern.',
+   first:'Inspect genuine results and decide whether the technique helps answer your aim.',
+   caution:'A prediction is not evidence of a mathematical pattern.'})):[];
+  const used=new Set();
+  const routes=[...inferred,...earlyMathRecommendations(state)].filter(x=>{
+   if(used.has(x.id))return false;
+   used.add(x.id);return true;
+  }).slice(0,5);
+  if(!routes.length)return '<p class="math-route-empty">There is no clearly applicable suggested route yet. Explore your course menu, try one small case, or discuss a suitable starting point with your teacher.</p>';
+  const selected=new Set(state.planning.mathSelected);
+  return '<section class="math-routes" aria-label="Possible mathematical pathways">'+
+   '<div class="math-routes-heading"><span>'+icon('route')+' POSSIBLE ROUTES</span>'+
+   '<h3>Mathematics worth considering</h3>'+
+   '<p>Based on your investigation type, data structure, working question or prediction. These are optional ideas—not instructions, proven patterns, grades or syllabus approval.</p></div>'+
+   '<div class="math-route-grid">'+routes.map(x=>{
+    const isSelected=selected.has(x.id);
+    return '<button type="button" class="math-route-option'+(isSelected?' selected':'')+
+     '" data-action="plan-toggle-math" data-math-id="'+e(x.id)+'" aria-pressed="'+isSelected+'">'+
+     '<span class="math-route-overline">'+e(x.origin)+'</span>'+
+     '<strong>'+e(x.label)+'</strong><span class="math-route-topic">'+e(x.topic)+'</span>'+
+     '<span class="math-route-why">'+e(x.why)+'</span>'+
+     '<span class="math-route-first"><b>Try first:</b> '+e(x.first)+'</span>'+
+     (x.caution?'<span class="math-route-caution">'+icon('info')+' '+e(x.caution)+'</span>':'')+
+     '<span class="math-route-select">'+icon(isSelected?'check-circle':'plus-circle')+
+      '<span data-math-route-status>'+(isSelected?'Added to my plan':'Add this possibility')+'</span></span>'+
+     '</button>';
+   }).join('')+'</div></section>';
+ }
+ function mathChoices(state,suggested=false,collapsed=false){
   const f=state.planning.fields,course=f.course;
-  if(!["AI SL","AA SL"].includes(course))return callout("Course review needed","No AI SL or AA SL menu is applied to this course. Record a provisional technique and ask your teacher.",true)+
-   F("otherCourseMaths","Which mathematics might be useful?","A tentative technique, or Not sure yet",{type:"textarea",rows:3});
-  const chosen=selectedMaths(state),foreign=chosen.filter(x=>x.course!==course);
-  const suggestions=suggested?predictionMathSuggestions(state):[];
-  return (suggested?'<div class="context-card">'+icon("lightbulb")+'<div><strong>Revisit, don’t restart</strong><p>These are your original selections. Add or remove techniques if your predicted pattern suggests a better question. Suggestions are optional and are not evidence that a result will occur.</p></div></div>':"")+
-   (suggested&&suggestions.length?'<div class="task-section"><label class="field-label">Mathematics that might be worth considering</label>'+
-     mathCards(state,suggestions.map(x=>x.id))+'</div>':"")+
+  if(!["AI SL","AA SL"].includes(course))return callout("Course review needed","Only AI SL and AA SL are supported by the current detailed menu. No automatic match to HL or another syllabus is claimed.",true)+
+   F("otherCourseMaths","Mathematics I might explore (optional)","A tentative technique or 'Not sure yet'",{type:"textarea",rows:2});
+  const chosen=selectedMaths(state),foreign=chosen.filter(x=>x.course!==course),local=chosen.filter(x=>x.course===course);
+  const selectedSummary='<p class="math-selection-summary">Selected: <strong data-math-selected-count>'+local.length+'</strong>'+
+   (local.length?' · '+e(local.map(x=>x.label).join(' · ')):' · Nothing selected yet — that is okay')+'</p>';
+  const menu=
    '<div class="field-group"><label class="field-label" for="planMathSearch">Search '+e(course)+' mathematics</label>'+
    '<input id="planMathSearch" class="field" type="search" placeholder="Search a topic or technique" data-plan-search value="'+e(state.planning.mathSearch)+'"></div>'+
    '<div class="plan-math-count"><span>Selected: <strong>'+chosen.length+'</strong></span><span>Choose only mathematics with a purpose</span></div>'+
    mathCards(state)+
-   (foreign.length?callout("Course changed",e("Earlier choices from a different course: "+foreign.map(x=>x.label).join(", ")+". Revisit these with your teacher; they have not been silently discarded."),true):"")+
+   (foreign.length?callout("Course changed",e("Earlier choices from a different course: "+foreign.map(x=>x.label).join(", ")+". Review these with your teacher; they have not been silently discarded."),true):"")+
    F("otherMaths","Another technique I might use (optional)","Describe a different or researched technique",{type:"textarea",rows:2})+
-   callout("Not sure yet?","You may leave every technique unselected and continue. You are not rewarded for choosing more mathematics.");
+   '<p class="field-hint">You can leave all techniques unselected. Adding more mathematics does not make an investigation better.</p>';
+  return (suggested?'<p class="math-review-note">'+icon('refresh-cw')+
+    ' Revisit, do not restart. Your earlier selections are retained; a prediction is not a confirmed pattern.</p>':'')+
+   (collapsed?selectedSummary+
+    '<details class="math-catalog-more"><summary>'+icon('book-open')+' Browse all '+e(course)+' mathematics'+icon('chevron-down')+'</summary>'+
+    '<div class="math-catalog-more-body">'+menu+'</div></details>':menu);
  }
  function limitedTimeline(state){
   const f=state.planning.fields;
