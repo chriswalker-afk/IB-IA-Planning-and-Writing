@@ -30,6 +30,7 @@ test("all 33 normalized Planning nodes render without throwing, with exact node 
 });
 test("course options are shown only for the matching SL syllabus",()=>{
  const {state,view}=screenFixture();state.planning.current="N04S";
+ state.planning.routeExplorer.mode="all";
  state.planning.fields.course="AI SL";
  let html=view.viewPlanning();
  assert(html.includes("Voronoi diagrams"));
@@ -175,12 +176,18 @@ test('early course and mathematics page offers contextual selection and avoids m
  assert(!html.includes('data-math-id="AI05"'));
  state.planning.fields.course='AI SL';
  html=view.viewPlanning();
+ assert(html.includes('Three ways to explore mathematics'));
+ assert(html.includes('Based on my aim'));
+ assert(html.includes('Typical investigative routes'));
+ assert(html.includes('Complete list'));
+ assert(html.includes('Movement and trajectories'));
+ assert(!html.includes('data-math-id="AI05"'));
+ state.planning.routeExplorer.openRoute='trajectories';
+ html=view.viewPlanning();
+ assert(html.includes('What does the measured path actually allow you to model?'));
  assert(html.includes('Quadratic or cubic models'));
- assert(html.includes('Mathematics worth considering'));
- assert(html.includes('Try first:'));
- assert(html.includes('Browse all AI SL mathematics'));
- assert(html.includes('data-planning-return-spark="aim"'));
  assert(html.includes('data-math-id="AI05"'));
+ assert(html.includes('data-planning-return-spark="aim"'));
  assert(!html.includes('data-source-node="N03"'));
 });
 test('following Planning screens have compact question and motivation sparks, not an expanded recall panel',()=>{
