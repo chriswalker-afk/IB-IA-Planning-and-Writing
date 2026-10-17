@@ -147,7 +147,7 @@ test('a saved route spark travels into later Planning and remains editable by na
  };
  const v=createPlanningViews(ctx).viewPlanning();
  assert(v.includes('data-spark-id="investigative-route"'));
- assert(v.includes('My investigative route'));
+ assert(v.includes('My provisional investigative route'));
  assert(v.includes('data-node="N02M"'));
  assert(v.includes('data-planning-return-spark="aim"'));
  assert(v.includes('data-spark-id="motivation"'));
