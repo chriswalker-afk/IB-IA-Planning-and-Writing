@@ -434,5 +434,11 @@ export const PLANNING_ROUTES = Object.freeze([
   {"from":"N02M","answer":"Discuss theoretical maths with teacher","to":"N02T","sourceRow":null,"editorial":"UX 2026-10-17: theoretical routes retain existing teacher consultation"},
   {"from":"N03H","answer":"Continue with mathematics already explored","to":"N01P","sourceRow":null,"editorial":"UX 2026-10-17: no duplicate course/technique screen after evidence planning; prediction then maths refinement"},
   {"from":"N03P","answer":"Continue to sampling","to":"N03P2","sourceRow":null,"editorial":"UX 2026-10-17: combine collection procedure, quantities and recording accuracy"},
-  {"from":"N03P2","answer":"Complete primary plan","to":"N03J","sourceRow":null,"editorial":"UX 2026-10-17: sampling decisions and readiness finish primary data plan"}
+  {"from":"N03P2","answer":"Complete primary plan","to":"N03J","sourceRow":null,"editorial":"UX 2026-10-17: sampling decisions and readiness finish primary data plan"},
+  {"from":"N03P2","answer":"Finish primary data plan","to":"N03D","sourceRow":null,"editorial":"UX 2026-10-17: skip repeated planned method justification; revisit actual method in IA Studio"},
+  {"from":"N03S","answer":"Finish secondary data plan","to":"N03D","sourceRow":null,"editorial":"UX 2026-10-17: skip repeated method justification after secondary source selection"},
+  {"from":"N03B","answer":"Continue to evidence timing","to":"N03D","sourceRow":null,"editorial":"UX 2026-10-17: combine both validated source branches without a second comparison essay"},
+  {"from":"N03E","answer":"Continue to manageability","to":"N03G","sourceRow":null,"editorial":"UX 2026-10-17: essential consent and access checks live on data readiness, bypass lengthy feasibility questionnaire"},
+  {"from":"N03E","answer":"Safety / privacy / consent unresolved","to":"N02T","sourceRow":null,"editorial":"UX 2026-10-17: teacher discussion reachable directly from the short consent check"},
+  {"from":"N03G","answer":"Revisit practical checks","to":"N03E","sourceRow":null,"editorial":"UX 2026-10-17: return to quick feasibility checks instead of retired long form"}
 ]);
