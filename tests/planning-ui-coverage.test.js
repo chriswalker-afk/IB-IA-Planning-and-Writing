@@ -16,9 +16,9 @@ function screenFixture(){
  };
  return {state,view:createPlanningViews(ctx)};
 }
-test("all 32 normalized Planning nodes render without throwing, with exact node trace",()=>{
+test("all 33 normalized Planning nodes render without throwing, with exact node trace",()=>{
  const {state,view}=screenFixture();
- assert.equal(PLANNING_NODE_IDS.length,32);
+ assert.equal(PLANNING_NODE_IDS.length,33);
  for(const node of PLANNING_NODE_IDS){
   state.planning.current=node;
   const html=view.viewPlanning();
@@ -162,4 +162,37 @@ test('motivation screen has one why/who/how response and a small inline-editable
  assert(html.includes('Spark saved · Your motivation'));
  assert(html.includes('My aim spark'));
  assert(html.includes('planning-trail-support'));
+});
+
+test('early course and mathematics page offers contextual selection and avoids mandatory technique choice',()=>{
+ const {state,view}=screenFixture();state.planning.current='N02M';
+ state.planning.fields.aim='How could a scaled recording help model a football trajectory?';
+ state.planning.fields.kind='modelling';
+ let html=view.viewPlanning();
+ assert(html.includes('Choose your course and explore possible mathematics'));
+ assert(html.includes('Mathematics AI SL'));
+ assert(html.includes('Mathematics AA SL'));
+ assert(!html.includes('data-math-id="AI05"'));
+ state.planning.fields.course='AI SL';
+ html=view.viewPlanning();
+ assert(html.includes('Quadratic or cubic models'));
+ assert(html.includes('Mathematics worth considering'));
+ assert(html.includes('Try first:'));
+ assert(html.includes('Browse all AI SL mathematics'));
+ assert(html.includes('data-planning-return-spark="aim"'));
+ assert(html.includes('data-math-id="AI05"'));
+ assert(!html.includes('data-source-node="N03"'));
+});
+test('following Planning screens have compact question and motivation sparks, not an expanded recall panel',()=>{
+ const {state,view}=screenFixture();
+ state.planning.fields.aim='How could I estimate the volume?';
+ state.planning.fields.beneficiary='I want to compare possible box designs';
+ for(const id of ['N02','N02M','N03','N04R','N05V']){
+  state.planning.current=id;
+  const html=view.viewPlanning();
+  assert(html.includes('planning-compact-recall'),id);
+  assert(html.includes('data-planning-return-spark="aim"'),id);
+  assert(html.includes('data-planning-return-spark="beneficiary"'),id);
+  assert(!html.includes('class="insight-echo"'),id);
+ }
 });
