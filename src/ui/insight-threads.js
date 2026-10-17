@@ -9,7 +9,8 @@ const has=v=>typeof v==='string'&&!!v.trim();
 const short=(v,n=160)=>{const t=String(v??'').trim();return t.length>n?t.slice(0,n-1)+'…':t;};
 export const INSIGHT_FAMILIES=Object.freeze({
  title:{label:'My working title',icon:'sparkles',verb:'A provisional direction to reconsider'},
- aim:{label:'My question',icon:'target',verb:'A purpose to return to'},
+ aim:{label:'My question',icon:'target',verb:'A question to return to'},
+ motivation:{label:'My motivation',icon:'compass',verb:'Why answering this question matters'},
  evidence:{label:'My evidence',icon:'flask',verb:'A source or method to revisit'},
  accuracy:{label:'My accuracy choices',icon:'layers',verb:'A decision to apply when relevant'},
  discovery:{label:'My discoveries',icon:'chart',verb:'A mathematical finding to build upon'},
@@ -32,6 +33,10 @@ export function insightItems(s){
   {usage:'This title is provisional. Review whether it still describes the mathematical question you really explored.'}));
  if(has(aim))out.push(item('aim','aim','Investigation aim',aim,'Planning · Investigation aim',{type:'planning',node:'N01'},
   {usage:'Keeps mathematical interpretations connected to the original question.'}));
+ const motivation=p.beneficiary||p.motivation||s?.project?.beneficiary||p.intendedUse;
+ if(has(motivation))out.push(item('motivation','motivation','My motivation',motivation,
+  'Planning · Motivation',{type:'planning',node:'N01V'},
+  {usage:'Revisit why finding the answer matters. Your eventual conclusions and any advice must be supported by the actual mathematics.'}));
  if(has(p.prediction||s?.project?.prediction))out.push(item('aim','prediction','Prediction or conjecture',p.prediction||s.project.prediction,
   'Planning · Prediction',{type:'planning',node:'N01P'},{usage:'Compare this with genuine findings, including results that disagree.'}));
  const planned=p.kind==='theoretical'
@@ -95,34 +100,37 @@ export function insightItems(s){
 export function insightForCurrent(s,node){
  const all=insightItems(s),active=entries(s)[s?.completion?.activeEntryIndex];
  const get=type=>all.filter(x=>x.type===type);
- if(node==='N01V'||/^N(?:02|03|04|05|06)/.test(node))return all.filter(x=>x.id==='working-title'||x.id==='aim'||(node==='N06'&&x.id==='planned-evidence')).slice(0,2);
+ const named=id=>all.find(x=>x.id===id);
+ const compact=ids=>ids.map(named).filter(Boolean);
+ if(node==='N01V')return compact(['aim','working-title']);
+ if(/^N(?:02|03|04|05|06)/.test(node))return compact(['aim','motivation','working-title']).slice(0,2);
  const result=active?.fromEntryId?all.filter(x=>x.id==='result:'+active.fromEntryId):[];
  const related=kind=>all.filter(x=>x.id.startsWith(kind+':')&&active&&(
-   kind==='accuracy'?linkedAccuracy(s,active).some(a=>'accuracy:'+a.id===x.id):
-   linkedSources(s,active).some(a=>'source:'+a.id===x.id)));
- if(['C10','C10E','C34B','C35','C60','C61','C62','C64'].includes(node)){
-  const out=[...get('aim')];
-  if(['C10','C10E','C60'].includes(node))out.unshift(...get('title'));
-  if(['C35','C60','C61','C64'].includes(node)){
-   const real=get('discovery').filter(x=>!x.planned&&!x.needsReview);
-   out.push(...real.slice(-1));
+  kind==='accuracy'?linkedAccuracy(s,active).some(a=>'accuracy:'+a.id===x.id):
+  linkedSources(s,active).some(a=>'source:'+a.id===x.id)));
+ const latestResult=get('discovery').filter(x=>!x.planned&&!x.needsReview).at(-1);
+ if(['C10','C10E','C02','C34B','C35','C60','C61','C62','C64'].includes(node)){
+  const prep=['C10','C10E'].includes(node)?compact(['working-title','aim','motivation']):
+   compact(['aim','motivation']);
+  if(['C34B','C35','C60','C61','C62','C64'].includes(node)&&latestResult)prep.push(latestResult);
+  if(/^C6/.test(node)){
+   prep.push(...get('reflection').slice(-1));
+   prep.push(...get('learning').slice(-1));
   }
-  if(/^C6/.test(node))out.push(...get('reflection').slice(-2));
-  if(/^C6/.test(node))out.push(...get('learning').slice(-1));
-  return [...new Map(out.map(x=>[x.id,x])).values()].slice(0,3);
+  return [...new Map(prep.map(x=>[x.id,x])).values()].slice(0,3);
  }
  if(['C20','C21S','C21M','C21T','C22','C23','C24','C25','C26','C30','C31'].includes(node)){
-  return all.filter(x=>x.id==='planned-evidence'||x.id==='planned-maths'||x.id==='aim').slice(0,2);
+  const standard=all.filter(x=>x.id==='planned-evidence'||x.id==='planned-maths'||x.id==='aim').slice(0,2);
+  if(['C20','C22','C26'].includes(node)&&named('motivation'))standard.push(named('motivation'));
+  return standard.slice(0,3);
  }
  if(['C32','C33','C34','C34A','C40','C50','C40T','C40L','C35H','C35B','C35P'].includes(node)){
   const contextual=[...result,...related('accuracy'),...related('source')];
-  // An unlinked accuracy/source decision is never presented as an input to this calculation.
-  if(['C35H','C35B','C35P'].includes(node)){
-   const real=get('discovery').filter(x=>!x.planned);
-   contextual.push(...real.slice(-1));
-  }
-  if(['C34','C34A','C40','C50'].includes(node))contextual.push(...get('aim').slice(0,1));
-  if(['C40','C50','C40T'].includes(node)&&active?.fromEntryId)contextual.push(...get('learning').filter(x=>x.id==='learning:'+active.fromEntryId));
+  if(['C35H','C35B','C35P'].includes(node)&&latestResult)contextual.push(latestResult);
+  if(['C34','C34A','C40','C50'].includes(node))contextual.push(...compact(['aim']));
+  if(['C34','C34A'].includes(node))contextual.push(...compact(['motivation']));
+  if(['C40','C50','C40T'].includes(node)&&active?.fromEntryId)
+   contextual.push(...get('learning').filter(x=>x.id==='learning:'+active.fromEntryId));
   return [...new Map(contextual.map(x=>[x.id,x])).values()].slice(0,3);
  }
  return [];
@@ -139,7 +147,8 @@ export function insightCapture(s,node){
  const p=s?.planning?.fields||{},c=s?.completion||{},all=insightItems(s);
  let ids=[],kind='';
  if(node==='N01'){ids=['working-title'];kind='Your provisional title';}
-  else if(node==='N01A'||node==='N01V'){ids=['aim'];kind='Your investigation aim';}
+  else if(node==='N01A'){ids=['aim'];kind='Your investigation aim';}
+  else if(node==='N01V'){ids=['motivation'];kind='Your motivation';}
  else if(node==='N01P'){ids=['prediction'];kind='Your conjecture';}
  else if(/^N03/.test(node)||node==='N02T'){ids=['planned-evidence'];kind='Your intended evidence';}
  else if(['N05V','N05'].includes(node)){ids=['planned-maths'];kind='Your first mathematical intention';}
@@ -174,6 +183,11 @@ export function insightMeaning(s,node,x){
   return 'You explicitly linked this source to your mathematics. Check the original values, units and method before relying on the finding.';
  }
  if(x.id==='working-title')return 'This is a provisional signpost, not a result. Adapt your title if the actual mathematics leads to a more precise question.';
+ if(x.id==='motivation'){
+  if(['C34','C34A','C34B','C35','C35H','C35B','C35P','C60','C61','C62','C64'].includes(node))
+   return 'Why did you want this answer? Connect what your genuine mathematics established to that reason, including if the result is limited, unexpected or does not justify a practical recommendation.';
+  return 'Keep your question and motivation together: does each choice help you learn, explain or decide what you originally set out to understand? Your findings may change your motivation.';
+ }
   if(x.id==='aim'&&['C34','C34A','C35','C40','C50','C60','C61','C62','C64'].includes(node)){
   return 'Connect what your mathematics actually established to this precise investigation question. Does the result answer all of it, or only a narrower part?';
  }
