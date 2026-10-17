@@ -7,7 +7,7 @@ import {createPlanningViews} from '../src/ui/planning-views.js';
 
 const sample=()=>{
  const s=createProjectState();
- s.route='planning';s.planning.current='N03P3';
+ s.route='planning';s.planning.current='N03P';
  Object.assign(s.planning.fields,{
   provisionalTitle:'Optimising a school box',
   aim:'Which design has the greatest usable volume?',
@@ -42,7 +42,7 @@ test('an empty project has no artificial sparks or empty shelf',()=>{
 });
 test('every recorded insight is represented exactly once in the expandable library',()=>{
  const s=sample(),all=insightItems(s),before=JSON.stringify(s);
- const html=renderSparkShelf(s,'N03P3');
+ const html=renderSparkShelf(s,'N03P');
  assert.equal((html.match(/class="spark-library-entry insight-/g)||[]).length,all.length);
  for(const x of all){
   assert(html.includes('class="spark-library-entry insight-'+x.type+'" data-spark-id="'+x.id+'"'),x.id);
@@ -57,9 +57,9 @@ test('every recorded insight is represented exactly once in the expandable libra
 });
 test('only two sparks are highlighted; all others remain available with no duplicate inline editors',()=>{
  const s=sample();
- const displayed=renderSparkShelf(s,'N03P3');
+ const displayed=renderSparkShelf(s,'N03P');
  assert.equal((displayed.match(/class="motivation-aim-spark planning-return-spark spark-shelf-featured/g)||[]).length,2);
- assert.deepEqual(featuredSparkItems(s,'N03P3').map(x=>x.id),['planned-accuracy:pa-primary-2','sampling-plan']);
+ assert.deepEqual(featuredSparkItems(s,'N03P').map(x=>x.id),['planned-accuracy:pa-primary-2','sampling-plan']);
  const secondary=featuredSparkItems(s,'N03S').map(x=>x.id);
  assert(secondary.includes('planned-accuracy:pa-secondary-1'));
  assert(!secondary.includes('planned-accuracy:pa-primary-1'));
@@ -107,7 +107,7 @@ test('planning + studio use the same shelf and allow inline edits of original ti
  assert(aim.includes('data-bind="planning.fields.aim"'));
  assert(aim.includes('data-bind="planning.fields.provisionalTitle"'));
  assert(aim.includes('Edit in the highlighted spark')===false);
- const other=renderSparkShelf(s,'N03P3');
+ const other=renderSparkShelf(s,'N03P');
  assert(other.includes('data-action="spark-edit-accuracy"'));
  assert(other.includes('data-action="insight-jump"'));
 });
@@ -121,7 +121,7 @@ test('student-entered text is escaped rather than injected into the shelf',()=>{
 });
 test('all types of sparks remain accessible on Planning, data, mathematics and conclusion screens',()=>{
  const s=sample(),all=insightItems(s);
- for(const node of ['N00','N01V','N02M','N03P2','N03P3','N03S','N05V','C10','C21S','C24','C40','C60']){
+ for(const node of ['N00','N01V','N02M','N03P2','N03P','N03S','N05V','C10','C21S','C24','C40','C60']){
   const html=renderSparkShelf(s,node);
   assert.equal((html.match(/class="spark-library-entry insight-/g)||[]).length,all.length,node);
   assert(featuredSparkItems(s,node).length<=2,node);
