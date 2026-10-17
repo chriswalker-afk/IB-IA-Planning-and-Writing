@@ -98,7 +98,7 @@ test('compact returning sparks render source-bound editors rather than large def
  const ui=createPlanningViews(ctx).viewPlanning();
  for(const term of ['data-planning-return-spark="aim"','data-planning-return-spark="beneficiary"',
   'data-spark-preview-path="planning.fields.aim"','data-spark-preview-path="planning.fields.beneficiary"',
-  'Refine my investigation aim','Refine why this answer matters'])
+  'data-spark-editor="aim"','data-spark-editor="motivation"','data-spark-library'])
   assert(ui.includes(term),term);
  assert(!ui.includes('class="insight-echo"'));
 });
