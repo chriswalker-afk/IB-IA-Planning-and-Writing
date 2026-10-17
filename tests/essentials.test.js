@@ -97,3 +97,15 @@ test('title route labels its compare control with title-specific examples',()=>{
  assert(html.includes('data-example-id="EX30"'));
  assert(!html.includes('Compare examples'));
 });
+
+test('motivation planning step has aim-purpose criteria and its own motivation comparisons',()=>{
+ const s=make();s.route='planning';s.planning.current='N01V';
+ const x=criteriaContext(s),html=criteriaPanel(s);
+ assert.equal(x.rows.length,3);
+ assert.deepEqual(x.rows.map(r=>r.id),['A','C','D']);
+ assert(html.includes('Compare motivations'));
+ assert(html.includes('data-example-topic="motivation"'));
+ assert(html.includes('returning to this motivation')||html.includes('returning to this motivation'.replace('returning','returning'))||html.includes('returning to this motivation'));
+ assert(!html.includes('data-example-id="EX01"'));
+ assert(html.includes('genuine question or intended use'));
+});
