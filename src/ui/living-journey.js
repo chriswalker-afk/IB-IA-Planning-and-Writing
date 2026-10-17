@@ -70,7 +70,7 @@ export function planningLearningTrail(s,{support=''}={}){
  const stage=PROGRESS_GROUPS[stageIndex];
  const screenLabels={
   N00:'Chose a starting route',N00B:'Explored possible ideas',N00C:'Compared possible ideas',
-  N01:'Worked on the title and question',N01V:'Recorded my motivation',
+  N01:'Worked on the title and question',N01V:'Considered my motivation',
   N02:'Chose an investigation direction',N02U:'Explored mathematical routes',N02T:'Prepared a teacher conversation',
   N03:'Chose a starting-material route',N03B:'Planned two evidence routes',
   N03P:'Planned primary evidence',N03S:'Planned secondary evidence',
