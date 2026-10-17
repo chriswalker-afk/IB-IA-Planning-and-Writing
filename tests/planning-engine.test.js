@@ -58,7 +58,7 @@ test("prediction nudge options respect statistical data context and course sugge
  assert(relevantPredictionOptions(s).some(x=>x.id==="T01"));
 });
 test("combined primary+secondary plans cannot bypass either question set",()=>{
- const s=newPlan();set(s,"dataSource","both");
+ const s=newPlan();set(s,"kind","statistics");set(s,"dataSource","both");
  s.planning.current="N03";
  advance(s,"N03B");
  advance(s,"N03P");
