@@ -755,8 +755,10 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       }
       case "math-open-route":{
         const id=el.dataset.routeId;
-        const currentlyOpen=state.planning.routeExplorer.openRoute===id;
-        if(!exploreMathRoute(state,{openRoute:currentlyOpen?'':id})){toast("That route is unavailable.");break;}
+        const revisit=el.dataset.revisit==="true";
+        const currentlyOpen=!revisit&&state.planning.routeExplorer.openRoute===id;
+        const mode=state.planning.routeExplorer.mode==="all"?"routes":state.planning.routeExplorer.mode;
+        if(!exploreMathRoute(state,{mode,openRoute:currentlyOpen?'':id})){toast("That route is unavailable.");break;}
         save();render();
         if(!currentlyOpen){
           const heading=document.getElementById("journey-detail-title");
