@@ -68,13 +68,18 @@ with sync_playwright() as pw:
   assert p.locator('#idea-topic').count()==0
   assert p.locator('text=What makes a promising starting point?').count()==0
   assert p.locator('.idea-map-quickstart').is_visible()
+  assert p.locator('.idea-map-connectors path').count()==3
   assert p.locator('[data-action="idea-map-mode"][data-mode="interests"]').get_attribute('aria-pressed')=='true'
  run('ideas-map-welcome',state('N00'),enter,360,740)
  def interest(p):
   before=protect(saved(p));choose_nature(p)
   assert p.locator('[data-idea-card]').count()==3
   assert p.locator('[data-idea-card]').first.get_attribute('data-idea-card')=='leaf-outline'
-  assert 'Your missing detail' in p.locator('.idea-map-direction').first.inner_text()
+  assert 'Make it personal' in p.locator('.idea-map-direction-node').first.inner_text()
+  assert p.locator('.idea-map-connectors path').count()>=10
+  assert p.locator('[data-idea-node="topic-nature"][data-idea-parent="root-world"]').count()==1
+  assert p.locator('[data-idea-node="leaf-nature-0"][data-idea-parent="topic-nature"]').count()==1
+  assert p.locator('[data-idea-node="seed-leaf-outline"][data-idea-parent="leaf-nature-0"]').count()==1
   p.screenshot(path=str(OUT/'ideas-nature-desktop.png'),full_page=True,animations='disabled')
   p.locator('[data-action="idea-map-leaf"][data-subtopic="Birds"]').click()
   assert p.locator('[data-seed="wildlife-observations"]').count()==1
@@ -86,6 +91,7 @@ with sync_playwright() as pw:
   p.locator('[data-action="idea-map-root"][data-root="record"]').click()
   p.locator('[data-action="idea-map-access"][data-branch="survey"]').click()
   assert 'permission' in p.locator('.idea-map-survey-warning').inner_text()
+  assert p.locator('.idea-map-connectors path').count()==9
   p.locator('[data-action="idea-map-root"][data-root="find"]').click()
   p.locator('[data-action="idea-map-access"][data-branch="image"]').click()
   p.locator('[data-action="idea-explore"][data-seed="sport-trajectory"]').click()
@@ -214,3 +220,4 @@ with sync_playwright() as pw:
 (OUT/'ideas-results.json').write_text(json.dumps(results,indent=2))
 print(json.dumps(results,indent=2))
 assert all(r['status']=='passed' for r in results)
+
