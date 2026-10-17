@@ -19,7 +19,7 @@ const fields = Object.keys(PLANNING_FIELD_DEFAULTS);
 
 export const FIELD_GROUPS = Object.freeze({
  "Your question and its meaning": ["planIdentifier","provisionalTitle","idea","interest","aim","motivation","beneficiaryType","beneficiary","intendedUse"],
- "Investigation and sources": ["kind","dataSource","statisticsContext","primaryWhat","primaryWhen","primaryWhere","primaryPopulation","primaryHow","primaryEquipment","primarySampling","primaryStatus","secondaryUrl","secondaryPublisher","secondaryVariables","secondaryScope","secondaryVerified","secondaryStatus","alternativeMethod","methodReason","methodLimitation","methodMitigation","sourceFirstDate","sourceFullDate","dataAvailability"],
+ "Investigation and sources": ["kind","dataSource","statisticsContext","primaryWhat","primaryWhen","primaryWhere","primaryPopulation","primaryHow","primaryEquipment","primarySampling","primarySamplingMethod","primarySamplingUnit","primarySamplingFrame","primarySamplingFrameDetails","primaryRepeatable","primaryAccuracyQuantity","primaryAccuracyUnit","primaryAccuracyResolution","primaryAccuracyBasis","primaryAccuracyUncertainty","primaryStatus","secondaryUrl","secondaryPublisher","secondaryVariables","secondaryScope","secondarySamplingOrigin","secondaryAccuracyQuantity","secondaryAccuracyUnit","secondaryAccuracyResolution","secondaryAccuracyBasis","secondaryAccuracyUncertainty","secondaryVerified","secondaryStatus","alternativeMethod","methodReason","methodLimitation","methodMitigation","sourceFirstDate","sourceFullDate","dataAvailability"],
  "Readiness, practicality and permissions": ["dataReadiness","readinessImprovement","dependencies","unsecured","permissionNeed","permissionDetails","softwareReady","workloadHours","cleaningBurden","externalRisks","minimumVersion","backupMethod","pilotReady","costIssue","sourceRights","dataSufficiency","negativeResultViable","presentationManageable","practicalEase","easeImprovement"],
  "Mathematics and prediction": ["course","mathsOutside","otherMaths","mathsWhy","predictionId","prediction","predictionWhy","predictionImplication","predictionExploration","courseSuitability","suitabilityWhy","mathsRevisedWhy","figureType","figureOther","figurePurpose","firstAction","firstAccuracy","theoreticalAim","theoreticalCase","theoreticalPrediction","theoreticalWhy","otherCourseMaths"],
  "Timeline and adaptations": ["timelineWeeks","timelineEarly","timelineStart","milestoneSchoolDraft","milestoneSchoolFinal","milestonePlan","milestoneData","milestoneFirstVisual","milestoneVisualReview","milestoneFirstMath","milestoneFurtherMath","milestoneDraft","milestoneReview","milestoneAdjustment","changeTrigger","changeAdaptation","fallbackEvidence"],
@@ -32,9 +32,17 @@ export const FIELD_LABELS = Object.freeze({
  course:"IB Mathematics course",kind:"Investigation type",dataSource:"Source route",statisticsContext:"Data context",
  primaryWhat:"Primary variables / units", primaryWhen:"Collection target",primaryWhere:"Collection setting",
  primaryPopulation:"Population or objects",primaryHow:"How I plan to collect data",primaryEquipment:"Equipment",
- primarySampling:"Sampling approach",primaryStatus:"Primary source plan status",
+ primarySampling:"Why the sampling approach fits",primarySamplingMethod:"Sampling / census method",
+ primarySamplingUnit:"Sampling unit",primarySamplingFrame:"Sampling frame availability",
+ primarySamplingFrameDetails:"Sampling frame description",primaryRepeatable:"Possible follow-up data collection",
+ primaryAccuracyQuantity:"Primary measurement quantity draft",primaryAccuracyUnit:"Primary quantity unit",
+ primaryAccuracyResolution:"Primary recording increment",primaryAccuracyBasis:"Primary instrument type",
+ primaryAccuracyUncertainty:"Possible primary uncertainty",primaryStatus:"Primary source plan status",
  secondaryUrl:"Source URL",secondaryPublisher:"Publisher",secondaryVariables:"Variables and definitions",
- secondaryScope:"Population / dates / useful subset",secondaryVerified:"Verification status",
+ secondaryScope:"Population / dates / useful subset",secondarySamplingOrigin:"How published data were selected",
+ secondaryAccuracyQuantity:"Published quantity draft",secondaryAccuracyUnit:"Published quantity unit",
+ secondaryAccuracyResolution:"Published recording precision",secondaryAccuracyBasis:"Published precision evidence",
+ secondaryAccuracyUncertainty:"Possible published uncertainty",secondaryVerified:"Verification status",
  secondaryStatus:"Secondary source plan status",alternativeMethod:"Alternative considered",
  methodReason:"Reason for chosen method",methodLimitation:"Anticipated limitation",
  methodMitigation:"Possible mitigation",sourceFirstDate:"First usable-data target",
@@ -88,6 +96,7 @@ export function createPlanningEnvelope(state,{exportedAt=new Date().toISOString(
  const exportData={
   current:p.current,fields:{...p.fields},mathSelected:[...p.mathSelected],
   routeExplorer:{selectedRoute:p.routeExplorer.selectedRoute,firstStep:p.routeExplorer.firstStep,status:'provisional'},
+  accuracyPlans:p.accuracyPlans.map(x=>({...x})),
   sourceBranches:{...p.sourceBranches},completedNodes:[...p.completedNodes],
   // Current Planning work only: no actual mathematics, no teacher approval record.
   completed:!!p.completed,sourceSnapshot:p.sourceSnapshot
@@ -128,6 +137,7 @@ export function normalizePlanningEnvelope(value){
   status:"PROVISIONAL",demo:value.demo===true,
   planning:{current:clean.current,fields:clean.fields,mathSelected:clean.mathSelected,
    routeExplorer:clean.routeExplorer,
+   accuracyPlans:clean.accuracyPlans,
    sourceBranches:clean.sourceBranches,completedNodes:clean.completedNodes,
    completed:clean.completed,sourceSnapshot:clean.sourceSnapshot},
   teacher:{openFlags,pendingReview:value.teacher?.pendingReview===true||openFlags.length>0}, // no imported document establishes approval
@@ -172,6 +182,14 @@ export function getFieldDiff(current,envelope){
    old:oldSelected.join(", ")||"",next:newSelected.join(", "),
    recommended:!oldSelected.length});
  }
+ const newAccuracy=incoming.planning.accuracyPlans||[];
+ const oldAccuracy=current.planning?.accuracyPlans||[];
+ if(newAccuracy.length&&JSON.stringify(newAccuracy)!==JSON.stringify(oldAccuracy))
+  changes.push({key:'accuracyPlans',label:'Planned accuracy and recording increments',
+    group:'Investigation and sources',
+    old:oldAccuracy.map(x=>x.quantity+': '+x.resolution).join('; '),
+    next:newAccuracy.map(x=>x.quantity+': '+(x.resolution||x.basis)).join('; '),
+    recommended:!oldAccuracy.length});
  const routeNew=routeById(incoming.planning.routeExplorer?.selectedRoute);
  const routeOld=routeById(current.planning?.routeExplorer?.selectedRoute);
  if(routeNew&&routeNew.id!==routeOld?.id)
@@ -190,6 +208,9 @@ export function mergePlanningEnvelope(current,envelope,selectedKeys=[],{origin="
  for(const key of requested){
   if(key==="mathSelected"){
    state.planning.mathSelected=[...imported.planning.mathSelected];
+  }else if(key==='accuracyPlans'){
+   state.planning.accuracyPlans=imported.planning.accuracyPlans.map(x=>({...x}));
+   state.planning.accuracyEditId='';
   }else if(key==='routeExplorer'){
    const match=routeById(imported.planning.routeExplorer?.selectedRoute);
    if(match){
@@ -223,7 +244,8 @@ export function mergePlanningEnvelope(current,envelope,selectedKeys=[],{origin="
   const titleChanged=applied.includes("provisionalTitle");
   const aimKeys=new Set(["aim","motivation","beneficiaryType","beneficiary","intendedUse","prediction","predictionWhy","predictionImplication"]);
   const mathsKeys=new Set(["course","kind","mathSelected","routeExplorer","mathsOutside","otherMaths","otherCourseMaths","firstAction","figureType","figurePurpose","firstAccuracy"]);
-  const sourceKeys=new Set(["dataSource","secondaryUrl","secondaryVariables","primaryWhat","primaryHow","primarySampling","methodReason","methodLimitation","methodMitigation"]);
+  const sourceKeys=new Set(["dataSource","secondaryUrl","secondaryVariables","primaryWhat","primaryHow","primarySampling","primarySamplingMethod","primarySamplingUnit","primarySamplingFrame",
+   "primarySamplingFrameDetails","primaryRepeatable","secondarySamplingOrigin","accuracyPlans","methodReason","methodLimitation","methodMitigation"]);
   const changesAim=applied.some(k=>aimKeys.has(k));
   const changesMaths=applied.some(k=>mathsKeys.has(k));
   const changesSource=applied.some(k=>sourceKeys.has(k));
