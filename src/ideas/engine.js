@@ -1,5 +1,6 @@
 import {IDEA_SEEDS,IDEA_TOPICS,IDEA_CHECKS,seedById,OWN_PROMPT} from './catalog.js';
 import {createIdeaState,cleanDraft,MAX_IDEAS} from './state.js';
+import {ideaMapRoot,ideaMapTopics,ideaMapBranches,ideaMapIdeas} from './mindmap.js';
 import {planningMove,setPlanCurrent} from '../planning/engine.js';
 const clone=v=>JSON.parse(JSON.stringify(v));
 export function ideaState(state){return state.ideaExplorer||(state.ideaExplorer=createIdeaState());}
@@ -15,9 +16,10 @@ export function ideaChoices(state){
  const start=s.offset%candidates.length;
  return {items:[...candidates.slice(start),...candidates.slice(0,start)].slice(0,3),total:candidates.length};
 }
-export function beginIdea(state,id){
+export function beginIdea(state,id,{fromMap=false}={}){
  const s=ideaState(state),seed=id==='own'?OWN_PROMPT:seedById(id);if(!seed)return false;
- if(!s.drafts[id])s.drafts[id]=cleanDraft({seedId:id,question:seed.question,focus:s.focus||s.subtopic});
+ if(!s.drafts[id])s.drafts[id]=cleanDraft({seedId:id,question:fromMap?'':seed.question,focus:s.focus||s.map?.subtopic||s.subtopic,fromMap});
+ else if(fromMap)s.drafts[id].fromMap=true;
  s.active=id;s.pending=null;return true;
 }
 export function ideaInput(state,key,value,{savedId=''}={}){
@@ -79,9 +81,43 @@ export function ideaAction(state,action,data={}){
  if(state.route!=='planning'||!['N00B','N00C'].includes(state.planning.current))return {ok:false,error:'Open the optional Idea Explorer from Planning first.'};
  const s=ideaState(state);
  switch(action){
-  case 'idea-explore':if(!beginIdea(state,data.seed))return{ok:false,error:'That starting direction is unavailable.'};return{ok:true,render:true,focus:'idea-detail-heading'};
+  case 'idea-map-mode':{
+   if(!['interests','data'].includes(data.mode))return{ok:false,error:'That map is unavailable.'};
+   s.map={mode:data.mode,root:'',topic:'',subtopic:'',dataBranch:''};s.active='';s.pending=null;
+   return{ok:true,render:true,focus:'idea-map-heading'};
+  }
+  case 'idea-map-root':{
+   const root=ideaMapRoot(s.map.mode,data.root);if(!root)return{ok:false,error:'Choose a starting branch.'};
+   s.map.root=s.map.root===root.id?'':root.id;s.map.topic='';s.map.subtopic='';s.map.dataBranch='';
+   return{ok:true,render:true,focus:'idea-map-root-'+root.id};
+  }
+  case 'idea-map-topic':{
+   if(!ideaMapTopics(ideaMapRoot(s.map.mode,s.map.root)).some(x=>x.id===data.topic))return{ok:false,error:'Choose a branch on your map.'};
+   s.map.topic=data.topic;s.map.subtopic='';s.topic=data.topic;s.subtopic='';
+   return{ok:true,render:true,focus:'idea-map-topic-'+data.topic};
+  }
+  case 'idea-map-leaf':{
+   const topic=IDEA_TOPICS.find(x=>x.id===s.map.topic);
+   if(!topic?.subtopics.includes(data.subtopic))return{ok:false,error:'Choose a visible detail to grow this branch.'};
+   s.map.subtopic=data.subtopic;s.subtopic=data.subtopic;
+   return{ok:true,render:true,focus:'idea-map-leaf-'+topic.subtopics.indexOf(data.subtopic)};
+  }
+  case 'idea-map-access':{
+   if(!ideaMapBranches(ideaMapRoot(s.map.mode,s.map.root)).some(x=>x.id===data.branch))return{ok:false,error:'Choose a visible data direction.'};
+   s.map.dataBranch=data.branch;
+   return{ok:true,render:true,focus:'idea-map-access-'+data.branch};
+  }
+  case 'idea-map-reset':{
+   s.map.root='';s.map.topic='';s.map.subtopic='';s.map.dataBranch='';
+   return{ok:true,render:true,focus:'idea-map-heading'};
+  }
+  case 'idea-explore':{
+   if(data.map==='true'&&!ideaMapIdeas({...s.map}).some(x=>x.id===data.seed))return{ok:false,error:'That branch is no longer open.'};
+   if(!beginIdea(state,data.seed,{fromMap:data.map==='true'}))return{ok:false,error:'That starting direction is unavailable.'};
+   return{ok:true,render:true,focus:'idea-detail-heading'};
+  }
   case 'idea-own':beginIdea(state,'own');setPlanCurrent(state,'N00B');return{ok:true,render:true,focus:'idea-question'};
-  case 'idea-browse':s.active='';s.pending=null;setPlanCurrent(state,'N00B');return{ok:true,render:true,focus:'idea-topic'};
+  case 'idea-browse':s.active='';s.pending=null;setPlanCurrent(state,'N00B');return{ok:true,render:true,focus:'idea-map-heading'};
   case 'idea-subtopic':if(!IDEA_TOPICS.find(t=>t.id===s.topic)?.subtopics.includes(data.subtopic))return{ok:false,error:'Choose one of the available subtopics.'};s.subtopic=s.subtopic===data.subtopic?'':data.subtopic;s.offset=0;return{ok:true,render:true,focus:'idea-subtopic-'+IDEA_TOPICS.find(t=>t.id===s.topic).subtopics.indexOf(data.subtopic)};
   case 'idea-more':{const c=ideaChoices(state);if(c.total)s.offset=(s.offset+3)%c.total;return{ok:true,render:true,focus:'idea-directions-heading'};}
   case 'idea-angle':{const seed=currentSeed(state),pool=IDEA_SEEDS.filter(x=>x.topic===seed.topic);if(!pool.length)return{ok:true};beginIdea(state,pool[(pool.findIndex(x=>x.id===seed.id)+1)%pool.length].id);return{ok:true,render:true,focus:'idea-detail-heading'};}
