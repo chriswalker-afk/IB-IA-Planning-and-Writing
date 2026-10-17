@@ -141,3 +141,10 @@ test('Idea Lab CSS is neutral and has mobile and reduced-motion arrangements',as
  assert(css.includes('prefers-reduced-motion:reduce'));
  assert(!/\.idea-map-quickstart\{[^}]*background:var\(--teal-pale\)/.test(css));
 });
+
+test('opening an empty comparison does not manufacture a completed Planning screen',()=>{
+ const s=make();assert.equal(s.planning.completedNodes.length,0);
+ assert(ideaAction(s,'idea-compare').ok);
+ assert.equal(s.planning.current,'N00C');
+ assert.equal(s.planning.completedNodes.includes('N00B'),false);
+});
