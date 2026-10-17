@@ -152,3 +152,106 @@
  .idea-map-root-icon,.idea-map-wire,.idea-map-tier{animation:none}
  .idea-map-seeds{break-inside:avoid}
 }
+
+
+/* Unified Idea Lab: students create one aim, reflect with two honest five-step
+   scales and optional concerns. Neutral panels: the spark palette is reserved
+   for the saved aim in Insight Threads. */
+.idea-evaluation{max-width:100%;min-width:0}
+.idea-evaluation .idea-toolbar{justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:15px}
+.idea-evaluation-progress{font-size:10px;letter-spacing:.09em;font-weight:800;color:#647da1}
+.idea-evaluation>h3{font-size:22px;line-height:1.3;letter-spacing:-.035em;margin:2px 0 7px}
+.idea-evaluation-intro{margin:0 0 19px;font-size:12px;line-height:1.65;color:var(--muted)}
+.idea-evaluation-aim{padding:3px 0 16px}
+.idea-evaluation-aim>p{font-size:12px;line-height:1.55;color:#536a80;margin:0 0 12px}
+.idea-evaluation-aim .field-group{margin:0}
+.idea-evaluation-aim textarea{min-height:98px}
+.idea-evaluation-ratings{border-top:1px solid #e1e8f1;padding:16px 0 4px}
+.idea-evaluation-ratings h4{font-size:16px;letter-spacing:-.02em;margin:0 0 4px}
+.idea-evaluation-ratings>p{color:#6b7d93;font-size:11px;line-height:1.55;margin:0 0 17px}
+.idea-evaluation-scale{padding:12px 15px 14px;border:1px solid #dfe6f0;border-radius:14px;background:#f9fbfe;margin:0 0 12px}
+.idea-scale-head{display:flex;align-items:baseline;flex-wrap:wrap;justify-content:space-between;gap:4px 8px;margin-bottom:10px}
+.idea-scale-head strong{font-size:12px;color:#2a4668}
+.idea-scale-head>span{font-size:11px;color:#5675a0;font-weight:750}
+.idea-rating-buttons{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px}
+.idea-rating-point{display:grid;place-items:center;width:100%;min-height:38px;border:1.5px solid #bfcfe4;border-radius:10px;background:#fff;color:#527096;font-size:12px;font-weight:800;cursor:pointer;transition:background .15s,border-color .15s,transform .15s}
+.idea-rating-point:hover{background:#ebf1fa;border-color:#829cc2}
+.idea-rating-point.selected{background:#42658e;color:#fff;border-color:#42658e;box-shadow:0 2px 9px #2948772b;transform:translateY(-1px)}
+.idea-rating-point:focus-visible{outline:3px solid #8aa4c5;outline-offset:2px}
+.idea-scale-ends{display:flex;justify-content:space-between;gap:10px;font-size:10px;color:#728297;margin-top:6px}
+.idea-evaluation-difficulties{min-width:0;margin:17px 0;padding:15px;border:1px solid #e0e6f0;background:#fafbfe;border-radius:15px}
+.idea-evaluation-difficulties legend{padding:0 5px;font-size:15px;font-weight:800;color:#304e6e}
+.idea-evaluation-difficulties>p{font-size:11px;line-height:1.55;color:#64788f;margin:0 0 12px}
+.idea-difficulty-grid{display:grid;gap:7px}
+.idea-difficulty-option{display:flex;gap:11px;align-items:center;padding:9px 11px;min-height:43px;border:1px solid #e0e8f2;border-radius:11px;background:white;color:#405875;cursor:pointer}
+.idea-difficulty-option:hover{background:#f3f7fd}
+.idea-difficulty-option:has(input:checked){background:#edf3fc;border-color:#a5bada}
+.idea-difficulty-option input{accent-color:#3d668f;width:16px;height:16px;flex:none;cursor:pointer}
+.idea-difficulty-option>span{font-size:11px;line-height:1.4}
+.idea-evaluation .idea-primary-actions{margin-top:19px}
+.idea-evaluation .idea-primary-actions .btn-primary{min-height:46px}
+.idea-evaluation .idea-map-starter{margin:0 0 19px}
+.idea-evaluation .idea-map-starter>span{font-size:11px;letter-spacing:0;text-transform:none}
+.idea-evaluation #idea-save-status{margin-top:9px;font-size:11px;line-height:1.5}
+
+/* Evaluation cards present two separate judgements, not a composite mark. */
+.idea-compare-intro{position:relative;padding:4px 0 15px}
+.idea-compare-intro>h3{font-size:20px;line-height:1.3;letter-spacing:-.025em;margin:9px 0 5px}
+.idea-compare-intro>p{font-size:12px;line-height:1.6;color:var(--muted);margin:0 0 11px;max-width:64ch}
+.idea-compare-count{display:inline-block;border:1px solid #d4dfef;border-radius:100px;background:#f5f8fc;color:#526d8e;padding:5px 10px;font-size:10px;font-weight:800}
+.idea-comparison-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:stretch}
+.idea-comparison-grid .idea-empty{grid-column:1 / -1;padding:21px;border:1px dashed #b6c9df;background:#f8faff;border-radius:15px;font-size:12px;color:#5c7491}
+.idea-comparison-card{display:flex;flex-direction:column;gap:10px;min-width:0;padding:15px;border:1px solid #d7e2ef;border-radius:17px;background:#fff;box-shadow:0 5px 20px #283f6c09}
+.idea-compare-card-top{display:flex;justify-content:space-between;align-items:center;gap:7px;flex-wrap:wrap}
+.idea-source-pill{display:inline-flex;align-items:center;gap:5px;padding:5px 8px;border-radius:100px;background:#f0f4fa;color:#577292;font-size:9px;font-weight:800}
+.idea-source-pill .icon{height:12px;width:12px}
+.idea-selected-indicator{display:inline-flex;align-items:center;gap:4px;font-size:10px;color:var(--teal-dark);font-weight:800}
+.idea-selected-indicator .icon{height:13px;width:13px}
+.idea-comparison-card>h4{font-size:13px;line-height:1.45;overflow-wrap:anywhere;margin:0}
+.idea-compare-ratings{display:grid;gap:10px;padding:2px 0}
+.idea-compare-scoreline{display:flex;justify-content:space-between;gap:5px;font-size:10px;color:#62758c;margin-bottom:5px}
+.idea-compare-scoreline strong{color:#34567c;white-space:nowrap}
+.idea-compare-bar{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}
+.idea-compare-bar>span{height:8px;border-radius:8px;background:#e3e9f1}
+.idea-compare-bar>span.active{background:#7495bd}
+.idea-compare-difficulties{display:flex;flex-wrap:wrap;gap:6px}
+.idea-compare-difficulties>strong{width:100%;font-size:10px;color:#556985}
+.idea-compare-difficulties>span{display:inline-flex;align-items:center;border-radius:8px;background:#f3f5fa;border:1px solid #e1e6f0;padding:5px 7px;font-size:9px;line-height:1.35;color:#6b7485}
+.idea-no-difficulties{color:#7b8796;font-size:10px;margin:0}
+.idea-old-unrated{border-left:3px solid #ba9962;padding:8px 10px;background:#fcf8f0;color:#806344;font-size:10px;line-height:1.45;margin:0}
+.idea-comparison-card .idea-saved-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:auto;padding-top:8px}
+.idea-comparison-card .idea-saved-actions .btn{font-size:10px;padding:9px 5px;min-height:39px;white-space:normal}
+.idea-comparison-card .idea-saved-actions [data-action="idea-use"]{grid-column:1/-1;order:-1}
+.idea-compare-add{border-top:1px solid #e0e6ef;margin-top:22px;padding-top:15px}
+.idea-compare-add h4{font-size:14px;margin:0 0 10px}
+.idea-compare-add-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.idea-compare-add-actions .btn{font-size:11px;line-height:1.45;min-height:50px;white-space:normal}
+.idea-compare-add .field-hint{font-size:11px;line-height:1.5}
+.idea-rejected{border:1px solid #e2e7ef;border-radius:13px;margin-top:17px;background:#fafbfe;overflow:hidden}
+.idea-rejected>summary{cursor:pointer;padding:12px 14px;font-size:11px;font-weight:800;color:#536b8b}
+.idea-rejected-list{padding:0 13px 13px;display:grid;gap:8px}
+.idea-rejected-item{display:flex;align-items:center;gap:9px;padding:10px;background:#fff;border:1px solid #e3e7ef;border-radius:10px}
+.idea-rejected-item p{font-size:11px;line-height:1.4;margin:0;flex:1;overflow-wrap:anywhere}
+.idea-rejected-item small{font-size:9px;color:#718096}
+.idea-rejected-item .btn{font-size:10px;white-space:normal}
+.idea-confirm .idea-compare-change{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.idea-confirm .idea-compare-change>div{padding:13px;background:#f8faff;border:1px solid #e0e8f2;border-radius:13px;min-width:0}
+.idea-confirm .idea-compare-change p{overflow-wrap:anywhere;font-size:12px}
+@media(max-width:760px){
+ .idea-comparison-grid{grid-template-columns:1fr}
+ .idea-compare-add-actions{grid-template-columns:1fr}
+ .idea-rejected-item{align-items:flex-start;flex-wrap:wrap}
+ .idea-rejected-item small{width:100%}
+ .idea-compare-card-top{flex-wrap:wrap}
+}
+@media(max-width:430px){
+ .idea-evaluation-scale,.idea-evaluation-difficulties{padding:12px}
+ .idea-evaluation>h3{font-size:19px}
+ .idea-scale-head{align-items:start}
+ .idea-evaluation .idea-primary-actions .btn{width:100%}
+ .idea-confirm .idea-compare-change{grid-template-columns:1fr}
+}
+@media(prefers-reduced-motion:reduce){
+ .idea-rating-point{transition:none!important}
+ .idea-rating-point.selected{transform:none}
+}
