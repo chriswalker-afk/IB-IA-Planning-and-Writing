@@ -8,7 +8,7 @@ import {linkedAccuracy,linkedSources} from '../completing/evidence-links.js';
 const has=v=>typeof v==='string'&&!!v.trim();
 const short=(v,n=160)=>{const t=String(v??'').trim();return t.length>n?t.slice(0,n-1)+'…':t;};
 export const INSIGHT_FAMILIES=Object.freeze({
- title:{label:'My working title',icon:'bookmark',verb:'A provisional direction to reconsider'},
+ title:{label:'My working title',icon:'sparkles',verb:'A provisional direction to reconsider'},
  aim:{label:'My question',icon:'target',verb:'A purpose to return to'},
  evidence:{label:'My evidence',icon:'flask',verb:'A source or method to revisit'},
  accuracy:{label:'My accuracy choices',icon:'layers',verb:'A decision to apply when relevant'},
