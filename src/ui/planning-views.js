@@ -411,7 +411,7 @@ export function createPlanningViews(ctx){
    '<div class="task-shell'+(kickoff?' planning-kickoff':'')+(titleStep?' planning-title-step':'')+'" data-source-node="'+e(n)+'">'+
    '<h1 class="task-heading">'+e(screen.title)+'</h1><p class="task-intro">'+e(screen.intro)+'</p>'+
    (kickoff?'':insightEcho(state,n))+screen.html+
-   (kickoff||titleStep?'':insightCapture(state,n))+(!kickoff&&titleStep?'':essentialsNudge(state))+
+   (kickoff||titleStep?'':insightCapture(state,n))+(kickoff||titleStep?'':essentialsNudge(state))+
    (kickoff||titleStep||ideaMapStep?'':'<div class="example-row">'+helpButton("plan-"+n)+helpBox("plan-"+n,screen.help)+'</div>')+
    footer(state,screen)+'</div>'+
    (kickoff||ideaMapStep?'':'<p class="small-callout">Your choices are provisional until evidence supports them. You can revisit earlier decisions. Teacher flags never prevent a provisional report.</p>')+
