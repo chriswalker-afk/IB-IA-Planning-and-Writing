@@ -1,4 +1,4 @@
-import {chapterRibbon,planningProgress} from './living-journey.js';
+import {planningLearningTrail} from './living-journey.js';
 import {insightCapture,insightEcho} from './insight-threads.js';
 import {examplePrompt} from "../examples/views.js";
 import {criteriaPanel,essentialsNudge} from "../essentials/views.js";
@@ -395,12 +395,11 @@ export function createPlanningViews(ctx){
  function viewPlanning(){
   const state=ctx.getState(),p=state.planning,n=p.current,screen=nodePage(state);
   const stage=planningStage(n),stageI=PROGRESS_GROUPS.findIndex(x=>x.id===stage);
-  const kickoff=n==="N00";
-  const milestones=kickoff?'<span class="visually-hidden">Find your question · Plan your evidence · Plan your mathematics · Review your idea</span>':planningProgress(state,{compact:true});
-  return '<div class="page narrow">'+tabletNav()+(kickoff?'':chapterRibbon(state))+
+  return '<div class="page planning-page">'+tabletNav()+
+   '<div class="planning-page-layout">'+planningLearningTrail(state)+
+   '<div class="planning-page-main">'+
    '<div class="progress-top"><span class="progress-overview">'+icon("compass")+' Guided Planning</span>'+
    '<span class="progress-counter">1. Planning · '+e(PROGRESS_GROUPS[stageI]?.label||"Review")+'</span></div>'+
-   milestones+
    '<div class="task-shell" data-source-node="'+e(n)+'">'+
    '<h1 class="task-heading">'+e(screen.title)+'</h1><p class="task-intro">'+e(screen.intro)+'</p>'+
    insightEcho(state,n)+criteriaPanel(state)+screen.html+insightCapture(state,n)+essentialsNudge(state)+
@@ -408,7 +407,7 @@ export function createPlanningViews(ctx){
    resourcePrompt(state)+footer(state,screen)+'</div>'+
    '<p class="small-callout">Your choices are provisional until evidence supports them. You can revisit earlier decisions. Teacher flags never prevent a provisional report.</p>'+
    (p.notices&&p.notices.length?'<div class="inline-note warning">'+icon("info")+'<p>'+e(p.notices.at(-1))+'</p></div>':"")+
-   '</div>';
+   '</div></div></div>';
  }
  return {viewPlanning};
 }
