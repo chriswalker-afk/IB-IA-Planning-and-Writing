@@ -134,3 +134,6 @@
 .journey-family-heading>.icon{width:20px;height:20px;flex:none;margin-top:2px;color:#518679}
 .journey-family-heading h4{font-size:14px;letter-spacing:-.015em;margin:0 0 3px}
 .journey-family-heading p{font-size:10px;line-height:1.5;color:#668277;margin:0}
+
+.journey-course-switch-note{display:flex;align-items:start;gap:8px;padding:11px 13px;margin:10px 0;background:#fff9ed;border:1px solid #efdfbf;border-radius:11px;font-size:10px;line-height:1.6;color:#85642e}
+.journey-course-switch-note .icon{width:15px;height:15px;flex:none;margin-top:1px}
