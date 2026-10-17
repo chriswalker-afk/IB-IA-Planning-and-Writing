@@ -288,7 +288,11 @@ export function planAutoAdvance(state){
   case "N00B":return go("Ready with one idea");
   case "N00C":if(!f.ideaSelected)return{ok:false,error:"Choose which idea you want to develop."};return go(f.ideaSelected==="original"?"Keep original idea":"Selected one idea");
   case "N01":return go("Continue");
-  case "N01V":if(!f.beneficiaryType&&!state.planning.returnToPrediction)return{ok:false,error:"Choose who could benefit, including Not sure yet."};return go(state.planning.returnToPrediction?"Return to prediction after editing beneficiary":
+  case "N01V":
+   if(!f.beneficiaryType&&!state.planning.returnToPrediction)return{ok:false,error:"Choose who might benefit, including Still working it out."};
+   if(f.beneficiaryType!=="unsure"&&!f.beneficiary.trim()&&!state.planning.returnToPrediction)
+    return{ok:false,error:"Write a brief motivation: who might benefit from answering your question, and how? You can choose Still working it out if you're not ready yet."};
+   return go(state.planning.returnToPrediction?"Return to prediction after editing beneficiary":
    f.beneficiaryType==="others"?"I could offer advice to someone else":
    f.beneficiaryType==="both"?"Both personal benefit and advice":
    f.beneficiaryType==="unsure"?"I'm not sure yet":"The results could help me directly");
