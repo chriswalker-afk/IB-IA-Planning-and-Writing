@@ -253,21 +253,152 @@ export function insightMeaning(s,node,x){
  if(x.id==='planned-evidence')return 'This was a proposed starting route. Check whether the material was actually obtained before presenting it as evidence.';
  return x.usage||INSIGHT_FAMILIES[x.type].verb;
 }
-export function insightEcho(s,node){
- const items=insightForCurrent(s,node);
- if(!items.length)return'';
- return '<aside class="insight-echo" aria-label="Earlier information that may help now">'+
-  '<div class="insight-echo-head">'+icon('route')+' <strong>Your ideas are back</strong>'+
-  '<span>From earlier in your investigation</span></div>'+
-  items.map((x,i)=>'<details class="insight-echo-item insight-'+e(x.type)+'"'+(i===0?' open':'')+'>'+
-   '<summary>'+insightToken(x,{compact:true})+'<span class="insight-echo-title">'+e(short(x.title,54))+
-   '</span>'+icon('chevron-right')+'</summary><div class="insight-echo-body">'+
-   '<p class="insight-original">'+e(short(x.value,280))+'</p>'+
-   '<p>'+e(insightMeaning(s,node,x))+'</p>'+
-   '<button type="button" class="insight-link"'+jumpAttrs(x)+'>'+icon('arrow-up-right')+
-   ' Go to my original decision</button></div></details>').join('')+
-  '</aside>';
+/**
+ * A shared spark shelf for Planning and IA Studio.
+ * Exactly two *recorded* sparks are featured; the full collection is one
+ * disclosure away on every active screen. The library never silently erases
+ * or promotes provisional choices to completed mathematics.
+ */
+export function featuredSparkItems(s,node){
+ const all=insightItems(s),selected=[],used=new Set();
+ const pick=predicate=>{
+  for(const x of all){
+   if(selected.length===2)break;
+   if(!used.has(x.id)&&predicate(x)){selected.push(x);used.add(x.id);}
+  }
+ };
+ const id=key=>pick(x=>x.id===key);
+ const prefix=(start,source='')=>pick(x=>x.id.startsWith(start)&&(!source||x.plannedSource===source));
+ const recent=predicate=>{
+  const x=all.filter(predicate).at(-1);
+  if(x&&!used.has(x.id)&&selected.length<2){selected.push(x);used.add(x.id);}
+ };
+ const linked=insightForCurrent(s,node);
+ const active=entries(s)[s?.completion?.activeEntryIndex];
+ const latestResult=all.filter(x=>x.id.startsWith('result:')&&!x.needsReview).at(-1);
+ const accuracy=source=>{prefix('accuracy:');prefix('planned-accuracy:',source);};
+ if(node==='N01'||node==='N01A'){id('working-title');id('aim');}
+ else if(node==='N01V'){id('aim');id('working-title');}
+ else if(node==='N01P'){id('aim');id('motivation');id('prediction');}
+ else if(/^N00/.test(node)){id('working-title');id('aim');}
+ else if(/^N02/.test(node)||/^N04/.test(node)){
+  id('aim');id('investigative-route');id('motivation');
+ }
+ else if(node==='N03P2'){id('sampling-plan');id('aim');}
+ else if(node==='N03P3'||node==='N03P4'){prefix('planned-accuracy:','primary');id('sampling-plan');id('aim');}
+ else if(node==='N03S'){prefix('planned-accuracy:','secondary');id('planned-evidence');id('aim');}
+ else if(node==='N03J'){id('sampling-plan');prefix('planned-accuracy:');id('aim');}
+ else if(node==='N03D'||node==='N03E'||node==='N03H'){id('planned-evidence');id('sampling-plan');id('aim');}
+ else if(/^N03/.test(node)){id('planned-evidence');id('aim');id('sampling-plan');}
+ else if(/^N05/.test(node)){prefix('planned-accuracy:');id('planned-maths');id('aim');}
+ else if(/^N06/.test(node)||node==='N07'){id('motivation');id('aim');id('investigative-route');}
+ else if(['C10','C10E','C02'].includes(node)){id('aim');id('motivation');id('working-title');}
+ else if(node==='C21S'){id('sampling-plan');recent(x=>x.id.startsWith('source:'));id('planned-evidence');}
+ else if(node==='C24'){recent(x=>x.id.startsWith('accuracy:'));prefix('planned-accuracy:');id('planned-evidence');}
+ else if(['C20','C21M','C21T','C22','C23','C25','C26'].includes(node)){
+  recent(x=>x.id.startsWith('source:'));id('planned-evidence');id('sampling-plan');id('investigative-route');
+ }
+ else if(['C30','C31'].includes(node)){id('planned-maths');id('investigative-route');id('aim');}
+ else if(['C32','C33','C34','C34A','C35','C35H','C35B','C35P','C40','C50','C40T','C40L'].includes(node)){
+  if(active?.fromEntryId)id('result:'+active.fromEntryId);
+  if(active)for(const x of linked)if(x.id.startsWith('accuracy:')||x.id.startsWith('source:'))id(x.id);
+  if(['C35','C35H','C35B','C35P','C40','C50'].includes(node)&&latestResult)id(latestResult.id);
+  accuracy();id('aim');id('investigative-route');
+ }
+ else if(/^C6/.test(node)){id('aim');if(latestResult)id(latestResult.id);id('motivation');}
+ // Unknown screens still get relevant existing insights, then a useful fallback.
+ for(const x of linked){if(selected.length===2)break;id(x.id);}
+ id('aim');id('motivation');id('working-title');
+ if(selected.length<2)for(const x of all.slice().reverse()){if(selected.length===2)break;id(x.id);}
+ return selected.slice(0,2);
 }
+const sparkLibraryGroups=[
+ {label:'Your question and intentions',test:x=>['title','aim','motivation','pathway'].includes(x.type)},
+ {label:'Data, sources and accuracy',test:x=>['evidence','sampling','accuracy'].includes(x.type)},
+ {label:'Mathematical discoveries and learning',test:x=>['discovery','learning'].includes(x.type)},
+ {label:'Reflections and limitations',test:x=>x.type==='reflection'}
+];
+const inlineSparkKey=(s,x)=>{
+ const f=s?.planning?.fields||{};
+ if(x.id==='working-title')return 'provisionalTitle';
+ if(x.id==='aim')return 'aim';
+ if(x.id==='motivation')return has(f.beneficiary)?'beneficiary':has(f.motivation)?'motivation':
+  has(f.intendedUse)?'intendedUse':'beneficiary';
+ if(x.id==='prediction')return 'prediction';
+ return '';
+};
+const sparkOriginalAction=(x,label='Review or edit original')=>{
+ if(x.id.startsWith('planned-accuracy:'))
+  return '<button type="button" class="spark-shelf-action" data-action="spark-edit-accuracy" data-accuracy-id="'+
+   e(x.id.slice('planned-accuracy:'.length))+'">'+icon('pencil')+' Edit accuracy decision</button>';
+ if(!x.go||!['entry','planning','completion'].includes(x.go.type))return'';
+ return '<button type="button" class="spark-shelf-action"'+jumpAttrs(x)+'>'+icon('arrow-up-right')+' '+e(label)+'</button>';
+};
+const sparkEditor=(s,x,{preview=false}={})=>{
+ const key=inlineSparkKey(s,x);
+ if(!key)return sparkOriginalAction(x,'Open original to review or edit');
+ // Every saved spark has a single inline editor across visible and expanded views.
+ if(preview)return sparkOriginalAction(x,'Edit in the highlighted spark above');
+ const id='spark-edit-'+x.id.replace(/[^a-z0-9-]/gi,'-');
+ const value=s.planning?.fields?.[key]||x.value;
+ const isTitle=key==='provisionalTitle';
+ return '<div class="spark-inline-editor"><label for="'+e(id)+'">Edit '+e(x.title.toLowerCase())+'</label>'+
+ (isTitle?'<input type="text" class="field"':'<textarea rows="2" class="field"')+
+  ' id="'+e(id)+'" data-bind="planning.fields.'+e(key)+'" data-spark-editor="'+e(x.id)+'"'+
+  (isTitle?' value="'+e(value)+'">':'>'+e(value)+'</textarea>')+
+ '<small>Saved on this device. Changes update your original Planning decision, not a copy.</small></div>';
+};
+const sparkFullBody=(s,node,x,{featured=false}={})=>
+ '<p class="spark-shelf-full-value">'+e(x.value)+'</p>'+
+ '<p class="spark-shelf-guidance">'+e(insightMeaning(s,node,x))+'</p>'+
+ '<div class="spark-shelf-source">'+(x.planned?'Provisional · ':'')+
+  e(x.needsReview?'Needs review · '+x.where:x.where)+'</div>'+
+ sparkEditor(s,x,{preview:!featured});
+const sparkFeaturedCard=(s,node,x)=>{
+ const key=inlineSparkKey(s,x),path=key?' data-spark-preview-path="planning.fields.'+e(key)+'"':'';
+ return '<details class="motivation-aim-spark planning-return-spark spark-shelf-featured insight-'+e(x.type)+
+   '" data-planning-return-spark="'+e(x.id==='aim'?'aim':x.id==='motivation'?'beneficiary':x.id)+
+   '" data-spark-id="'+e(x.id)+'">'+
+  '<summary><span class="motivation-aim-symbol">'+icon(INSIGHT_FAMILIES[x.type].icon)+'</span>'+
+  '<span class="motivation-aim-copy"><strong>'+e(INSIGHT_FAMILIES[x.type].label)+
+   '</strong><small'+path+'>'+e(short(x.value,100))+'</small></span>'+
+  '<span class="motivation-aim-toggle">'+icon('chevron-down')+' View</span></summary>'+
+  '<div class="motivation-aim-details">'+sparkFullBody(s,node,x,{featured:true})+'</div></details>';
+};
+const sparkLibraryEntry=(s,node,x,featuredIds)=>{
+ const isFeatured=featuredIds.has(x.id),key=inlineSparkKey(s,x);
+ return '<details class="spark-library-entry insight-'+e(x.type)+'" data-spark-id="'+e(x.id)+'">'+
+  '<summary>'+icon(INSIGHT_FAMILIES[x.type].icon)+
+  '<span class="spark-library-entry-title"><strong>'+e(x.title)+'</strong>'+
+  '<small'+(key?' data-spark-preview-path="planning.fields.'+e(key)+'"':'')+'>'+
+   e(short(x.value,128))+'</small></span>'+
+  '<span class="spark-library-entry-status">'+(isFeatured?'On this screen':x.needsReview?'Review':x.planned?'Planned':'Saved')+'</span>'+
+  icon('chevron-down')+'</summary>'+
+  '<div class="spark-library-entry-body">'+sparkFullBody(s,node,x,{featured:!isFeatured})+'</div></details>';
+};
+export function renderSparkShelf(s,node,{surface='planning'}={}){
+ const all=insightItems(s);
+ if(!all.length)return '';
+ const featured=featuredSparkItems(s,node),featuredIds=new Set(featured.map(x=>x.id));
+ const groups=sparkLibraryGroups.map(g=>({label:g.label,items:all.filter(g.test)})).filter(g=>g.items.length);
+ const groupHtml=groups.map(g=>
+  '<section class="spark-library-group"><h4>'+e(g.label)+' <span>'+g.items.length+'</span></h4>'+
+  '<div class="spark-library-entries">'+g.items.map(x=>sparkLibraryEntry(s,node,x,featuredIds)).join('')+'</div></section>').join('');
+ return '<section class="planning-compact-recall spark-shelf spark-shelf-'+e(surface)+'" aria-label="Your saved sparks" data-spark-shelf="'+e(surface)+'">'+
+  '<p class="planning-compact-recall-label">'+icon('sparkles')+' Your sparks are back'+
+  ' <span>Two that matter now · '+all.length+' saved in total</span></p>'+
+  '<div class="planning-compact-sparks">'+
+  featured.map(x=>sparkFeaturedCard(s,node,x)).join('')+
+  '<details class="spark-library" data-spark-library><summary>'+icon('layers')+
+  '<span><strong>View all sparks</strong><small>'+all.length+' collected</small></span>'+
+  icon('chevron-down')+'</summary>'+
+  '<div class="spark-library-panel"><p class="spark-library-intro">Every saved spark so far, including provisional choices and real mathematical findings. Open any one to revisit it or edit its original information.</p>'+
+  '<div class="spark-library-groups">'+groupHtml+'</div>'+
+  '<p class="spark-library-note">A planned idea or recording rule is not evidence of mathematical work being completed. You can change earlier choices at any stage.</p>'+
+  '</div></details></div></section>';
+}
+/** Backwards-compatible IA Studio entry point, now using the same shelf. */
+export function insightEcho(s,node){return renderSparkShelf(s,node,{surface:'studio'});}
 export function insightToolkit(s,{compact=false}={}){
  const all=insightItems(s);
  const forHome=all.filter(x=>!x.planned||x.id==='investigative-route'||x.id==='sampling-plan'||x.id.startsWith('planned-accuracy:'));
