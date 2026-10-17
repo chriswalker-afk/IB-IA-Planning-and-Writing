@@ -336,7 +336,8 @@ test('a saved aim spark can be edited directly on the motivation page',()=>{
  const s=createProjectState();s.route='planning';s.planning.current='N01V';
  s.planning.fields.aim='My current mathematical aim';s.project.aim=s.planning.fields.aim;
  const h=createHarness(s);
- assert(h.html.includes('data-motivation-aim-spark'));
+ assert(h.html.includes('data-spark-editor="aim"'));
+ assert(h.html.includes('data-spark-library'));
  assert(h.html.includes('My current mathematical aim'));
  h.write('planning.fields.aim','My revised mathematical aim');
  assert.equal(h.saved.planning.fields.aim,'My revised mathematical aim');
