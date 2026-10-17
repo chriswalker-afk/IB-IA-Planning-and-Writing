@@ -134,11 +134,12 @@ export function createPlanningViews(ctx){
    '<input id="planMathSearch" class="field" type="search" placeholder="Search a topic or technique" data-plan-search value="'+e(state.planning.mathSearch)+'"></div>'+
    '<div class="plan-math-count"><span>Selected: <strong>'+chosen.length+'</strong></span><span>Choose only mathematics with a purpose</span></div>'+
    mathCards(state)+
-   (foreign.length?callout("Course changed",e("Earlier choices from a different course: "+foreign.map(x=>x.label).join(", ")+". Review these with your teacher; they have not been silently discarded."),true):"")+
    F("otherMaths","Another technique I might use (optional)","Describe a different or researched technique",{type:"textarea",rows:2})+
    '<p class="field-hint">You can leave all techniques unselected. Adding more mathematics does not make an investigation better.</p>';
+  const foreignNotice=foreign.length?callout("Course changed",e("Previously selected mathematics from a different course: "+foreign.map(x=>x.label).join(", ")+". These choices are preserved, but check your current syllabus before relying on them."),true):"";
   return (suggested?'<p class="math-review-note">'+icon('refresh-cw')+
     ' Revisit, do not restart. Your earlier selections are retained; a prediction is not a confirmed pattern.</p>':'')+
+   foreignNotice+
    (collapsed?selectedSummary+
     '<details class="math-catalog-more"><summary>'+icon('book-open')+' Browse all '+e(course)+' mathematics'+icon('chevron-down')+'</summary>'+
     '<div class="math-catalog-more-body">'+menu+'</div></details>':menu);
