@@ -176,7 +176,7 @@ test('primary data is split into three focused screens, with optional help on st
  assert(!html.includes('data-action="plan-save-accuracy"'));
  x.planning.current='N03P3';
  html=render(x);
- for(const term of ['How will I collect it accurately?','Step 3 of 3','data-primary-accuracy',
+ for(const term of ['How will I collect it accurately?','Step 3 of 3','primary-accuracy-step',
   'How do I judge a measuring device','Save accuracy spark','Can you start collecting data'])
   assert(html.includes(term),term);
  assert(html.includes('data-action="plan-save-accuracy" data-source="primary"'));
