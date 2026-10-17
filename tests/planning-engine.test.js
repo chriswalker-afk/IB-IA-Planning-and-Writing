@@ -181,3 +181,19 @@ test("a provisional title is retained and its revision affects writing stages, n
  assert.equal(s.completion.stages.C40,"complete");
  assert.equal(s.entries[0].result,"A genuine observation");
 });
+
+test('motivation has one meaningful response; uncertain students can continue honestly',()=>{
+ const s=newPlan();s.planning.current='N01V';
+ set(s,'beneficiaryType','me');
+ const blank=planAutoAdvance(s);
+ assert.equal(blank.ok,false);
+ assert.match(blank.error,/motivation/i);
+ set(s,'beneficiary','I want to understand how my chosen comparison could help me make a decision.');
+ assert(planAutoAdvance(s).ok);
+ assert.equal(s.planning.current,'N02');
+ assert.equal(s.project.beneficiary,s.planning.fields.beneficiary);
+ const unsure=newPlan();unsure.planning.current='N01V';
+ set(unsure,'beneficiaryType','unsure');
+ assert(planAutoAdvance(unsure).ok);
+ assert.equal(unsure.planning.current,'N02');
+});
