@@ -50,11 +50,11 @@ with sync_playwright() as pw:
  run('examples-library-filter-readonly',fixture(),browse)
  def all_cards(p):
   open_example(p)
-  for i in range(1,30):
+  for i in range(1,31):
    id=f'EX{i:02d}';p.locator('[data-example-library]').click();p.locator('[data-example-select="'+id+'"]').click();card(p,id);assert p.locator('.ex-less').inner_text();assert p.locator('.ex-more').inner_text();overflow(p)
    if id in ['EX10','EX12','EX13']:p.screenshot(path=str(OUT/(id+'-desktop.png')))
   close(p)
- run('examples-all-29-rendered',fixture(),all_cards)
+ run('examples-all-30-rendered',fixture(),all_cards)
  def next_step(p):
   before=saved(p);open_example(p);card(p,'EX16');assert p.locator('#ex-variant').input_value()=='turning';p.locator('#ex-variant').select_option('stop');assert 'make the investigation longer' in p.locator('.ex-more').inner_text();close(p);assert saved(p)==before
  s=fixture('statistics','C35');s['completion'].update(activeEntryIndex=1,scatterDetailForEntryId='earlier');s['completion']['fields']['scatterDetail']='turning'
@@ -76,7 +76,9 @@ with sync_playwright() as pw:
   assert p.locator('#main [data-example-card]').count()==1;assert 'What changed?' in p.locator('#main').inner_text()
  run('examples-legacy-introduction-route',fixture('modelling','C10E'),legacy,390,844)
  def planning(p):
-  before=saved(p);open_example(p);card(p,'EX02');assert 'Planning preview' in p.locator('#exampleDialog').inner_text();close(p);assert saved(p)==before
+  before=saved(p);open_example(p);card(p,'EX30');assert 'Planning preview' in p.locator('#exampleDialog').inner_text()
+  assert 'Provisional IA titles' in p.locator('#exampleDialog').inner_text()
+  close(p);assert saved(p)==before
  s=fixture('statistics');s['route']='planning';s['planning']['current']='N01'
  run('examples-planning-is-preview',s,planning,390,844)
  def small(p):
