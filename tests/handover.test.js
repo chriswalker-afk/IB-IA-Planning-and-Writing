@@ -13,6 +13,7 @@ import {extractRecognisedFields} from "../src/handover/read-document.js";
 function example(){
  const s=createProjectState();s.planning.completed=true;
  const answers={
+  provisionalTitle:"Does sleep duration relate to reaction time?",
   idea:"Is there a link between sleep and reaction time?",
   aim:"Does more sleep relate to shorter reaction time?",
   motivation:"I am interested in human responses and sports.",
@@ -43,6 +44,7 @@ test("a planning snapshot includes beneficiary, prediction, source, scores, ques
  const state=example();
  const envelope=createPlanningEnvelope(state,{exportedAt:"2026-10-14T08:00:00.000Z"});
  assert.equal(envelope.schemaVersion,1);
+ assert.equal(envelope.planning.fields.provisionalTitle,"Does sleep duration relate to reaction time?");
  assert.equal(envelope.planning.fields.beneficiary,"My own training");
  assert.equal(envelope.planning.fields.predictionImplication,"If true, it could inform my training routine");
  assert.equal(envelope.planning.fields.teacherQuestion,"Can this method meet our consent requirements?");
@@ -59,6 +61,7 @@ test("model groups a full Both plan with correct types and caution labels",()=>{
  assert(titles.some(t=>t.includes("Secondary data")));
  assert(titles.some(t=>t.includes("mathematical")));
  assert(model.status.includes("TEACHER"));
+ assert(model.sections.flatMap(x=>x.rows).some(x=>x.label==="Provisional IA title"));
  assert(model.sections.flatMap(x=>x.rows).some(x=>x.label.includes("IF TRUE")));
  assert(suggestedFilename(model,"docx").endsWith(".docx"));
 });
@@ -84,6 +87,7 @@ test("DOCX export round-trips its private versioned planning part and is editabl
  assert(body.includes("Does more sleep relate"));
  assert(body.includes("PROVISIONAL"));
  const restored=await importEmbeddedDocxReport(bytes);
+ assert.equal(restored.planning.fields.provisionalTitle,envelope.planning.fields.provisionalTitle);
  assert.equal(restored.planning.fields.predictionWhy,envelope.planning.fields.predictionWhy);
  assert.deepEqual(restored.planning.mathSelected,envelope.planning.mathSelected);
  assert.equal(restored.teacher.pendingReview,true);
@@ -98,6 +102,7 @@ test("PDF export and attachment-based reimport round-trip core Planning values",
  assert.equal(pdf.getTitle(),"My IB Mathematics IA Plan");
  const imported=await importEmbeddedPdfReport(bytes);
  assert(imported);
+ assert.equal(imported.planning.fields.provisionalTitle,original.planning.fields.provisionalTitle);
  assert.equal(imported.planning.fields.aim,original.planning.fields.aim);
  assert.equal(imported.planning.fields.intendedUse,original.planning.fields.intendedUse);
  assert.equal(imported.planning.fields.firstAccuracy,original.planning.fields.firstAccuracy);
