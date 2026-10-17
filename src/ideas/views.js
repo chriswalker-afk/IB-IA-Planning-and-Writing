@@ -121,6 +121,7 @@ export function ideaDetailView(state){
    '<span class="idea-evaluation-progress">IDEA LAB · SHAPE & EVALUATE</span></div>'+
   '<h3 id="idea-detail-heading" tabindex="-1">'+(seed.id==='own'?'Add an idea of my own':'Make this idea yours')+'</h3>'+
   '<p class="idea-evaluation-intro">Your question can change. You are deciding whether this could be a manageable starting point, not proving it will earn a particular mark.</p>'+
+  (fromMap&&d.focus?'<p class="idea-evaluation-origin">'+icon('route')+' Your starting branch: <strong>'+e(d.focus)+'</strong></p>':'')+
   (fromMap?'<div class="idea-map-starter"><span>'+icon('lightbulb')+' Something to get you thinking</span>'+
    '<p>'+e(seed.question)+'</p><small>You can use this prompt, change it, or ignore it entirely.</small></div>':'')+
   '<div class="idea-evaluation-aim"><p>Either using the thinking prompt or otherwise, write your own possible aim here.</p>'+
