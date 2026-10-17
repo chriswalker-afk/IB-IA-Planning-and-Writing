@@ -234,7 +234,7 @@ export function insightEcho(s,node){
 }
 export function insightToolkit(s,{compact=false}={}){
  const all=insightItems(s);
- const forHome=all.filter(x=>!x.planned),pinned=forHome.filter(x=>x.id==='working-title'||x.id==='aim');
+ const forHome=all.filter(x=>!x.planned||x.id==='investigative-route'),pinned=forHome.filter(x=>x.id==='working-title'||x.id==='aim'||x.id==='investigative-route');
  const visible=compact?[...pinned,...forHome.filter(x=>!['working-title','aim'].includes(x.id)).slice(-(5-pinned.length))]:all.slice(-10);
  const earlier=compact?[]:all.slice(0,-10);
  const card=x=>'<button type="button" class="insight-toolkit-card insight-'+e(x.type)+'"'+jumpAttrs(x)+'>'+
