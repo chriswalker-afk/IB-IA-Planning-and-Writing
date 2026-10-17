@@ -33,7 +33,7 @@ function add(s,seed='leaf-outline',question='How can I estimate the area of my c
  assert(beginIdea(s,seed,{fromMap:seed!=='own'}));
  assert(ideaInput(s,'question',question));
  rated(s,...scores);
- const result=saveIdea(s);
+ const result=ideaAction(s,'idea-save');
  assert(result.ok,result.error);
  return result.id;
 }
