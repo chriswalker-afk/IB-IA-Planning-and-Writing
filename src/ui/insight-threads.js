@@ -62,7 +62,7 @@ export function insightItems(s){
   if(!plan.quantity)continue;
   out.push(item('accuracy','planned-accuracy:'+plan.id,'Planned accuracy · '+plan.quantity,
    plannedAccuracyText(plan),'Planning · '+(plan.source==='secondary'?'Published data':'Primary measurements'),
-   {type:'planning',node:plan.source==='secondary'?'N03S':'N03P3'},
+   {type:'planning',node:plan.source==='secondary'?'N03S':'N03P'},
    {planned:true,plannedSource:plan.source,
     usage:'This is a planned recording or rounding rule, not verified measurement accuracy. Confirm the original instrument or published methodology before calculating or reporting results.'}));
  }
@@ -188,7 +188,7 @@ export function insightCapture(s,node){
  else if(node==='N03P2'){
   ids=['sampling-plan'];kind='Your planned sampling method';
  }
- else if(node==='N03P3'){
+ else if(node==='N03P'){
   ids=all.filter(x=>x.id.startsWith('planned-accuracy:')&&x.plannedSource==='primary').map(x=>x.id);
   kind='Your planned recording accuracy';
  }
@@ -289,7 +289,7 @@ export function featuredSparkItems(s,node){
   id('aim');id('investigative-route');id('motivation');
  }
  else if(node==='N03P2'){id('sampling-plan');id('aim');}
- else if(node==='N03P3'||node==='N03P4'){
+ else if(node==='N03P'){
   recent(x=>x.id.startsWith('planned-accuracy:')&&x.plannedSource==='primary');
   id('sampling-plan');id('aim');
  }
