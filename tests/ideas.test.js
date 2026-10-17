@@ -162,6 +162,8 @@ test('Up to three active ideas; rejected ideas are archived, and restored with t
  assert.equal(s.ideaExplorer.shortlist.length,2);
  assert.equal(s.ideaExplorer.rejected.length,1);
  assert.equal(s.ideaExplorer.rejected[0].id,reject.id);
+ // The unsaved fourth draft stays open after a rejected save; return to comparison.
+ assert(ideaAction(s,'idea-compare').ok);
  assert(ideaComparisonView(s).includes('Restore idea'));
  assert(ideaAction(s,'idea-restore',{id:reject.id}).ok);
  assert.equal(s.ideaExplorer.shortlist.length,3);
