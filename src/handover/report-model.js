@@ -1,6 +1,7 @@
 /** A shared document model: PDF and Word render precisely the same student-owned plan. */
 import {PLANNING_CATALOG} from "../planning/catalog.js";
 import {routeById} from '../planning/investigative-routes.js';
+import {samplingMethod,plannedAccuracyText} from '../planning/data-decisions.js';
 import {normalizePlanningEnvelope} from "./schema.js";
 
 const trim=x=>String(x??"").trim();
@@ -17,6 +18,7 @@ export function modelFromEnvelope(envelope){
  const chosen=payload.planning.mathSelected.map(id=>PLANNING_CATALOG.math.find(m=>m.id===id)?.label||"").filter(Boolean);
  const predictionPrompt=PLANNING_CATALOG.predictions.find(p=>p.id===f.predictionId)?.question||"";
  const route=routeById(payload.planning.routeExplorer?.selectedRoute);
+ const accuracy=payload.planning.accuracyPlans||[];
  const flags=payload.teacher.openFlags;
  const main=[
   section("01 · The question and its purpose",[
@@ -52,7 +54,13 @@ export function modelFromEnvelope(envelope){
     row("Location or setting",f.primaryWhere),
     row("Collection method",f.primaryHow),
     row("Equipment and resolution",f.primaryEquipment),
-    row("Sampling approach",f.primarySampling),
+    row("Sampling approach",samplingMethod(f.primarySamplingMethod)?.label||f.primarySampling),
+    row("Sampling unit",f.primarySamplingUnit),
+    row("Sampling frame",f.primarySamplingFrame),
+    row("Frame details or limitations",f.primarySamplingFrameDetails),
+    row("How feasible is collecting follow-up data?",f.primaryRepeatable),
+    row("Why this method is suitable",f.primarySampling),
+    row("Provisional primary recording precision",accuracy.filter(x=>x.source==='primary').map(plannedAccuracyText).join('; ')),
     row("Status of source plan",f.primaryStatus)
   ],"Planned collection only. No data are asserted as collected or approved."),
   sec&&section(prim?"05 · Secondary data source plan":"04 · Secondary data source plan",[
@@ -60,6 +68,8 @@ export function modelFromEnvelope(envelope){
     row("Original source URL",f.secondaryUrl,{link:true}),
     row("Relevant variables, units and definitions",f.secondaryVariables),
     row("Intended dates, population or subset",f.secondaryScope),
+    row("Sampling or collection process in source (if known)",f.secondarySamplingOrigin),
+    row("Provisional precision of published values",accuracy.filter(x=>x.source==='secondary').map(plannedAccuracyText).join('; ')),
     row("Student's verification status",f.secondaryVerified),
     row("Status of source plan",f.secondaryStatus)
   ],"The source URL identifies original provenance, not independent verification by Pathfinder."),
