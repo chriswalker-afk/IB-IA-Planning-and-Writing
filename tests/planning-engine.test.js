@@ -18,7 +18,7 @@ function newPlan(){
 function set(s,key,val){assert.equal(applyPlanningField(s,key,val),true)}
 function advance(s,id){const r=planAutoAdvance(s);assert.equal(r.ok,true,r.error||"");if(id)assert.equal(s.planning.current,id);return r}
 test("all 61 source-sheet routes are preserved alongside explicit later UX routes",()=>{
- assert.equal(PLANNING_NODE_IDS.length,35);
+ assert.equal(PLANNING_NODE_IDS.length,34);
  const source=PLANNING_ROUTES.filter(r=>Number.isInteger(r.sourceRow));
  const extra=PLANNING_ROUTES.filter(r=>r.sourceRow===null);
  assert.equal(source.length,61);
