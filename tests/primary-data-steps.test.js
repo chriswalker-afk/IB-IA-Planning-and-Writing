@@ -37,39 +37,31 @@ const view=state=>{
  return createPlanningViews(ctx).viewPlanning();
 };
 
-test('new primary flow has three real navigable route nodes, without altering historical source rows',()=>{
- for(const id of ['N03P','N03P2','N03P3'])
-  assert(PLANNING_NODE_IDS.includes(id),id);
+test('primary collection and sampling use two screens while keeping provenance',()=>{
+ for(const id of ['N03P','N03P2'])assert(PLANNING_NODE_IDS.includes(id));
+ assert(!PLANNING_NODE_IDS.includes('N03P3'));
  const route=(from,to)=>PLANNING_ROUTES.find(x=>x.from===from&&x.to===to);
  assert.equal(route('N03P','N03P2').sourceRow,null);
- assert.equal(route('N03P2','N03P3').sourceRow,null);
- assert.equal(route('N03P3','N03J').sourceRow,null);
+ assert.equal(route('N03P2','N03J').sourceRow,null);
  assert.equal(route('N03P','N03J').sourceRow,19);
  const state=s();
- assert(!planAutoAdvance(state).ok); // no data described
- set(state,'primaryWhat','Length and duration of repeated trials');
+ assert(!planAutoAdvance(state).ok);
+ set(state,'primaryHow','Measure jump distance with a tape');
  assert(planAutoAdvance(state).ok);
  assert.equal(state.planning.current,'N03P2');
- assert(!planAutoAdvance(state).ok); // statistical sampling undecided
+ assert(!planAutoAdvance(state).ok);
  set(state,'primarySamplingMethod','convenience');
- assert(planAutoAdvance(state).ok);
- assert.equal(state.planning.current,'N03P3');
- assert(!planAutoAdvance(state).ok); // collection plan not assessed yet
  set(state,'primaryStatus','unsure');
  assert(planAutoAdvance(state).ok);
  assert.equal(state.planning.current,'N03J');
- assert.deepEqual(['N03P','N03P2','N03P3'].map(id=>state.planning.completedNodes.includes(id)),[true,true,true]);
- assert(state.planning.completedNodes.every(x=>x!=='N03J'));
- assert(planningBack(state).ok);assert.equal(state.planning.current,'N03P3');
- assert(planningBack(state).ok);assert.equal(state.planning.current,'N03P2');
- assert.equal(state.planning.fields.primarySamplingMethod,'convenience');
-});
-test('legacy direct-complete transition enters the new three-step flow rather than skipping sampling',()=>{
- const state=s();set(state,'primaryWhat','Length of a measured object');
- const result=planningMove(state,'Complete');
- assert(result.ok);
+ assert.deepEqual(['N03P','N03P2'].map(id=>state.planning.completedNodes.includes(id)),[true,true]);
+ assert(planningBack(state).ok);
  assert.equal(state.planning.current,'N03P2');
- assert.equal(state.journey.history.at(-1).sourceRow,null);
+});
+test('legacy direct-complete edge uses the merged collection screen',()=>{
+ const state=s();set(state,'primaryHow','Measure with a ruler');
+ assert(planningMove(state,'Complete').ok);
+ assert.equal(state.planning.current,'N03P2');
 });
 test('quantities and their units can be collected, edited and safely reused for precision',()=>{
  const state=s();
@@ -99,72 +91,49 @@ test('quantities and their units can be collected, edited and safely reused for 
  assert.equal(state.planning.accuracyPlans.length,1); // never silently delete an existing spark
  assert.equal(state.evidence.accuracyDecisions.length,0); // do not invent actual measurements
 });
-test('a genuinely ready primary plan needs recording accuracy for each named measurement',()=>{
- const state=s();set(state,'primaryWhat','Paired measurements');
+test('ready plans require each named quantity accuracy on sampling finish',()=>{
+ const state=s();set(state,'primaryHow','Measure two variables with a ruler and stopwatch');
  name(state,'Height','cm');name(state,'Duration','s');
  assert(planAutoAdvance(state).ok);
  set(state,'primarySamplingMethod','convenience');
  set(state,'primarySamplingFrame','no');set(state,'primaryRepeatable','yes');
- set(state,'primaryPopulation','Accessible class members');
- set(state,'primarySamplingUnit','One member');
- assert(planAutoAdvance(state).ok);
- set(state,'primaryHow','Use a scale and stopwatch to measure each participant');
+ set(state,'primaryPopulation','Accessible pupils');set(state,'primarySamplingUnit','One pupil');
  set(state,'primaryStatus','ready');
  assert(measure(state,'Height','cm','analogue','nearest 1 mm').ok);
- assert(!planAutoAdvance(state).ok); // Duration is missing a rule
+ assert(!planAutoAdvance(state).ok);
  assert(measure(state,'Duration','s','digital','nearest 0.01 s').ok);
  assert(planAutoAdvance(state).ok);assert.equal(state.planning.current,'N03J');
 });
-test('three screens show different main tasks, with small learning-trail progress',()=>{
- const state=s();
- set(state,'primaryWhat','Jump distance and recorded time');
+test('quantity and accuracy live together on screen one; sampling lives on screen two',()=>{
+ const state=s();set(state,'primaryHow','Measure jump distance');
  name(state,'Jump distance','cm');
  let h=view(state);
- assert(h.includes('Step 1 of 3'));
- assert(h.includes('data-action="plan-save-quantity"'));
- assert(h.includes('What data will I collect?'));
- assert(!h.includes('data-action="plan-save-accuracy"'));
+ assert(h.includes('Step 1 of 2'));assert(h.includes('What will I collect, and how?'));
+ assert(h.includes('data-action="plan-use-quantity"'));
+ assert(h.includes('primary-accuracy-editor'));
  assert(!h.includes('Sampling and census: quick recap'));
  assert(planAutoAdvance(state).ok);
  h=view(state);
- assert(h.includes('Step 2 of 3'));
- assert(h.includes('How will I choose my data?'));
+ assert(h.includes('Step 2 of 2'));assert(h.includes('How will I choose my data?'));
  assert(h.includes('Sampling and census: quick recap'));
  assert(!h.includes('data-action="plan-save-accuracy"'));
- set(state,'primarySamplingMethod','convenience');
+ set(state,'primarySamplingMethod','convenience');set(state,'primaryStatus','unsure');
  assert(planAutoAdvance(state).ok);
- h=view(state);
- assert(h.includes('Step 3 of 3'));
- assert(h.includes('How will I collect it accurately?'));
- assert(h.includes('Jump distance'));
- assert(h.includes('data-action="plan-use-quantity"'));
- assert(h.includes('data-action="plan-save-accuracy"'));
- assert(!h.includes('Sampling and census: quick recap'));
- const trail=planningLearningTrail(state);
- assert(trail.includes('2 completed'));
- assert(trail.includes('Chose quantities to collect'));
- assert(trail.includes('Considered a sampling approach'));
+ assert(planningLearningTrail(state).includes('Planned collection and accuracy'));
 });
-test('sampling and accuracy sparks appear at their actual checkpoints',()=>{
- const state=s();
- set(state,'primaryWhat','Repeated times');
+test('saved accuracy sparks remain on the merged screen',()=>{
+ const state=s();set(state,'primaryHow','Measure reaction times');
  set(state,'primarySamplingMethod','convenience');
- state.planning.current='N03P2';
- assert(insightCapture(state,'N03P2').includes('Spark saved'));
- assert(!insightCapture(state,'N03P3').includes('Spark saved'));
  assert(measure(state,'Reaction time','s','digital','nearest 0.01 s').ok);
- assert(insightCapture(state,'N03P3').includes('Spark saved'));
+ assert(insightCapture(state,'N03P').includes('Spark saved'));
  const h=view(state);
- assert(!h.includes('data-action="plan-save-accuracy"'));
+ assert(h.includes('Reaction time'));
 });
-test('a combined primary+secondary plan returns to the source choice only after all three primary decisions',()=>{
+test('combined primary/secondary route preserves both branch completion checks',()=>{
  const state=s();set(state,'dataSource','both');
- state.planning.current='N03P';
- set(state,'primaryWhat','One measurement');
- assert(planAutoAdvance(state).ok);assert.equal(state.planning.sourceBranches.primary,false);
- set(state,'primarySamplingMethod','unsure');
- assert(planAutoAdvance(state).ok);assert.equal(state.planning.sourceBranches.primary,false);
- set(state,'primaryStatus','unsure');
+ set(state,'primaryHow','Measure a variable');
+ assert(planAutoAdvance(state).ok);
+ set(state,'primarySamplingMethod','unsure');set(state,'primaryStatus','unsure');
  assert(planAutoAdvance(state).ok);
  assert.equal(state.planning.current,'N03B');
  assert.equal(state.planning.sourceBranches.primary,true);
