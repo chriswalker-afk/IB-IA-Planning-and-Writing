@@ -1,4 +1,4 @@
-/** Exact planning transitions from the 2026-10-14 source sheet (text conditions are labels, not inferred booleans). */
+/** 61 original 2026-10-14 source-sheet routes are preserved below. Later UX-only routes carry sourceRow:null and an explicit editorial note; no source-sheet provenance is claimed. */
 export const PLANNING_ROUTES = Object.freeze([
   {
     "from": "N00",
@@ -426,5 +426,11 @@ export const PLANNING_ROUTES = Object.freeze([
     "to": "N01P",
     "sourceRow": 99,
     "editorial": "Only when N01V was opened from prediction. Update dynamic wording; confirm or revise previously written implication; do not repeat earlier planning stages."
-  }
+  },
+  {"from":"N02","answer":"Choose maths after statistics","to":"N02M","sourceRow":null,"editorial":"UX 2026-10-17: students select course and possible mathematics immediately after investigation type, before their data plan"},
+  {"from":"N02","answer":"Choose maths after modelling","to":"N02M","sourceRow":null,"editorial":"UX 2026-10-17: introduce early course-level mathematical possibilities before evidence planning"},
+  {"from":"N02","answer":"Choose maths after theoretical route","to":"N02M","sourceRow":null,"editorial":"UX 2026-10-17: record course and tentative mathematics before theoretical teacher checkpoint"},
+  {"from":"N02M","answer":"Proceed to evidence planning","to":"N03","sourceRow":null,"editorial":"UX 2026-10-17: continue data-first routes after early maths review"},
+  {"from":"N02M","answer":"Discuss theoretical maths with teacher","to":"N02T","sourceRow":null,"editorial":"UX 2026-10-17: theoretical routes retain existing teacher consultation"},
+  {"from":"N03H","answer":"Continue with mathematics already explored","to":"N01P","sourceRow":null,"editorial":"UX 2026-10-17: no duplicate course/technique screen after evidence planning; prediction then maths refinement"}
 ]);
