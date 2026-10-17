@@ -95,7 +95,7 @@ export function insightItems(s){
 export function insightForCurrent(s,node){
  const all=insightItems(s),active=entries(s)[s?.completion?.activeEntryIndex];
  const get=type=>all.filter(x=>x.type===type);
- if(/^N(?:02|03|04|05|06)/.test(node))return all.filter(x=>x.id==='working-title'||x.id==='aim'||(node==='N06'&&x.id==='planned-evidence')).slice(0,2);
+ if(node==='N01V'||/^N(?:02|03|04|05|06)/.test(node))return all.filter(x=>x.id==='working-title'||x.id==='aim'||(node==='N06'&&x.id==='planned-evidence')).slice(0,2);
  const result=active?.fromEntryId?all.filter(x=>x.id==='result:'+active.fromEntryId):[];
  const related=kind=>all.filter(x=>x.id.startsWith(kind+':')&&active&&(
    kind==='accuracy'?linkedAccuracy(s,active).some(a=>'accuracy:'+a.id===x.id):
@@ -155,7 +155,7 @@ export function insightCapture(s,node){
  if(!kind)return'';
  const existing=all.filter(x=>ids.includes(x.id));
  const spark=existing.at(-1);
- const family=spark?.type||(/Accuracy|accuracy/.test(kind)?'accuracy':/source|evidence|method/.test(kind.toLowerCase())?'evidence':/mathematical|result/.test(kind.toLowerCase())?'discovery' :/reflection/.test(kind.toLowerCase())?'reflection':'aim');
+ const family=spark?.type||(node==='N01'?'title':/Accuracy|accuracy/.test(kind)?'accuracy':/source|evidence|method/.test(kind.toLowerCase())?'evidence':/mathematical|result/.test(kind.toLowerCase())?'discovery' :/reflection/.test(kind.toLowerCase())?'reflection':'aim');
  const meta=INSIGHT_FAMILIES[family];
  return '<aside class="insight-capture insight-'+family+' '+(spark?'is-captured':'is-pending')+
    '" data-insight-source="'+e(node)+'" aria-label="Remembered decision">'+
