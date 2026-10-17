@@ -106,6 +106,11 @@ test("adaptive Planning follows genuine spreadsheet source nodes and retains stu
  h.action("plan-advance");assert(h.html.includes('data-source-node="N01"'));
  h.write("planning.fields.aim","How does X relate to Y?");
  h.action("plan-advance");assert(h.html.includes('data-source-node="N01V"'));
+ assert(h.html.includes('Why does this matter?'));
+ assert(h.html.includes('data-motivation-aim-spark'));
+ assert(h.html.includes('data-bind="planning.fields.aim"'));
+ assert(h.html.includes('data-bind="planning.fields.beneficiary"'));
+ assert(h.html.includes('Compare motivations'));
  h.choose("planning.fields.beneficiaryType","me");
  h.write("planning.fields.beneficiary","I want to understand whether this relationship could guide my decision.");
  h.action("plan-advance");assert(h.html.includes('data-source-node="N02"'));
@@ -307,4 +312,16 @@ test('tools library opens over Planning and preserves its node, answers and prog
 });
 test('resource guide returns to the same stuck topic rather than another mathematical stage',()=>{
  const h=createHarness();h.action('open-stuck');h.action('stuck-topic',{topic:'calculation'});h.action('resource-browse',{resourceHelp:'true'});h.action('resource-open',{resourceId:'desmos-start'});h.action('resource-close');assert(h.drawer.includes('My calculation or software is not working'));
+});
+
+test('a saved aim spark can be edited directly on the motivation page',()=>{
+ const s=createProjectState();s.route='planning';s.planning.current='N01V';
+ s.planning.fields.aim='My current mathematical aim';s.project.aim=s.planning.fields.aim;
+ const h=createHarness(s);
+ assert(h.html.includes('data-motivation-aim-spark'));
+ assert(h.html.includes('My current mathematical aim'));
+ h.write('planning.fields.aim','My revised mathematical aim');
+ assert.equal(h.saved.planning.fields.aim,'My revised mathematical aim');
+ assert.equal(h.saved.project.aim,'My revised mathematical aim');
+ assert(h.html.includes('data-bind="planning.fields.beneficiary"'));
 });
