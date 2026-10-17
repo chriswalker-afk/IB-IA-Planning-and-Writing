@@ -57,3 +57,92 @@
  .motivation-aim-copy small{font-size:10px}
 }
 @media(prefers-reduced-motion:reduce){.motivation-aim-spark{transition:none!important}}
+
+
+/* Compact returning sparks: same affordance as Have a clear motivation.
+   The named sparks alone use their saved colour family. */
+.planning-compact-recall{margin:0 0 19px;max-width:100%}
+.planning-compact-recall-label{display:flex;align-items:center;gap:6px;margin:0 0 8px;font-size:10px;line-height:1.4;font-weight:850;color:#6d857e;letter-spacing:.04em}
+.planning-compact-recall-label>.icon{width:14px;height:14px;flex:none}
+.planning-compact-recall-label span{margin-left:auto;color:#879e99;font-weight:500;letter-spacing:0}
+.planning-compact-sparks{display:flex;align-items:start;gap:10px;flex-wrap:wrap}
+.planning-compact-sparks .planning-return-spark{flex:0 1 270px;min-width:205px;max-width:100%;margin:0}
+.planning-compact-sparks .planning-return-spark[open]{flex:1 1 270px;max-width:100%}
+.planning-return-spark>summary{min-height:51px;padding:9px 11px}
+.planning-return-spark .motivation-aim-copy small{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+.planning-return-spark[open] .motivation-aim-copy small{-webkit-line-clamp:unset}
+.planning-return-spark.insight-motivation{background:#fffaf1;border-color:#e9d8b9}
+.planning-return-spark.insight-motivation .motivation-aim-symbol{background:#fff0d8;color:#826126}
+.planning-return-spark.insight-motivation .motivation-aim-copy strong,.planning-return-spark.insight-motivation .motivation-aim-toggle{color:#906a27}
+.planning-return-spark.insight-motivation .motivation-aim-details{border-top-color:#ebddc3}
+.planning-return-spark.insight-motivation .motivation-aim-details p{color:#776442}
+.planning-return-spark .motivation-aim-details textarea{width:100%}
+
+/* Starting mathematics: guided pathways at the top, complete menu behind a
+   deliberate learner choice. Course-specific, never preselected. */
+.math-course-picker{border:1px solid #dde9e4;background:#f8fbf9;border-radius:16px;padding:16px;margin:3px 0 19px}
+.math-course-picker h3{margin:0 0 12px;font-size:15px;letter-spacing:-.02em}
+.math-course-picker .choice-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.math-course-picker .choice.tight{min-width:0;padding:9px 11px;min-height:48px;gap:7px;border-radius:11px}
+.math-course-picker .choice.tight .choice-symbol{width:29px;height:29px;flex:none}
+.math-course-picker .choice.tight .choice-symbol .icon{width:16px;height:16px}
+.math-course-picker .choice.tight .choice-title{font-size:11px;overflow-wrap:anywhere;line-height:1.35}
+.math-course-picker .choice-marker{width:15px;height:15px}
+.math-course-picker .choice-marker .icon{width:11px;height:11px}
+.math-course-next{display:flex;align-items:center;gap:8px;font-size:12px;line-height:1.5;color:#56746b;padding:14px;border:1px dashed #b8d4c9;border-radius:12px}
+.math-course-next .icon{width:17px;height:17px;flex:none}
+.math-routes{margin:18px 0 19px}
+.math-routes-heading{margin:0 0 12px}
+.math-routes-heading>span{display:flex;align-items:center;gap:6px;color:#59847b;font-weight:900;font-size:10px;letter-spacing:.09em}
+.math-routes-heading>span>.icon{width:14px;height:14px}
+.math-routes-heading h3{font-size:18px;letter-spacing:-.025em;margin:8px 0 5px}
+.math-routes-heading p{font-size:11px;line-height:1.6;color:#5d7872;margin:0}
+.math-route-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-items:stretch}
+.math-route-option{display:flex;flex-direction:column;align-items:stretch;text-align:left;min-width:0;border-radius:15px;padding:13px 14px;background:#fff;border:1.5px solid #dce7e2;color:#1e3d40;cursor:pointer;transition:box-shadow .2s,border-color .2s,transform .2s}
+.math-route-option:hover{border-color:#9fc8ba;box-shadow:0 4px 16px #164c3411;transform:translateY(-1px)}
+.math-route-option.selected{border-color:#208278;background:#f1faf5;box-shadow:inset 0 0 0 .3px #208278}
+.math-route-option:focus-visible{outline:3px solid #69ad9e;outline-offset:2px}
+.math-route-overline{font-size:9px;font-weight:900;letter-spacing:.03em;color:#357d71;margin:0 0 7px;text-transform:uppercase}
+.math-route-option strong{font-size:12px;line-height:1.38;margin:0 0 3px}
+.math-route-topic{font-size:9px;color:#7b9a92;margin-bottom:9px}
+.math-route-why{display:block;font-size:11px;line-height:1.52;color:#49655e;margin:0 0 10px}
+.math-route-first{display:block;background:#f3f7f5;border-radius:9px;padding:9px 10px;font-size:10px;line-height:1.5;color:#416459;margin-top:auto}
+.math-route-first b{font-weight:850}
+.math-route-caution{display:flex;gap:5px;align-items:start;font-size:10px;line-height:1.5;color:#87652e;margin:8px 0 0}
+.math-route-caution .icon{width:13px;height:13px;flex:none;margin-top:2px}
+.math-route-select{display:flex;align-items:center;gap:7px;font-size:10px;font-weight:850;color:#087467;border-top:1px solid #e1eae4;margin-top:10px;padding-top:9px}
+.math-route-select .icon{width:15px;height:15px;flex:none}
+.math-route-option.selected .math-route-select{color:#075b55}
+.math-scope-honesty{display:flex;align-items:start;gap:8px;font-size:10px;line-height:1.6;color:#61726e;margin:12px 0 0}
+.math-scope-honesty .icon{flex:none;width:14px;height:14px;margin-top:2px}
+.math-route-empty{padding:14px;border:1px dashed #bfd4ce;border-radius:12px;font-size:12px;color:#587770}
+.math-selection-summary{color:#587369;font-size:11px;line-height:1.55;margin:12px 0}
+.math-selection-summary strong{color:#0b665e}
+.math-catalog-more{border:1px solid #dfeae4;border-radius:13px;overflow:hidden;margin:11px 0 14px;background:#fafcfa}
+.math-catalog-more>summary{display:flex;align-items:center;gap:8px;list-style:none;cursor:pointer;padding:13px 14px;min-height:45px;color:#236c61;font-size:11px;font-weight:850}
+.math-catalog-more>summary::-webkit-details-marker{display:none}
+.math-catalog-more>summary>.icon{width:16px;height:16px;flex:none}
+.math-catalog-more>summary>.icon:last-child{margin-left:auto;transition:transform .2s}
+.math-catalog-more[open]>summary>.icon:last-child{transform:rotate(180deg)}
+.math-catalog-more>summary:focus-visible{outline:3px solid #68a795;outline-offset:-3px}
+.math-catalog-more-body{padding:15px;background:#fff;border-top:1px solid #e1eae4}
+.math-catalog-more .plan-math-options{max-height:min(65vh,650px);overflow:auto;overscroll-behavior:contain}
+.math-review-note{display:flex;align-items:start;gap:8px;margin:10px 0;font-size:11px;line-height:1.6;color:#58796b}
+.math-review-note>.icon{width:17px;height:17px;flex:none;margin-top:1px}
+
+@media(max-width:780px){
+ .math-route-grid{grid-template-columns:1fr}
+}
+@media(max-width:550px){
+ .planning-compact-sparks{flex-direction:column;gap:8px}
+ .planning-compact-sparks .planning-return-spark,.planning-compact-sparks .planning-return-spark[open]{flex:none;width:100%;min-width:0}
+ .planning-compact-recall-label span{margin-left:0}
+ .math-course-picker{padding:12px}
+ .math-course-picker .choice-grid{grid-template-columns:1fr}
+ .math-route-option{padding:12px}
+ .math-catalog-more-body{padding:12px}
+}
+@media(prefers-reduced-motion:reduce){
+ .math-route-option,.math-catalog-more>summary>.icon:last-child{transition:none!important}
+ .math-route-option:hover{transform:none}
+}
