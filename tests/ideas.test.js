@@ -267,6 +267,13 @@ test('Saved evaluations, archived ratings and map selections survive a JSON roun
  assert.deepEqual(restored.ideaExplorer.map,s.ideaExplorer.map);
  assert.equal(restored.ideaExplorer.pending,null);
 });
+test('Keeping an already recorded aim works without inventing a new idea',()=>{
+ const s=make('N00C');
+ s.planning.fields.aim=s.project.aim='Can I analyse my own recorded observations?';
+ assert(ideaAction(s,'idea-keep').ok);
+ assert.equal(s.planning.current,'N01');
+ assert.equal(s.planning.fields.aim,'Can I analyse my own recorded observations?');
+});
 test('Existing data rejects invalid difficulty IDs, forged idea IDs and prototype keys',()=>{
  const input=JSON.parse('{"active":"__proto__","drafts":{"__proto__":{"question":"bad"},"own":{"question":"ok","clarity":8,"quickStart":3,"difficulties":["x","maths","maths"]}},"shortlist":[{"id":"__proto__","question":"bad"}]}');
  const s=normalizeIdeaState(input);
