@@ -285,8 +285,14 @@ export function featuredSparkItems(s,node){
   id('aim');id('investigative-route');id('motivation');
  }
  else if(node==='N03P2'){id('sampling-plan');id('aim');}
- else if(node==='N03P3'||node==='N03P4'){prefix('planned-accuracy:','primary');id('sampling-plan');id('aim');}
- else if(node==='N03S'){prefix('planned-accuracy:','secondary');id('planned-evidence');id('aim');}
+ else if(node==='N03P3'||node==='N03P4'){
+  recent(x=>x.id.startsWith('planned-accuracy:')&&x.plannedSource==='primary');
+  id('sampling-plan');id('aim');
+ }
+ else if(node==='N03S'){
+  recent(x=>x.id.startsWith('planned-accuracy:')&&x.plannedSource==='secondary');
+  id('planned-evidence');id('aim');
+ }
  else if(node==='N03J'){id('sampling-plan');prefix('planned-accuracy:');id('aim');}
  else if(node==='N03D'||node==='N03E'||node==='N03H'){id('planned-evidence');id('sampling-plan');id('aim');}
  else if(/^N03/.test(node)){id('planned-evidence');id('aim');id('sampling-plan');}
@@ -303,7 +309,9 @@ export function featuredSparkItems(s,node){
   if(active?.fromEntryId)id('result:'+active.fromEntryId);
   if(active)for(const x of linked)if(x.id.startsWith('accuracy:')||x.id.startsWith('source:'))id(x.id);
   if(['C35','C35H','C35B','C35P','C40','C50'].includes(node)&&latestResult)id(latestResult.id);
-  accuracy();id('aim');id('investigative-route');
+  // Confirmed source/accuracy sparks are highlighted here only if the
+  // student explicitly linked them to this mathematics. Otherwise use aim.
+  id('aim');id('investigative-route');
  }
  else if(/^C6/.test(node)){id('aim');if(latestResult)id(latestResult.id);id('motivation');}
  // Unknown screens still get relevant existing insights, then a useful fallback.
