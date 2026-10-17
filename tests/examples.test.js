@@ -4,8 +4,8 @@ import {EXAMPLES,NUMERICAL_EXAMPLE as D,exampleById} from '../src/examples/catal
 import {exampleContext,selectExamples,defaultVariant,filterExamples} from '../src/examples/context.js';
 import {examplePrompt,exampleInline,prose,renderCard,library} from '../src/examples/views.js';
 const state=(kind='modelling',node='C10')=>({route:'completing',project:{kind},planning:{current:'N01',fields:{kind,aim:'My real aim',course:'AA SL'}},scratch:{introduction:'My original work'},completion:{current:node,activeEntryIndex:0,nextFromEntryId:'first',fields:{},support:{},guidanceUi:{},accuracyDecisions:[],stages:{}},entries:[{id:'first',phase:'first',kind:'scatter',methodId:'',knowledge:'unsure',status:'completed',result:'Actual graph',observation:'curved',title:'Earlier real work'},{id:'later',phase:'substantial',status:'completed',kind:'model',methodId:'linear-regression',result:'Actual later result',observation:'linear',title:'Different later work'}]});
-test('29 substantive original cards have stable unique IDs, explanations and transfer questions',()=>{
- assert.equal(EXAMPLES.length,29);assert.equal(new Set(EXAMPLES.map(x=>x.id)).size,29);
+test('30 substantive original cards have stable unique IDs, explanations and transfer questions',()=>{
+ assert.equal(EXAMPLES.length,30);assert.equal(new Set(EXAMPLES.map(x=>x.id)).size,30);
  for(const c of EXAMPLES){assert(c.weak.length>40,c.id);assert(c.strong.length>100,c.id);assert(c.why.length>40,c.id);assert(c.question.endsWith('?'),c.id);assert(!JSON.stringify(c).includes('drive.google.com'));}
 });
 test('introduction and conclusion select statistical, modelling and theoretical variants',()=>{
@@ -74,4 +74,13 @@ test('planning previews do not infer course familiarity from old entries',()=>{
 });
 test('mathematical presentation defines variables before the calculation',()=>{
  const html=renderCard(exampleById('EX13'));assert(html.indexOf('Let t be')<html.indexOf('<math '));
+});
+
+test('Planning title screen opens actual title comparisons, not introduction examples',()=>{
+ const s=state('statistics');s.route='planning';s.planning.current='N01';
+ assert.equal(exampleContext(s).topic,'title');
+ assert.equal(selectExamples(s)[0].id,'EX30');
+ const card=exampleById('EX30');
+ assert(card.strong.includes('basketball'));assert(card.strong.includes('music-practice'));
+ assert(card.why.includes('mathematics')||card.why.includes('title'));
 });
