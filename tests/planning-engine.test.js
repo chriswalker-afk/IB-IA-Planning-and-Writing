@@ -18,11 +18,11 @@ function newPlan(){
 function set(s,key,val){assert.equal(applyPlanningField(s,key,val),true)}
 function advance(s,id){const r=planAutoAdvance(s);assert.equal(r.ok,true,r.error||"");if(id)assert.equal(s.planning.current,id);return r}
 test("all 61 source-sheet routes are preserved alongside explicit later UX routes",()=>{
- assert.equal(PLANNING_NODE_IDS.length,33);
+ assert.equal(PLANNING_NODE_IDS.length,35);
  const source=PLANNING_ROUTES.filter(r=>Number.isInteger(r.sourceRow));
  const extra=PLANNING_ROUTES.filter(r=>r.sourceRow===null);
  assert.equal(source.length,61);
- assert.equal(extra.length,6);
+ assert.equal(extra.length,9);
  for(const route of PLANNING_ROUTES){
   assert(PLANNING_NODE_IDS.includes(route.from));
   if(route.to.startsWith("N"))assert(PLANNING_NODE_IDS.includes(route.to));
@@ -63,6 +63,12 @@ test("combined primary+secondary plans cannot bypass either question set",()=>{
  advance(s,"N03B");
  advance(s,"N03P");
  assert.equal(planAutoAdvance(s).ok,false);
+ set(s,"primaryWhat","Reaction times and group categories");
+ advance(s,"N03P2");
+ assert.equal(planAutoAdvance(s).ok,false);
+ set(s,"primarySamplingMethod","unsure");
+ advance(s,"N03P3");
+ assert.equal(planAutoAdvance(s).ok,false);
  set(s,"primaryStatus","unsure");
  advance(s,"N03B");
  assert.equal(s.planning.sourceBranches.primary,true);
@@ -79,6 +85,11 @@ test("primary-only and secondary-only branches reach the join without false data
  for(const [source,id,statusKey] of [["primary","N03P","primaryStatus"],["secondary","N03S","secondaryStatus"]]){
   const s=newPlan();s.planning.current="N03";set(s,"dataSource",source);
   advance(s,id);
+  if(source==="primary"){
+   set(s,"primaryWhat","A short planned measurement");
+   advance(s,"N03P2");set(s,"primarySamplingMethod","unsure");
+   advance(s,"N03P3");
+  }
   set(s,statusKey,"unsure");advance(s,"N03J");
   assert.equal(s.evidence.sources.length,0);
  }
