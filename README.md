@@ -10,7 +10,7 @@ IA Pathfinder is a responsive, device-local **planning and writing companion** f
 
 ## Living Journey & Insight Threads — 16 October 2026
 
-The site now shares a **Discovery Trail** and compact chapter markers across Planning, IA Studio, the returning student homepage, and My Path. The Planning journey displays four provisional anchors; IA Studio readiness still comes only from explicit stage statuses. A **Growing Constellation** distinguishes real mathematical results, planned mathematics and work needing review, and draws connections only where an explicit `fromEntryId` exists. There is no required calculation count.
+The site now shares a **Discovery Trail** and compact chapter markers across Planning, IA Studio, the returning student homepage, and My Path. The Planning journey shows five provisional anchors (including a working title), plus source-defined screens actually advanced through; IA Studio readiness still comes only from explicit stage statuses. A **Growing Constellation** distinguishes real mathematical results, planned mathematics and work needing review, and draws connections only where an explicit `fromEntryId` exists. There is no required calculation count.
 
 **Insight Threads** visually carry a student's saved aim, proposed evidence, recorded actual source/method, linked accuracy policy, actual mathematical discovery and confirmed limitation into relevant later contexts. The same spark family appears when information is recorded, when it echoes later, and inside **My Toolkit**. Echo links go back to their original section or mathematical step. Input links refer only to explicit evidence IDs; unrelated decisions are not presented as calculation inputs. The toolkit shows a small selection of recent or pinned sparks first, with earlier ones expandable.
 
@@ -26,7 +26,7 @@ See [design principles, compatibility and regression checks](docs/experience-202
 
 ## Compare examples - 15 October 2026
 
-A shared optional viewer now offers **29 original fictional less-effective / more-effective comparisons**, with explanations and a transfer question. Visible links sit beside Planning and Completing tasks; the existing writing-cue and introduction routes use the same collection. The library is searchable by topic and exploration type. Original SVG graphs, residuals, diagrams and native tables are included. Viewing, filtering or closing examples never writes student results, marks a stage complete or changes an IA document.
+A shared optional viewer now offers **30 original fictional less-effective / more-effective comparisons**, with explanations and a transfer question. Visible links sit beside Planning and Completing tasks; the existing writing-cue and introduction routes use the same collection. The library is searchable by topic and exploration type. Original SVG graphs, residuals, diagrams and native tables are included. Viewing, filtering or closing examples never writes student results, marks a stage complete or changes an IA document.
 
 See [implementation, editorial boundaries and testing](docs/examples-2026-10-15.md).
 
@@ -87,3 +87,9 @@ Planning's optional brainstorming branch now offers twelve broad topics, 48 star
 ## IA essentials and assessment guidance
 
 **IA essentials** provides source-labelled formatting/length guidance, the complete A-E rubric (including both SL and HL Criterion E), and draft/final evidence-based self-review. A visible **Show the criteria here** panel connects the current task to relevant criteria and the shared example library. Optional self-marks are entered only by students, retain their rubric level, and survive full JSON backups; browsing never awards marks or completes work. See [implementation notes](docs/essentials-and-criteria-2026-10-15.md).
+
+## Planning screen review — 17 October 2026
+
+Screen 1 asks only whether the student has one idea, several to compare, or needs inspiration. The shared N01 screen asks for a **provisional IA title** and a **mathematical aim**, not a compulsory enthusiasm story. Its title spark appears immediately, stays in device-local state and the planning report, and returns contextually during Planning and IA Studio. A new fictional EX30 comparison teaches students to prefer focused, revisable titles rather than broad labels or predetermined results. Personal engagement is explained as mathematical ownership, independent choices, interpretation and development.
+
+The right-hand **Discovery Trail** shows five provisional decisions and a cumulative count of **screens actually advanced through**; merely visiting a screen does not count as finishing it. Contextual controls sit below the trail on desktop and inside compact Help & examples on mobile. Duplicate Planning tool prompts are removed; the resource library remains accessible through its single control. None of these indicators claims an IA mark or completed calculation.
