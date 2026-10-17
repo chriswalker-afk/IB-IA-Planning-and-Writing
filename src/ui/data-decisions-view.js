@@ -30,6 +30,7 @@ const samplingSpotlight=(f,e,icon)=>{
  '<p><b>Check:</b> '+e(method.watch)+'</p>'+
  '<small>Provisional. Revisit this after you collect genuine observations; your selection is not evidence of representativeness.</small></div>'+
  icon('check-circle')+'</aside>':'';
+};
 export function samplingPlanner(state,{F,select,e,icon}){
  const f=state.planning.fields,method=samplingMethod(f.primarySamplingMethod);
  return '<section class="data-quality-section" aria-label="Make your sampling decision">'+
