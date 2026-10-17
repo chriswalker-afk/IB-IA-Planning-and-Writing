@@ -1,5 +1,7 @@
 import {planningLearningTrail} from './living-journey.js';
 import {earlyMathRecommendations} from '../planning/math-recommendations.js';
+import {renderInvestigativeRoutes} from './investigative-routes-view.js';
+import {routeById} from '../planning/investigative-routes.js';
 import {insightCapture} from './insight-threads.js';
 import {examplePrompt} from "../examples/views.js";
 import {criteriaPanel,essentialsNudge} from "../essentials/views.js";
@@ -58,6 +60,16 @@ export function createPlanningViews(ctx){
     '<div class="motivation-aim-details"><p>'+e(x.hint)+'</p>'+
     F(x.key,x.label,'Write in your own words',{type:'textarea',rows:2})+'</div></details>';
   });
+  const current=state.planning.current;
+  const selectedRoute=routeById(state.planning.routeExplorer?.selectedRoute);
+  if(selectedRoute&& !['N02M','N04R','N04S'].includes(current))
+   cards.push('<details class="motivation-aim-spark planning-return-spark insight-pathway" data-planning-return-spark="route">'+
+    '<summary><span class="motivation-aim-symbol">'+icon('route')+'</span>'+
+    '<span class="motivation-aim-copy"><strong>My investigative route</strong><small>'+e(selectedRoute.title)+'</small></span>'+
+    '<span class="motivation-aim-toggle">'+icon('chevron-down')+' View</span></summary>'+
+    '<div class="motivation-aim-details"><p>Provisional first step: '+e(selectedRoute.first[0])+
+    '. This is a possible pathway, not an agreed sequence or work already completed.</p>'+
+    edit('N02M','Revisit my route')+'</div></details>');
   return cards.length?'<section class="planning-compact-recall" aria-label="Earlier ideas you can refine">'+
     '<p class="planning-compact-recall-label">'+icon('sparkles')+' Your sparks are back <span>Open to revisit or edit</span></p>'+
     '<div class="planning-compact-sparks">'+cards.join('')+'</div></section>':'';
@@ -232,9 +244,9 @@ export function createPlanningViews(ctx){
       {value:"AA HL",title:"Mathematics AA HL · teacher review",icon:"book"},
       {value:"AI HL",title:"Mathematics AI HL · teacher review",icon:"book"},
       {value:"other",title:"Another course / unsure",icon:"lightbulb"}],{tight:true,label:"My IB Mathematics course"})+'</div>'+
-     (eligible?mathRouteCards(state)+mathChoices(state,false,true)+
+     (eligible?renderInvestigativeRoutes(state,{e,icon,catalogue:()=>mathChoices(state)})+
       '<p class="math-scope-honesty">'+icon('info')+' This catalogue is a planning reference, not formal syllabus verification. Your teacher should confirm mathematical depth and suitability.</p>':
-      hasCourse?mathChoices(state)+
+      hasCourse?renderInvestigativeRoutes(state,{e,icon,catalogue:()=>mathChoices(state)})+
        '<p class="math-scope-honesty">'+icon('info')+' We have not assigned another course’s techniques. Discuss your provisional mathematical direction with your teacher.</p>':
        '<p class="math-course-next">'+icon('arrow-down')+' Select your course to see possible mathematical routes. It is fine to leave techniques undecided.</p>'),
      "<h4>Start with something workable</h4><p>Choose mathematics that might answer your question and can be started with accessible observations, data or simple mathematical cases. Later, revisit your choices in response to your prediction and actual results.</p>");
@@ -366,7 +378,7 @@ export function createPlanningViews(ctx){
     callout("Provisional plan","You can still develop your aim, mathematics and safe first step. Teacher validation remains outstanding.",true),
     "<h4>Proceed provisionally</h4><p>Do not interpret an exported report as approval of out-of-course mathematics.</p>");
    case "N04S":return stepBody("Which mathematics might help answer your aim?","Choose possible techniques, not a checklist of things you must do.",
-    mathRouteCards(state)+mathChoices(state,false,true),
+    renderInvestigativeRoutes(state,{e,icon,catalogue:()=>mathChoices(state)}),
     "<h4>What's a good selection?</h4><p>A few purposeful techniques beat many disconnected ones. Routine syllabus maths can be used without tutorial-style explanations. Research beyond the syllabus should show your understanding when actually used.</p>");
    case "N01P":{
     const choices=relevantPredictionOptions(state);
@@ -384,9 +396,9 @@ export function createPlanningViews(ctx){
       callout("Your result might surprise you","A different finding is not failure. Your later interpretation should be based on actual evidence."),
       "<h4>A meaningful prediction</h4><p>Separate WHAT you expect, WHY, and what it would mean for the person or purpose you selected IF TRUE. Do not turn a prediction into a statement of fact.</p>");
    }
-   case "N04R":return stepBody("Does your prediction change your maths plan?","Revisit your earlier choices but don't assume your predicted pattern will occur.",
-    edit("N02M","Review my course and initial maths choices")+mathRouteCards(state,{afterPrediction:true})+
-    mathChoices(state,true,true)+
+   case "N04R":return stepBody("Does your prediction change your maths plan?","Revisit your earlier choices, including your route; no predicted pattern is yet a finding.",
+    edit("N02M","Review my course and initial maths choices")+
+    renderInvestigativeRoutes(state,{e,icon,catalogue:()=>mathChoices(state)})+
     F("mathsRevisedWhy","Why might this mathematics be useful? (optional)","Connect a selected method to the question you want to answer",{type:"textarea",rows:2}),
     "<h4>Keep it flexible</h4><p>These suggestions respond to a prediction, not a demonstrated pattern. Once you have real results, you may need to choose a different method or end the investigation.</p>");
    case "N04M":return stepBody("Is the mathematics likely to answer your question?","Check purpose, course suitability and potential interpretation. If the mathematical suitability is unclear, note a question for your teacher without blocking your plan.",
