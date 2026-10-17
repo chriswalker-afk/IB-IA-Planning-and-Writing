@@ -21,6 +21,8 @@ const guide=(e,icon)=>'<details class="sampling-recap"><summary>'+
  '<p class="sampling-recap-foot">A quickly available, repeatable sample can be very useful for a first investigation. Call it what it really is and keep conclusions within the population it represents. Always follow school consent and privacy requirements.</p>'+
  '</div></details>';
 
+export const samplingRecap=guide;
+
 const samplingSpotlight=(f,e,icon)=>{
  const method=samplingMethod(f.primarySamplingMethod);
  return method?'<aside class="plan-sampling-spark" aria-label="Saved sampling choice">'+
@@ -91,6 +93,8 @@ const accuracyGuide=(source,icon)=>'<details class="accuracy-recap"><summary>'+i
  '<p><b>Exact counts:</b> frequencies and categories need not be assigned an invented ± value. Check completeness, definitions and how the original sample was chosen.</p>')+
  '<p><b>Good practice:</b> carry enough digits during calculations and justify rounding when reporting a result. Never treat the number of decimal places as a guarantee of accuracy.</p>'+
  '</div></details>';
+export const accuracyRecap=accuracyGuide;
+
 export function accuracyPlanner(state,source,{F,select,e,icon}){
  const f=state.planning.fields;
  const draft=ACCURACY_DRAFT_FIELDS[source],basis=f[draft[3]];
