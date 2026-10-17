@@ -4,6 +4,7 @@
  */
 import {escapeHtml as e,icon} from './primitives.js';
 import {linkedAccuracy,linkedSources} from '../completing/evidence-links.js';
+import {routeById} from '../planning/investigative-routes.js';
 
 const has=v=>typeof v==='string'&&!!v.trim();
 const short=(v,n=160)=>{const t=String(v??'').trim();return t.length>n?t.slice(0,n-1)+'…':t;};
@@ -11,6 +12,7 @@ export const INSIGHT_FAMILIES=Object.freeze({
  title:{label:'My working title',icon:'sparkles',verb:'A provisional direction to reconsider'},
  aim:{label:'My question',icon:'target',verb:'A question to return to'},
  motivation:{label:'My motivation',icon:'compass',verb:'Why answering this question matters'},
+ pathway:{label:'My investigative route',icon:'route',verb:'An optional first step and possible directions'},
  evidence:{label:'My evidence',icon:'flask',verb:'A source or method to revisit'},
  accuracy:{label:'My accuracy choices',icon:'layers',verb:'A decision to apply when relevant'},
  discovery:{label:'My discoveries',icon:'chart',verb:'A mathematical finding to build upon'},
@@ -37,6 +39,11 @@ export function insightItems(s){
  if(has(motivation))out.push(item('motivation','motivation','My motivation',motivation,
   'Planning · Motivation',{type:'planning',node:'N01V'},
   {usage:'Revisit why finding the answer matters. Your eventual conclusions and any advice must be supported by the actual mathematics.'}));
+ const chosenJourney=routeById(s?.planning?.routeExplorer?.selectedRoute);
+ if(chosenJourney)out.push(item('pathway','investigative-route','My provisional investigative route',
+  chosenJourney.title+' · Start here: '+chosenJourney.first[0],
+  'Planning · Mathematical routes',{type:'planning',node:'N02M'},
+  {planned:true,usage:'This is a possible starting route, not mathematics already performed. Use actual findings to decide whether a branch is relevant.'}));
  if(has(p.prediction||s?.project?.prediction))out.push(item('aim','prediction','Prediction or conjecture',p.prediction||s.project.prediction,
   'Planning · Prediction',{type:'planning',node:'N01P'},{usage:'Compare this with genuine findings, including results that disagree.'}));
  const planned=p.kind==='theoretical'
@@ -122,6 +129,7 @@ export function insightForCurrent(s,node){
  if(['C20','C21S','C21M','C21T','C22','C23','C24','C25','C26','C30','C31'].includes(node)){
   const standard=all.filter(x=>x.id==='planned-evidence'||x.id==='planned-maths'||x.id==='aim').slice(0,2);
   if(['C20','C22','C26'].includes(node)&&named('motivation'))standard.push(named('motivation'));
+  if(['C26','C30','C31'].includes(node)&&named('investigative-route'))standard.push(named('investigative-route'));
   return standard.slice(0,3);
  }
  if(['C32','C33','C34','C34A','C40','C50','C40T','C40L','C35H','C35B','C35P'].includes(node)){
@@ -129,6 +137,8 @@ export function insightForCurrent(s,node){
   if(['C35H','C35B','C35P'].includes(node)&&latestResult)contextual.push(latestResult);
   if(['C34','C34A','C40','C50'].includes(node))contextual.push(...compact(['aim']));
   if(['C34','C34A'].includes(node))contextual.push(...compact(['motivation']));
+  if(['C35H','C35B','C35P'].includes(node)&&named('investigative-route')&&contextual.length<3)
+   contextual.push(named('investigative-route'));
   if(['C40','C50','C40T'].includes(node)&&active?.fromEntryId)
    contextual.push(...get('learning').filter(x=>x.id==='learning:'+active.fromEntryId));
   return [...new Map(contextual.map(x=>[x.id,x])).values()].slice(0,3);
@@ -151,6 +161,7 @@ export function insightCapture(s,node){
   else if(node==='N01V'){ids=['motivation'];kind='Your motivation';}
  else if(node==='N01P'){ids=['prediction'];kind='Your conjecture';}
  else if(/^N03/.test(node)||node==='N02T'){ids=['planned-evidence'];kind='Your intended evidence';}
+ else if(node==='N02M'||node==='N04R'||node==='N04S'){ids=['investigative-route'];kind='Your provisional investigative route';}
  else if(['N05V','N05'].includes(node)){ids=['planned-maths'];kind='Your first mathematical intention';}
  else if(['C20','C22','C23'].includes(node)){ids=all.filter(x=>x.id.startsWith('source:')||x.id==='source-current').map(x=>x.id);kind='Your source or method';}
  else if(node==='C24'){ids=all.filter(x=>x.type==='accuracy').map(x=>x.id);kind='Your accuracy choices';}
@@ -183,6 +194,9 @@ export function insightMeaning(s,node,x){
   return 'You explicitly linked this source to your mathematics. Check the original values, units and method before relying on the finding.';
  }
  if(x.id==='working-title')return 'This is a provisional signpost, not a result. Adapt your title if the actual mathematics leads to a more precise question.';
+ if(x.id==='investigative-route'){
+  return 'This is only the starting route you explored. Decide your next mathematics from what your genuine results reveal; no branch is required, and there is no obligation to add more techniques.';
+ }
  if(x.id==='motivation'){
   if(['C34','C34A','C34B','C35','C35H','C35B','C35P','C60','C61','C62','C64'].includes(node))
    return 'Why did you want this answer? Connect what your genuine mathematics established to that reason, including if the result is limited, unexpected or does not justify a practical recommendation.';
