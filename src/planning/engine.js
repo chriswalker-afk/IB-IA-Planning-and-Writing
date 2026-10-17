@@ -158,7 +158,8 @@ export function applyPlanningField(state,key,value){
  const before=f[key];
  f[key]=String(value??"");
  if(before!==f[key]&&state.completion?.stages){
-  const groups=/^(aim|motivation|beneficiaryType|beneficiary|intendedUse|prediction|predictionWhy|predictionImplication)$/.test(key)?
+  const groups=key==='provisionalTitle'?["C10","C60"]:
+   /^(aim|motivation|beneficiaryType|beneficiary|intendedUse|prediction|predictionWhy|predictionImplication)$/.test(key)?
     ["C10","C40","C60"]:
    /^(course|kind|mathsOutside|otherMaths|otherCourseMaths|courseSuitability|mathsRevisedWhy)$/.test(key)?
     ["C20","C30","C40","C60"]:
