@@ -127,3 +127,10 @@
 @media(prefers-reduced-motion:reduce){
  .journey-branch>summary>.icon,.journey-mode-tab{transition:none!important}
 }
+
+/* Each family is a discoverable collection, not an undifferentiated 16-card grid. */
+.journey-family-section{margin:0 0 20px;min-width:0}
+.journey-family-heading{display:flex;align-items:start;gap:9px;padding:0 0 10px;margin:0 0 11px;border-bottom:1px solid #e2ebe5}
+.journey-family-heading>.icon{width:20px;height:20px;flex:none;margin-top:2px;color:#518679}
+.journey-family-heading h4{font-size:14px;letter-spacing:-.015em;margin:0 0 3px}
+.journey-family-heading p{font-size:10px;line-height:1.5;color:#668277;margin:0}
