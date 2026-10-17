@@ -91,6 +91,8 @@ export function modelFromEnvelope(envelope){
     row("Why I suspect it",f.theoreticalWhy)
   ],"A suitable scope and level should be discussed with the teacher. No dataset is required by this route."),
   section("Practical readiness",[
+    row("Data readiness",data?"":"Not applicable — theoretical route"),
+    row("Evidence available now",data?f.dataAvailability:""),
     row("Earlier data readiness score (historical, if recorded)",data&&f.dataReadiness?f.dataReadiness+"/5":""),
     row("One way to improve data readiness",f.readinessImprovement),
     row("Earlier practical ease score (historical, if recorded)",f.practicalEase?f.practicalEase+"/5":""),
