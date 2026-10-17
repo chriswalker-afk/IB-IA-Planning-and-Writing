@@ -337,8 +337,8 @@ const sparkOriginalAction=(x,label='Review or edit original')=>{
 const sparkEditor=(s,x,{preview=false}={})=>{
  const key=inlineSparkKey(s,x);
  if(!key)return sparkOriginalAction(x,'Open original to review or edit');
- // Every saved spark has a single inline editor across visible and expanded views.
- if(preview)return sparkOriginalAction(x,'Edit in the highlighted spark above');
+ // Avoid duplicate controls for the same canonical Planning field.
+ if(preview)return '<p class="spark-library-featured-hint">This spark is highlighted above. Open that card to edit the same original decision.</p>';
  const id='spark-edit-'+x.id.replace(/[^a-z0-9-]/gi,'-');
  const value=s.planning?.fields?.[key]||x.value;
  const isTitle=key==='provisionalTitle';
