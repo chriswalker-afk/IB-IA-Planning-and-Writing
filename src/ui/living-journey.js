@@ -10,6 +10,7 @@ export function planningAnchors(s){
  const p=s?.planning?.fields||{};
  const yes=v=>typeof v==='string'&&!!v.trim();
  return [
+  {name:'Working title',recorded:yes(p.provisionalTitle),detail:'A provisional IA title has been saved, not finalised'},
   {name:'My question',recorded:yes(p.aim||s.project?.aim),detail:'An investigation aim is recorded'},
   {name:'Starting material',recorded:yes(p.kind==='theoretical'?(p.theoreticalCase||p.theoreticalObject):(p.dataSource||p.primaryWhat||p.secondaryUrl)),detail:'A proposed evidence or theoretical starting route is recorded'},
   {name:'First mathematics',recorded:yes(p.firstAction||p.figurePurpose),detail:'An intended first mathematical action is recorded'},
@@ -62,11 +63,34 @@ export function planningProgress(s,{compact=false}={}){
  * Chapter readiness and saved planning anchors are derived from existing state;
  * moving through a route alone never implies that its decisions are complete.
  */
-export function planningLearningTrail(s){
+export function planningLearningTrail(s,{support=''}={}){
  const anchors=planningAnchors(s),recorded=anchors.filter(x=>x.recorded).length;
  const activeStage=planningStage(s?.planning?.current||'N00');
  const stageIndex=Math.max(0,PROGRESS_GROUPS.findIndex(x=>x.id===activeStage));
  const stage=PROGRESS_GROUPS[stageIndex];
+ const screenLabels={
+  N00:'Chose a starting route',N00B:'Explored possible ideas',N00C:'Compared possible ideas',
+  N01:'Worked on the title and question',N01V:'Considered the purpose',
+  N02:'Chose an investigation direction',N02U:'Explored mathematical routes',N02T:'Prepared a teacher conversation',
+  N03:'Chose a starting-material route',N03B:'Planned two evidence routes',
+  N03P:'Planned primary evidence',N03S:'Planned secondary evidence',
+  N04:'Reviewed mathematical suitability',N04S:'Considered possible mathematics',
+  N05V:'Planned first mathematics',N06:'Reviewed a provisional plan'
+ };
+ const activeNode=s?.planning?.current||'N00';
+ const screensDone=[...new Set(s?.planning?.completedNodes||[])].filter(id=>PROGRESS_GROUPS.some(g=>g.nodes.includes(id)));
+ const stepsCompleted=screensDone.length;
+ const screenProgress='<div class="planning-trail-screen-progress" aria-label="'+stepsCompleted+
+  ' Planning screen'+(stepsCompleted===1?'':'s')+' completed">'+
+  '<div class="planning-trail-screen-head"><strong>Every screen counts</strong><span>'+stepsCompleted+
+  ' completed</span></div>'+
+  '<div class="planning-trail-footsteps" aria-hidden="true">'+
+  screensDone.slice(-6).map(() => '<span class="finished">'+icon('check')+'</span>').join('')+
+  '<span class="active">'+icon('compass')+'</span></div>'+
+  '<div class="planning-trail-recent">'+screensDone.slice(-2).map(id=>
+   '<span class="finished">'+icon('check')+' '+e(screenLabels[id]||'Continued through Planning')+'</span>').join('')+
+  '<span class="active">'+icon('arrow-right')+' Now: '+e(screenLabels[activeNode]&&activeNode==='N00'?'Find your starting point':
+   PROGRESS_GROUPS.find(g=>g.nodes.includes(activeNode))?.label||'Continue Planning')+'</span></div></div>';
  const chapters=JOURNEY_GROUPS.map(g=>({g,status:groupStatus(s,g)}));
  const pathSegments=[
   'M29 37 C53 53 5 94 29 111',
@@ -93,8 +117,8 @@ export function planningLearningTrail(s){
    '" title="'+e(g.label)+'"></span>').join('')+'</div>';
  const milestones='<div class="planning-trail-within">'+
   '<div class="planning-trail-within-head"><strong>Within Planning</strong>'+
-  '<span>Step '+(stageIndex+1)+' of '+PROGRESS_GROUPS.length+'</span></div>'+
-  '<p class="planning-trail-stage-name">'+e(stage.label)+'</p>'+stageTrack+
+  '<span>Phase '+(stageIndex+1)+' of '+PROGRESS_GROUPS.length+'</span></div>'+
+  '<p class="planning-trail-stage-name">'+e(stage.label)+'</p>'+stageTrack+screenProgress+
   '<div class="planning-trail-saved">'+icon('sparkles')+' <strong>'+recorded+' of '+anchors.length+
   ' decisions saved</strong></div>'+
   '<details class="planning-trail-checkpoints"><summary>See planning checkpoints '+icon('chevron-down')+'</summary>'+
@@ -111,10 +135,15 @@ export function planningLearningTrail(s){
   '<details class="planning-trail-compact"><summary>'+
   '<span class="planning-trail-compact-text">'+
   '<strong>'+icon('route')+' Your learning trail</strong>'+
-  '<small>Planning · '+e(stage.label)+' ('+(stageIndex+1)+' of '+PROGRESS_GROUPS.length+')</small>'+
+  '<small>Planning · '+e(stage.label)+' (phase '+(stageIndex+1)+' of '+PROGRESS_GROUPS.length+')</small>'+
   '</span><span class="planning-trail-compact-end">'+stageTrack+
-  '<small>'+recorded+'/'+anchors.length+' decisions saved</small></span>'+icon('chevron-down')+
-  '</summary><div class="planning-trail-compact-body">'+full+'</div></details></aside>';
+  '<small>'+stepsCompleted+' screens · '+recorded+'/'+anchors.length+' decisions</small></span>'+icon('chevron-down')+
+  '</summary><div class="planning-trail-compact-body">'+full+'</div></details>'+
+  (support?'<section class="planning-trail-support" aria-label="Help and examples for this screen">'+
+    '<button class="planning-trail-help-toggle" type="button" data-action="planning-help-toggle" aria-expanded="false" aria-controls="planning-trail-support-body">'+
+    icon('lightbulb')+' Help & examples '+icon('chevron-down')+'</button>'+
+    '<div class="planning-trail-support-body" id="planning-trail-support-body">'+support+'</div></section>':'')+
+  '</aside>';
 }
 
 const coordinates=[{x:31,y:122},{x:126,y:42},{x:229,y:97},{x:326,y:28}];
