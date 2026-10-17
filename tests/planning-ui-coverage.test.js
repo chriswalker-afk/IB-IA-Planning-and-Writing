@@ -143,15 +143,15 @@ test('motivation screen has one why/who/how response and a small inline-editable
  let html=view.viewPlanning();
  assert(html.includes('Have a clear motivation'));
  assert(html.includes('A mathematical result is an outcome, not a reason'));
- assert(html.includes('data-motivation-aim-spark'));
- assert(html.includes('data-motivation-aim-preview'));
- assert(html.includes('View / edit'));
+ assert(html.includes('data-spark-shelf="planning"'));
+ assert(html.includes('data-spark-editor="aim"'));
+ assert(html.includes('View all sparks'));
  // This lightweight view fixture renders field labels only; a full DOM harness
  // separately checks the actual data-bind wiring.
- assert(html.includes('Refine my investigation aim'));
+ assert(html.includes('Edit investigation aim'));
  assert.equal((html.match(/Who might benefit, and how could the answer help\?/g)||[]).length,1);
  assert(!html.includes('What might someone do with the answer? (optional)'));
- assert(!html.includes('Your ideas are back'));
+ assert(html.includes('Your sparks are back'));
  assert(html.includes('Who might benefit, and how'));
  assert(html.includes('We will return to this'));
  // Help-button text is checked with the full UI harness, not this label-only fixture.
@@ -161,7 +161,7 @@ test('motivation screen has one why/who/how response and a small inline-editable
  s.beneficiary='I want to compare two trajectories to understand which model fits better.';
  html=view.viewPlanning();
  assert(html.includes('Spark saved · Your motivation'));
- assert(html.includes('My aim spark'));
+ assert(html.includes('My question'));
  assert(html.includes('planning-trail-support'));
 });
 
