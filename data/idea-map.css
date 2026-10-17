@@ -37,6 +37,7 @@
 .idea-map-root-world .idea-map-root-icon,.idea-map-root-find .idea-map-root-icon{color:#a36e4a}
 .idea-map-root:hover,.idea-map-root.selected{border-width:2px;box-shadow:0 10px 26px #263c681f}
 .idea-map-root.selected{outline:3px solid #dae4f8;outline-offset:2px}
+.idea-map-root.selected .idea-map-root-arrow{rotate:90deg}
 .idea-map-root:focus-visible,.idea-map-mode-button:focus-visible,.idea-map-branch-node:focus-visible,.idea-map-subtopic:focus-visible,.idea-map-customise:focus-visible,.idea-map-theory-warning summary:focus-visible{outline:3px solid #6f83b6;outline-offset:3px}
 .idea-map-first-prompt{font-size:11px;line-height:1.45;text-align:center;color:#7b8596;margin:4px 0 0}
 .idea-map-growth{margin-top:18px;animation:ideaGrow .25s ease-out}
