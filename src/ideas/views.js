@@ -165,7 +165,7 @@ export function ideaComparisonView(state){
  if(s.active)return ideaDetailView(state);
  return '<section class="idea-explorer idea-comparison">'+
   '<div class="idea-compare-intro"><span class="idea-map-overline">'+icon('layers')+' IDEA LAB · COMPARE</span>'+
-  '<h3 id="idea-compare-heading" tabindex="-1">My possible ideas</h3>'+
+  '<h3 id="idea-compare-heading" tabindex="-1">Compare them at a glance</h3>'+
   '<p>Look at your judgements side by side. A quick start is useful, but it does not guarantee mathematical depth or IA suitability.</p>'+
   '<span class="idea-compare-count">'+s.shortlist.length+' of '+3+' active ideas</span></div>'+
   '<div class="idea-grid idea-comparison-grid">'+
