@@ -230,3 +230,22 @@ test('working title survives export normalization, remains escaped and does not 
  assert(!insightCapture(restored,'N01').includes('<example>'));
  assert(insightEcho(restored,'N03').includes('&lt;example&gt;'));
 });
+
+test('motivation is a separate student-owned spark echoed where findings need a purpose',()=>{
+ const s=createProjectState();
+ s.planning.fields.aim='Can I model my observed measurements?';
+ s.planning.fields.beneficiary='I want to know whether this model is useful for estimating a new measurement.';
+ let items=insightItems(s);
+ assert(items.some(x=>x.id==='aim'));
+ assert(items.some(x=>x.id==='motivation'&&x.value.includes('useful')));
+ assert(insightCapture(s,'N01V').includes('Spark saved · Your motivation'));
+ assert(insightEcho(s,'N02').includes('My motivation'));
+ assert(insightEcho(s,'C10').includes('My motivation'));
+ assert(insightEcho(s,'C35').includes('My motivation'));
+ assert(insightEcho(s,'C60').includes('My motivation'));
+ assert(insightEcho(s,'C60').includes('genuine mathematics'));
+ const after=JSON.parse(JSON.stringify(s));
+ after.planning.fields.beneficiary='';
+ after.project.beneficiary='';
+ assert(!insightItems(after).some(x=>x.id==='motivation'));
+});
