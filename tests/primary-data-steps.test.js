@@ -102,7 +102,7 @@ test('ready plans require each named quantity accuracy on sampling finish',()=>{
  assert(measure(state,'Height','cm','analogue','nearest 1 mm').ok);
  assert(!planAutoAdvance(state).ok);
  assert(measure(state,'Duration','s','digital','nearest 0.01 s').ok);
- assert(planAutoAdvance(state).ok);assert.equal(state.planning.current,'N03J');
+ assert(planAutoAdvance(state).ok);assert.equal(state.planning.current,'N03D');
 });
 test('quantity and accuracy live together on screen one; sampling lives on screen two',()=>{
  const state=s();set(state,'primaryHow','Measure jump distance');
