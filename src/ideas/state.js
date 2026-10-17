@@ -1,5 +1,5 @@
 import {IDEA_TOPICS,IDEA_SEEDS,IDEA_CHECKS} from './catalog.js';
-import {ideaMapRoot,ideaMapTopics,ideaMapBranches} from './mindmap.js';
+import {ideaMapRoots,ideaMapRoot,ideaMapTopics,ideaMapBranches} from './mindmap.js';
 const text=(v,n=1600)=>typeof v==='string'?v.slice(0,n):'';
 const plain=v=>v&&typeof v==='object'&&!Array.isArray(v);
 const ids=new Set(['own',...IDEA_SEEDS.map(s=>s.id)]);
@@ -25,6 +25,12 @@ export function normalizeIdeaState(raw){
  }else s.map.dataBranch=ideaMapBranches(ideaMapRoot(s.map.mode,s.map.root)).find(x=>x.id===m.dataBranch)?.id||'';
  s.topic=topicIds.has(raw.topic)?raw.topic:'';
  s.subtopic=IDEA_TOPICS.find(t=>t.id===s.topic)?.subtopics.includes(raw.subtopic)?raw.subtopic:'';
+ // Old dropdown-based projects are carried into the nearest equivalent branch.
+ // Abstract pattern ideas are intentionally not auto-recommended as a quick IA.
+ if(!plain(raw.map)&&s.topic&&!['other','patterns'].includes(s.topic)){
+  const home=ideaMapRoots('interests').find(x=>x.topics.includes(s.topic));
+  if(home){s.map.root=home.id;s.map.topic=s.topic;s.map.subtopic=s.subtopic;}
+ }
  s.focus=text(raw.focus,160);s.offset=Number.isInteger(raw.offset)?Math.max(0,Math.min(48,raw.offset)):0;
  if(plain(raw.drafts))for(const [key,value] of Object.entries(raw.drafts))if(ids.has(key)&&plain(value))s.drafts[key]=cleanDraft({...value,seedId:key});
  s.active=ids.has(raw.active)&&s.drafts[raw.active]?raw.active:'';
