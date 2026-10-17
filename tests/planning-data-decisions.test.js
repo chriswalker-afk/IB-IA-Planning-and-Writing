@@ -48,6 +48,15 @@ test('students choose a sampling approach before a statistical primary route can
  assert(!planAutoAdvance(ready).ok);
  set(ready,'primaryPopulation','Students in Year 12');
  set(ready,'primarySamplingUnit','One student');
+ assert(!planAutoAdvance(ready).ok);
+ set(ready,'primaryWhat','Reaction time in seconds');
+ set(ready,'primaryHow','Use a calibrated stopwatch for each participant');
+ set(ready,'primarySamplingFrame','no');
+ set(ready,'primaryRepeatable','yes');
+ assert(!planAutoAdvance(ready).ok); // a random sample cannot proceed without a suitable frame
+ set(ready,'primarySamplingFrame','yes');
+ assert(!planAutoAdvance(ready).ok); // requires a stated recording increment
+ assert(save(ready,'primary','Reaction time','s','digital','nearest 0.01 s').ok);
  assert(planAutoAdvance(ready).ok);
  assert.equal(ready.evidence.sources.length,0);
  const model=s();model.planning.fields.kind='modelling';set(model,'primaryStatus','unsure');
@@ -114,6 +123,21 @@ test('edit and remove work on exact record identity even when quantity changes',
  assert(removePlannedAccuracy(x,first));
  assert.equal(x.planning.accuracyPlans.length,1);
  assert(!removePlannedAccuracy(x,first));
+});
+test('recording unknown precision creates an honest spark, not a falsely ready plan',()=>{
+ const x=s();
+ set(x,'primaryStatus','ready');
+ set(x,'primaryWhat','Height in metres');
+ set(x,'primaryHow','Record readings from measuring equipment');
+ set(x,'primarySamplingMethod','convenience');
+ set(x,'primarySamplingUnit','One person');
+ set(x,'primaryPopulation','Accessible Year 12 pupils');
+ set(x,'primarySamplingFrame','no');
+ set(x,'primaryRepeatable','maybe');
+ assert(save(x,'primary','Height','m','unknown','').ok);
+ assert(!planAutoAdvance(x).ok);
+ set(x,'primaryStatus','unsure');
+ assert(planAutoAdvance(x).ok);
 });
 test('incomplete degree-of-accuracy drafts are not saved; unknown and exact are legitimate',()=>{
  const x=s();
