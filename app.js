@@ -752,7 +752,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       case "plan-back":handlePlanningResult(planningBack(state));break;
       case "plan-edit":handlePlanningResult(planningEdit(state,el.dataset.node));break;
       case "path-plan":{
-        const map={"0":"N00","1":"N01","5":"N03E"};
+        const map={"0":"N00","1":"N01","5":"N03D"};
         handlePlanningResult(planningEdit(state,map[el.dataset.index]||"N00"));break;
       }
       case "math-mode":{
@@ -1216,7 +1216,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
        ["planning.fields.primarySamplingMethod","planning.fields.primarySamplingFrame",
         "planning.fields.primaryAccuracyBasis","planning.fields.secondaryAccuracyBasis",
         "planning.fields.permissionNeed","planning.fields.practicalBlocker",
-        "planning.fields.dataReadiness"].includes(path)||
+        "planning.fields.dataAvailability"].includes(path)||
        ["completion.fields.scatterDetail","completion.fields.scatterAimRelevance",
         "entries."+state.completion.activeEntryIndex+".methodId",
         "entries."+state.completion.activeEntryIndex+".accuracyRef"].includes(path)||
