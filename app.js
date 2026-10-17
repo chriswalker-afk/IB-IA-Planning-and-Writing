@@ -9,6 +9,7 @@ import {createExampleController} from "./src/examples/controller.js";
 import {createEssentialsController} from "./src/essentials/controller.js";
 import {editCriterionReview} from "./src/essentials/review.js";
 import {ideaAction,ideaInput,chooseTopic} from './src/ideas/engine.js';
+import {attachIdeaMapGraph} from './src/ideas/map-layout.js';
 import {resourceDrawer,resourceList} from './src/resources/views.js';
 import {resourceAction,resourceFilter,resourcePreference} from './src/resources/actions.js';
 import {newResourceSession} from './src/resources/state.js';
@@ -313,9 +314,12 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     if(result.targetRoute==="planning"){nav("planning");return;}
     nav("completing");
   }
+  let detachIdeaMapGraph=()=>{};
   function render(opts={}) {
+    detachIdeaMapGraph();
     const map={home:viewHome,planning:viewPlanning,completing:viewCompleting,path:viewPath,report:viewReport};
     main.innerHTML=previewBanner()+stuckViews.returnBanner()+map[state.route]();
+    detachIdeaMapGraph=attachIdeaMapGraph(main);
     if(preview.active)setSaveStatus("Sample preview only");
     filterMathOptions();
     document.querySelectorAll("[data-nav]").forEach(b=>b.classList.toggle("active",b.dataset.nav===state.route));
