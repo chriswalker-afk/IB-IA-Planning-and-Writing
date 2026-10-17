@@ -7,6 +7,7 @@ import {createConformanceViews} from "../completing/conformance-views.js";
 import {linkedAccuracy,linkedSources} from "../completing/evidence-links.js";
 import {WRITING_MOMENTS} from "../completing/guidance-catalog.js";
 import {PLANNING_CATALOG} from "../planning/catalog.js";
+import {routeById} from '../planning/investigative-routes.js';
 import {planningFlags,selectedMaths} from "../planning/engine.js";
 /** Home, student journey map and working-record views. */
 export function createProjectViews(ctx){
@@ -56,11 +57,14 @@ export function createProjectViews(ctx){
     const p=state.project;
     const pfields=state.planning?.fields||{};
     const chosen=selectedMaths(state),flags=planningFlags(state);
+    const journey=routeById(state.planning?.routeExplorer?.selectedRoute);
     const pairs=[
       ["Provisional IA title",pfields.provisionalTitle],["Investigation aim",p.aim],["Motivation",pfields.motivation],["Who might benefit",pfields.beneficiary],
       ["What the answer might help with",pfields.intendedUse],["Course",p.course],
       ["Investigation route",p.kind],
       ["Tentative mathematical techniques",chosen.map(x=>x.label).join("; ")+(pfields.otherMaths?" · "+pfields.otherMaths:"")+(pfields.otherCourseMaths?" · "+pfields.otherCourseMaths:"")],
+      ["Provisional investigative route",journey?.title||""],
+      ["Route's possible first step (not completed)",journey?.first[0]||""],
       ["Selected prediction prompt (not a mathematical result)",PLANNING_CATALOG.predictions.find(x=>x.id===pfields.predictionId)?.question||""],
       ["My tentative prediction / conjecture",pfields.prediction||p.prediction],["Earlier prediction (saved note)",pfields.predictionPrior],
       ["WHY I expect this",pfields.predictionWhy||p.predictionWhy],
