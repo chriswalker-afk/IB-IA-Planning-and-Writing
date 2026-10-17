@@ -8,6 +8,7 @@ import {linkedAccuracy,linkedSources} from "../completing/evidence-links.js";
 import {WRITING_MOMENTS} from "../completing/guidance-catalog.js";
 import {PLANNING_CATALOG} from "../planning/catalog.js";
 import {routeById} from '../planning/investigative-routes.js';
+import {samplingMethod,plannedAccuracyText} from '../planning/data-decisions.js';
 import {planningFlags,selectedMaths} from "../planning/engine.js";
 /** Home, student journey map and working-record views. */
 export function createProjectViews(ctx){
@@ -58,6 +59,7 @@ export function createProjectViews(ctx){
     const pfields=state.planning?.fields||{};
     const chosen=selectedMaths(state),flags=planningFlags(state);
     const journey=routeById(state.planning?.routeExplorer?.selectedRoute);
+    const accuracy=state.planning?.accuracyPlans||[];
     const pairs=[
       ["Provisional IA title",pfields.provisionalTitle],["Investigation aim",p.aim],["Motivation",pfields.motivation],["Who might benefit",pfields.beneficiary],
       ["What the answer might help with",pfields.intendedUse],["Course",p.course],
@@ -81,12 +83,20 @@ export function createProjectViews(ctx){
     const primary=pfields.kind!=="theoretical"&&["primary","both"].includes(pfields.dataSource) ? planningSection("Primary-data plan",[
       ["What will be recorded",pfields.primaryWhat],["Population or objects",pfields.primaryPopulation],
       ["When",pfields.primaryWhen],["Where",pfields.primaryWhere],["How",pfields.primaryHow],
-      ["Equipment",pfields.primaryEquipment],["Sampling plan",pfields.primarySampling],
+      ["Equipment",pfields.primaryEquipment],
+      ["Sampling strategy",samplingMethod(pfields.primarySamplingMethod)?.label||""],
+      ["Sampling unit",pfields.primarySamplingUnit],["Sampling frame",pfields.primarySamplingFrame],
+      ["Frame details",pfields.primarySamplingFrameDetails],
+      ["Availability for follow-up data",pfields.primaryRepeatable],
+      ["Why the sample fits",pfields.primarySampling],
+      ["Planned measurement precision",accuracy.filter(x=>x.source==='primary').map(plannedAccuracyText).join("; ")],
       ["Data-plan confidence",pfields.primaryStatus]]) : "";
     const secondary=pfields.kind!=="theoretical"&&["secondary","both"].includes(pfields.dataSource) ? planningSection("Secondary-data plan",[
       ["Source link",pfields.secondaryUrl],["Publisher",pfields.secondaryPublisher],
       ["Variables, units and definitions",pfields.secondaryVariables],
       ["Population, dates or subset",pfields.secondaryScope],
+      ["How published data were collected",pfields.secondarySamplingOrigin],
+      ["Published column precision (unverified)",accuracy.filter(x=>x.source==='secondary').map(plannedAccuracyText).join("; ")],
       ["Verified status (student report only)",pfields.secondaryVerified],
       ["Data-plan confidence",pfields.secondaryStatus]]) : "";
     const method=planningSection("Method and feasibility",[
