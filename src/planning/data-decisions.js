@@ -115,7 +115,12 @@ export function savePlannedAccuracy(state,source){
   return{ok:false,error:'Record the instrument increment or table rounding (for example, nearest 0.1 cm), or choose Not yet known / Exact count.'};
  if(basis&&!Object.hasOwn(ACCURACY_BASIS,basis))return{ok:false,error:'Choose a supported type of measurement or source.'};
  const list=state.planning.accuracyPlans||[];
- const found=list.findIndex(x=>x.source===source&&x.quantity.toLowerCase()===quantity.toLowerCase());
+ const editId=state.planning.accuracyEditId||'';
+ const byEdit=editId?list.findIndex(x=>x.id===editId&&x.source===source):-1;
+ const byName=list.findIndex(x=>x.source===source&&x.quantity.toLowerCase()===quantity.toLowerCase());
+ if(byEdit>=0&&byName>=0&&byName!==byEdit)
+  return{ok:false,error:'You already saved an accuracy rule for that quantity. Edit that one instead.'};
+ const found=byEdit>=0?byEdit:byName;
  if(found<0&&list.length>=18)return{ok:false,error:'This plan has room for 18 quantities. Remove an outdated decision before adding more.'};
  const current=found>=0?list[found]:null;
  const id=current?.id||'pa-'+source+'-'+(1+Math.max(0,...list.filter(x=>x.source===source)
@@ -126,6 +131,7 @@ export function savePlannedAccuracy(state,source){
  if(found>=0)list[found]=item;else list.push(item);
  state.planning.accuracyPlans=list;
  for(const k of ACCURACY_DRAFT_FIELDS[source])fields[k]='';
+ state.planning.accuracyEditId='';
  invalidatePlan(state);
  return{ok:true,updated:found>=0,record:item};
 }
@@ -134,7 +140,9 @@ export function removePlannedAccuracy(state,id){
  if(!Array.isArray(list))return false;
  const pos=list.findIndex(x=>x.id===id);
  if(pos<0)return false;
- list.splice(pos,1);invalidatePlan(state);
+ list.splice(pos,1);
+ if(state.planning.accuracyEditId===id)state.planning.accuracyEditId='';
+ invalidatePlan(state);
  return true;
 }
 export function editPlannedAccuracy(state,id){
@@ -143,5 +151,6 @@ export function editPlannedAccuracy(state,id){
  const fields=ACCURACY_DRAFT_FIELDS[rec.source];
  for(const [i,key] of fields.entries())
   state.planning.fields[key]=[rec.quantity,rec.unit,rec.resolution,rec.basis,rec.uncertainty][i];
+ state.planning.accuracyEditId=rec.id;
  return rec.source;
 }
