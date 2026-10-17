@@ -103,3 +103,13 @@ The map uses neutral and cool-coloured surfaces: the original spark palette is r
 See `tests/ideas.test.js`, `tests/planning-ui-coverage.test.js`, and `scripts/ideas-browser.py` for logic and manual-browser checks.
 
 The connected-graph refinement replaces the old separate panels with a single responsive SVG-linked diagram and changes the card cue to **Make it personal**. See `src/ideas/map-layout.js` and `tests/idea-map-layout.test.js` for coordinate-aware links and regression checks.
+
+## Shared idea evaluation — 17 October 2026
+
+The “Help me find an idea” route and the “I'm choosing between ideas” route share **one evaluation screen**. A mind-map direction optionally supplies **Something to get you thinking**; a manually entered idea omits this starter. Students write **one** own-word provisional aim, choose a clarity score (1–5) and quick-start score (1–5), and optionally tick potential difficulties. These are personal planning judgements, not a calculated IA grade or approval.
+
+Saving moves the evaluation and both ratings into **My possible ideas**, without changing the current investigation. From there students may edit, add from mind map, add manually, reject and restore, or select a single possibility. Three active ideas are supported. Rejected possibilities retain their ratings. Older saved ideas without scores remain visible but require rating before selection.
+
+Selection now writes the student's question into the existing Planning aim field and project aim using the normal Planning setter. This creates the **same aim spark** used on the direct ‘I have an idea’ route. An existing aim or established work triggers confirmation before a replacement; previous mathematics, notes, and teacher flags are not erased. Related completed writing is flagged for review when appropriate.
+
+Regression coverage: tests/ideas.test.js and scripts/ideas-browser.py. Responsive presentation: data/idea-map.css. The synthetic UI-smoke harness stubs the purely decorative graph layout because it lacks browser geometry.
