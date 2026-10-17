@@ -31,6 +31,7 @@ import {resultFamily,routeNextQuestions} from "./src/completing/route-coach.js";
 
 import { planningMove, planAutoAdvance, planningBack, planningEdit, applyPlanningField, toggleMath, selectedMaths, exploreMathRoute, chooseMathRoute, syncPlanningToProject, setPlanCurrent, planningFlags } from "./src/planning/engine.js";
 import { createPlanningViews } from "./src/ui/planning-views.js";
+import {savePlannedAccuracy,editPlannedAccuracy,removePlannedAccuracy} from "./src/planning/data-decisions.js";
 import {applySuggestedTimeline,localToday,validDate,timelineWeek} from "./src/planning/timeline.js";
 import { createStudioViews } from "./src/ui/studio-views.js";
 import {createCompletingViews} from "./src/completing/views.js";
@@ -782,6 +783,32 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
           "Route spark saved. Branches remain optional until supported by your mathematics.");
         break;
       }
+      case "plan-save-accuracy":{
+        const prior=captureReturn(el);
+        const result=savePlannedAccuracy(state,el.dataset.source);
+        if(!result.ok){toast(result.error);break;}
+        save();render();restoreReturn(prior);
+        toast(result.updated?"Accuracy spark updated":"Accuracy spark saved",
+         "This is a provisional recording rule; confirm its accuracy when you use actual data.");
+        break;
+      }
+      case "plan-edit-accuracy":{
+        const source=editPlannedAccuracy(state,el.dataset.accuracyId);
+        if(!source){toast("That saved accuracy plan could not be found.");break;}
+        save();render();
+        const input=document.querySelector('[data-bind="planning.fields.'+source+'AccuracyQuantity"]');
+        if(input){input.scrollIntoView({block:"center",behavior:"auto"});input.focus({preventScroll:true});}
+        toast("Editing saved accuracy spark","Save again to update this quantity's rule.");
+        break;
+      }
+      case "plan-remove-accuracy":{
+        if(!window.confirm("Remove this provisional accuracy spark? No real calculations or evidence will be deleted."))break;
+        const origin=captureReturn(el);
+        if(!removePlannedAccuracy(state,el.dataset.accuracyId)){toast("That accuracy plan was not found.");break;}
+        save();render();restoreReturn(origin);
+        toast("Accuracy spark removed","Recorded mathematical results were not changed.");
+        break;
+      }
       case "plan-toggle-math":{
         const id=el.dataset.mathId;
         if(!toggleMath(state,id)){toast("Choose a technique from your selected course.");break;}
@@ -1129,6 +1156,8 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       save();
       const path=target.dataset.bind;
       if(path==="planning.fields.course"||path==="planning.fields.ideaSelected"||
+       ["planning.fields.primarySamplingMethod","planning.fields.primarySamplingFrame",
+        "planning.fields.primaryAccuracyBasis","planning.fields.secondaryAccuracyBasis"].includes(path)||
        ["completion.fields.scatterDetail","completion.fields.scatterAimRelevance",
         "entries."+state.completion.activeEntryIndex+".methodId",
         "entries."+state.completion.activeEntryIndex+".accuracyRef"].includes(path)||
