@@ -104,8 +104,8 @@ export function createPlanningViews(ctx){
      {value:"unsure",title:"I'm choosing between ideas",desc:"I have a few possibilities to explore.",icon:"layers"},
      {value:"no",title:"Help me find an idea",desc:"I could use some inspiration.",icon:"compass"}
     ],{stack:true,label:"Choose your starting point"}),"");
-   case "N00B":return stepBody("Find a question worth exploring.","Use as much or as little help as you need. Your current plan stays unchanged until you choose a direction.",
-    ideaExplorerView(state),"<p>Accessible starting material, a mathematical purpose and one small first step. A single idea is enough.</p>");
+   case "N00B":return stepBody("Find an idea worth exploring.","Start with something familiar, or with information you can access. Follow a branch and make the question yours.",
+    ideaExplorerView(state),"");
    case "N00C":return stepBody("Compare your possibilities.","A quick comparison is enough; you do not need three full IA plans.",
     ideaComparisonView(state),"<p>Judge interest, access, mathematical purpose and one small first step. A single idea is also fine. Selecting a saved possibility asks before changing an existing topic.</p>");
    case "N01":return stepBody("Give your idea a working title.","This is a starting point, not a final decision. Your title can change as your investigation develops.",
@@ -400,7 +400,7 @@ export function createPlanningViews(ctx){
  }
  function viewPlanning(){
   const state=ctx.getState(),p=state.planning,n=p.current,screen=nodePage(state);
-  const stage=planningStage(n),stageI=PROGRESS_GROUPS.findIndex(x=>x.id===stage),kickoff=n==="N00",titleStep=n==="N01";
+  const stage=planningStage(n),stageI=PROGRESS_GROUPS.findIndex(x=>x.id===stage),kickoff=n==="N00",titleStep=n==="N01",ideaMapStep=n==="N00B";
   return '<div class="page planning-page">'+tabletNav()+
    '<div class="planning-page-layout">'+planningLearningTrail(state,{support:kickoff?'':criteriaPanel(state)})+
    '<div class="planning-page-main">'+
@@ -410,9 +410,9 @@ export function createPlanningViews(ctx){
    '<h1 class="task-heading">'+e(screen.title)+'</h1><p class="task-intro">'+e(screen.intro)+'</p>'+
    (kickoff?'':insightEcho(state,n))+screen.html+
    (kickoff||titleStep?'':insightCapture(state,n))+(!kickoff&&titleStep?'':essentialsNudge(state))+
-   (kickoff||titleStep?'':'<div class="example-row">'+helpButton("plan-"+n)+helpBox("plan-"+n,screen.help)+'</div>')+
+   (kickoff||titleStep||ideaMapStep?'':'<div class="example-row">'+helpButton("plan-"+n)+helpBox("plan-"+n,screen.help)+'</div>')+
    footer(state,screen)+'</div>'+
-   (kickoff?'':'<p class="small-callout">Your choices are provisional until evidence supports them. You can revisit earlier decisions. Teacher flags never prevent a provisional report.</p>')+
+   (kickoff||ideaMapStep?'':'<p class="small-callout">Your choices are provisional until evidence supports them. You can revisit earlier decisions. Teacher flags never prevent a provisional report.</p>')+
    (p.notices&&p.notices.length?'<div class="inline-note warning">'+icon("info")+'<p>'+e(p.notices.at(-1))+'</p></div>':"")+
    '</div></div></div>';
  }
