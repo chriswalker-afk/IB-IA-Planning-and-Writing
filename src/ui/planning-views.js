@@ -370,7 +370,7 @@ export function createPlanningViews(ctx){
     "Review and save plan");
    case "N07":return stepBody("Your provisional plan is ready to take forward.","You've created a working direction. Your mathematical findings—and perhaps your aim—may evolve.",
     '<div class="success-moment"><span class="feature-icon">'+icon("check")+'</span><div><strong>Planning checkpoint reached</strong><p>Review your work in the printable report, or download a portable project backup. Save and return later, or explore your actual mathematics in IA Studio.</p></div></div>'+
-    summary("Your aim",f.aim)+summary("First mathematical move",f.firstAction)+
+    summary("Provisional IA title",f.provisionalTitle)+summary("Your aim",f.aim)+summary("First mathematical move",f.firstAction)+
     F("planIdentifier","Optional label for my copy of this plan","e.g. My IA plan — revision 2")+teacherWarnings(state)+
     '<div class="button-row" style="margin-top:18px">'+button("Download my planning PDF","export-plan-pdf","btn-primary","", "download")+
     button("Download editable Word plan","export-plan-docx","btn-secondary","", "download")+
