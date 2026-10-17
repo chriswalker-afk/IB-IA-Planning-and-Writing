@@ -484,6 +484,48 @@ export const EXAMPLES = [
     "why": "A useful working title identifies an investigable relationship, property or problem. It need not promise a result, name impressive techniques, or announce that the topic is a personal passion. It can change when genuine calculations lead somewhere interesting. These are fictional prompts, not guaranteed suitable IA topics or titles to copy.",
     "question": "What precisely might your mathematics answer? Which words would you revise if the evidence leads to a different question?",
     "visual": ""
+  },
+  {
+    "id": "EX31",
+    "title": "Motivation: an answer that could inform a choice",
+    "category": "methods",
+    "kind": "modelling",
+    "topics": [
+      "motivation"
+    ],
+    "weak": "I am going to find the maximum volume of a box because differentiation gives a mathematical answer and I think calculus is useful.",
+    "strong": "I want to understand how the size of corner cut-outs changes the volume of an open box made from one fixed sheet. Comparing the volumes could help me decide which cut size is worth trying. The calculation will give an idealised answer; I will need to return to the original design question when interpreting whether that answer is useful, since the model does not test the box's strength.",
+    "why": "This explains a worthwhile question and what knowing the answer might change, rather than simply saying a technique will produce a result. Its practical meaning remains provisional; the eventual mathematics must support the claim. The student does not need to invent an emotional backstory.",
+    "question": "What could you understand, compare, explain or decide once you know the answer—and will you check that when interpreting your results?",
+    "visual": ""
+  },
+  {
+    "id": "EX32",
+    "title": "Motivation: comparing evidence for a real decision",
+    "category": "methods",
+    "kind": "statistics",
+    "topics": [
+      "motivation"
+    ],
+    "weak": "I will collect queue times and calculate an average. This will give me a result for my IA.",
+    "strong": "I want to know whether the wait at two service points differs enough to make choosing one rather than the other worthwhile. I could record waiting times in comparable periods, examine the distributions and judge whether the observed difference is meaningful for that choice. Even if one seems faster in my sample, I will need to consider how variable the waits are before recommending a change.",
+    "why": "There is a clear reason for investigating rather than just a planned statistic. The intended beneficiary is not an automatic finding; any advice would depend on the actual sample, variation and limitations.",
+    "question": "Does your proposed mathematical answer help someone make a decision or understand something—and would your evidence justify that use?",
+    "visual": ""
+  },
+  {
+    "id": "EX33",
+    "title": "Motivation: a genuine mathematical question without a made-up beneficiary",
+    "category": "methods",
+    "kind": "theoretical",
+    "topics": [
+      "motivation"
+    ],
+    "weak": "I really love number patterns and want to use algebra to get an interesting answer, which will show my passion for mathematics.",
+    "strong": "A few worked cases suggest that a stated numerical claim may hold. I want to understand exactly what makes the claim true, or find a counterexample if it fails. The purpose is to distinguish a pattern suggested by examples from a justified general conclusion, so I would return to that question whenever choosing which cases or arguments to test.",
+    "why": "Mathematical curiosity can be a genuine motivation, but it needs a precise question rather than a promise of an interesting result or unsupported enthusiasm. The particular claim still needs a suitable scope and mathematical depth; this excerpt is not an automatically suitable IA topic.",
+    "question": "What mathematical uncertainty do you genuinely want to resolve, and how would you know whether your argument answered it?",
+    "visual": ""
   }
 ];
 export const NUMERICAL_EXAMPLE = {
