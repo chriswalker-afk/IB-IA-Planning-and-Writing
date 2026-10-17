@@ -38,8 +38,13 @@ def run_primary(p,width):
   p.locator('[data-action="plan-save-quantity"]').click()
   items=p.locator(".primary-quantity")
   items.last.locator('[data-action="plan-use-quantity"]').click()
-  assert field(p,"primaryAccuracyQuantity").input_value()==quantity
-  assert field(p,"primaryAccuracyUnit").input_value()==unit
+  # Names and units are reused without rendering duplicate input boxes.
+  current=saved(p)["planning"]["fields"]
+  assert current["primaryAccuracyQuantity"]==quantity
+  assert current["primaryAccuracyUnit"]==unit
+  assert field(p,"primaryAccuracyQuantity").count()==0
+  assert field(p,"primaryAccuracyUnit").count()==0
+  assert quantity in p.locator(".primary-accuracy-target").inner_text()
   field(p,"primaryAccuracyBasis").select_option(basis)
   field(p,"primaryAccuracyResolution").fill(resolution)
   p.locator('[data-action="plan-save-accuracy"][data-source="primary"]').click()
