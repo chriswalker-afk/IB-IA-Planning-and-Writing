@@ -31,7 +31,7 @@ test('the four chapters are consistent in ribbon, rail, map and dashboard',()=>{
    assert(board.includes(g.name.replace('&','&amp;')));
  }
  assert.equal(chapterStats(s,JOURNEY_GROUPS[0]).ready,3);
- assert(planningProgress(s).includes('3 of 4 planning anchors recorded'));
+ assert(planningProgress(s).includes('3 of 5 planning anchors recorded'));
  assert(!strip.includes('100%'));
  assert(!map.includes('IA grade awarded'));
 });
@@ -46,10 +46,14 @@ test('self-assessed stage progress never treats a visit as a completion',()=>{
  assert.equal(chapterStats(s,JOURNEY_GROUPS[1]).ready,1);
 });
 test('aim and planned mathematics are sparks, but do not become completed results',()=>{
- const s=createProjectState();s.planning.fields.aim='Can a function model growth?';
+ const s=createProjectState();s.planning.fields.provisionalTitle='Can a growth curve describe the pattern?';s.planning.fields.aim='Can a function model growth?';
  s.planning.fields.firstAction='Investigate a graph';
  const all=insightItems(s);
+ assert(all.some(x=>x.id==='working-title'&&x.value.includes('growth curve')));
  assert(all.some(x=>x.id==='aim'));
+ assert(insightCapture(s,'N01A').includes('Spark saved'));
+ assert(insightEcho(s,'C10').includes('growth curve'));
+ assert(insightEcho(s,'N05V').includes('growth curve'));
  assert(all.some(x=>x.id==='planned-maths'&&x.planned));
  assert(insightCapture(s,'N01').includes('Spark saved'));
  assert(insightEcho(s,'N05V').includes('Can a function model growth?'));
@@ -180,24 +184,49 @@ test('Planning trail has all chapters, a live planning step and honest provision
  assert(fresh.includes('planning-learning-trail'));
  assert(fresh.includes('planning-trail-desktop'));
  assert(fresh.includes('planning-trail-compact'));
- assert(fresh.includes('Step 1 of 4'));
- assert(fresh.includes('0 of 4 decisions saved'));
+ assert(fresh.includes('Phase 1 of 4'));
+ assert(fresh.includes('0 of 5 decisions saved'));
  assert(fresh.includes('aria-label="Your learning trail"'));
  for(const g of JOURNEY_GROUPS)assert(fresh.includes(g.name.replace('&','&amp;')));
  assert(fresh.includes('data-action="journey-open"'));
  s.planning.current='N05';
+ s.planning.completedNodes=['N00','N01'];
  s.planning.fields.aim='How does this pattern change?';
  s.planning.fields.firstAction='Plot the first graph';
  const later=planningLearningTrail(s);
- assert(later.includes('Step 3 of 4'));
- assert(later.includes('2 of 4 decisions saved'));
+ assert(later.includes('Phase 3 of 4'));
+ assert(later.includes('2 of 5 decisions saved'));
  assert(later.includes('Plan your mathematics'));
+ assert(later.includes('2 completed'));
+ assert(later.includes('Chose a starting route'));
+ assert(later.includes('Worked on the title and question'));
+ s.planning.visited=['N00','N01','N05'];s.planning.completedNodes=[];
+ assert(planningLearningTrail(s).includes('0 completed'));
  assert(!later.includes('100%'));
 });
 test('Planning trail includes responsive column and compact disclosure styles',()=>{
  const css=readFileSync(new URL('../data/living-journey.css',import.meta.url),'utf8');
  assert(css.includes('grid-template-areas:"task trail"'));
- assert(css.includes('.planning-trail-desktop{position:sticky'));
+ assert(css.includes('.planning-learning-trail{position:sticky'));
+ assert(css.includes('.planning-trail-help-toggle'));
+ assert(css.includes('.planning-trail-screen-progress'));
+ assert(css.includes('planning-trail-support.is-open'));
+ const html=planningLearningTrail(createProjectState(),{support:'<button type="button">Support</button>'});
+ assert(html.includes('planning-trail-support-body'));
+ assert(html.includes('Support'));
  assert(css.includes('@media(max-width:980px)'));
  assert(css.includes('.planning-trail-compact{display:block'));
+});
+
+test('working title survives export normalization, remains escaped and does not create a mathematical result',()=>{
+ const s=createProjectState();s.route='planning';
+ s.planning.fields.provisionalTitle='<example> My working title';
+ const restored=normalizeProjectState(JSON.parse(JSON.stringify(s)));
+ assert.equal(restored.planning.fields.provisionalTitle,s.planning.fields.provisionalTitle);
+ const items=insightItems(restored);
+ assert(items.some(x=>x.id==='working-title'));
+ assert(!items.some(x=>x.id.startsWith('result:')));
+ assert(insightCapture(restored,'N01').includes('Spark saved'));
+ assert(!insightCapture(restored,'N01').includes('<example>'));
+ assert(insightEcho(restored,'N03').includes('&lt;example&gt;'));
 });
