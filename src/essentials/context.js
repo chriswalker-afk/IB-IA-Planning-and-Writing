@@ -8,7 +8,11 @@ export function criteriaContext(state,options={}){
  const x=exampleContext(state,options),n=x.node||'',c=state.completion||{};
  const theory=x.kind==='theoretical';let rows=[];
  if(x.route==='planning'){
-  if(/^N03/.test(n))rows=theory?[pair('C','choosing a conjecture or starting case for a reason you can explain.'),pair('E','checking the domain and mathematical assumptions of your proposed argument.')]:[pair('C','explaining which feasible source or collection method you would choose, and why.'),pair('D','considering how the proposed source or sampling method could restrict your eventual answer.')];
+  if(n==='N01V')rows=[
+   pair('A','keeping the stated aim and reason for investigating it connected, so the mathematics later forms one coherent answer.'),
+   pair('C','showing why a genuine question or intended use shaped your choices—not merely saying you love the subject.'),
+   pair('D','returning to this motivation when interpreting actual results, discussing what they mean and recognising limits to their usefulness.')];
+  else if(/^N03/.test(n))rows=theory?[pair('C','choosing a conjecture or starting case for a reason you can explain.'),pair('E','checking the domain and mathematical assumptions of your proposed argument.')]:[pair('C','explaining which feasible source or collection method you would choose, and why.'),pair('D','considering how the proposed source or sampling method could restrict your eventual answer.')];
   else if(/^N04/.test(n))rows=[pair('E','choosing course-appropriate mathematics that would help answer the aim, not adding techniques for their own sake.'),pair('C','explaining the mathematical question behind your proposed approach.')];
   else if(['N05','N05V'].includes(n))rows=[pair('B','planning a representation whose quantities, units and variables will be clear.'),pair('A','explaining what the first representation will contribute to the investigation.')];
   else rows=[pair('A','making the aim specific enough to guide a coherent investigation.'),pair('C',theory?'identifying the mathematical question or conjecture that genuinely interests you.':'explaining the genuine question or observation behind your chosen focus.')];
