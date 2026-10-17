@@ -752,7 +752,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       case "plan-back":handlePlanningResult(planningBack(state));break;
       case "plan-edit":handlePlanningResult(planningEdit(state,el.dataset.node));break;
       case "path-plan":{
-        const map={"0":"N00","1":"N01","5":"N03F"};
+        const map={"0":"N00","1":"N01","5":"N03E"};
         handlePlanningResult(planningEdit(state,map[el.dataset.index]||"N00"));break;
       }
       case "math-mode":{
