@@ -28,6 +28,18 @@ export function createPlanningViews(ctx){
  const text=(value)=>e(value||"");
  const dates=(fields)=>fields.map(([key,label])=>F(key,label,"",{type:"date"})).join("");
  const callout=(title,body,warning=false)=>'<div class="inline-note'+(warning?" warning":"")+'">'+icon(warning?"info":"lightbulb")+'<p><strong>'+e(title)+'</strong> '+body+'</p></div>';
+ /** One compact expandable spark, backed by the canonical Planning aim. */
+ function compactAimSpark(state){
+  const aim=state.planning.fields.aim||state.project?.aim||"";
+  const preview=aim.trim()?(aim.trim().length>90?aim.trim().slice(0,89)+"…":aim.trim()):"Your aim is still developing";
+  return '<details class="motivation-aim-spark" data-motivation-aim-spark>'+
+   '<summary><span class="motivation-aim-symbol">'+icon("target")+'</span>'+
+   '<span class="motivation-aim-copy"><strong>My aim spark</strong><small data-motivation-aim-preview>'+e(preview)+'</small></span>'+
+   '<span class="motivation-aim-toggle">'+icon("pencil")+' View / edit</span></summary>'+
+   '<div class="motivation-aim-details"><p>Your aim can change. Editing here updates the same aim used across your investigation.</p>'+
+   F("aim","Refine my investigation aim","What mathematical question am I trying to answer?",{type:"textarea",rows:2})+
+   '</div></details>';
+ }
  const route=(label,condition,cls="btn-secondary")=>'<button type="button" class="btn '+cls+'" data-action="plan-route" data-condition="'+e(condition)+'">'+e(label)+icon("arrow-right")+'</button>';
  const edit=(id,label)=>'<button type="button" class="btn btn-quiet btn-sm" data-action="plan-edit" data-node="'+e(id)+'">'+e(label)+icon("chevron-right")+'</button>';
  const stepBody=(title,intro,html,help="",label="Continue")=>({title,intro,html,help,label});
@@ -120,16 +132,23 @@ export function createPlanningViews(ctx){
     (f.idea?'<details class="planning-extra-interest"><summary>Revise my original idea (optional)</summary>'+
     F("idea","My starting idea","The topic or observation that brought me here")+'</details>':''),
     "<h4>A title worth exploring</h4><p>Be specific enough to guide your mathematics without deciding the conclusion in advance. Your title can change after you have real results.</p>");
-   case "N01V":return stepBody("Who might benefit from knowing the answer?","Personal curiosity is a meaningful purpose. You do not need to invent a grand real-world impact.",
+   case "N01V":return stepBody("Have a clear motivation.","A mathematical result is an outcome, not a reason on its own to investigate a question. Why would answering your aim be worth doing?",
+    compactAimSpark(state)+
+    '<div class="motivation-purpose-note">'+icon("lightbulb")+
+    '<div><strong>Give your mathematics a purpose</strong><p>What could answering your question help you understand, compare, explain or decide? It might help you, someone else, or develop a genuine mathematical understanding. You do not need to invent a beneficiary or promise a particular result.</p></div></div>'+
+    '<div class="motivation-who"><h3>One way to think about your motivation</h3>'+
+    '<p>Who might benefit from the answer? Choose a starting point; your explanation below matters more than the category.</p>'+
     choice("beneficiaryType",[
-     {value:"me",title:"It would help me",desc:"A question I want to answer or decision I might make.",icon:"target"},
-     {value:"others",title:"I could advise someone else",desc:"My findings might inform another person or group.",icon:"route"},
-     {value:"both",title:"It could help me and someone else",icon:"layers"},
-     {value:"unsure",title:"I'm not sure yet",desc:"I can refine this after learning more.",icon:"lightbulb"}],{stack:true})+
-    F("beneficiary",f.beneficiaryType==="others"?"Who might you advise?":"Why is this important or interesting?","A person, group, choice or mathematical question",{type:"textarea",rows:2})+
-    F("intendedUse","What might someone do with the answer? (optional)","A genuine use or insight—not advice you've already proved.",{type:"textarea",rows:2})+
+     {value:"me",title:"My own understanding or decision",icon:"target"},
+     {value:"others",title:"Someone else could use it",icon:"route"},
+     {value:"both",title:"Both me and others",icon:"layers"},
+     {value:"unsure",title:"Still working it out",icon:"lightbulb"}],{tight:true,label:"Who might benefit from my investigation?"})+'</div>'+
+    F("beneficiary","Who might benefit, and how could the answer help?","e.g. I want to compare ... so I can decide ... / I want to explain why ...",{type:"textarea",rows:3,
+     hint:"Write one genuine reason. What would knowing the answer help you understand or decide? Don't assume you will prove your prediction."})+
+    (f.intendedUse?'<details class="motivation-older-note"><summary>Earlier intended-use note (preserved)</summary><p>'+e(f.intendedUse)+'</p></details>':"")+
+    '<p class="motivation-later-echo">'+icon("route")+' <span><strong>We will return to this.</strong> When you interpret results, decide what to do next and write your conclusion, check how far your findings actually answer your motivation.</span></p>'+
     (p.returnToPrediction?callout("Returning to your prediction","Your earlier mathematical choices and prediction are retained."): ""),
-    "<h4>Intended benefit ≠ actual finding</h4><p>You are describing what you hope to learn or help with. Later, your mathematical results will determine what you can responsibly conclude.</p>");
+    "<h4>A purpose worth revisiting</h4><p>Doing mathematics merely to obtain a result is not a motivation by itself. Explain what you hope the answer will help you understand or decide. Revisit your genuine purpose when interpreting results and in your conclusion. You do not have to invent a dramatic benefit or confirm your original prediction.</p>");
    case "N02":return stepBody("What kind of investigation is this?","We will adapt the next questions to the mathematical route you choose.",
     choice("kind",[
      {value:"statistics",title:"Statistics",desc:"Investigating observations, comparisons or relationships in data.",icon:"chart"},
@@ -276,7 +295,7 @@ export function createPlanningViews(ctx){
     const choices=relevantPredictionOptions(state);
     return stepBody("What do you predict might happen?","This is a tentative expectation, not a result. Then explain why and what it would mean IF true.",
       summary("Your investigation aim",f.aim)+
-      (f.beneficiary?summary("Who benefits / intended use",f.beneficiary+(f.intendedUse?" — "+f.intendedUse:"")):"")+
+      (f.beneficiary?summary("My motivation — why this matters",f.beneficiary+(f.intendedUse?" — "+f.intendedUse:"")):"")+
       '<div class="field-group"><label class="field-label">Some possible predictions for this type of investigation</label>'+
       choice("predictionId",choices.map(x=>({value:x.id,title:x.question,desc:x.id==="X02"?"You can explore before deciding.":""})),{stack:true,tight:true})+'</div>'+
       F("prediction","My tentative prediction or conjecture","Use your own words. A suggestion above is a question, not a written prediction.",{type:"textarea",rows:2})+
@@ -284,7 +303,7 @@ export function createPlanningViews(ctx){
       F("predictionWhy","WHY do I expect this?","Experience, observation, small mathematical case or uncertainty",{type:"textarea",rows:3})+
       F("predictionImplication","IF it were true, what could it mean for my purpose?","A possible implication—not advice backed by results yet",{type:"textarea",rows:3})+
       (f.predictionId==="X02"?F("predictionExploration","What initial example might help you form a prediction?","A simple graph, sample or mathematical case",{type:"textarea",rows:2}):"")+
-      '<div class="button-row">'+route("Edit who this is for","Edit 'Who is this for?' while predicting")+'</div>'+
+      '<div class="button-row">'+route("Refine my motivation","Edit 'Who is this for?' while predicting")+'</div>'+
       callout("Your result might surprise you","A different finding is not failure. Your later interpretation should be based on actual evidence."),
       "<h4>A meaningful prediction</h4><p>Separate WHAT you expect, WHY, and what it would mean for the person or purpose you selected IF TRUE. Do not turn a prediction into a statement of fact.</p>");
    }
@@ -356,7 +375,7 @@ export function createPlanningViews(ctx){
    case "N06":return stepBody("Your investigation plan at a glance.","Review what you've actually decided, what is tentative, and what still needs discussing.",
     '<div class="plan-review">'+
     summary("Investigation aim",f.aim)+edit("N01","Edit aim")+
-    summary("Why it matters",f.beneficiary+(f.intendedUse?" — "+f.intendedUse:""))+edit("N01V","Edit purpose")+
+    summary("My motivation — why the answer matters",f.beneficiary+(f.intendedUse?" — "+f.intendedUse:""))+edit("N01V","Edit motivation")+
     summary("Course and mathematical direction",(f.course||"Not confirmed")+" · "+(selectedMaths(state).map(x=>x.label).join("; ")||f.otherMaths||f.otherCourseMaths||"Still to decide"))+edit("N04","Edit maths")+
     summary("Evidence plan",f.kind==="theoretical"?(f.theoreticalCase||"Theoretical cases to confirm"):
       (f.dataSource||"No source chosen")+" · "+(f.primaryWhat||f.secondaryPublisher||"source details to confirm"))+
@@ -410,9 +429,9 @@ export function createPlanningViews(ctx){
    '<span class="progress-counter">1. Planning · '+e(PROGRESS_GROUPS[stageI]?.label||"Review")+'</span></div>'+
    '<div class="task-shell'+(kickoff?' planning-kickoff':'')+(titleStep?' planning-title-step':'')+'" data-source-node="'+e(n)+'">'+
    '<h1 class="task-heading">'+e(screen.title)+'</h1><p class="task-intro">'+e(screen.intro)+'</p>'+
-   (kickoff?'':insightEcho(state,n))+screen.html+
+   (kickoff||n==="N01V"?'':insightEcho(state,n))+screen.html+
    (kickoff||titleStep?'':insightCapture(state,n))+(kickoff||titleStep?'':essentialsNudge(state))+
-   (kickoff||titleStep||ideaMapStep?'':'<div class="example-row">'+helpButton("plan-"+n)+helpBox("plan-"+n,screen.help)+'</div>')+
+   (kickoff||titleStep||ideaMapStep?'':'<div class="example-row">'+helpButton("plan-"+n,n==="N01V"?"Why does this matter?":"Help me think")+helpBox("plan-"+n,screen.help)+'</div>')+
    footer(state,screen)+'</div>'+
    (kickoff||ideaMapStep?'':'<p class="small-callout">Your choices are provisional until evidence supports them. You can revisit earlier decisions. Teacher flags never prevent a provisional report.</p>')+
    (p.notices&&p.notices.length?'<div class="inline-note warning">'+icon("info")+'<p>'+e(p.notices.at(-1))+'</p></div>':"")+
