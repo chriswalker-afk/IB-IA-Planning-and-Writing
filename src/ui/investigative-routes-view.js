@@ -11,6 +11,7 @@ export function renderInvestigativeRoutes(state,{e,icon,catalogue}){
  const course=p.fields.course,supported=['AI SL','AA SL'].includes(course);
  const selected=routeById(x.selectedRoute),opened=routeById(x.openRoute);
  const counts=p.mathSelected.filter(id=>course==='AI SL'?id.startsWith('AI'):course==='AA SL'?id.startsWith('AA'):false).length;
+ const foreign=p.mathSelected.filter(id=>course==='AI SL'?!id.startsWith('AI'):course==='AA SL'?!id.startsWith('AA'):true).length;
  const modeTabs='<div class="journey-mode-tabs" role="tablist" aria-label="Ways to explore mathematics">'+modes.map(item=>
   '<button type="button" class="journey-mode-tab'+(mode===item.id?' active':'')+'" role="tab" aria-selected="'+(mode===item.id)+'"'+
   ' id="journey-tab-'+item.id+'" aria-controls="journey-mode-panel" data-action="math-mode" data-mode="'+item.id+'">'+
@@ -54,6 +55,8 @@ export function renderInvestigativeRoutes(state,{e,icon,catalogue}){
   '<div class="journey-maths-current"><span>'+icon('calculator')+' '+e(course||'Course not chosen')+'</span>'+
   '<span>'+counts+' technique'+(counts===1?'':'s')+' chosen</span></div>'+
   modeTabs+saved+courseNotice+
+  (foreign?'<p class="journey-course-switch-note">'+icon('info')+' '+foreign+' earlier mathematics selection'+(foreign===1?'':'s')+
+   ' belong'+(foreign===1?'s':'')+' to another course. They are preserved but not included in the current course list. Check with your teacher before relying on them.</p>':'')+
   '<div class="journey-mode-panel" role="tabpanel" id="journey-mode-panel" aria-labelledby="journey-tab-'+mode+'" data-journey-mode-panel="'+mode+'">'+body+'</div>'+
   '<p class="journey-inquiry-note">Nothing here is a required IA structure. A worthwhile question, genuine mathematics, interpretation and reflection matter more than the number of techniques.</p></section>';
 }
