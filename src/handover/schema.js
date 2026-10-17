@@ -17,7 +17,7 @@ const text = value => String(value ?? "");
 const fields = Object.keys(PLANNING_FIELD_DEFAULTS);
 
 export const FIELD_GROUPS = Object.freeze({
- "Your question and its meaning": ["planIdentifier","idea","interest","aim","motivation","beneficiaryType","beneficiary","intendedUse"],
+ "Your question and its meaning": ["planIdentifier","provisionalTitle","idea","interest","aim","motivation","beneficiaryType","beneficiary","intendedUse"],
  "Investigation and sources": ["kind","dataSource","statisticsContext","primaryWhat","primaryWhen","primaryWhere","primaryPopulation","primaryHow","primaryEquipment","primarySampling","primaryStatus","secondaryUrl","secondaryPublisher","secondaryVariables","secondaryScope","secondaryVerified","secondaryStatus","alternativeMethod","methodReason","methodLimitation","methodMitigation","sourceFirstDate","sourceFullDate","dataAvailability"],
  "Readiness, practicality and permissions": ["dataReadiness","readinessImprovement","dependencies","unsecured","permissionNeed","permissionDetails","softwareReady","workloadHours","cleaningBurden","externalRisks","minimumVersion","backupMethod","pilotReady","costIssue","sourceRights","dataSufficiency","negativeResultViable","presentationManageable","practicalEase","easeImprovement"],
  "Mathematics and prediction": ["course","mathsOutside","otherMaths","mathsWhy","predictionId","prediction","predictionWhy","predictionImplication","predictionExploration","courseSuitability","suitabilityWhy","mathsRevisedWhy","figureType","figureOther","figurePurpose","firstAction","firstAccuracy","theoreticalAim","theoreticalCase","theoreticalPrediction","theoreticalWhy","otherCourseMaths"],
@@ -26,7 +26,7 @@ export const FIELD_GROUPS = Object.freeze({
  "Optional idea comparison": ["originalIdea","otherIdea1","otherIdea2","ideaSelected","ideaAccess","ideaValue","ideaStatus"]
 });
 export const FIELD_LABELS = Object.freeze({
- planIdentifier:"Student-selected plan label", idea:"Working idea", interest:"Interest", aim:"Investigation aim", motivation:"Why this interests me",
+ planIdentifier:"Student-selected plan label", provisionalTitle:"Provisional IA title", idea:"Working idea", interest:"Interest", aim:"Investigation aim", motivation:"Why this interests me",
  beneficiaryType:"Intended type of benefit", beneficiary:"Who could benefit", intendedUse:"Possible use of the findings",
  course:"IB Mathematics course",kind:"Investigation type",dataSource:"Source route",statisticsContext:"Data context",
  primaryWhat:"Primary variables / units", primaryWhen:"Collection target",primaryWhere:"Collection setting",
@@ -204,7 +204,7 @@ export function mergePlanningEnvelope(current,envelope,selectedKeys=[],{origin="
   // Keep every result and student-written paragraph, but ask the student to
   // recheck only sections affected by meaningful imported differences.
   const affected=new Set();
-  const aimKeys=new Set(["aim","motivation","beneficiaryType","beneficiary","intendedUse","prediction","predictionWhy","predictionImplication"]);
+  const aimKeys=new Set(["provisionalTitle","aim","motivation","beneficiaryType","beneficiary","intendedUse","prediction","predictionWhy","predictionImplication"]);
   const mathsKeys=new Set(["course","kind","mathSelected","mathsOutside","otherMaths","otherCourseMaths","firstAction","figureType","figurePurpose","firstAccuracy"]);
   const sourceKeys=new Set(["dataSource","secondaryUrl","secondaryVariables","primaryWhat","primaryHow","primarySampling","methodReason","methodLimitation","methodMitigation"]);
   const changesAim=applied.some(k=>aimKeys.has(k));
