@@ -101,3 +101,5 @@
 @media(prefers-reduced-motion:reduce){
  .spark-shelf .spark-library>summary>.icon:last-child,.spark-library-entry>summary>.icon:last-child{transition:none}
 }
+
+.spark-library-featured-hint{margin:8px 0 0;color:#5d786c;font-size:11px;line-height:1.5;font-style:italic}
