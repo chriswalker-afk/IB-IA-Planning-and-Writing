@@ -107,6 +107,7 @@ test("adaptive Planning follows genuine spreadsheet source nodes and retains stu
  h.write("planning.fields.aim","How does X relate to Y?");
  h.action("plan-advance");assert(h.html.includes('data-source-node="N01V"'));
  h.choose("planning.fields.beneficiaryType","me");
+ h.write("planning.fields.beneficiary","I want to understand whether this relationship could guide my decision.");
  h.action("plan-advance");assert(h.html.includes('data-source-node="N02"'));
  h.choose("planning.fields.kind","statistics");
  h.action("plan-advance");assert(h.html.includes('data-source-node="N03"'));
