@@ -61,11 +61,11 @@ test("theoretical prompts don't ask for data sampling and specialist checkpoint 
  assert(html.includes("Continue to review"));
 });
 test("unresolved consent exposes teacher support and never pretends approval",()=>{
- const {state,view}=screenFixture();state.planning.current="N03F";
+ const {state,view}=screenFixture();state.planning.current="N03E";
  state.planning.fields.permissionNeed="yes";
  let html=view.viewPlanning();
  assert(html.includes("Discuss permissions with my teacher"));
- assert(html.includes("do not begin affected data collection"));
+ assert(html.includes("Do not begin affected collection"));
  assert(html.includes('data-condition="Safety / privacy / consent unresolved"'));
 });
 test("statistical prediction choices use chosen data context",()=>{
