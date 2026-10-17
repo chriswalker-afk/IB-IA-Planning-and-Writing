@@ -34,7 +34,7 @@ export const DATA_BRANCHES=Object.freeze({
   {id:'image',label:'A photo or video',desc:'Permission and a defensible scale',seeds:['sport-trajectory','design-outline','tech-animation']}
  ]
 });
-export const IDEA_DATA_PROMISE='Could I time, count, measure, photograph, survey (with permission), or verify some existing data this week? Try one tiny check before committing.';
+export const IDEA_DATA_PROMISE='Could I time, count, measure, photograph, survey (with permission), or verify existing data this week? What maths from my course could help? Try one small check before committing.';
 export const IDEA_THEORY_CAUTION='Pure number patterns, general sequences and proof-heavy topics can be difficult to develop into an appropriately focused IB Maths IA; they may fit an Extended Essay better. Discuss the scope, course-level mathematics and a manageable first example with your teacher before choosing this route.';
 export const ideaMapRoots=mode=>IDEA_MAP_ROOTS[mode]||IDEA_MAP_ROOTS.interests;
 export const ideaMapRoot=(mode,id)=>ideaMapRoots(mode).find(x=>x.id===id);
