@@ -12,7 +12,7 @@ import {normalizePrimaryQuantities} from "./primary-quantities.js";
 export const PLANNING_NODE_IDS = Object.freeze([...new Set(PLANNING_ROUTES.flatMap(r=>[r.from,r.to]).filter(n=>n.startsWith("N")))]);
 export const PROGRESS_GROUPS = Object.freeze([
  {id:"direction",label:"Find your question",nodes:["N00","N00B","N00C","N01","N01V","N02","N02M","N02U","N02T"]},
- {id:"practical",label:"Plan your evidence",nodes:["N03","N03B","N03P","N03P2","N03S","N03J","N03D","N03E","N03R","N03F","N03G","N03H"]},
+ {id:"practical",label:"Plan your evidence",nodes:["N03","N03B","N03P","N03P2","N03S","N03D","N03E","N03R","N03G","N03H"]},
  {id:"mathematical",label:"Plan your mathematics",nodes:["N04","N04T","N04S","N01P","N04R","N04M","N05V","N05"]},
  {id:"review",label:"Review your idea",nodes:["N06E","N06T","N08","N06","N07"]}
 ]);
@@ -31,7 +31,7 @@ export const PLANNING_FIELD_DEFAULTS = Object.freeze({
  secondaryAccuracyQuantity:"",secondaryAccuracyUnit:"",secondaryAccuracyResolution:"",secondaryAccuracyBasis:"",secondaryAccuracyUncertainty:"",
  secondaryStatus:"",alternativeMethod:"",methodReason:"",methodLimitation:"",methodMitigation:"",
  sourceFirstDate:"",sourceFullDate:"",dataAvailability:"",dataReadiness:"",readinessImprovement:"",
- dependencies:"",unsecured:"",permissionNeed:"",permissionDetails:"",softwareReady:"",
+ dependencies:"",unsecured:"",permissionNeed:"",permissionDetails:"",practicalBlocker:"",softwareReady:"",
  workloadHours:"",cleaningBurden:"",externalRisks:"",minimumVersion:"",backupMethod:"",
  pilotReady:"",costIssue:"",sourceRights:"",dataSufficiency:"",negativeResultViable:"",presentationManageable:"",
  practicalEase:"",easeImprovement:"",mathsOutside:"",otherMaths:"",mathsWhy:"",
@@ -71,17 +71,22 @@ export function normalizePlanningState(value,project={}){
   const raw=migrated?fallback[key]:v.fields[key];
   if(typeof raw==="string"||typeof raw==="number")fields[key]=String(raw);
  }
+ // Preserve all historical free-text answers. Old screen locations move forward
+ // rather than reopening removed forms after a reload or document import.
+ if(!fields.practicalBlocker&&fields.unsecured.trim())fields.practicalBlocker="yes";
  const cleanIds = Array.isArray(v.mathSelected) ?
   [...new Set(v.mathSelected.filter(id=>PLANNING_CATALOG.math.some(m=>m.id===id)))].slice(0,55) : [];
  const entries=arr=>Array.isArray(arr)?arr.filter(x=>typeof x==="string"&&PLANNING_NODE_IDS.includes(x)).slice(-450):[];
- const current=v.current==="N03P3"?"N03P":PLANNING_NODE_IDS.includes(v.current)?v.current:"N00";
+ const obsoleteNode=id=>id==="N03P3"?"N03P":id==="N03J"?"N03D":id==="N03F"?"N03E":id;
+ const current=PLANNING_NODE_IDS.includes(obsoleteNode(v.current))?obsoleteNode(v.current):"N00";
  return {
   ...base,fields,mathSelected:cleanIds,accuracyPlans:normalizePlanningAccuracy(v.accuracyPlans),
   accuracyEditId:(v.accuracyPlans||[]).some?.(x=>x?.id===v.accuracyEditId)?v.accuracyEditId:"",
   primaryQuantities:normalizePrimaryQuantities(v.primaryQuantities,v.accuracyPlans),
   primaryQuantityEditId:(v.primaryQuantities||[]).some?.(x=>x?.id===v.primaryQuantityEditId)?v.primaryQuantityEditId:"",current,
-  history:entries(v.history),visited:entries(v.visited),
-  completedNodes:entries(v.completedNodes).filter(x=>x!=="N03P3"),
+  history:entries(v.history).filter(x=>x!=="N03J"&&x!=="N03F"),
+  visited:entries(v.visited).filter(x=>x!=="N03J"&&x!=="N03F"),
+  completedNodes:entries(v.completedNodes).filter(x=>!["N03P3","N03J","N03F"].includes(x)),
   sourceBranches:{
    primary:v.sourceBranches?.primary===true,secondary:v.sourceBranches?.secondary===true
   },
@@ -137,6 +142,7 @@ export function planningFlags(state){
  if(f.mathsOutside==="outside"||f.mathsOutside==="unsure")add("outside-maths","Mathematics suitability to check","Ask about techniques beyond or not clearly within your course.");
  if(f.courseSuitability==="unsure"||f.courseSuitability==="no")add("depth","Mathematical suitability remains open","Discuss the mathematical purpose and level, without treating this as an IA grade.");
  if(Number(f.dataReadiness)>0&&Number(f.dataReadiness)<3)add("readiness","Data plan needs strengthening","Consider a smaller pilot, confirmed source or earlier usable material.");
+ if(f.practicalBlocker==="yes")add("practical-access","Important practical access to arrange","Agree a realistic next action for missing people, equipment, locations or resources before relying on them.");
  if(Number(f.practicalEase)>0&&Number(f.practicalEase)<3)add("practical","Practical workload may be high","Reduce dependencies and try a small end-to-end test.");
  if(m.some(id=>mathIds.get(id)?.course!==c)&&["AI SL","AA SL"].includes(c))add("different-course-maths","Selected techniques from another course","Review which options suit your current course; do not silently discard them.");
  return flags;
@@ -175,7 +181,7 @@ export function applyPlanningField(state,key,value){
     ["C10","C40","C60"]:
    /^(course|kind|mathsOutside|otherMaths|otherCourseMaths|courseSuitability|mathsRevisedWhy)$/.test(key)?
     ["C20","C30","C40","C60"]:
-   /^(dataSource|primary|secondary|source|method|firstAccuracy)/.test(key)?
+   /^(dataSource|primary|secondary|source|method|firstAccuracy|permissionNeed|permissionDetails|practicalBlocker|unsecured|sourceRights)/.test(key)?
     ["C20","C30","C40","C60"]:[];
   for(const stage of groups)if(state.completion.stages[stage]==="complete")
     state.completion.stages[stage]="needs-review";
@@ -257,6 +263,8 @@ export function toggleMath(state,id){
  syncPlanningToProject(state);return true;
 }
 export function setPlanCurrent(state,id,{history=true,internal=false}={}){
+ if(id==="N03J")id="N03D";
+ if(id==="N03F")id="N03E";
  if(!PLANNING_NODE_IDS.includes(id))return {ok:false,error:"Unknown planning stage."};
  const current=state.planning.current;
  if(history&&current!==id)state.planning.history.push(current);
@@ -268,6 +276,8 @@ export function setPlanCurrent(state,id,{history=true,internal=false}={}){
  return {ok:true,current:id,internal};
 }
 export function planningBack(state){
+ // Old snapshots may contain obsolete route entries before normalization.
+ while(["N03J","N03F"].includes(state.planning.history.at(-1)))state.planning.history.pop();
  const old=state.planning.history.pop();
  if(!old)return{ok:false,error:"This is the first stage. Use Home to leave."};
  return setPlanCurrent(state,old,{history:false});
@@ -287,13 +297,23 @@ function recordTransition(state,from,to,condition,sourceRow){
 }
 export function planningMove(state,condition) {
  const from=state.planning.current;
+ // Retained historical routes remain in the provenance table, but neither
+ // obsolete questionnaire is part of the interactive student journey.
+ const shortRoute={
+  N03P2:{"Complete primary plan":"Finish primary data plan"},
+  N03S:{"Complete":"Finish secondary data plan"},
+  N03B:{"Both data sources complete":"Continue to evidence timing"},
+  N03E:{"Continue":"Continue to manageability"},
+  N03G:{"Reduce workload or resolve blockers":"Revisit practical checks"}
+ };
+ condition=shortRoute[from]?.[condition]||condition;
  const route=routeCondition(from,condition);
  if(!route)return{ok:false,error:"That transition isn't defined for this question."};
  // Legacy source-sheet edge is retained in the route table for provenance,
  // but continuing the old one-page primary form enters the new 3-step flow.
  if(from==="N03P"&&condition==="Complete")return planningMove(state,"Continue to sampling");
  const to=route.to,f=state.planning.fields;
- if(from==="N03B"&&to==="N03J"&&!(state.planning.sourceBranches.primary&&state.planning.sourceBranches.secondary))
+ if(from==="N03B"&&["N03J","N03D"].includes(to)&&!(state.planning.sourceBranches.primary&&state.planning.sourceBranches.secondary))
   return{ok:false,error:"Answer both primary and secondary source questions first."};
  if(from==="N03P"&&!f.primaryHow.trim()&&!f.primaryWhat.trim()&&!state.planning.primaryQuantities.length)
   return{ok:false,error:"Describe what you will collect and how, or add a quantity to get started."};
@@ -321,10 +341,10 @@ export function planningMove(state,condition) {
   !["not-applicable","unsure"].includes(f.primarySamplingMethod)&&
   (!f.primaryPopulation.trim()||!f.primarySamplingUnit.trim()))
   return{ok:false,error:"Identify your population and sampling unit, or select Still uncertain."};
- if(from==="N03P2"&&to==="N03J"&&!["ready","unsure"].includes(f.primaryStatus))
+ if(from==="N03P2"&&["N03J","N03D"].includes(to)&&!["ready","unsure"].includes(f.primaryStatus))
   return{ok:false,error:"Choose whether your primary data plan is ready or uncertain."};
- if(from==="N03S"&&to==="N03J"&&!["ready","unsure"].includes(f.secondaryStatus))return{ok:false,error:"Confirm whether your secondary source plan is ready or uncertain."};
- if(["N03P2","N03S"].includes(from)&&to==="N03J"&&f.dataSource==="both"){
+ if(from==="N03S"&&["N03J","N03D"].includes(to)&&!["ready","unsure"].includes(f.secondaryStatus))return{ok:false,error:"Confirm whether your secondary source plan is ready or uncertain."};
+ if(["N03P2","N03S"].includes(from)&&["N03J","N03D"].includes(to)&&f.dataSource==="both"){
   const branch=from==="N03P2"?"primary":"secondary";
   const statusKey=branch+"Status";
   if(!["ready","unsure"].includes(f[statusKey]))
@@ -337,7 +357,9 @@ export function planningMove(state,condition) {
   }
  }
 
- if(from==="N03F"&&to==="N02T"&&!["yes","unsure"].includes(f.permissionNeed))
+ if(from==="N03E"&&to==="N03G"&&(!f.permissionNeed||!f.practicalBlocker))
+  return{ok:false,error:"Complete the two quick checks about permission and practical access. Choose 'Not sure' if needed."};
+ if(["N03F","N03E"].includes(from)&&to==="N02T"&&!["yes","unsure"].includes(f.permissionNeed))
   return{ok:false,error:"This checkpoint is for unresolved permission or safety concerns."};
  if(from==="N04"&&condition==="AI SL / AA SL"&&!["AI SL","AA SL"].includes(f.course))
   return{ok:false,error:"Select AI SL or AA SL before using this course-specific menu."};
@@ -381,14 +403,14 @@ export function planAutoAdvance(state){
   case "N02U":return go("Return");
   case "N02T":return go("Continue with provisional plan");
   case "N03":if(!f.dataSource)return{ok:false,error:"Choose primary, secondary or both data sources."};return go(f.dataSource==="secondary"?"Secondary":f.dataSource==="both"?"Both":"Primary");
-  case "N03B":return go(state.planning.sourceBranches.primary&&state.planning.sourceBranches.secondary?"Both data sources complete":
+  case "N03B":return go(state.planning.sourceBranches.primary&&state.planning.sourceBranches.secondary?"Continue to evidence timing":
    !state.planning.sourceBranches.primary?"Primary questions":"Secondary questions");
   case "N03P":return go("Continue to sampling");
-  case "N03P2":return go("Complete primary plan");
-  case "N03S":return go("Complete");
+  case "N03P2":return go("Finish primary data plan");
+  case "N03S":return go("Finish secondary data plan");
   case "N03J":return go("Method justification or 'not sure'");
   case "N03D":return go("Continue");
-  case "N03E":if(Number(f.dataReadiness)===5&&f.dataAvailability!=="in-hand")return{ok:false,error:"A readiness rating of 5 means usable data are already in hand. Please adjust the rating or confirm the evidence is available."};return go("Continue");
+  case "N03E":if(Number(f.dataReadiness)===5&&f.dataAvailability!=="in-hand")return{ok:false,error:"A readiness rating of 5 means usable data are already in hand. Please adjust the rating or confirm the evidence is available."};return go("Continue to manageability");
   case "N03R":return go("Retry");
   case "N03F":return go("Feasibility questions answered");
   case "N03G":return go("Practical plan is workable");
