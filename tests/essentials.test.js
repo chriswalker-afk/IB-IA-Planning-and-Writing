@@ -89,3 +89,11 @@ test('switching the reference level does not silently reinterpret an existing E 
 test('student evidence text is escaped in the self-review view',()=>{
  const s=make();s.completion.review.records['draft-D02'].note='<img src=x onerror=alert(1)>';const t=submissionView(s,{mode:'draft'});assert(!t.includes('<img'));assert(t.includes('&lt;img'));
 });
+
+test('title route labels its compare control with title-specific examples',()=>{
+ const s=make();s.route='planning';s.planning.current='N01';
+ const html=criteriaPanel(s);
+ assert(html.includes('Compare titles'));
+ assert(html.includes('data-example-id="EX30"'));
+ assert(!html.includes('Compare examples'));
+});
