@@ -19,6 +19,7 @@ export function modelFromEnvelope(envelope){
  const main=[
   section("01 · The question and its purpose",[
     row("Optional plan label",f.planIdentifier),
+    row("Provisional IA title",f.provisionalTitle),
     row("My investigation aim",f.aim,{required:true}),
     row("Why I chose it",f.motivation),
     row("Intended beneficiary",f.beneficiary||f.beneficiaryType,{required:true}),
