@@ -86,9 +86,14 @@ with sync_playwright() as pw:
   tools=p.locator('.criteria-writing-tools');tools.locator('summary').first.click();p.locator('[data-guidance-event="write-now"]').first.click();field=p.locator('[data-bind="completion.guidanceUi.noteDraft"]');assert field.is_visible();field.fill('My own meaningful thought');p.locator('[data-guidance-event="save-note"]').click();assert p.locator('.criteria-panel').count()==1
  run('criteria-retains-private-writing-tools',fixture(),writing)
  def planning(p):
+  assert p.locator('#main .criteria-panel').count()==0
+  assert p.locator('#main .ess-at-glance').count()==0
+  p.locator('[data-choice="planning.fields.ideaStatus"][data-value="yes"]').click()
+  p.locator('[data-action="plan-advance"]').click()
+  assert p.locator('[data-source-node="N01"]').count()==1
   assert p.locator('.ess-at-glance').count()==1;p.locator('[data-action="criteria-toggle"]').click();assert 'Planning guidance' in p.locator('.criteria-panel').inner_text();before=stored(p);open_ess(p);close_ess(p);assert stored(p)==before
  s=fixture();s['route']='planning';s['planning']['current']='N00'
- run('essentials-planning-at-a-glance',s,planning,390,844)
+ run('essentials-planning-after-kickoff',s,planning,390,844)
  def repeated_reference(p):
   before=stored(p);open_ess(p);tab(p,'rubric');p.locator('.ess-example-links [data-action="example-open"]').first.click()
   p.locator('#exampleDialog .ex-criteria [data-action="essentials-open"]').first.click()
