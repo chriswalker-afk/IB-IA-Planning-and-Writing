@@ -2,6 +2,8 @@ import {planningLearningTrail} from './living-journey.js';
 import {earlyMathRecommendations} from '../planning/math-recommendations.js';
 import {renderInvestigativeRoutes} from './investigative-routes-view.js';
 import {routeById} from '../planning/investigative-routes.js';
+import {samplingPlanner,accuracyPlanner} from './data-decisions-view.js';
+import {samplingMethod,plannedAccuracyText} from '../planning/data-decisions.js';
 import {insightCapture} from './insight-threads.js';
 import {examplePrompt} from "../examples/views.js";
 import {criteriaPanel,essentialsNudge} from "../essentials/views.js";
@@ -278,33 +280,43 @@ export function createPlanningViews(ctx){
      (!p.sourceBranches.primary||!p.sourceBranches.secondary?callout("Complete each source plan","A source is addressed when you have recorded whether it is ready or still uncertain. We will not pretend to have collected either dataset."):callout("Both question sets addressed","You can now consider why you need both sources and how to compare them.")),
     "<h4>Why this extra step?</h4><p>A combined-data investigation needs two defensible source plans. Switching between the panels here does not mean you've actually gathered observations.</p>",
     "Continue to method comparison");
-   case "N03P":return stepBody("Plan your primary data.","Think about a reproducible method. Do not enter identifiable participant information.",
-    F("primaryWhat","What will you measure or record?","Variables, quantity and units",{type:"textarea",rows:2})+
-    '<div class="field-row">'+F("primaryWhen","When could you collect it?","",{type:"date"})+
+   case "N03P":return stepBody("Plan your primary data.",
+    "Decide what you will observe, who or what it represents, and how accurately you can record it—before collecting anything.",
+    F("primaryWhat","What will you measure or record?","Quantities, variables or categories relevant to your aim",{type:"textarea",rows:2})+
+    samplingPlanner(state,{F,select,e,icon})+
+    '<section class="data-plan-how"><h3>How will you collect and record it?</h3>'+
+    F("primaryHow","Measurement or collection procedure","What will you do, step by step? Avoid names or identifying personal information.",{type:"textarea",rows:3})+
+    F("primaryEquipment","Equipment or resources needed","e.g. digital stopwatch, tape measure, recording app")+
+    accuracyPlanner(state,"primary",{F,select,e,icon})+'</section>'+
+    '<div class="field-row">'+F("primaryWhen","When could you start?","",{type:"date"})+
     F("primaryWhere","Where could you do this?","Setting without private details")+'</div>'+
-    F("primaryPopulation","Who or what will you study?","Population or objects, not participants' names")+
-    F("primaryHow","How will you collect or measure it?","A clear method and any sampling strategy",{type:"textarea",rows:3})+
-    F("primaryEquipment","Equipment or resources needed","Tools and their relevant accuracy")+
-    F("primarySampling","Sampling plan (only if relevant)","Census, random sample, convenience and why",{type:"textarea",rows:2})+
     select("primaryStatus","How certain is your primary-data plan?",[
-     ["ready","I have a workable collection plan"],["unsure","Parts of my method or access are still uncertain"]]),
-    "<h4>Method first</h4><p>Choose a sampling method or collection approach that suits the aim. Describe limitations of the actual design later, not an imagined perfect study.</p>");
-   case "N03S":return stepBody("Plan your secondary data.","A proposed web link is not yet a verified usable dataset.",
+     ["ready","I have a workable collection plan"],
+     ["unsure","Parts of the collection, sampling or accuracy plan are uncertain"]]),
+    "<h4>Start small, but be accurate</h4><p>Define your population and units, collect a quick permitted pilot, then adapt if the results suggest another observation. A practical sample is valuable when its limitations are described honestly.</p>");
+   case "N03S":return stepBody("Plan your secondary data.",
+    "Check what published values represent and their original precision. A table's decimal places do not prove measurement accuracy.",
     F("secondaryUrl","Source link (optional while searching)","https://…",{type:"url"})+
     F("secondaryPublisher","Who published the source?","Organisation or publisher")+
-    F("secondaryVariables","Which variables and units will you use?","Specify variables, units and definitions",{type:"textarea",rows:2})+
-    F("secondaryScope","Which dates, population or subset are relevant?","The part that actually connects to your aim",{type:"textarea",rows:2})+
-    select("secondaryVerified","Have you confirmed this source is usable?",[
-     ["yes","I checked the source and variables"],["no","Not yet; it is a candidate source"],["unsure","I'm not sure how to verify it"]])+
+    F("secondaryVariables","Which variables and units will you use?","Specify relevant columns, units and definitions",{type:"textarea",rows:2})+
+    F("secondaryScope","Which dates, population or subset are relevant?","Describe which observations actually connect to your aim",{type:"textarea",rows:2})+
+    F("secondarySamplingOrigin","How were the published observations selected? (if known)",
+     "A sample, census, administrative records or unknown collection method",{type:"textarea",rows:2})+
+    accuracyPlanner(state,"secondary",{F,select,e,icon})+
+    select("secondaryVerified","Have you checked the source and original data definitions?",[
+     ["yes","I checked its source and variable definitions"],
+     ["no","Not yet; it is a candidate source"],
+     ["unsure","I need to check how to verify it"]])+
     select("secondaryStatus","How certain is your secondary-data plan?",[
-     ["ready","I have a credible and workable plan"],["unsure","My source or its suitability remains uncertain"]]),
-    "<h4>Check relevance</h4><p>Inspect actual fields, definitions, dates and population. A reputable publisher doesn't guarantee this dataset answers your aim. Cite the source when it is actually used.</p>");
+     ["ready","I have a credible and workable plan"],
+     ["unsure","My source, sampling information or precision remains uncertain"]]),
+    "<h4>Reporting precision is not instrument accuracy</h4><p>If a table shows two decimal places, you may infer how the published value was rounded. Do not assume the original instrument was accurate to the same degree. Look for documentation; when unknown, record that honestly.</p>");
    case "N03J":return stepBody("Why is this method worth choosing?","Compare with one realistic alternative. There is no need for a generic essay on sampling.",
     F("alternativeMethod","Another possible method or source","An alternative you genuinely considered",{type:"textarea",rows:2})+
     F("methodReason","Why does your preferred approach suit your aim?","What would make this evidence useful?",{type:"textarea",rows:3})+
     F("methodLimitation","What is its most important likely limitation?","Measurement uncertainty, selection, source coverage …",{type:"textarea",rows:2})+
     F("methodMitigation","Could you reduce or accept that limitation? (optional)","One feasible adjustment or an honest scope qualification",{type:"textarea",rows:2})+
-    ((f.primaryHow||"").toLowerCase().includes("survey")?F("primarySampling","Survey: which population and sampling strategy?","Explain choice, access, bias and wording",{type:"textarea",rows:2}):""),
+    (f.primarySamplingMethod?callout("Return to your sampling decision","Your provisional choice is saved. Revisit the primary-data screen if your available observations change."):''),
     "<h4>A targeted comparison</h4><p>Don't recite every sampling method. The question is why your chosen approach serves this particular aim better than a plausible alternative.</p>");
    case "N03D":return stepBody("When can you start doing useful mathematics?","An early small dataset can be more valuable than waiting for everything to be complete.",
     dates([["sourceFirstDate","Target for first usable evidence"],["sourceFullDate","Target for complete dataset"]])+
@@ -429,8 +441,11 @@ export function createPlanningViews(ctx){
    case "N05":return stepBody("Choose an achievable first mathematical action.","Start small, but make the action mathematically useful.",
     summary("Your proposed first representation",f.figureOther||f.figureType)+
     F("firstAction","One worthwhile step I could do first","A first graph, algebraic example, labelled diagram or test",{type:"textarea",rows:3})+
-    F("firstAccuracy","Units or measurement precision to remember (if relevant)","e.g. height to nearest cm; exact symbolic expressions",{type:"textarea",rows:2})+
-    callout("Save accuracy decisions","When you report later results, Pathfinder should reuse relevant earlier units and precision rather than asking again unnecessarily."),
+    (state.planning.accuracyPlans?.length?callout("Your planned accuracy sparks",
+      e(state.planning.accuracyPlans.map(x=>plannedAccuracyText(x)).join("; ").slice(0,300))+
+      " — Confirm these against actual measurements and sources before using them."):
+      callout("No recorded measurement accuracy yet","If you use numerical measurements or rounded tables, return to the source plan and record original precision. Exact counts need no invented uncertainty."))+
+    F("firstAccuracy","Any further accuracy convention for calculations? (optional)","For example, exact symbolic results or an output-rounding policy",{type:"textarea",rows:2}),
     "<h4>Plan for interpretation</h4><p>After an actual result, explain its significance for the aim and why another mathematical question would follow.</p>");
    case "N06E":return stepBody("What might change the direction of your investigation?","A strong plan is flexible when data, methods or surprising findings call for revision.",
     F("changeTrigger","What result or obstacle might make you rethink your approach?","A curved pattern, missing source, unexpected result or counterexample",{type:"textarea",rows:3})+
