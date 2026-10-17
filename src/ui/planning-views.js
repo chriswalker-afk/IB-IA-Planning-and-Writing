@@ -34,18 +34,6 @@ export function createPlanningViews(ctx){
  const text=(value)=>e(value||"");
  const dates=(fields)=>fields.map(([key,label])=>F(key,label,"",{type:"date"})).join("");
  const callout=(title,body,warning=false)=>'<div class="inline-note'+(warning?" warning":"")+'">'+icon(warning?"info":"lightbulb")+'<p><strong>'+e(title)+'</strong> '+body+'</p></div>';
- /** One compact expandable spark, backed by the canonical Planning aim. */
- function compactAimSpark(state){
-  const aim=state.planning.fields.aim||state.project?.aim||"";
-  const preview=aim.trim()?(aim.trim().length>90?aim.trim().slice(0,89)+"…":aim.trim()):"Your aim is still developing";
-  return '<details class="motivation-aim-spark" data-motivation-aim-spark>'+
-   '<summary><span class="motivation-aim-symbol">'+icon("target")+'</span>'+
-   '<span class="motivation-aim-copy"><strong>My aim spark</strong><small data-motivation-aim-preview>'+e(preview)+'</small></span>'+
-   '<span class="motivation-aim-toggle">'+icon("pencil")+' View / edit</span></summary>'+
-   '<div class="motivation-aim-details"><p>Your aim can change. Editing here updates the same aim used across your investigation.</p>'+
-   F("aim","Refine my investigation aim","What mathematical question am I trying to answer?",{type:"textarea",rows:2})+
-   '</div></details>';
- }
  const route=(label,condition,cls="btn-secondary")=>'<button type="button" class="btn '+cls+'" data-action="plan-route" data-condition="'+e(condition)+'">'+e(label)+icon("arrow-right")+'</button>';
  const edit=(id,label)=>'<button type="button" class="btn btn-quiet btn-sm" data-action="plan-edit" data-node="'+e(id)+'">'+e(label)+icon("chevron-right")+'</button>';
  const stepBody=(title,intro,html,help="",label="Continue")=>({title,intro,html,help,label});
@@ -176,7 +164,6 @@ export function createPlanningViews(ctx){
     F("idea","My starting idea","The topic or observation that brought me here")+'</details>':''),
     "<h4>A title worth exploring</h4><p>Be specific enough to guide your mathematics without deciding the conclusion in advance. Your title can change after you have real results.</p>");
    case "N01V":return stepBody("Have a clear motivation.","A mathematical result is an outcome, not a reason on its own to investigate a question. Why would answering your aim be worth doing?",
-    compactAimSpark(state)+
     '<div class="motivation-purpose-note">'+icon("lightbulb")+
     '<div><strong>Give your mathematics a purpose</strong><p>What could answering your question help you understand, compare, explain or decide? It might help you, someone else, or develop a genuine mathematical understanding. You do not need to invent a beneficiary or promise a particular result.</p></div></div>'+
     '<div class="motivation-who"><h3>One way to think about your motivation</h3>'+
