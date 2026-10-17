@@ -97,6 +97,7 @@ export function createPlanningEnvelope(state,{exportedAt=new Date().toISOString(
   current:p.current,fields:{...p.fields},mathSelected:[...p.mathSelected],
   routeExplorer:{selectedRoute:p.routeExplorer.selectedRoute,firstStep:p.routeExplorer.firstStep,status:'provisional'},
   accuracyPlans:p.accuracyPlans.map(x=>({...x})),
+  primaryQuantities:p.primaryQuantities.map(x=>({...x})),
   sourceBranches:{...p.sourceBranches},completedNodes:[...p.completedNodes],
   // Current Planning work only: no actual mathematics, no teacher approval record.
   completed:!!p.completed,sourceSnapshot:p.sourceSnapshot
@@ -138,6 +139,7 @@ export function normalizePlanningEnvelope(value){
   planning:{current:clean.current,fields:clean.fields,mathSelected:clean.mathSelected,
    routeExplorer:clean.routeExplorer,
    accuracyPlans:clean.accuracyPlans,
+   primaryQuantities:clean.primaryQuantities,
    sourceBranches:clean.sourceBranches,completedNodes:clean.completedNodes,
    completed:clean.completed,sourceSnapshot:clean.sourceSnapshot},
   teacher:{openFlags,pendingReview:value.teacher?.pendingReview===true||openFlags.length>0}, // no imported document establishes approval
@@ -182,6 +184,13 @@ export function getFieldDiff(current,envelope){
    old:oldSelected.join(", ")||"",next:newSelected.join(", "),
    recommended:!oldSelected.length});
  }
+ const newQuantities=incoming.planning.primaryQuantities||[];
+ const oldQuantities=current.planning?.primaryQuantities||[];
+ if(newQuantities.length&&JSON.stringify(newQuantities)!==JSON.stringify(oldQuantities))
+  changes.push({key:'primaryQuantities',label:'Planned data quantities and units',
+   group:'Investigation and sources',old:oldQuantities.map(q=>q.name+(q.unit?' ('+q.unit+')':'')).join('; '),
+   next:newQuantities.map(q=>q.name+(q.unit?' ('+q.unit+')':'')).join('; '),
+   recommended:!oldQuantities.length});
  const newAccuracy=incoming.planning.accuracyPlans||[];
  const oldAccuracy=current.planning?.accuracyPlans||[];
  if(newAccuracy.length&&JSON.stringify(newAccuracy)!==JSON.stringify(oldAccuracy))
@@ -208,6 +217,9 @@ export function mergePlanningEnvelope(current,envelope,selectedKeys=[],{origin="
  for(const key of requested){
   if(key==="mathSelected"){
    state.planning.mathSelected=[...imported.planning.mathSelected];
+  }else if(key==='primaryQuantities'){
+   state.planning.primaryQuantities=imported.planning.primaryQuantities.map(q=>({...q}));
+   state.planning.primaryQuantityEditId='';
   }else if(key==='accuracyPlans'){
    state.planning.accuracyPlans=imported.planning.accuracyPlans.map(x=>({...x}));
    state.planning.accuracyEditId='';
@@ -245,7 +257,7 @@ export function mergePlanningEnvelope(current,envelope,selectedKeys=[],{origin="
   const aimKeys=new Set(["aim","motivation","beneficiaryType","beneficiary","intendedUse","prediction","predictionWhy","predictionImplication"]);
   const mathsKeys=new Set(["course","kind","mathSelected","routeExplorer","mathsOutside","otherMaths","otherCourseMaths","firstAction","figureType","figurePurpose","firstAccuracy"]);
   const sourceKeys=new Set(["dataSource","secondaryUrl","secondaryVariables","primaryWhat","primaryHow","primarySampling","primarySamplingMethod","primarySamplingUnit","primarySamplingFrame",
-   "primarySamplingFrameDetails","primaryRepeatable","secondarySamplingOrigin","accuracyPlans","methodReason","methodLimitation","methodMitigation"]);
+   "primarySamplingFrameDetails","primaryRepeatable","primaryQuantities","secondarySamplingOrigin","accuracyPlans","methodReason","methodLimitation","methodMitigation"]);
   const changesAim=applied.some(k=>aimKeys.has(k));
   const changesMaths=applied.some(k=>mathsKeys.has(k));
   const changesSource=applied.some(k=>sourceKeys.has(k));
