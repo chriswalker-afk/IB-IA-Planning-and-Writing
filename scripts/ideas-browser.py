@@ -91,7 +91,7 @@ with sync_playwright() as pw:
   p.locator('[data-action="idea-map-root"][data-root="record"]').click()
   p.locator('[data-action="idea-map-access"][data-branch="survey"]').click()
   assert 'permission' in p.locator('.idea-map-survey-warning').inner_text()
-  assert p.locator('.idea-map-connectors path').count()==9
+  assert p.locator('.idea-map-connectors path').count()==6
   p.locator('[data-action="idea-map-root"][data-root="find"]').click()
   p.locator('[data-action="idea-map-access"][data-branch="image"]').click()
   p.locator('[data-action="idea-explore"][data-seed="sport-trajectory"]').click()
