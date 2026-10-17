@@ -127,7 +127,7 @@ export function planningLearningTrail(s,{support=''}={}){
   '<p class="planning-trail-stage-name">'+e(stage.label)+'</p>'+stageTrack+screenProgress+
   '<div class="planning-trail-saved">'+icon('sparkles')+' <strong>'+recorded+' of '+anchors.length+
   ' decisions saved</strong></div>'+
-  '<details class="planning-trail-checkpoints"><summary>See planning checkpoints '+icon('chevron-down')+'</summary>'+
+  '<details class="planning-trail-checkpoints"><summary>See planning checkpoints '+icon('chevron-right')+'</summary>'+
   '<ol>'+anchors.map(x=>'<li class="'+(x.recorded?'recorded':'waiting')+'">'+
    '<span>'+icon(x.recorded?'check':'circle')+'</span><span>'+e(x.name)+'</span></li>').join('')+
   '</ol></details>'+
@@ -143,11 +143,11 @@ export function planningLearningTrail(s,{support=''}={}){
   '<strong>'+icon('route')+' Your learning trail</strong>'+
   '<small>Planning · '+e(stage.label)+' (phase '+(stageIndex+1)+' of '+PROGRESS_GROUPS.length+')</small>'+
   '</span><span class="planning-trail-compact-end">'+stageTrack+
-  '<small>'+stepsCompleted+' screens · '+recorded+'/'+anchors.length+' decisions</small></span>'+icon('chevron-down')+
+  '<small>'+stepsCompleted+' screens · '+recorded+'/'+anchors.length+' decisions</small></span>'+icon('chevron-right')+
   '</summary><div class="planning-trail-compact-body">'+full+'</div></details>'+
   (support?'<section class="planning-trail-support" aria-label="Help and examples for this screen">'+
     '<button class="planning-trail-help-toggle" type="button" data-action="planning-help-toggle" aria-expanded="false" aria-controls="planning-trail-support-body">'+
-    icon('lightbulb')+' Help & examples '+icon('chevron-down')+'</button>'+
+    icon('lightbulb')+' Help & examples '+icon('chevron-right')+'</button>'+
     '<div class="planning-trail-support-body" id="planning-trail-support-body">'+support+'</div></section>':'')+
   '</aside>';
 }
