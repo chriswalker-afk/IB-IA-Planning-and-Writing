@@ -3,7 +3,9 @@ import {createIllustrativeSample,SAMPLE_CHOICES} from '../src/core/illustrative-
 import {STATUS_LABELS,resumeRoute,rememberCheckpoint} from '../src/ui/journey.js';
 import {journeyRail} from '../src/ui/journey-views.js';
 import {C_MAJOR_STAGES,completionStage} from '../src/completing/engine.js';
-import {ideaAction,ideaInput,chooseTopic} from '../src/ideas/engine.js';
+import {ideaAction,ideaInput,ideaDifficultyInput,chooseTopic} from '../src/ideas/engine.js';
+import {insightCapture} from '../src/ui/insight-threads.js';
+import {planningLearningTrail} from '../src/ui/living-journey.js';
 import {resourceDrawer,resourceList} from '../src/resources/views.js';
 import {resourceAction,resourceFilter,resourcePreference} from '../src/resources/actions.js';
 import {newResourceSession} from '../src/resources/state.js';
@@ -60,7 +62,8 @@ function createHarness(savedValue){
   const window={scrollTo(){},confirm:()=>true,alert(){},print(){}};
   const script=read("../app.js").replace(/^import\s+.*;\s*$/gm,"");
   // The real browser suite exercises the independent native-dialog controller.
-  const globals={createSamplePreview,createIllustrativeSample,SAMPLE_CHOICES,STATUS_LABELS,resumeRoute,rememberCheckpoint,journeyRail,C_MAJOR_STAGES,completionStage,structuredClone,captureReturn:()=>({scroll:0,attributes:[]}),restoreReturn:()=>{},createEssentialsController:()=>({}),editCriterionReview:()=>false,createExampleController:()=>({}),ideaAction,ideaInput,chooseTopic,resourceDrawer,resourceList,resourceAction,resourceFilter,resourcePreference,newResourceSession,PRACTICE_PAIRS,createStuckViews,captureStuckOrigin,isStuckNode,stuckAction,stuckContext,
+  const globals={createSamplePreview,createIllustrativeSample,SAMPLE_CHOICES,STATUS_LABELS,resumeRoute,rememberCheckpoint,journeyRail,C_MAJOR_STAGES,completionStage,structuredClone,captureReturn:()=>({scroll:0,attributes:[]}),restoreReturn:()=>{},createEssentialsController:()=>({}),editCriterionReview:()=>false,createExampleController:()=>({}),ideaAction,ideaInput,ideaDifficultyInput,chooseTopic,
+     attachIdeaMapGraph:()=>()=>{},insightCapture,planningLearningTrail,resourceDrawer,resourceList,resourceAction,resourceFilter,resourcePreference,newResourceSession,PRACTICE_PAIRS,createStuckViews,captureStuckOrigin,isStuckNode,stuckAction,stuckContext,
     conformanceAction,reviewEditChanged,document,window,localStorage:storage,console,clearTimeout(){},setTimeout(){return 1;},
     createProjectState,normalizeProjectState,persistProjectState,
     newState:createProjectState,normalise:normalizeProjectState,
