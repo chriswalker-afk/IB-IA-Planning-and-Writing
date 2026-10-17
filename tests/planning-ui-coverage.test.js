@@ -134,3 +134,30 @@ test("the idea-map starting page focuses on branches instead of the old help and
  assert(!html.includes('idea-start'));
  assert(!html.includes('resource-prompt'));
 });
+
+test('motivation screen has one why/who/how response and a small inline-editable aim spark',()=>{
+ const {state,view}=screenFixture();
+ state.planning.current='N01V';
+ state.planning.fields.aim='How well does my model describe an observed trajectory?';
+ let html=view.viewPlanning();
+ assert(html.includes('Have a clear motivation'));
+ assert(html.includes('A mathematical result is an outcome, not a reason'));
+ assert(html.includes('data-motivation-aim-spark'));
+ assert(html.includes('data-motivation-aim-preview'));
+ assert(html.includes('View / edit'));
+ assert(html.includes('data-bind="planning.fields.aim"'));
+ assert.equal((html.match(/data-bind="planning.fields.beneficiary"/g)||[]).length,1);
+ assert(!html.includes('data-bind="planning.fields.intendedUse"'));
+ assert(!html.includes('Your ideas are back'));
+ assert(html.includes('Who might benefit, and how'));
+ assert(html.includes('We will return to this'));
+ assert(html.includes('Why does this matter?'));
+ assert(html.includes('Compare motivations'));
+ assert(html.includes('data-insight-source="N01V"'));
+ const s=state.planning.fields;
+ s.beneficiary='I want to compare two trajectories to understand which model fits better.';
+ html=view.viewPlanning();
+ assert(html.includes('Spark saved · Your motivation'));
+ assert(html.includes('My aim spark'));
+ assert(html.includes('planning-trail-support'));
+});
