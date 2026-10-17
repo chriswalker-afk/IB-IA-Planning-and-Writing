@@ -73,7 +73,7 @@ export function planningLearningTrail(s,{support=''}={}){
   N01:'Worked on the title and question',N01V:'Considered my motivation',N02M:'Explored course and mathematics',
   N02:'Chose an investigation direction',N02U:'Explored mathematical routes',N02T:'Prepared a teacher conversation',
   N03:'Chose a starting-material route',N03B:'Planned two evidence routes',
-  N03P:'Planned primary evidence',N03S:'Planned secondary evidence',
+  N03P:'Chose quantities to collect',N03P2:'Considered a sampling approach',N03P3:'Planned recording accuracy',N03S:'Planned secondary evidence',
   N04:'Reviewed mathematical suitability',N04S:'Considered possible mathematics',
   N05V:'Planned first mathematics',N06:'Reviewed a provisional plan'
  };
@@ -82,7 +82,7 @@ export function planningLearningTrail(s,{support=''}={}){
   N00:'Choose a starting point',N00B:'Find a promising idea',N00C:'Compare your ideas',
   N01:'Give your idea a working title',N01V:'Have a clear motivation',N02M:'Choose possible mathematics',
   N02:'Choose an investigation type',N02U:'Explore types',N02T:'Prepare a teacher discussion',
-  N03:'Choose starting material',N04:'Consider the maths',N05V:'Plan the first move',
+  N03:'Choose starting material',N03P:'What will I collect?',N03P2:'How will I sample?',N03P3:'How will I measure accurately?',N04:'Consider the maths',N05V:'Plan the first move',
   N06:'Review your provisional plan'
  };
  const screensDone=[...new Set(s?.planning?.completedNodes||[])].filter(id=>PROGRESS_GROUPS.some(g=>g.nodes.includes(id)));
