@@ -1214,7 +1214,9 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       const path=target.dataset.bind;
       if(path==="planning.fields.course"||path==="planning.fields.ideaSelected"||
        ["planning.fields.primarySamplingMethod","planning.fields.primarySamplingFrame",
-        "planning.fields.primaryAccuracyBasis","planning.fields.secondaryAccuracyBasis"].includes(path)||
+        "planning.fields.primaryAccuracyBasis","planning.fields.secondaryAccuracyBasis",
+        "planning.fields.permissionNeed","planning.fields.practicalBlocker",
+        "planning.fields.dataReadiness"].includes(path)||
        ["completion.fields.scatterDetail","completion.fields.scatterAimRelevance",
         "entries."+state.completion.activeEntryIndex+".methodId",
         "entries."+state.completion.activeEntryIndex+".accuracyRef"].includes(path)||
