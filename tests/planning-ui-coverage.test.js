@@ -116,3 +116,18 @@ test("first Planning screen asks one three-way question and keeps support for la
  assert(i>=0);
  assert(!next.slice(i).includes('criteria-panel'));
 });
+
+test("the idea-map starting page focuses on branches instead of the old help and dropdown",()=>{
+ const {state,view}=screenFixture();state.planning.current="N00B";
+ const html=view.viewPlanning();
+ assert(html.includes("My hobbies &amp; interests"));
+ assert(html.includes("My daily life"));
+ assert(html.includes("My world"));
+ assert(html.includes("Start with data I can get"));
+ assert(html.includes('idea-map-quickstart'));
+ assert(!html.includes('id="idea-topic"'));
+ assert(!html.includes('What makes a promising starting point?'));
+ assert(!html.includes('Help me think'));
+ assert(!html.includes('idea-start'));
+ assert(!html.includes('resource-prompt'));
+});
