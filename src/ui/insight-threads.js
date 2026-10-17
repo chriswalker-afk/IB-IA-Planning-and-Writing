@@ -5,6 +5,7 @@
 import {escapeHtml as e,icon} from './primitives.js';
 import {linkedAccuracy,linkedSources} from '../completing/evidence-links.js';
 import {routeById} from '../planning/investigative-routes.js';
+import {samplingMethod,samplingSparkValue,plannedAccuracyText} from '../planning/data-decisions.js';
 
 const has=v=>typeof v==='string'&&!!v.trim();
 const short=(v,n=160)=>{const t=String(v??'').trim();return t.length>n?t.slice(0,n-1)+'…':t;};
@@ -14,6 +15,7 @@ export const INSIGHT_FAMILIES=Object.freeze({
  motivation:{label:'My motivation',icon:'compass',verb:'Why answering this question matters'},
  pathway:{label:'My investigative route',icon:'route',verb:'An optional first step and possible directions'},
  evidence:{label:'My evidence',icon:'flask',verb:'A source or method to revisit'},
+ sampling:{label:'My sampling decision',icon:'layers',verb:'A provisional sampling approach to confirm with actual observations'},
  accuracy:{label:'My accuracy choices',icon:'layers',verb:'A decision to apply when relevant'},
  discovery:{label:'My discoveries',icon:'chart',verb:'A mathematical finding to build upon'},
  reflection:{label:'My reflections',icon:'lightbulb',verb:'Something to consider later'},
@@ -52,6 +54,18 @@ export function insightItems(s){
  if(has(planned))out.push(item('evidence','planned-evidence','Planned starting material',planned,'Planning · Evidence',
   {type:'planning',node:p.kind==='theoretical'?'N02T':'N03'},
   {usage:'A plan is not yet evidence collected or a confirmed actual source.'}));
+ const sampling=samplingMethod(p.primarySamplingMethod);
+ if(sampling)out.push(item('sampling','sampling-plan','My planned sampling approach',
+  samplingSparkValue(p),'Planning · Primary data sampling',{type:'planning',node:'N03P'},
+  {planned:true,usage:'A proposed approach only. Check the real sample, sampling frame, participation and which population the data genuinely represent.'}));
+ for(const plan of Array.isArray(s?.planning?.accuracyPlans)?s.planning.accuracyPlans:[]){
+  if(!plan.quantity)continue;
+  out.push(item('accuracy','planned-accuracy:'+plan.id,'Planned accuracy · '+plan.quantity,
+   plannedAccuracyText(plan),'Planning · '+(plan.source==='secondary'?'Published data':'Primary measurements'),
+   {type:'planning',node:plan.source==='secondary'?'N03S':'N03P'},
+   {planned:true,plannedSource:plan.source,
+    usage:'This is a planned recording or rounding rule, not verified measurement accuracy. Confirm the original instrument or published methodology before calculating or reporting results.'}));
+ }
  const first=p.firstAction||p.figurePurpose;
  if(has(first))out.push(item('discovery','planned-maths','Planned first mathematics',first,'Planning · Mathematical direction',
   {type:'planning',node:'N05V'}, {planned:true,usage:'A proposed action, not a performed calculation.'}));
@@ -126,7 +140,12 @@ export function insightForCurrent(s,node){
   }
   return [...new Map(prep.map(x=>[x.id,x])).values()].slice(0,3);
  }
- if(['C20','C21S','C21M','C21T','C22','C23','C24','C25','C26','C30','C31'].includes(node)){
+ if(node==='C21S')return [...compact(['sampling-plan','planned-evidence','aim'])].slice(0,3);
+ if(node==='C24'){
+  const planned=all.filter(x=>x.id.startsWith('planned-accuracy:')).slice(0,2);
+  return [...planned,...compact(['planned-evidence','aim'])].slice(0,3);
+ }
+ if(['C20','C21M','C21T','C22','C23','C25','C26','C30','C31'].includes(node)){
   const standard=all.filter(x=>x.id==='planned-evidence'||x.id==='planned-maths'||x.id==='aim').slice(0,2);
   if(['C20','C22','C26'].includes(node)&&named('motivation'))standard.push(named('motivation'));
   if(['C26','C30','C31'].includes(node)&&named('investigative-route'))standard.push(named('investigative-route'));
@@ -134,6 +153,8 @@ export function insightForCurrent(s,node){
  }
  if(['C32','C33','C34','C34A','C40','C50','C40T','C40L','C35H','C35B','C35P'].includes(node)){
   const contextual=[...result,...related('accuracy'),...related('source')];
+  if(['C34','C34A','C40','C50'].includes(node)&&!related('accuracy').length&&contextual.length<2)
+   contextual.push(...all.filter(x=>x.id.startsWith('planned-accuracy:')).slice(0,1));
   if(['C35H','C35B','C35P'].includes(node)&&latestResult)contextual.push(latestResult);
   if(['C34','C34A','C40','C50'].includes(node))contextual.push(...compact(['aim']));
   if(['C34','C34A'].includes(node))contextual.push(...compact(['motivation']));
@@ -160,6 +181,14 @@ export function insightCapture(s,node){
   else if(node==='N01A'){ids=['aim'];kind='Your investigation aim';}
   else if(node==='N01V'){ids=['motivation'];kind='Your motivation';}
  else if(node==='N01P'){ids=['prediction'];kind='Your conjecture';}
+ else if(node==='N03P'){
+  ids=['sampling-plan',...all.filter(x=>x.id.startsWith('planned-accuracy:')&&x.plannedSource==='primary').map(x=>x.id)];
+  kind='Your planned sampling and accuracy';
+ }
+ else if(node==='N03S'){
+  ids=all.filter(x=>x.id.startsWith('planned-accuracy:')&&x.plannedSource==='secondary').map(x=>x.id);
+  kind='Your planned source precision';
+ }
  else if(/^N03/.test(node)||node==='N02T'){ids=['planned-evidence'];kind='Your intended evidence';}
  else if(node==='N02M'||node==='N04R'||node==='N04S'){ids=['investigative-route'];kind='Your provisional investigative route';}
  else if(['N05V','N05'].includes(node)){ids=['planned-maths'];kind='Your first mathematical intention';}
@@ -187,6 +216,10 @@ export function insightCapture(s,node){
 }
 export function insightMeaning(s,node,x){
  const active=entries(s)[s?.completion?.activeEntryIndex];
+ if(x.id==='sampling-plan')
+  return 'You chose this sampling strategy earlier. Verify the real method and units used, including who was excluded or unavailable. Convenience can be useful, but it does not justify population-wide generalisations.';
+ if(x.id.startsWith('planned-accuracy:'))
+  return 'You saved this degree of accuracy while planning. Check the actual instrument resolution or source metadata; do not assume that rounded digits equal measurement accuracy. Record the confirmed quantity and uncertainty in IA Studio.';
  if(x.type==='accuracy'&&['C34','C34A','C40','C50','C40T','C40L'].includes(node)){
   return 'This is the precision policy you linked to the active mathematics. Use it when these measurements actually limit the accuracy of this result; retain guard digits during calculations.';
  }
@@ -234,7 +267,9 @@ export function insightEcho(s,node){
 }
 export function insightToolkit(s,{compact=false}={}){
  const all=insightItems(s);
- const forHome=all.filter(x=>!x.planned||x.id==='investigative-route'),pinned=forHome.filter(x=>x.id==='working-title'||x.id==='aim'||x.id==='investigative-route');
+ const forHome=all.filter(x=>!x.planned||x.id==='investigative-route'||x.id==='sampling-plan'||x.id.startsWith('planned-accuracy:'));
+ const pinned=forHome.filter(x=>x.id==='working-title'||x.id==='aim'||x.id==='investigative-route'||x.id==='sampling-plan'||
+  (x.id.startsWith('planned-accuracy:')&&x.id===forHome.find(y=>y.id.startsWith('planned-accuracy:'))?.id)).slice(0,5);
  const visible=compact?[...pinned,...forHome.filter(x=>!['working-title','aim'].includes(x.id)).slice(-(5-pinned.length))]:all.slice(-10);
  const earlier=compact?[]:all.slice(0,-10);
  const card=x=>'<button type="button" class="insight-toolkit-card insight-'+e(x.type)+'"'+jumpAttrs(x)+'>'+
