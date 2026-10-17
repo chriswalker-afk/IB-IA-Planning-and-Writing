@@ -472,6 +472,18 @@ export const EXAMPLES = [
     "why": "The representation matches categorical data. Zero-baseline bars support count comparisons; this is not a rule that every scatter-graph axis must begin at zero.",
     "question": "Does the representation fit your variable type?",
     "visual": "categorical"
+  },
+  {
+    "id": "EX30",
+    "title": "Provisional IA titles: a question you can actually investigate",
+    "category": "methods",
+    "kind": "all",
+    "topics": ["title", "aim", "engagement"],
+    "weak": "**Too broad:** 'Mathematics in basketball'.\n\n**Assumes a conclusion:** 'Why practising music improves maths grades'.\n\n**Just names a technique:** 'Using correlation and regression'.",
+    "strong": "**Modelling:** 'How well does a quadratic model describe the path of a basketball shot recorded on video?'\n\n**Statistics:** 'Is weekly music-practice time associated with mathematics test marks in a sample of students?'\n\n**Mathematical curiosity:** 'How does the number of ways to tile a 2 by n rectangle with dominoes change as n increases?'",
+    "why": "A useful working title identifies an investigable relationship, property or problem. It need not promise a result, name impressive techniques, or announce that the topic is a personal passion. It can change when genuine calculations lead somewhere interesting. These are fictional prompts, not guaranteed suitable IA topics or titles to copy.",
+    "question": "What precisely might your mathematics answer? Which words would you revise if the evidence leads to a different question?",
+    "visual": ""
   }
 ];
 export const NUMERICAL_EXAMPLE = {
