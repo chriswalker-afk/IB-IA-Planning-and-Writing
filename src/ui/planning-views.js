@@ -3,7 +3,7 @@ import {earlyMathRecommendations} from '../planning/math-recommendations.js';
 import {renderInvestigativeRoutes} from './investigative-routes-view.js';
 
 import {accuracyPlanner} from './data-decisions-view.js';
-import {primaryDataWhat,primaryDataSampling,primaryDataAccuracy} from './primary-data-steps.js';
+import {primaryDataWhat,primaryDataSampling} from './primary-data-steps.js';
 
 import {insightCapture,renderSparkShelf} from './insight-threads.js';
 import {examplePrompt} from "../examples/views.js";
@@ -230,27 +230,22 @@ export function createPlanningViews(ctx){
     "<h4>Planning a source is not collecting data</h4><p>Record what you intend to do here. In IA Studio you will confirm what you actually obtained and used.</p>");
    case "N03B":return stepBody("Plan both evidence sources.","Answer each question set. They can be provisional, but both must be addressed before they join.",
     '<div class="plan-source-grid">'+
-     '<div class="content-card"><strong>Primary data</strong><p class="text-small text-muted">Three short steps: what to collect, sampling, and accuracy</p>'+statusValue(p.sourceBranches.primary)+
+     '<div class="content-card"><strong>Primary data</strong><p class="text-small text-muted">Two short steps: collection & accuracy, then sampling</p>'+statusValue(p.sourceBranches.primary)+
      '<div style="margin-top:12px">'+route(p.sourceBranches.primary?"Edit primary questions":"Answer primary questions","Primary questions","btn-light")+'</div></div>'+
      '<div class="content-card"><strong>Secondary data</strong><p class="text-small text-muted">Source, variables, population and validation</p>'+statusValue(p.sourceBranches.secondary)+
      '<div style="margin-top:12px">'+route(p.sourceBranches.secondary?"Edit secondary questions":"Answer secondary questions","Secondary questions","btn-light")+'</div></div></div>'+
      (!p.sourceBranches.primary||!p.sourceBranches.secondary?callout("Complete each source plan","A source is addressed when you have recorded whether it is ready or still uncertain. We will not pretend to have collected either dataset."):callout("Both question sets addressed","You can now consider why you need both sources and how to compare them.")),
     "<h4>Why this extra step?</h4><p>A combined-data investigation needs two defensible source plans. Switching between the panels here does not mean you've actually gathered observations.</p>",
     "Continue to method comparison");
-   case "N03P":return stepBody("What data will I collect?",
-    "Start with the population or objects and the few quantities or categories that could answer your aim.",
-    primaryDataWhat(state,{F,e,icon}),
-    "<h4>What counts as data?</h4><p>Data might be measurements, counts, categories or timed observations. Name a useful quantity and its unit; you can revise it after an early pilot. Repeated readings from one object are not automatically a random sample.</p>",
-    "Next: choose my data");
+   case "N03P":return stepBody("What will I collect, and how?",
+    "Describe your method once, add the quantities you need, and decide their recording accuracy when possible.",
+    primaryDataWhat(state,{F,select,e,icon}),
+    "<h4>Keep your method simple</h4><p>One clear collection plan is enough at this stage. Add a few measurements, counts or categories; give units only when relevant. Use each row's accuracy control to save the resolution or exact-count rule without entering its name again.</p>",
+    "Next: sampling");
    case "N03P2":return stepBody("How will I choose my data?",
-    "Choose a realistic sampling or census approach, then consider whether you can reach the units and collect more data later.",
+    "Choose a realistic census or sampling approach, define your population, then decide whether your plan is ready.",
     primaryDataSampling(state,{F,select,e,icon}),
-    "<h4>Choose the method you can really use</h4><p>A census covers every eligible member of the population you actually defined. Random sampling requires a suitable frame; convenience samples can be excellent for a quick pilot but often cannot represent a wider population. Use the optional recap if you want a reminder.</p>",
-    "Next: measurement accuracy");
-   case "N03P3":return stepBody("How will I collect it accurately?",
-    "Plan a simple procedure and decide how precisely you can record each quantity. Your earlier quantities are ready to reuse.",
-    primaryDataAccuracy(state,{F,select,e,icon}),
-    "<h4>What does accuracy mean?</h4><p>An analogue scale's smallest marked division or a digital display's increment tells you recording resolution, not necessarily overall accuracy. Check instrument specifications, calibration and repeated readings. The optional device guide can help.</p>",
+    "<h4>Choose a method you can really use</h4><p>Random sampling needs a suitable frame. Convenience sampling is often good for a small, repeatable investigation, but cannot justify claims about everyone.</p>",
     "Finish primary-data plan");
    case "N03S":return stepBody("Plan your secondary data.",
     "Check what published values represent and their original precision. A table's decimal places do not prove measurement accuracy.",
