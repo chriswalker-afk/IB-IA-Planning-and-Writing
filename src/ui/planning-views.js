@@ -2,7 +2,8 @@ import {planningLearningTrail} from './living-journey.js';
 import {earlyMathRecommendations} from '../planning/math-recommendations.js';
 import {renderInvestigativeRoutes} from './investigative-routes-view.js';
 import {routeById} from '../planning/investigative-routes.js';
-import {samplingPlanner,accuracyPlanner} from './data-decisions-view.js';
+import {accuracyPlanner} from './data-decisions-view.js';
+import {primaryDataWhat,primaryDataSampling,primaryDataAccuracy} from './primary-data-steps.js';
 import {samplingMethod,plannedAccuracyText} from '../planning/data-decisions.js';
 import {insightCapture} from './insight-threads.js';
 import {examplePrompt} from "../examples/views.js";
@@ -81,14 +82,14 @@ export function createPlanningViews(ctx){
      '<div class="motivation-aim-details"><p>Planned population: '+e(fields.primaryPopulation||'to confirm')+
      '; sampling unit: '+e(fields.primarySamplingUnit||'to confirm')+
      '. Check real coverage and possible bias before making claims.</p>'+
-     edit('N03P','Revise sampling')+'</div></details>');
+     edit('N03P2','Revise sampling')+'</div></details>');
    const plans=state.planning.accuracyPlans||[];
    if(plans.length)cards.push('<details class="motivation-aim-spark planning-return-spark insight-planned-accuracy" data-planning-return-spark="accuracy">'+
      '<summary><span class="motivation-aim-symbol">'+icon('target')+'</span>'+
      '<span class="motivation-aim-copy"><strong>My accuracy plans</strong><small>'+e(plans.length+(plans.length===1?' provisional quantity':' provisional quantities'))+'</small></span>'+
      '<span class="motivation-aim-toggle">'+icon('chevron-down')+' View</span></summary>'+
      '<div class="motivation-aim-details">'+plans.map(x=>'<p>'+e(plannedAccuracyText(x))+' · Original accuracy not yet verified.</p>').join('')+
-     edit('N03'+(plans[0].source==='secondary'?'S':'P'),'Review source accuracy')+'</div></details>');
+     edit(plans[0].source==='secondary'?'N03S':'N03P3','Review source accuracy')+'</div></details>');
   }
   return cards.length?'<section class="planning-compact-recall" aria-label="Earlier ideas you can refine">'+
     '<p class="planning-compact-recall-label">'+icon('sparkles')+' Your sparks are back <span>Open to revisit or edit</span></p>'+
@@ -291,28 +292,28 @@ export function createPlanningViews(ctx){
     "<h4>Planning a source is not collecting data</h4><p>Record what you intend to do here. In IA Studio you will confirm what you actually obtained and used.</p>");
    case "N03B":return stepBody("Plan both evidence sources.","Answer each question set. They can be provisional, but both must be addressed before they join.",
     '<div class="plan-source-grid">'+
-     '<div class="content-card"><strong>Primary data</strong><p class="text-small text-muted">Who/what, where, when, how and equipment</p>'+statusValue(p.sourceBranches.primary)+
+     '<div class="content-card"><strong>Primary data</strong><p class="text-small text-muted">Three short steps: what to collect, sampling, and accuracy</p>'+statusValue(p.sourceBranches.primary)+
      '<div style="margin-top:12px">'+route(p.sourceBranches.primary?"Edit primary questions":"Answer primary questions","Primary questions","btn-light")+'</div></div>'+
      '<div class="content-card"><strong>Secondary data</strong><p class="text-small text-muted">Source, variables, population and validation</p>'+statusValue(p.sourceBranches.secondary)+
      '<div style="margin-top:12px">'+route(p.sourceBranches.secondary?"Edit secondary questions":"Answer secondary questions","Secondary questions","btn-light")+'</div></div></div>'+
      (!p.sourceBranches.primary||!p.sourceBranches.secondary?callout("Complete each source plan","A source is addressed when you have recorded whether it is ready or still uncertain. We will not pretend to have collected either dataset."):callout("Both question sets addressed","You can now consider why you need both sources and how to compare them.")),
     "<h4>Why this extra step?</h4><p>A combined-data investigation needs two defensible source plans. Switching between the panels here does not mean you've actually gathered observations.</p>",
     "Continue to method comparison");
-   case "N03P":return stepBody("Plan your primary data.",
-    "Decide what you will observe, who or what it represents, and how accurately you can record it—before collecting anything.",
-    F("primaryWhat","What will you measure or record?","Quantities, variables or categories relevant to your aim",{type:"textarea",rows:2})+
-    samplingPlanner(state,{F,select,e,icon})+
-    '<section class="data-plan-how"><h3>How will you collect and record it?</h3>'+
-    F("primaryHow","Measurement or collection procedure","What will you do, step by step? Avoid names or identifying personal information.",{type:"textarea",rows:3})+
-    F("primaryEquipment","Equipment or resources needed","e.g. digital stopwatch, tape measure, recording app")+
-    accuracyPlanner(state,"primary",{F,select,e,icon})+'</section>'+
-    '<div class="field-row">'+F("primaryWhen","When could you start?","",{type:"date"})+
-    F("primaryWhere","Where could you do this?","Setting without private details")+'</div>'+
-    '<p class="data-ready-rule">'+icon('info')+' Mark your plan workable only when you know what and how you will record and have saved an appropriate degree of accuracy (or exact count). Otherwise choose uncertain and continue planning.</p>'+ 
-    select("primaryStatus","How certain is your primary-data plan?",[
-     ["ready","I have a workable collection plan"],
-     ["unsure","Parts of the collection, sampling or accuracy plan are uncertain"]]),
-    "<h4>Start small, but be accurate</h4><p>Define your population and units, collect a quick permitted pilot, then adapt if the results suggest another observation. A practical sample is valuable when its limitations are described honestly.</p>");
+   case "N03P":return stepBody("What data will I collect?",
+    "Start with the population or objects and the few quantities or categories that could answer your aim.",
+    primaryDataWhat(state,{F,e,icon}),
+    "<h4>What counts as data?</h4><p>Data might be measurements, counts, categories or timed observations. Name a useful quantity and its unit; you can revise it after an early pilot. Repeated readings from one object are not automatically a random sample.</p>",
+    "Next: choose my data");
+   case "N03P2":return stepBody("How will I choose my data?",
+    "Choose a realistic sampling or census approach, then consider whether you can reach the units and collect more data later.",
+    primaryDataSampling(state,{F,select,e,icon}),
+    "<h4>Choose the method you can really use</h4><p>A census covers every eligible member of the population you actually defined. Random sampling requires a suitable frame; convenience samples can be excellent for a quick pilot but often cannot represent a wider population. Use the optional recap if you want a reminder.</p>",
+    "Next: measurement accuracy");
+   case "N03P3":return stepBody("How will I collect it accurately?",
+    "Plan a simple procedure and decide how precisely you can record each quantity. Your earlier quantities are ready to reuse.",
+    primaryDataAccuracy(state,{F,select,e,icon}),
+    "<h4>What does accuracy mean?</h4><p>An analogue scale's smallest marked division or a digital display's increment tells you recording resolution, not necessarily overall accuracy. Check instrument specifications, calibration and repeated readings. The optional device guide can help.</p>",
+    "Finish primary-data plan");
    case "N03S":return stepBody("Plan your secondary data.",
     "Check what published values represent and their original precision. A table's decimal places do not prove measurement accuracy.",
     F("secondaryUrl","Source link (optional while searching)","https://…",{type:"url"})+
@@ -335,7 +336,9 @@ export function createPlanningViews(ctx){
     F("methodReason","Why does your preferred approach suit your aim?","What would make this evidence useful?",{type:"textarea",rows:3})+
     F("methodLimitation","What is its most important likely limitation?","Measurement uncertainty, selection, source coverage …",{type:"textarea",rows:2})+
     F("methodMitigation","Could you reduce or accept that limitation? (optional)","One feasible adjustment or an honest scope qualification",{type:"textarea",rows:2})+
-    (f.primarySamplingMethod?callout("Return to your sampling decision","Your provisional choice is saved. Revisit the primary-data screen if your available observations change."):''),
+    (f.primarySamplingMethod?'<div class="primary-review-link">'+
+      callout("Your sampling spark","Your choice is saved. Revisit it if actual collection changes.")+
+      edit('N03P2','Review my sampling approach')+'</div>':''),
     "<h4>A targeted comparison</h4><p>Don't recite every sampling method. The question is why your chosen approach serves this particular aim better than a plausible alternative.</p>");
    case "N03D":return stepBody("When can you start doing useful mathematics?","An early small dataset can be more valuable than waiting for everything to be complete.",
     dates([["sourceFirstDate","Target for first usable evidence"],["sourceFullDate","Target for complete dataset"]])+
