@@ -128,7 +128,7 @@ export function createPlanningViews(ctx){
    F("otherCourseMaths","Mathematics I might explore (optional)","A tentative technique or 'Not sure yet'",{type:"textarea",rows:2});
   const chosen=selectedMaths(state),foreign=chosen.filter(x=>x.course!==course),local=chosen.filter(x=>x.course===course);
   const selectedSummary='<p class="math-selection-summary">Selected: <strong data-math-selected-count>'+local.length+'</strong>'+
-   (local.length?' · '+e(local.map(x=>x.label).join(' · ')):' · Nothing selected yet — that is okay')+'</p>';
+   '<span data-math-selection-summary>'+(local.length?' · '+e(local.map(x=>x.label).join(' · ')):' · Nothing selected yet — that is okay')+'</span></p>';
   const menu=
    '<div class="field-group"><label class="field-label" for="planMathSearch">Search '+e(course)+' mathematics</label>'+
    '<input id="planMathSearch" class="field" type="search" placeholder="Search a topic or technique" data-plan-search value="'+e(state.planning.mathSearch)+'"></div>'+
