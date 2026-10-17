@@ -104,10 +104,12 @@ export function createPlanningViews(ctx){
      {value:"unsure",title:"I'm choosing between ideas",desc:"I have a few possibilities to explore.",icon:"layers"},
      {value:"no",title:"Help me find an idea",desc:"I could use some inspiration.",icon:"compass"}
     ],{stack:true,label:"Choose your starting point"}),"");
-   case "N00B":return stepBody("Find an idea worth exploring.","Start with something familiar, or with information you can access. Follow a branch and make the question yours.",
+   case "N00B":return stepBody(state.ideaExplorer?.active?"Shape a possible idea.":"Find an idea worth exploring.",
+    state.ideaExplorer?.active?"Write one possible aim and consider how workable it is.":"Start with something familiar, or with information you can access. Follow a branch and make the question yours.",
     ideaExplorerView(state),"");
-   case "N00C":return stepBody("Compare your possibilities.","A quick comparison is enough; you do not need three full IA plans.",
-    ideaComparisonView(state),"<p>Judge interest, access, mathematical purpose and one small first step. A single idea is also fine. Selecting a saved possibility asks before changing an existing topic.</p>");
+   case "N00C":return stepBody(state.ideaExplorer?.active?"Evaluate your own idea.":"My possible ideas",
+    state.ideaExplorer?.active?"Write one possible aim, rate it, and add it to your comparison.":"Compare the clarity, quick start and difficulties of the ideas you have saved. You only need one promising direction.",
+    ideaComparisonView(state),"");
    case "N01":return stepBody("Give your idea a working title.","This is a starting point, not a final decision. Your title can change as your investigation develops.",
     (f.idea?'<div class="planning-idea-recall"><span>'+icon("compass")+' YOUR STARTING IDEA</span><p>'+e(f.idea)+'</p></div>':'')+
     F("provisionalTitle","My provisional IA title","e.g. How well can a model describe ...?",{hint:"A focused question or short descriptive title. You do not need to choose a technique yet."})+
