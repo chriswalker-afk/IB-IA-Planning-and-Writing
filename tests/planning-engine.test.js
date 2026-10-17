@@ -22,7 +22,7 @@ test("all 61 source-sheet routes are preserved alongside explicit later UX route
  const source=PLANNING_ROUTES.filter(r=>Number.isInteger(r.sourceRow));
  const extra=PLANNING_ROUTES.filter(r=>r.sourceRow===null);
  assert.equal(source.length,61);
- assert.equal(extra.length,8);
+ assert.equal(extra.length,14);
  for(const route of PLANNING_ROUTES){
   assert(PLANNING_NODE_IDS.includes(route.from));
   if(route.to.startsWith("N"))assert(PLANNING_NODE_IDS.includes(route.to));
@@ -75,10 +75,10 @@ test("combined primary+secondary plans cannot bypass either question set",()=>{
  assert.equal(planningMove(s,"Both data sources complete").ok,false);
  advance(s,"N03S");
  set(s,"secondaryStatus","ready");
- advance(s,"N03J");
+ advance(s,"N03D");
  assert.equal(s.planning.sourceBranches.secondary,true);
  assert.equal(s.planning.fields.secondaryStatus,"ready");
- assert.equal(s.journey.history.at(-1).sourceRow,20);
+ assert.equal(s.journey.history.at(-1).sourceRow,null); // shortcut is editorial, legacy sheet edge is still preserved
 });
 test("primary-only and secondary-only branches reach the join without false data completion",()=>{
  for(const [source,id,statusKey] of [["primary","N03P","primaryStatus"],["secondary","N03S","secondaryStatus"]]){
@@ -88,7 +88,7 @@ test("primary-only and secondary-only branches reach the join without false data
    set(s,"primaryWhat","A short planned measurement");
    advance(s,"N03P2");set(s,"primarySamplingMethod","unsure");
   }
-  set(s,statusKey,"unsure");advance(s,"N03J");
+  set(s,statusKey,"unsure");advance(s,"N03D");
   assert.equal(s.evidence.sources.length,0);
  }
 });
@@ -109,7 +109,7 @@ test("permission concerns flag only restricted activities; report remains access
  set(s,"permissionNeed","yes");
  assert(planningFlags(s).some(f=>f.id==="permission"&&f.needsApproval));
  assert.equal(s.teacher.pendingApproval,true);
- s.planning.current="N03F";
+ s.planning.current="N03E";
  const r=planningMove(s,"Safety / privacy / consent unresolved");
  assert.equal(r.ok,true);assert.equal(s.planning.current,"N02T");
  advance(s,"N08");advance(s,"N06T");advance(s,"N06");advance(s,"N07");
