@@ -1,0 +1,73 @@
+/* Evidence planning: calm, compact forms; colour-filled panels are reserved
+   for saved sparks, not routine decisions or tips. */
+.data-quality-section{margin:22px 0;padding:18px 16px 16px;background:#fff;border:1px solid #dce7e1;border-radius:15px;min-width:0}
+.data-quality-section .field-group{min-width:0}
+.data-quality-heading{display:flex;align-items:center;gap:7px;font-size:10px;font-weight:850;letter-spacing:.075em;color:#477970;margin-bottom:6px}
+.data-quality-heading .icon{width:16px;height:16px;flex:none}
+.data-quality-section h3,.data-plan-how>h3{font-size:17px;line-height:1.35;letter-spacing:-.025em;color:#233d40;margin:0 0 7px}
+.data-quality-intro{color:#5b7474;font-size:12px;line-height:1.62;margin:0 0 17px}
+.data-quality-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.data-quality-pair .field-group{margin-bottom:12px}
+.sampling-recap,.accuracy-recap{margin:13px 0 18px;border:1px solid #d8e5dd;border-radius:11px;background:#fff;overflow:hidden}
+.sampling-recap>summary,.accuracy-recap>summary{display:flex;align-items:center;gap:8px;padding:11px 12px;min-height:44px;cursor:pointer;font-size:11px;font-weight:800;color:#006f66;list-style:none}
+.sampling-recap>summary::-webkit-details-marker,.accuracy-recap>summary::-webkit-details-marker{display:none}
+.sampling-recap>summary .icon,.accuracy-recap>summary .icon{width:16px;height:16px;flex:none}
+.sampling-recap>summary .icon:last-child,.accuracy-recap>summary .icon:last-child{margin-left:auto;transition:transform .14s}
+.sampling-recap[open]>summary .icon:last-child,.accuracy-recap[open]>summary .icon:last-child{transform:rotate(90deg)}
+.sampling-recap-body,.accuracy-recap-body{padding:13px;border-top:1px solid #dfeae3;font-size:11px;line-height:1.58;color:#48665e}
+.sampling-two-cases{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.sampling-two-cases>div{padding:10px 11px;border:1px solid #e2ebe7;border-radius:9px;background:#fcfdfc}
+.sampling-two-cases strong{display:block;font-size:11px;color:#234f48;margin-bottom:3px}
+.sampling-two-cases p,.sampling-method-row p{margin:0;color:#59746d}
+.sampling-recap-body h4{font-size:12px;margin:18px 0 8px}
+.sampling-method-comparison{display:grid;grid-template-columns:1fr;gap:8px}
+.sampling-method-row{border-bottom:1px solid #e5eee9;padding:0 0 9px}
+.sampling-method-row:last-child{border:0}
+.sampling-method-row strong{display:block;margin:0 0 4px;color:#254c44;font-size:11px}
+.sampling-method-row p{line-height:1.55;margin:3px 0}
+.sampling-recap-foot{border-top:1px solid #e3eae6;padding-top:10px;margin:12px 0 0;font-weight:700}
+.plan-sampling-spark,.data-accuracy-spark{display:flex;align-items:flex-start;gap:9px;border:1px solid #ebd4a8;background:#fff9ec;border-radius:12px;padding:12px 13px;margin:11px 0;color:#64512f}
+.plan-sampling-spark-mark{display:grid;place-items:center;flex:none;background:#fff0d3;color:#956620;width:29px;height:29px;border-radius:9px}
+.plan-sampling-spark-mark .icon{width:17px;height:17px}
+.plan-sampling-spark>div{min-width:0;flex:1}
+.plan-sampling-spark strong,.data-accuracy-spark strong{font-size:11px;line-height:1.38;display:block;color:#725529}
+.plan-sampling-spark p{font-size:10px;line-height:1.58;margin:5px 0}
+.plan-sampling-spark small,.data-accuracy-spark small{display:block;font-size:10px;line-height:1.48;color:#836b48;margin-top:5px}
+.plan-sampling-spark>.icon:last-child{width:17px;height:17px;flex:none;margin-left:auto;color:#8b6b33}
+.data-quality-footnote{font-size:10px;color:#637b72;line-height:1.55;margin:11px 0 0}
+.data-quality-warning{display:flex;align-items:start;gap:8px;padding:10px 11px;border:1px solid #eddcc0;border-radius:9px;margin:12px 0 0;background:#fffaf2;color:#8a6538;font-size:11px;line-height:1.55}
+.data-quality-warning .icon{width:15px;height:15px;flex:none;margin-top:1px}
+.data-plan-how{margin:24px 0 12px}
+.data-plan-how>h3{margin-bottom:14px}
+.data-accuracy-planner{margin:20px 0}
+.data-accuracy-inputs{margin-top:14px}
+.data-accuracy-save{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:41px;margin-top:5px;white-space:normal;text-align:center}
+.data-accuracy-save .icon{width:16px;height:16px}
+.data-quality-basis-note{display:flex;align-items:start;gap:7px;padding:9px 10px;margin:-1px 0 15px;font-size:10px;line-height:1.55;color:#62786d;background:#f5f8f6;border-radius:8px}
+.data-quality-basis-note .icon{width:14px;height:14px;flex:none;margin-top:1px}
+.data-quality-subhead{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#8d713c;font-weight:850;margin:19px 0 9px}
+.data-accuracy-spark{margin:8px 0}
+.data-accuracy-spark-text{flex:1;min-width:0;overflow-wrap:anywhere}
+.data-accuracy-spark-text p{font-size:10px;color:#675b43;line-height:1.6;margin:5px 0}
+.data-accuracy-actions{display:flex;flex-direction:column;gap:5px}
+.data-accuracy-actions button{background:#fff;border:1px solid #ebdabc;border-radius:8px;padding:7px 9px;min-height:31px;cursor:pointer;font-size:10px;font-weight:800;color:#785d32}
+.data-accuracy-actions button:hover{background:#fff4de}
+.data-accuracy-actions button:focus-visible,.data-accuracy-save:focus-visible,.sampling-recap>summary:focus-visible,.accuracy-recap>summary:focus-visible{outline:3px solid #7eb5a6;outline-offset:2px}
+.accuracy-recap-body p{margin:0 0 10px}
+.accuracy-recap-body p:last-child{margin-bottom:0}
+.planning-return-spark.insight-sampling,.planning-return-spark.insight-planned-accuracy{background:#fffaf2;border-color:#ead7b3}
+.planning-return-spark.insight-sampling .motivation-aim-symbol,.planning-return-spark.insight-planned-accuracy .motivation-aim-symbol{color:#92682b;background:#ffefd4}
+.planning-return-spark.insight-sampling .motivation-aim-copy strong,.planning-return-spark.insight-planned-accuracy .motivation-aim-copy strong{color:#795c2e}
+@media(max-width:650px){
+ .data-quality-section{margin:19px 0;padding:15px 13px}
+ .data-quality-pair{grid-template-columns:1fr;gap:0}
+ .sampling-two-cases{grid-template-columns:1fr}
+ .plan-sampling-spark,.data-accuracy-spark{padding:11px}
+ .data-accuracy-spark{flex-wrap:wrap}
+ .data-accuracy-actions{width:100%;flex-direction:row;padding-left:37px}
+ .data-accuracy-actions button{flex:1}
+ .data-accuracy-save{width:100%}
+}
+@media(prefers-reduced-motion:reduce){
+ .sampling-recap>summary .icon:last-child,.accuracy-recap>summary .icon:last-child{transition:none}
+}
