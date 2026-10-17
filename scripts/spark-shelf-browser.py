@@ -14,8 +14,8 @@ RESULTS=[]
 def setup():
  s=copy.deepcopy(BASE)
  s["route"]="planning"
- s["planning"]["current"]="N03P3"
- s["journey"]["currentNodeId"]="N03P3"
+ s["planning"]["current"]="N03P"
+ s["journey"]["currentNodeId"]="N03P"
  s["planning"]["fields"].update({
   "provisionalTitle":"Measuring a school box",
   "aim":"Which design gives the largest usable volume?",
