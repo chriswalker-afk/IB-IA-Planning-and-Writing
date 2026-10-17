@@ -269,41 +269,51 @@ export function createPlanningViews(ctx){
     callout("Saved answers preserved","Earlier alternatives, reasons and limitations remain in your Planning report. In IA Studio you can justify your actual approach and evaluate real limitations."),
     "<h4>Why was this removed?</h4><p>The source and sampling pages already capture the proposed method. Write about limitations when you know which ones genuinely matter.</p>",
     "Continue to evidence timing");
-   case "N03D":return stepBody("When can you start doing useful mathematics?","An early small dataset can be more valuable than waiting for everything to be complete.",
-    dates([["sourceFirstDate","Target for first usable evidence"],["sourceFullDate","Target for complete dataset"]])+
-    select("dataAvailability","What evidence is available now?",[
-     ["in-hand","I already have usable evidence"],["some","I have part of it"],["soon","A credible route to obtaining it"],["inaccessible","Access currently looks difficult"],["unsure","Not sure yet"]])+
-    timelineFlags(state),
-    "<h4>Useful evidence first</h4><p>Plan to produce a small first graph or example before the entire dataset is ready, provided you clearly label provisional work.</p>");
-   case "N03E":return stepBody("How ready is your data plan?",
-    "Rate how accessible your evidence is, then complete two quick checks before you begin collecting it.",
-    rating("dataReadiness","Rate data readiness /5","1 = little access; 5 = usable data already in hand. This is not an IA mark.")+
-    (Number(f.dataReadiness)===5&&f.dataAvailability!=="in-hand"?callout("Check this rating","5/5 means actual usable data are already available. Otherwise, choose a lower provisional rating.",true):"")+
-    (Number(f.dataReadiness)>0&&Number(f.dataReadiness)<4?F("readinessImprovement","What would most improve access? (optional)","e.g. a small pilot or confirmed source",{type:"textarea",rows:2}):"")+
-    '<section class="practical-quick-check" aria-label="Two checks before data collection">'+
+   case "N03D":return stepBody("Can you get started?",
+    "Check what evidence you can access now and whether anything needs arranging before you collect it. You do not need a numerical readiness score.",
+    select("dataAvailability","What evidence can you work with now?",[
+      ["in-hand","I already have usable evidence"],
+      ["some","I have enough for a small first test"],
+      ["soon","I have a realistic way to get it"],
+      ["inaccessible","Getting evidence looks difficult"],
+      ["unsure","I'm still working this out"]])+
+    '<section class="practical-quick-check" aria-label="Permission and access checks">'+
     '<div class="primary-section-title">'+icon("clipboard-check")+
-      '<div><h3>Before you start</h3><p>Two quick checks. Choose “not sure” rather than guessing.</p></div></div>'+
+    '<div><h3>Two quick checks</h3><p>These decisions keep the investigation practical and responsible.</p></div></div>'+
     select("permissionNeed","Could permissions, consent, privacy or safety matter?",[
-      ["no","No concerns identified"],["yes","Yes — I need to check or seek approval"],
-      ["unsure","Not sure — I need advice"]])+
+      ["no","No concerns identified"],["yes","Yes — I need approval or advice"],["unsure","I'm not sure yet"]])+
     (["yes","unsure"].includes(f.permissionNeed)?
-      callout("Check before collecting","Do not begin affected collection or use restricted data until relevant school requirements are resolved.",true)+
-      '<details class="primary-step-extra"><summary>'+icon("pencil")+' What needs discussion? (optional) '+icon("chevron-down")+'</summary>'+
+      callout("Check before collecting","Do not begin affected collection or use restricted data until school requirements are resolved.",true)+
+      '<details class="primary-step-extra"><summary>'+icon("pencil")+
+      ' What needs discussion? (optional) '+icon("chevron-down")+'</summary>'+
       '<div class="primary-step-extra-content">'+
-      F("permissionDetails","Brief note for my teacher","Avoid entering private student details",{type:"textarea",rows:2})+
+      F("permissionDetails","Brief note for my teacher","Avoid entering private information",{type:"textarea",rows:2})+
       '</div></details>'+
       '<div class="button-row">'+route("Discuss permissions with my teacher","Safety / privacy / consent unresolved")+'</div>':"")+
     select("practicalBlocker","Is anything essential stopping you getting started?",[
-      ["no","No — I can begin a small safe step"],["yes","Yes — something still needs arranging"],
+      ["no","No — I can take a small safe step"],
+      ["yes","Yes — something still needs arranging"],
       ["unsure","I'm not sure what I can access yet"]])+
     (["yes","unsure"].includes(f.practicalBlocker)?
-      F("unsecured","What needs arranging? (optional)","One practical obstacle and a realistic next step",{type:"textarea",rows:2}):"")+
+      F("unsecured","What needs arranging? (optional)","One obstacle and a realistic next step",{type:"textarea",rows:2}):"")+
+    (["inaccessible","unsure"].includes(f.dataAvailability)&&f.practicalBlocker==="no"?
+      F("readinessImprovement","One useful next step (optional)","A safe pilot, a better source or a teacher question",{type:"textarea",rows:2}):"")+
     (["secondary","both"].includes(f.dataSource)?
-      '<p class="primary-hint">If you use published data, check that the source is legitimate, can be cited and can be used appropriately. Keep a source link in your secondary-data plan.</p>':"")+
+      '<p class="primary-hint">For published data, check the source can be cited and used appropriately. Keep its URL in your source plan.</p>':"")+
     '</section>'+
-    '<div class="button-row">'+route("Reconsider my data route","Revise")+'</div>',
-    "<h4>What happens to the long checklist?</h4><p>Extended feasibility planning is optional. The two checks preserve teacher warnings and access concerns without requiring an equipment-and-workload questionnaire. Evaluate the method and its limitations when using real data in IA Studio.</p>",
-    "Continue to manageability");
+    '<details class="primary-step-extra" data-evidence-timing><summary>'+icon("calendar")+
+      ' Set evidence target dates (optional) '+icon("chevron-down")+'</summary>'+
+      '<div class="primary-step-extra-content">'+
+      dates([["sourceFirstDate","Target for first usable evidence"],["sourceFullDate","Target for a complete dataset"]])+
+      timelineFlags(state)+'</div></details>'+
+    '<div class="button-row">'+route("Reconsider my data route","Reconsider my data route")+'</div>',
+    "<h4>Ready enough to begin?</h4><p>A provisional source and a safe first step are enough. You can move on while permission or access is uncertain; this never grants approval to collect affected data. Review the actual method and its limitations in IA Studio.</p>",
+    "Next: plan your time");
+   case "N03E":return stepBody("Readiness checks have been combined.",
+    "The two numerical readiness ratings are no longer required.",
+    edit("N03D","Open the combined evidence and safety check"),
+    "<h4>Earlier work is safe</h4><p>Existing ratings and practical notes remain in saved projects and report snapshots.</p>",
+    "Open combined check");
    case "N03R":return stepBody("Improve the data route.","Changing a plan now is a strength if your original data are not accessible.",
     F("readinessImprovement","What might make the data plan more realistic?","Try a pilot, alternative source, smaller scope or a revised method",{type:"textarea",rows:3})+
     '<div class="button-row">'+route("I need teacher advice about access","No accessible data; request teacher guidance")+'</div>',
@@ -313,12 +323,11 @@ export function createPlanningViews(ctx){
     callout("Your earlier answers are safe","Old resource, workload, permission and fallback notes are still saved in your Planning report. Continue from the short readiness check."),
     "<h4>Keep it manageable</h4><p>You can refine practical arrangements when required, rather than completing a long checklist before starting useful mathematics.</p>",
     "Continue to manageability");
-   case "N03G":return stepBody("How manageable is the project?","This is a separate practical ease rating—not an IB mark.",
-    rating("practicalEase","Rate completion ease /5","1 = major unresolved operational barriers; 5 = independent and manageable.")+
-    (Number(f.practicalEase)>0&&Number(f.practicalEase)<4?F("easeImprovement","What one change would make the project more manageable?","Smaller pilot, simpler tools, less manual cleaning, confirmed access",{type:"textarea",rows:2}):"")+
-    '<div class="button-row">'+route("Revisit practical checks","Revisit practical checks")+
-    route("I need teacher help with obstacles","Practical obstacles not yet resolved")+'</div>',
-    "<h4>Practical ≠ mathematical</h4><p>Even a mathematically promising idea may need its administrative burden reduced. It is okay to proceed provisionally while seeking advice.</p>");
+   case "N03G":return stepBody("Practical manageability is now part of the evidence check.",
+    "You no longer have to complete a second feasibility rating.",
+    edit("N03D","Review permission and access"),
+    "<h4>Keep earlier details</h4><p>Any old practical ease score or adjustment remains in your saved planning record.</p>",
+    "Open combined check");
    case "N03H":return stepBody("Plan your IA time.","Two quick questions are enough to start. We can suggest milestones for data, mathematics, writing and review.",
     renderTimelineStep(state,{e,icon,F,choice,callout}),
     "<h4>Keep it flexible</h4><p>These are suggestions, not school deadlines. Aim for usable starting material early, mathematical investigation and reflection along the way, then a complete draft with time to check it. The plan can change.</p>");
@@ -434,8 +443,9 @@ export function createPlanningViews(ctx){
     summary("Prediction (provisional)",f.prediction|| (f.predictionId==="X02"?"Not sure yet":""))+summary("Why I predicted it",f.predictionWhy)+
     summary("What it might mean IF TRUE",f.predictionImplication)+
     summary("First mathematical action",f.firstAction||f.figureOther||f.figureType)+
-    summary("Data readiness /5",f.kind==="theoretical"?"Not applicable":f.dataReadiness)+
-    summary("Practical ease /5",f.practicalEase)+
+    summary("Current evidence availability",f.kind==="theoretical"?"Not required":f.dataAvailability||"Still to check")+
+    summary("Permissions and consent",f.kind==="theoretical"?"Not applicable":f.permissionNeed||"Still to check")+
+    summary("Access to essential resources",f.kind==="theoretical"?"Not applicable":f.practicalBlocker||"Still to check")+
     teacherWarnings(state)+
     '<div class="button-row">'+edit("N03H","Edit timeline")+edit("N08","Teacher questions")+'</div></div>'+
     callout("This is not an approved IA","A provisional plan is useful even if parts need clarification. The result and intended benefit have not yet been demonstrated."),
