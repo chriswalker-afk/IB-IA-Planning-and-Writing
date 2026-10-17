@@ -200,3 +200,20 @@
 .route-preflight>p{font-size:12px;line-height:1.6;margin:6px 0 0}
 .route-preflight>.field-hint{font-size:11px;line-height:1.55;margin-top:8px}
 @media(max-width:760px){.route-preflight{padding:11px 12px;margin:11px 0 16px}.route-depth-check{margin-top:11px}}
+
+
+/* The first Planning screen is just a three-way starting choice. */
+.planning-kickoff .task-intro{margin-bottom:26px;max-width:55ch}
+.planning-kickoff .choice-stack{gap:12px}
+.planning-kickoff .choice{min-height:79px}
+.planning-kickoff-footer{margin-top:24px}
+.planning-kickoff-note{font-size:12px;color:var(--muted);margin:0;line-height:1.5}
+.planning-extra-interest{border:1px solid var(--line);border-radius:12px;margin:0 0 12px;background:var(--surface-soft)}
+.planning-extra-interest>summary{padding:13px 16px;cursor:pointer;font-size:12px;font-weight:750;color:var(--teal-dark)}
+.planning-extra-interest .field-group{padding:0 16px 15px;margin:0}
+@media(max-width:760px){
+ .planning-kickoff .choice{min-height:64px}
+ .planning-kickoff .task-intro{margin-bottom:22px}
+ .planning-kickoff-footer{align-items:center}
+ .planning-kickoff-footer .btn{min-width:120px}
+}
