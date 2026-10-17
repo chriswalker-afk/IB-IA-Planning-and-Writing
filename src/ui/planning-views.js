@@ -99,21 +99,22 @@ export function createPlanningViews(ctx){
  function nodePage(state){
   const p=state.planning,f=p.fields,n=p.current;
   switch(n){
-   case "N00":return stepBody("Every investigation starts somewhere.","You need curiosity and a question worth exploring, not a perfect idea.",
-    choice("ideaStatus",[{value:"yes",title:"I have an idea",desc:"Something specific interests me.",icon:"sparkles"},
-    {value:"no",title:"Help me find one",desc:"I need an idea to start from.",icon:"compass"},
-    {value:"unsure",title:"I have a few ideas",desc:"I want to compare them briefly.",icon:"layers"}],{stack:true})+
-    small(F("idea","A possible topic or question","e.g. patterns in a sport, design or natural phenomenon")+
-    F("interest","My interests (optional)","A hobby, everyday decision or mathematical curiosity")+
-    '<div class="button-row">'+route("Compare two or three possible ideas","Optional: compare more than one idea")+'</div>'),
-    "<h4>A useful first question</h4><p>Look for something you can investigate mathematically with accessible evidence or a defensible mathematical starting point. One idea is enough.</p>");
+   case "N00":return stepBody("Where are you starting?","You don't need a perfect idea yet. Just choose where you are on your journey.",
+    choice("ideaStatus",[
+     {value:"yes",title:"I have an idea",desc:"There's something I want to investigate.",icon:"lightbulb"},
+     {value:"unsure",title:"I'm choosing between ideas",desc:"I have a few possibilities to explore.",icon:"layers"},
+     {value:"no",title:"Help me find an idea",desc:"I could use some inspiration.",icon:"compass"}
+    ],{stack:true,label:"Choose your starting point"}),"");
    case "N00B":return stepBody("Find a question worth exploring.","Use as much or as little help as you need. Your current plan stays unchanged until you choose a direction.",
     ideaExplorerView(state),"<p>Accessible starting material, a mathematical purpose and one small first step. A single idea is enough.</p>");
    case "N00C":return stepBody("Compare your possibilities.","A quick comparison is enough; you do not need three full IA plans.",
     ideaComparisonView(state),"<p>Judge interest, access, mathematical purpose and one small first step. A single idea is also fine. Selecting a saved possibility asks before changing an existing topic.</p>");
-   case "N01":return stepBody("What do you want to find out?","Describe your investigation aim. It can develop as you discover more.",
+   case "N01":return stepBody("What do you want to find out?","Turn your starting idea into a question you could investigate mathematically. Both can change as you explore.",
+    F("idea","My starting topic or idea (optional)","e.g. patterns in a sport, design or natural phenomenon")+
     F("aim","My current investigation aim","How does … relate to …? Can … be modelled? When is … optimal?",{type:"textarea",rows:3})+
-    F("motivation","What sparked my interest?","An experience, observation or genuine mathematical curiosity",{type:"textarea",rows:3}),
+    F("motivation","What sparked my interest?","An experience, observation or genuine mathematical curiosity",{type:"textarea",rows:3})+
+    '<details class="planning-extra-interest"'+(f.interest?' open':'')+'><summary>Other interests I might explore (optional)</summary>'+
+    F("interest","My interests","A hobby, everyday decision or mathematical curiosity")+'</details>',
     "<h4>What makes a good aim?</h4><p>It should invite meaningful mathematics and an interpretable answer. Avoid promising a result before any work has been done.</p>");
    case "N01V":return stepBody("Who might benefit from knowing the answer?","Personal curiosity is a meaningful purpose. You do not need to invent a grand real-world impact.",
     choice("beneficiaryType",[
@@ -383,6 +384,9 @@ export function createPlanningViews(ctx){
  }
  function footer(state,screen){
   const n=state.planning.current;
+  if(n==="N00")return '<div class="task-footer planning-kickoff-footer">'+
+   '<p class="planning-kickoff-note">You can change your mind later.</p>'+
+   '<div class="button-row">'+button("Let's go","plan-advance","btn-primary","", "arrow-right")+'</div></div>';
   if(n==="N00B"||n==="N00C")return ideaFooter(state);
   if(n==="N03B")return '<div class="task-footer">'+button("Back","plan-back","btn-quiet","", "chevron-left")+
    (state.planning.sourceBranches.primary&&state.planning.sourceBranches.secondary?button("Compare methods","plan-advance","btn-primary","", "arrow-right"):button("Continue the other source","plan-advance","btn-primary","", "arrow-right"))+'</div>';
@@ -394,18 +398,19 @@ export function createPlanningViews(ctx){
  }
  function viewPlanning(){
   const state=ctx.getState(),p=state.planning,n=p.current,screen=nodePage(state);
-  const stage=planningStage(n),stageI=PROGRESS_GROUPS.findIndex(x=>x.id===stage);
+  const stage=planningStage(n),stageI=PROGRESS_GROUPS.findIndex(x=>x.id===stage),kickoff=n==="N00";
   return '<div class="page planning-page">'+tabletNav()+
    '<div class="planning-page-layout">'+planningLearningTrail(state)+
    '<div class="planning-page-main">'+
    '<div class="progress-top"><span class="progress-overview">'+icon("compass")+' Guided Planning</span>'+
    '<span class="progress-counter">1. Planning · '+e(PROGRESS_GROUPS[stageI]?.label||"Review")+'</span></div>'+
-   '<div class="task-shell" data-source-node="'+e(n)+'">'+
+   '<div class="task-shell'+(kickoff?' planning-kickoff':'')+'" data-source-node="'+e(n)+'">'+
    '<h1 class="task-heading">'+e(screen.title)+'</h1><p class="task-intro">'+e(screen.intro)+'</p>'+
-   insightEcho(state,n)+criteriaPanel(state)+screen.html+insightCapture(state,n)+essentialsNudge(state)+
+   (kickoff?'':insightEcho(state,n)+criteriaPanel(state))+screen.html+
+   (kickoff?'':insightCapture(state,n)+essentialsNudge(state)+
    '<div class="example-row">'+helpButton("plan-"+n)+helpBox("plan-"+n,screen.help)+'</div>'+
-   resourcePrompt(state)+footer(state,screen)+'</div>'+
-   '<p class="small-callout">Your choices are provisional until evidence supports them. You can revisit earlier decisions. Teacher flags never prevent a provisional report.</p>'+
+   resourcePrompt(state))+footer(state,screen)+'</div>'+
+   (kickoff?'':'<p class="small-callout">Your choices are provisional until evidence supports them. You can revisit earlier decisions. Teacher flags never prevent a provisional report.</p>')+
    (p.notices&&p.notices.length?'<div class="inline-note warning">'+icon("info")+'<p>'+e(p.notices.at(-1))+'</p></div>':"")+
    '</div></div></div>';
  }
