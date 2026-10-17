@@ -78,6 +78,13 @@ export function planningLearningTrail(s,{support=''}={}){
   N05V:'Planned first mathematics',N06:'Reviewed a provisional plan'
  };
  const activeNode=s?.planning?.current||'N00';
+ const currentLabels={
+  N00:'Choose a starting point',N00B:'Find a promising idea',N00C:'Compare your ideas',
+  N01:'Give your idea a working title',N01V:'Consider what the answer might mean',
+  N02:'Choose an investigation type',N02U:'Explore types',N02T:'Prepare a teacher discussion',
+  N03:'Choose starting material',N04:'Consider the maths',N05V:'Plan the first move',
+  N06:'Review your provisional plan'
+ };
  const screensDone=[...new Set(s?.planning?.completedNodes||[])].filter(id=>PROGRESS_GROUPS.some(g=>g.nodes.includes(id)));
  const stepsCompleted=screensDone.length;
  const screenProgress='<div class="planning-trail-screen-progress" aria-label="'+stepsCompleted+
@@ -89,8 +96,7 @@ export function planningLearningTrail(s,{support=''}={}){
   '<span class="active">'+icon('compass')+'</span></div>'+
   '<div class="planning-trail-recent">'+screensDone.slice(-2).map(id=>
    '<span class="finished">'+icon('check')+' '+e(screenLabels[id]||'Continued through Planning')+'</span>').join('')+
-  '<span class="active">'+icon('arrow-right')+' Now: '+e(screenLabels[activeNode]&&activeNode==='N00'?'Find your starting point':
-   PROGRESS_GROUPS.find(g=>g.nodes.includes(activeNode))?.label||'Continue Planning')+'</span></div></div>';
+  '<span class="active">'+icon('arrow-right')+' Now: '+e(currentLabels[activeNode]||PROGRESS_GROUPS.find(g=>g.nodes.includes(activeNode))?.label||'Continue Planning')+'</span></div></div>';
  const chapters=JOURNEY_GROUPS.map(g=>({g,status:groupStatus(s,g)}));
  const pathSegments=[
   'M29 37 C53 53 5 94 29 111',
