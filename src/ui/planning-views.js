@@ -139,6 +139,30 @@ export function createPlanningViews(ctx){
   if(f.kind==="modelling")return"A labelled diagram, table of model inputs or simple limiting case could reveal a useful starting pattern.";
   return"Try a small numerical case, diagram, conjecture or potential counterexample. Numerical examples are not a proof.";
  }
+ /** Informal onboarding: a separate visual screen, not another source-sheet question. */
+ function planningWelcome(){
+  return stepBody("Welcome to Planning.","Discover a worthwhile mathematical question, make practical choices and collect useful sparks. You do not need to know your final answer yet.",
+   '<div class="chapter-onboarding chapter-onboarding-plan">'+
+    '<div class="chapter-onboarding-banner"><span class="chapter-onboarding-symbol">'+icon("compass")+'</span>'+
+     '<div><span class="chapter-onboarding-eyebrow">CHAPTER 1 · PLAN ONLY</span><strong>Think first. Write the IA afterwards.</strong>'+
+     '<p>This chapter helps you decide what to investigate. Your choices are provisional notes, not completed mathematics or text you must copy into your IA.</p></div></div>'+
+    '<div class="chapter-onboarding-grid">'+
+     '<section class="chapter-onboarding-tile"><span class="chapter-onboarding-tile-icon">'+icon("sparkles")+'</span>'+
+       '<h3>Sparks remember your ideas</h3><p>When you save a useful decision, it becomes a <strong>spark</strong>. Later pages bring back the two most relevant sparks. Select <strong>View all sparks</strong> to find or edit the rest. Your sparks can change as you investigate.</p></section>'+
+     '<section class="chapter-onboarding-tile"><span class="chapter-onboarding-tile-icon onboarding-criterion-letter" aria-hidden="true">C</span>'+
+       '<h3>Criteria appear where they matter</h3><p>Tap a small letter badge beside a question or heading to see exactly how an IB criterion connects to it. For the full A–E rubrics, open <strong>IA essentials</strong>.</p>'+
+       '<button class="onboarding-inline-action" type="button" data-action="essentials-open">'+icon("book")+' Explore the IB criteria '+icon("arrow-right")+'</button></section>'+
+     '<section class="chapter-onboarding-tile"><span class="chapter-onboarding-tile-icon">'+icon("lightbulb")+'</span>'+
+       '<h3>Help is always nearby</h3><p>Use <strong>Compare examples</strong>, <strong>Tools & tutorials</strong> or <strong>I am stuck</strong> whenever you need them. You can return to previous questions from the Discovery Trail.</p>'+
+       '<div class="chapter-onboarding-links">'+
+        '<button class="onboarding-inline-action" type="button" data-action="example-open" data-example-browse="true">Compare examples '+icon("arrow-right")+'</button>'+
+        '<button class="onboarding-inline-action" type="button" data-action="resource-browse">Tools & tutorials '+icon("arrow-right")+'</button></div></section>'+
+     '<section class="chapter-onboarding-tile"><span class="chapter-onboarding-tile-icon">'+icon("download")+'</span>'+
+       '<h3>Make progress at your own pace</h3><p>Look at the <strong>Discovery Trail</strong> to see four chapters. Your work is saved on this device; save a project backup to move between devices. Planning ends with a report and a clear link into writing your IA.</p></section>'+
+    '</div>'+
+    '<p class="chapter-onboarding-reassurance">'+icon("check-circle")+' No grades or marks are predicted here. It is fine to revise your question later.</p>'+
+   '</div>',"","Start planning");
+ }
  function nodePage(state){
   const p=state.planning,f=p.fields,n=p.current;
   switch(n){
@@ -510,20 +534,25 @@ export function createPlanningViews(ctx){
    '<div class="button-row">'+button(only(n),"plan-advance","btn-primary","", "arrow-right")+'</div></div>';
  }
  function viewPlanning(){
-  const state=ctx.getState(),p=state.planning,n=p.current,screen=nodePage(state);
+  const state=ctx.getState(),p=state.planning,n=p.current;
+  const welcome=state.ui.planningIntroOpen===true||(n==="N00"&&!state.ui.planningIntroSeen);
+  const screen=welcome?planningWelcome():nodePage(state);
   const stage=planningStage(n),stageI=PROGRESS_GROUPS.findIndex(x=>x.id===stage),kickoff=n==="N00",titleStep=n==="N01",ideaMapStep=n==="N00B";
   return '<div class="page planning-page">'+tabletNav()+
    '<div class="planning-page-layout">'+planningLearningTrail(state,{support:kickoff?'':criteriaPanel(state)})+
    '<div class="planning-page-main">'+
    '<div class="progress-top"><span class="progress-overview">'+icon("compass")+' Guided Planning</span>'+
-   '<span class="progress-counter">1. Planning · '+e(PROGRESS_GROUPS[stageI]?.label||"Review")+'</span></div>'+
-   '<div class="task-shell'+(kickoff?' planning-kickoff':'')+(titleStep?' planning-title-step':'')+(n==="N07"?' planning-finish':'')+'" data-source-node="'+e(n)+'">'+
+   '<span class="progress-counter">1. Planning · '+e(welcome?"How Pathfinder works":PROGRESS_GROUPS[stageI]?.label||"Review")+'</span>'+
+   (welcome?'':'<button type="button" class="chapter-guide-reopen" data-action="planning-intro-open">'+icon("circle-help")+' How this works</button>')+'</div>'+
+   '<div class="task-shell'+(welcome?' chapter-onboarding-shell':'')+(kickoff&&!welcome?' planning-kickoff':'')+(titleStep?' planning-title-step':'')+(n==="N07"?' planning-finish':'')+'" data-source-node="'+e(n)+'"'+(welcome?' data-planning-intro="true"':'')+'>'+
    criterionPageHeading(screen.title,"planning",n)+'<p class="task-intro">'+e(screen.intro)+'</p>'+
-   renderSparkShelf(state,n,{surface:'planning'})+screen.html+
-   (kickoff||titleStep?'':insightCapture(state,n))+(kickoff||titleStep?'':essentialsNudge(state))+
-   (kickoff||titleStep||ideaMapStep?'':'<div class="example-row">'+helpButton("plan-"+n,n==="N01V"?"Why does this matter?":"Help me think")+helpBox("plan-"+n,screen.help)+'</div>')+
-   footer(state,screen)+'</div>'+
-   (kickoff||ideaMapStep?'':'<p class="small-callout">Your choices are provisional until evidence supports them. You can revisit earlier decisions. Teacher flags never prevent a provisional report.</p>')+
+   (welcome?'':renderSparkShelf(state,n,{surface:'planning'}))+screen.html+
+   (welcome||kickoff||titleStep?'':insightCapture(state,n))+(welcome||kickoff||titleStep?'':essentialsNudge(state))+
+   (welcome||kickoff||titleStep||ideaMapStep?'':'<div class="example-row">'+helpButton("plan-"+n,n==="N01V"?"Why does this matter?":"Help me think")+helpBox("plan-"+n,screen.help)+'</div>')+
+   (welcome?'<div class="task-footer chapter-onboarding-footer">'+
+      '<span class="chapter-onboarding-footer-hint">A short tour. Nothing to fill in yet.</span>'+
+      button(n==="N00"?"Start planning":"Return to my planning","planning-intro-continue","btn-primary","","arrow-right")+'</div>':footer(state,screen))+'</div>'+
+   (welcome||kickoff||ideaMapStep?'':'<p class="small-callout">Your choices are provisional until evidence supports them. You can revisit earlier decisions. Teacher flags never prevent a provisional report.</p>')+
    (p.notices&&p.notices.length?'<div class="inline-note warning">'+icon("info")+'<p>'+e(p.notices.at(-1))+'</p></div>':"")+
    '</div></div></div>';
  }
