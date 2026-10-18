@@ -37,7 +37,7 @@ export function chapterRibbon(s){
  JOURNEY_GROUPS.map((g,i)=>{
   const status=groupStatus(s,g),label=STATUS_LABELS[status];
   return '<button type="button" data-action="journey-open" data-target="'+e(groupTarget(s,g))+
-   '" class="living-ribbon-part '+e(status)+(active.id===g.id?' current':'')+'"'+
+   '" class="living-ribbon-part '+e(status)+' '+e(g.mode)+(active.id===g.id?' current':'')+'"'+
    (active.id===g.id?' aria-current="step"':'')+'>'+
    '<span class="living-ribbon-number">'+(status==='complete'?icon('check'):i+1)+'</span>'+
    '<span class="living-ribbon-label">'+e(g.name)+'</span>'+
