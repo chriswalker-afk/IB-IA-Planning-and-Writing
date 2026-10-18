@@ -72,7 +72,7 @@ export function insightItems(s){
   {planned:true,usage:'An intended policy for rounding or displaying values. Confirm actual measurement or source resolution before presenting numerical results.'}));
  const first=p.firstAction||p.figurePurpose;
  if(has(first))out.push(item('discovery','planned-maths','Planned first mathematics',first,'Planning · Mathematical direction',
-  {type:'planning',node:'N05V'}, {planned:true,usage:'A proposed action, not a performed calculation.'}));
+  {type:'completion',node:'C31'}, {planned:true,usage:'A preserved earlier idea. Choose and create an actual representation in IA Studio; no calculation is implied completed.'}));
  for(const source of sources(s)){
   const f=source.fields||{},v=f.actualSource||f.theoreticalObject||f.theoreticalCase||f.actualMethod;
   if(!has(v))continue;
