@@ -113,6 +113,64 @@ export const CRITERION_SPOTS=Object.freeze({
   avoid:'Avoid merely repeating a graph description, claiming an expected result without evidence, or assuming an inconclusive result is a failure.',
   reminder:'Meaningful reflection can appear throughout the exploration, not only in its final conclusion.'
  }),
+ 'completing:C61:mainConclusion':Object.freeze({
+  criterion:'A',location:'The strongest answer I can support',stage:'IA Studio · conclusion in context',
+  why:'A coherent conclusion answers the original mathematical aim using only the work actually carried out.',
+  strong:'Give a concise, qualified answer and connect it to the key results or arguments already presented in your IA. An inconclusive result can be an honest answer.',
+  avoid:'Avoid introducing brand-new calculations, copying the full working again, or claiming that a planned result has been established.',
+  reminder:'Criterion A concerns coherence across the whole exploration. One conclusion paragraph does not establish it by itself.'
+ }),
+ 'completing:C61:uncertainty':Object.freeze({
+  criterion:'D',location:'What important uncertainty remains?',stage:'IA Studio · evaluate the conclusion',
+  why:'Reflection involves recognising how genuine limitations or uncertainty affect the strength and meaning of a mathematical conclusion.',
+  strong:'Identify a limitation that actually changes what you can claim. Explain its consequence, or explain why your established mathematical result has a clear domain or scope.',
+  avoid:'Avoid a generic list of weaknesses, speculative errors presented as facts, or saying an uncertainty is harmless without evidence.',
+  reminder:'Link to reflections already made beside the mathematics rather than rewriting them at the end.'
+ }),
+ 'completing:C62:benefit':Object.freeze({
+  criterion:'D',location:'What can the actual results tell that audience?',stage:'IA Studio · implications of the result',
+  why:'Connecting genuine findings back to the original purpose is a meaningful opportunity for reflection.',
+  strong:'Explain what your mathematics can and cannot help someone understand or decide. If it does not support the hoped-for use, say so.',
+  avoid:'Avoid treating motivation or an initial prediction as evidence, inventing advice or assuming that every investigation has a practical beneficiary.',
+  reminder:'A mathematical investigation can have an intellectual purpose; do not invent an external audience.'
+ }),
+ 'completing:C63:extension':Object.freeze({
+  criterion:'D',location:'One mathematical question that might follow (optional)',stage:'IA Studio · a meaningful extension',
+  why:'An extension may demonstrate reflection if it genuinely follows from an established mathematical result or unresolved question.',
+  strong:'Only if useful, identify one mathematical consequence, special case or model restriction worth examining, and explain its connection to your findings.',
+  avoid:'Avoid generic future-work suggestions, adding more data without a mathematical reason, or treating an extension as compulsory.',
+  reminder:'No extension is required when the mathematics already supports a reasonable stopping point.'
+ }),
+ 'completing:C64:title':Object.freeze({
+  criterion:'A',location:'Keep the conclusion concise and connected',stage:'IA Studio · coherent ending',
+  why:'The conclusion should complete the thread from the aim through the mathematical development, without repeating everything.',
+  strong:'Summarise what the mathematics established, acknowledge only consequential limits, and remove working or critique that belongs earlier.',
+  avoid:'Avoid another long methods section, new unperformed checks, or a conclusion disconnected from the original aim.',
+  reminder:'Edit the actual document where changes belong; reviewing this page alone cannot demonstrate coherence.'
+ }),
+ 'completing:C70:title':Object.freeze({
+  criterion:'A',location:'Review clarity across the actual document',stage:'IA Studio · presentation and coherence',
+  why:'Presentation concerns an organised mathematical argument, not decoration alone. Readers need clear connections between the aim, representations and conclusions.',
+  strong:'Inspect the real IA. Introduce each major representation where it supports a mathematical claim, remove needless repetition and connect sections logically.',
+  avoid:'Avoid prioritising colour or formatting over understanding, hiding essential mathematics in an appendix or claiming review notes are corrections already made.',
+  reminder:'The notation-specific Criterion B badge remains on its dedicated screen, so this page does not need a second letter.'
+ }),
+ 'completing:C80D:title':Object.freeze({
+  criterion:'A',criteria:Object.freeze(['A','B','C','D','E']),
+  location:'Review my complete teacher draft against A–E',stage:'IA Studio · optional draft self-review',
+  why:'A useful draft self-review checks the mathematics actually written, the organisation, the decisions made and the reflection already evidenced.',
+  strong:'Locate examples in the real draft for each of A–E and make one specific revision plan where needed. Use the existing evidence-review panel rather than filling out a second criteria form.',
+  avoid:'Avoid self-awarding marks for completing Pathfinder screens or describing unfinished mathematics as a complete draft.',
+  reminder:'Your draft evidence pointers and self-marks remain your own provisional judgements, not teacher approval.'
+ }),
+ 'completing:C90F:title':Object.freeze({
+  criterion:'A',criteria:Object.freeze(['A','B','C','D','E']),
+  location:'Check the final exploration against A–E',stage:'IA Studio · final evidence review',
+  why:'The final review should locate genuine evidence in the actual revised document and identify any significant gaps without making up work.',
+  strong:'Review coherence (A), communication (B), demonstrated personal engagement (C), substantive reflection (D) and suitable, understood mathematics (E), using your saved evidence pointers.',
+  avoid:'Avoid treating five completed boxes as five achieved criteria, redoing advice already addressed or claiming that the website predicts an IA grade.',
+  reminder:'This remains a self-review. The site does not inspect or grade your final document or submit it to the IB.'
+ }),
  'completing:C70N:title':Object.freeze({
   criterion:'B',location:'Notation and mathematical presentation',stage:'IA Studio · notation review',
   why:'A reader should be able to follow your mathematics through appropriate, consistent symbols, units, definitions, equations and representations.',
@@ -129,6 +187,10 @@ const TITLE_SPOTS=Object.freeze({
  'completing:C50':'completing:C50:title',
  'completing:C40T':'completing:C40T:title',
  'completing:C40L':'completing:C40L:title',
+ 'completing:C64':'completing:C64:title',
+ 'completing:C70':'completing:C70:title',
+ 'completing:C80D':'completing:C80D:title',
+ 'completing:C90F':'completing:C90F:title',
  'planning:N02M':'planning:N02M:title',
  'completing:C34B':'completing:C34B:title',
  'completing:C70N':'completing:C70N:title'
@@ -138,7 +200,10 @@ const FIELD_SPOTS=Object.freeze({
  'completing:C31':['completing:C31:firstPurpose'],
  'completing:C32':['completing:C32:purpose'],
  'completing:C34':['completing:C34:observation'],
- 'completing:C35':['completing:C35:nextQuestion','completing:C35:nextReason']
+ 'completing:C35':['completing:C35:nextQuestion','completing:C35:nextReason'],
+ 'completing:C61':['completing:C61:mainConclusion','completing:C61:uncertainty'],
+ 'completing:C62':['completing:C62:benefit'],
+ 'completing:C63':['completing:C63:extension']
 });
 export const criterionFieldSpots=(route,node)=>route==='completing'?(FIELD_SPOTS[route+':'+node]||[]):[];
 export const isCriterionSpotPage=(route,node)=>route==='planning'&&node==='N01V'||
