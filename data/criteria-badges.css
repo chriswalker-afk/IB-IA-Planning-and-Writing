@@ -9,6 +9,7 @@
 .criterion-marked-field{position:relative;margin:0}
 .criterion-marked-field>.criterion-badge{position:absolute;left:-14px;top:42px}
 .criterion-marked-field>.field-group{margin-bottom:0}
+.completing-page .criterion-marked-field{margin-bottom:16px}
 .criterion-marked-field textarea.field{padding-left:31px}
 .criterion-marked-field+.motivation-older-note,.criterion-marked-field+.motivation-later-echo{margin-top:18px}
 .criterion-popin{width:min(475px,calc(100vw - 32px));max-width:none;max-height:min(710px,calc(100dvh - 30px));border:1px solid #b9d6c7;border-radius:19px;padding:0;color:#143840;background:#fff;box-shadow:0 30px 90px #163c3c48;overflow:hidden;font:inherit}
@@ -26,6 +27,10 @@
 .criterion-popin-part{margin-bottom:15px}
 .criterion-popin-part h3{font-size:12px;color:#173e40;margin:0 0 5px}
 .criterion-popin-part p{font-size:13px;color:#36545a;line-height:1.65;margin:0}
+.criterion-popin-context{margin:10px 0 14px;padding:11px 13px;background:#f7faf9;border:1px solid #dbe8e3;border-radius:11px;overflow-wrap:anywhere}
+.criterion-popin-context h3{margin:0 0 8px;color:#326c61;font-size:12px}
+.criterion-popin-context p{font-size:12px;line-height:1.6;color:#486762;margin:5px 0}
+.criterion-popin-context strong{display:block;font-size:11px;color:#174f48}
 .criterion-popin-note{background:#f5f9f6;border:1px solid #dceadf;border-radius:10px;padding:11px 12px;color:#35665b;font-size:12px;line-height:1.6;margin:6px 0 12px}
 .criterion-popin-level,.criterion-popin-disclaimer{font-size:11px;line-height:1.6;color:#617673;margin:8px 0}
 .criterion-popin-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
@@ -33,7 +38,9 @@
 .criterion-popin button:focus-visible{outline:3px solid #078578;outline-offset:3px}
 @media(max-width:620px){
  .criterion-badge{--badge-size:34px}
- .criterion-marked-field>.criterion-badge{left:-10px;top:44px}
+ .criterion-marked-field>.criterion-badge{left:auto;right:0;top:0}
+ .criterion-marked-field>.field-group>.field-label{display:block;padding-right:44px;min-height:34px}
+ .criterion-marked-field textarea.field{padding-left:12px}
  .criterion-marked-field textarea.field{padding-left:29px}
  .criterion-title-row{gap:7px}
  .criterion-title-row>.task-heading{flex-basis:205px}
