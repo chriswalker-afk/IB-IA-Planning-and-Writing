@@ -1,5 +1,6 @@
 import {CRITERIA,courseLevel} from './catalog.js';
 import {criteriaContext} from './context.js';
+import {contextualBadgeGuidance} from './criteria-badge-guidance.js';
 import {guidanceContext} from '../completing/guidance-context.js';
 import {firstUnfamiliarUse,methodFamilies} from '../completing/method-identity.js';
 import {linkedAccuracy} from '../completing/evidence-links.js';
@@ -184,7 +185,7 @@ export function createCriterionBadgeController({getState,openRubric=()=>{}}){
   if(!Object.hasOwn(CRITERION_SPOTS,key))return;
   ensure();if(dialog.open)dialog.close();
   current=key;origin=trigger;
-  const p=CRITERION_SPOTS[key],c=CRITERIA[p.criterion],state=getState();
+  const state=getState(),p=contextualBadgeGuidance(state,key,CRITERION_SPOTS[key]),c=CRITERIA[p.criterion];
   const planned=key==='completing:C34B:title'&&!criteriaContext(state).real;
   const why=planned?'An interpretation can support Reflection only when it is based on actual mathematics. A proposed calculation or prediction is not a result.':p.why;
   const strong=planned?'First complete and check a genuine graph, calculation or argument. Then explain what that specific result means for your aim; do not invent findings.':p.strong;
@@ -198,6 +199,8 @@ export function createCriterionBadgeController({getState,openRubric=()=>{}}){
    block('Why this matters here',why)+
    block('What a strong response looks like',strong)+
    block('Avoid this',p.avoid)+
+   (p.details.length?'<section class="criterion-popin-context" aria-label="Your investigation context"><h3>Using your work</h3>'+
+    p.details.map(x=>'<p><strong>'+escapeHtml(x.label)+'</strong> '+escapeHtml(x.text)+'</p>').join('')+'</section>':'')+
    '<p class="criterion-popin-note">'+escapeHtml(p.reminder)+'</p>'+
    (p.criterion==='E'?'<p class="criterion-popin-level">'+
     escapeHtml(level?'Your recorded course uses the '+level+' Criterion E reference.':'Confirm whether the SL or HL Criterion E rubric applies to your course.')+'</p>':'')+
