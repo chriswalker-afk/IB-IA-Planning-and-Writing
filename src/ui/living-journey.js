@@ -41,8 +41,7 @@ export function chapterRibbon(s){
    (active.id===g.id?' aria-current="step"':'')+'>'+
    '<span class="living-ribbon-number">'+(status==='complete'?icon('check'):i+1)+'</span>'+
    '<span class="living-ribbon-label">'+e(g.name)+'</span>'+
-   '<span class="journey-mode-tag '+e(g.mode)+'">'+e(chapterRole(g))+'</span>'+
-   chapterMini(s,g)+'<span class="visually-hidden">'+e(label)+'</span></button>';
+   chapterJourneyIcon(g)+chapterMini(s,g)+'<span class="visually-hidden">'+e(label)+'</span></button>';
  }).join('')+'</nav>';
 }
 export function planningProgress(s,{compact=false}={}){
@@ -105,18 +104,22 @@ export function planningLearningTrail(s,{support=''}={}){
   'M29 185 C53 213 5 243 29 259'
  ];
  const chapterButtons='<div class="planning-trail-chapters">'+
-  '<svg viewBox="0 0 64 296" class="planning-trail-roadmap" aria-hidden="true" focusable="false">'+
-  pathSegments.map((d,i)=>'<path d="'+d+'" class="living-trail-road"/>'+
+  '<div class="planning-trail-zone-underlay" aria-hidden="true"><span class="plan"></span><span class="writing"></span></div>'+
+  '<svg viewBox="0 0 64 296" preserveAspectRatio="none" class="planning-trail-roadmap" aria-hidden="true" focusable="false">'+
+  pathSegments.map((d,i)=>'<path d="'+d+'" class="living-trail-road '+(i===0?'plan-to-writing':'writing')+'"/>'+
    (chapters[i].status==='complete'?'<path d="'+d+'" class="living-trail-done"/>':'')).join('')+
   '</svg>'+
   chapters.map(({g,status},i)=>{
    const current=g.id==='plan',label=current&&status==='not-started'?'Getting started':STATUS_LABELS[status];
+   const phase=i===0?'<span class="planning-trail-phase-label plan">'+icon('compass')+' Plan</span>':
+    i===1?'<span class="planning-trail-phase-label writing">'+icon('pencil')+' Write your IA</span>':'';
    return '<button type="button" class="planning-trail-chapter '+e(status)+(current?' current':'')+
     ' '+e(g.mode)+'" data-action="journey-open" data-target="'+e(groupTarget(s,g))+'"'+
-    (current?' aria-current="step"':'')+' aria-label="'+e(g.name+', '+chapterRole(g)+', '+label)+'">'+
+    (current?' aria-current="step"':'')+' aria-label="'+e('Chapter '+(i+1)+': '+g.name+', '+chapterRole(g)+', '+label)+'">'+
     '<span class="planning-trail-point">'+(status==='complete'?icon('check'):i+1)+'</span>'+
-    '<span class="planning-trail-chapter-copy"><strong>'+e(g.name)+'</strong>'+
-    '<small>'+e(label)+'</small><span class="journey-mode-tag '+e(g.mode)+'">'+e(chapterRole(g))+'</span>'+chapterMini(s,g)+'</span></button>';
+    '<span class="planning-trail-chapter-copy">'+phase+
+    '<span class="planning-trail-chapter-name">'+chapterJourneyIcon(g)+'<strong>'+e(g.name)+'</strong></span>'+
+    '<small>'+e(label)+'</small>'+chapterMini(s,g)+'</span></button>';
   }).join('')+'</div>';
  const stageTrack='<div class="planning-trail-stage-track" role="img" aria-label="'+
   e('Planning route, step '+(stageIndex+1)+' of '+PROGRESS_GROUPS.length+': '+stage.label)+'">'+
@@ -153,6 +156,7 @@ export function planningLearningTrail(s,{support=''}={}){
   '</aside>';
 }
 
+const chapterJourneyIcon=g=>'<span class="chapter-journey-icon" aria-hidden="true">'+icon(g.icon)+'</span>';
 const coordinates=[{x:31,y:122},{x:126,y:42},{x:229,y:97},{x:326,y:28}];
 const curves=[
  'M31 122 C81 122 77 42 126 42',
@@ -164,29 +168,36 @@ export function discoveryTrail(s,{compact=false}={}){
  const stages=JOURNEY_GROUPS.map(g=>({g,status:groupStatus(s,g)}));
  return '<section class="living-trail '+(compact?'is-compact':'')+'" aria-label="Discovery Trail">'+
   '<div class="living-trail-top"><div><span class="section-eyebrow">'+icon('route')+
-  ' DISCOVERY TRAIL</span><h3>Follow your mathematical journey</h3></div>'+
-  '<span class="living-trail-tag">Chapter 1: plan · Chapters 2–4: write your IA</span></div>'+
-  '<svg class="living-trail-svg" viewBox="0 0 356 153" aria-hidden="true" focusable="false">'+
-  insightTrailLines(s)+
-  curves.map((path,i)=>'<path d="'+path+'" class="living-trail-road"/>'+
-   (stages[i].status==='complete'?'<path d="'+path+'" class="living-trail-done"/>':'')).join('')+
-  coordinates.map((p,i)=>{
-   const x=stages[i],current=now.id===x.g.id;
-   return '<g class="living-trail-node '+e(x.status)+(current?' is-current':'')+'">'+
-    (current?'<circle class="living-trail-focus" cx="'+p.x+'" cy="'+p.y+'" r="19"/>':'')+
-    '<circle cx="'+p.x+'" cy="'+p.y+'" r="12" class="living-trail-circle"/>'+
-    (x.status==='complete'?'<path d="M'+(p.x-5)+' '+p.y+' l4 4 l7 -8" class="living-trail-check"/>':
-      '<text x="'+p.x+'" y="'+(p.y+4)+'" text-anchor="middle" class="living-trail-digit">'+(i+1)+'</text>')+
-   '</g>';
-  }).join('')+
-  '<path d="M97 13 v8 M93 17 h8 M274 141 v8 M270 145 h8" class="living-trail-star"/>'+
-  '</svg>'+
-  '<div class="living-trail-steps">'+stages.map(({g,status},i)=>
-   '<button type="button" class="living-trail-step '+e(status)+(now.id===g.id?' current':'')+
-   ' '+e(g.mode)+'" data-action="journey-open" data-target="'+e(groupTarget(s,g))+'" aria-label="'+e(g.name+', '+chapterRole(g)+', '+STATUS_LABELS[status])+'">'+
-   '<strong>'+e(g.name)+'</strong><span class="journey-mode-tag '+e(g.mode)+'">'+e(chapterRole(g))+'</span><small>'+e(STATUS_LABELS[status])+'</small>'+
-   chapterMini(s,g)+'</button>').join('')+'</div>'+
-  insightTrailControls(s)+'<p class="living-trail-note">Your stages are always revisitable. “Ready for now” is your own checkpoint, not an IA grade.</p></section>';
+  ' DISCOVERY TRAIL</span><h3>Follow your mathematical journey</h3></div></div>'+
+  '<div class="living-trail-route" role="group" aria-label="Chapter 1 is planning. Chapters 2, 3 and 4 are where you write your IA.">'+
+   '<div class="living-trail-zone-underlay" aria-hidden="true"><span class="plan"></span><span class="writing"></span></div>'+
+   '<div class="living-trail-zone-headings">'+
+    '<div class="living-trail-zone-title plan">'+icon('compass')+'<div><strong>Plan</strong><small>Explore your idea</small></div></div>'+
+    '<div class="living-trail-zone-title writing">'+icon('pencil')+'<div><strong>Write your IA</strong><small>Build your actual mathematical exploration</small></div></div>'+
+   '</div>'+
+   '<svg class="living-trail-svg" viewBox="0 0 356 153" aria-hidden="true" focusable="false">'+
+    insightTrailLines(s)+
+    curves.map((path,i)=>'<path d="'+path+'" class="living-trail-road '+(i===0?'plan-to-writing':'writing')+'"/>'+
+     (stages[i].status==='complete'?'<path d="'+path+'" class="living-trail-done"/>':'')).join('')+
+    coordinates.map((p,i)=>{
+     const x=stages[i],current=now.id===x.g.id;
+     return '<g class="living-trail-node '+e(x.status)+' '+e(x.g.mode)+(current?' is-current':'')+'">'+
+      (current?'<circle class="living-trail-focus" cx="'+p.x+'" cy="'+p.y+'" r="19"/>':'')+
+      '<circle cx="'+p.x+'" cy="'+p.y+'" r="12" class="living-trail-circle"/>'+
+      (x.status==='complete'?'<path d="M'+(p.x-5)+' '+p.y+' l4 4 l7 -8" class="living-trail-check"/>':
+       '<text x="'+p.x+'" y="'+(p.y+4)+'" text-anchor="middle" class="living-trail-digit">'+(i+1)+'</text>')+
+      '</g>';
+    }).join('')+
+    '<path d="M97 13 v8 M93 17 h8 M274 141 v8 M270 145 h8" class="living-trail-star"/>'+
+   '</svg>'+
+   '<div class="living-trail-steps">'+stages.map(({g,status},i)=>
+    '<button type="button" class="living-trail-step '+e(status)+(now.id===g.id?' current':'')+
+    ' '+e(g.mode)+'" data-action="journey-open" data-target="'+e(groupTarget(s,g))+
+    '" aria-label="'+e('Chapter '+(i+1)+': '+g.name+'. '+(g.mode==='planning'?'Plan your exploration.':'Write in your IA.')+' '+STATUS_LABELS[status]+'.')+'">'+
+    chapterJourneyIcon(g)+'<strong>'+e(g.name)+'</strong><small>'+e(STATUS_LABELS[status])+'</small>'+
+    chapterMini(s,g)+'</button>').join('')+'</div>'+
+  '</div>'+
+  insightTrailControls(s)+'<p class="living-trail-note">Follow the mint Planning chapter into the purple writing chapters. Each stage remains revisitable; “Ready for now” is a checkpoint, not an IA grade.</p></section>';
 }
 const real=e=>e?.status==='completed'&&typeof e.result==='string'&&!!e.result.trim();
 export function mathConstellation(s,{compact=false}={}){
