@@ -4,7 +4,7 @@
  * Phase 2 will replace this list with real graph navigation.
  */
 export const PROTOTYPE_PLANNING_NODE_REFS=Object.freeze([
-  "N00","N01","N01V","N02","N03","N03D","N04S","N01P","N05V","N07"
+  "N00","N01","N01V","N02","N03","N03D","N04S","N01P","N06","N07"
 ]);
 export const PROTOTYPE_STUDIO_NODE_REFS=Object.freeze({
   intro:"C10",data:"C20",math:"C35",conclusion:"C60",review:"C90"
