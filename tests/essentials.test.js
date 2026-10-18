@@ -55,7 +55,13 @@ test('next-step selection and C96 use the explicitly selected earlier result',()
  s.completion.current='C96';s.completion.writingOrigin={node:'C34B',entryId:'first'};assert.equal(criteriaContext(s).entry.id,'first');assert(criteriaPanel(s).includes('Show good reflection here by'));
 });
 test('a planned record gets preparation rather than an actual-result interpretation',()=>{
- const s=make('C34B');s.entries[0].status='planned';assert(criteriaPanel(s).includes('obtaining and checking a genuine result'));assert(!criteriaPanel(s).includes('this actual result means'));
+ const s=make('C34B');s.entries[0].status='planned';
+ const rows=criteriaContext(s).rows;
+ assert(rows.some(r=>r.by.includes('genuine result')));
+ assert(!rows.some(r=>r.by.includes('this actual result means')));
+ const panel=criteriaPanel(s);
+ assert(panel.includes('Full criteria rubric'));
+ assert(!panel.includes('data-action="criteria-toggle"'));
 });
 test('familiar, first unfamiliar, mixed and later reused mathematics remain distinct',()=>{
  const s=make('C40L');assert(criteriaPanel(s).includes('without a textbook-style tutorial'));
@@ -98,14 +104,14 @@ test('title route labels its compare control with title-specific examples',()=>{
  assert(!html.includes('Compare examples'));
 });
 
-test('motivation planning step has aim-purpose criteria and its own motivation comparisons',()=>{
+test('motivation planning step uses one local C badge, with examples and rubric still available',()=>{
  const s=make();s.route='planning';s.planning.current='N01V';
  const x=criteriaContext(s),html=criteriaPanel(s);
- assert.equal(x.rows.length,3);
- assert.deepEqual(x.rows.map(r=>r.id),['A','C','D']);
+ assert.deepEqual(x.rows.map(r=>r.id),['A','C','D']); // Legacy context remains available to rubric/review.
  assert(html.includes('Compare motivations'));
  assert(html.includes('data-example-topic="motivation"'));
- assert(html.includes('returning to this motivation')||html.includes('returning to this motivation'.replace('returning','returning'))||html.includes('returning to this motivation'));
+ assert(html.includes('Full criteria rubric'));
+ assert(!html.includes('data-action="criteria-toggle"'));
  assert(!html.includes('data-example-id="EX01"'));
- assert(html.includes('genuine question or intended use'));
+ assert(html.includes('Tools & tutorials'));
 });
