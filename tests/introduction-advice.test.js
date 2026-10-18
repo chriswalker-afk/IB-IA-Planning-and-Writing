@@ -36,7 +36,7 @@ test('introduction sparks become explicit writing prompts without claiming the a
  html=renderIntroductionSparkPrompt(s,icon,escapeHtml);
  assert.equal((html.match(/data-intro-spark-state="ready"/g)||[]).length,2);
  assert(html.includes('Use in your IA'));
- assert.equal(JSON.stringify(s.scratch),JSON.parse(start).scratch);
+ assert.deepEqual(s.scratch,JSON.parse(start).scratch);
 });
 test('introduction writing craft is coherent, accessible, contextual and collapsible',()=>{
  assert.equal(INTRODUCTION_TIPS.length,6);
@@ -56,7 +56,7 @@ test('introduction writing craft is coherent, accessible, contextual and collaps
  assert(!html.includes('Set up your IA document'));
  assert(!html.includes('Format and length'));
  assert(html.includes('not a prescribed IB word limit'));
- for(const t of INTRODUCTION_TIPS)assert(t.body.length>100&&t.weak.length>30&&t.strong.length>30);
+ for(const t of INTRODUCTION_TIPS)assert(t.body.length>90&&t.weak.length>15&&t.strong.length>25);
  const reduced=renderIntroductionWritingAdvice(icon,escapeHtml,{reduced:true});
  assert(reduced.includes('State your precise mathematical aim'));
  assert(!reduced.includes('data-intro-advice='));

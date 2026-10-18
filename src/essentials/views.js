@@ -11,7 +11,12 @@ const source=x=>'<p class="ess-source"><span>'+e(x.label)+'</span> '+e(x.source)
 export function essentialsNudge(state){
  const n=state.route==='planning'?state.planning.current:state.completion.current;
  if(state.route==='planning'&&n==='N00')return '<details class="ess-at-glance"><summary>Your IA at a glance</summary><p>Individual mathematical exploration · 20% of the course · 20 marks across five criteria.<br>Approximately 12–20 double-spaced pages. Quality matters more than length.</p>'+essentialsButton('Format & length',{tab:'format'})+essentialsButton('View rubric',{tab:'rubric'})+'</details>';
- if(state.route==='completing'&&n==='C10')return '<aside class="ess-setup"><strong>Set up your IA document</strong><span>Double spacing; cover title and page count; clear equations and source credits.</span>'+essentialsButton('Format & length',{tab:'format'})+'</aside>';
+ if(state.route==='completing'&&n==='C00')return '<section class="setup-document-guide" aria-labelledby="setup-document-heading">'+
+  '<div class="setup-document-guide-top"><span class="setup-document-guide-icon" aria-hidden="true">✎</span><div>'+
+   '<h3 id="setup-document-heading">Set up your IA document</h3>'+
+   '<p>Open your own Word or Google Docs file before writing. Choose a clear working title, use readable equations and figures, and record sources as you work. Pathfinder prompts are <strong>not</strong> inserted into your document automatically.</p></div></div>'+
+  '<div class="setup-document-guide-bottom"><span class="setup-document-guide-summary">About 12–20 double-spaced pages for the <strong>whole IA</strong> is the IB guideline, not an introduction target or an automatic limit. Check your school requirements.</span>'+
+  essentialsButton('Format and length',{tab:'format'})+'</div></section>';
  if(state.route==='completing'&&['C80','C90'].includes(n))return '<aside class="ess-setup"><strong>Check the actual document</strong><span>Review formatting, references, authenticity and the five criteria before submission.</span>'+essentialsButton('Before submission',{tab:'submission',mode:n==='C80'?'draft':'final'})+'</aside>';
  return '';
 }

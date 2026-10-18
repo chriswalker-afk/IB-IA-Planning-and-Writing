@@ -5,7 +5,7 @@ import {exampleContext,selectExamples,defaultVariant,filterExamples} from '../sr
 import {examplePrompt,exampleInline,prose,renderCard,library} from '../src/examples/views.js';
 const state=(kind='modelling',node='C10')=>({route:'completing',project:{kind},planning:{current:'N01',fields:{kind,aim:'My real aim',course:'AA SL'}},scratch:{introduction:'My original work'},completion:{current:node,activeEntryIndex:0,nextFromEntryId:'first',fields:{},support:{},guidanceUi:{},accuracyDecisions:[],stages:{}},entries:[{id:'first',phase:'first',kind:'scatter',methodId:'',knowledge:'unsure',status:'completed',result:'Actual graph',observation:'curved',title:'Earlier real work'},{id:'later',phase:'substantial',status:'completed',kind:'model',methodId:'linear-regression',result:'Actual later result',observation:'linear',title:'Different later work'}]});
 test('34 substantive original cards have stable unique IDs, explanations and transfer questions',()=>{
- assert.equal(EXAMPLES.length,34);assert.equal(new Set(EXAMPLES.map(x=>x.id)).size,33);
+ assert.equal(EXAMPLES.length,34);assert.equal(new Set(EXAMPLES.map(x=>x.id)).size,34);
  for(const c of EXAMPLES){assert(c.weak.length>40,c.id);assert(c.strong.length>100,c.id);assert(c.why.length>40,c.id);assert(c.question.endsWith('?'),c.id);assert(!JSON.stringify(c).includes('drive.google.com'));}
 });
 test('introduction and conclusion select statistical, modelling and theoretical variants',()=>{
