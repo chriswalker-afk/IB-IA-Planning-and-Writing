@@ -262,8 +262,9 @@ test("Set up uses saved Planning sparks without creating repeated mandatory inpu
  assert(h.html.includes('Your starting sparks are available'));
  assert(h.html.includes('Review my Planning'));
  assert(h.html.includes('View all sparks'));
- assert(!h.html.includes('data-bind="planning.fields.aim"'));
- assert(!h.html.includes('data-bind="planning.fields.beneficiary"'));
+ assert(!h.html.includes('class="setup-quick-sparks"'));
+ assert(h.html.includes('data-spark-editor="aim"'));
+ assert(h.html.includes('data-spark-editor="beneficiary"'));
  assert(h.html.includes('data-action="setup-start-writing"'));
  h.action('setup-start-writing');
  assert.equal(h.saved.completion.current,'C10');
