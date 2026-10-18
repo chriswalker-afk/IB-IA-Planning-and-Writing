@@ -13,7 +13,7 @@ test('four shared chapters describe the same stages in rail, map and dashboard',
  assert.equal(JOURNEY_GROUPS.flatMap(g=>g.stages).length,9);
 });
 test('visiting a later stage never earns earlier completion ticks',()=>{
- const s=createProjectState();s.route='planning';s.planning.current='N05V';s.planning.visited=['N05V'];
+ const s=createProjectState();s.route='planning';s.planning.current='N01P';s.planning.visited=['N01P'];
  assert.equal(stageStatus(s,'plan'),'working');assert.equal(groupStatus(s,JOURNEY_GROUPS[1]),'not-started');
  assert(!journeyRail(s).includes('journey-milestone done'));
 });
