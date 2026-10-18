@@ -41,7 +41,7 @@ test('two visible criterion actions accompany a uniform comparison and rubric ro
  assert(/class="criteria-content"[^>]* hidden/.test(t));assert(t.includes('Compare examples'));assert(t.includes('View these criteria'));
 });
 test('dismissal changes only the UI and is scoped to the exact task and mathematical record',()=>{
- const s=make('C40'),before=JSON.stringify(s),k=criteriaContext(s).key;dismissCriteria(k,true);assert(/class="criteria-content"[^>]* hidden/.test(criteriaPanel(s)));
+ const s=make('C34A'),before=JSON.stringify(s),k=criteriaContext(s).key;dismissCriteria(k,true);assert(/class="criteria-content"[^>]* hidden/.test(criteriaPanel(s)));
  s.completion.activeEntryIndex=1;assert.notEqual(criteriaContext(s).key,k);s.completion.activeEntryIndex=0;assert.equal(JSON.stringify(s),before);dismissCriteria(k,false);
 });
 test('an introduction and conclusion do not inherit a stale theoretical record',()=>{
@@ -67,9 +67,10 @@ test('a planned record gets preparation rather than an actual-result interpretat
  assert(!panel.includes('data-action="criteria-toggle"'));
 });
 test('familiar, first unfamiliar, mixed and later reused mathematics remain distinct',()=>{
- const s=make('C40L');assert(criteriaPanel(s).includes('without a textbook-style tutorial'));
- s.completion.activeEntryIndex=1;assert(criteriaPanel(s).includes('at first use'));s.entries[1].knowledge='mixed';assert(criteriaPanel(s).includes('unfamiliar component'));
- s.entries[0]={...s.entries[1],id:'first'};assert(criteriaPanel(s).includes('already introduced'));
+ const s=make('C40L');assert(criteriaContext(s).rows[0].by.includes('without a textbook-style tutorial'));
+ s.completion.activeEntryIndex=1;assert(criteriaContext(s).rows[0].by.includes('at first use'));s.entries[1].knowledge='mixed';assert(criteriaContext(s).rows[0].by.includes('unfamiliar component'));
+ s.entries[0]={...s.entries[1],id:'first'};assert(criteriaContext(s).rows[0].by.includes('already introduced'));
+ assert(criteriaPanel(s).includes('Full criteria rubric'));
 });
 test('accuracy reminders mention only policies linked to the selected record',()=>{
  const s=make('C34A');s.completion.accuracyDecisions=[{id:'a',quantity:'Time',unit:'s',policy:'nearest second'},{id:'b',quantity:'Mass',unit:'kg',policy:'nearest kilogram'}];s.entries[0].accuracyRefs=['a'];const t=criteriaPanel(s);assert(t.includes('nearest second'));assert(!t.includes('nearest kilogram'));
