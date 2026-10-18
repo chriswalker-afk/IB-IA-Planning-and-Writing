@@ -224,3 +224,25 @@ test('following Planning screens have compact question and motivation sparks, no
   assert(!html.includes('class="insight-echo"'),id);
  }
 });
+
+
+test("the Planning finish page clearly ends chapter one and offers one distinct move into IA writing",()=>{
+ const {state,view}=screenFixture();
+ state.planning.current="N07";state.planning.completed=true;
+ state.planning.fields.aim="Does this mathematical model work?";
+ let html=view.viewPlanning();
+ assert(html.includes('CHAPTER 1 COMPLETE'));
+ assert(html.includes('You have finished Planning!'));
+ assert(html.includes('IA Studio · Introduction'));
+ assert(html.includes('planning-finish-handoff'));
+ assert(html.includes('planning-finish-footer'));
+ assert(html.includes('Finish planning & begin writing'));
+ assert(html.includes('View working report'));
+ assert(html.includes('Download my planning PDF'));
+ assert(html.includes('Download project backup'));
+ assert(!html.includes('route("Open IA Studio"'));
+ state.completion.visited.push("C10");
+ html=view.viewPlanning();
+ assert(html.includes('Return to IA Studio'));
+ assert(!html.includes('Finish planning & begin writing'));
+});
