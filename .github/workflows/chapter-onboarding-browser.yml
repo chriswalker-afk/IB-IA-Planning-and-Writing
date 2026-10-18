@@ -13,6 +13,7 @@ on:
       - 'src/ui/journey.js'
       - 'src/ui/journey-views.js'
       - 'data/chapter-onboarding.css'
+      - 'data/living-journey.css'
       - 'tests/ui-smoke.test.js'
       - 'tests/planning-ui-coverage.test.js'
       - 'tests/living-journey.test.js'
