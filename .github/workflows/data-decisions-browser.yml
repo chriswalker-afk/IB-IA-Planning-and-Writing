@@ -4,6 +4,11 @@ on:
   push:
     branches: [main]
     paths:
+      - 'app.js'
+      - 'src/ui/planning-views.js'
+      - 'data/experience.css'
+      - 'tests/ui-smoke.test.js'
+      - 'tests/planning-ui-coverage.test.js'
       - 'src/planning/data-decisions.js'
       - 'src/planning/primary-quantities.js'
       - 'src/ui/data-decisions-view.js'
