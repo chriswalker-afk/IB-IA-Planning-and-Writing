@@ -60,7 +60,9 @@ with sync_playwright() as pw:
    assert p.locator('.criteria-panel .support-actions').count()==1
    if node=='N01V':
     assert badge.locator('..').get_attribute('class')=='criterion-marked-field'
-    assert shell.locator('[data-bind="planning.fields.beneficiary"]').count()==1
+    # The saved-spark editor may mirror the answer elsewhere on the screen.
+    # Ensure the marked response itself contains one editable textarea.
+    assert badge.locator('..').locator('textarea[data-bind="planning.fields.beneficiary"]').count()==1
    else:
     assert badge.locator('..').get_attribute('class').startswith('criterion-title-row')
    box=badge.bounding_box()
