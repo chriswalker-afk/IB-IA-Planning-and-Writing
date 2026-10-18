@@ -310,12 +310,10 @@ export function createCompletingViews(ctx){
     html:stageDashboard()+'<button type="button" class="writer-guide-overview" data-action="writer-guide-open">'+icon("book")+' Open the Writer\'s Field Guide '+icon("arrow-right")+'</button>'+miniList()+
       '<div class="button-row">'+sourceAction("Save progress","Save a full project backup")+
       sourceAction("I'm stuck / Something isn't working","I'm stuck")+'</div>'};
-  case "C10":return{intro:"Introduce your mathematical question and genuine motivation in a few focused paragraphs. This is the start of your investigation, not a list of every calculation you might do.",
+  case "C10":return{intro:"Introduce your mathematical aim and genuine motivation in a few focused paragraphs. Where useful, share what you think or hope to discover and why. Start your mathematical journey without listing every planned calculation.",
     html:renderIntroductionWritingAdvice(icon,e,{reduced:isAdviceReduced(s)})+
-      (plannedPrediction()?'<details class="completion-help intro-optional-prediction"><summary>'+icon("lightbulb")+' My earlier tentative prediction (optional)</summary>'+
-       '<p>'+e(plannedPrediction())+'</p><p class="field-hint">Only mention it if useful. A prediction is not a finding or a promise that your maths will confirm it.</p></details>':"")+
-      field("scratch.introduction","My own working introduction notes","Optional private notes: the precise aim, my genuine motivation, and only enough background to understand the question.",{type:"textarea",rows:5})+
-      info("Your real IA is a separate document","Write the actual paragraphs in Word or Google Docs; these notes do not get inserted automatically. Revisit your aim, motivation and introduction whenever your direction genuinely changes.")
+      field("scratch.introduction","My own working introduction notes","Optional private notes: my precise aim, genuine motivation, an honest starting prediction or hope (and why), and only essential non-mathematical background.",{type:"textarea",rows:5})+
+      info("Your real IA is a separate document","Write these paragraphs in your actual Word or Google Docs file. Updating the prediction spark above saves it in Pathfinder for later comparison but does not insert text into your IA or establish a finding.")
    };
   case "C10E":return{intro:"Compare original fictional introductions, then return to your own investigation.",html:exampleInline(s,{topic:"introduction"})};
   case "C20":return{intro:"What data, measurements or mathematical objects are actually available now? This is different from the collection plan.",
@@ -455,11 +453,12 @@ export function createCompletingViews(ctx){
   };
   case "C34B":return{intro:"Relate this actual result to your aim, your earlier prediction and its intended benefit.",
    html:entryReviewAlert()+actualRecord()+coachBlock(st,{allowChoices:false})+smallSummary("Your current aim",currentAim())+
-    smallSummary("Original prediction (tentative)",plannedPrediction())+
+    smallSummary("Original prediction or hope (tentative)",plannedPrediction())+
+    smallSummary("Why I expected or hoped this",p.predictionWhy||s.project.predictionWhy)+
     smallSummary("Possible beneficiary",currentBenefit())+
     entryField("interpretation","What does this actual result mean for my aim?","An honest local conclusion based on mathematics I have done",{type:"textarea",rows:4})+
     entryField("localTakeaway","One sentence: what has this section established?","What do I know now, and what remains unanswered?",{type:"textarea",rows:2})+
-    F("predictionComparison","Does the result support, contradict or complicate the prediction?","A comparison, not a requirement for the prediction to be correct",{type:"textarea",rows:2})+
+    F("predictionComparison","How does the result compare with your starting prediction, conjecture or hope?","What did you actually find out? It need not confirm your early expectation.",{type:"textarea",rows:2})+
     F("benefitFinding","What might this mean for the intended beneficiary?","Only if supported by evidence",{type:"textarea",rows:2})+
     '<details class="guidance-insight"><summary>Did this result teach me something new mathematically? (optional)</summary>'+
       entryField("mathsInsight","My genuine new mathematical insight","About the method, proof, connection or conditions—not a routine formula",{type:"textarea",rows:3})+
@@ -583,6 +582,8 @@ export function createCompletingViews(ctx){
   };
   case "C60":return{intro:"Synthesize the mathematics you actually completed and give the best-supported answer to your aim.",
     html:actualList()+smallSummary("Current aim",currentAim())+
+    smallSummary("Starting prediction or hope (not evidence)",plannedPrediction())+
+    smallSummary("Original reason for that expectation",p.predictionWhy||s.project.predictionWhy)+
     smallSummary("Intended beneficiary",currentBenefit())+
     guides.conclusionLimitations()+
     field("scratch.conclusion","My own conclusion notes","State the best-supported answer and limits, in my own words",{type:"textarea",rows:6})

@@ -161,8 +161,17 @@ def first_time(browser,width):
   assert page.locator('[data-source-node="C10"]').count()==1
   assert page.locator('[data-bind="scratch.introduction"]').count()==1
   assert "WRITE IN YOUR IA" in page.locator(".studio-ia-writing-reminder").inner_text()
-  assert "Write about these two sparks now" in page.locator('.intro-spark-brief').inner_text()
+  assert "Bring these three ideas into your introduction" in page.locator('.intro-spark-brief').inner_text()
   assert page.locator('.intro-spark-needed[data-intro-spark-state="ready"]').count()==2
+  assert page.locator('.intro-spark-needed[data-intro-spark="prediction"]').count()==1
+  assert "non-mathematical specialist background brief" in page.locator('.intro-spark-brief').inner_text()
+  assert "Define specialist terms briefly" in page.locator('.intro-writing-guide').inner_text()
+  page.locator('[data-bind="planning.fields.prediction"]').fill("I suspect a curved relationship.")
+  page.locator('[data-bind="planning.fields.predictionWhy"]').fill("A few small cases suggest the changes increase.")
+  assert stored(page)["planning"]["fields"]["prediction"]=="I suspect a curved relationship."
+  assert stored(page)["planning"]["fields"]["predictionWhy"]=="A few small cases suggest the changes increase."
+  assert stored(page)["project"]["prediction"]=="I suspect a curved relationship."
+  assert stored(page)["project"]["predictionWhy"]=="A few small cases suggest the changes increase."
   assert page.locator('.intro-advice-tip').count()==6
   assert page.locator('.intro-advice-tip[data-intro-advice="journey"]').count()==1
   assert page.locator('.intro-advice-extra-group').count()==1
@@ -172,9 +181,10 @@ def first_time(browser,width):
   assert page.locator('[data-criterion-badge="completing:C10:motivation"]').count()==1
   page.locator('[data-intro-advice="journey"] > summary').click()
   assert page.locator('[data-intro-advice="journey"] .intro-advice-example').is_visible()
-  page.locator('.intro-advice-extra-group > summary').click()
   assert page.locator('[data-intro-advice="context"] > summary').is_visible()
   page.locator('[data-intro-advice="context"] > summary').click()
+  page.locator('.intro-advice-extra-group > summary').click()
+  assert page.locator('[data-intro-advice="uncertain"] > summary').is_visible()
   page.locator('[data-intro-advice="context"] [data-example-id="EX34"]').click()
   assert page.locator('#exampleDialog[open] [data-example-card="EX34"]').count()==1
   assert page.locator('#exampleDialog[open] .ex-introduction-feature').count()==3
@@ -189,6 +199,13 @@ def first_time(browser,width):
   assert page.locator('.writer-guide-drawer [data-guide-card="voice"][open]').count()==1
   page.locator('.writer-guide-drawer .drawer-header [data-action="close-drawer"]').click()
   assert page.locator('[data-source-node="C10"]').count()==1
+  # The same original prediction and its reason survive reopening the actual IA task.
+  page.reload()
+  assert page.locator('[data-source-node="C10"]').count()==1
+  assert page.locator('[data-bind="planning.fields.prediction"]').input_value()=="I suspect a curved relationship."
+  assert page.locator('[data-bind="planning.fields.predictionWhy"]').input_value()=="A few small cases suggest the changes increase."
+  assert page.locator('[data-intro-spark="prediction"][data-intro-spark-state="ready"]').count()==1
+  assert page.locator('[data-spark-id="prediction"]').count()>=1
   after=stored(page)
   assert after["planning"]["completed"]==False
   assert after["completion"]["current"]=="C10"

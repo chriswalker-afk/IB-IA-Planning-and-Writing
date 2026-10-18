@@ -138,3 +138,21 @@ test('mobile styling, disclosure semantics and original edit navigation are wire
  const index=readFileSync(new URL('../index.html',import.meta.url),'utf8');
  assert(index.includes('spark-shelf.css'));
 });
+
+test('the introduction keeps two featured sparks while a saved prediction and rationale stay available',()=>{
+ const s=sample();
+ s.completion.current='C10';
+ s.planning.fields.predictionWhy='Because the size changes geometrically.';
+ const items=insightItems(s);
+ const prediction=items.find(x=>x.id==='prediction');
+ assert(prediction,'the canonical Planning prediction spark should exist');
+ assert(prediction.value.includes('A larger box may use more material.'));
+ assert(prediction.value.includes('Because the size changes geometrically.'));
+ const featured=featuredSparkItems(s,'C10').map(x=>x.id);
+ assert.deepEqual(featured,['aim','motivation']);
+ const library=renderSparkShelf(s,'C10',{surface:'studio'});
+ assert(library.includes('data-spark-id="prediction"'));
+ assert(library.includes('href="#intro-prediction-spark"'));
+ assert(!library.includes('data-spark-editor="prediction"')); // A single editor in the Introduction avoids contradictory copies.
+ assert(library.includes('Why I thought or hoped this'));
+});

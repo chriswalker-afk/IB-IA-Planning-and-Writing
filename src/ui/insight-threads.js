@@ -46,8 +46,12 @@ export function insightItems(s){
   chosenJourney.title+' · Start here: '+chosenJourney.first[0],
   'Planning · Mathematical routes',{type:'planning',node:'N02M'},
   {planned:true,usage:'This is a possible starting route, not mathematics already performed. Use actual findings to decide whether a branch is relevant.'}));
- if(has(p.prediction||s?.project?.prediction))out.push(item('aim','prediction','Prediction or conjecture',p.prediction||s.project.prediction,
-  'Planning · Prediction',{type:'planning',node:'N01P'},{usage:'Compare this with genuine findings, including results that disagree.'}));
+ const initialPrediction=p.prediction||s?.project?.prediction;
+ const predictionWhy=p.predictionWhy||s?.project?.predictionWhy;
+ if(has(initialPrediction))out.push(item('aim','prediction','Prediction or conjecture',
+  initialPrediction+(has(predictionWhy)?'\nWhy I thought or hoped this: '+predictionWhy:''),
+  'Planning · Prediction',{type:'planning',node:'N01P'},
+  {usage:'This is a provisional prediction or hope, not an actual result. Compare it honestly with genuine findings, including those that differ.'}));
  const planned=p.kind==='theoretical'
   ?p.theoreticalCase||p.theoreticalQuestion||p.theoreticalObject
   :p.secondaryUrl||p.primaryWhat||p.dataSource;
@@ -135,7 +139,7 @@ export function insightForCurrent(s,node){
   linkedSources(s,active).some(a=>'source:'+a.id===x.id)));
  const latestResult=get('discovery').filter(x=>!x.planned&&!x.needsReview).at(-1);
  if(['C10','C10E','C02','C34B','C35','C60','C61','C62','C64'].includes(node)){
-  const prep=['C10','C10E'].includes(node)?compact(['working-title','aim','motivation']):
+  const prep=['C10','C10E'].includes(node)?compact(['aim','motivation','prediction']):
    compact(['aim','motivation']);
   if(['C34B','C35','C60','C61','C62','C64'].includes(node)&&latestResult)prep.push(latestResult);
   if(/^C6/.test(node)){
@@ -236,6 +240,10 @@ export function insightMeaning(s,node,x){
  if(x.id==='working-title')return 'This is a provisional signpost, not a result. Adapt your title if the actual mathematics leads to a more precise question.';
  if(x.id==='investigative-route'){
   return 'This is only the starting route you explored. Decide your next mathematics from what your genuine results reveal; no branch is required, and there is no obligation to add more techniques.';
+ }
+ if(x.id==='prediction'){
+  if(node==='C10')return 'If this expectation or hope is genuine and useful, write what you think or want to find out, and why, in the introduction of your actual IA. Edit the original Planning prediction spark below to revisit it as results emerge. It is not a finding or proof.';
+  return 'This was your starting prediction or hope. Compare it with the mathematics you actually obtained: a result that contradicts it can be just as valuable as one that supports it.';
  }
  if(x.id==='motivation'){
   if(node==='C10')return 'Use this genuine reason in the opening of your actual IA. Explain what drew you to the question without inventing an anecdote; your independent mathematical decisions will develop personal engagement later.';
@@ -368,7 +376,10 @@ const sparkFullBody=(s,node,x,{featured=false}={})=>
  '<p class="spark-shelf-guidance">'+e(insightMeaning(s,node,x))+'</p>'+
  '<div class="spark-shelf-source">'+(x.planned?'Provisional · ':'')+
   e(x.needsReview?'Needs review · '+x.where:x.where)+'</div>'+
- sparkEditor(s,x,{preview:!featured});
+ (node==='C10'&&x.id==='prediction'?
+  '<p class="spark-library-featured-hint">Edit the original prediction and your reason once in the Introduction prompt above, where they are saved for later reference.</p>'+
+  '<a class="spark-shelf-action" href="#intro-prediction-spark">'+icon('arrow-up-right')+' Edit my prediction in the Introduction</a>':
+  sparkEditor(s,x,{preview:!featured}));
 const sparkFeaturedCard=(s,node,x)=>{
  const key=inlineSparkKey(s,x),path=key?' data-spark-preview-path="planning.fields.'+e(key)+'"':'';
  return '<details class="motivation-aim-spark planning-return-spark spark-shelf-featured insight-'+e(x.type)+

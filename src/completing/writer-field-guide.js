@@ -130,7 +130,7 @@ export const FIELD_GUIDE_TIPS=Object.freeze([
     "essential": false,
     "title": "Your prediction isn't your conclusion.",
     "hook": "Keep expectations separate from discoveries.",
-    "explanation": "Your initial conjecture or prediction is a record of what you expected, not evidence. Keep it distinct from what the actual mathematics eventually shows, even if the answer is surprising.",
+    "explanation": "In your introduction, briefly say what you genuinely think or hope you will discover, and why. Save or refine your tentative prediction spark for later comparison. A prediction is not evidence, and your eventual mathematical findings may challenge it. If no sensible prediction is possible yet, be honest about what you hope to understand.",
     "ordinary": "I predicted a strong correlation, so the two quantities are related.",
     "stronger": "I originally expected a strong positive correlation. The scatter plot was more dispersed than I anticipated, and the PMCC of 0.23 challenged that expectation.",
     "why": "The writing distinguishes a prior belief from a genuine finding.",
