@@ -384,6 +384,7 @@ export function createPlanningViews(ctx){
       "A prediction can help you focus, but it is optional and is not a result. You can also choose to explore first.",
       summary("Your investigation aim",f.aim)+
       (f.beneficiary?summary("My motivation — why this matters",f.beneficiary+(f.intendedUse?" — "+f.intendedUse:"")):"")+
+      refinePanel+
       '<div class="field-group"><label class="field-label">Some possible predictions (optional)</label>'+
       choice("predictionId",choices.map(x=>({value:x.id,title:x.question,
        desc:x.id==="X02"?"It is fine to explore before forming a prediction.":""})),{stack:true,tight:true})+'</div>'+
@@ -396,7 +397,6 @@ export function createPlanningViews(ctx){
        F("predictionImplication","If it were true, what might it mean? (optional)",
         "A possibility, not advice supported by results",{type:"textarea",rows:2}):"")+
       (f.predictionId==="X02"?'<p class="primary-hint">No prediction needed yet. Explore some genuine mathematics and decide what questions arise.</p>':"")+
-      refinePanel+
       '<div class="button-row">'+route("Refine my motivation","Edit 'Who is this for?' while predicting")+'</div>'+
       callout("Your result might surprise you",
        "A different finding is not failure. Interpret actual evidence rather than trying to confirm an early prediction."),
