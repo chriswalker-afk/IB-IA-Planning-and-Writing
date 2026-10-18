@@ -41,7 +41,7 @@ export function modelFromEnvelope(envelope){
   ],"Provisional selections only. Selecting a technique does not imply that it has been used or understood."),
   section("03 · Prediction and mathematical purpose",[
     row("Contextual prompt I considered",predictionPrompt),
-    row("My tentative prediction or conjecture",f.prediction|| (f.predictionId==="X02"?"Not sure yet":""),{required:true}),
+    row("My tentative prediction or conjecture (optional)",f.prediction|| (f.predictionId==="X02"?"Exploring first":"")),
     row("Why I expect it",f.predictionWhy),
     row("What it could mean IF TRUE",f.predictionImplication),
     row("Exploration if uncertain",f.predictionExploration),
@@ -110,12 +110,12 @@ export function modelFromEnvelope(envelope){
     row("Permissions questions",f.permissionDetails),
     row("Rights to use source material",f.sourceRights)
   ],"The /5 assessments concern practical planning only, never predicted IA marks or teacher approval."),
-  section("The first mathematical step",[
-    row("Planned representation",f.figureOther||f.figureType,{required:true}),
-    row("What the first figure / example might reveal",f.figurePurpose),
-    row("First purposeful calculation or investigation",f.firstAction,{required:true}),
-    row("Measurement accuracy or symbolic precision",f.firstAccuracy)
-  ],"Purpose comes before the mathematics; interpretation should follow the actual result."),
+  section("Earlier first-mathematics ideas (if recorded)",[
+    row("Earlier proposed representation",f.figureOther||f.figureType),
+    row("Earlier idea of its purpose",f.figurePurpose),
+    row("Earlier proposed first action",f.firstAction),
+    row("Earlier symbolic or numerical precision policy",f.firstAccuracy)
+  ],"These are preserved optional plans from an earlier workflow. The first actual representation is chosen in IA Studio; no mathematics is implied completed."),
   section("Timeline and review",[
     row("Time available for the project",f.timelineWeeks?f.timelineWeeks+" "+(f.timelineWeeks==="1"?"week":"weeks"):""),
     row("Preference for finishing early",f.timelineEarly==="yes"?"Yes — leave a breathing-space buffer":f.timelineEarly==="no"?"No — use the available weeks":""),
