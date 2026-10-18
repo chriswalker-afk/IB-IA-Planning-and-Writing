@@ -439,7 +439,7 @@ export function createPlanningViews(ctx){
     F("teacherSafeAction","One safe step I can do before getting feedback","Review an assumption, refine an aim or prepare a permitted example",{type:"textarea",rows:2})+
     F("teacherExtra","Anything else you would like your teacher to know? (optional)","An important uncertainty, interest or practical constraint",{type:"textarea",rows:2})+
     '<div class="button-row">'+route("Revise my aim","Revisit existing planning answers")+route("Plan milestones and course mathematics","Optional: plan milestones before export")+
-    route("Plan a safe first mathematical step","Optional: identify first safe mathematical step")+'</div>'+
+    '<span class="primary-hint">Choose your first mathematical representation in IA Studio once you have a direction.</span>'+'</div>'+
     callout("Provisional summary stays available","An unresolved flag must remain visible. Do not begin affected collection requiring permission, but you can save this work.",true),
     "<h4>Safety comes first</h4><p>A teacher checkpoint does not mean consent or safety permission has been granted. It also does not prevent saving or printing a provisional plan.</p>",
     "Review my provisional plan");
@@ -447,12 +447,13 @@ export function createPlanningViews(ctx){
     '<div class="plan-review">'+
     summary("Investigation aim",f.aim)+edit("N01","Edit aim")+
     summary("My motivation — why the answer matters",f.beneficiary+(f.intendedUse?" — "+f.intendedUse:""))+edit("N01V","Edit motivation")+
-    summary("Course and mathematical direction",(f.course||"Not confirmed")+" · "+(selectedMaths(state).map(x=>x.label).join("; ")||f.otherMaths||f.otherCourseMaths||"Still to decide"))+edit("N04","Edit maths")+
+    summary("Course and mathematical direction",(f.course||"Not confirmed")+" · "+(selectedMaths(state).map(x=>x.label).join("; ")||f.otherMaths||f.otherCourseMaths||"Still to decide"))+edit("N02M","Edit maths")+
     summary("Evidence plan",f.kind==="theoretical"?(f.theoreticalCase||"Theoretical cases to confirm"):
       (f.dataSource||"No source chosen")+" · "+(f.primaryWhat||f.secondaryPublisher||"source details to confirm"))+
-    summary("Prediction (provisional)",f.prediction|| (f.predictionId==="X02"?"Not sure yet":""))+summary("Why I predicted it",f.predictionWhy)+
-    summary("What it might mean IF TRUE",f.predictionImplication)+
-    summary("First mathematical action",f.firstAction||f.figureOther||f.figureType)+
+    summary("Prediction (optional)",f.prediction||(f.predictionId==="X02"?"Exploring first":"No prediction recorded"))+
+    (f.predictionWhy?summary("Why I predicted it",f.predictionWhy):"")+
+    (f.predictionImplication?summary("What it might mean IF TRUE",f.predictionImplication):"")+
+    (f.firstAction||f.figureOther||f.figureType?summary("Earlier proposed first mathematics (preserved)",f.firstAction||f.figureOther||f.figureType):"")+
     summary("Current evidence availability",f.kind==="theoretical"?"Not required":f.dataAvailability||"Still to check")+
     summary("Permissions and consent",f.kind==="theoretical"?"Not applicable":f.permissionNeed||"Still to check")+
     summary("Access to essential resources",f.kind==="theoretical"?"Not applicable":f.practicalBlocker||"Still to check")+
@@ -463,7 +464,9 @@ export function createPlanningViews(ctx){
     "Review and save plan");
    case "N07":return stepBody("Your provisional plan is ready to take forward.","You've created a working direction. Your mathematical findings—and perhaps your aim—may evolve.",
     '<div class="success-moment"><span class="feature-icon">'+icon("check")+'</span><div><strong>Planning checkpoint reached</strong><p>Review your work in the printable report, or download a portable project backup. Save and return later, or explore your actual mathematics in IA Studio.</p></div></div>'+
-    summary("Provisional IA title",f.provisionalTitle)+summary("Your aim",f.aim)+summary("First mathematical move",f.firstAction)+
+    summary("Provisional IA title",f.provisionalTitle)+summary("Your aim",f.aim)+
+    (f.firstAction?summary("Earlier first-step idea (preserved)",f.firstAction):"")+
+    '<p class="primary-hint">The first genuine mathematical representation belongs in IA Studio.</p>'+
     F("planIdentifier","Optional label for my copy of this plan","e.g. My IA plan — revision 2")+teacherWarnings(state)+
     '<div class="button-row" style="margin-top:18px">'+button("Download my planning PDF","export-plan-pdf","btn-primary","", "download")+
     button("Download editable Word plan","export-plan-docx","btn-secondary","", "download")+
@@ -484,7 +487,7 @@ export function createPlanningViews(ctx){
    '<div class="button-row">'+button("Let's go","plan-advance","btn-primary","", "arrow-right")+'</div></div>';
   if(n==="N00B"||n==="N00C")return ideaFooter(state);
   if(n==="N03B")return '<div class="task-footer">'+button("Back","plan-back","btn-quiet","", "chevron-left")+
-   (state.planning.sourceBranches.primary&&state.planning.sourceBranches.secondary?button("Continue to evidence timing","plan-advance","btn-primary","", "arrow-right"):button("Continue the other source","plan-advance","btn-primary","", "arrow-right"))+'</div>';
+   (state.planning.sourceBranches.primary&&state.planning.sourceBranches.secondary?button("Next: prediction","plan-advance","btn-primary","", "arrow-right"):button("Continue the other source","plan-advance","btn-primary","", "arrow-right"))+'</div>';
   if(n==="N07")return '<div class="task-footer">'+button("Back to review","plan-back","btn-quiet","", "chevron-left")+
    button("View report","go-report","btn-primary","", "arrow-right")+'</div>';
   const only=N=>N==="N08"?"Continue to review":N==="N02U"?"Back to route":N==="N03R"?"Retry source plan":N==="N00C"?"Use this idea":screen.label;
