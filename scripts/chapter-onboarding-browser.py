@@ -199,8 +199,10 @@ def first_time(browser,width):
   assert page.locator('.writer-guide-drawer [data-guide-card="voice"][open]').count()==1
   page.locator('.writer-guide-drawer .drawer-header [data-action="close-drawer"]').click()
   assert page.locator('[data-source-node="C10"]').count()==1
-  # The same original prediction and its reason survive reopening the actual IA task.
-  page.reload()
+  # The original fixture's page-init script resets storage on EVERY reload.
+  # Open a fresh tab in the same browser context to test actual persisted data.
+  page=ctx.new_page()
+  page.goto(URL,wait_until="networkidle")
   assert page.locator('[data-source-node="C10"]').count()==1
   assert page.locator('[data-bind="planning.fields.prediction"]').input_value()=="I suspect a curved relationship."
   assert page.locator('[data-bind="planning.fields.predictionWhy"]').input_value()=="A few small cases suggest the changes increase."
