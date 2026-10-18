@@ -33,6 +33,7 @@ export function createCompletingViews(ctx){
   const state=getState(),i=state.completion.activeEntryIndex;
   return i>=0&&i<state.entries.length?field("entries."+i+"."+key,label,placeholder,opts):"";
  };
+ const criteriaField=(html,key)=>isAdviceReduced(getState())?html:criterionMarkedField(html,key);
  const entryChoice=(key,options)=>{
   const c=getState().completion,i=c.activeEntryIndex;
   return i>=0?choose("entries."+i+"."+key,options,{tight:true}):"";
@@ -355,13 +356,13 @@ export function createCompletingViews(ctx){
     ["diagram","Labelled mathematical diagram"],["table","Small numerical table or case"],
     ["calculation","One purposeful calculation"],["theory","Theoretical example or conjecture"],
     ["other","Another suitable representation"],["unsure","Not sure yet"]])+
-    criterionMarkedField(F("firstPurpose","Why might this help answer the aim?","The mathematical question it could reveal",{type:"textarea",rows:3}),"completing:C31:firstPurpose")+
+    criteriaField(F("firstPurpose","Why might this help answer the aim?","The mathematical question it could reveal",{type:"textarea",rows:3}),"completing:C31:firstPurpose")+
     (f.dataStatus==="not-started"&&p.kind!=="theoretical"?info("Data not ready?","You can define terms, use a clearly labelled provisional case or revisit sources. Do not invent measurements."): "")
   };
   case "C32":return{intro:"Immediately before the figure or calculation, give your reader a mathematical reason to look at it.",
    html:actualRecord()+
     entryField("title","A short title for this step","e.g. Inspect a scatter graph")+
-    criterionMarkedField(entryField("purpose","Mathematical purpose BEFORE it","What question should this graph/calculation help answer?",{type:"textarea",rows:3}),"completing:C32:purpose")+
+    criteriaField(entryField("purpose","Mathematical purpose BEFORE it","What question should this graph/calculation help answer?",{type:"textarea",rows:3}),"completing:C32:purpose")+
     entryField("technique","Mathematical technique being used","e.g. plot observed paired values")+
     entryField("resultRef","Where will the figure or work appear in my IA?","e.g. Figure 1 in my Word document")+
     F("firstDefinitions","Variables, units or assumptions the reader needs here","Only what is not already defined",{type:"textarea",rows:2})+
@@ -393,7 +394,7 @@ export function createCompletingViews(ctx){
       {value:"unclear",title:"No clear pattern",icon:"circle"},
       {value:"unexpected",title:"Unexpected point or result",icon:"sparkles"}]):"")+
     coachBlock(st,{allowChoices:st?.kind!=="scatter"})+
-    criterionMarkedField(entryField("observationText","What can you really observe?","Trend, feature, value, possible counterexample or inconclusive finding",{type:"textarea",rows:3}),"completing:C34:observation")+
+    criteriaField(entryField("observationText","What can you really observe?","Trend, feature, value, possible counterexample or inconclusive finding",{type:"textarea",rows:3}),"completing:C34:observation")+
     F("firstResultSummary","What is the essential local takeaway?","Use this when deciding what mathematical question should follow",{type:"textarea",rows:2})+
     accuracyNote()
   };
@@ -423,9 +424,9 @@ export function createCompletingViews(ctx){
   };
   case "C35":return{intro:"One logical bridge from your last actual result to the next mathematics—or recognise that you have enough to conclude.",
    html:bridgeFromPrior()+coachBlock(sourceResultForNext(s),{showDepth:false})+nextCoachQuestions()+
-    criterionMarkedField(F("nextQuestion","What worthwhile mathematical question remains unanswered?","It should arise from the previous local takeaway",{type:"textarea",rows:3}),"completing:C35:nextQuestion")+
+    criteriaField(F("nextQuestion","What worthwhile mathematical question remains unanswered?","It should arise from the previous local takeaway",{type:"textarea",rows:3}),"completing:C35:nextQuestion")+
     F("nextMethod","Which technique might answer THAT question?","Course-appropriate if possible; it can be undecided")+
-    criterionMarkedField(F("nextReason","Why would this next technique follow from the previous result?","Explain the bridge BEFORE the new mathematics in your real IA",{type:"textarea",rows:3}),"completing:C35:nextReason")+
+    criteriaField(F("nextReason","Why would this next technique follow from the previous result?","Explain the bridge BEFORE the new mathematics in your real IA",{type:"textarea",rows:3}),"completing:C35:nextReason")+
     info("No prescribed number of mathematical sections","Another technique is useful only if it answers a genuine next question. An honest conclusion may be the best next step.")+
     '<div class="button-row">'+sourceAction("Show me relevant NEXT mathematical ideas","Help me think of a next step")+
     (canViewScatterFollowup(s)?sourceAction("Show bivariate options for actual scatter pattern","Interpret my scatter pattern"):"")+
