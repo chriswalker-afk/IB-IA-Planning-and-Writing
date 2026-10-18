@@ -22,7 +22,7 @@ test("all 61 source-sheet routes are preserved alongside explicit later UX route
  const source=PLANNING_ROUTES.filter(r=>Number.isInteger(r.sourceRow));
  const extra=PLANNING_ROUTES.filter(r=>r.sourceRow===null);
  assert.equal(source.length,61);
- assert.equal(extra.length,17);
+ assert.equal(extra.length,23);
  for(const route of PLANNING_ROUTES){
   assert(PLANNING_NODE_IDS.includes(route.from));
   if(route.to.startsWith("N"))assert(PLANNING_NODE_IDS.includes(route.to));
@@ -75,6 +75,7 @@ test("combined primary+secondary plans cannot bypass either question set",()=>{
  assert.equal(planningMove(s,"Both data sources complete").ok,false);
  advance(s,"N03S");
  set(s,"secondaryStatus","ready");
+ advance(s,"N01P");
  advance(s,"N03D");
  assert.equal(s.planning.sourceBranches.secondary,true);
  assert.equal(s.planning.fields.secondaryStatus,"ready");
@@ -88,7 +89,7 @@ test("primary-only and secondary-only branches reach the join without false data
    set(s,"primaryWhat","A short planned measurement");
    advance(s,"N03P2");set(s,"primarySamplingMethod","unsure");
   }
-  set(s,statusKey,"unsure");advance(s,"N03D");
+  set(s,statusKey,"unsure");advance(s,"N01P");advance(s,"N03D");
   assert.equal(s.evidence.sources.length,0);
  }
 });
@@ -123,6 +124,7 @@ test("single evidence checkpoint replaces readiness and manageability with expli
  set(s,"primaryHow","Measure each item carefully");
  advance(s,"N03P2");
  set(s,"primarySamplingMethod","convenience");set(s,"primaryStatus","unsure");
+ advance(s,"N01P");
  advance(s,"N03D");
  assert(!planAutoAdvance(s).ok); // Don't assume actual evidence access without a decision.
  set(s,"dataAvailability","soon");
@@ -210,13 +212,46 @@ test("unsupported course requires teacher checkpoint, not a fabricated SL syllab
  advance(s,"N06T");advance(s,"N06");advance(s,"N07");
  assert(s.planning.completed);
 });
-test("maths suitability stage remains provisional and can link to specialist support",()=>{
- const s=newPlan();s.planning.current="N04M";
+test("optional mathematical suitability on prediction retains specialist support",()=>{
+ const s=newPlan();s.planning.current="N01P";
  set(s,"mathsOutside","outside");
  const r=planningMove(s,"Outside-course maths or unclear mathematical depth");
  assert.equal(r.ok,true);assert.equal(s.planning.current,"N08");
  assert.equal(s.teacher.pendingApproval,false);
  assert(planningFlags(s).some(f=>f.id==="outside-maths"));
+});
+test("an optional prediction flows to readiness and the actual mathematical work stays in Studio",()=>{
+ const s=newPlan();s.planning.current="N01P";
+ assert(planAutoAdvance(s).ok);
+ assert.equal(s.planning.current,"N03D");
+ set(s,"dataAvailability","soon");set(s,"permissionNeed","no");set(s,"practicalBlocker","no");
+ advance(s,"N03H");
+ advance(s,"N06T");
+ advance(s,"N06");
+ assert.equal(s.entries.length,0);
+ assert.equal(s.planning.fields.firstAction,"");
+ assert(!s.planning.completedNodes.some(x=>["N04R","N04M","N05V","N05","N06E"].includes(x)));
+});
+test("old duplicate mathematics screens normalize forward without deleting prior answers or sparks",()=>{
+ for(const [oldNode,next] of [["N04R","N01P"],["N04M","N01P"],["N05V","N06T"],["N05","N06T"],["N06E","N06T"]]){
+  const s=newPlan();
+  s.planning.current=oldNode;s.planning.history=["N01","N04R","N04M","N05V","N05","N06E"];
+  s.planning.visited=[oldNode];s.planning.completedNodes=["N01",oldNode];
+  Object.assign(s.planning.fields,{figureType:"diagram",figurePurpose:"Examine geometry",
+   firstAction:"Draw a first figure",mathsOutside:"unsure",mathsRevisedWhy:"May explain my data",
+   changeTrigger:"Unexpected trend",fallbackEvidence:"An alternative permitted dataset"});
+  s.planning.mathSelected=["AI15"];s.planning.refinePlanOpen=true;
+  const restored=normalizeProjectState(JSON.parse(JSON.stringify(s)));
+  assert.equal(restored.planning.current,next,oldNode);
+  assert.deepEqual(restored.planning.history,["N01"],oldNode);
+  assert.deepEqual(restored.planning.completedNodes,["N01"],oldNode);
+  assert.equal(restored.planning.fields.firstAction,"Draw a first figure");
+  assert.equal(restored.planning.fields.fallbackEvidence,"An alternative permitted dataset");
+  assert.equal(restored.planning.mathSelected[0],"AI15");
+  assert.equal(restored.planning.refinePlanOpen,true);
+  assert(planningEdit(restored,oldNode).ok);
+  assert.equal(restored.planning.current,next);
+ }
 });
 test("editing visited stages and back navigation retain the investigation record",()=>{
  const s=newPlan();set(s,"ideaStatus","yes");advance(s,"N01");
