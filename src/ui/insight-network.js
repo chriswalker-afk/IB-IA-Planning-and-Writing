@@ -23,7 +23,15 @@ export function insightConnections(s){
     status:'linked'};
   }).filter(Boolean).slice(-36);
 }
-const point={plan:[31,122],setup:[126,42],explore:[229,97],finish:[326,28]};
+/** Shared full-width trail coordinates. X is 0..1000 across the four chapter cards,
+ * with node 1 at 12.5% (inside Planning) and nodes 2–4 in the Writing zone.
+ * The decorative road scales; the visible milestone circles do not stretch.
+ */
+export const CHAPTER_TRAIL_POINTS=Object.freeze({
+ plan:Object.freeze({x:125,y:118}),setup:Object.freeze({x:375,y:58}),
+ explore:Object.freeze({x:625,y:112}),finish:Object.freeze({x:875,y:58})
+});
+const point=Object.fromEntries(Object.entries(CHAPTER_TRAIL_POINTS).map(([id,{x,y}])=>[id,[x,y]]));
 export function threadGeometry(connection,i){
  const [x,y]=point[connection.from], [tx,ty]=point[connection.to];
  const offset=i%5;
