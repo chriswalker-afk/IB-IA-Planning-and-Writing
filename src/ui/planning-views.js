@@ -463,21 +463,29 @@ export function createPlanningViews(ctx){
     callout("This is not an approved IA","A provisional plan is useful even if parts need clarification. The result and intended benefit have not yet been demonstrated."),
     "<h4>How to review</h4><p>Confirm your aim, whether the mathematical methods serve it, source feasibility, actual deadlines and any teacher flags. A pending decision never prevents a provisional summary.</p>",
     "Review and save plan");
-   case "N07":return stepBody("Your provisional plan is ready to take forward.","You've created a working direction. Your mathematical findings—and perhaps your aim—may evolve.",
-    '<div class="success-moment"><span class="feature-icon">'+icon("check")+'</span><div><strong>Planning checkpoint reached</strong><p>Review your work in the printable report, or download a portable project backup. Save and return later, or explore your actual mathematics in IA Studio.</p></div></div>'+
+   case "N07":return stepBody("Your provisional plan is ready to take forward.","Planning is complete for now. Your mathematical findings—and perhaps your aim—may evolve as you write.",
+    '<div class="planning-finish-handoff" aria-label="End of Planning, beginning of IA Studio">'+
+    '<span class="planning-finish-seal" aria-hidden="true">'+icon("check")+'</span>'+
+    '<div class="planning-finish-handoff-text"><span class="planning-finish-kicker">CHAPTER 1 COMPLETE</span>'+
+    '<strong>You have finished Planning!</strong>'+
+    '<p>Your provisional choices are saved. Next, begin your own introduction in IA Studio. You can revisit your plan whenever your mathematical investigation changes.</p>'+
+    '<div class="planning-finish-path" aria-label="Planning complete, Introduction in IA Studio next">'+
+    '<span class="planning-finish-path-done">'+icon("check")+' Planning</span>'+
+    icon("arrow-right")+
+    '<span class="planning-finish-path-next">IA Studio · Introduction</span></div></div></div>'+
     summary("Provisional IA title",f.provisionalTitle)+summary("Your aim",f.aim)+
     (f.firstAction?summary("Earlier first-step idea (preserved)",f.firstAction):"")+
     '<p class="primary-hint">The first genuine mathematical representation belongs in IA Studio.</p>'+
     F("planIdentifier","Optional label for my copy of this plan","e.g. My IA plan — revision 2")+teacherWarnings(state)+
-    '<div class="button-row" style="margin-top:18px">'+button("Download my planning PDF","export-plan-pdf","btn-primary","", "download")+
+    '<div class="planning-finish-resources"><p class="planning-finish-resources-title">Keep or review your plan (optional)</p>'+
+    '<div class="button-row">'+button("Download my planning PDF","export-plan-pdf","btn-secondary","", "download")+
     button("Download editable Word plan","export-plan-docx","btn-secondary","", "download")+
     button("View working report","go-report","btn-quiet","", "file")+
     button("Download project backup","export-json","btn-secondary","", "download")+
-    route("Review my plan again","Revisit an answer or correct a detail")+
-    route("Open IA Studio","Continue into Completing in this session")+'</div>'+
+    route("Review my plan again","Revisit an answer or correct a detail")+'</div></div>'+
     callout("Export reminder","Your PDF and Word reports contain an importable Planning snapshot. Later edits to the visible document do not update that snapshot automatically. Use a JSON backup to restore your entire IA Studio work."),
-    "<h4>What happens next?</h4><p>In Completing you will work with ACTUAL findings, not only this proposed plan. Unexpected results can legitimately change your next mathematical question.</p>",
-    "View my report");
+    "<h4>What happens next?</h4><p>Begin your own introduction in IA Studio, then verify actual sources and permissions before collecting restricted data. Planning choices are not mathematical findings or teacher approval; you can revise the plan later.</p>",
+    "Begin writing in IA Studio");
    default:return stepBody("Review this planning question.","This source stage isn't ready yet.",callout("Stage not recognised","Use your project report to preserve any work."),"");
   }
  }
@@ -489,8 +497,14 @@ export function createPlanningViews(ctx){
   if(n==="N00B"||n==="N00C")return ideaFooter(state);
   if(n==="N03B")return '<div class="task-footer">'+button("Back","plan-back","btn-quiet","", "chevron-left")+
    (state.planning.sourceBranches.primary&&state.planning.sourceBranches.secondary?button("Next: prediction","plan-advance","btn-primary","", "arrow-right"):button("Continue the other source","plan-advance","btn-primary","", "arrow-right"))+'</div>';
-  if(n==="N07")return '<div class="task-footer">'+button("Back to review","plan-back","btn-quiet","", "chevron-left")+
-   button("View report","go-report","btn-primary","", "arrow-right")+'</div>';
+  if(n==="N07"){
+   const returning=state.completion.visited.some(id=>!["C00","C01"].includes(id))||
+    state.entries.length>0||Object.values(state.scratch||{}).some(value=>typeof value==="string"&&value.trim());
+   return '<div class="task-footer planning-finish-footer">'+
+    '<div class="planning-finish-footer-left">'+button("Back to review","plan-back","btn-quiet","", "chevron-left")+
+    '<span class="planning-finish-footer-note">End of Planning · Next chapter: IA Studio</span></div>'+
+    button(returning?"Return to IA Studio":"Finish planning & begin writing","plan-finish-writing","btn-finish-planning","", "arrow-right")+'</div>';
+  }
   const only=N=>N==="N08"?"Continue to review":N==="N02U"?"Back to route":N==="N03R"?"Retry source plan":N==="N00C"?"Use this idea":screen.label;
   return '<div class="task-footer">'+(state.planning.history.length?button("Back","plan-back","btn-quiet","", "chevron-left"):button("Home","go-home","btn-quiet"))+
    '<div class="button-row">'+button(only(n),"plan-advance","btn-primary","", "arrow-right")+'</div></div>';
@@ -503,7 +517,7 @@ export function createPlanningViews(ctx){
    '<div class="planning-page-main">'+
    '<div class="progress-top"><span class="progress-overview">'+icon("compass")+' Guided Planning</span>'+
    '<span class="progress-counter">1. Planning · '+e(PROGRESS_GROUPS[stageI]?.label||"Review")+'</span></div>'+
-   '<div class="task-shell'+(kickoff?' planning-kickoff':'')+(titleStep?' planning-title-step':'')+'" data-source-node="'+e(n)+'">'+
+   '<div class="task-shell'+(kickoff?' planning-kickoff':'')+(titleStep?' planning-title-step':'')+(n==="N07"?' planning-finish':'')+'" data-source-node="'+e(n)+'">'+
    criterionPageHeading(screen.title,"planning",n)+'<p class="task-intro">'+e(screen.intro)+'</p>'+
    renderSparkShelf(state,n,{surface:'planning'})+screen.html+
    (kickoff||titleStep?'':insightCapture(state,n))+(kickoff||titleStep?'':essentialsNudge(state))+
