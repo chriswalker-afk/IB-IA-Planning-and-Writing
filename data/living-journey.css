@@ -430,3 +430,45 @@
 @media(prefers-reduced-motion:reduce){
  .living-trail-route .living-trail-step,.living-ribbon-part{transition:none}
 }
+
+
+/* Two small, clearly separated regions in the always-visible sidebar. */
+.side-milestones .journey-rail-zone{display:grid;gap:4px;border:1px solid;border-radius:13px;padding:7px}
+.side-milestones .journey-rail-zone.planning{background:#f0f8f3;border-color:#d5eadd}
+.side-milestones .journey-rail-zone.writing{background:#f8f5fc;border-color:#e7dcf1}
+.side-milestones .journey-rail-zone-label{display:flex;align-items:center;gap:6px;padding:2px 7px 4px;font-weight:800;font-size:10px;letter-spacing:.03em;color:#247363}
+.side-milestones .journey-rail-zone-label .icon{width:14px;height:14px}
+.side-milestones .journey-rail-zone.writing .journey-rail-zone-label{color:#705394}
+.side-milestones .journey-milestone{width:100%;min-width:0;gap:8px;padding:6px 7px}
+.side-milestones .journey-milestone.writing.active{background:#eae3f5}
+.side-milestones .journey-milestone.planning.active{background:#ddf0e6}
+.side-milestones .journey-milestone.writing:hover{background:#eee8f7}
+.side-milestones .journey-milestone.planning:hover{background:#e3f3ea}
+.side-milestones .journey-milestone.writing.active strong{color:#584377}
+.side-milestones .journey-milestone.writing .dot{border-color:#d3c7e2}
+.side-milestones .journey-milestone.writing.done .dot{border-color:#08766e}
+.side-milestones .journey-milestone .journey-rail-name{display:flex;align-items:center;gap:5px;min-width:0}
+.side-milestones .journey-milestone .journey-rail-name>.icon{flex:none;width:12px;height:12px;color:#29836a}
+.side-milestones .journey-milestone.writing .journey-rail-name>.icon{color:#896db0}
+.side-milestones .journey-milestone .journey-rail-name strong{font-size:11px}
+.side-milestones .journey-milestone .journey-mini{margin-top:4px}
+.side-milestones .journey-rail-zone .side-milestone:focus-visible{outline:3px solid #cfa559;outline-offset:2px}
+/* The detailed path and writing dashboard keep the same language. */
+.journey-chapter.journey-chapter-planning{border-color:#d1e6dc;background:#f5faf6}
+.journey-chapter.journey-chapter-writing{border-color:#e5dcef;background:#faf7fd}
+.journey-chapter.journey-chapter-writing summary:hover{background:#f0eaf9}
+.journey-chapter.journey-chapter-planning summary:hover{background:#e8f5ed}
+.journey-chapter-act{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:850;letter-spacing:.065em;margin:0 0 5px;color:#267364}
+.journey-chapter-act.writing{color:#705094}
+.journey-chapter-act>.icon{width:13px;height:13px}
+.journey-chapter.journey-chapter-writing .chapter-marker:not(.complete):not(.needs-review){color:#7956a2;background:#eee4f7}
+.journey-writing-stage{border:1px solid #e8dff1;border-radius:15px;background:#fcfafd;padding:15px}
+.journey-writing-stage h3{display:flex;align-items:center;gap:6px;color:#5d497e}
+.journey-writing-stage h3>.icon{width:17px;height:17px;flex:none;color:#8969ad}
+.journey-writing-phase{display:inline-flex;align-items:center;gap:7px;margin:0 0 12px;font-size:10px;font-weight:800;letter-spacing:.07em;color:#654985}
+.journey-writing-phase .icon{width:15px;height:15px}
+@media(max-width:760px){
+ .side-milestones .journey-rail-zone{padding:6px}
+ .side-milestones .journey-rail-zone-label{font-size:9px}
+ .journey-writing-stage{padding:12px}
+}
