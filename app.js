@@ -7,6 +7,7 @@ import {insightCapture} from "./src/ui/insight-threads.js";
 import {planningLearningTrail} from "./src/ui/living-journey.js";
 import {createExampleController} from "./src/examples/controller.js";
 import {createEssentialsController} from "./src/essentials/controller.js";
+import {createCriterionBadgeController} from "./src/essentials/criteria-badges.js";
 import {editCriterionReview} from "./src/essentials/review.js";
 import {ideaAction,ideaInput,ideaDifficultyInput,chooseTopic} from './src/ideas/engine.js';
 import {attachIdeaMapGraph} from './src/ideas/map-layout.js';
@@ -53,7 +54,8 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   const preview=createSamplePreview(previewStorage,normalise);
   const resourceSession = newResourceSession();
   createExampleController(() => state); // Read-only, ephemeral examples; no student state writes.
-  createEssentialsController({getState:()=>state,onEdit:data=>{if(!editCriterionReview(state,data))return false;save();return true;},onChangedClose:()=>render()});
+  const essentialsController=createEssentialsController({getState:()=>state,onEdit:data=>{if(!editCriterionReview(state,data))return false;save();return true;},onChangedClose:()=>render()});
+  createCriterionBadgeController({getState:()=>state,openRubric:(criterion,trigger)=>essentialsController.open({tab:"rubric",criterion},trigger)});
   let lastFocus = null;
   let lastDrawer = "";
   let drawerReturn=null;
