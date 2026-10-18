@@ -110,6 +110,14 @@ def run_primary(p,width):
  p.locator('[data-action="plan-advance"]').first.click()
  assert p.locator('[data-source-node="N03H"]').count()==1
  assert not any(v in saved(p)["planning"]["visited"] for v in ["N03J","N03F","N03E","N03G"])
+ p.locator('[data-action="plan-advance"]').first.click()
+ assert p.locator('[data-source-node="N06T"]').count()==1
+ assert not any(v in saved(p)["planning"]["visited"] for v in ["N04R","N04M","N05V","N05","N06E"])
+ p.locator('[data-action="plan-advance"]').first.click()
+ assert p.locator('[data-source-node="N06"]').count()==1
+ p.locator('[data-action="plan-advance"]').first.click()
+ assert p.locator('[data-source-node="N07"]').count()==1
+ assert saved(p)["planning"]["completed"]==True
  test_state=saved(p)
  test_state["route"]="completing";test_state["completion"]["current"]="C21S"
  p.evaluate("([k,s])=>localStorage.setItem(k,JSON.stringify(s))",[KEY,test_state])
