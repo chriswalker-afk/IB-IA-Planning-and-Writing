@@ -84,7 +84,7 @@ test("prediction refinement is a small optional control that keeps the maths cho
  const expanded=view.viewPlanning();
  assert(expanded.includes('aria-expanded="true"'));
  assert(expanded.includes('id="planning-prediction-refine-panel"'));
- assert(expanded.includes('planning.fields.mathsRevisedWhy'));
+ assert(expanded.includes('Why might this mathematical direction help?'));
  assert(!expanded.includes("Does your prediction change your maths plan?"));
  assert(!expanded.includes("What could your first mathematical representation be?"));
 });
