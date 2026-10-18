@@ -301,12 +301,12 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       const sparks={
         N01:["Your working title is taking shape","Your provisional title and question can guide this investigation. Revise them if the mathematics develops."],
         N03:["A possible evidence route","This is your plan for getting started, not a claim that evidence has been collected."],
-        N05V:["Your first mathematical move","You've recorded an intended action. The actual discovery comes after the mathematics."]
+        N01P:["Your early expectation","A prediction is optional and provisional. Actual mathematics will determine what is supported."]
       };
       if(sparks[from]&&result.route&&
          (from!=="N01"||(state.planning.fields.provisionalTitle||state.planning.fields.aim)?.trim())&&
          (from!=="N03"||state.planning.fields.dataSource?.trim())&&
-         (from!=="N05V"||(state.planning.fields.firstAction||state.planning.fields.figurePurpose)?.trim())){
+         (from!=="N01P"||(state.planning.fields.prediction||state.planning.fields.predictionId)?.trim())){
         toast(...sparks[from]);
       }
     }
