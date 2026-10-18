@@ -55,7 +55,9 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   const resourceSession = newResourceSession();
   createExampleController(() => state); // Read-only, ephemeral examples; no student state writes.
   const essentialsController=createEssentialsController({getState:()=>state,onEdit:data=>{if(!editCriterionReview(state,data))return false;save();return true;},onChangedClose:()=>render()});
-  createCriterionBadgeController({getState:()=>state,openRubric:(criterion,trigger)=>essentialsController.open({tab:"rubric",criterion},trigger)});
+  createCriterionBadgeController({getState:()=>state,
+    openRubric:(criterion,trigger)=>essentialsController.open({tab:"rubric",criterion},trigger),
+    openReview:(mode,trigger)=>essentialsController.open({tab:"submission",mode},trigger)});
   let lastFocus = null;
   let lastDrawer = "";
   let drawerReturn=null;
