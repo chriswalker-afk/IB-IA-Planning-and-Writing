@@ -1,7 +1,7 @@
 /* Criterion opportunities: unobtrusive by default, detailed only when requested. */
 .criterion-title-row{display:flex;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:0}
 .criterion-title-row>.task-heading{flex:1 1 250px;min-width:0}
-.criterion-badge{--badge-size:36px;display:grid;place-items:center;width:var(--badge-size);height:var(--badge-size);flex:none;border:2px solid #42755a;border-radius:50%;background:#e6f1e2;color:#153f26;font:750 15px/1 inherit;box-shadow:0 0 0 3px #fff;cursor:pointer;position:relative;z-index:1;transition:background .15s,border-color .15s,transform .15s}
+.criterion-badge{--badge-size:36px;display:grid;place-items:center;width:var(--badge-size);height:var(--badge-size);flex:none;border:2px solid #42755a;border-radius:50%;background:#e6f1e2;color:#153f26;font-family:inherit;font-size:15px;font-weight:750;line-height:1;box-shadow:0 0 0 3px #fff;cursor:pointer;position:relative;z-index:1;transition:background .15s,border-color .15s,transform .15s}
 .criterion-badge:hover{background:#d1e9d2;border-color:#0a7669;transform:translateY(-1px)}
 .criterion-badge:focus-visible{outline:3px solid #078578;outline-offset:4px}
 .criterion-badge>span{display:block;line-height:1}
