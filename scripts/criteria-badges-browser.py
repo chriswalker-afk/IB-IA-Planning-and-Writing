@@ -249,6 +249,36 @@ with sync_playwright() as pw:
    result.append({'case':'planned-conclusion-'+node,'status':'FAILED','reason':str(err)})
    traceback.print_exc()
   ctx.close()
+ # A–E evidence belongs in the existing self-review, not a second textbox.
+ for node,fieldname in [('C80D','draftCriteria'),('C90F','finalCriteria')]:
+  sample=state_for('completing',node)
+  ctx=browser.new_context(viewport={'width':390,'height':844})
+  page=ctx.new_page()
+  page.add_init_script('localStorage.setItem('+json.dumps(KEY)+','+json.dumps(json.dumps(sample))+');')
+  try:
+   page.goto(URL,wait_until='networkidle')
+   assert page.locator('[data-bind="completion.fields.'+fieldname+'"]').count()==0
+   assert page.locator('.criterion-badge-multi').count()==1
+   result.append({'case':'review-without-duplicate-'+node,'status':'passed'})
+  except Exception as err:
+   result.append({'case':'review-without-duplicate-'+node,'status':'FAILED','reason':str(err)})
+   traceback.print_exc()
+  ctx.close()
+  sample['completion']['fields'][fieldname]='Previously saved student note'
+  ctx=browser.new_context(viewport={'width':390,'height':844})
+  page=ctx.new_page()
+  page.add_init_script('localStorage.setItem('+json.dumps(KEY)+','+json.dumps(json.dumps(sample))+');')
+  try:
+   page.goto(URL,wait_until='networkidle')
+   previous=page.locator('[data-bind="completion.fields.'+fieldname+'"]')
+   assert previous.count()==1
+   assert previous.input_value()=='Previously saved student note'
+   assert previous.locator('xpath=ancestor::details').count()==1
+   result.append({'case':'legacy-review-notes-'+node,'status':'passed'})
+  except Exception as err:
+   result.append({'case':'legacy-review-notes-'+node,'status':'FAILED','reason':str(err)})
+   traceback.print_exc()
+  ctx.close()
  # Reduced advice should suppress the new icons without changing the mathematical form.
  reduced=state_for('completing','C35')
  reduced['completion']['guidanceUi']['quietNode']='C35'
