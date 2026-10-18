@@ -54,6 +54,11 @@ def state_for(route,node):
     'technique':'Compare the model with observations',
     'result':'A small genuine difference between model and observations.',
     'localTakeaway':'The model approximates the observed trend.'}]
+  if node in ('C80D','C90F'):
+   mode='draft' if node=='C80D' else 'final'
+   s['completion']['review']['records'][mode+'-D02']['location']='My '+mode+' introduction'
+   s['completion']['review']['records'][mode+'-D06']['location']='My '+mode+' mathematics'
+   if node=='C80D':s['completion']['fields']['draftComplete']='not-yet'
   if node=='C35B':
    s['entries'][0]['kind']='scatter'
    s['completion']['scatterPatternForEntryId']='first'
@@ -97,7 +102,7 @@ with sync_playwright() as pw:
    assert shell.get_attribute('data-source-node')==node
    badge=shell.locator('[data-criterion-badge="'+spot+'"]')
    assert badge.count()==1
-   assert shell.locator('[data-criterion-badge]').count()==(2 if node=='C35' else 1)
+   assert shell.locator('[data-criterion-badge]').count()==(2 if node in ('C35','C61') else 1)
    assert shell.locator('.criteria-panel [data-action="criteria-toggle"]').count()==0
    assert shell.locator('.criteria-panel [data-action="essentials-open"]').count()==0 or (
     shell.locator('.criteria-panel [data-action="essentials-open"]').count()==1)
