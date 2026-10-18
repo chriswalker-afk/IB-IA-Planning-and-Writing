@@ -12,7 +12,7 @@ import {normalizeEntry} from "../completing/entry-record.js";
 export const STATE_VERSION = 2;
 export const STORAGE_KEY = "ia-pathfinder-prototype-v1"; // Deliberately stable across upgrades.
 export const MAX_ENTRIES = 120;
-const planningIds = ["N00","N01","N01V","N02","N03","N03D","N04S","N01P","N05V","N07"];
+const planningIds = ["N00","N01","N01V","N02","N03","N03D","N04S","N01P","N06","N07"];
 const plain = v => v && typeof v === "object" && !Array.isArray(v);
 const str = v => typeof v === "string" ? v : "";
 function copyKnown(defaults, input) {
@@ -82,7 +82,7 @@ export function createProjectState() {
 function legacyAnswers(p) {
   const valueById = {
     N00:p.ideaStatus,N01:p.aim,N01V:p.beneficiary,N02:p.kind,N03:p.dataSource,
-    N03E:p.readiness,N03G:p.ease,N04:p.course,N01P:p.prediction,N05V:p.firstMove
+    N03E:p.readiness,N03G:p.ease,N04:p.course,N01P:p.prediction,N06:p.firstMove
   };
   return Object.fromEntries(Object.entries(valueById).filter(([,v])=>typeof v==="string" ? v.trim():Number(v)>0));
 }
