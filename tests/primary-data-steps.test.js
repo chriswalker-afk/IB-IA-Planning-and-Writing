@@ -42,7 +42,7 @@ test('primary collection and sampling use two screens while keeping provenance',
  assert(!PLANNING_NODE_IDS.includes('N03P3'));
  const route=(from,to)=>PLANNING_ROUTES.find(x=>x.from===from&&x.to===to);
  assert.equal(route('N03P','N03P2').sourceRow,null);
- assert.equal(route('N03P2','N03D').sourceRow,null);
+ assert.equal(route('N03P2','N01P').sourceRow,null);
  assert.equal(route('N03P','N03J').sourceRow,19);
  const state=s();
  assert(!planAutoAdvance(state).ok);
@@ -53,7 +53,7 @@ test('primary collection and sampling use two screens while keeping provenance',
  set(state,'primarySamplingMethod','convenience');
  set(state,'primaryStatus','unsure');
  assert(planAutoAdvance(state).ok);
- assert.equal(state.planning.current,'N03D');
+ assert.equal(state.planning.current,'N01P');
  assert.deepEqual(['N03P','N03P2'].map(id=>state.planning.completedNodes.includes(id)),[true,true]);
  assert(planningBack(state).ok);
  assert.equal(state.planning.current,'N03P2');
@@ -102,7 +102,7 @@ test('ready plans require each named quantity accuracy on sampling finish',()=>{
  assert(measure(state,'Height','cm','analogue','nearest 1 mm').ok);
  assert(!planAutoAdvance(state).ok);
  assert(measure(state,'Duration','s','digital','nearest 0.01 s').ok);
- assert(planAutoAdvance(state).ok);assert.equal(state.planning.current,'N03D');
+ assert(planAutoAdvance(state).ok);assert.equal(state.planning.current,'N01P');
 });
 test('quantity and accuracy live together on screen one; sampling lives on screen two',()=>{
  const state=s();set(state,'primaryHow','Measure jump distance');
