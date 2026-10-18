@@ -83,7 +83,9 @@ def first_time(browser,width):
   assert colors[0]!=colors[1],colors
   without_overflow(page)
   page.screenshot(path=str(OUT/f"two-zone-discovery-trail-{width}.png"),full_page=True,animations="disabled")
-  page.locator('[data-nav="completing"]').first.click()
+  # Use the actual visible Writing chapter, including on phones where
+  # the sidebar's duplicate navigation links are deliberately hidden.
+  page.locator('.living-trail-step.writing').first.click()
   assert page.locator('[data-source-node="C00"]').count()==1
   without_overflow(page)
   page.screenshot(path=str(OUT/f"setup-quick-sparks-{width}.png"),full_page=True,animations="disabled")
