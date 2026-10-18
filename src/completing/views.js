@@ -214,18 +214,67 @@ export function createCompletingViews(ctx){
     '<div class="context-card">'+icon("check-circle")+'<div><strong>'+e(st.title||"Result "+(i+1))+'</strong><p>'+
     e(st.localTakeaway||st.interpretation||st.observationText||st.result)+'</p></div></div>').join("")+'</div>';
  };
+ /** Optional, short catch-up: saved Planning fields produce reusable sparks. */
+ const setupQuickSparks=s=>{
+  const p=s.planning.fields,missing=v=>typeof v!=='string'||!v.trim(),core=[],extras=[];
+  if(missing(p.aim))core.push(field("planning.fields.aim","My investigation question","What would I like to find out mathematically?",{type:"textarea",rows:2}));
+  if(missing(p.beneficiary)&&missing(p.motivation)&&missing(p.intendedUse))
+   core.push(field("planning.fields.beneficiary","Why would knowing the answer matter?","What might it help me understand or decide?",{type:"textarea",rows:2}));
+  if(missing(p.provisionalTitle))extras.push(field("planning.fields.provisionalTitle","A working title (optional)","This can change later"));
+  if(missing(p.course))extras.push(field("planning.fields.course","My IB Maths course","",{type:"select",
+   options:[["","Choose later"],["AI SL","AI SL"],["AA SL","AA SL"],["AA HL","AA HL"],["AI HL","AI HL"],["other","Not sure / other"]]}));
+  if(missing(p.kind))extras.push(field("planning.fields.kind","What sort of investigation?","",{type:"select",
+   options:[["","Choose later"],["statistics","Data and statistics"],["modelling","Mathematical modelling"],["theoretical","Theoretical mathematics"],["unsure","Still exploring"]]}));
+  if(p.kind==="theoretical"&&missing(p.theoreticalCase))
+   extras.push(field("planning.fields.theoreticalCase","Possible mathematical objects or example","e.g. a shape, pattern, conjecture or initial case"));
+  else if(p.kind!=="theoretical"&&missing(p.dataSource))
+   extras.push(field("planning.fields.dataSource","Likely data route (if needed)","",{type:"select",
+   options:[["","Choose later"],["primary","Collect my own data"],["secondary","Use existing published data"],["both","Both routes"]]}));
+  const count=core.length+extras.length;
+  if(!count)return '<div class="setup-spark-already">'+icon("check-circle")+
+   '<div><strong>Your starting sparks are available</strong><p>Your question, purpose and direction can be reused. Edit them from View all sparks or return to Planning.</p></div></div>';
+  return '<details class="setup-quick-sparks"'+(!s.planning.completed?' open':'')+'>'+
+   '<summary>'+icon("sparkles")+' <span><strong>Quick-fill missing sparks</strong>'+
+   '<small>'+count+' useful starting detail'+(count===1?'':'s')+' still open · all optional</small></span>'+icon("chevron-down")+'</summary>'+
+   '<div class="setup-quick-sparks-body"><p>Short on time? Add the essentials here, or leave them blank and return later. These are <strong>Planning sparks</strong>, not completed mathematics or IA prose.</p>'+
+    core.join("")+
+    (extras.length?'<details class="setup-spark-extras"><summary>Add other missing details (optional) '+icon("chevron-down")+'</summary>'+
+     '<div>'+extras.join("")+'</div></details>':'')+
+   '<p class="setup-quick-sparks-note">For sampling, source checks and recording accuracy, use the full Planning chapter. These shortcuts do not mean Planning is complete.</p></div></details>';
+ };
  const startOptions=(n)=>{
   if(isStuckNode(n))return{intro:"Choose one useful way forward. Your original work is preserved.",html:stuck.render()};
   const s=getState(),f=s.completion.fields,p=s.planning.fields,st=completeEntry(s);
   switch(n){
-  case "C00":return{
-   intro:"Continue with your plan, restore a Pathfinder planning report, or begin without one. You never need an account.",
-   html:smallSummary("Current aim",currentAim())+
-    '<div class="completion-big-actions">'+
-    sourceAction("Continue from completed Planning in this session","Continue my current plan",true)+
-    sourceAction("Upload saved planning report PDF/DOCX","Import PDF or Word plan")+
-    sourceAction("Start without a saved plan","Start without a plan")+'</div>'
-  };
+  case "C00":{
+   const hasPlan=s.planning.completed===true;
+   return{
+    intro:"This is the beginning of your written IA. You can use your plan, fill in a few missing sparks, or start now and revisit Planning later.",
+    html:'<div class="chapter-onboarding chapter-onboarding-write">'+
+      '<div class="chapter-onboarding-banner"><span class="chapter-onboarding-symbol">'+icon("pencil")+'</span>'+
+       '<div><span class="chapter-onboarding-eyebrow">CHAPTER 2 · WRITE IN YOUR IA</span>'+
+        '<strong>Your writing starts here.</strong>'+
+        '<p><b>Write relevant Set up answers directly into your actual IA document</b> as you work: the introduction, sources and methods you really use. Pathfinder stores your notes here; it does not automatically insert text into Word or Google Docs.</p>'+
+       '</div></div>'+
+      '<div class="chapter-onboarding-grid chapter-onboarding-grid-setup">'+
+       '<section class="chapter-onboarding-tile"><span class="chapter-onboarding-tile-icon">'+icon("compass")+'</span>'+
+        '<h3>Planning first is recommended</h3><p>Choose an aim, explore possible mathematics and check sources before writing. Your saved sparks follow you into IA Studio.</p>'+
+        '<button type="button" class="onboarding-inline-action" data-action="go-planning">'+icon("arrow-right")+' '+(hasPlan?'Review my Planning':'Complete Planning first')+'</button></section>'+
+       '<section class="chapter-onboarding-tile"><span class="chapter-onboarding-tile-icon">'+icon("book")+'</span>'+
+        '<h3>Write, check, revise</h3><p>Use writing guidance and criteria badges as you go. Write in your own words; use real evidence. Predictions from Planning are not findings.</p>'+
+        '<button type="button" class="onboarding-inline-action" data-action="essentials-open">Find the IB criteria '+icon("arrow-right")+'</button></section></div>'+
+      setupQuickSparks(s)+
+      '<div class="setup-start-actions">'+
+       button("Start writing my introduction","setup-start-writing","btn-primary","","arrow-right")+
+       (hasPlan?'<span>Your Planning chapter is ready for now; return whenever your aim changes.</span>':
+        '<span>You can start without a complete plan. Check sources and permissions before collecting restricted data.</span>')+'</div>'+
+      '<details class="setup-other-ways"><summary>Other ways to begin or restore your plan '+icon("chevron-down")+'</summary><div class="button-row">'+
+       sourceAction("Continue from completed Planning in this session","Review carried-forward answers")+
+       sourceAction("Upload saved planning report PDF/DOCX","Import a Planning PDF or Word file")+
+       sourceAction("Start without a saved plan","Review starting details without a saved plan")+'</div></details>'+
+     '</div>'
+   };
+  }
   case "C01":return{intro:"Upload an earlier Pathfinder PDF or Word plan, or continue by entering what you know.",
    html:info("Import is optional","The existing Phase 3 importer lets you compare old and current answers. Uploaded files do not count as teacher approval.")+
     '<div class="button-row">'+button("Choose PDF / Word document","import-report","btn-primary","", "upload")+
