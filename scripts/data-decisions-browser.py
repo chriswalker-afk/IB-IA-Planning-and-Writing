@@ -118,6 +118,27 @@ def run_primary(p,width):
  p.locator('[data-action="plan-advance"]').first.click()
  assert p.locator('[data-source-node="N07"]').count()==1
  assert saved(p)["planning"]["completed"]==True
+ assert "CHAPTER 1 COMPLETE" in p.locator(".planning-finish-handoff").inner_text()
+ assert "IA Studio · Introduction" in p.locator(".planning-finish-path").inner_text()
+ assert p.locator('[data-action="go-report"]').count()>=1
+ assert p.locator('.planning-finish-footer .btn-finish-planning').count()==1
+ assert p.locator('.planning-finish-footer .btn-primary').count()==0
+ assert "Finish planning & begin writing" in p.locator(".btn-finish-planning").inner_text()
+ no_overflow(p)
+ p.screenshot(path=str(OUT/f"planning-finish-{width}.png"),full_page=True,animations="disabled")
+ before=saved(p)
+ p.locator('[data-action="plan-finish-writing"]').click()
+ assert p.locator('[data-source-node="C10"]').count()==1
+ assert p.locator('[data-bind="scratch.introduction"]').count()==1
+ after=saved(p)
+ assert after["route"]=="completing"
+ assert after["planning"]["completed"]==True
+ assert after["planning"]["current"]=="N07"
+ assert after["completion"]["current"]=="C10"
+ assert after["teacher"]["pendingApproval"]==before["teacher"]["pendingApproval"]
+ assert any(x["from"]=="N07" and x["to"]=="C00" for x in after["journey"]["history"])
+ no_overflow(p)
+ p.screenshot(path=str(OUT/f"planning-to-writing-{width}.png"),full_page=True,animations="disabled")
  test_state=saved(p)
  test_state["route"]="completing";test_state["completion"]["current"]="C21S"
  p.evaluate("([k,s])=>localStorage.setItem(k,JSON.stringify(s))",[KEY,test_state])
