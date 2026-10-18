@@ -24,7 +24,7 @@ test("all 34 normalized Planning nodes render without throwing, with exact node 
   const html=view.viewPlanning();
   assert(html.includes('data-source-node="'+node+'"'),node);
   assert(html.includes('class="task-shell'),node);
-  assert(html.includes("Back")||html.includes("Home")||(node==="N00"&&html.includes("Let's go")),node);
+  assert(html.includes("Back")||html.includes("Home")||(node==="N00"&&(html.includes("Let's go")||html.includes("Start planning"))),node);
   assert(!html.includes("undefined"),node);
  }
 });
@@ -105,8 +105,21 @@ test("phase two planning uses route-progress milestones rather than a compulsory
  assert(!html.includes("Step 1 of 10"));
 });
 
-test("first Planning screen asks one three-way question and keeps support for later",()=>{
+test("the Planning welcome explains sparks, relevant criteria and support before the first question",()=>{
  const {state,view}=screenFixture();
+ const first=view.viewPlanning();
+ assert(first.includes('data-planning-intro="true"'));
+ assert(first.includes('Welcome to Planning'));
+ assert(first.includes('Sparks remember your ideas'));
+ assert(first.includes('View all sparks'));
+ assert(first.includes('Criteria appear where they matter'));
+ assert(first.includes('data-action="essentials-open"'));
+ assert(first.includes('data-action="example-open"'));
+ assert(first.includes('data-action="resource-browse"'));
+ assert(first.includes('CHAPTER 1 · PLAN ONLY'));
+ assert(first.includes('data-action="planning-intro-continue"'));
+ assert(!first.includes('I have an idea'));
+ state.ui.planningIntroSeen=true;
  const start=view.viewPlanning();
  for(const label of ["I have an idea","I'm choosing between ideas","Help me find an idea"]){
   assert(start.includes(label),label);
@@ -245,4 +258,20 @@ test("the Planning finish page clearly ends chapter one and offers one distinct 
  html=view.viewPlanning();
  assert(html.includes('Return to IA Studio'));
  assert(!html.includes('Finish planning & begin writing'));
+});
+
+
+test('Planning welcome can be reopened, but existing students are not interrupted',()=>{
+ const {state,view}=screenFixture();
+ state.planning.fields.aim='How does the actual value change?';
+ assert(!view.viewPlanning().includes('data-planning-intro="true"'));
+ assert(view.viewPlanning().includes('data-action="planning-intro-open"'));
+ state.ui.planningIntroOpen=true;
+ assert(view.viewPlanning().includes('data-planning-intro="true"'));
+ assert(view.viewPlanning().includes('Return to my planning'));
+ assert.equal(state.planning.current,'N00');
+ state.ui.planningIntroOpen=false;
+ state.planning.fields.aim='';
+ state.planning.completedNodes.push('N01');
+ assert(!view.viewPlanning().includes('data-planning-intro="true"'));
 });
