@@ -8,6 +8,7 @@ import {primaryDataWhat,primaryDataSampling} from './primary-data-steps.js';
 import {insightCapture,renderSparkShelf} from './insight-threads.js';
 import {examplePrompt} from "../examples/views.js";
 import {criteriaPanel,essentialsNudge} from "../essentials/views.js";
+import {criterionMarkedField,criterionPageHeading} from "../essentials/criteria-badges.js";
 import {ideaExplorerView,ideaComparisonView,ideaFooter} from '../ideas/views.js';
 import {renderTimelineStep} from "./timeline-view.js";
 /**
@@ -173,8 +174,8 @@ export function createPlanningViews(ctx){
      {value:"others",title:"Someone else could use it",icon:"route"},
      {value:"both",title:"Both me and others",icon:"layers"},
      {value:"unsure",title:"Still working it out",icon:"lightbulb"}],{tight:true,label:"Who might benefit from my investigation?"})+'</div>'+
-    F("beneficiary","Who might benefit, and how could the answer help?","e.g. I want to compare ... so I can decide ... / I want to explain why ...",{type:"textarea",rows:3,
-     hint:"Write one genuine reason. What would knowing the answer help you understand or decide? Don't assume you will prove your prediction."})+
+    criterionMarkedField(F("beneficiary","Who might benefit, and how could the answer help?","e.g. I want to compare ... so I can decide ... / I want to explain why ...",{type:"textarea",rows:3,
+     hint:"Write one genuine reason. What would knowing the answer help you understand or decide? Don't assume you will prove your prediction."}),"planning:N01V:benefit")+
     (f.intendedUse?'<details class="motivation-older-note"><summary>Earlier intended-use note (preserved)</summary><p>'+e(f.intendedUse)+'</p></details>':"")+
     '<p class="motivation-later-echo">'+icon("route")+' <span><strong>We will return to this.</strong> When you interpret results, decide what to do next and write your conclusion, check how far your findings actually answer your motivation.</span></p>'+
     (p.returnToPrediction?callout("Returning to your prediction","Your earlier mathematical choices and prediction are retained."): ""),
@@ -503,7 +504,7 @@ export function createPlanningViews(ctx){
    '<div class="progress-top"><span class="progress-overview">'+icon("compass")+' Guided Planning</span>'+
    '<span class="progress-counter">1. Planning · '+e(PROGRESS_GROUPS[stageI]?.label||"Review")+'</span></div>'+
    '<div class="task-shell'+(kickoff?' planning-kickoff':'')+(titleStep?' planning-title-step':'')+'" data-source-node="'+e(n)+'">'+
-   '<h1 class="task-heading">'+e(screen.title)+'</h1><p class="task-intro">'+e(screen.intro)+'</p>'+
+   criterionPageHeading(screen.title,"planning",n)+'<p class="task-intro">'+e(screen.intro)+'</p>'+
    renderSparkShelf(state,n,{surface:'planning'})+screen.html+
    (kickoff||titleStep?'':insightCapture(state,n))+(kickoff||titleStep?'':essentialsNudge(state))+
    (kickoff||titleStep||ideaMapStep?'':'<div class="example-row">'+helpButton("plan-"+n,n==="N01V"?"Why does this matter?":"Help me think")+helpBox("plan-"+n,screen.help)+'</div>')+
