@@ -104,3 +104,153 @@
 @media print{
  .chapter-onboarding-footer,.chapter-guide-reopen,.onboarding-inline-action,.setup-start-actions,.setup-other-ways{display:none!important}
 }
+
+/* The Writer's Field Guide: optional, original teaching examples. No checklist scores. */
+.writer-guide-teaser{position:relative;overflow:hidden;background:linear-gradient(142deg,#f5f0fc 0%,#fff 85%);border-color:#d9cbe9;padding:17px}
+.writer-guide-teaser::after{content:"";position:absolute;width:95px;height:95px;right:-35px;top:-40px;border:1px solid #cfc1e9;border-radius:50%;pointer-events:none}
+.writer-guide-teaser-top{display:flex;align-items:center;gap:9px;margin-bottom:9px}
+.writer-guide-teaser-top .chapter-onboarding-tile-icon{margin:0;background:#e9dcf7;color:#664a94}
+.writer-guide-teaser-tag{font-size:9px;font-weight:850;line-height:1.4;letter-spacing:.09em;color:#684f96}
+.chapter-onboarding-tile.writer-guide-teaser h3{font-size:16px;line-height:1.3;margin-bottom:7px}
+.writer-guide-teaser-families{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 14px}
+.writer-family-chip{display:inline-flex;align-items:center;gap:5px;padding:5px 8px;border-radius:9px;font-size:10px;font-weight:760}
+.writer-family-chip .icon{width:14px;height:14px}
+.writer-family-chip.writer-family-voice{background:#ede4f7;color:#614588}
+.writer-family-chip.writer-family-maths{background:#e1f4ec;color:#126e60}
+.writer-family-chip.writer-family-reader{background:#fcf0d7;color:#816226}
+.writer-guide-open-button{border:1px solid #644a92;background:#644a92;color:white;border-radius:12px;display:flex;align-items:center;justify-content:center;gap:8px;padding:11px 13px;width:100%;min-height:43px;font-size:12px;font-weight:800;text-align:center;transition:background .2s,transform .2s}
+.writer-guide-open-button .icon{width:16px;height:16px}
+.writer-guide-open-button:hover{background:#4d3778;transform:translateY(-1px)}
+.chapter-onboarding-tile p.writer-guide-teaser-note{font-size:11px;line-height:1.55;margin-top:9px}
+.writer-guide-criteria-link{font-size:11px}
+.writer-guide-overview{display:inline-flex;align-items:center;gap:9px;padding:10px 12px;background:#f7f2fc;color:#624a8f;border-radius:11px;border:1px solid #dfd2eb;font-size:12px;font-weight:750;margin:11px 0 18px}
+.writer-guide-overview .icon{width:17px;height:17px}
+.writer-guide-return{display:flex;align-items:center;flex-wrap:wrap;gap:10px;border:1px solid #e5daf0;background:#faf7fd;border-radius:13px;padding:12px 14px;margin:14px 0 18px}
+.writer-guide-return-icon{display:grid;place-items:center;flex:none;width:32px;height:32px;border-radius:10px;background:#efe7f8;color:#674d91}
+.writer-guide-return-icon .icon{width:18px;height:18px}
+.writer-guide-return-copy{display:flex;flex-direction:column;gap:1px;flex:1;min-width:140px}
+.writer-guide-return-copy>strong{font-size:10px;font-weight:850;color:#624a8c;text-transform:uppercase;letter-spacing:.06em}
+.writer-guide-return-copy>span{font-size:12px;line-height:1.4;color:var(--ink);font-weight:600}
+.writer-guide-return button{border:0;background:transparent;display:flex;gap:5px;align-items:center;padding:7px 2px;font-size:11px;font-weight:800;color:#63438f}
+.writer-guide-return button .icon{width:15px;height:15px}
+.writer-guide-return button:hover,.writer-guide-overview:hover{text-decoration:underline;text-underline-offset:3px}
+.writer-guide-drawer{width:min(100%,780px);padding:20px 24px 34px;background:#f9fbf9}
+.writer-guide-drawer .drawer-header{position:sticky;top:0;z-index:4;padding:16px 3px;background:#f9fbf9;border-bottom:1px solid var(--line);margin:-15px 0 17px}
+.writer-guide-drawer .drawer-header h2{font-size:17px}
+.writer-guide-main{display:grid;gap:22px;min-width:0;padding-bottom:20px}
+.writer-guide-main [hidden]{display:none!important}
+.writer-guide-hero{position:relative;overflow:hidden;border-radius:21px;background:linear-gradient(116deg,#e9e1f5,#f8f4fe 58%,#f4f9f5);padding:27px 27px 24px;border:1px solid #dbd0ec}
+.writer-guide-eyebrow{font-size:10px;letter-spacing:.15em;display:inline-flex;align-items:center;gap:7px;font-weight:850;color:#614587}
+.writer-guide-eyebrow .icon{width:16px;height:16px}
+.writer-guide-hero-layout{display:grid;grid-template-columns:minmax(0,1fr) 175px;align-items:center;gap:12px}
+.writer-guide-hero h2{font-size:clamp(25px,3.4vw,37px);line-height:1.13;color:#2b3545;margin:9px 0 11px}
+.writer-guide-drawer p.writer-guide-hero-note,.writer-guide-hero-note{display:inline-block;color:#614d80;font-size:10px;font-weight:760}
+.writer-guide-hero-layout p{font-size:13px;color:#58636d;line-height:1.65;max-width:44ch;margin:0 0 12px}
+.writer-guide-art{height:175px;position:relative}
+.writer-guide-art-sheet{display:grid;place-items:center;position:absolute;width:112px;height:140px;top:12px;left:34px;border:2px solid #c5b7e1;border-radius:12px;background:#fffdfc;box-shadow:0 12px 25px #473a6121}
+.writer-guide-art-sheet.sheet-one{transform:rotate(-15deg) translate(-16px,3px);color:#2b8673}
+.writer-guide-art-sheet.sheet-two{transform:rotate(9deg) translate(18px,-2px);color:#6d5198;background:#fffaf1}
+.writer-guide-art-sheet .icon{width:49px;height:49px;stroke-width:1.4}
+.writer-guide-art-star{position:absolute;right:4px;top:5px;display:grid;place-items:center;background:#e4b95e;color:#614b31;border-radius:50%;width:46px;height:46px;box-shadow:0 4px 11px #9c763a22}
+.writer-guide-art-star .icon{width:24px;height:24px}
+.writer-guide-drawer .writer-guide-disclaimer{font-size:11px;line-height:1.55;margin:0;color:#667b7a}
+.writer-guide-story{background:white;border:1px solid #dce9e0;border-radius:18px;padding:18px;min-width:0}
+.writer-guide-section-heading{display:flex;align-items:flex-start;gap:12px;margin:0 0 15px}
+.writer-guide-section-heading h3{font-size:16px;color:#203c42;margin:0 0 4px}
+.writer-guide-section-heading p{font-size:12px;line-height:1.55;color:#60757a;margin:0}
+.writer-guide-section-symbol{flex:none;display:grid;place-items:center;width:37px;height:37px;border-radius:12px;background:#e9f4ec;color:#116e63}
+.writer-guide-section-symbol .icon{width:20px;height:20px}
+.writer-guide-story-steps{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}
+.writer-guide-story-step{min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;border:1px solid #deeae6;background:#f6f9f7;border-radius:11px;padding:8px 3px;min-height:74px;color:#426764;font-size:10px;font-weight:800;transition:transform .15s,border-color .15s,background .15s}
+.writer-guide-story-step .icon{width:22px;height:22px}
+.writer-guide-story-step.is-active,.writer-guide-story-step[aria-pressed="true"]{background:#ddf1e8;border-color:#90c7b5;color:#0f665b;box-shadow:inset 0 -3px #b5ddce}
+.writer-guide-story-step:hover{transform:translateY(-2px);border-color:#98cbb9}
+.writer-guide-story-panels{background:#f5f9f5;border-radius:10px;padding:12px 14px;margin-top:10px;min-height:66px}
+.writer-guide-story-panels p{font-size:12px;line-height:1.6;margin:0}
+.writer-guide-story-panels strong{color:#125f57}
+.writer-guide-drawer p.writer-guide-story-footnote{font-size:11px;line-height:1.55;margin:9px 0 0;color:#647876}
+.writer-guide-toolbar{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.writer-guide-toolbar>div:first-child strong{font-size:16px;color:#203c42}
+.writer-guide-toolbar>div:first-child p{font-size:12px;margin:4px 0 0}
+.writer-guide-filters{display:flex;gap:5px;flex-wrap:wrap}
+.writer-guide-filters button{display:inline-flex;align-items:center;gap:5px;border:1px solid #dce4df;border-radius:19px;background:#fff;color:#4e6768;padding:7px 10px;font-size:11px;font-weight:730;min-height:36px}
+.writer-guide-filters button .icon{width:14px;height:14px}
+.writer-guide-filters button[aria-pressed="true"]{border-color:#6b5295;background:#eae1f6;color:#533b7e}
+.writer-guide-filters button:hover{border-color:#9277b1}
+.writer-guide-drawer .writer-guide-filter-count{font-size:11px;color:#5f6c70;margin:-14px 0 -4px}
+.writer-guide-tip-section{min-width:0;display:grid;gap:12px}
+.writer-guide-tip-list{display:grid;gap:9px}
+.writer-guide-tip{--guide-ink:#664c91;--guide-pale:#f1e9f9;--guide-line:#d7c4ea;border:1px solid #e0e7e0;border-left:4px solid var(--guide-line);border-radius:13px;background:white;overflow:clip}
+.writer-guide-tip.writer-family-maths{--guide-ink:#146c5f;--guide-pale:#e3f3ea;--guide-line:#9fceb9}
+.writer-guide-tip.writer-family-reader{--guide-ink:#836227;--guide-pale:#fff2d9;--guide-line:#ebd4a0}
+.writer-guide-tip[open]{box-shadow:0 9px 24px #284d4410;border-color:var(--guide-line)}
+.writer-guide-tip>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:11px;padding:13px 14px;min-height:74px}
+.writer-guide-tip>summary::-webkit-details-marker{display:none}
+.writer-guide-tip-icon{flex:none;width:43px;height:43px;background:var(--guide-pale);border-radius:13px;color:var(--guide-ink);display:grid;place-items:center}
+.writer-guide-tip-icon .icon{width:23px;height:23px}
+.writer-guide-tip-summary{flex:1;display:flex;flex-direction:column;gap:3px;min-width:0}
+.writer-guide-tip-meta{font-size:9px;letter-spacing:.09em;font-weight:850;color:var(--guide-ink)}
+.writer-guide-tip-summary strong{font-size:14px;line-height:1.35;color:#203b40;font-weight:830}
+.writer-guide-tip-summary small{font-size:11px;line-height:1.4;color:#6a7878}
+.writer-guide-tip-expand{align-self:center;display:grid;place-items:center;color:var(--guide-ink);border-radius:50%;width:27px;height:27px;background:var(--guide-pale)}
+.writer-guide-tip-expand .icon{width:15px;height:15px;transition:transform .2s}
+.writer-guide-tip[open] .writer-guide-tip-expand .icon{transform:rotate(90deg)}
+.writer-guide-tip-body{padding:0 16px 16px 70px}
+.writer-guide-tip-body>p{font-size:12px;line-height:1.65;color:#465f62;margin:0 0 13px}
+.writer-guide-example{border:1px solid #e2e9e5;border-radius:11px;background:#f9fbfa;padding:12px;min-width:0}
+.writer-guide-example-top{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:7px}
+.writer-guide-example-top>strong{font-size:11px;line-height:1.4;color:#284d4b}
+.writer-guide-example-switch{display:flex;gap:3px;background:#eaf0ed;padding:3px;border-radius:9px}
+.writer-guide-example-switch button{border:0;border-radius:7px;padding:6px 9px;min-height:32px;font-size:10px;font-weight:760;background:transparent;color:#486765}
+.writer-guide-example-switch button[aria-pressed="true"]{background:white;color:#0d6c60;box-shadow:0 2px 5px #28473f1c}
+.writer-guide-example .writer-guide-example-text{font-size:12px;line-height:1.7;color:#263e43;background:white;border-radius:8px;margin:10px 0 0;padding:12px;border:1px solid #e8eee9}
+.writer-guide-example-why{display:grid;gap:4px;border-top:1px solid #d8e7dc;margin-top:10px;padding-top:10px;font-size:11px;line-height:1.55;color:#526962}
+.writer-guide-example-why strong{color:#0f6d60}
+.writer-guide-challenge{margin:12px 0;border-radius:10px;background:#fff9e9;border:1px solid #f0dfb3;padding:12px}
+.writer-guide-challenge summary{cursor:pointer;font-size:11px;font-weight:800;line-height:1.6;color:#7b5d2e;list-style:none;display:flex;gap:7px}
+.writer-guide-challenge summary::-webkit-details-marker{display:none}
+.writer-guide-challenge summary .icon{width:17px;height:17px}
+.writer-guide-drawer .writer-guide-challenge p{font-size:12px;color:#5f5c49;line-height:1.65;margin:9px 0 0}
+.writer-guide-drawer .writer-guide-tip-body .writer-guide-when{font-size:11px;color:#5b716a;margin:12px 0 0}
+.writer-guide-when strong{color:#2a6457}
+.writer-guide-finish{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:15px;border-radius:16px;padding:18px;background:#eef5ef;border:1px solid #d2e5d8}
+.writer-guide-finish strong{font-size:14px}
+.writer-guide-finish p{font-size:12px;margin:6px 0 0;line-height:1.6}
+.writer-guide-finish .btn{flex:none;margin:0}
+@media(max-width:760px){
+ .writer-guide-teaser{padding:16px}
+ .writer-guide-drawer{padding:18px 16px 28px}
+ .writer-guide-drawer .drawer-header{top:0;margin:-13px 0 18px}
+ .writer-guide-drawer .drawer-header h2{font-size:16px}
+ .writer-guide-hero{padding:20px}
+ .writer-guide-hero-layout{grid-template-columns:minmax(0,1fr) 105px;gap:4px}
+ .writer-guide-art{height:126px}
+ .writer-guide-art-sheet{width:75px;height:95px;left:0;top:12px}
+ .writer-guide-art-sheet.sheet-one{transform:rotate(-15deg) translate(-7px,3px)}
+ .writer-guide-art-sheet.sheet-two{transform:rotate(9deg) translate(13px,-2px)}
+ .writer-guide-art-sheet .icon{width:33px;height:33px}
+ .writer-guide-art-star{width:34px;height:34px;right:0;top:2px}
+ .writer-guide-art-star .icon{width:18px;height:18px}
+ .writer-guide-tip-body{padding-left:15px}
+}
+@media(max-width:440px){
+ .writer-guide-teaser-top .chapter-onboarding-tile-icon{width:32px;height:32px}
+ .writer-guide-hero-layout{grid-template-columns:1fr}
+ .writer-guide-art{display:none}
+ .writer-guide-story{padding:13px}
+ .writer-guide-story-steps{gap:3px}
+ .writer-guide-story-step{min-height:65px;padding:6px 1px;font-size:9px;line-height:1.25}
+ .writer-guide-story-step .icon{width:18px;height:18px}
+ .writer-guide-example-switch{width:100%}
+ .writer-guide-example-switch button{flex:1}
+ .writer-guide-tip>summary{padding:12px 10px;gap:9px}
+ .writer-guide-tip-icon{width:37px;height:37px}
+ .writer-guide-tip-icon .icon{width:20px;height:20px}
+ .writer-guide-tip-summary strong{font-size:13px}
+ .writer-guide-return button{margin-left:42px}
+}
+@media(prefers-reduced-motion:reduce){
+ .writer-guide-open-button,.writer-guide-story-step,.writer-guide-tip-expand .icon{transition:none!important}
+ .writer-guide-open-button:hover,.writer-guide-story-step:hover{transform:none}
+}
+@media print{.writer-guide-teaser .writer-guide-open-button,.writer-guide-return,.writer-guide-overview{display:none!important}}
