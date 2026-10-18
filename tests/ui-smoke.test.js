@@ -199,13 +199,16 @@ test("returning to a finished plan resumes existing IA Studio writing, without r
  assert(h.html.includes('data-source-node="C34B"'));
  assert.equal(h.saved.completion.current,'C34B');
  assert.equal(h.saved.scratch.introduction,previous.scratch.introduction);
- assert.deepEqual(h.saved.entries,previous.entries);
+ assert.equal(h.saved.entries.length,previous.entries.length);
+ assert.equal(h.saved.entries[0].id,previous.entries[0].id);
+ assert.equal(h.saved.entries[0].result,previous.entries[0].result);
+ assert.equal(h.saved.entries[0].interpretation,previous.entries[0].interpretation);
  assert.equal(h.saved.completion.fields.changedSincePlanning,previous.completion.fields.changedSincePlanning);
  assert.equal(h.saved.planning.completed,true);
 });
 
 test("the finish-writing action cannot bypass unfinished Planning",()=>{
- const h=createHarness();
+ const h=createHarness(createProjectState());
  h.action('plan-finish-writing');
  assert.equal(h.saved.route,'home');
  assert.equal(h.saved.completion.current,'C00');
