@@ -253,8 +253,9 @@ test('motivation is a separate student-owned spark echoed where findings need a 
 
 
 test('Discovery Trail uses one mint planning zone connected to a purple writing zone, not four role labels',()=>{
- const s=createProjectState(),before=JSON.stringify(s);
+ const s=createProjectState();
  s.route='completing';s.completion.current='C10';
+ const before=JSON.stringify(s);
  const trail=discoveryTrail(s),small=discoveryTrail(s,{compact:true});
  for(const html of [trail,small]){
   assert(html.includes('living-trail-route'));
@@ -290,7 +291,7 @@ test('chapter progress and writing identity remain independent after completing 
  s.completion.stages.C10='needs-review';
  html=discoveryTrail(s);
  assert(html.includes('living-trail-node needs-review writing'));
- s.completion.stages.C10='complete';
+ s.completion.stages.C10='complete';s.completion.stages.C20='complete';
  html=discoveryTrail(s);
  assert(html.includes('living-trail-node complete writing'));
  // A completed writing section still has the writing colour identity.
