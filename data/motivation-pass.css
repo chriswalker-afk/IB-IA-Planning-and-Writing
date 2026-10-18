@@ -146,3 +146,22 @@
  .math-route-option,.math-catalog-more>summary>.icon:last-child{transition:none!important}
  .math-route-option:hover{transform:none}
 }
+
+/* A small, optional plan-refinement affordance belongs on the prediction screen. */
+.planning-prediction-refine{margin:18px 0 12px;border:1px solid #d8e8df;border-radius:13px;background:#f9fcfa;overflow:hidden}
+.planning-prediction-refine-toggle{width:100%;display:flex;align-items:center;gap:10px;padding:12px 15px;background:transparent;border:0;color:#116b61;font:inherit;font-size:12px;font-weight:850;text-align:left;cursor:pointer}
+.planning-prediction-refine-toggle>.icon{width:17px;height:17px;flex:none}
+.planning-prediction-refine-toggle>.icon:last-child{margin-left:auto}
+.planning-prediction-refine-toggle small{font-size:10px;color:#6e877f;font-weight:550}
+.planning-prediction-refine-toggle:focus-visible{outline:3px solid #78b7a8;outline-offset:-4px}
+.planning-prediction-refine-summary{display:block;padding:0 15px 11px 42px;font-size:10px;color:#6a867a;line-height:1.5}
+.planning-prediction-refine-panel{padding:16px;border-top:1px solid #dbe8e1;background:#fff}
+.planning-prediction-refine-panel>.primary-hint{margin:0 0 15px}
+.planning-prediction-refine-panel .journey-route-explorer{max-width:100%}
+.planning-refine-check{border:1px solid #dbe7df;border-radius:11px;margin-top:14px;overflow:hidden}
+.planning-refine-check>summary{display:flex;align-items:center;gap:8px;padding:13px;font-size:11px;font-weight:800;color:#356f64;cursor:pointer;list-style:none}
+.planning-refine-check>summary::-webkit-details-marker{display:none}
+.planning-refine-check>summary>.icon{width:15px;height:15px;flex:none}
+.planning-refine-check>summary>.icon:last-child{margin-left:auto}
+.planning-refine-check-body{padding:14px;border-top:1px solid #e2ece6}
+@media(max-width:550px){.planning-prediction-refine-panel{padding:12px}.planning-prediction-refine-toggle{padding:12px}}
