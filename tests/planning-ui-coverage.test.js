@@ -249,7 +249,7 @@ test("the Planning finish page clearly ends chapter one and offers one distinct 
  assert(html.includes('IA Studio · Introduction'));
  assert(html.includes('planning-finish-handoff'));
  assert(html.includes('planning-finish-footer'));
- assert(html.includes('Finish planning & begin writing'));
+ assert(html.includes('Finish planning &amp; begin writing'));
  assert(html.includes('View working report'));
  assert(html.includes('Download my planning PDF'));
  assert(html.includes('Download project backup'));
