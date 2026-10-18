@@ -22,6 +22,20 @@ export const CRITERION_SPOTS=Object.freeze({
   avoid:'Avoid selecting techniques because they appear impressive, or assuming a suggested pathway is formal syllabus verification.',
   reminder:'This is a provisional choice. Criterion E is demonstrated through relevant, correct mathematics and understanding in the completed exploration.'
  }),
+ 'completing:C10:aim':Object.freeze({
+  criterion:'A',location:'Introduction: the mathematical aim and concise background',stage:'IA Studio · introduction',
+  why:'Criterion A rewards a coherent, well-organised and concise investigation. A precise starting aim gives the reader a mathematical thread to follow throughout the work.',
+  strong:'State what you intend to investigate mathematically, then include only enough subject background and specialist vocabulary to understand the question. A few focused paragraphs are usually sufficient.',
+  avoid:'Avoid a vague topic instead of a question, a long non-mathematical essay, or a list promising every calculation before any mathematical result is known.',
+  reminder:'Criterion A is judged across the entire exploration. A few paragraphs is helpful writing advice, not a prescribed IB introduction word or page limit.'
+ }),
+ 'completing:C10:motivation':Object.freeze({
+  criterion:'C',location:'Introduction: the genuine question or curiosity behind the aim',stage:'IA Studio · introduction',
+  why:'Criterion C concerns how independent choices, questions and perspectives shape the mathematical exploration. A genuine starting reason can make its direction understandable.',
+  strong:'Explain one authentic observation, puzzle or mathematical interest that led you to the aim. Write naturally in first person where appropriate; allow the investigation to develop through your later decisions.',
+  avoid:'Avoid an invented personal anecdote, generic statements about loving mathematics, or treating the use of I as sufficient evidence of personal engagement.',
+  reminder:'Criterion C is judged across the completed mathematical exploration. Your introduction starts the story; actual mathematical decisions and development show engagement later.'
+ }),
  'completing:C31:firstPurpose':Object.freeze({
   criterion:'E',location:'Why might this help answer the aim?',stage:'IA Studio · select an initial representation',
   why:'A mathematical representation is useful when it could answer a specific part of your investigation question.',

@@ -3,10 +3,27 @@ export const EXAMPLES = [
   {
     "id": "EX01",
     "title": "Introduction: a mathematical question, not a list of techniques",
-    "weak": "This exploration investigates the cooling of tea using mathematics. I will take temperature readings, draw graphs and calculate equations. Exponential functions have many applications, so I will use one to show how the temperature changes. I predict that the tea will become colder as time passes.",
-    "strong": "I often leave a cup of tea beside me while studying and notice that it seems to cool quickly at first, then more slowly. I want to investigate how well linear and exponential models describe its temperature over 20 minutes, and use the better-supported model to estimate when it reaches my chosen reference temperature of 50 °C. I will use readings from one uncovered 250 ml cup, taken at two-minute intervals. My prediction is that a decreasing exponential model will describe the slowing rate of cooling better, but the measurements must determine whether that prediction is supported.",
-    "why": "The same topic now has a specific mathematical purpose, a manageable scope and a provisional prediction. The method is connected to the question rather than presented as a technique checklist. The opening observation is appropriate only for a student for whom it is genuine; an invented backstory is not an improvement.",
+    "weak": "This exploration investigates the cooling of tea using mathematics. First I will collect readings every two minutes, then create graphs, calculate gradients, compare regression models and finally draw a conclusion.",
+    "strong": "When I make tea while studying, I sometimes forget about it until it is lukewarm. This made me wonder whether mathematics could help me predict when the tea reaches a comfortable drinking temperature. My aim is to investigate how the temperature of one cup of tea changes over time and whether a mathematical model can give a useful estimate of when it reaches 50 °C. I suspect that the cooling slows over time, but I want to see whether the mathematics supports that expectation.",
+    "why": "A genuine motivation leads directly to a specific mathematical aim. The reader knows the question without being given a fixed list of methods or unperformed calculations. An initial expectation is explicitly tentative. The opening observation is appropriate only if it is genuinely the student's experience; invented backstories are not improvements.",
     "question": "Can a reader say what mathematical question you are answering, and what evidence could answer it?",
+    "introFeatures": [
+        {
+            "label": "The motivation",
+            "quote": "When I make tea while studying",
+            "why": "An authentic observation explains why this specific question matters to the investigator. Do not borrow the fictional backstory."
+        },
+        {
+            "label": "The mathematical aim",
+            "quote": "My aim is to investigate how the temperature of one cup of tea changes over time",
+            "why": "The reader knows what quantity is changing and what mathematical question the investigation hopes to answer."
+        },
+        {
+            "label": "An open journey",
+            "quote": "I suspect that the cooling slows over time",
+            "why": "This is a tentative expectation, not a conclusion or a promise to carry out particular calculations."
+        }
+    ],
     "category": "introduction",
     "kind": "modelling",
     "topics": [
@@ -18,10 +35,27 @@ export const EXAMPLES = [
   {
     "id": "EX02",
     "title": "Introduction: a statistical investigation without causal overclaiming",
-    "weak": "I will investigate whether practicing music makes students better at mathematics. I will survey 20 students, calculate a correlation coefficient and use a line of best fit to prove my hypothesis.",
-    "strong": "I want to investigate whether weekly music-practice time and the most recent mathematics test percentage are associated in a sample of 20 students from the same class. I will first inspect the paired numerical observations, then choose an appropriate measure of association. The survey is observational, so it cannot establish that music practice causes higher mathematics attainment; other differences between students may matter.",
-    "why": "The improved version defines the quantities and population, removes the predetermined conclusion and makes the scope of inference explicit. It does not turn an observational survey into a controlled experiment by changing the wording.",
+    "weak": "I will investigate the effect of music on mathematics performance. First I will survey students, then make a scatter plot, calculate the Pearson correlation coefficient, perform regression and prove my hypothesis.",
+    "strong": "Students in my class have different practice routines, and I was curious whether those differences are reflected in their mathematics test results. My aim is to investigate whether weekly music-practice time and mathematics test percentage appear associated in a sample from my class. Because the observations are not an experiment, any relationship I find would not show that practising music causes a change in attainment.",
+    "why": "The improved introduction identifies the mathematical quantities, offers a genuine reason for the question and avoids promising a specific sequence of calculations. It states a legitimate limitation of an observational investigation without claiming to know the eventual relationship.",
     "question": "Are you investigating an association, a difference, a prediction or a causal claim?",
+    "introFeatures": [
+        {
+            "label": "The motivation",
+            "quote": "I was curious whether those differences are reflected in their mathematics test results",
+            "why": "A genuine question motivates exploring a possible relationship, not proving a preconceived explanation."
+        },
+        {
+            "label": "The mathematical aim",
+            "quote": "whether weekly music-practice time and mathematics test percentage appear associated",
+            "why": "Both variables and the kind of relationship sought are made explicit."
+        },
+        {
+            "label": "An honest starting point",
+            "quote": "any relationship I find would not show",
+            "why": "The student avoids causal overclaiming before any observations have been analysed."
+        }
+    ],
     "category": "introduction",
     "kind": "statistics",
     "topics": [
@@ -34,9 +68,26 @@ export const EXAMPLES = [
     "id": "EX03",
     "title": "Introduction: authentic mathematical curiosity without a forced real-life story",
     "weak": "Number patterns are important in everyday life. I have always loved mathematics and will investigate some interesting patterns. I will use algebra and hopefully find a formula.",
-    "strong": "For the first few positive integers, the difference between the cube and the original number appears to be divisible by six. I want to determine whether this is true for every integer, rather than only the cases I have tested, and to explain which feature of the expression makes it happen. I will distinguish numerical evidence for the conjecture from a general argument.",
-    "why": "A theoretical exploration can have a clear purpose without claiming an external beneficiary or inventing a personal anecdote. This short example illustrates how to state a conjecture; it is not a claim that this elementary result alone constitutes a sufficiently substantial IA.",
+    "strong": "When I tested a few integers, I noticed that the difference between each integer's cube and the integer itself seemed divisible by six. My aim is to determine whether this holds for every integer and to understand what mathematical property explains the pattern. A few examples made me curious, but they do not yet settle the question.",
+    "why": "An authentic mathematical observation provides the motivation, and a precise conjecture becomes the aim. No invented practical beneficiary or detailed methods itinerary is necessary. This elementary statement alone would not constitute a sufficiently substantial IA.",
     "question": "What exactly is your conjecture, and what would count as a proof or counterexample?",
+    "introFeatures": [
+        {
+            "label": "The mathematical curiosity",
+            "quote": "I noticed that the difference between each integer's cube and the integer itself seemed divisible by six",
+            "why": "Curiosity can be purely mathematical. A practical benefit or personal life story is not compulsory."
+        },
+        {
+            "label": "The precise aim",
+            "quote": "determine whether this holds for every integer",
+            "why": "The reader knows the claim that needs to be established or disproved."
+        },
+        {
+            "label": "Not a finished result",
+            "quote": "they do not yet settle the question",
+            "why": "The writer distinguishes a pattern in tested cases from a proof."
+        }
+    ],
     "category": "introduction",
     "kind": "theoretical",
     "topics": [
@@ -44,6 +95,39 @@ export const EXAMPLES = [
       "aim"
     ],
     "visual": ""
+  },
+  {
+    "id": "EX34",
+    "title": "Introduction: explain specialist context briefly, then return to mathematics",
+    "weak": "Bread making is a complex process involving gluten, yeast activity, fermentation, water absorption and many chemical reactions. Different flour proteins behave differently, and bakers use a range of methods. I will explain bread science in detail and then investigate some mathematical relationships.",
+    "strong": "When baking, I noticed that recipes use different dough hydration percentages. Dough hydration is the mass of water expressed as a percentage of the flour mass. I want to investigate whether the hydration percentage is associated with how much a loaf expands during baking. The mathematical relationship interests me more than the details of bread chemistry.",
+    "why": "The specialist term is defined briefly so the reader can follow the question. The student immediately states an investigable mathematical aim instead of writing a long non-mathematical background essay. This is a fictional example; the motivation must be genuine for the writer.",
+    "question": "What specialist term does your reader need to understand before they can follow your mathematical aim?",
+    "category": "introduction",
+    "kind": "all",
+    "topics": [
+      "introduction",
+      "context",
+      "aim"
+    ],
+    "visual": "",
+    "introFeatures": [
+      {
+        "label": "Necessary vocabulary",
+        "quote": "Dough hydration is the mass of water expressed as a percentage of the flour mass",
+        "why": "One concise definition is enough for a reader to understand the mathematical variable."
+      },
+      {
+        "label": "The mathematical aim",
+        "quote": "whether the hydration percentage is associated with how much a loaf expands",
+        "why": "The context becomes a mathematical question rather than an unrelated science explanation."
+      },
+      {
+        "label": "Where to stop",
+        "quote": "The mathematical relationship interests me more than the details of bread chemistry",
+        "why": "The background is deliberately brief. Specialist science can be introduced later only where it genuinely affects the mathematics."
+      }
+    ]
   },
   {
     "id": "EX04",

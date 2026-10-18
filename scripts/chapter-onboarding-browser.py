@@ -57,6 +57,12 @@ def first_time(browser,width):
   assert "does not automatically insert text" in setup.inner_text()
   assert "Planning first is recommended" in setup.inner_text()
   assert "Complete Planning first" in setup.inner_text()
+  assert "Set up your IA document" in setup.inner_text()
+  assert "12–20 double-spaced pages" in setup.inner_text()
+  setup.locator('[data-action="essentials-open"][data-essentials-tab="format"]').click()
+  assert page.locator('#essentialsDialog[open] .ess-heading').inner_text()=="Format & length"
+  assert "12–20" in page.locator('#essentialsDialog[open]').inner_text()
+  page.locator('#essentialsDialog [data-essentials-close]').click()
   assert page.locator('.setup-quick-sparks').count()==1
   assert page.locator('.setup-quick-sparks[open]').count()==1
   assert page.locator('.living-ribbon-part.writing').count()==3
@@ -155,6 +161,29 @@ def first_time(browser,width):
   assert page.locator('[data-source-node="C10"]').count()==1
   assert page.locator('[data-bind="scratch.introduction"]').count()==1
   assert "WRITE IN YOUR IA" in page.locator(".studio-ia-writing-reminder").inner_text()
+  assert "Write about these two sparks now" in page.locator('.intro-spark-brief').inner_text()
+  assert page.locator('.intro-spark-needed[data-intro-spark-state="ready"]').count()==2
+  assert page.locator('.intro-advice-tip').count()==6
+  assert page.locator('.intro-advice-tip[data-intro-advice="journey"]').count()==1
+  assert page.locator('.intro-advice-extra-group').count()==1
+  assert page.locator('.intro-writing-guide').is_visible()
+  assert page.locator('.setup-document-guide').count()==0
+  assert page.locator('[data-criterion-badge="completing:C10:aim"]').count()==1
+  assert page.locator('[data-criterion-badge="completing:C10:motivation"]').count()==1
+  page.locator('[data-intro-advice="journey"] > summary').click()
+  assert page.locator('[data-intro-advice="journey"] .intro-advice-example').is_visible()
+  page.locator('.intro-advice-extra-group > summary').click()
+  assert page.locator('[data-intro-advice="context"] > summary').is_visible()
+  page.locator('[data-intro-advice="context"] > summary').click()
+  page.locator('[data-intro-advice="context"] [data-example-id="EX34"]').click()
+  assert page.locator('#exampleDialog[open] [data-example-card="EX34"]').count()==1
+  assert page.locator('#exampleDialog[open] .ex-introduction-feature').count()==3
+  page.locator('#exampleDialog [data-example-close]').click()
+  page.locator('[data-criterion-badge="completing:C10:aim"]').click()
+  assert "Criterion A" in page.locator('#criterionBadgeDialog[open]').inner_text()
+  assert "few focused paragraphs" in page.locator('#criterionBadgeDialog[open]').inner_text()
+  page.locator('#criterionBadgeDialog [data-criterion-badge-close]').first.click()
+  without_overflow(page)
   assert page.locator('.writer-guide-return [data-guide-tip="voice"]').count()==1
   page.locator('.writer-guide-return [data-guide-tip="voice"]').click()
   assert page.locator('.writer-guide-drawer [data-guide-card="voice"][open]').count()==1

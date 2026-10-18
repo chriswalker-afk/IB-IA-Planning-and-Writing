@@ -1,5 +1,6 @@
 import {chapterRibbon} from '../ui/living-journey.js';
 import {renderFieldGuideTeaser,renderContextualGuide} from './writer-field-guide.js';
+import {renderIntroductionSparkPrompt,renderIntroductionWritingAdvice} from './intro-writing-advice.js';
 import {insightCapture,insightEcho} from '../ui/insight-threads.js';
 import {STATUS_LABELS,currentGroup,JOURNEY_GROUPS} from "../ui/journey.js";
 import {groupedDashboard} from "../ui/journey-views.js";
@@ -257,6 +258,7 @@ export function createCompletingViews(ctx){
         '<strong>Your writing starts here.</strong>'+
         '<p><b>Write relevant Set up answers directly into your actual IA document</b> as you work: the introduction, sources and methods you really use. Pathfinder stores your notes here; it does not automatically insert text into Word or Google Docs.</p>'+
        '</div></div>'+
+      essentialsNudge(s)+
       '<div class="chapter-onboarding-grid chapter-onboarding-grid-setup">'+
        '<section class="chapter-onboarding-tile"><span class="chapter-onboarding-tile-icon">'+icon("compass")+'</span>'+
         '<h3>Planning first is recommended</h3><p>Choose an aim, explore possible mathematics and check sources before writing. Your saved sparks follow you into IA Studio.</p>'+
@@ -308,13 +310,12 @@ export function createCompletingViews(ctx){
     html:stageDashboard()+'<button type="button" class="writer-guide-overview" data-action="writer-guide-open">'+icon("book")+' Open the Writer\'s Field Guide '+icon("arrow-right")+'</button>'+miniList()+
       '<div class="button-row">'+sourceAction("Save progress","Save a full project backup")+
       sourceAction("I'm stuck / Something isn't working","I'm stuck")+'</div>'};
-  case "C10":return{intro:"Keep the opening short, genuine and in your own words. Results and detailed mathematics belong later.",
-    html:smallSummary("My current aim",currentAim())+
-      smallSummary("Why I chose the topic",p.motivation)+smallSummary("Who might benefit",currentBenefit())+
-      smallSummary("My prediction (not a finding)",plannedPrediction())+
-      field("scratch.introduction","My own working introduction notes","Why I chose this aim, what I hope to find out, and which approach might help",{type:"textarea",rows:7})+
-      info("A useful length","Often a few short paragraphs or less than a page are enough; this is guidance, not a prescribed IB word limit.")+
-      info("Revisitable","Your introduction can evolve. Use 'Edit aim or beneficiary' below to revise Planning without losing this text.")
+  case "C10":return{intro:"Introduce your mathematical question and genuine motivation in a few focused paragraphs. This is the start of your investigation, not a list of every calculation you might do.",
+    html:renderIntroductionWritingAdvice(icon,e,{reduced:isAdviceReduced(s)})+
+      (plannedPrediction()?'<details class="completion-help intro-optional-prediction"><summary>'+icon("lightbulb")+' My earlier tentative prediction (optional)</summary>'+
+       '<p>'+e(plannedPrediction())+'</p><p class="field-hint">Only mention it if useful. A prediction is not a finding or a promise that your maths will confirm it.</p></details>':"")+
+      field("scratch.introduction","My own working introduction notes","Optional private notes: the precise aim, my genuine motivation, and only enough background to understand the question.",{type:"textarea",rows:5})+
+      info("Your real IA is a separate document","Write the actual paragraphs in Word or Google Docs; these notes do not get inserted automatically. Revisit your aim, motivation and introduction whenever your direction genuinely changes.")
    };
   case "C10E":return{intro:"Compare original fictional introductions, then return to your own investigation.",html:exampleInline(s,{topic:"introduction"})};
   case "C20":return{intro:"What data, measurements or mathematical objects are actually available now? This is different from the collection plan.",
@@ -725,7 +726,10 @@ export function createCompletingViews(ctx){
       ' WRITE IN YOUR IA · Use these prompts to develop your own document; nothing is inserted automatically.</p>':'')+
     '<div class="task-shell'+(node==="C00"?' chapter-onboarding-shell':'')+'" data-source-node="'+e(node)+'">'+
     criterionPageHeading(label,"completing",isAdviceReduced(s)?"":node)+'<p class="task-intro">'+e(screen.intro)+'</p>'+
-    insightEcho(s,node)+extra.returnToReview()+(isStuckNode(node)||["C00","C04","C10E"].includes(node)||isAdviceReduced(s)?"":criteriaPanel(s))+screen.html+(screen.extra||"")+(node==="C00"?"":insightCapture(s,node))+
+    (node==="C10"?renderIntroductionSparkPrompt(s,icon,e):"")+
+    insightEcho(s,node)+extra.returnToReview()+(isStuckNode(node)||["C00","C04","C10","C10E"].includes(node)||isAdviceReduced(s)?"":criteriaPanel(s))+
+    screen.html+(screen.extra||"")+
+    (node==="C00"?"":insightCapture(s,node))+
     (node==="C00"||node==="C04"||isStuckNode(node)||isAdviceReduced(s)?"":renderContextualGuide(icon,e,node))+
     (node==="C00"||isAdviceReduced(s)?"":essentialsNudge(s))+
     (node==="C00"||isStuckNode(node)||node==="C10E"||isAdviceReduced(s)?"":guides.writingMoment(node,{embedded:node!=="C96"}))+

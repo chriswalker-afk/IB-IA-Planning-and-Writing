@@ -241,6 +241,9 @@ test("Set up welcomes students, recommends Planning and captures missing provisi
  assert(h.html.includes('data-bind="planning.fields.aim"'));
  assert(h.html.includes('data-bind="planning.fields.beneficiary"'));
  assert(h.html.includes('data-action="setup-start-writing"'));
+ assert(h.html.includes('Set up your IA document'));
+ assert(h.html.includes('Format and length'));
+ assert(h.html.includes('data-essentials-tab="format"'));
  assert(!h.html.includes('data-action="completion-mark"'));
  h.write('planning.fields.aim','Is the observed pattern well modelled by a quadratic?');
  h.write('planning.fields.beneficiary','I want to compare two possible models');
@@ -251,6 +254,13 @@ test("Set up welcomes students, recommends Planning and captures missing provisi
  assert.equal(h.saved.completion.current,'C10');
  assert(h.html.includes('My own working introduction notes'));
  assert(h.html.includes('WRITE IN YOUR IA'));
+ assert(h.html.includes('Write about these two sparks now'));
+ assert(h.html.includes('Start the journey; don&#39;t write an itinerary'));
+ assert(h.html.includes('data-intro-spark="aim"'));
+ assert(h.html.includes('data-intro-spark="motivation"'));
+ assert(h.html.includes('data-criterion-badge="completing:C10:aim"'));
+ assert(h.html.includes('data-criterion-badge="completing:C10:motivation"'));
+ assert(!h.html.includes('Set up your IA document'));
  assert.equal(h.saved.planning.completed,false);
 });
 test("Set up uses saved Planning sparks without creating repeated mandatory inputs",()=>{

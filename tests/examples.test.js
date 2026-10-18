@@ -4,8 +4,8 @@ import {EXAMPLES,NUMERICAL_EXAMPLE as D,exampleById} from '../src/examples/catal
 import {exampleContext,selectExamples,defaultVariant,filterExamples} from '../src/examples/context.js';
 import {examplePrompt,exampleInline,prose,renderCard,library} from '../src/examples/views.js';
 const state=(kind='modelling',node='C10')=>({route:'completing',project:{kind},planning:{current:'N01',fields:{kind,aim:'My real aim',course:'AA SL'}},scratch:{introduction:'My original work'},completion:{current:node,activeEntryIndex:0,nextFromEntryId:'first',fields:{},support:{},guidanceUi:{},accuracyDecisions:[],stages:{}},entries:[{id:'first',phase:'first',kind:'scatter',methodId:'',knowledge:'unsure',status:'completed',result:'Actual graph',observation:'curved',title:'Earlier real work'},{id:'later',phase:'substantial',status:'completed',kind:'model',methodId:'linear-regression',result:'Actual later result',observation:'linear',title:'Different later work'}]});
-test('33 substantive original cards have stable unique IDs, explanations and transfer questions',()=>{
- assert.equal(EXAMPLES.length,33);assert.equal(new Set(EXAMPLES.map(x=>x.id)).size,33);
+test('34 substantive original cards have stable unique IDs, explanations and transfer questions',()=>{
+ assert.equal(EXAMPLES.length,34);assert.equal(new Set(EXAMPLES.map(x=>x.id)).size,33);
  for(const c of EXAMPLES){assert(c.weak.length>40,c.id);assert(c.strong.length>100,c.id);assert(c.why.length>40,c.id);assert(c.question.endsWith('?'),c.id);assert(!JSON.stringify(c).includes('drive.google.com'));}
 });
 test('introduction and conclusion select statistical, modelling and theoretical variants',()=>{
@@ -95,4 +95,21 @@ test('motivation step provides different relevant comparisons for modelling, sta
   assert(renderCard(first).includes('What changed?'));
  }
  assert(filterExamples({query:'motivation'}).some(x=>x.id==='EX31'));
+});
+
+test('introduction examples show specific motivations and mathematical aims without scripted techniques',()=>{
+ for(const id of ['EX01','EX02','EX03']){
+  const card=exampleById(id),html=renderCard(card);
+  assert.equal(card.introFeatures.length,3,id);
+  assert(html.includes('What makes the stronger introduction work?'));
+  assert.equal((html.match(/class="ex-introduction-feature"/g)||[]).length,3);
+  assert(!card.strong.includes('First I will'),id);
+  assert(!card.strong.includes('then calculate'),id);
+  for(const f of card.introFeatures)assert(card.strong.includes(f.quote),id+' missing quoted feature');
+ }
+ const specialist=exampleById('EX34');
+ assert(specialist.strong.includes('Dough hydration'));
+ assert(specialist.strong.includes('My aim')||specialist.strong.includes('I want to investigate'));
+ assert(renderCard(specialist).includes('Necessary vocabulary'));
+ assert(selectExamples(state('modelling','C10')).some(x=>x.id==='EX34'));
 });

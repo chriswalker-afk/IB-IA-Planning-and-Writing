@@ -87,7 +87,11 @@ export function contextualBadgeGuidance(state,key,base){
  result.real=real;
  const add=(label,value)=>{if(short(value)&&result.details.length<3)result.details.push({label,text:short(value)});};
  add('Your current aim',ctx.aim);
- if(node==='C31'){
+ if(node==='C10'){
+  const p=state.planning?.fields||{};
+  add('Your saved motivation (a Planning note, not IA prose)',p.motivation||p.beneficiary||p.intendedUse||state.project?.beneficiary);
+  result.reminder=base.reminder;
+ }else if(node==='C31'){
   if(firstTypes[f.firstType])add('Proposed first representation',firstTypes[f.firstType]);
   if(ctx.theoretical)result.avoid='Avoid mistaking a few examples for proof. Define your mathematical objects, domain and conditions.';
  }else if(node==='C32'){

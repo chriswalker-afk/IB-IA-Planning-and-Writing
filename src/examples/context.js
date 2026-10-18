@@ -56,7 +56,7 @@ export function selectExamples(state,options={}){
  switch(x.topic){
   case 'title':add('EX30','EX04');break;
   case 'motivation':add(theory?'EX33':stats?'EX32':'EX31',theory?'EX31':stats?'EX31':'EX32');break;
-  case 'introduction':case 'aim':add(theory?'EX03':stats?'EX02':'EX01');if(x.topic==='aim'&&!stats&&!theory)add('EX04');break;
+  case 'introduction':case 'aim':add(theory?'EX03':stats?'EX02':'EX01');if(x.topic==='introduction')add('EX34');if(x.topic==='aim'&&!stats&&!theory)add('EX04');break;
   case 'source':add(stats?'EX06':'EX05');break;
   case 'method':add(theory?'EX20':stats?'EX06':'EX05');break;
   case 'assumptions':case 'limitations':add(theory?'EX26':stats?'EX06':x.topic==='assumptions'?'EX07':'EX17');break;
