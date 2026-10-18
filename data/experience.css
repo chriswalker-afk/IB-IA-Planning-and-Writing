@@ -238,3 +238,72 @@
  .planning-title-step .insight-capture{padding:8px 10px;margin-bottom:17px}
  .planning-engagement-note{font-size:11px}
 }
+
+
+/* Planning is one completed chapter: this handoff is not an ordinary next question. */
+.planning-finish .planning-finish-handoff{
+  display:flex;align-items:flex-start;gap:15px;
+  padding:19px 20px;margin:1px 0 19px;
+  border:1px solid #ddd4ee;border-radius:17px;
+  background:linear-gradient(118deg,#f0f5ef 0%,#f7f1fc 70%,#fbf6ec 100%);
+}
+.planning-finish-seal{
+  flex:none;display:grid;place-items:center;width:45px;height:45px;
+  background:#594187;color:#fff;border-radius:50%;
+  box-shadow:0 0 0 5px #eee4f5,0 8px 16px #38226520;
+}
+.planning-finish-seal .icon{width:23px;height:23px;stroke-width:2.8}
+.planning-finish-handoff-text{min-width:0}
+.planning-finish-kicker{
+  display:block;color:#6a4c92;font-size:10px;font-weight:850;
+  line-height:1.35;letter-spacing:.13em;margin:0 0 7px;
+}
+.planning-finish-handoff-text strong{display:block;color:var(--ink);font-size:18px;line-height:1.3}
+.planning-finish-handoff-text p{font-size:13px;line-height:1.6;color:var(--muted);margin:7px 0 0}
+.planning-finish-path{
+  display:flex;align-items:center;flex-wrap:wrap;gap:9px;
+  margin-top:14px;font-size:11px;font-weight:800;color:#5e5875;
+}
+.planning-finish-path .icon{width:15px;height:15px}
+.planning-finish-path-done{
+  display:inline-flex;align-items:center;gap:5px;
+  color:#256857;background:#e2f2e9;border-radius:20px;padding:6px 10px;
+}
+.planning-finish-path-next{color:#554081;background:#ebe4f5;border-radius:20px;padding:6px 10px}
+.planning-finish-resources{margin:18px 0 5px}
+.planning-finish-resources-title{
+  font-size:12px;color:#586f6b;font-weight:750;margin:0 0 10px;
+}
+.planning-finish-resources .button-row{gap:8px}
+.planning-finish-resources .btn{font-size:12px;min-height:41px;padding:9px 13px}
+.planning-finish-footer{
+  border-top:2px solid #e7dcf2;
+  align-items:center;gap:16px;margin-top:27px;
+}
+.planning-finish-footer-left{display:flex;flex-direction:column;align-items:flex-start;gap:4px;min-width:0}
+.planning-finish-footer-left .btn{min-height:36px}
+.planning-finish-footer-note{font-size:11px;line-height:1.45;color:#7d6c97}
+.btn-finish-planning{
+  background:linear-gradient(110deg,#644b98,#4b367f);color:#fff;
+  border-color:#493573;min-width:290px;min-height:55px;
+  font-size:14px;font-weight:850;
+  box-shadow:0 7px 18px #563b8e35,0 2px 0 #3f2e6b;
+}
+.btn-finish-planning:hover:not(:disabled){
+  background:linear-gradient(110deg,#7156a9,#56408c);
+  box-shadow:0 10px 24px #563b8e40,0 2px 0 #3f2e6b;
+}
+.btn-finish-planning:focus-visible{outline:3px solid #9874ce;outline-offset:4px}
+@media(max-width:760px){
+  .planning-finish-footer{flex-direction:column-reverse;align-items:stretch}
+  .planning-finish-footer .btn-finish-planning{width:100%;min-width:0}
+  .planning-finish-footer-left{flex-direction:row;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  .planning-finish .planning-finish-handoff{padding:16px 15px;gap:13px}
+  .planning-finish-seal{width:39px;height:39px}
+}
+@media(max-width:380px){
+  .planning-finish-handoff-text strong{font-size:16px}
+  .planning-finish-path{gap:6px}
+  .planning-finish-path-done,.planning-finish-path-next{padding:5px 8px}
+}
+@media print{.planning-finish-footer,.planning-finish-resources{display:none}}
