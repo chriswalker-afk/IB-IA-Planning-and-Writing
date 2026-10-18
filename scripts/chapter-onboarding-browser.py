@@ -49,7 +49,7 @@ def first_time(browser,width):
   assert page.locator('[data-planning-intro="true"]').count()==1
   page.locator('[data-action="planning-intro-continue"]').click()
   assert stored(page)["planning"]["completed"]==False
-  page.locator('[data-nav="completing"]').first.click()
+  page.locator('[data-nav="completing"]:visible').first.click()
   assert page.locator('[data-source-node="C00"]').count()==1
   setup=page.locator(".chapter-onboarding-write")
   assert "WRITE IN YOUR IA" in setup.inner_text()
@@ -64,7 +64,7 @@ def first_time(browser,width):
   assert page.locator('.living-ribbon .journey-mode-tag').count()==0
   # Check the main Discovery Trail: two zones and four stages, with
   # colour explaining the task type independently of progress status.
-  page.locator('[data-nav="path"]').first.click()
+  page.locator('[data-nav="path"]:visible').first.click()
   trail=page.locator('.living-trail:not(.is-compact)').first
   assert trail.is_visible()
   assert trail.locator('.living-trail-zone-title.plan').count()==1
