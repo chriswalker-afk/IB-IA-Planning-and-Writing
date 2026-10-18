@@ -250,3 +250,70 @@ test('motivation is a separate student-owned spark echoed where findings need a 
  after.project.beneficiary='';
  assert(!insightItems(after).some(x=>x.id==='motivation'));
 });
+
+
+test('Discovery Trail uses one mint planning zone connected to a purple writing zone, not four role labels',()=>{
+ const s=createProjectState(),before=JSON.stringify(s);
+ s.route='completing';s.completion.current='C10';
+ const trail=discoveryTrail(s),small=discoveryTrail(s,{compact:true});
+ for(const html of [trail,small]){
+  assert(html.includes('living-trail-route'));
+  assert(html.includes('living-trail-zone-underlay'));
+  assert(html.includes('living-trail-zone-title plan'));
+  assert(html.includes('living-trail-zone-title writing'));
+  assert(html.includes('Write your IA'));
+  assert(html.includes('Plan'));
+  assert.equal((html.match(/class="living-trail-step /g)||[]).length,4);
+  assert.equal((html.match(/class="living-trail-step [^"]* writing"/g)||[]).length,3);
+  assert.equal((html.match(/class="chapter-journey-icon"/g)||[]).length,4);
+  assert(!html.includes('journey-mode-tag'));
+  assert(!html.includes('PLAN ONLY')&&!html.includes('WRITE IN IA'));
+  assert(html.includes('aria-label="Chapter 2: Start writing. Write in your IA.'));
+  for(const label of ['Planning','Start writing','Explore &amp; explain','Conclude &amp; review'])
+   assert(html.includes(label),label);
+ }
+ assert.equal(JSON.stringify(s),JSON.stringify(JSON.parse(before)));
+});
+test('chapter progress and writing identity remain independent after completing Planning',()=>{
+ const s=createProjectState();
+ s.planning.completed=true;
+ s.route='completing';s.completion.current='C10';
+ let html=discoveryTrail(s),rail=journeyRail(s),strip=chapterRibbon(s);
+ assert(html.includes('living-trail-node complete planning'));
+ assert(html.includes('living-trail-node not-started writing'));
+ assert(rail.includes('journey-rail-zone planning'));
+ assert(rail.includes('journey-rail-zone writing'));
+ assert(rail.includes('journey-rail-zone-label'));
+ assert.equal((rail.match(/class="journey-milestone-text"/g)||[]).length,4);
+ assert.equal((rail.match(/journey-mode-tag/g)||[]).length,0);
+ assert.equal((strip.match(/living-ribbon-part [^"]+ writing/g)||[]).length,3);
+ s.completion.stages.C10='needs-review';
+ html=discoveryTrail(s);
+ assert(html.includes('living-trail-node needs-review writing'));
+ s.completion.stages.C10='complete';
+ html=discoveryTrail(s);
+ assert(html.includes('living-trail-node complete writing'));
+ // A completed writing section still has the writing colour identity.
+ assert(html.includes('living-trail-zone-underlay'));
+});
+test('the compact Planning roadmap uses one writing-zone cue, not a badge on each chapter',()=>{
+ const s=createProjectState();s.route='planning';
+ const html=planningLearningTrail(s);
+ assert(html.includes('planning-trail-zone-underlay'));
+ assert.equal((html.match(/planning-trail-phase-label plan/g)||[]).length,2); // desktop and compact copy
+ assert.equal((html.match(/planning-trail-phase-label writing/g)||[]).length,2);
+ assert(!html.includes('journey-mode-tag'));
+ assert.equal((html.match(/planning-trail-chapter /g)||[]).length,8);
+ assert(html.includes('aria-label="Chapter 2: Start writing, WRITE IN IA, Not started"'));
+});
+test('two-zone styles use distinct mint/lavender colours and a single-column mobile journey',()=>{
+ const css=readFileSync(new URL('../data/living-journey.css',import.meta.url),'utf8');
+ assert(css.includes('.living-trail-zone-underlay>.plan'));
+ assert(css.includes('.living-trail-zone-underlay>.writing'));
+ assert(css.includes('.journey-rail-zone.writing'));
+ assert(css.includes('.planning-trail-zone-underlay'));
+ assert(css.includes('@media(max-width:540px)'));
+ assert(css.includes('grid-template-columns:1fr'));
+ assert(css.includes('@media(prefers-reduced-motion:reduce)'));
+ assert(css.includes(':focus-visible'));
+});
