@@ -5,6 +5,10 @@
 .criterion-badge:hover{background:#d1e9d2;border-color:#0a7669;transform:translateY(-1px)}
 .criterion-badge:focus-visible{outline:3px solid #078578;outline-offset:4px}
 .criterion-badge>span{display:block;line-height:1}
+/* The A–E review is one subtle control, never five competing field badges. */
+.criterion-badge-multi{width:49px;height:34px;border-radius:18px;font-size:11px;letter-spacing:.01em}
+.criterion-popin-letter-multi{width:50px;min-width:50px;height:38px;border-radius:18px;font-size:15px}
+
 .criterion-title-row>.criterion-badge{margin-top:4px}
 .criterion-marked-field{position:relative;margin:0}
 .criterion-marked-field>.criterion-badge{position:absolute;left:-14px;top:42px}
@@ -31,6 +35,17 @@
 .criterion-popin-context h3{margin:0 0 8px;color:#326c61;font-size:12px}
 .criterion-popin-context p{font-size:12px;line-height:1.6;color:#486762;margin:5px 0}
 .criterion-popin-context strong{display:block;font-size:11px;color:#174f48}
+.criterion-popin-all{border:1px solid #dce9e3;border-radius:12px;padding:11px 12px;margin:12px 0;background:#fcfefd}
+.criterion-popin-all h3{font-size:12px;color:#286b5a;margin:0 0 9px}
+.criterion-popin-all-row{display:grid;grid-template-columns:25px minmax(0,1fr);gap:9px;padding:8px 0;border-top:1px solid #e8efe9}
+.criterion-popin-all-row:first-of-type{border-top:0}
+.criterion-popin-all-letter{width:25px;height:25px;display:grid;place-items:center;border-radius:50%;background:#e3efe5;color:#205e44;font-size:12px;font-weight:850}
+.criterion-popin-all-row strong{color:#193c3c;font-size:12px}
+.criterion-popin-all-row p{font-size:11px;line-height:1.55;color:#496b63;margin:3px 0}
+.criterion-popin-all-row .criterion-popin-evidence{border-left:2px solid #afd7c1;padding-left:7px;color:#245a4b;overflow-wrap:anywhere}
+.criterion-popin-rubric-links{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin:13px 0 0;font-size:11px;color:#496c62}
+.criterion-popin-rubric-link{width:29px;height:29px;display:grid;place-items:center;border:1px solid #d6e5da;border-radius:7px;background:#f1f8f3;color:#226554;font:800 12px inherit;cursor:pointer}
+.criterion-popin-rubric-link:hover{background:#e1f1e5}
 .criterion-popin-note{background:#f5f9f6;border:1px solid #dceadf;border-radius:10px;padding:11px 12px;color:#35665b;font-size:12px;line-height:1.6;margin:6px 0 12px}
 .criterion-popin-level,.criterion-popin-disclaimer{font-size:11px;line-height:1.6;color:#617673;margin:8px 0}
 .criterion-popin-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
@@ -41,7 +56,6 @@
  .criterion-marked-field>.criterion-badge{left:auto;right:0;top:0}
  .criterion-marked-field>.field-group>.field-label{display:block;padding-right:44px;min-height:34px}
  .criterion-marked-field textarea.field{padding-left:12px}
- .criterion-marked-field textarea.field{padding-left:29px}
  .criterion-title-row{gap:7px}
  .criterion-title-row>.task-heading{flex-basis:205px}
  .criterion-popin{width:calc(100vw - 16px);max-height:calc(100dvh - 16px);border-radius:15px}
