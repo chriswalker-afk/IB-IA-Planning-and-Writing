@@ -52,7 +52,10 @@ test('theoretical source guidance does not impose sampling, measurement or a ben
 });
 test('next-step selection and C96 use the explicitly selected earlier result',()=>{
  const s=make('C35');s.completion.activeEntryIndex=1;assert.equal(criteriaContext(s).entry.id,'first');
- s.completion.current='C96';s.completion.writingOrigin={node:'C34B',entryId:'first'};assert.equal(criteriaContext(s).entry.id,'first');assert(criteriaPanel(s).includes('Show good reflection here by'));
+ s.completion.current='C96';s.completion.writingOrigin={node:'C34B',entryId:'first'};
+ assert.equal(criteriaContext(s).entry.id,'first');
+ assert(criteriaContext(s).rows.some(r=>r.id==='D'));
+ assert(criteriaPanel(s).includes('Full criteria rubric'));
 });
 test('a planned record gets preparation rather than an actual-result interpretation',()=>{
  const s=make('C34B');s.entries[0].status='planned';
