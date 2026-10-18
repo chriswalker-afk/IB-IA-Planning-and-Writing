@@ -349,66 +349,76 @@ export function createPlanningViews(ctx){
     renderInvestigativeRoutes(state,{e,icon,catalogue:()=>mathChoices(state)}),
     "<h4>What's a good selection?</h4><p>A few purposeful techniques beat many disconnected ones. Routine syllabus maths can be used without tutorial-style explanations. Research beyond the syllabus should show your understanding when actually used.</p>");
    case "N01P":{
-    const choices=relevantPredictionOptions(state);
-    return stepBody("What do you predict might happen?","This is a tentative expectation, not a result. Then explain why and what it would mean IF true.",
+    const choices=relevantPredictionOptions(state),open=p.refinePlanOpen===true;
+    const selected=selectedMaths(state).filter(item=>item.course===f.course);
+    const refinePanel='<div class="planning-prediction-refine">'+
+     '<button type="button" class="planning-prediction-refine-toggle" data-action="plan-refine-toggle"'+
+     ' aria-expanded="'+open+'" aria-controls="planning-prediction-refine-panel">'+
+     icon('sliders-horizontal')+' <span>Refine the plan <small>(optional)</small></span>'+
+     icon(open?'chevron-up':'chevron-down')+'</button>'+
+     (open?'<div id="planning-prediction-refine-panel" class="planning-prediction-refine-panel">'+
+      '<p class="primary-hint">If your expectation gives you a better mathematical direction, adjust it here. Your earlier choices are retained, and a prediction does not establish a pattern.</p>'+
+      select('course','Mathematics course',[
+       ['AI SL','Mathematics AI SL'],['AA SL','Mathematics AA SL'],
+       ['AA HL','Mathematics AA HL (teacher review)'],['AI HL','Mathematics AI HL (teacher review)'],
+       ['other','Another course / unsure']])+
+      renderInvestigativeRoutes(state,{e,icon,catalogue:()=>mathChoices(state)})+
+      '<details class="planning-refine-check"><summary>'+icon('circle-help')+
+       ' Check mathematical suitability (optional) '+icon('chevron-down')+'</summary>'+
+       '<div class="planning-refine-check-body">'+
+       select('courseSuitability','Could the chosen mathematics answer my aim?',[
+        ['yes','I can explain how it might help'],['unsure','I need to check'],['no','I may need to change approach']])+
+       select('mathsOutside','Is this mathematics familiar within my course?',[
+        ['syllabus','Mainly within the syllabus'],['outside','Possibly beyond the syllabus'],
+        ['unsure','Not sure — a teacher check would help']])+
+       F('mathsRevisedWhy','Why might this mathematical direction help? (optional)',
+        'A relevant mathematical question or quantity',{type:'textarea',rows:2})+
+       (f.courseSuitability==='no'||f.mathsOutside==='outside'||f.mathsOutside==='unsure'?
+        '<div class="button-row">'+route('Ask my teacher about suitability','Outside-course maths or unclear mathematical depth')+'</div>':'')+
+       '</div></details>'+
+      '</div>':
+      '<span class="planning-prediction-refine-summary">'+
+       e(selected.length?selected.length+' possible technique'+(selected.length===1?'':'s')+' chosen':'Mathematical choices can be adjusted here')+
+       '</span>')+'</div>';
+    return stepBody("What do you predict might happen?",
+      "A prediction can help you focus, but it is optional and is not a result. You can also choose to explore first.",
       summary("Your investigation aim",f.aim)+
       (f.beneficiary?summary("My motivation — why this matters",f.beneficiary+(f.intendedUse?" — "+f.intendedUse:"")):"")+
-      '<div class="field-group"><label class="field-label">Some possible predictions for this type of investigation</label>'+
-      choice("predictionId",choices.map(x=>({value:x.id,title:x.question,desc:x.id==="X02"?"You can explore before deciding.":""})),{stack:true,tight:true})+'</div>'+
-      F("prediction","My tentative prediction or conjecture","Use your own words. A suggestion above is a question, not a written prediction.",{type:"textarea",rows:2})+
+      '<div class="field-group"><label class="field-label">Some possible predictions (optional)</label>'+
+      choice("predictionId",choices.map(x=>({value:x.id,title:x.question,
+       desc:x.id==="X02"?"It is fine to explore before forming a prediction.":""})),{stack:true,tight:true})+'</div>'+
+      F("prediction","My tentative prediction or conjecture (optional)",
+       "Use your own words, or leave blank and explore first.",{type:"textarea",rows:2})+
       (f.predictionPrior?summary("Earlier prediction saved as a note (not current)",f.predictionPrior):"")+
-      F("predictionWhy","WHY do I expect this?","Experience, observation, small mathematical case or uncertainty",{type:"textarea",rows:3})+
-      F("predictionImplication","IF it were true, what could it mean for my purpose?","A possible implication—not advice backed by results yet",{type:"textarea",rows:3})+
-      (f.predictionId==="X02"?F("predictionExploration","What initial example might help you form a prediction?","A simple graph, sample or mathematical case",{type:"textarea",rows:2}):"")+
+      (f.predictionId!=="X02"&&(f.prediction.trim()||f.predictionId)?
+       F("predictionWhy","Why do I expect this? (optional)",
+        "Experience, observation or a small mathematical case",{type:"textarea",rows:2})+
+       F("predictionImplication","If it were true, what might it mean? (optional)",
+        "A possibility, not advice supported by results",{type:"textarea",rows:2}):"")+
+      (f.predictionId==="X02"?'<p class="primary-hint">No prediction needed yet. Explore some genuine mathematics and decide what questions arise.</p>':"")+
+      refinePanel+
       '<div class="button-row">'+route("Refine my motivation","Edit 'Who is this for?' while predicting")+'</div>'+
-      callout("Your result might surprise you","A different finding is not failure. Your later interpretation should be based on actual evidence."),
-      "<h4>A meaningful prediction</h4><p>Separate WHAT you expect, WHY, and what it would mean for the person or purpose you selected IF TRUE. Do not turn a prediction into a statement of fact.</p>");
+      callout("Your result might surprise you",
+       "A different finding is not failure. Interpret actual evidence rather than trying to confirm an early prediction."),
+      "<h4>A tentative expectation, not a commitment</h4><p>It is fine to explore first. If you change your expected mathematical direction, open Refine the plan here rather than repeating a second mathematics-choice screen.</p>",
+      "Next: can I get started?");
    }
-   case "N04R":return stepBody("Does your prediction change your maths plan?","Revisit your earlier choices, including your route; no predicted pattern is yet a finding.",
-    edit("N02M","Review my course and initial maths choices")+
-    renderInvestigativeRoutes(state,{e,icon,catalogue:()=>mathChoices(state)})+
-    F("mathsRevisedWhy","Why might this mathematics be useful? (optional)","Connect a selected method to the question you want to answer",{type:"textarea",rows:2}),
-    "<h4>Keep it flexible</h4><p>These suggestions respond to a prediction, not a demonstrated pattern. Once you have real results, you may need to choose a different method or end the investigation.</p>");
-   case "N04M":return stepBody("Is the mathematics likely to answer your question?","Check purpose, course suitability and potential interpretation. If the mathematical suitability is unclear, note a question for your teacher without blocking your plan.",
-    summary("Current aim",f.aim)+
-    summary("Possible mathematics",selectedMaths(state).map(x=>x.label).join("; ")+(f.otherMaths?" · "+f.otherMaths:""))+
-    select("courseSuitability","Does your mathematics look suited to this aim?",[
-     ["yes","I can explain how it could help"],["unsure","I'm not sure yet"],["no","I think it needs revising"]])+
-    select("mathsOutside","How familiar is your selected mathematics within your course?",[
-     ["syllabus","It is mainly within my syllabus"],["outside","It may include mathematics beyond my syllabus"],["unsure","I'm unsure; I need a syllabus check"]])+
-    F("suitabilityWhy","What mathematical question could it answer?","Describe one relevant quantity, pattern or comparison",{type:"textarea",rows:3})+
-    (f.courseSuitability==="no"||f.mathsOutside==="outside"||f.mathsOutside==="unsure"?
-      '<div class="button-row">'+route("Ask my teacher about suitability","Outside-course maths or unclear mathematical depth")+'</div>':"")+
-    callout("Not a grading tool","This is a planning check, not a prediction of IA marks or an automatic syllabus assessment."),
-    "<h4>Outside-syllabus mathematics</h4><p>When you actually use an independently researched method beyond the syllabus, explain the new mathematics you understand. There is no need to teach routine syllabus techniques.</p>");
-   case "N05V":return stepBody("What could your first mathematical representation be?","One purposeful figure, short calculation or simplified case can give you a useful starting direction.",
-    choice("figureType",[
-      {value:"scatter",title:"Scatter graph",icon:"chart"},
-      {value:"distribution",title:"Distribution or group comparison",icon:"chart"},
-      {value:"diagram",title:"Labelled mathematical diagram",icon:"target"},
-      {value:"table",title:"A small table or numerical example",icon:"calculator"},
-      {value:"calculation",title:"A first short calculation",icon:"calculator"},
-      {value:"theory",title:"A simplified conjecture / case",icon:"book"},
-      {value:"unsure",title:"Not sure yet",icon:"lightbulb"}],{stack:true,tight:true})+
-    F("figureOther","More detail (optional)","What would you draw, compare, label or calculate?")+
-    F("figurePurpose","WHY might this help answer your aim?","What might it reveal or allow you to test?",{type:"textarea",rows:3})+
-    callout("Suggested direction",e(seedExample(state))),
-    "<h4>Do not create invented mathematics here</h4><p>This is a plan. Later, explain the purpose BEFORE the figure or calculation, then interpret actual findings AFTER it.</p>");
-   case "N05":return stepBody("Choose an achievable first mathematical action.","Start small, but make the action mathematically useful.",
-    summary("Your proposed first representation",f.figureOther||f.figureType)+
-    F("firstAction","One worthwhile step I could do first","A first graph, algebraic example, labelled diagram or test",{type:"textarea",rows:3})+
-    (state.planning.accuracyPlans?.length?callout("Your planned accuracy sparks",
-      e(state.planning.accuracyPlans.map(x=>plannedAccuracyText(x)).join("; ").slice(0,300))+
-      " — Confirm these against actual measurements and sources before using them."):
-      callout("No recorded measurement accuracy yet","If you use numerical measurements or rounded tables, return to the source plan and record original precision. Exact counts need no invented uncertainty."))+
-    F("firstAccuracy","Any further accuracy convention for calculations? (optional)","For example, exact symbolic results or an output-rounding policy",{type:"textarea",rows:2}),
-    "<h4>Plan for interpretation</h4><p>After an actual result, explain its significance for the aim and why another mathematical question would follow.</p>");
-   case "N06E":return stepBody("What might change the direction of your investigation?","A strong plan is flexible when data, methods or surprising findings call for revision.",
-    F("changeTrigger","What result or obstacle might make you rethink your approach?","A curved pattern, missing source, unexpected result or counterexample",{type:"textarea",rows:3})+
-    F("changeAdaptation","What could you adjust without restarting everything?","A refined variable, model, sample or conjecture",{type:"textarea",rows:2})+
-    F("fallbackEvidence","If data become unavailable, what is a plausible fallback?","Another permitted source, narrower scope or 'to discuss'",{type:"textarea",rows:2})+
-    callout("Plans are provisional","A prediction that turns out to be wrong can be an excellent mathematical starting point. Do not change findings to make them fit the plan."),
-    "<h4>A contingency isn't an extra IA section</h4><p>Keep logistical concerns in planning notes. Only discuss actual mathematical limitations at the point where they affect an analysis.</p>");
+   case "N04R":
+   case "N04M":return stepBody("Mathematical refinement is now optional.",
+    "Return to the prediction screen and open Refine the plan to review techniques and mathematical suitability.",
+    edit("N01P","Review my prediction and mathematical choices"),
+    "<p>Earlier notes about suitability or revised mathematics remain saved.</p>");
+   case "N05V":
+   case "N05":return stepBody("Your first mathematical representation belongs in IA Studio.",
+    "After Planning, choose a meaningful first graph, diagram, numerical example or calculation using real evidence.",
+    callout("What happens to my previous notes?",
+      "Any earlier plans and accuracy conventions remain saved. IA Studio will ask why a representation is useful before you create it, and what the real result means."),
+    "<p>No mathematical result is assumed completed merely because it was planned.</p>");
+   case "N06E":return stepBody("Respond to discoveries as they occur.",
+    "The reflection about changes to your mathematical direction happens in IA Studio after real results.",
+    callout("Your previous notes remain saved",
+      "Earlier contingencies and suggested adaptations are still retained in your project and planning report."),
+    "<p>Unexpected results should guide your next mathematical step, not be pre-scripted in Planning.</p>");
    case "N06T":return stepBody("A brief teacher check-in.","Every student can note one question. If you've already completed a specialist check-in, your answers are kept.",
     (f.teacherQuestion?summary("Existing teacher question",f.teacherQuestion):"")+
     F("universalTeacherQuestion","Anything you would like to discuss with your teacher? (optional)","Aim, mathematical suitability, feasibility or what you'd like to achieve",{type:"textarea",rows:2})+
