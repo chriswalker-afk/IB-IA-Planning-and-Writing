@@ -151,14 +151,25 @@ with sync_playwright() as pw:
    assert p.evaluate('document.activeElement?.dataset?.criterionBadge')==spot
    assert stored(p)==before
    badge.click()
-   dialog.locator('[data-criterion-badge-rubric]').click()
+   chosen='E' if letter=='A–E' else letter
+   dialog.locator('[data-criterion-badge-rubric="'+chosen+'"]').click()
    assert not dialog.is_visible()
    full=p.locator('#essentialsDialog')
    assert full.is_visible()
-   assert full.locator('[data-rubric-criterion="'+letter+'"]').count()==1
-   if letter=='E':
+   assert full.locator('[data-rubric-criterion="'+chosen+'"]').count()==1
+   if chosen=='E':
     assert full.locator('#ess-level').input_value()=='SL'
    full.locator('[data-essentials-close]').click()
+   if letter=='A–E':
+    badge.click()
+    dialog.locator('[data-criterion-badge-review]').click()
+    assert not dialog.is_visible()
+    assert full.is_visible()
+    assert full.locator('[data-evidence-criterion]').count()==5
+    mode='draft' if node=='C80D' else 'final'
+    assert full.locator('[data-essentials-mode="'+mode+'"]').get_attribute('aria-pressed')=='true'
+    assert 'My '+mode+' introduction' in full.inner_text()
+    full.locator('[data-essentials-close]').click()
    assert stored(p)==before
    assert badge.is_visible()
    assert p.evaluate('document.documentElement.scrollWidth <= innerWidth+1')
