@@ -81,6 +81,38 @@ def first_time(browser,width):
     return [...panels].map(p=>getComputedStyle(p).backgroundColor);
   }""")
   assert colors[0]!=colors[1],colors
+  # Marker geometry must align with the four stage cards. The first is
+  # INSIDE the mint panel, not merely labelled as Planning within purple.
+  geometry=trail.evaluate("""root => {
+    const rect=el=>{const r=el.getBoundingClientRect();return {
+      left:r.left,right:r.right,top:r.top,bottom:r.bottom,
+      x:(r.left+r.right)/2,y:(r.top+r.bottom)/2,width:r.width,height:r.height
+    }};
+    const panel=root.querySelector('.living-trail-zone-underlay');
+    return {
+      plan:rect(panel.querySelector('.plan')),
+      writing:rect(panel.querySelector('.writing')),
+      svg:rect(root.querySelector('.living-trail-svg')),
+      markers:[...root.querySelectorAll('.living-trail-marker')].map(rect),
+      cards:[...root.querySelectorAll('.living-trail-step')].map(rect),
+      pathDisplay:getComputedStyle(root.querySelector('.living-trail-path')).display
+    };
+  }""")
+  assert len(geometry['cards'])==4
+  if width>540:
+   assert geometry['pathDisplay']!='none',geometry
+   assert len(geometry['markers'])==4,geometry
+   first=geometry['markers'][0]
+   assert geometry['plan']['left']+12<first['x']<geometry['plan']['right']-12,geometry
+   assert first['x']<geometry['writing']['left'],geometry
+   for marker in geometry['markers'][1:]:
+    assert geometry['writing']['left']+8<marker['x']<geometry['writing']['right']-8,geometry
+   for marker,card in zip(geometry['markers'],geometry['cards']):
+    assert abs(marker['x']-card['x'])<5,geometry
+    assert 27<marker['width']<45 and 27<marker['height']<45,geometry
+   assert geometry['svg']['width']>geometry['writing']['width'],geometry
+  else:
+   assert geometry['pathDisplay']=='none',geometry
   without_overflow(page)
   page.screenshot(path=str(OUT/f"two-zone-discovery-trail-{width}.png"),full_page=True,animations="disabled")
   # Use the actual visible Writing chapter, including on phones where
