@@ -704,7 +704,7 @@ export function createCompletingViews(ctx){
  };
  function render(){
   const s=getState(),c=s.completion||{current:"C00",stages:{}},node=c.current;
-  const label=titleMap.get(node)||"IA Studio";
+  const label=node==="C00"?"Set up: start writing your IA":(titleMap.get(node)||"IA Studio");
   const screen=startOptions(node),stage=completionStage(node,s);
   const progress=stage&&s.completion.stages[stage];
   const warning=completionFlags(s);
@@ -722,16 +722,18 @@ export function createCompletingViews(ctx){
       icon(isAdviceReduced(s)?"eye":"eye-off")+' '+(isAdviceReduced(s)?"Show full advice":"Reduce advice")+'</button>'+
     (node==="C04"?"":'<button class="btn btn-quiet btn-sm" data-action="completion-open" data-node="C04">'+icon("layers")+' My stages</button>')+'</div></div>'+
     topWarnings+
-    '<div class="task-shell" data-source-node="'+e(node)+'">'+
+    (node!=="C00"&&node!=="C04"&&!isStuckNode(node)?'<p class="studio-ia-writing-reminder">'+icon("pencil")+
+      ' WRITE IN YOUR IA · Use these prompts to develop your own document; nothing is inserted automatically.</p>':'')+
+    '<div class="task-shell'+(node==="C00"?' chapter-onboarding-shell':'')+'" data-source-node="'+e(node)+'">'+
     criterionPageHeading(label,"completing",isAdviceReduced(s)?"":node)+'<p class="task-intro">'+e(screen.intro)+'</p>'+
-    insightEcho(s,node)+extra.returnToReview()+(isStuckNode(node)||["C04","C10E"].includes(node)||isAdviceReduced(s)?"":criteriaPanel(s))+screen.html+(screen.extra||"")+insightCapture(s,node)+
-    (isAdviceReduced(s)?"":essentialsNudge(s))+
-    (isStuckNode(node)||node==="C10E"||isAdviceReduced(s)?"":guides.writingMoment(node,{embedded:node!=="C96"}))+
-    (isStuckNode(node)||isAdviceReduced(s)?"":guides.mathsHelp(node)+guides.limitsHelp(node)+
-    (node==="C04"?"":contextualPrompt(node)+resourcePrompt(s)))+statusControls+
-    allButtons(node,primaryByNode[node]||[])+'</div>'+
+    insightEcho(s,node)+extra.returnToReview()+(isStuckNode(node)||["C00","C04","C10E"].includes(node)||isAdviceReduced(s)?"":criteriaPanel(s))+screen.html+(screen.extra||"")+(node==="C00"?"":insightCapture(s,node))+
+    (node==="C00"||isAdviceReduced(s)?"":essentialsNudge(s))+
+    (node==="C00"||isStuckNode(node)||node==="C10E"||isAdviceReduced(s)?"":guides.writingMoment(node,{embedded:node!=="C96"}))+
+    (node==="C00"||isStuckNode(node)||isAdviceReduced(s)?"":guides.mathsHelp(node)+guides.limitsHelp(node)+
+    (["C00","C04"].includes(node)?"":contextualPrompt(node)+resourcePrompt(s)))+statusControls+
+    (node==="C00"?"":allButtons(node,primaryByNode[node]||[]))+'</div>'+
     '<p class="small-callout">Only actual mathematics supports a mathematical conclusion. Your planning, predictions and teacher questions remain separate from real findings. No compulsory number of calculations or IA grade.</p>'+
-    (node==="C04"?"":miniList())+'</div>';
+    (["C00","C04"].includes(node)?"":miniList())+'</div>';
  }
  return {viewCompleting:render};
 }
