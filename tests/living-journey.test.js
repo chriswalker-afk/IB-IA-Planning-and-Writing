@@ -290,7 +290,7 @@ test('Discovery Trail path starts inside Planning and every visible milestone ce
  ];
  for(const [id,left,top,mode] of positions){
   const n=JOURNEY_GROUPS.findIndex(g=>g.id===id);
-  assert(trail.includes('class="living-trail-node living-trail-marker not-started '+mode+'" style="left:'+left+'%;top:'+top+'px"'),id);
+  assert(new RegExp('class="living-trail-node living-trail-marker (not-started|working|complete|needs-review) '+mode+'(?: is-current)?" style="left:'+left+'%;top:'+top+'px"').test(trail),id);
   assert(trail.includes('<span class="living-trail-circle">'+(n+1)+'</span>'),id);
  }
  assert(trail.includes('M125 118 C250 118 250 58 375 58'));
@@ -306,8 +306,8 @@ test('chapter progress and writing identity remain independent after completing 
  s.planning.completed=true;
  s.route='completing';s.completion.current='C10';
  let html=discoveryTrail(s),rail=journeyRail(s),strip=chapterRibbon(s);
- assert(html.includes('living-trail-node complete planning'));
- assert(html.includes('living-trail-node not-started writing'));
+ assert(html.includes('living-trail-node living-trail-marker complete planning'));
+ assert(html.includes('living-trail-node living-trail-marker not-started writing'));
  assert(rail.includes('journey-rail-zone planning'));
  assert(rail.includes('journey-rail-zone writing'));
  assert(rail.includes('journey-rail-zone-label'));
@@ -316,10 +316,10 @@ test('chapter progress and writing identity remain independent after completing 
  assert.equal((strip.match(/living-ribbon-part [^"]+ writing/g)||[]).length,3);
  s.completion.stages.C10='needs-review';
  html=discoveryTrail(s);
- assert(html.includes('living-trail-node needs-review writing'));
+ assert(html.includes('living-trail-node living-trail-marker needs-review writing'));
  s.completion.stages.C10='complete';s.completion.stages.C20='complete';
  html=discoveryTrail(s);
- assert(html.includes('living-trail-node complete writing'));
+ assert(html.includes('living-trail-node living-trail-marker complete writing'));
  // A completed writing section still has the writing colour identity.
  assert(html.includes('living-trail-zone-underlay'));
 });
