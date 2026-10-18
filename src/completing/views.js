@@ -4,6 +4,7 @@ import {STATUS_LABELS,currentGroup,JOURNEY_GROUPS} from "../ui/journey.js";
 import {groupedDashboard} from "../ui/journey-views.js";
 import {examplePrompt,exampleInline} from "../examples/views.js";
 import {criteriaPanel,essentialsNudge} from "../essentials/views.js";
+import {criterionPageHeading} from "../essentials/criteria-badges.js";
 import {resourcePrompt} from "../resources/views.js";
 import {createStuckViews} from '../help/stuck-views.js';
 import {isStuckNode} from '../help/stuck-state.js';
@@ -670,7 +671,7 @@ export function createCompletingViews(ctx){
     (node==="C04"?"":'<button class="btn btn-quiet btn-sm" data-action="completion-open" data-node="C04">'+icon("layers")+' My stages</button>')+'</div></div>'+
     topWarnings+
     '<div class="task-shell" data-source-node="'+e(node)+'">'+
-    '<h1 class="task-heading">'+e(label)+'</h1><p class="task-intro">'+e(screen.intro)+'</p>'+
+    criterionPageHeading(label,"completing",isAdviceReduced(s)?"":node)+'<p class="task-intro">'+e(screen.intro)+'</p>'+
     insightEcho(s,node)+extra.returnToReview()+(isStuckNode(node)||["C04","C10E"].includes(node)||isAdviceReduced(s)?"":criteriaPanel(s))+screen.html+(screen.extra||"")+insightCapture(s,node)+
     (isAdviceReduced(s)?"":essentialsNudge(s))+
     (isStuckNode(node)||node==="C10E"||isAdviceReduced(s)?"":guides.writingMoment(node,{embedded:node!=="C96"}))+
