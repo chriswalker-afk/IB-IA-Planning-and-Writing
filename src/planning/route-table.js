@@ -443,5 +443,11 @@ export const PLANNING_ROUTES = Object.freeze([
   {"from":"N03G","answer":"Revisit practical checks","to":"N03E","sourceRow":null,"editorial":"UX 2026-10-17: return to quick feasibility checks instead of retired long form"},
   {"from":"N03D","answer":"Continue after evidence checks","to":"N03H","sourceRow":null,"editorial":"UX 2026-10-17: merge two readiness ratings and their checklists into source availability and safeguards"},
   {"from":"N03D","answer":"Safety / privacy / consent unresolved","to":"N02T","sourceRow":null,"editorial":"UX 2026-10-17: keep permission and teacher guidance available without separate readiness screens"},
-  {"from":"N03D","answer":"Reconsider my data route","to":"N03R","sourceRow":null,"editorial":"UX 2026-10-17: offer targeted help for inaccessible evidence"}
+  {"from":"N03D","answer":"Reconsider my data route","to":"N03R","sourceRow":null,"editorial":"UX 2026-10-17: offer targeted help for inaccessible evidence"},
+  {"from":"N03P2","answer":"Continue to prediction","to":"N01P","sourceRow":null,"editorial":"UX 2026-10-18: put an optional hypothesis after primary sampling, before readiness"},
+  {"from":"N03S","answer":"Continue to prediction","to":"N01P","sourceRow":null,"editorial":"UX 2026-10-18: put an optional hypothesis after secondary source decisions"},
+  {"from":"N03B","answer":"Continue to prediction","to":"N01P","sourceRow":null,"editorial":"UX 2026-10-18: include both primary and secondary source branches before the optional hypothesis"},
+  {"from":"N01P","answer":"Continue to evidence checks","to":"N03D","sourceRow":null,"editorial":"UX 2026-10-18: replace compulsory repeat of mathematics choices with an inline optional plan refinement"},
+  {"from":"N03H","answer":"Continue to review","to":"N06T","sourceRow":null,"editorial":"UX 2026-10-18: first actual representation/action and adaptive reflection happen in IA Studio, not Planning"},
+  {"from":"N01P","answer":"Outside-course maths or unclear mathematical depth","to":"N08","sourceRow":null,"editorial":"UX 2026-10-18: preserve specialist teacher support from optional in-screen maths check"}
 ]);
