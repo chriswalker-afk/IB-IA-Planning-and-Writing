@@ -22,7 +22,7 @@ test('a fresh project gets a journey, but no invented milestones or result stars
 });
 test('the four chapters are consistent in ribbon, rail, map and dashboard',()=>{
  const s=createProjectState();s.route='planning';s.planning.fields.aim='Investigate a relationship';
- s.planning.fields.dataSource='secondary';s.planning.fields.firstAction='Draw a scatter diagram';
+ s.planning.fields.dataSource='secondary';s.planning.fields.course='AI SL';s.planning.fields.kind='statistics';
  const strip=chapterRibbon(s),map=journeyMap(s),rail=journeyRail(s),board=groupedDashboard(s);
  for(const g of JOURNEY_GROUPS){
    assert(strip.includes(g.name.replace('&','&amp;')));
@@ -190,18 +190,18 @@ test('Planning trail has all chapters, a live planning step and honest provision
  assert(fresh.includes('aria-label="Your learning trail"'));
  for(const g of JOURNEY_GROUPS)assert(fresh.includes(g.name.replace('&','&amp;')));
  assert(fresh.includes('data-action="journey-open"'));
- s.planning.current='N05';
+ s.planning.current='N01P';
  s.planning.completedNodes=['N00','N01'];
  s.planning.fields.aim='How does this pattern change?';
- s.planning.fields.firstAction='Plot the first graph';
+ s.planning.fields.course='AI SL';s.planning.fields.kind='statistics';
  const later=planningLearningTrail(s);
  assert(later.includes('Phase 3 of 4'));
  assert(later.includes('2 of 5 decisions saved'));
- assert(later.includes('Plan your mathematics'));
+ assert(later.includes('Prepare to explore'));
  assert(later.includes('2 completed'));
  assert(later.includes('Chose a starting route'));
  assert(later.includes('Worked on the title and question'));
- s.planning.visited=['N00','N01','N05'];s.planning.completedNodes=[];
+ s.planning.visited=['N00','N01','N01P'];s.planning.completedNodes=[];
  assert(planningLearningTrail(s).includes('0 completed'));
  assert(!later.includes('100%'));
 });
