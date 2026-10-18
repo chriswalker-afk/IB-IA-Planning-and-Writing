@@ -5,10 +5,17 @@ import {chapterMini,discoveryTrail,mathConstellation} from './living-journey.js'
 import {insightToolkit,insightThreadMap} from './insight-threads.js';
 export function journeyRail(s){
  const active=currentGroup(s);
- return JOURNEY_GROUPS.map((g,i)=>{const status=groupStatus(s,g),target=groupTarget(s,g);
-  return '<button type="button" class="side-milestone journey-milestone '+(status==='complete'?'done ':'')+(active.id===g.id?'active':'')+'" data-action="journey-open" data-target="'+target+'"'+(active.id===g.id?' aria-current="step"':'')+'><span class="dot">'+icon(status==='complete'?'check':g.icon)+'</span><span class="journey-milestone-text"><strong>'+e(g.name)+'</strong><small>'+e(STATUS_LABELS[status])+'</small>'+
-  '<span class="journey-mode-tag '+e(g.mode)+'">'+e(chapterRole(g))+'</span>'+chapterMini(s,g)+'</span></button>';
- }).join('');
+ const buttons=JOURNEY_GROUPS.map((g,i)=>{
+  const status=groupStatus(s,g),target=groupTarget(s,g);
+  return '<button type="button" class="side-milestone journey-milestone '+e(g.mode)+' '+(status==='complete'?'done ':'')+(active.id===g.id?'active':'')+
+   '" data-action="journey-open" data-target="'+e(target)+'"'+(active.id===g.id?' aria-current="step"':'')+
+   ' aria-label="'+e('Chapter '+(i+1)+': '+g.name+'. '+chapterRole(g)+'. '+STATUS_LABELS[status])+'.">'+
+   '<span class="dot">'+icon(status==='complete'?'check':g.icon)+'</span>'+
+   '<span class="journey-milestone-text"><span class="journey-rail-name">'+icon(g.icon)+'<strong>'+e(g.name)+'</strong></span>'+
+   '<small>'+e(STATUS_LABELS[status])+'</small>'+chapterMini(s,g)+'</span></button>';
+ });
+ return '<div class="journey-rail-zone planning"><span class="journey-rail-zone-label">'+icon('compass')+' Plan</span>'+buttons[0]+'</div>'+
+  '<div class="journey-rail-zone writing"><span class="journey-rail-zone-label">'+icon('pencil')+' Write your IA</span>'+buttons.slice(1).join('')+'</div>';
 }
 export function checkpointCard(s){
  const last=latestCheckpoint(s);if(!last)return '';
