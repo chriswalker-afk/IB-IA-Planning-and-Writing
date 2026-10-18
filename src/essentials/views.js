@@ -1,5 +1,6 @@
 import {CRITERIA,E_DESCRIPTORS,FORMAT_ITEMS,PROCESS_ITEMS,SOURCE_NOTE,HL_NOTE,BEST_FIT,REVIEW_IDS,courseLevel} from './catalog.js';
 import {criteriaContext,isCriteriaDismissed} from './context.js';
+import {isCriterionSpotPage} from './criteria-badges.js';
 import {exampleButton,examplePrompt,e} from '../examples/views.js';
 import {EXAMPLE_CRITERIA} from './example-criteria.js';
 export function essentialsButton(label='IA essentials',options={}){
@@ -20,6 +21,15 @@ export function criteriaPanel(state,{writingTools=''}={}){
  const titleStep=state.route==='planning'&&state.planning?.current==='N01';
  const motivationStep=state.route==='planning'&&state.planning?.current==='N01V';
  const exampleAction=motivationStep?exampleButton('Compare motivations',{topic:'motivation'}):titleStep?exampleButton('Compare titles',{topic:'title',id:'EX30'}):exampleButton('Compare examples');
+ // The local letter badge now owns the tailored guidance. Keep useful tools,
+ // but do not duplicate generic A/C/D or B/E explanations below it.
+ if(isCriterionSpotPage(x.route,x.node)){
+  return '<section class="criteria-panel task-support criterion-local-support" aria-label="More support for this step"><div class="criteria-actions support-actions">'+
+   exampleAction+essentialsButton('Full criteria rubric',{tab:'rubric'})+
+   '<button type="button" class="btn btn-secondary btn-sm" data-action="resource-browse">Tools & tutorials</button>'+
+   '<button type="button" class="btn btn-secondary btn-sm" data-action="open-stuck">I am stuck</button></div>'+
+   writingTools+'</section>';
+ }
  return '<section class="criteria-panel task-support" data-criteria-key="'+e(x.key)+'" aria-label="Support for this step"><div class="criteria-actions support-actions">'+exampleAction+criteria+'<button type="button" class="btn btn-secondary btn-sm" data-action="resource-browse">Tools & tutorials</button><button type="button" class="btn btn-secondary btn-sm" data-action="open-stuck">I am stuck</button></div>'+
  '<div class="criteria-content" id="'+id+'"'+(hidden?' hidden':'')+'>'+x.rows.map(r=>'<div class="criteria-row"><span class="criterion-letter" aria-hidden="true">'+r.id+'</span><p><strong>'+e(CRITERIA[r.id].name)+'</strong><br>Show good '+e(CRITERIA[r.id].name.toLowerCase())+' here by '+e(r.by)+'</p></div>').join('')+
  (x.policy?'<p class="criteria-policy">'+e(x.policy)+'. Apply only where these inputs limit this result; keep guard digits.</p>':'')+
