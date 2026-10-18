@@ -28,6 +28,7 @@ import {createPlanningViews} from "../src/ui/planning-views.js";
 import {planningMove,planAutoAdvance,planningBack,planningEdit,applyPlanningField,toggleMath,selectedMaths,exploreMathRoute,chooseMathRoute,syncPlanningToProject,setPlanCurrent,planningFlags} from "../src/planning/engine.js";
 import {createStudioViews} from "../src/ui/studio-views.js";
 import {createCompletingViews} from "../src/completing/views.js";
+import {renderWriterFieldGuide} from "../src/completing/writer-field-guide.js";
 import {setCompletionNode,moveCompletionRoute,completionBack,markCompletionStage,setCompletionField,addAccuracyDecision,completionSuggestions,sectionForNode,targetForSection,completeEntry,latestRealResult,flagDependentMathematics,acknowledgeMathReview} from "../src/completing/engine.js";
 import {createProjectViews} from "../src/ui/project-views.js";
 import {createHandoverViews} from "../src/ui/handover-views.js";
@@ -70,7 +71,7 @@ function createHarness(savedValue){
     newState:createProjectState,normalise:normalizeProjectState,
     KEY:"ia-pathfinder-prototype-v1",
     readRecordValue,updateRecordValue,icon,escapeHtml,cleanUrl,button,
-    referenceNodeForPrototypeStep,createPlanningViews,createStudioViews,createCompletingViews,createProjectViews,
+    referenceNodeForPrototypeStep,createPlanningViews,createStudioViews,createCompletingViews,renderWriterFieldGuide,createProjectViews,
     setCompletionNode,moveCompletionRoute,completionBack,markCompletionStage,setCompletionField,addAccuracyDecision,completionSuggestions,sectionForNode,targetForSection,completeEntry,latestRealResult,flagDependentMathematics,acknowledgeMathReview,
     createHandoverViews,createPlanningEnvelope,getFieldDiff,mergePlanningEnvelope,modelFromEnvelope,suggestedFilename,
     actOnWritingCue,eligibleWritingCues,selectLimitation,recordLimitation,limitationContextKey,relevantLimitations,relevantBivariateOptions,resultFamily,routeNextQuestions,sourceResultForNext,
@@ -447,4 +448,30 @@ test('a saved aim spark can be edited directly on the motivation page',()=>{
  assert.equal(h.saved.planning.fields.aim,'My revised mathematical aim');
  assert.equal(h.saved.project.aim,'My revised mathematical aim');
  assert(h.html.includes('data-bind="planning.fields.beneficiary"'));
+});
+
+test("Writer's Field Guide replaces the old tile, opens without changing student work and returns contextually",()=>{
+ const s=createProjectState();s.route="completing";s.completion.current="C00";
+ s.planning.fields.aim="Is larger pizza better value?";s.scratch.introduction="My original opening";
+ const h=createHarness(s);
+ assert(h.html.includes("Key advice to read before you start writing"));
+ assert(h.html.includes("Explore 14 writing tips"));
+ assert(!h.html.includes("Write, check, revise"));
+ const original=h.saved;
+ h.action("writer-guide-open");
+ assert(h.drawer.includes("Make your IA worth reading."));
+ assert(h.drawer.includes("The six essentials"));
+ assert(h.drawer.includes("Eight more ideas when you need them"));
+ assert(h.drawer.includes("This isn&#39;t a lab report!"));
+ assert(h.drawer.includes("data-action=\"writer-guide-example\""));
+ assert(h.drawer.includes("data-action=\"writer-guide-story\""));
+ assert.deepEqual(h.saved,original);
+ h.action("close-drawer");
+ h.action("setup-start-writing");
+ assert(h.html.includes("A tip from your Field Guide"));
+ assert(h.html.includes('data-guide-tip="voice"'));
+ h.action("writer-guide-open",{guideTip:"voice"});
+ assert(h.drawer.includes("You&#39;re allowed to say &#39;I&#39;!"));
+ assert.equal(h.saved.scratch.introduction,"My original opening");
+ assert.equal(h.saved.planning.fields.aim,"Is larger pizza better value?");
 });

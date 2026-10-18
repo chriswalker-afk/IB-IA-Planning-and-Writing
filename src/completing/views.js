@@ -1,4 +1,5 @@
 import {chapterRibbon} from '../ui/living-journey.js';
+import {renderFieldGuideTeaser,renderContextualGuide} from './writer-field-guide.js';
 import {insightCapture,insightEcho} from '../ui/insight-threads.js';
 import {STATUS_LABELS,currentGroup,JOURNEY_GROUPS} from "../ui/journey.js";
 import {groupedDashboard} from "../ui/journey-views.js";
@@ -260,9 +261,7 @@ export function createCompletingViews(ctx){
        '<section class="chapter-onboarding-tile"><span class="chapter-onboarding-tile-icon">'+icon("compass")+'</span>'+
         '<h3>Planning first is recommended</h3><p>Choose an aim, explore possible mathematics and check sources before writing. Your saved sparks follow you into IA Studio.</p>'+
         '<button type="button" class="onboarding-inline-action" data-action="go-planning">'+icon("arrow-right")+' '+(hasPlan?'Review my Planning':'Complete Planning first')+'</button></section>'+
-       '<section class="chapter-onboarding-tile"><span class="chapter-onboarding-tile-icon">'+icon("book")+'</span>'+
-        '<h3>Write, check, revise</h3><p>Use writing guidance and criteria badges as you go. Write in your own words; use real evidence. Predictions from Planning are not findings.</p>'+
-        '<button type="button" class="onboarding-inline-action" data-action="essentials-open">Find the IB criteria '+icon("arrow-right")+'</button></section></div>'+
+       renderFieldGuideTeaser(icon,e)+'</div>'+
       setupQuickSparks(s)+
       '<div class="setup-start-actions">'+
        button("Start writing my introduction","setup-start-writing","btn-primary","","arrow-right")+
@@ -306,7 +305,7 @@ export function createCompletingViews(ctx){
    };
   }
   case "C04":return{intro:"Choose a meaningful task. A section may be revisited whenever the evidence changes; there is no required number of maths sections.",
-    html:stageDashboard()+miniList()+
+    html:stageDashboard()+'<button type="button" class="writer-guide-overview" data-action="writer-guide-open">'+icon("book")+' Open the Writer\'s Field Guide '+icon("arrow-right")+'</button>'+miniList()+
       '<div class="button-row">'+sourceAction("Save progress","Save a full project backup")+
       sourceAction("I'm stuck / Something isn't working","I'm stuck")+'</div>'};
   case "C10":return{intro:"Keep the opening short, genuine and in your own words. Results and detailed mathematics belong later.",
@@ -727,6 +726,7 @@ export function createCompletingViews(ctx){
     '<div class="task-shell'+(node==="C00"?' chapter-onboarding-shell':'')+'" data-source-node="'+e(node)+'">'+
     criterionPageHeading(label,"completing",isAdviceReduced(s)?"":node)+'<p class="task-intro">'+e(screen.intro)+'</p>'+
     insightEcho(s,node)+extra.returnToReview()+(isStuckNode(node)||["C00","C04","C10E"].includes(node)||isAdviceReduced(s)?"":criteriaPanel(s))+screen.html+(screen.extra||"")+(node==="C00"?"":insightCapture(s,node))+
+    (node==="C00"||node==="C04"||isStuckNode(node)||isAdviceReduced(s)?"":renderContextualGuide(icon,e,node))+
     (node==="C00"||isAdviceReduced(s)?"":essentialsNudge(s))+
     (node==="C00"||isStuckNode(node)||node==="C10E"||isAdviceReduced(s)?"":guides.writingMoment(node,{embedded:node!=="C96"}))+
     (node==="C00"||isStuckNode(node)||isAdviceReduced(s)?"":guides.mathsHelp(node)+guides.limitsHelp(node)+

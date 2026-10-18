@@ -37,6 +37,7 @@ import {updatePrimaryQuantity,editPrimaryQuantity,removePrimaryQuantity,reusePri
 import {applySuggestedTimeline,localToday,validDate,timelineWeek} from "./src/planning/timeline.js";
 import { createStudioViews } from "./src/ui/studio-views.js";
 import {createCompletingViews} from "./src/completing/views.js";
+import {renderWriterFieldGuide} from "./src/completing/writer-field-guide.js";
 import {C_MAJOR_STAGES,setCompletionNode,moveCompletionRoute,completionBack,markCompletionStage,setCompletionField,addAccuracyDecision,completionSuggestions,sectionForNode,targetForSection,completionStage,completeEntry,latestRealResult,sourceResultForNext,flagDependentMathematics,acknowledgeMathReview} from "./src/completing/engine.js";
 
 import { createProjectViews } from "./src/ui/project-views.js";
@@ -407,10 +408,13 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         button("Start a new project","new-project","btn-danger","", "refresh")+'</section>';
     }else if(panel==="resources"){
       body=resourceDrawer(state,resourceSession);
+    }else if(panel==="writer-guide"){
+      body=renderWriterFieldGuide(icon,e);
     }else if(panel==="help"){
       body='<section><p>Pathfinder is a thinking and writing companion. You remain the author of your mathematics and explanations.</p><div class="panel-list">'+
         '<button class="panel-link" data-action="open-stuck">I am stuck '+icon("arrow-right")+'</button>'+
         '<button class="panel-link" data-action="resource-browse">Tools &amp; tutorials '+icon("arrow-right")+'</button>'+
+        '<button class="panel-link" data-action="writer-guide-open">Writer\'s Field Guide '+icon("arrow-right")+'</button>'+
         '<button class="panel-link" data-action="go-path">How do I see my journey? '+icon("arrow-right")+'</button>'+
         '<button class="panel-link" data-action="open-files">How do I keep my work safe? '+icon("arrow-right")+'</button>'+
         '<button class="panel-link" data-action="open-demos">Try an illustrative sample '+icon("arrow-right")+'</button></div></section>'+
@@ -432,10 +436,10 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     }else if(panel==="stuck"){
       body=stuckViews.render();
     }
-    const titles={resources:"Tools & tutorials",project:"My project",files:"Save & export",help:"Here to help",demos:"Choose a sample",stuck:"Find a way forward", "import-preview":"Review planning import","import-manual":"Recover a plan",handover:"Confirm your starting plan"};
+    const titles={resources:"Tools & tutorials",project:"My project",files:"Save & export",help:"Here to help","writer-guide":"The IA Writer's Field Guide",demos:"Choose a sample",stuck:"Find a way forward", "import-preview":"Review planning import","import-manual":"Recover a plan",handover:"Confirm your starting plan"};
     layer.hidden=false;document.body.classList.add("dialog-open");
     document.querySelectorAll(".topbar,.app-grid,.mobile-nav").forEach(el=>el.inert=true);
-    layer.innerHTML='<aside class="drawer'+(panel==="resources"?" resource-drawer":"")+'" role="dialog" aria-modal="true" aria-labelledby="drawerTitle" tabindex="-1"><div class="drawer-header"><h2 id="drawerTitle">'+titles[panel]+'</h2>'+
+    layer.innerHTML='<aside class="drawer'+(panel==="resources"?" resource-drawer":"")+(panel==="writer-guide"?" writer-guide-drawer":"")+'" role="dialog" aria-modal="true" aria-labelledby="drawerTitle" tabindex="-1"><div class="drawer-header"><h2 id="drawerTitle">'+titles[panel]+'</h2>'+
       '<button class="btn btn-secondary btn-sm" type="button" data-action="close-drawer">'+(panel==="resources"&&resourceSession.parent==="stuck"?"Back to I am stuck":"Return to my work")+' '+icon("x")+'</button></div>'+body+'</aside>';
     $(".drawer",layer).focus();
   }
@@ -578,6 +582,15 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     if(action==="go-home")return nav("home");
     if(action==="go-planning")return nav("planning");
     if(action==="go-studio")return nav("completing"); // Resume the saved C-stage; "Studio overview" remains a separate action.
+    if(action==="writer-guide-open"){
+      lastFocus=el;openDrawer("writer-guide");
+      const tip=String(el.dataset.guideTip||"").replace(/[^a-z0-9-]/g,"");
+      if(tip){
+        const card=layer.querySelector('[data-guide-card="'+tip+'"]');
+        if(card){card.open=true;card.scrollIntoView?.({block:"start",behavior:"instant"});}
+      }
+      return;
+    }
     if(action==="setup-start-writing"){
       const result=setCompletionNode(state,"C10",{reason:"setup-to-introduction"});
       if(result.ok)nav("completing");
@@ -1101,6 +1114,40 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       case "close-cue":state.ui.openCue="";save();render();break;
       case "cue-covered":state.cues[el.dataset.key]="done";state.ui.openCue="";save();render();toast("Noted — this reminder won't keep appearing.");break;
       case "cue-skip":state.cues[el.dataset.key]="not-relevant";state.ui.openCue="";save();render();toast("Okay — this cue is now hidden.");break;
+      case "writer-guide-filter":{
+        const guide=el.closest(".writer-guide-main");if(!guide)break;
+        const family=el.dataset.guideFilter||"all";
+        let visible=0;
+        guide.querySelectorAll("[data-guide-card]").forEach(card=>{
+          card.hidden=family!=="all"&&card.dataset.guideFamily!==family;
+          if(!card.hidden)visible++;
+        });
+        guide.querySelectorAll("[data-action='writer-guide-filter']").forEach(b=>b.setAttribute("aria-pressed",String(b===el)));
+        guide.querySelectorAll(".writer-guide-tip-section").forEach(section=>{
+          section.hidden=![...section.querySelectorAll("[data-guide-card]")].some(c=>!c.hidden);
+        });
+        const count=guide.querySelector(".writer-guide-filter-count");
+        if(count)count.textContent=family==="all"?"Showing all 14 tips":"Showing "+visible+" tips for this theme";
+        break;
+      }
+      case "writer-guide-example":{
+        const example=el.closest(".writer-guide-example");if(!example)break;
+        const show=el.dataset.guideView==="stronger"?"stronger":"ordinary";
+        example.querySelectorAll("[data-guide-view]").forEach(button=>button.setAttribute("aria-pressed",String(button.dataset.guideView===show)));
+        example.querySelectorAll("[data-guide-text]").forEach(paragraph=>{paragraph.hidden=paragraph.dataset.guideText!==show;});
+        const why=example.querySelector(".writer-guide-example-why");if(why)why.hidden=show!=="stronger";
+        break;
+      }
+      case "writer-guide-story":{
+        const story=el.closest(".writer-guide-story");if(!story)break;
+        const index=el.dataset.storyStep;
+        story.querySelectorAll("[data-story-step]").forEach(button=>{
+          button.setAttribute("aria-pressed",String(button===el));
+          button.classList.toggle("is-active",button===el);
+        });
+        story.querySelectorAll("[data-story-panel]").forEach(panel=>{panel.hidden=panel.dataset.storyPanel!==index;});
+        break;
+      }
       case "open-panel":lastFocus=el;openDrawer(el.dataset.panel);break;
       case "close-drawer":dismissDrawer();break;
       case "load-demo":

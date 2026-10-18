@@ -121,6 +121,31 @@ def first_time(browser,width):
   assert page.locator('[data-source-node="C00"]').count()==1
   without_overflow(page)
   page.screenshot(path=str(OUT/f"setup-quick-sparks-{width}.png"),full_page=True,animations="disabled")
+  # Student can explore the full advice guide without losing their own work.
+  before_guide=stored(page)
+  page.locator('.writer-guide-open-button').click()
+  guide=page.locator('.writer-guide-drawer')
+  assert guide.is_visible()
+  assert guide.locator('[data-guide-card]').count()==14
+  assert guide.locator('[data-guide-example]').count()==14
+  assert guide.locator('[data-guide-text="ordinary"]').first.is_visible()
+  guide.locator('[data-guide-card="lab"] [data-guide-view="stronger"]').click()
+  assert guide.locator('[data-guide-card="lab"] [data-guide-text="stronger"]').is_visible()
+  assert guide.locator('[data-guide-card="lab"] .writer-guide-example-why').is_visible()
+  guide.locator('[data-guide-filter="voice"]').click()
+  assert guide.locator('[data-guide-card]:visible').count()==4
+  guide.locator('[data-guide-filter="all"]').click()
+  assert guide.locator('[data-guide-card]:visible').count()==14
+  guide.locator('[data-story-step="3"]').click()
+  assert guide.locator('[data-story-panel="3"]').is_visible()
+  guide.locator('[data-guide-card="audience"] > summary').click()
+  guide.locator('[data-guide-card="audience"] .writer-guide-challenge > summary').click()
+  assert guide.locator('[data-guide-card="audience"] .writer-guide-challenge p').is_visible()
+  without_overflow(page)
+  guide.screenshot(path=str(OUT/f"writers-guide-{width}.png"),animations="disabled")
+  guide.locator('[data-action="close-drawer"]').click()
+  assert page.locator('.writer-guide-drawer').count()==0
+  assert stored(page)==before_guide
   page.locator('.setup-quick-sparks [data-bind="planning.fields.aim"]').fill("Can a quadratic model an observed pattern?")
   page.locator('.setup-quick-sparks [data-bind="planning.fields.beneficiary"]').fill("I want to compare which model is useful.")
   assert stored(page)["planning"]["fields"]["aim"]=="Can a quadratic model an observed pattern?"
@@ -130,6 +155,11 @@ def first_time(browser,width):
   assert page.locator('[data-source-node="C10"]').count()==1
   assert page.locator('[data-bind="scratch.introduction"]').count()==1
   assert "WRITE IN YOUR IA" in page.locator(".studio-ia-writing-reminder").inner_text()
+  assert page.locator('.writer-guide-return [data-guide-tip="voice"]').count()==1
+  page.locator('.writer-guide-return [data-guide-tip="voice"]').click()
+  assert page.locator('.writer-guide-drawer [data-guide-card="voice"][open]').count()==1
+  page.locator('.writer-guide-drawer [data-action="close-drawer"]').click()
+  assert page.locator('[data-source-node="C10"]').count()==1
   after=stored(page)
   assert after["planning"]["completed"]==False
   assert after["completion"]["current"]=="C10"
