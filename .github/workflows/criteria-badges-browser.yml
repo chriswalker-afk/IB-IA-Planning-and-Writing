@@ -9,6 +9,7 @@ on:
       - 'src/ui/planning-views.js'
       - 'src/completing/views.js'
       - 'data/criteria-badges.css'
+      - 'tests/criteria-badges.test.js'
       - 'scripts/criteria-badges-browser.py'
       - '.github/workflows/criteria-badges-browser.yml'
 permissions:
