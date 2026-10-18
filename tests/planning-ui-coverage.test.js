@@ -169,7 +169,8 @@ test('motivation screen has one why/who/how response and a small inline-editable
  // This lightweight view fixture renders field labels only; a full DOM harness
  // separately checks the actual data-bind wiring.
  assert(html.includes('Edit investigation aim'));
- assert.equal((html.match(/Who might benefit, and how could the answer help\?/g)||[]).length,1);
+ assert.equal((html.match(/<label>Who might benefit, and how could the answer help\?<\/label>/g)||[]).length,1);
+ assert(html.includes('data-criterion-badge="planning:N01V:benefit"'));
  assert(!html.includes('What might someone do with the answer? (optional)'));
  assert(html.includes('Your sparks are back'));
  assert(html.includes('Who might benefit, and how'));
