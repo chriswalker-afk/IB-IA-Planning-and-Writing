@@ -324,3 +324,109 @@
  .planning-trail-support .support-actions .btn{font-size:11px}
 }
 @media(prefers-reduced-motion:reduce){.planning-trail-help-toggle .icon:last-child{transition:none}}
+
+
+/* Two connected acts of one journey: colour communicates the kind of work,
+   while completion/checkpoints keep their own independent teal/amber states. */
+.living-trail-route{position:relative;isolation:isolate;padding:9px 12px 13px;margin:16px 0 0;min-width:0}
+.living-trail-zone-underlay{position:absolute;inset:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,3fr);gap:12px;pointer-events:none;z-index:-1}
+.living-trail-zone-underlay>span{display:block;border-radius:19px;border:1px solid}
+.living-trail-zone-underlay>.plan{background:#edf7f2;border-color:#d2e7db}
+.living-trail-zone-underlay>.writing{background:#f7f3fc;border-color:#e1d7f0}
+.living-trail-zone-headings{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;align-items:center;position:relative;z-index:1}
+.living-trail-zone-title{display:flex;align-items:center;justify-content:center;gap:9px;min-width:0;padding:8px 6px 2px}
+.living-trail-zone-title.plan{grid-column:1;color:#216654}
+.living-trail-zone-title.writing{grid-column:2 / 5;color:#614784}
+.living-trail-zone-title>.icon{flex:none;width:19px;height:19px;stroke-width:2.1}
+.living-trail-zone-title>div{display:grid;gap:2px;min-width:0}
+.living-trail-zone-title strong{font-size:13px;font-weight:750;line-height:1.25}
+.living-trail-zone-title small{font-size:10px;color:#67857b;line-height:1.3;font-weight:550}
+.living-trail-zone-title.writing small{color:#817391}
+.living-trail-route>.living-trail-svg{position:relative;z-index:1;margin-top:0}
+.living-trail-route>.living-trail-steps{position:relative;z-index:1;gap:9px}
+.living-trail-route .living-trail-road.plan-to-writing{stroke:#d1e1d7}
+.living-trail-route .living-trail-road.writing{stroke:#e0d5ef}
+.living-trail-node.writing.not-started .living-trail-circle{stroke:#b9a9cd}
+.living-trail-route .living-trail-steps .living-trail-step{min-height:85px;margin:0 3px 3px;border-color:transparent;padding:8px 4px}
+.living-trail-route .living-trail-step.planning.current{background:#dcefe7;border-color:#b6dac8}
+.living-trail-route .living-trail-step.writing.current{background:#ece5f7;border-color:#cebee8}
+.living-trail-route .living-trail-step.writing:hover{background:#eee7f7}
+.chapter-journey-icon{display:inline-flex;align-items:center;justify-content:center;flex:none;width:28px;height:28px;border-radius:9px;background:#dceee5;color:#277360}
+.chapter-journey-icon>.icon{width:16px;height:16px;stroke-width:2.1}
+.writing .chapter-journey-icon{background:#eadff6;color:#6c5197}
+.living-trail-step .chapter-journey-icon{margin-bottom:1px}
+.living-trail-route .living-trail-step strong{font-size:12px;line-height:1.3}
+.living-trail-route .living-trail-step small{line-height:1.4}
+.living-trail-route .living-trail-step.writing strong{color:#42345f}
+.living-trail-route .living-trail-step.planning strong{color:#1f5c4f}
+.living-trail-note{max-width:73ch}
+.living-ribbon-part.planning{background:#f0f8f4;border-color:#d0e7d9}
+.living-ribbon-part.writing{background:#f9f6fc;border-color:#e5daef}
+.living-ribbon-part.writing.current{background:#eee7f7;border-color:#cbb9e4}
+.living-ribbon-part.planning.current{background:#def1e7;border-color:#9fcfbc}
+.living-ribbon-part .chapter-journey-icon{width:25px;height:25px;margin-left:2px}
+.living-ribbon-part .chapter-journey-icon>.icon{width:15px;height:15px}
+.living-ribbon-part.writing .living-ribbon-number:not(:has(.icon)){color:#604b84;border-color:#d6c9e8}
+.living-ribbon-part.complete .living-ribbon-number{background:#08766e;color:#fff}
+.living-ribbon-part.writing:hover{background:#f0e9f9}
+.living-ribbon-part.planning:hover{background:#e6f5ed}
+/* The Planning-side mini trail groups all three writing chapters instead of repeating text. */
+.planning-trail-zone-underlay{position:absolute;inset:0;display:grid;grid-template-rows:74px minmax(0,1fr);pointer-events:none;z-index:0}
+.planning-trail-zone-underlay>.plan{background:#f0f7f2;border:1px solid #e0eadf;border-radius:13px}
+.planning-trail-zone-underlay>.writing{margin-top:3px;background:#f8f5fc;border:1px solid #e6dff0;border-radius:13px}
+.planning-trail-roadmap{z-index:1}
+.planning-trail-chapter{z-index:2}
+.planning-trail-chapter.writing.current{background:#ede6f6;border-color:#cab8e0}
+.planning-trail-chapter.writing:hover{background:#f1ebf9}
+.planning-trail-phase-label{display:flex;align-items:center;gap:4px;margin:0 0 3px;font-size:9px;line-height:1;color:#30715d;font-weight:750;letter-spacing:.01em}
+.planning-trail-phase-label.writing{color:#76589d}
+.planning-trail-phase-label .icon{width:11px;height:11px}
+.planning-trail-chapter-name{display:flex;align-items:center;gap:5px}
+.planning-trail-chapter-name .chapter-journey-icon{height:18px;width:18px;border-radius:6px}
+.planning-trail-chapter-name .chapter-journey-icon .icon{width:12px;height:12px}
+.planning-trail-chapter.writing .planning-trail-chapter-copy strong{color:#51406b}
+.planning-trail-chapter .journey-mini{margin-top:2px}
+.planning-trail-card .planning-trail-chapters .living-trail-road.writing{stroke:#e2d7ee}
+.planning-trail-card .planning-trail-chapters .living-trail-road.plan-to-writing{stroke:#d4e4db}
+
+@media(max-width:760px){
+ .living-trail-route{padding:10px 9px 13px;margin-top:10px}
+ .living-trail-zone-underlay{gap:6px}
+ .living-trail-zone-underlay>span{border-radius:13px}
+ .living-trail-zone-headings{gap:4px}
+ .living-trail-zone-title{gap:4px;padding:6px 3px}
+ .living-trail-zone-title>.icon{height:14px;width:14px}
+ .living-trail-zone-title strong{font-size:11px}
+ .living-trail-zone-title small{font-size:9px}
+ .living-trail-route .living-trail-steps .living-trail-step{margin:0;padding:5px 2px;min-height:69px}
+ .living-trail-route .living-trail-step strong{font-size:10px}
+ .living-trail-route .chapter-journey-icon{height:23px;width:23px;border-radius:7px}
+ .living-trail-route .chapter-journey-icon .icon{width:14px;height:14px}
+ .living-ribbon-part .chapter-journey-icon{display:none}
+}
+@media(max-width:540px){
+ .living-trail-route{padding:9px 9px 11px}
+ .living-trail-route .living-trail-svg{display:none}
+ .living-trail-route .living-trail-zone-underlay{display:none}
+ .living-trail-zone-headings{margin-bottom:8px}
+ .living-trail-zone-title{justify-content:center;background:#f0f8f4;border:1px solid #d6e8dc;border-radius:9px}
+ .living-trail-zone-title.writing{background:#f7f2fc;border-color:#e7daf0}
+ .living-trail-zone-title small{display:none}
+ .living-trail-route>.living-trail-steps{display:grid;grid-template-columns:1fr;gap:6px}
+ .living-trail-route>.living-trail-steps::before{content:"";position:absolute;left:24px;top:17px;bottom:17px;border-left:3px solid #d4e2d9;z-index:-1}
+ .living-trail-route .living-trail-steps .living-trail-step{display:grid;grid-template-columns:38px minmax(0,1fr) auto;grid-template-rows:auto auto;align-items:center;gap:2px 8px;text-align:left;border-radius:11px;min-height:54px;padding:7px 10px;background:#edf7f1;border:1px solid #d6e9de}
+ .living-trail-route .living-trail-steps .living-trail-step.writing{background:#f8f4fc;border-color:#e9dff3}
+ .living-trail-route .living-trail-steps .living-trail-step.planning.current{background:#dcefe6;border-color:#a8d0bc}
+ .living-trail-route .living-trail-steps .living-trail-step.writing.current{background:#ede4f7;border-color:#cab8de}
+ .living-trail-step .chapter-journey-icon{grid-column:1;grid-row:1 / 3;width:32px;height:32px;margin:0;border-radius:50%;border:2px solid white}
+ .living-trail-route .chapter-journey-icon>.icon{width:17px;height:17px}
+ .living-trail-step strong{grid-column:2;grid-row:1}
+ .living-trail-step small{grid-column:2;grid-row:2}
+ .living-trail-step .journey-mini{grid-column:3;grid-row:1 / 3}
+ .living-trail-route .living-trail-step strong{font-size:12px}
+ .living-trail-route .living-trail-step small{font-size:10px}
+ .living-trail-route .living-trail-step .journey-mini-cell{width:9px}
+}
+@media(prefers-reduced-motion:reduce){
+ .living-trail-route .living-trail-step,.living-ribbon-part{transition:none}
+}
