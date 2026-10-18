@@ -578,6 +578,12 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     if(action==="go-home")return nav("home");
     if(action==="go-planning")return nav("planning");
     if(action==="go-studio")return nav("completing"); // Resume the saved C-stage; "Studio overview" remains a separate action.
+    if(action==="setup-start-writing"){
+      const result=setCompletionNode(state,"C10",{reason:"setup-to-introduction"});
+      if(result.ok)nav("completing");
+      else toast(result.error||"Unable to begin the introduction.");
+      return;
+    }
     if(action==="go-path")return nav("path");
     if(action==="go-report")return nav("report");
     if(action==="open-files")return openDrawer("files");
@@ -750,6 +756,12 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         }
         break;
       }
+      case "planning-intro-continue":
+        state.ui.planningIntroSeen=true;state.ui.planningIntroOpen=false;
+        save();render({top:true});break;
+      case "planning-intro-open":
+        state.ui.planningIntroOpen=true;
+        save();render({top:true});break;
       case "plan-next":
       case "plan-advance":handlePlanningResult(planAutoAdvance(state));break;
       case "plan-route":handlePlanningResult(planningMove(state,el.dataset.condition));break;
@@ -767,7 +779,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         // making students choose "Continue my plan" on another start screen.
         // Revisiting Planning never resets work already underway in IA Studio.
         if(!hasStudioWork&&["C00","C01"].includes(state.completion.current))
-          setCompletionNode(state,"C10",{reason:"planning-to-first-writing"});
+          setCompletionNode(state,"C00",{reason:"planning-to-writing-welcome"});
         nav("completing");
         break;
       }
