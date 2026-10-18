@@ -38,7 +38,8 @@ export function chapterRibbon(s){
   const status=groupStatus(s,g),label=STATUS_LABELS[status];
   return '<button type="button" data-action="journey-open" data-target="'+e(groupTarget(s,g))+
    '" class="living-ribbon-part '+e(status)+' '+e(g.mode)+(active.id===g.id?' current':'')+'"'+
-   (active.id===g.id?' aria-current="step"':'')+'>'+
+   (active.id===g.id?' aria-current="step"':'')+
+   ' aria-label="'+e('Chapter '+(i+1)+': '+g.name+'. '+chapterRole(g)+'. '+label+'.')+'">'+
    '<span class="living-ribbon-number">'+(status==='complete'?icon('check'):i+1)+'</span>'+
    '<span class="living-ribbon-label">'+e(g.name)+'</span>'+
    chapterJourneyIcon(g)+chapterMini(s,g)+'<span class="visually-hidden">'+e(label)+'</span></button>';
@@ -194,7 +195,8 @@ export function discoveryTrail(s,{compact=false}={}){
     '<button type="button" class="living-trail-step '+e(status)+(now.id===g.id?' current':'')+
     ' '+e(g.mode)+'" data-action="journey-open" data-target="'+e(groupTarget(s,g))+
     '" aria-label="'+e('Chapter '+(i+1)+': '+g.name+'. '+(g.mode==='planning'?'Plan your exploration.':'Write in your IA.')+' '+STATUS_LABELS[status]+'.')+'">'+
-    chapterJourneyIcon(g)+'<strong>'+e(g.name)+'</strong><small>'+e(STATUS_LABELS[status])+'</small>'+
+    chapterJourneyIcon(g)+'<span class="living-trail-step-order" aria-hidden="true">'+(status==='complete'?icon('check'):i+1)+'</span>'+
+    '<strong>'+e(g.name)+'</strong><small>'+e(STATUS_LABELS[status])+'</small>'+
     chapterMini(s,g)+'</button>').join('')+'</div>'+
   '</div>'+
   insightTrailControls(s)+'<p class="living-trail-note">Follow the mint Planning chapter into the purple writing chapters. Each stage remains revisitable; “Ready for now” is a checkpoint, not an IA grade.</p></section>';
