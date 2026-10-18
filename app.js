@@ -587,7 +587,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       const tip=String(el.dataset.guideTip||"").replace(/[^a-z0-9-]/g,"");
       if(tip){
         const card=layer.querySelector('[data-guide-card="'+tip+'"]');
-        if(card){card.open=true;card.scrollIntoView?.({block:"start",behavior:"instant"});}
+        if(card){card.open=true;card.scrollIntoView?.({block:"start",behavior:"auto"});}
       }
       return;
     }

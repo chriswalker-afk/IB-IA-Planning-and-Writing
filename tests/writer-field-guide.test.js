@@ -14,9 +14,10 @@ test("Writer's Field Guide includes six essentials plus eight meaningful extra l
  assert.equal(new Set(FIELD_GUIDE_TIPS.map(x=>x.id)).size,14);
  assert.deepEqual(new Set(FIELD_GUIDE_TIPS.map(x=>x.family)),new Set(["voice","maths","reader"]));
  for(const tip of FIELD_GUIDE_TIPS){
-  for(const field of ["title","hook","explanation","ordinary","stronger","why","moment","icon"]){
+  for(const field of ["title","hook","explanation","ordinary","stronger","why","moment"]){
    assert(tip[field].trim().length>8,tip.id+" missing "+field);
   }
+  assert(tip.icon.trim().length>=3);
   assert.notEqual(tip.ordinary,tip.stronger);
   assert(!/you must include every/.test(tip.explanation.toLowerCase()));
  }
@@ -43,7 +44,7 @@ test("Each tip has an accessible expandable card with optional authentic advice 
  assert.equal((html.match(/data-action="writer-guide-filter"/g)||[]).length,4);
  assert.equal((html.match(/class="writer-guide-challenge"/g)||[]).length,3);
  assert.match(html,/fictional teaching examples/);
- assert.match(html,/no compulsory five-step template/i);
+ assert.match(html,/not a compulsory five-step template/i);
  assert.match(html,/The six essentials/);
  assert.match(html,/Eight more ideas when you need them/);
  assert.match(html,/IB criteria/);

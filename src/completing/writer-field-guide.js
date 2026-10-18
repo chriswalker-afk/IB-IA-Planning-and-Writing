@@ -7,7 +7,7 @@ export const FIELD_GUIDE_TIPS=Object.freeze([
     "essential": true,
     "title": "This isn't a lab report!",
     "hook": "The mathematics is the main character.",
-    "explanation": "Practical problems can matter, especially in data work. But go beyond a list of human errors: examine what your mathematics assumes, what your results establish, and how far your conclusions really reach.",
+    "explanation": "Practical problems can matter, especially in data work. But go beyond a list of human errors: examine what your mathematics assumes, what your results establish about your overall aim, and how far your conclusions really reach.",
     "ordinary": "Human error and lack of time may have affected the experiment.",
     "stronger": "My linear model describes the observed data reasonably well, but extending it beyond the measured range assumes that the relationship stays linear. My results do not establish that.",
     "why": "This identifies a mathematical limitation and explains the consequence for the investigation.",
