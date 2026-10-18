@@ -2,11 +2,12 @@ import {C_MAJOR_STAGES,completionStage} from '../completing/engine.js';
 import {C_NODES} from '../completing/catalog.js';
 export const STATUS_LABELS=Object.freeze({'not-started':'Not started',working:'Working on it',complete:'Ready for now','needs-review':'Needs review'});
 export const JOURNEY_GROUPS=Object.freeze([
- {id:'plan',name:'Planning',icon:'compass',stages:['plan']},
- {id:'setup',name:'Set up',icon:'pencil',stages:['C10','C20']},
- {id:'explore',name:'Explore & develop',icon:'chart',stages:['C30','C40']},
- {id:'finish',name:'Bring it together',icon:'flag',stages:['C60','C70','C80','C90']}
+ {id:'plan',name:'Planning',icon:'compass',mode:'planning',role:'PLAN ONLY',description:'Shape your question and possible approach',stages:['plan']},
+ {id:'setup',name:'Start writing',icon:'pencil',mode:'writing',role:'WRITE IN IA',description:'Introduction, sources and methods',stages:['C10','C20']},
+ {id:'explore',name:'Explore & explain',icon:'chart',mode:'writing',role:'WRITE IN IA',description:'Mathematics, results and interpretation',stages:['C30','C40']},
+ {id:'finish',name:'Conclude & review',icon:'flag',mode:'writing',role:'WRITE IN IA',description:'Conclusions, presentation and final checks',stages:['C60','C70','C80','C90']}
 ]);
+export const chapterRole=g=>g.mode==='planning'?'PLAN ONLY':'WRITE IN IA';
 const has=v=>typeof v==='string'&&!!v.trim();
 export function stageStatus(s,id){
  if(id!=='plan')return Object.hasOwn(STATUS_LABELS,s.completion?.stages?.[id])?s.completion.stages[id]:'not-started';
@@ -31,12 +32,18 @@ export function currentGroup(s){
 }
 export function groupTarget(s,g){
  if(g.id==='plan')return 'plan';
+ // First entry through Chapter 2 should explain what changes when writing starts.
+ // Anyone who has already begun Set up resumes their actual work instead.
+ if(g.id==='setup'&&!s.completion.visited.some(id=>['C10','C20','C21S','C21M','C21T','C22','C23','C24','C25','C26'].includes(id))&&
+  s.completion.stages.C10==='not-started'&&s.completion.stages.C20==='not-started')
+  return 'C00';
  const stage=completionStage(s.completion.current,s);
  return g.stages.find(id=>stageStatus(s,id)==='needs-review')||
   (g.stages.includes(stage)?stage:g.stages.find(id=>stageStatus(s,id)!=='complete')||g.stages[0]);
 }
 export function resumeLabel(s){
  if(resumeRoute(s)==='planning')return 'Continue my planning';
+ if(s.completion?.current==='C00')return 'Start writing in IA Studio';
  const name=C_NODES.find(n=>n.id===s.completion.current)?.label||'my IA Studio';
  return 'Continue: '+(name.length>65?name.slice(0,62)+'...':name);
 }
