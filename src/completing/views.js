@@ -344,8 +344,8 @@ export function createCompletingViews(ctx){
       F("dataStatusSummary","One important uncertainty still to resolve (optional)","Sampling scope, permission, parameter quality or missing source",{type:"textarea",rows:2})
   };
   case "C30":return{intro:"Start with a single useful graph, labelled diagram, numerical case or brief calculation. It should have a mathematical purpose.",
-    html:smallSummary("Initial plan",p.figureOther||p.figureType)+
-      smallSummary("Planned purpose",p.figurePurpose)+
+    html:(p.figureOther||p.figureType||p.firstAction?smallSummary("Earlier first-step idea (optional)",p.figureOther||p.figureType||p.firstAction):"")+
+      (p.figurePurpose?smallSummary("Earlier planned purpose",p.figurePurpose):"")+
       info("First purposeful mathematics","Explain why this representation might be useful BEFORE creating it. Then describe what it ACTUALLY shows and what follows.")
   };
   case "C31":return{intro:"Choose an initial representation that could genuinely reveal the next mathematical question.",
