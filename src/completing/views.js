@@ -540,18 +540,18 @@ export function createCompletingViews(ctx){
   };
   case "C61":return{intro:"What essential answer have your actual results established? An uncertain or negative finding is still legitimate.",
    html:actualList()+guides.conclusionLimitations()+
-    F("mainConclusion","The strongest answer I can support","Bring key results together without repeating all calculations",{type:"textarea",rows:4})+
+    criteriaField(F("mainConclusion","The strongest answer I can support","Bring key results together without repeating all calculations",{type:"textarea",rows:4}),"completing:C61:mainConclusion")+
     F("conclusionEvidence","Which two or three actual results support that answer?","Reference genuine figures/equations or earlier local takeaways",{type:"textarea",rows:3})+
-    F("conclusionUncertainty","What important uncertainty remains?","Only limitations that materially restrict the answer",{type:"textarea",rows:2})
+    criteriaField(F("conclusionUncertainty","What important uncertainty remains?","Only limitations that materially restrict the answer",{type:"textarea",rows:2}),"completing:C61:uncertainty")
   };
   case "C62":return{intro:"What do the findings really mean for the person or purpose you identified originally?",
    html:smallSummary("Earlier intended use",p.intendedUse)+smallSummary("Earlier prediction IF TRUE",p.predictionImplication)+
-    F("conclusionBenefit","What can the actual results tell that audience?","Meaningful, appropriately cautious interpretation",{type:"textarea",rows:3})+
+    criteriaField(F("conclusionBenefit","What can the actual results tell that audience?","Meaningful, appropriately cautious interpretation",{type:"textarea",rows:3}),"completing:C62:benefit")+
     F("conclusionAdvice","What could reasonably be recommended or decided, if anything?","Only evidence-supported advice, not a promised positive result",{type:"textarea",rows:3})+
     info("Inconclusive mathematics is useful too","You can explain that the evidence does NOT justify the advice originally hoped for.")
   };
   case "C63":return{intro:"An extension should arise from the mathematics you found, not a generic request for more data.",
-    html:F("conclusionExtension","One mathematical question that might follow, if meaningful","Optional and different from work already done",{type:"textarea",rows:3})+
+    html:criteriaField(F("conclusionExtension","One mathematical question that might follow, if meaningful","Optional and different from work already done",{type:"textarea",rows:3}),"completing:C63:extension")+
       info("No extension is also fine","You do not need a speculative future-work paragraph if the investigation has reached a sensible stopping point.")
   };
   case "C64":return{intro:"Keep the ending a synthesis. Method critiques and intermediate reflections belong beside earlier work.",
@@ -575,7 +575,8 @@ export function createCompletingViews(ctx){
     info("Not automatic permission","The site does not deliver a draft to your teacher or assume another written feedback round is permitted.")+extra.feedback()
   };
   case "C80D":return{intro:"A meaningful teacher draft should be complete enough for feedback, with an initial self-review.",
-   html:F("draftCriteria","Evidence for presentation, communication, engagement, reflection and mathematics (A–E)","Short notes to where each appears in YOUR draft",{type:"textarea",rows:4})+
+   html:(filled(f.draftCriteria)?'<details class="completion-help criterion-legacy-notes"><summary>Earlier general A–E draft notes (optional)</summary>'+
+      F("draftCriteria","Earlier A–E draft notes","You can still edit these saved notes",{type:"textarea",rows:3})+'</details>':"")+
     choice("draftComplete",[["not-yet","Important sections still incomplete"],["ready","Complete draft for permitted teacher feedback"],
     ["unsure","Need to check"]])+
     F("writtenFeedback","What written feedback did I actually receive, if any?","Private revision notes; no invented teacher response",{type:"textarea",rows:4})+
@@ -588,7 +589,8 @@ export function createCompletingViews(ctx){
   };
   case "C90F":return{intro:"Locate genuine evidence for criteria A–E and check the finished document's mathematical accuracy and readability.",
    html:field("scratch.finalReview","My earlier review notes (editable)","Revisit what still needs correcting",{type:"textarea",rows:3})+
-    F("finalCriteria","Where are the strongest examples of A presentation, B communication, C engagement, D reflection and E mathematics?","Your own evidence references; not a grade",{type:"textarea",rows:5})+
+    (filled(f.finalCriteria)?'<details class="completion-help criterion-legacy-notes"><summary>Earlier general A–E final notes (optional)</summary>'+
+      F("finalCriteria","Earlier A–E final notes","You can still edit these saved notes",{type:"textarea",rows:3})+'</details>':"")+
      F("finalProofread","What still needs proofreading or verifying?","Notation, ≈, units, diagrams, precision, source links, page numbers",{type:"textarea",rows:3})+
      F("finalRequirements","Confirmed submission and formatting requirements","School guidance, not assumed IB deadlines",{type:"textarea",rows:2})+extra.review("final")+extra.feedback()
   };
