@@ -753,6 +753,24 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       case "plan-next":
       case "plan-advance":handlePlanningResult(planAutoAdvance(state));break;
       case "plan-route":handlePlanningResult(planningMove(state,el.dataset.condition));break;
+      case "plan-finish-writing":{
+        if(state.route!=="planning"||state.planning.current!=="N07"){
+          toast("Finish reviewing your provisional plan before entering IA Studio.");break;
+        }
+        // Keep the original Planning-to-Completing provenance edge.
+        const result=planningMove(state,"Continue into Completing in this session");
+        if(!result.ok){toast(result.error||"Unable to open IA Studio.");break;}
+        syncPlanningToProject(state);
+        const hasStudioWork=state.completion.visited.some(id=>!["C00","C01"].includes(id))||
+          state.entries.length>0||Object.values(state.scratch||{}).some(filled);
+        // First arrival opens a real introductory writing box instead of
+        // making students choose "Continue my plan" on another start screen.
+        // Revisiting Planning never resets work already underway in IA Studio.
+        if(!hasStudioWork&&["C00","C01"].includes(state.completion.current))
+          setCompletionNode(state,"C10",{reason:"planning-to-first-writing"});
+        nav("completing");
+        break;
+      }
       case "plan-back":handlePlanningResult(planningBack(state));break;
       case "plan-edit":handlePlanningResult(planningEdit(state,el.dataset.node));break;
       case "plan-refine-toggle":{
