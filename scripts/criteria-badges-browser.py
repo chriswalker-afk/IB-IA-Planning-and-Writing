@@ -228,6 +228,27 @@ with sync_playwright() as pw:
    result.append({'case':'planned-guard-'+node,'status':'FAILED','reason':str(e)})
    traceback.print_exc()
   ctx.close()
+ # A planned conclusion cannot borrow an unperformed result from this project.
+ for node,key in [('C61','completing:C61:mainConclusion'),('C62','completing:C62:benefit')]:
+  sample=state_for('completing',node)
+  sample['entries'][0]['status']='planned'
+  sample['entries'][0]['result']='Never performed result'
+  ctx=browser.new_context(viewport={'width':360,'height':740})
+  page=ctx.new_page()
+  page.add_init_script('localStorage.setItem('+json.dumps(KEY)+','+json.dumps(json.dumps(sample))+');')
+  try:
+   page.goto(URL,wait_until='networkidle')
+   before=stored(page)
+   page.locator('[data-criterion-badge="'+key+'"]').click()
+   guidance=page.locator('#criterionBadgeDialog').inner_text()
+   assert 'no mathematical results marked completed' in guidance
+   assert 'Never performed result' not in guidance
+   assert stored(page)==before
+   result.append({'case':'planned-conclusion-'+node,'status':'passed'})
+  except Exception as err:
+   result.append({'case':'planned-conclusion-'+node,'status':'FAILED','reason':str(err)})
+   traceback.print_exc()
+  ctx.close()
  # Reduced advice should suppress the new icons without changing the mathematical form.
  reduced=state_for('completing','C35')
  reduced['completion']['guidanceUi']['quietNode']='C35'
