@@ -69,7 +69,9 @@ def check(page,width):
  shelf.locator('.spark-library-entry[data-spark-id="planned-accuracy:pa-primary-1"]>summary').click()
  shelf.locator('.spark-library-entry[data-spark-id="planned-accuracy:pa-primary-1"] [data-action="spark-edit-accuracy"]').click()
  assert saved(page)["planning"]["accuracyEditId"]=="pa-primary-1"
- assert page.locator('[data-bind="planning.fields.primaryAccuracyQuantity"]').input_value()=="Length"
+ assert saved(page)["planning"]["fields"]["primaryAccuracyQuantity"]=="Length"
+ assert "Length" in page.locator(".primary-accuracy-target").inner_text()
+ assert page.locator('[data-bind="planning.fields.primaryAccuracyQuantity"]').count()==0
  assert len(saved(page)["planning"]["accuracyPlans"])==2
  check_width(page)
  page.reload(wait_until="networkidle")
