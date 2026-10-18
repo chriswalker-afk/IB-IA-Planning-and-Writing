@@ -125,7 +125,7 @@ test('actual scatter context is specific, with no false Pearson calculation or f
 test('new mathematical observation and presentation guidance never invent completed mathematics',()=>{
  const s=evidenceFixture();
  const first=info(s,'completing:C34:observation');
- assert(first.real);assert(first.details.some(x=>x.text.includes('curved upward pattern')));
+ assert(first.real);assert(first.details.some(x=>x.text.includes('not well described by a straight line')));
  assert(first.details.some(x=>x.text.includes('nearest 0.1 seconds')));
  s.entries[0].status='planned';
  for(const key of ['completing:C33:title','completing:C34:observation']){
