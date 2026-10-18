@@ -2,7 +2,7 @@
  * No points, grades, streaks, required result counts or inferred document completion.
  */
 import {escapeHtml as e,icon} from './primitives.js';
-import {insightTrailLines,insightTrailControls} from './insight-network.js';
+import {insightTrailLines,insightTrailControls,CHAPTER_TRAIL_POINTS} from './insight-network.js';
 import {JOURNEY_GROUPS,groupStatus,stageStatus,currentGroup,groupTarget,STATUS_LABELS,chapterRole} from './journey.js';
 import {PROGRESS_GROUPS,planningStage} from '../planning/engine.js';
 
@@ -158,12 +158,13 @@ export function planningLearningTrail(s,{support=''}={}){
 }
 
 const chapterJourneyIcon=g=>'<span class="chapter-journey-icon" aria-hidden="true">'+icon(g.icon)+'</span>';
-const coordinates=[{x:31,y:122},{x:126,y:42},{x:229,y:97},{x:326,y:28}];
-const curves=[
- 'M31 122 C81 122 77 42 126 42',
- 'M126 42 C175 42 175 97 229 97',
- 'M229 97 C278 97 277 28 326 28'
-];
+// The markers use real CSS circles so they remain round at any screen width.
+// The SVG contains only the scalable connecting paths and optional spark links.
+const coordinates=JOURNEY_GROUPS.map(g=>CHAPTER_TRAIL_POINTS[g.id]);
+const curves=coordinates.slice(0,-1).map((p,i)=>{
+ const q=coordinates[i+1],middle=(p.x+q.x)/2;
+ return 'M'+p.x+' '+p.y+' C'+middle+' '+p.y+' '+middle+' '+q.y+' '+q.x+' '+q.y;
+});
 export function discoveryTrail(s,{compact=false}={}){
  const now=currentGroup(s);
  const stages=JOURNEY_GROUPS.map(g=>({g,status:groupStatus(s,g)}));
@@ -176,21 +177,20 @@ export function discoveryTrail(s,{compact=false}={}){
     '<div class="living-trail-zone-title plan">'+icon('compass')+'<div><strong>Plan</strong><small>Explore your idea</small></div></div>'+
     '<div class="living-trail-zone-title writing">'+icon('pencil')+'<div><strong>Write your IA</strong><small>Build your actual mathematical exploration</small></div></div>'+
    '</div>'+
-   '<svg class="living-trail-svg" viewBox="0 0 356 153" aria-hidden="true" focusable="false">'+
+   '<div class="living-trail-path" aria-hidden="true">'+
+   '<svg class="living-trail-svg" viewBox="0 0 1000 155" preserveAspectRatio="none" focusable="false">'+
     insightTrailLines(s)+
     curves.map((path,i)=>'<path d="'+path+'" class="living-trail-road '+(i===0?'plan-to-writing':'writing')+'"/>'+
      (stages[i].status==='complete'?'<path d="'+path+'" class="living-trail-done"/>':'')).join('')+
-    coordinates.map((p,i)=>{
-     const x=stages[i],current=now.id===x.g.id;
-     return '<g class="living-trail-node '+e(x.status)+' '+e(x.g.mode)+(current?' is-current':'')+'">'+
-      (current?'<circle class="living-trail-focus" cx="'+p.x+'" cy="'+p.y+'" r="19"/>':'')+
-      '<circle cx="'+p.x+'" cy="'+p.y+'" r="12" class="living-trail-circle"/>'+
-      (x.status==='complete'?'<path d="M'+(p.x-5)+' '+p.y+' l4 4 l7 -8" class="living-trail-check"/>':
-       '<text x="'+p.x+'" y="'+(p.y+4)+'" text-anchor="middle" class="living-trail-digit">'+(i+1)+'</text>')+
-      '</g>';
-    }).join('')+
-    '<path d="M97 13 v8 M93 17 h8 M274 141 v8 M270 145 h8" class="living-trail-star"/>'+
+    '<path d="M320 25 v7 M316 29 h8 M736 137 v7 M732 141 h8" class="living-trail-star"/>'+
    '</svg>'+
+   coordinates.map((p,i)=>{
+    const x=stages[i],current=now.id===x.g.id;
+    return '<span class="living-trail-node living-trail-marker '+e(x.status)+' '+e(x.g.mode)+(current?' is-current':'')+
+     '" style="left:'+(p.x/10)+'%;top:'+p.y+'px">'+
+     (current?'<span class="living-trail-focus"></span>':'')+
+     '<span class="living-trail-circle">'+(x.status==='complete'?icon('check'):(i+1))+'</span></span>';
+   }).join('')+'</div>'+
    '<div class="living-trail-steps">'+stages.map(({g,status},i)=>
     '<button type="button" class="living-trail-step '+e(status)+(now.id===g.id?' current':'')+
     ' '+e(g.mode)+'" data-action="journey-open" data-target="'+e(groupTarget(s,g))+
