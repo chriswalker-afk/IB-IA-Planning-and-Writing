@@ -71,6 +71,17 @@ def run_primary(p,width):
  no_overflow(p)
  p.screenshot(path=str(OUT/f"primary-data-sampling-{width}.png"),full_page=True,animations="disabled")
  p.locator('[data-action="plan-advance"]').first.click()
+ assert p.locator('[data-source-node="N01P"]').count()==1
+ # Predictions now follow the actual data-source decisions, not a second maths-choice screen.
+ assert p.locator('[data-action="plan-refine-toggle"]').count()==1
+ assert p.locator('#planning-prediction-refine-panel').count()==0
+ p.locator('[data-action="plan-refine-toggle"]').click()
+ assert p.locator('#planning-prediction-refine-panel').count()==1
+ assert saved(p)["planning"]["refinePlanOpen"]==True
+ assert "Three ways to explore mathematics" in p.locator('#planning-prediction-refine-panel').inner_text()
+ no_overflow(p)
+ p.screenshot(path=str(OUT/f"optional-prediction-refinement-{width}.png"),full_page=True,animations="disabled")
+ p.locator('[data-action="plan-advance"]').first.click()
  assert p.locator('[data-source-node="N03D"]').count()==1
  # No repeated method-justification essay; sampling and precision sparks stay accessible.
  assert p.locator('[data-spark-library]').count()==1
