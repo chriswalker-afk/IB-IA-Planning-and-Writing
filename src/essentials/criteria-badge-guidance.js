@@ -2,6 +2,7 @@
 import {guidanceContext} from '../completing/guidance-context.js';
 import {firstUnfamiliarUse,methodFamilies} from '../completing/method-identity.js';
 import {linkedAccuracy} from '../completing/evidence-links.js';
+import {CRITERIA,REVIEW_IDS} from './catalog.js';
 
 const str=x=>typeof x==='string'?x.trim():'';
 const short=x=>str(x).replace(/\s+/g,' ').slice(0,160);
@@ -11,10 +12,77 @@ const firstTypes={scatter:'a scatter graph',distribution:'a group or distributio
  unsure:'an undecided first representation'};
 const needsReal=new Set(['C33','C34','C34B','C35','C35B','C35P','C40','C50','C40T','C40L']);
 
+const closingNodes=new Set(['C61','C62','C63','C64','C70','C80D','C90F']);
+const REVIEW_FOCUS=Object.freeze({
+ A:'Follow the coherent thread from aim to relevant mathematics and a concise conclusion.',
+ B:'Check real notation, symbols, equations, diagrams, units and suitable accuracy.',
+ C:'Find independent choices and mathematical questions that actually shaped the investigation.',
+ D:'Find meaningful analysis of implications, limitations and next steps alongside results.',
+ E:'Find relevant, correct, course-appropriate mathematics with understanding and justified reasoning.'
+});
+/** Conclusion/review advice can reference only genuinely marked completed records. */
+export function closingBadgeGuidance(state,key,base){
+ const node=key.split(':')[1],p=state.planning?.fields||{},f=state.completion?.fields||{};
+ const all=Array.isArray(state.entries)?state.entries:[];
+ const done=all.filter(x=>x?.status==='completed'&&str(x.result));
+ const latest=done.at(-1);
+ const result={...base,details:[],real:done.length>0,reviewRows:[],reviewMode:''};
+ const add=(label,value)=>{if(short(value)&&result.details.length<3)result.details.push({label,text:short(value)});};
+ add('Your recorded investigation aim',p.aim||state.project?.aim);
+ if(node==='C61'||node==='C62'||node==='C63'||node==='C64'){
+  if(latest){
+   add('Last mathematical finding marked completed',latest.localTakeaway||latest.result);
+   if(latest.reviewNeeded==='yes')result.reminder='An earlier result has an outstanding review flag after a change. Recheck it before relying on the conclusion.';
+  }else{
+   result.why='A mathematical conclusion must be grounded in the actual IA. There are no mathematical results marked completed in this Pathfinder project yet.';
+   result.strong='Check your actual IA document and record or revisit genuinely completed mathematics before stating what it establishes. An incomplete or inconclusive result must not be rewritten as success.';
+   result.reminder='Pathfinder cannot verify calculations in an external IA document. No result is invented to fill this gap.';
+  }
+  if(node==='C62'){
+   if(p.beneficiary||p.intendedUse)add('Your original purpose (not evidence)',p.intendedUse||p.beneficiary);
+   else result.strong=result.real?
+    'Explain what the actual mathematics clarified about your original mathematical question, even if it has no external beneficiary. Keep claims within the scope of the evidence.':
+    'Return to the actual investigation before interpreting its value. A theoretical IA does not need an invented outside beneficiary.';
+  }
+  if(node==='C63'&&result.real)
+   result.reminder='A mathematical extension is optional. A sound conclusion can be the best stopping point even when more calculations are possible.';
+  if(node==='C61'&&p.kind==='theoretical'&&result.real)
+   result.strong='State what your argument genuinely proved, the domain and assumptions for which it holds, and any unresolved mathematical case. Tested examples must not be described as a general proof.';
+  if(node==='C64'&&f.conclusionFocus)add('Your own earlier editing intention (not yet verified)',f.conclusionFocus);
+ }else if(node==='C70'){
+  if(f.presentationIssue)add('Your recorded presentation concern (not yet checked)',f.presentationIssue);
+  if(f.referencesIssue)add('Your recorded source concern (not yet checked)',f.referencesIssue);
+  result.reminder='This site has not inspected your Word/PDF file. Make and verify any corrections in the actual document.';
+ }else if(node==='C80D'||node==='C90F'){
+  const mode=node==='C80D'?'draft':'final',reviews=state.completion?.review?.records||{};
+  result.reviewMode=mode;
+  result.reviewRows=Object.keys(REVIEW_FOCUS).map(id=>{
+   const rec=reviews[mode+'-'+REVIEW_IDS[id]]||{};
+   return {id,title:CRITERIA[id].name,focus:REVIEW_FOCUS[id],
+    location:short(rec.location)};
+  });
+  if(mode==='draft'&&f.draftComplete!=='ready'){
+   result.reminder='The draft is not confirmed complete in this project. The review is still useful for planning repairs but is not teacher approval or an extra feedback opportunity.';
+  }else if(mode==='final'){
+   result.reminder='Review the actual final file. Earlier draft evidence pointers are not copied across as final evidence, and this site neither inspects nor submits the document.';
+  }
+  if(!done.length){
+   result.strong='Locate evidence in your actual IA file for A–E, even if this site does not contain completed mathematical records. Do not infer that a blank Pathfinder record proves the document is incomplete, or invent evidence to fill it.';
+  }
+  if(state.completion?.review?.feedbackItems?.some(x=>x.status!=='verified')){
+   add('Revision reminder','Some previously recorded feedback actions are not yet marked verified in Pathfinder. Check the actual revised document.');
+  }
+  const pending=all.filter(x=>x.reviewNeeded==='yes');
+  if(pending.length)add('Review reminder','One or more mathematical records are flagged for rechecking after earlier edits; verify their consequences before finalising.');
+ }
+ return result;
+}
+
 export function contextualBadgeGuidance(state,key,base){
  const result={...base,details:[],real:false};
  const [route,node]=key.split(':');
  if(route!=='completing')return result;
+ if(closingNodes.has(node))return closingBadgeGuidance(state,key,base);
  const ctx=guidanceContext(state,node),entry=ctx.entry,c=ctx.c||{},f=ctx.f||{},real=ctx.real===true;
  result.real=real;
  const add=(label,value)=>{if(short(value)&&result.details.length<3)result.details.push({label,text:short(value)});};
