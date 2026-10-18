@@ -72,6 +72,22 @@ test("unresolved consent exposes teacher support and never pretends approval",()
  assert(!html.includes("Rate data readiness /5"));
  assert(!html.includes("Rate completion ease /5"));
 });
+test("prediction refinement is a small optional control that keeps the maths choices on one screen",()=>{
+ const {state,view}=screenFixture();state.planning.current="N01P";
+ state.planning.fields.course="AI SL";state.planning.fields.kind="statistics";
+ state.planning.mathSelected=["AI15"];
+ const closed=view.viewPlanning();
+ assert(closed.includes('data-action="plan-refine-toggle"'));
+ assert(closed.includes('aria-expanded="false"'));
+ assert(!closed.includes('id="planning-prediction-refine-panel"'));
+ state.planning.refinePlanOpen=true;
+ const expanded=view.viewPlanning();
+ assert(expanded.includes('aria-expanded="true"'));
+ assert(expanded.includes('id="planning-prediction-refine-panel"'));
+ assert(expanded.includes('planning.fields.mathsRevisedWhy'));
+ assert(!expanded.includes("Does your prediction change your maths plan?"));
+ assert(!expanded.includes("What could your first mathematical representation be?"));
+});
 test("statistical prediction choices use chosen data context",()=>{
  const {state,view}=screenFixture();state.planning.current="N01P";
  state.planning.fields.kind="statistics";
@@ -198,7 +214,7 @@ test('following Planning screens have compact question and motivation sparks, no
  const {state,view}=screenFixture();
  state.planning.fields.aim='How could I estimate the volume?';
  state.planning.fields.beneficiary='I want to compare possible box designs';
- for(const id of ['N02','N02M','N03','N04R','N05V']){
+ for(const id of ['N02','N02M','N03','N01P','N03D']){
   state.planning.current=id;
   const html=view.viewPlanning();
   assert(html.includes('planning-compact-recall'),id);
