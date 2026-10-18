@@ -167,7 +167,7 @@ with sync_playwright() as pw:
     assert full.is_visible()
     assert full.locator('[data-evidence-criterion]').count()==5
     mode='draft' if node=='C80D' else 'final'
-    assert full.locator('[data-essentials-mode="'+mode+'"]').get_attribute('aria-pressed')=='true'
+    assert full.locator('.ess-review-modes button[data-essentials-mode="'+mode+'"]').get_attribute('aria-pressed')=='true'
     assert 'My '+mode+' introduction' in full.inner_text()
     full.locator('[data-essentials-close]').click()
    assert stored(p)==before
