@@ -12,10 +12,17 @@ import {normalizePrimaryQuantities} from "./primary-quantities.js";
 export const PLANNING_NODE_IDS = Object.freeze([...new Set(PLANNING_ROUTES.flatMap(r=>[r.from,r.to]).filter(n=>n.startsWith("N")))]);
 export const PROGRESS_GROUPS = Object.freeze([
  {id:"direction",label:"Find your question",nodes:["N00","N00B","N00C","N01","N01V","N02","N02M","N02U","N02T"]},
- {id:"practical",label:"Plan your evidence",nodes:["N03","N03B","N03P","N03P2","N03S","N03D","N03R","N03H"]},
- {id:"mathematical",label:"Plan your mathematics",nodes:["N04","N04T","N04S","N01P","N04R","N04M","N05V","N05"]},
- {id:"review",label:"Review your idea",nodes:["N06E","N06T","N08","N06","N07"]}
+ {id:"practical",label:"Plan your evidence",nodes:["N03","N03B","N03P","N03P2","N03S","N03R"]},
+ {id:"mathematical",label:"Prepare to explore",nodes:["N01P","N03D","N03H","N04","N04T","N04S"]},
+ {id:"review",label:"Review your idea",nodes:["N06T","N08","N06","N07"]}
 ]);
+// Preserve original workbook routes for provenance without reopening superseded UX screens.
+const LEGACY_DESTINATION = Object.freeze({
+ N03P3:"N03P",N03J:"N03D",N03F:"N03D",N03E:"N03D",N03G:"N03D",
+ N04R:"N01P",N04M:"N01P",N05V:"N06T",N05:"N06T",N06E:"N06T"
+});
+const legacyNode=id=>LEGACY_DESTINATION[id]||id;
+const retiredNode=id=>Object.hasOwn(LEGACY_DESTINATION,id);
 const val = x => String(x??"").trim();
 const now = () => new Date().toISOString();
 export const PLANNING_FIELD_DEFAULTS = Object.freeze({
@@ -51,7 +58,7 @@ export function createPlanningState(){
   current:"N00", fields:{...PLANNING_FIELD_DEFAULTS}, mathSelected:[],accuracyPlans:[],accuracyEditId:"",
   primaryQuantities:[],primaryQuantityEditId:"",
   history:[], visited:[], completedNodes:[], sourceBranches:{primary:false,secondary:false},
-  teacherFlagsAcknowledged:[], returnToPrediction:false, sourceSnapshot:"2026-10-14",
+  teacherFlagsAcknowledged:[], returnToPrediction:false, refinePlanOpen:false, sourceSnapshot:"2026-10-14",
   completed:false, notices:[], mathSearch:"", mathsReviewVersion:0,timelineAuto:{},routeExplorer:createRouteExplorer()
  };
 }
@@ -77,22 +84,21 @@ export function normalizePlanningState(value,project={}){
  const cleanIds = Array.isArray(v.mathSelected) ?
   [...new Set(v.mathSelected.filter(id=>PLANNING_CATALOG.math.some(m=>m.id===id)))].slice(0,55) : [];
  const entries=arr=>Array.isArray(arr)?arr.filter(x=>typeof x==="string"&&PLANNING_NODE_IDS.includes(x)).slice(-450):[];
- const obsoleteNode=id=>id==="N03P3"?"N03P":
-  ["N03J","N03F","N03E","N03G"].includes(id)?"N03D":id;
- const current=PLANNING_NODE_IDS.includes(obsoleteNode(v.current))?obsoleteNode(v.current):"N00";
+ const current=PLANNING_NODE_IDS.includes(legacyNode(v.current))?legacyNode(v.current):"N00";
  return {
   ...base,fields,mathSelected:cleanIds,accuracyPlans:normalizePlanningAccuracy(v.accuracyPlans),
   accuracyEditId:(v.accuracyPlans||[]).some?.(x=>x?.id===v.accuracyEditId)?v.accuracyEditId:"",
   primaryQuantities:normalizePrimaryQuantities(v.primaryQuantities,v.accuracyPlans),
   primaryQuantityEditId:(v.primaryQuantities||[]).some?.(x=>x?.id===v.primaryQuantityEditId)?v.primaryQuantityEditId:"",current,
-  history:entries(v.history).filter(x=>!["N03J","N03F","N03E","N03G"].includes(x)),
-  visited:entries(v.visited).filter(x=>!["N03J","N03F","N03E","N03G"].includes(x)),
-  completedNodes:entries(v.completedNodes).filter(x=>!["N03P3","N03J","N03F","N03E","N03G"].includes(x)),
+  history:entries(v.history).filter(x=>!retiredNode(x)),
+  visited:entries(v.visited).filter(x=>!retiredNode(x)),
+  completedNodes:entries(v.completedNodes).filter(x=>!retiredNode(x)),
   sourceBranches:{
    primary:v.sourceBranches?.primary===true,secondary:v.sourceBranches?.secondary===true
   },
   teacherFlagsAcknowledged:Array.isArray(v.teacherFlagsAcknowledged)?v.teacherFlagsAcknowledged.filter(x=>typeof x==="string").slice(0,30):[],
   returnToPrediction:v.returnToPrediction===true,
+  refinePlanOpen:v.refinePlanOpen===true,
   completed:v.completed===true,
   notices:[],mathSearch:typeof v.mathSearch==="string"?v.mathSearch.slice(0,90):"",
   mathsReviewVersion:Number.isInteger(v.mathsReviewVersion)?v.mathsReviewVersion:0,
@@ -264,7 +270,7 @@ export function toggleMath(state,id){
  syncPlanningToProject(state);return true;
 }
 export function setPlanCurrent(state,id,{history=true,internal=false}={}){
- if(["N03J","N03F","N03E","N03G"].includes(id))id="N03D";
+ id=legacyNode(id);
  if(!PLANNING_NODE_IDS.includes(id))return {ok:false,error:"Unknown planning stage."};
  const current=state.planning.current;
  if(history&&current!==id)state.planning.history.push(current);
@@ -277,12 +283,13 @@ export function setPlanCurrent(state,id,{history=true,internal=false}={}){
 }
 export function planningBack(state){
  // Old snapshots may contain obsolete route entries before normalization.
- while(["N03J","N03F","N03E","N03G"].includes(state.planning.history.at(-1)))state.planning.history.pop();
+ while(retiredNode(state.planning.history.at(-1)))state.planning.history.pop();
  const old=state.planning.history.pop();
  if(!old)return{ok:false,error:"This is the first stage. Use Home to leave."};
  return setPlanCurrent(state,old,{history:false});
 }
 export function planningEdit(state,id){
+ id=legacyNode(id);
  if(!PLANNING_NODE_IDS.includes(id))return{ok:false,error:"Unknown stage."};
  return setPlanCurrent(state,id);
 }
@@ -300,9 +307,12 @@ export function planningMove(state,condition) {
  // Retained historical routes remain in the provenance table, but neither
  // obsolete questionnaire is part of the interactive student journey.
  const shortRoute={
-  N03P2:{"Complete primary plan":"Finish primary data plan"},
-  N03S:{"Complete":"Finish secondary data plan"},
-  N03B:{"Both data sources complete":"Continue to evidence timing"},
+  N03P2:{"Complete primary plan":"Continue to prediction","Finish primary data plan":"Continue to prediction"},
+  N03S:{"Complete":"Continue to prediction","Finish secondary data plan":"Continue to prediction"},
+  N03B:{"Both data sources complete":"Continue to prediction","Continue to evidence timing":"Continue to prediction"},
+  N01P:{"Prediction made or 'not sure'":"Continue to evidence checks"},
+  N03H:{"Continue with mathematics already explored":"Continue to review"},
+  N08:{"Optional: identify first safe mathematical step":"Review answers and export provisional plan"},
   N03D:{"Continue":"Continue after evidence checks"},
   N03E:{"Continue":"Continue after evidence checks"},
   N03G:{"Reduce workload or resolve blockers":"Revisit practical checks"}
@@ -314,7 +324,7 @@ export function planningMove(state,condition) {
  // but continuing the old one-page primary form enters the new 3-step flow.
  if(from==="N03P"&&condition==="Complete")return planningMove(state,"Continue to sampling");
  const to=route.to,f=state.planning.fields;
- if(from==="N03B"&&["N03J","N03D"].includes(to)&&!(state.planning.sourceBranches.primary&&state.planning.sourceBranches.secondary))
+ if(from==="N03B"&&["N03J","N03D","N01P"].includes(to)&&!(state.planning.sourceBranches.primary&&state.planning.sourceBranches.secondary))
   return{ok:false,error:"Answer both primary and secondary source questions first."};
  if(from==="N03P"&&!f.primaryHow.trim()&&!f.primaryWhat.trim()&&!state.planning.primaryQuantities.length)
   return{ok:false,error:"Describe what you will collect and how, or add a quantity to get started."};
@@ -342,10 +352,10 @@ export function planningMove(state,condition) {
   !["not-applicable","unsure"].includes(f.primarySamplingMethod)&&
   (!f.primaryPopulation.trim()||!f.primarySamplingUnit.trim()))
   return{ok:false,error:"Identify your population and sampling unit, or select Still uncertain."};
- if(from==="N03P2"&&["N03J","N03D"].includes(to)&&!["ready","unsure"].includes(f.primaryStatus))
+ if(from==="N03P2"&&["N03J","N03D","N01P"].includes(to)&&!["ready","unsure"].includes(f.primaryStatus))
   return{ok:false,error:"Choose whether your primary data plan is ready or uncertain."};
- if(from==="N03S"&&["N03J","N03D"].includes(to)&&!["ready","unsure"].includes(f.secondaryStatus))return{ok:false,error:"Confirm whether your secondary source plan is ready or uncertain."};
- if(["N03P2","N03S"].includes(from)&&["N03J","N03D"].includes(to)&&f.dataSource==="both"){
+ if(from==="N03S"&&["N03J","N03D","N01P"].includes(to)&&!["ready","unsure"].includes(f.secondaryStatus))return{ok:false,error:"Confirm whether your secondary source plan is ready or uncertain."};
+ if(["N03P2","N03S"].includes(from)&&["N03J","N03D","N01P"].includes(to)&&f.dataSource==="both"){
   const branch=from==="N03P2"?"primary":"secondary";
   const statusKey=branch+"Status";
   if(!["ready","unsure"].includes(f[statusKey]))
@@ -408,25 +418,26 @@ export function planAutoAdvance(state){
   case "N02U":return go("Return");
   case "N02T":return go("Continue with provisional plan");
   case "N03":if(!f.dataSource)return{ok:false,error:"Choose primary, secondary or both data sources."};return go(f.dataSource==="secondary"?"Secondary":f.dataSource==="both"?"Both":"Primary");
-  case "N03B":return go(state.planning.sourceBranches.primary&&state.planning.sourceBranches.secondary?"Continue to evidence timing":
+  case "N03B":return go(state.planning.sourceBranches.primary&&state.planning.sourceBranches.secondary?"Continue to prediction":
    !state.planning.sourceBranches.primary?"Primary questions":"Secondary questions");
   case "N03P":return go("Continue to sampling");
-  case "N03P2":return go("Finish primary data plan");
-  case "N03S":return go("Finish secondary data plan");
+  case "N03P2":return go("Continue to prediction");
+  case "N03S":return go("Continue to prediction");
   case "N03J":return go("Method justification or 'not sure'");
   case "N03D":return go("Continue after evidence checks");
   case "N03E":return go("Continue after evidence checks");
   case "N03R":return go("Retry");
   case "N03F":return go("Feasibility questions answered");
   case "N03G":return go("Practical plan is workable");
-  case "N03H":return go("Continue with mathematics already explored");
+  case "N03H":return go("Continue to review");
   case "N04":if(!f.course)return{ok:false,error:"Choose your course, or select Another course / unsure."};return go(["AI SL","AA SL"].includes(f.course)?"AI SL / AA SL":"Other / AA HL");
   case "N04T":return go("Record tentative maths and teacher question");
   case "N04S":return go("Techniques selected or unsure");
   case "N01P":
-   if(!f.predictionId&&!f.prediction.trim())return{ok:false,error:"Choose a prediction, describe your own, or select Not sure yet."};
-   if(f.predictionId==="X01"&&!f.prediction.trim())return{ok:false,error:"Write your own tentative prediction or choose Not sure yet."};
-   return go("Prediction made or 'not sure'");
+   // An early prediction is optional. Nothing here asserts the predicted pattern is real.
+   if(f.predictionId==="X01"&&!f.prediction.trim())
+    return{ok:false,error:"Describe your different prediction, or choose to explore without one."};
+   return go("Continue to evidence checks");
   case "N04R":return go("Keep / add / remove maths or remain unsure");
   case "N04M":return go("Continue");
   case "N05V":return go("Representation planned or uncertain");
