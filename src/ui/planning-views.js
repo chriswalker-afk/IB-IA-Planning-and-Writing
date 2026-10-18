@@ -554,7 +554,7 @@ export function createPlanningViews(ctx){
    (welcome||kickoff||titleStep||ideaMapStep?'':'<div class="example-row">'+helpButton("plan-"+n,n==="N01V"?"Why does this matter?":"Help me think")+helpBox("plan-"+n,screen.help)+'</div>')+
    (welcome?'<div class="task-footer chapter-onboarding-footer">'+
       '<span class="chapter-onboarding-footer-hint">A short tour. Nothing to fill in yet.</span>'+
-      button(n==="N00"?"Start planning":"Return to my planning","planning-intro-continue","btn-primary","","arrow-right")+'</div>':footer(state,screen))+'</div>'+
+      button(n==="N00"&&!existingPlan&&!state.ui.planningIntroSeen?"Start planning":"Return to my planning","planning-intro-continue","btn-primary","","arrow-right")+'</div>':footer(state,screen))+'</div>'+
    (welcome||kickoff||ideaMapStep?'':'<p class="small-callout">Your choices are provisional until evidence supports them. You can revisit earlier decisions. Teacher flags never prevent a provisional report.</p>')+
    (p.notices&&p.notices.length?'<div class="inline-note warning">'+icon("info")+'<p>'+e(p.notices.at(-1))+'</p></div>':"")+
    '</div></div></div>';
