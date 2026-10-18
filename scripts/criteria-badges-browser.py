@@ -123,11 +123,17 @@ with sync_playwright() as pw:
    badge.focus();p.keyboard.press('Enter')
    dialog=p.locator('#criterionBadgeDialog')
    assert dialog.is_visible()
-   assert 'Criterion '+letter+' ·' in dialog.locator('h2').inner_text()
+   if letter=='A–E':
+    assert 'Criteria A–E ·' in dialog.locator('h2').inner_text()
+    assert dialog.locator('.criterion-popin-all-row').count()==5
+    assert dialog.locator('[data-criterion-badge-review]').count()==1
+    assert dialog.locator('[data-criterion-badge-rubric]').count()==5
+    assert 'My '+('draft' if node=='C80D' else 'final')+' introduction' in dialog.inner_text()
+   else:assert 'Criterion '+letter+' ·' in dialog.locator('h2').inner_text()
    for title in ['Why this matters here','What a strong response looks like','Avoid this']:
     assert title in dialog.inner_text()
    assert 'not evidence, a score or a predicted mark' in dialog.inner_text()
-   if node in ('C34','C35','C35B','C35P','C40','C50','C40T','C40L'):
+   if node in ('C34','C35','C35B','C35P','C40','C50','C40T','C40L','C61','C62','C63','C64','C70','C80D','C90F'):
     assert 'Using your work' in dialog.inner_text()
    if node=='C35B':
     assert 'nonlinear' in dialog.inner_text()
