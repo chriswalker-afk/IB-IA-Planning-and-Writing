@@ -1,0 +1,56 @@
+name: Chapter onboarding browser acceptance
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'app.js'
+      - 'index.html'
+      - 'src/core/project-state.js'
+      - 'src/ui/planning-views.js'
+      - 'src/completing/views.js'
+      - 'src/ui/living-journey.js'
+      - 'src/ui/journey.js'
+      - 'src/ui/journey-views.js'
+      - 'data/chapter-onboarding.css'
+      - 'tests/ui-smoke.test.js'
+      - 'tests/planning-ui-coverage.test.js'
+      - 'tests/living-journey.test.js'
+      - 'scripts/chapter-onboarding-browser.py'
+      - '.github/workflows/chapter-onboarding-browser.yml'
+permissions:
+  contents: read
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test and build
+        run: |
+          npm install --no-audit --no-fund
+          npm test
+          npm run build
+      - name: Install headless Chromium
+        run: |
+          pip install playwright==1.57.0
+          python -m playwright install --with-deps chromium
+      - name: Check Planning and Set up on desktop and phone
+        run: |
+          mkdir -p qa-output
+          python -m http.server 8765 --directory dist > qa-output/onboarding-server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID"' EXIT
+          python scripts/chapter-onboarding-browser.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: chapter-onboarding-browser-results
+          path: qa-output
+          retention-days: 7
