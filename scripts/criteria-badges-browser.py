@@ -25,7 +25,15 @@ CASES=[
  ('substantial-first','completing','C40','E','completing:C40:title'),
  ('substantial-later','completing','C50','E','completing:C50:title'),
  ('technology','completing','C40T','E','completing:C40T:title'),
- ('unfamiliar-maths','completing','C40L','E','completing:C40L:title')
+ ('unfamiliar-maths','completing','C40L','E','completing:C40L:title'),
+ ('conclusion-answer','completing','C61','A','completing:C61:mainConclusion'),
+ ('conclusion-limit','completing','C61','D','completing:C61:uncertainty'),
+ ('meaning-for-purpose','completing','C62','D','completing:C62:benefit'),
+ ('optional-extension','completing','C63','D','completing:C63:extension'),
+ ('concise-ending','completing','C64','A','completing:C64:title'),
+ ('presentation-coherence','completing','C70','A','completing:C70:title'),
+ ('draft-evidence','completing','C80D','A–E','completing:C80D:title'),
+ ('final-evidence','completing','C90F','A–E','completing:C90F:title')
 ]
 result=[]
 def stored(page):
