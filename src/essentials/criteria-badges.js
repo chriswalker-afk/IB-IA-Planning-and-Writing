@@ -1,8 +1,11 @@
 import {CRITERIA,courseLevel} from './catalog.js';
 import {criteriaContext} from './context.js';
+import {guidanceContext} from '../completing/guidance-context.js';
+import {firstUnfamiliarUse,methodFamilies} from '../completing/method-identity.js';
+import {linkedAccuracy} from '../completing/evidence-links.js';
 import {escapeHtml} from '../ui/primitives.js';
 
-/** Four deliberately selective opportunities. These are not grades or checklist points. */
+/** Selective, read-only opportunities. A badge never represents a score or checklist point. */
 export const CRITERION_SPOTS=Object.freeze({
  'planning:N01V:benefit':Object.freeze({
   criterion:'C',location:'Who might benefit, and how could the answer help?',stage:'Planning · motivation',
@@ -17,6 +20,90 @@ export const CRITERION_SPOTS=Object.freeze({
   strong:'Identify a mathematical question that your proposed technique might answer. Keep the choice provisional and check course suitability with your teacher where uncertain.',
   avoid:'Avoid selecting techniques because they appear impressive, or assuming a suggested pathway is formal syllabus verification.',
   reminder:'This is a provisional choice. Criterion E is demonstrated through relevant, correct mathematics and understanding in the completed exploration.'
+ }),
+ 'completing:C31:firstPurpose':Object.freeze({
+  criterion:'E',location:'Why might this help answer the aim?',stage:'IA Studio · select an initial representation',
+  why:'A mathematical representation is useful when it could answer a specific part of your investigation question.',
+  strong:'Choose a graph, diagram, example or calculation for a mathematical reason. State the question it might reveal and whether you have the genuine evidence it requires.',
+  avoid:'Avoid beginning with a graph simply because it is familiar, choosing a technique to impress, or inventing data to get started.',
+  reminder:'Choosing an initial representation is a plan, not evidence of completed mathematical work.'
+ }),
+ 'completing:C32:purpose':Object.freeze({
+  criterion:'A',location:'Mathematical purpose BEFORE it',stage:'IA Studio · introduce your first mathematics',
+  why:'A brief mathematical bridge helps the reader understand why the next representation belongs in your exploration.',
+  strong:'Before the working or figure, explain which question the step is designed to investigate and link it to the preceding aim or finding.',
+  avoid:'Avoid dropping in an unexplained figure, writing a long generic introduction or reporting a result before doing the mathematics.',
+  reminder:'Coherence is judged across the whole exploration, not by one introductory sentence.'
+ }),
+ 'completing:C33:title':Object.freeze({
+  criterion:'B',location:'Create the actual figure or calculation',stage:'IA Studio · communicate your first mathematics',
+  why:'A reader needs correctly labelled and presented mathematics to understand what has genuinely been done.',
+  strong:'Put the real diagram, graph, table or calculation into your IA. Define necessary symbols, label axes and units, identify relevant scales and use defensible accuracy.',
+  avoid:'Avoid screenshots with unreadable notation, unlabeled graphs, invented results or calling a planned calculation completed.',
+  reminder:'Different representation types are not required for their own sake. Communicate the mathematics you actually use.'
+ }),
+ 'completing:C34:observation':Object.freeze({
+  criterion:'E',location:'What can you really observe?',stage:'IA Studio · observe an actual result',
+  why:'Accurate mathematical interpretation begins with reading what the representation actually establishes.',
+  strong:'Describe the mathematical feature you can justify, such as a value, trend, turning point, boundary, counterexample or absence of a clear pattern. Distinguish conjecture from proof.',
+  avoid:'Avoid reporting an expected pattern as a finding, interpreting a relationship that the graph does not show, or claiming that correlation proves causation.',
+  reminder:'A mathematical observation should rest on a genuine result. Its meaning for the aim is discussed in the next reflection step.'
+ }),
+ 'completing:C35:nextQuestion':Object.freeze({
+  criterion:'C',location:'What worthwhile mathematical question remains unanswered?',stage:'IA Studio · choose your own next question',
+  why:'Personal engagement can be demonstrated when you make an informed mathematical decision that develops your investigation.',
+  strong:'Choose a follow-up that answers a real gap in your previous result or tests an interesting mathematical consequence. You can also decide that enough has been established.',
+  avoid:'Avoid adding a calculation for quantity, copying a suggested route automatically or pretending every result creates a new question.',
+  reminder:'An independent mathematical decision matters through how it shapes the exploration, not because a question box was filled.'
+ }),
+ 'completing:C35:nextReason':Object.freeze({
+  criterion:'D',location:'Why would this next technique follow from the previous result?',stage:'IA Studio · justify the next step',
+  why:'A well-founded next step reflects on what the previous mathematics answered and what it left uncertain.',
+  strong:'Refer to a real previous finding or limitation. Explain why the proposed technique could resolve the remaining issue—or explain why the investigation can conclude.',
+  avoid:'Avoid claiming a planned or unsupported result, repeating a technique list or inventing a weakness to justify more mathematics.',
+  reminder:'Reflection can include deciding that another calculation is not necessary.'
+ }),
+ 'completing:C35B:title':Object.freeze({
+  criterion:'E',location:'Interpret the actual scatter pattern',stage:'IA Studio · paired numerical data',
+  why:'The mathematical method chosen after a scatter graph should match its actual shape and the investigation aim.',
+  strong:'Look at the real pattern before selecting Pearson correlation or a model. Determine whether a linear relationship is plausible, and consider genuine curvature or outliers.',
+  avoid:'Avoid forcing a line through a curved trend or saying that a low Pearson r means there is no relationship of any kind.',
+  reminder:'A pattern choice must describe real data. The badge does not certify that a scatter graph or calculation is correct.'
+ }),
+ 'completing:C35P:title':Object.freeze({
+  criterion:'E',location:'After an actual Pearson correlation calculation',stage:'IA Studio · linear association',
+  why:'Pearson r describes the direction and strength of linear association in paired numerical data, not every type of relationship.',
+  strong:'Interpret an r value only after calculating it. Compare its implications with the scatter plot and decide whether a fitted model, a check or no further calculation is justified.',
+  avoid:'Avoid treating correlation as causation, a low r as proof of no relationship, or a hypothetical r as an actual finding.',
+  reminder:'The next technique should be useful for your aim, not obligatory because r was calculated.'
+ }),
+ 'completing:C40:title':Object.freeze({
+  criterion:'E',location:'First substantial mathematical section',stage:'IA Studio · relevant mathematics',
+  why:'Criterion E values mathematics that is relevant, correct and understood. Mathematical depth should serve the investigation.',
+  strong:'Link the technique to the previous mathematical question, show meaningful working and explain what an actual result establishes. Verify course suitability rather than assuming unfamiliar means advanced.',
+  avoid:'Avoid a disconnected calculation, unexplained software output or a textbook tutorial for a familiar syllabus technique.',
+  reminder:'A planned method is not an actual result. The use of mathematics is assessed across the exploration.'
+ }),
+ 'completing:C50:title':Object.freeze({
+  criterion:'E',location:'Further substantial mathematics',stage:'IA Studio · develop the mathematical investigation',
+  why:'A later method should deepen the answer, test a genuine uncertainty or extend a real earlier mathematical result.',
+  strong:'Explain why the new mathematics follows from the selected previous result, demonstrate and check the steps, then interpret the result before proceeding.',
+  avoid:'Avoid repeating similar techniques for length, treating a list of methods as mathematical depth or skipping interpretation between sections.',
+  reminder:'There is no compulsory number of substantial calculations. Concluding can be the strongest next decision.'
+ }),
+ 'completing:C40T:title':Object.freeze({
+  criterion:'E',location:'Explain technology-assisted mathematics',stage:'IA Studio · technology with understanding',
+  why:'Using a GDC, spreadsheet, graphing tool or code is not itself evidence that the underlying mathematics is understood.',
+  strong:'Identify the mathematical operation, its meaningful inputs, what the actual output represents and why the result matters for your question.',
+  avoid:'Avoid relying on screenshots, unexplained fitted parameters, unexplained code or excessive calculator digits.',
+  reminder:'Technology helps carry out mathematics. Understanding and justified interpretation remain important.'
+ }),
+ 'completing:C40L:title':Object.freeze({
+  criterion:'E',location:'Explain unfamiliar mathematics when genuinely needed',stage:'IA Studio · mathematical understanding',
+  why:'An unfamiliar idea needs enough explanation to demonstrate your own understanding when it first contributes to the investigation.',
+  strong:'Identify precisely what was new, state the relevant definitions and conditions, show a short meaningful step or check and acknowledge sources you actually used.',
+  avoid:'Avoid calling a technique beyond the syllabus without checking, reteaching familiar course formulas or copying a long general tutorial.',
+  reminder:'Once unfamiliar mathematics has genuinely been introduced and understood, reuse it without repeating the explanation.'
  }),
  'completing:C34B:title':Object.freeze({
   criterion:'D',location:'Reconnect with aim and prediction',stage:'IA Studio · interpretation',
@@ -34,12 +121,27 @@ export const CRITERION_SPOTS=Object.freeze({
  })
 });
 const TITLE_SPOTS=Object.freeze({
+ 'completing:C33':'completing:C33:title',
+ 'completing:C35B':'completing:C35B:title',
+ 'completing:C35P':'completing:C35P:title',
+ 'completing:C40':'completing:C40:title',
+ 'completing:C50':'completing:C50:title',
+ 'completing:C40T':'completing:C40T:title',
+ 'completing:C40L':'completing:C40L:title',
  'planning:N02M':'planning:N02M:title',
  'completing:C34B':'completing:C34B:title',
  'completing:C70N':'completing:C70N:title'
 });
 export const criterionSpotFor=(route,node)=>TITLE_SPOTS[route+':'+node]||'';
-export const isCriterionSpotPage=(route,node)=>route==='planning'&&node==='N01V'||Boolean(criterionSpotFor(route,node));
+const FIELD_SPOTS=Object.freeze({
+ 'completing:C31':['completing:C31:firstPurpose'],
+ 'completing:C32':['completing:C32:purpose'],
+ 'completing:C34':['completing:C34:observation'],
+ 'completing:C35':['completing:C35:nextQuestion','completing:C35:nextReason']
+});
+export const criterionFieldSpots=(route,node)=>route==='completing'?(FIELD_SPOTS[route+':'+node]||[]):[];
+export const isCriterionSpotPage=(route,node)=>route==='planning'&&node==='N01V'||
+ Boolean(criterionSpotFor(route,node))||criterionFieldSpots(route,node).length>0;
 
 /** Badge is a real, accessible button; it never edits student work or progress. */
 export function criterionBadge(key){
@@ -51,7 +153,7 @@ export function criterionBadge(key){
   '<span aria-hidden="true">'+spot.criterion+'</span></button>';
 }
 export function criterionMarkedField(html,key){
- return CRITERION_SPOTS[key]?'<div class="criterion-marked-field">'+html+criterionBadge(key)+'</div>':html;
+ return html&&Object.hasOwn(CRITERION_SPOTS,key)?'<div class="criterion-marked-field">'+html+criterionBadge(key)+'</div>':html;
 }
 export function criterionPageHeading(title,route,node){
  const key=criterionSpotFor(route,node),name=escapeHtml(title);
