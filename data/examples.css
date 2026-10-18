@@ -25,3 +25,20 @@
 @media(max-width:900px){.ex-library-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.ex-pair{grid-template-columns:1fr}.ex-version{padding:18px}.ex-version h4{margin:-18px -18px 15px;padding:12px 18px}}
 @media(max-width:600px){.ex-dialog{width:calc(100vw - 16px);max-width:calc(100vw - 16px);height:calc(100dvh - 16px);max-height:calc(100dvh - 16px);border-radius:14px}.ex-dialog-head{padding:13px 14px;gap:8px}.ex-dialog-head h2{font-size:1.1rem}.ex-dialog-head .ex-eyebrow{font-size:.59rem}.ex-dialog-head button{font-size:.8rem;max-width:130px;padding:9px 10px;white-space:normal}.ex-dialog-body{padding:14px 14px 24px;scrollbar-gutter:auto}.ex-heading{font-size:1.25rem}.ex-prompt-note{display:none}.ex-prompt .ex-trigger:last-child{margin-left:0;font-size:.8rem}.ex-filters{grid-template-columns:1fr}.ex-library-grid{grid-template-columns:1fr}.ex-library-card{min-height:110px}.ex-view-nav .ex-small{max-width:100%}.ex-version p{font-size:.92rem}.ex-version{padding:14px}.ex-version h4{margin:-14px -14px 14px;padding:11px 14px}.ex-table-wrap th,.ex-table-wrap td{padding:8px 6px}}
 @media print{.ex-dialog,.ex-prompt,.ex-trigger{display:none!important}}
+
+/* Introduction comparison teaching annotations; native disclosures work on mobile and keyboard. */
+.ex-introduction-features{margin:18px 0 8px;padding:14px 16px;border:1px solid #cfe1d9;border-radius:13px;background:#f4faf6}
+.ex-introduction-features h4{font-size:.97rem;line-height:1.4;color:#205a4d;margin:0 0 5px}
+.ex-introduction-features>p{font-size:.84rem;line-height:1.5;color:#55726b;margin:0 0 12px}
+.ex-introduction-feature-list{display:grid;gap:7px}
+.ex-introduction-feature{background:#fff;border:1px solid #dce8df;border-radius:10px;overflow:clip}
+.ex-introduction-feature>summary{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;font-size:.86rem;line-height:1.4;font-weight:760;cursor:pointer;color:#256a5b;list-style:none}
+.ex-introduction-feature>summary::-webkit-details-marker{display:none}
+.ex-introduction-feature>summary>span:last-child{font-size:1.1rem;transition:transform .2s}
+.ex-introduction-feature[open]>summary>span:last-child{transform:rotate(180deg)}
+.ex-introduction-feature>div{border-top:1px solid #e3ede7;padding:11px 12px 13px}
+.ex-introduction-feature>div p{font-size:.85rem;line-height:1.6;margin:0 0 8px;color:#526862}
+.ex-introduction-feature>div .ex-introduction-feature-quote{font-weight:650;color:#245b50;padding-left:10px;border-left:3px solid #96c8b6}
+.ex-introduction-feature>div p:last-child{margin-bottom:0}
+@media(max-width:600px){.ex-introduction-features{padding:12px}.ex-introduction-feature>summary{min-height:40px}}
+@media(prefers-reduced-motion:reduce){.ex-introduction-feature>summary>span:last-child{transition:none}}

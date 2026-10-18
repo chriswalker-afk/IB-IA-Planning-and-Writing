@@ -7,6 +7,7 @@ export const EXAMPLE_CRITERIA=Object.freeze({
  EX32:{A:'The statistical question connects to what a comparison would mean.',C:'A student-owned decision motivates the data and analysis.',D:'Later reflection must consider variability and sampling before claiming a useful recommendation.'},
  EX33:{A:'A precise conjecture and reason make the investigation coherent.',C:'The mathematical question can be genuine without a fabricated personal story.',D:'Later reasoning must assess whether the argument actually resolved the original uncertainty.'},
  EX01:{A:'A precise aim gives the opening a direction.',C:'A genuine observation motivates a mathematical choice.'},
+ EX34:{A:'Only the essential specialist context is explained before reaching the mathematical aim.',C:'The mathematical question is based on genuine observation rather than an invented enthusiasm.'},
  EX02:{A:'The aim identifies the quantities and scope.',D:'The investigation distinguishes association from a causal conclusion.'},
  EX03:{A:'A conjecture establishes an answerable purpose.',C:'Mathematical curiosity needs no invented personal story.'},
  EX04:{A:'A defined objective keeps the investigation focused.',E:'A feasible domain makes the optimisation meaningful.'},

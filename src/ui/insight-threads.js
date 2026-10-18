@@ -37,7 +37,7 @@ export function insightItems(s){
   {usage:'This title is provisional. Review whether it still describes the mathematical question you really explored.'}));
  if(has(aim))out.push(item('aim','aim','Investigation aim',aim,'Planning · Investigation aim',{type:'planning',node:'N01'},
   {usage:'Keeps mathematical interpretations connected to the original question.'}));
- const motivation=p.beneficiary||p.motivation||s?.project?.beneficiary||p.intendedUse;
+ const motivation=p.motivation||p.beneficiary||p.intendedUse||s?.project?.beneficiary;
  if(has(motivation))out.push(item('motivation','motivation','My motivation',motivation,
   'Planning · Motivation',{type:'planning',node:'N01V'},
   {usage:'Revisit why finding the answer matters. Your eventual conclusions and any advice must be supported by the actual mathematics.'}));
@@ -238,10 +238,12 @@ export function insightMeaning(s,node,x){
   return 'This is only the starting route you explored. Decide your next mathematics from what your genuine results reveal; no branch is required, and there is no obligation to add more techniques.';
  }
  if(x.id==='motivation'){
+  if(node==='C10')return 'Use this genuine reason in the opening of your actual IA. Explain what drew you to the question without inventing an anecdote; your independent mathematical decisions will develop personal engagement later.';
   if(['C34','C34A','C34B','C35','C35H','C35B','C35P','C60','C61','C62','C64'].includes(node))
    return 'Why did you want this answer? Connect what your genuine mathematics established to that reason, including if the result is limited, unexpected or does not justify a practical recommendation.';
   return 'Keep your question and motivation together: does each choice help you learn, explain or decide what you originally set out to understand? Your findings may change your motivation.';
  }
+  if(x.id==='aim'&&node==='C10')return 'State this aim explicitly in your actual IA introduction. Does it pose a precise, answerable mathematical question rather than naming only a topic? You can edit the original spark below.';
   if(x.id==='aim'&&['C34','C34A','C35','C40','C50','C60','C61','C62','C64'].includes(node)){
   return 'Connect what your mathematics actually established to this precise investigation question. Does the result answer all of it, or only a narrower part?';
  }
@@ -335,7 +337,7 @@ const inlineSparkKey=(s,x)=>{
  const f=s?.planning?.fields||{};
  if(x.id==='working-title')return 'provisionalTitle';
  if(x.id==='aim')return 'aim';
- if(x.id==='motivation')return has(f.beneficiary)?'beneficiary':has(f.motivation)?'motivation':
+ if(x.id==='motivation')return has(f.motivation)?'motivation':has(f.beneficiary)?'beneficiary':
   has(f.intendedUse)?'intendedUse':'beneficiary';
  if(x.id==='prediction')return 'prediction';
  return '';

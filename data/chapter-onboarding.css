@@ -254,3 +254,113 @@
  .writer-guide-open-button:hover,.writer-guide-story-step:hover{transform:none}
 }
 @media print{.writer-guide-teaser .writer-guide-open-button,.writer-guide-return,.writer-guide-overview{display:none!important}}
+
+
+/* Stage 2 Set up: document preparation belongs BEFORE the introduction writing task. */
+.setup-document-guide{border:1px solid #d9d0eb;background:linear-gradient(120deg,#f3ecfa 0%,#faf8fd 70%,#f6faf7);border-radius:15px;padding:16px 18px;margin:0 0 18px}
+.setup-document-guide-top{display:flex;align-items:flex-start;gap:12px}
+.setup-document-guide-icon{flex:none;display:grid;place-items:center;width:39px;height:39px;background:#e9ddf5;border-radius:12px;color:#674e91}
+.setup-document-guide-icon .icon{width:21px;height:21px}
+.setup-document-guide-top h3{font-size:15px;line-height:1.35;color:#243f45;margin:0 0 5px}
+.setup-document-guide-top p{font-size:12px;line-height:1.6;color:#586c71;margin:0}
+.setup-document-guide-bottom{display:flex;justify-content:space-between;align-items:center;gap:9px 16px;flex-wrap:wrap;margin:13px 0 0 51px}
+.setup-document-guide-summary{font-size:11px;line-height:1.5;color:#5e6175;flex:1;min-width:185px}
+.setup-document-guide-bottom .essentials-trigger{border:1px solid #c8bbde;border-radius:10px;background:#fff;color:#644b8d;font-size:12px;font-weight:750;min-height:38px;padding:7px 12px}
+
+/* Introduction: promote Planning sparks to explicit written-work prompts. */
+.intro-spark-brief{border:1px solid #badccb;border-radius:17px;padding:16px 18px;background:linear-gradient(145deg,#edf8f2,#fbfdfb);margin:4px 0 12px}
+.intro-spark-brief-heading{display:flex;align-items:flex-start;gap:11px}
+.intro-spark-brief-symbol{flex:none;display:grid;place-items:center;width:38px;height:38px;border-radius:13px;background:#d9efe5;color:#167568}
+.intro-spark-brief-symbol .icon{width:20px;height:20px}
+.intro-spark-brief-eyebrow{font-size:9px;font-weight:850;letter-spacing:.12em;color:#19766a}
+.intro-spark-brief h2{font-size:16px;line-height:1.35;color:#1f5550;margin:3px 0 0}
+.intro-spark-brief>p{font-size:12px;line-height:1.65;color:#526e69;margin:10px 0 0}
+.intro-spark-needed-list{margin:12px 0 0;display:grid;gap:7px}
+.intro-spark-needed{display:flex;align-items:center;gap:9px;padding:10px 12px;border:1px solid #cde4da;background:#fff;border-radius:12px}
+.intro-spark-needed-icon{flex:none;color:#15796a;display:grid;place-items:center;background:#e4f5ec;border-radius:9px;width:34px;height:34px}
+.intro-spark-needed-icon .icon{width:18px;height:18px}
+.intro-spark-needed-copy{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.intro-spark-needed-copy strong{font-size:12px;line-height:1.35;color:#25544e}
+.intro-spark-needed-copy small{font-size:11px;line-height:1.5;color:#59726a}
+.intro-spark-needed-status{flex:none;font-size:10px;font-weight:850;background:#e3f4eb;color:#126656;border-radius:8px;padding:7px 9px;white-space:nowrap}
+.intro-spark-needed[data-intro-spark-state="missing"]{border-color:#ebd3ab;background:#fffcf4}
+.intro-spark-needed[data-intro-spark-state="missing"] .intro-spark-needed-icon{color:#89652f;background:#faefda}
+.intro-spark-needed button{flex:none;display:inline-flex;align-items:center;gap:5px;background:#fff6e8;color:#775626;border:1px solid #efd7ac;border-radius:9px;font-size:11px;font-weight:800;padding:8px 9px}
+.intro-spark-needed button .icon{width:14px;height:14px}
+.intro-spark-brief .intro-spark-lastline{font-size:11px;margin-top:10px}
+
+/* Consistent, reusable stage-writing advice cards with Field Guide deep links. */
+.intro-writing-guide{border:1px solid #ded8ea;border-radius:18px;background:#fcfafc;padding:18px;margin:18px 0 17px}
+.intro-writing-guide-head{display:flex;align-items:flex-start;gap:12px;margin:0 0 15px}
+.intro-writing-guide-icon{flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:13px;color:#634e91;background:#ece4f6}
+.intro-writing-guide-icon .icon{width:21px;height:21px}
+.intro-writing-guide-eyebrow{display:block;color:#72539a;font-weight:850;letter-spacing:.095em;font-size:10px}
+.intro-writing-guide-head h2{font-size:18px;line-height:1.35;margin:4px 0 6px;color:#264246}
+.intro-writing-guide-head p{font-size:12px;line-height:1.6;margin:0;color:#5e7175}
+.intro-advice-cards{display:grid;gap:9px}
+.intro-advice-tip{background:#fff;border:1px solid #e0d9e8;border-radius:12px;min-width:0;overflow:clip}
+.intro-advice-tip[open]{border-color:#baa7d5;box-shadow:0 5px 20px #523e7910}
+.intro-advice-tip>summary{cursor:pointer;display:flex;align-items:center;gap:10px;list-style:none;padding:12px;min-height:68px}
+.intro-advice-tip>summary::-webkit-details-marker{display:none}
+.intro-advice-tip-icon{display:grid;place-items:center;flex:none;width:35px;height:35px;border-radius:11px;background:#ede5f8;color:#694f91}
+.intro-advice-tip-icon .icon{width:19px;height:19px}
+.intro-advice-tip-copy{flex:1;min-width:0;display:grid;gap:2px}
+.intro-advice-tip-copy>small{font-size:9px;letter-spacing:.09em;font-weight:850;color:#715299}
+.intro-advice-tip-copy>strong{font-size:13px;line-height:1.38;color:#264046}
+.intro-advice-tip-copy>span{font-size:11px;line-height:1.4;color:#63757c}
+.intro-advice-tip-chevron{flex:none;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;color:#694f91;background:#f0e9fa}
+.intro-advice-tip-chevron .icon{width:14px;height:14px;transition:transform .2s}
+.intro-advice-tip[open] .intro-advice-tip-chevron .icon{transform:rotate(90deg)}
+.intro-advice-tip-body{padding:0 13px 14px 58px}
+.intro-advice-tip-body>p{font-size:12px;line-height:1.7;color:#4d6065;margin:0 0 10px}
+.intro-advice-example{background:#f7f8f7;border:1px solid #e5ebe8;border-radius:9px;padding:10px 12px}
+.intro-advice-example p{font-size:12px;line-height:1.6;margin:0 0 9px;overflow-wrap:anywhere}
+.intro-advice-example p:first-child strong{color:#966b2a}
+.intro-advice-example p:nth-child(2) strong{color:#197061}
+.intro-advice-example small{display:block;color:#637675;font-size:11px;line-height:1.5;margin-top:3px}
+.intro-advice-guide-link{display:inline-flex;align-items:center;gap:5px;border:0;background:transparent;color:#674b94;font-size:11px;font-weight:800;padding:9px 0 0;text-align:left}
+.intro-advice-guide-link .icon{width:14px;height:14px}
+.intro-advice-example-link{padding:5px 0 0}.intro-advice-example-link .ex-trigger{font-size:11px;font-weight:700;color:#216e62}
+.intro-advice-extra-group{margin:10px 0 14px;padding:0;border:1px solid #e2deea;background:#fff;border-radius:12px}
+.intro-advice-extra-group>summary{list-style:none;display:flex;align-items:center;gap:10px;padding:12px;color:#574a83;cursor:pointer}
+.intro-advice-extra-group>summary::-webkit-details-marker{display:none}
+.intro-advice-extra-group>summary>.icon:first-child{width:19px;height:19px;flex:none}
+.intro-advice-extra-group>summary>span{display:grid;gap:2px;flex:1;min-width:0}
+.intro-advice-extra-group>summary strong{font-size:12px;line-height:1.4}
+.intro-advice-extra-group>summary small{font-size:11px;line-height:1.4;color:#736e83}
+.intro-advice-extra-group>summary>.icon:last-child{width:15px;height:15px;transition:transform .2s}
+.intro-advice-extra-group[open]>summary>.icon:last-child{transform:rotate(90deg)}
+.intro-advice-extra-cards{padding:0 10px 11px}
+.intro-criteria-mini{padding:13px 14px;border:1px solid #d5e3de;background:#f5faf6;border-radius:13px;margin-top:15px}
+.intro-criteria-mini h3{font-size:14px;color:#25594e;margin:0 0 5px}
+.intro-criteria-mini>p{font-size:11px;line-height:1.55;color:#657b71;margin:0 0 10px}
+.intro-criteria-grid{display:grid;gap:8px}
+.intro-criterion-mini{display:flex;align-items:center;gap:10px;border:1px solid #dce9df;background:white;border-radius:10px;padding:10px 12px;min-width:0}
+.intro-criterion-mini>span{flex:1;display:grid;gap:3px;min-width:0}
+.intro-criterion-mini strong{font-size:12px;color:#2c514a}
+.intro-criterion-mini small{font-size:11px;line-height:1.5;color:#5b756e}
+.intro-criterion-mini .criterion-badge{flex:none}
+.intro-advice-example-actions{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin:13px 0}
+.intro-advice-example-actions strong{font-size:12px;color:#304e4b}
+.intro-advice-example-actions p{font-size:11px;line-height:1.5;margin:4px 0 0;color:#637472}
+.intro-advice-example-actions .ex-trigger{background:#e9f3ee;border-radius:9px;color:#1e6e60;font-size:12px;font-weight:780;padding:10px 12px}
+.intro-writing-guide p.intro-advice-final-note{border-top:1px solid #e6deef;padding:12px 0 0;font-size:11px;line-height:1.6;color:#606e76;margin:6px 0 0}
+@media(max-width:760px){
+ .intro-writing-guide{padding:13px}
+ .intro-spark-brief{padding:13px}
+ .intro-advice-tip-body{padding:0 12px 12px}
+ .setup-document-guide{padding:14px}
+}
+@media(max-width:440px){
+ .setup-document-guide-bottom{margin-left:0}
+ .intro-spark-needed{flex-wrap:wrap}
+ .intro-spark-needed button{margin-left:43px}
+ .intro-spark-needed-status{max-width:105px;white-space:normal;text-align:center}
+ .intro-criteria-mini{padding:10px}
+}
+@media(prefers-reduced-motion:reduce){
+ .intro-advice-tip-chevron .icon,.intro-advice-extra-group>summary>.icon:last-child{transition:none}
+}
+@media print{
+ .intro-advice-example-actions,.intro-advice-guide-link{display:none!important}
+}

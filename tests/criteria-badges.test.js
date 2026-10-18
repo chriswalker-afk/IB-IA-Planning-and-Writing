@@ -10,9 +10,10 @@ import {createProjectState} from '../src/core/project-state.js';
 
 test('three passes retain selective and specific criteria without new administrative badges',()=>{
  const keys=Object.keys(CRITERION_SPOTS);
- assert.equal(keys.length,24);
+ assert.equal(keys.length,26);
  for(const [key,criterion] of [
   ['planning:N01V:benefit','C'],['planning:N02M:title','E'],
+  ['completing:C10:aim','A'],['completing:C10:motivation','C'],
   ['completing:C34B:title','D'],['completing:C70N:title','B'],
   ['completing:C31:firstPurpose','E'],['completing:C32:purpose','A'],
   ['completing:C33:title','B'],['completing:C34:observation','E'],
@@ -283,4 +284,21 @@ test('Reading Pass 3 criteria advice does not change the saved mathematical proj
  ])info(s,key);
  assert.equal(JSON.stringify(s),before);
  assert(info(s,'completing:C90F:title').details.some(x=>x.text.includes('feedback actions')));
+});
+
+test('introduction A and C badges guide the writing rather than awarding marks',()=>{
+ const aim=CRITERION_SPOTS['completing:C10:aim'];
+ const motive=CRITERION_SPOTS['completing:C10:motivation'];
+ assert(aim.strong.includes('few focused paragraphs'));
+ assert(aim.reminder.includes('not a prescribed IB introduction'));
+ assert(motive.avoid.includes('invented personal anecdote'));
+ const s=createProjectState();s.route='completing';s.completion.current='C10';
+ s.planning.fields.aim='A genuine precise mathematical aim';
+ s.planning.fields.motivation='I wondered about an observed pattern';
+ const before=JSON.stringify(s);
+ const a=contextualBadgeGuidance(s,'completing:C10:aim',aim);
+ const c=contextualBadgeGuidance(s,'completing:C10:motivation',motive);
+ assert(a.details.some(x=>x.text.includes('mathematical aim')));
+ assert(c.details.some(x=>x.text.includes('observed pattern')));
+ assert.equal(JSON.stringify(s),before);
 });
