@@ -143,7 +143,7 @@ def first_time(browser,width):
   assert guide.locator('[data-guide-card="audience"] .writer-guide-challenge p').is_visible()
   without_overflow(page)
   guide.screenshot(path=str(OUT/f"writers-guide-{width}.png"),animations="disabled")
-  guide.locator('[data-action="close-drawer"]').click()
+  guide.locator('.drawer-header [data-action="close-drawer"]').click()
   assert page.locator('.writer-guide-drawer').count()==0
   assert stored(page)==before_guide
   page.locator('.setup-quick-sparks [data-bind="planning.fields.aim"]').fill("Can a quadratic model an observed pattern?")
@@ -158,7 +158,7 @@ def first_time(browser,width):
   assert page.locator('.writer-guide-return [data-guide-tip="voice"]').count()==1
   page.locator('.writer-guide-return [data-guide-tip="voice"]').click()
   assert page.locator('.writer-guide-drawer [data-guide-card="voice"][open]').count()==1
-  page.locator('.writer-guide-drawer [data-action="close-drawer"]').click()
+  page.locator('.writer-guide-drawer .drawer-header [data-action="close-drawer"]').click()
   assert page.locator('[data-source-node="C10"]').count()==1
   after=stored(page)
   assert after["planning"]["completed"]==False
