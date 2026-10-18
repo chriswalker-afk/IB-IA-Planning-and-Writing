@@ -166,6 +166,49 @@ test("adaptive Planning follows genuine spreadsheet source nodes and retains stu
  assert.equal(h.saved.project.aim,"How does X relate to Y?");
  assert.equal(h.saved.planning.completed,true);
  assert.equal(h.saved.version,2);
+ assert(h.html.includes('CHAPTER 1 COMPLETE'));
+ assert(h.html.includes('planning-finish-handoff'));
+ assert(h.html.includes('Finish planning &amp; begin writing'));
+ assert(h.html.includes('data-action="plan-finish-writing"'));
+ assert(!h.html.includes('data-action="go-report" data-condition='));
+ h.action('plan-finish-writing');
+ assert(h.html.includes('data-source-node="C10"'));
+ assert(h.html.includes('My own working introduction notes'));
+ assert.equal(h.saved.route,'completing');
+ assert.equal(h.saved.completion.current,'C10');
+ assert.equal(h.saved.ui.studioSection,'intro');
+ assert.equal(h.saved.planning.completed,true);
+ assert.equal(h.saved.planning.current,'N07');
+ assert.equal(h.saved.project.aim,'How does X relate to Y?');
+ assert(h.saved.journey.history.some(x=>x.from==='N07'&&x.to==='C00'));
+});
+
+test("returning to a finished plan resumes existing IA Studio writing, without resetting it",()=>{
+ const state=createProjectState();
+ state.route='planning';state.planning.current='N07';state.planning.completed=true;
+ state.planning.fields.aim='How closely can a quadratic describe the observed pattern?';
+ state.completion.current='C34B';
+ state.completion.visited=['C10','C20','C34B'];
+ state.completion.fields.changedSincePlanning='Adjusted the variables after first results';
+ state.scratch.introduction='Saved student writing';
+ state.entries=[{id:'math-a',phase:'first',status:'completed',result:'A genuine sample result',interpretation:'An actual explanation'}];
+ const h=createHarness(state),previous=h.saved;
+ assert(h.html.includes('Return to IA Studio'));
+ assert(!h.html.includes('Finish planning &amp; begin writing'));
+ h.action('plan-finish-writing');
+ assert(h.html.includes('data-source-node="C34B"'));
+ assert.equal(h.saved.completion.current,'C34B');
+ assert.equal(h.saved.scratch.introduction,previous.scratch.introduction);
+ assert.deepEqual(h.saved.entries,previous.entries);
+ assert.equal(h.saved.completion.fields.changedSincePlanning,previous.completion.fields.changedSincePlanning);
+ assert.equal(h.saved.planning.completed,true);
+});
+
+test("the finish-writing action cannot bypass unfinished Planning",()=>{
+ const h=createHarness();
+ h.action('plan-finish-writing');
+ assert.equal(h.saved.route,'home');
+ assert.equal(h.saved.completion.current,'C00');
 });
 
 test("new Phase 3 handover panel and report export actions remain reachable",()=>{
