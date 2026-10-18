@@ -3,7 +3,7 @@
  */
 import {escapeHtml as e,icon} from './primitives.js';
 import {insightTrailLines,insightTrailControls} from './insight-network.js';
-import {JOURNEY_GROUPS,groupStatus,stageStatus,currentGroup,groupTarget,STATUS_LABELS} from './journey.js';
+import {JOURNEY_GROUPS,groupStatus,stageStatus,currentGroup,groupTarget,STATUS_LABELS,chapterRole} from './journey.js';
 import {PROGRESS_GROUPS,planningStage} from '../planning/engine.js';
 
 export function planningAnchors(s){
@@ -41,6 +41,7 @@ export function chapterRibbon(s){
    (active.id===g.id?' aria-current="step"':'')+'>'+
    '<span class="living-ribbon-number">'+(status==='complete'?icon('check'):i+1)+'</span>'+
    '<span class="living-ribbon-label">'+e(g.name)+'</span>'+
+   '<span class="journey-mode-tag '+e(g.mode)+'">'+e(chapterRole(g))+'</span>'+
    chapterMini(s,g)+'<span class="visually-hidden">'+e(label)+'</span></button>';
  }).join('')+'</nav>';
 }
@@ -111,11 +112,11 @@ export function planningLearningTrail(s,{support=''}={}){
   chapters.map(({g,status},i)=>{
    const current=g.id==='plan',label=current&&status==='not-started'?'Getting started':STATUS_LABELS[status];
    return '<button type="button" class="planning-trail-chapter '+e(status)+(current?' current':'')+
-    '" data-action="journey-open" data-target="'+e(groupTarget(s,g))+'"'+
-    (current?' aria-current="step"':'')+' aria-label="'+e(g.name+', '+label)+'">'+
+    ' '+e(g.mode)+'" data-action="journey-open" data-target="'+e(groupTarget(s,g))+'"'+
+    (current?' aria-current="step"':'')+' aria-label="'+e(g.name+', '+chapterRole(g)+', '+label)+'">'+
     '<span class="planning-trail-point">'+(status==='complete'?icon('check'):i+1)+'</span>'+
     '<span class="planning-trail-chapter-copy"><strong>'+e(g.name)+'</strong>'+
-    '<small>'+e(label)+'</small>'+chapterMini(s,g)+'</span></button>';
+    '<small>'+e(label)+'</small><span class="journey-mode-tag '+e(g.mode)+'">'+e(chapterRole(g))+'</span>'+chapterMini(s,g)+'</span></button>';
   }).join('')+'</div>';
  const stageTrack='<div class="planning-trail-stage-track" role="img" aria-label="'+
   e('Planning route, step '+(stageIndex+1)+' of '+PROGRESS_GROUPS.length+': '+stage.label)+'">'+
@@ -134,7 +135,7 @@ export function planningLearningTrail(s,{support=''}={}){
   '<p class="planning-trail-honesty">These are provisional decisions, not IA marks or completed mathematics.</p></div>';
  const full='<div class="planning-trail-card"><div class="planning-trail-heading">'+
   '<span class="section-eyebrow">'+icon('route')+' DISCOVERY TRAIL</span>'+
-  '<h2>Your mathematical journey</h2><p>One investigation · Four chapters</p></div>'+
+  '<h2>Your mathematical journey</h2><p>Plan in Chapter 1. Build your actual IA in Chapters 2–4.</p></div>'+
   chapterButtons+milestones+'</div>';
  return '<aside class="planning-learning-trail" aria-label="Your learning trail">'+
   '<div class="planning-trail-desktop">'+full+'</div>'+
@@ -164,7 +165,7 @@ export function discoveryTrail(s,{compact=false}={}){
  return '<section class="living-trail '+(compact?'is-compact':'')+'" aria-label="Discovery Trail">'+
   '<div class="living-trail-top"><div><span class="section-eyebrow">'+icon('route')+
   ' DISCOVERY TRAIL</span><h3>Follow your mathematical journey</h3></div>'+
-  '<span class="living-trail-tag">One investigation · Four chapters</span></div>'+
+  '<span class="living-trail-tag">Chapter 1: plan · Chapters 2–4: write your IA</span></div>'+
   '<svg class="living-trail-svg" viewBox="0 0 356 153" aria-hidden="true" focusable="false">'+
   insightTrailLines(s)+
   curves.map((path,i)=>'<path d="'+path+'" class="living-trail-road"/>'+
@@ -182,8 +183,8 @@ export function discoveryTrail(s,{compact=false}={}){
   '</svg>'+
   '<div class="living-trail-steps">'+stages.map(({g,status},i)=>
    '<button type="button" class="living-trail-step '+e(status)+(now.id===g.id?' current':'')+
-   '" data-action="journey-open" data-target="'+e(groupTarget(s,g))+'">'+
-   '<strong>'+e(g.name)+'</strong><small>'+e(STATUS_LABELS[status])+'</small>'+
+   ' '+e(g.mode)+'" data-action="journey-open" data-target="'+e(groupTarget(s,g))+'" aria-label="'+e(g.name+', '+chapterRole(g)+', '+STATUS_LABELS[status])+'">'+
+   '<strong>'+e(g.name)+'</strong><span class="journey-mode-tag '+e(g.mode)+'">'+e(chapterRole(g))+'</span><small>'+e(STATUS_LABELS[status])+'</small>'+
    chapterMini(s,g)+'</button>').join('')+'</div>'+
   insightTrailControls(s)+'<p class="living-trail-note">Your stages are always revisitable. “Ready for now” is your own checkpoint, not an IA grade.</p></section>';
 }
