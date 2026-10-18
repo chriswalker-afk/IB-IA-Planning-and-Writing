@@ -8,7 +8,7 @@ function screenFixture(){
  const state=createProjectState();state.route="planning";
  const e=v=>String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;");
  const ctx={
-  getState:()=>state,icon:()=>"",e,button:(label)=>label,
+  getState:()=>state,icon:()=>"",e,button:(label,action)=>'<button data-action="'+e(action)+'">'+e(label)+'</button>',
   field:(path,label)=>'<label>'+e(label)+'</label>',
   choose:(path,opts)=>opts.map(x=>'<label>'+e(x.title)+'</label>').join(""),
   numberPick:()=>"",note:(t)=>t,summary:(label,value)=>'<p>'+e(label)+' '+e(value)+'</p>',
