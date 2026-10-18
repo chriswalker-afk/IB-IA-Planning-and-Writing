@@ -751,6 +751,15 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       case "plan-route":handlePlanningResult(planningMove(state,el.dataset.condition));break;
       case "plan-back":handlePlanningResult(planningBack(state));break;
       case "plan-edit":handlePlanningResult(planningEdit(state,el.dataset.node));break;
+      case "plan-refine-toggle":{
+        if(state.planning.current!=="N01P")break;
+        state.planning.refinePlanOpen=!state.planning.refinePlanOpen;
+        save();render();
+        const trigger=document.querySelector('[data-action="plan-refine-toggle"]');
+        trigger?.focus({preventScroll:true});
+        if(state.planning.refinePlanOpen)document.getElementById("planning-prediction-refine-panel")?.scrollIntoView({block:"nearest",behavior:"auto"});
+        break;
+      }
       case "path-plan":{
         const map={"0":"N00","1":"N01","5":"N03D"};
         handlePlanningResult(planningEdit(state,map[el.dataset.index]||"N00"));break;
