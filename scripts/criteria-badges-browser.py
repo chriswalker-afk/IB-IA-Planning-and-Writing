@@ -176,8 +176,9 @@ with sync_playwright() as pw:
                   ('C40','completing:C40:title')]:
   draft=state_for('completing',node)
   if node=='C40':
-   draft['entries'].append({'id':'later','phase':'substantial','status':'planned',
-      'technique':'Differentiation','result':'','knowledge':'syllabus'})
+   draft['entries'][1]['status']='planned'
+   draft['entries'][1]['result']=''
+   draft['entries'][1]['technique']='Differentiation'
    draft['completion']['activeEntryIndex']=1
   else:draft['entries'][0]['status']='planned'
   ctx=browser.new_context(viewport={'width':360,'height':740})
@@ -188,7 +189,8 @@ with sync_playwright() as pw:
    before=stored(page)
    page.locator('[data-criterion-badge="'+key+'"]').click()
    guidance=page.locator('#criterionBadgeDialog').inner_text()
-   assert 'not an actual finding' in guidance or 'not a result' in guidance
+   if node=='C35':assert 'real mathematical observation' in guidance
+   else:assert 'not an actual finding' in guidance or 'not a result' in guidance
    assert 'A small genuine difference between model' not in guidance
    assert stored(page)==before
    result.append({'case':'planned-guard-'+node,'status':'passed'})
