@@ -52,7 +52,7 @@ export function createProjectState() {
     },
     ui: {
       planStep:0,planMax:0,studioSection:"overview",mathIndex:0,mathPhase:"work",
-      helpKey:"",openCue:"",noteDraft:"",adviceMode:"guided",lastWorkRoute:"",lastStudioNode:"",latestTitle:"",latestDetail:"",latestNode:"",latestEntry:"",latestAt:""
+      helpKey:"",openCue:"",noteDraft:"",adviceMode:"guided",planningIntroSeen:false,planningIntroOpen:false,lastWorkRoute:"",lastStudioNode:"",latestTitle:"",latestDetail:"",latestNode:"",latestEntry:"",latestAt:""
     },
     scratch: {introduction:"",dataNotes:"",conclusion:"",finalReview:""},
     entries:[], cues:{},cueNotes:{},cueLocations:{},
@@ -103,6 +103,8 @@ export function normalizeProjectState(value) {
   if(!["overview","intro","data","math","conclusion","review"].includes(u.studioSection))u.studioSection="overview";
   if(!["work","interpret","next"].includes(u.mathPhase))u.mathPhase="work";
   if(!["guided","reduced"].includes(u.adviceMode))u.adviceMode="guided";
+  u.planningIntroSeen=u.planningIntroSeen===true;
+  u.planningIntroOpen=u.planningIntroOpen===true;
   const next={
     ...blank,
     updatedAt: str(value.updatedAt)||null,
