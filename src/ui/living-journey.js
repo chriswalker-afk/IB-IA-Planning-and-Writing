@@ -13,7 +13,7 @@ export function planningAnchors(s){
   {name:'Working title',recorded:yes(p.provisionalTitle),detail:'A provisional IA title has been saved, not finalised'},
   {name:'My question',recorded:yes(p.aim||s.project?.aim),detail:'An investigation aim is recorded'},
   {name:'Starting material',recorded:yes(p.kind==='theoretical'?(p.theoreticalCase||p.theoreticalObject):(p.dataSource||p.primaryWhat||p.secondaryUrl)),detail:'A proposed evidence or theoretical starting route is recorded'},
-  {name:'First mathematics',recorded:yes(p.firstAction||p.figurePurpose),detail:'An intended first mathematical action is recorded'},
+  {name:'Mathematical direction',recorded:yes(p.course)&&yes(p.kind),detail:'A course and investigation approach have been chosen; this is not completed mathematics'},
   {name:'Review my plan',recorded:s?.planning?.completed===true,detail:'The provisional planning review is marked ready'}
  ];
 }
@@ -75,14 +75,14 @@ export function planningLearningTrail(s,{support=''}={}){
   N03:'Chose a starting-material route',N03B:'Planned two evidence routes',
   N03P:'Planned collection and accuracy',N03P2:'Considered sampling and readiness',N03S:'Planned secondary evidence',N03D:'Checked availability, permissions and access',
   N04:'Reviewed mathematical suitability',N04S:'Considered possible mathematics',
-  N05V:'Planned first mathematics',N06:'Reviewed a provisional plan'
+  N01P:'Considered an early prediction',N06:'Reviewed a provisional plan'
  };
  const activeNode=s?.planning?.current||'N00';
  const currentLabels={
   N00:'Choose a starting point',N00B:'Find a promising idea',N00C:'Compare your ideas',
   N01:'Give your idea a working title',N01V:'Have a clear motivation',N02M:'Choose possible mathematics',
   N02:'Choose an investigation type',N02U:'Explore types',N02T:'Prepare a teacher discussion',
-  N03:'Choose starting material',N03P:'What and how will I collect?',N03P2:'How will I sample?',N03D:'Can I get started?',N04:'Consider the maths',N05V:'Plan the first move',
+  N03:'Choose starting material',N03P:'What and how will I collect?',N03P2:'How will I sample?',N03D:'Can I get started?',N04:'Consider the maths',N01P:'An early expectation (optional)',
   N06:'Review your provisional plan'
  };
  const screensDone=[...new Set(s?.planning?.completedNodes||[])].filter(id=>PROGRESS_GROUPS.some(g=>g.nodes.includes(id)));
