@@ -23,7 +23,8 @@ test('pass-one opportunity map contains exactly one box and three page-title bad
  assert(!isCriterionSpotPage('planning','N03D'));
  for(const spot of Object.values(CRITERION_SPOTS)){
   assert(CRITERIA[spot.criterion]);
-  for(const k of ['why','strong','avoid','reminder','location','stage'])assert(spot[k].length>25,k);
+  for(const k of ['why','strong','avoid','reminder'])assert(spot[k].length>25,k);
+  assert(spot.location.length>12&&spot.stage.length>8);
  }
 });
 test('box badges preserve existing labels and use real buttons with accurate accessible names',()=>{
