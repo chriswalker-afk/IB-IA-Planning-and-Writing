@@ -197,7 +197,12 @@ export function applyPlanningField(state,key,value){
   state.handover.confirmedAt="";
   state.handover.needsReview=true;
  }
- if(before!==f[key]&&state.planning.completed){
+ // Refining an optional expectation during Introduction writing is not a new Planning
+ // dependency. Keep completed Planning progress while retaining normal autosave,
+ // handover invalidation and downstream IA stage review for the updated spark.
+ const introPredictionEdit=state.route==="completing"&&state.completion?.current==="C10"&&
+  (key==="prediction"||key==="predictionWhy");
+ if(before!==f[key]&&state.planning.completed&&!introPredictionEdit){
   state.planning.completed=false;
   state.planning.notices=["Your planning choices changed. Review the updated provisional plan before using it."];
  }

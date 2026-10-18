@@ -364,3 +364,38 @@
 @media print{
  .intro-advice-example-actions,.intro-advice-guide-link{display:none!important}
 }
+
+
+/* Introduction — write an honest expectation/hope and update the original prediction spark. */
+.intro-spark-needed.intro-spark-optional{background:#fffbf3;border-color:#e9d8b5}
+.intro-spark-optional .intro-spark-needed-icon{background:#fff0d4;color:#80612e}
+.intro-spark-optional .intro-spark-prediction-status{background:#fff1d8;color:#805d29;font-size:10px;padding:7px 9px}
+.intro-spark-edit-link{flex:none;display:inline-flex;align-items:center;gap:5px;min-height:37px;padding:7px 9px;color:#806025;border:1px solid #ecd6a5;border-radius:9px;background:#fff8e8;font-size:11px;font-weight:790;text-decoration:none}
+.intro-spark-edit-link .icon{width:14px;height:14px;flex:none}
+.intro-spark-edit-link:hover{text-decoration:underline;background:#fff1d6;text-underline-offset:2px}
+.intro-spark-edit-link:focus-visible{outline:3px solid #bd9e66;outline-offset:2px}
+.intro-prediction-update{scroll-margin-top:105px;border:1px solid #e8d7b8;background:linear-gradient(135deg,#fffcf5,#fffdf9);border-radius:13px;margin:16px 0 0;padding:15px}
+.intro-prediction-head{display:flex;align-items:flex-start;gap:10px}
+.intro-prediction-icon{flex:none;width:36px;height:36px;display:grid;place-items:center;border-radius:11px;background:#fff0d8;color:#8b6829}
+.intro-prediction-icon .icon{width:20px;height:20px}
+.intro-prediction-eyebrow{font-size:9px;letter-spacing:.1em;font-weight:850;color:#8c6428}
+.intro-prediction-head h3{font-size:15px;line-height:1.35;color:#4d4838;margin:4px 0 0}
+.intro-prediction-steps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:13px 0}
+.intro-prediction-steps p{border:1px solid #f0e2c6;border-radius:10px;background:#fff;padding:10px 11px;font-size:11px;line-height:1.65;color:#685e4a;margin:0}
+.intro-prediction-steps strong{color:#785a2c}
+.intro-prediction-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.intro-prediction-fields .field-group{min-width:0;margin:0}
+.intro-prediction-fields .field-label{font-size:11px;color:#6c5534;line-height:1.4;margin-bottom:6px}
+.intro-prediction-fields textarea.field{width:100%;min-height:92px;box-sizing:border-box;resize:vertical;font-size:12px;line-height:1.6;background:#fff}
+.intro-prediction-fields textarea.field:focus-visible{outline:3px solid #c5aa77;outline-offset:2px}
+.intro-spark-brief p.intro-prediction-note{font-size:11px;line-height:1.6;color:#75664e;display:flex;align-items:flex-start;gap:8px;margin:11px 0 0}
+.intro-prediction-note>.icon{color:#9b7b42;flex:none;margin-top:2px;width:16px;height:16px}
+@media(max-width:760px){
+ .intro-prediction-fields,.intro-prediction-steps{grid-template-columns:1fr}
+ .intro-prediction-update{padding:12px}
+}
+@media(max-width:440px){
+ .intro-spark-edit-link{margin-left:43px}
+ .intro-prediction-fields textarea.field{min-height:78px}
+}
+@media print{.intro-prediction-fields{display:none}}

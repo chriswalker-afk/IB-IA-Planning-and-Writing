@@ -1244,6 +1244,17 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     if(target.dataset.bind){
       updateBoundField(target.dataset.bind,target.value);
       save();refreshSavedSpark(target.dataset.bind);
+      // Keep the optional prediction spark visibly updated while typing.
+      // This status means "saved in Pathfinder", never "written in the IA".
+      if(target.dataset.bind==="planning.fields.prediction"){
+        const row=main.querySelector?.('[data-intro-spark="prediction"]');
+        if(row){
+          const saved=!!target.value.trim();
+          row.dataset.introSparkState=saved?"ready":"missing";
+          const status=row.querySelector(".intro-spark-prediction-status");
+          if(status)status.textContent=saved?"Spark saved":"To consider";
+        }
+      }
       // Keep the compact, editable motivation-page aim spark in sync without
       // rerendering (which would steal focus from the student's textarea).
       if(target.dataset.bind==="planning.fields.aim"){

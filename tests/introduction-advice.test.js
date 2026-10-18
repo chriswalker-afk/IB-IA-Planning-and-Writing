@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createProjectState} from '../src/core/project-state.js';
+import {applyPlanningField} from '../src/planning/engine.js';
 import {icon,escapeHtml} from '../src/ui/primitives.js';
 import {essentialsNudge} from '../src/essentials/views.js';
 import {INTRODUCTION_TIPS,renderIntroductionSparkPrompt,renderIntroductionWritingAdvice} from '../src/completing/intro-writing-advice.js';
@@ -25,29 +26,38 @@ test('document setup and format belong to Set up, not the Introduction',()=>{
 test('introduction sparks become explicit writing prompts without claiming the actual document is written',()=>{
  const s=make(),start=JSON.stringify(s);
  let html=renderIntroductionSparkPrompt(s,icon,escapeHtml);
- assert(html.includes('Write about these two sparks now'));
- assert.equal((html.match(/data-intro-spark="/g)||[]).length,2);
+ assert(html.includes('Bring these three ideas into your introduction'));
+ assert.equal((html.match(/data-intro-spark="/g)||[]).length,3);
  assert(html.includes('data-intro-spark-state="missing"'));
  assert(html.includes('data-node="N01A"'));
  assert(html.includes('data-node="N01V"'));
+ assert(html.includes('data-intro-spark="prediction"'));
+ assert(html.includes('href="#intro-prediction-spark"'));
+ assert(html.includes('data-bind="planning.fields.prediction"'));
+ assert(html.includes('data-bind="planning.fields.predictionWhy"'));
+ assert(html.includes('non-mathematical specialist background brief'));
  assert.equal(JSON.stringify(s),start);
  s.planning.fields.aim='How well can a mathematical model explain my result?';
  s.planning.fields.motivation='I noticed a pattern and wanted to investigate it.';
  html=renderIntroductionSparkPrompt(s,icon,escapeHtml);
  assert.equal((html.match(/data-intro-spark-state="ready"/g)||[]).length,2);
+ assert(html.includes('data-intro-spark="prediction" data-intro-spark-state="missing"'));
  assert(html.includes('Use in your IA'));
  assert.deepEqual(s.scratch,JSON.parse(start).scratch);
 });
 test('introduction writing craft is coherent, accessible, contextual and collapsible',()=>{
  assert.equal(INTRODUCTION_TIPS.length,6);
- assert.equal(INTRODUCTION_TIPS.filter(t=>t.essential).length,3);
+ assert.equal(INTRODUCTION_TIPS.filter(t=>t.essential).length,4);
  const tips=new Set(INTRODUCTION_TIPS.map(t=>t.id));
  assert.equal(tips.size,6);
  const html=renderIntroductionWritingAdvice(icon,escapeHtml);
  assert(html.includes('Write the opening, not the ending'));
  assert(html.includes('Start the journey; don&#39;t write an itinerary'));
  assert.equal((html.match(/data-intro-advice="/g)||[]).length,6);
- assert(html.includes('Three more ways to keep it sharp'));
+ assert(html.includes('Two more ways to keep it sharp'));
+ assert(html.includes('Define specialist terms briefly'));
+ assert(html.includes('an honest starting prediction or hope'));
+ assert(html.includes('mathematics more than background detail')===false); // concise text, not an extra essay
  assert(html.includes('data-example-id="EX34"'));
  assert(html.includes('data-example-topic="introduction"'));
  assert(html.includes('data-guide-tip="thinking"'));
@@ -59,6 +69,8 @@ test('introduction writing craft is coherent, accessible, contextual and collaps
  for(const t of INTRODUCTION_TIPS)assert(t.body.length>90&&t.weak.length>15&&t.strong.length>25);
  const reduced=renderIntroductionWritingAdvice(icon,escapeHtml,{reduced:true});
  assert(reduced.includes('State your precise mathematical aim'));
+ assert(reduced.includes('non-mathematical specialist terms briefly'));
+ assert(reduced.includes('prediction spark'));
  assert(!reduced.includes('data-intro-advice='));
 });
 test('criterion A/C comments are introduction-specific, and remain best-fit guidance',()=>{
@@ -87,4 +99,56 @@ test('introduction examples favour aims, motivation and an open mathematical jou
   for(const f of example.introFeatures)assert(example.strong.includes(f.quote),id+': '+f.label);
  }
  assert(exampleById('EX34').strong.includes('Dough hydration'));
+});
+
+test('Introduction updates the canonical prediction and reasoning spark for later comparison',()=>{
+ const s=make();s.planning.completed=true;s.completion.stages.C10='working';
+ const before=JSON.stringify(s);
+ const initial=renderIntroductionSparkPrompt(s,icon,escapeHtml);
+ assert(initial.includes('data-intro-spark="prediction" data-intro-spark-state="missing"'));
+ assert(initial.includes('To consider'));
+ assert(initial.includes('Review and update'));
+ assert.equal(JSON.stringify(s),before);
+ const prediction='I suspect area grows more quickly than the price';
+ const why='Because area changes with the square of the diameter.';
+ assert.equal(applyPlanningField(s,'prediction',prediction),true);
+ assert.equal(applyPlanningField(s,'predictionWhy',why),true);
+ assert.equal(s.planning.completed,true); // Optional refinement does not restart Planning.
+ assert.equal(s.planning.fields.prediction,prediction);
+ assert.equal(s.project.prediction,prediction);
+ assert.equal(s.planning.fields.predictionWhy,why);
+ assert.equal(s.project.predictionWhy,why);
+ const saved=insightItems(s).find(x=>x.id==='prediction');
+ assert(saved.value.includes(prediction));
+ assert(saved.value.includes(why));
+ assert(saved.go.node==='N01P');
+ assert(insightMeaning(s,'C10',saved).includes('actual IA'));
+ assert(insightMeaning(s,'C34B',saved).includes('Compare'));
+ const updated=renderIntroductionSparkPrompt(s,icon,escapeHtml);
+ assert(updated.includes('data-intro-spark="prediction" data-intro-spark-state="ready"'));
+ assert(updated.includes('Spark saved'));
+ assert(updated.includes(prediction));
+ assert(updated.includes(why));
+});
+test('Introduction safely escapes free-text prediction input and does not invent a conclusion',()=>{
+ const s=make();s.planning.fields.prediction='<img src=x onerror=alert(1)>';
+ s.planning.fields.predictionWhy='<script>not real evidence</script>';
+ const html=renderIntroductionSparkPrompt(s,icon,escapeHtml);
+ assert(!html.includes('<img'));
+ assert(!html.includes('<script>'));
+ assert(html.includes('&lt;img'));
+ assert(html.includes('&lt;script&gt;'));
+ assert(html.includes('not a mathematical result'));
+ assert(html.includes('what you genuinely hope to learn'));
+});
+test('An updated prediction does not suppress existing true results or reset Planning from Studio',()=>{
+ const s=make();s.planning.completed=true;
+ s.completion.stages.C10='complete';s.completion.stages.C40='complete';
+ assert.equal(applyPlanningField(s,'prediction','A possible pattern'),true);
+ assert.equal(s.planning.completed,true);
+ assert.equal(s.completion.stages.C10,'needs-review');
+ assert.equal(s.completion.stages.C40,'needs-review');
+ s.route='planning';s.planning.completed=true;
+ assert.equal(applyPlanningField(s,'prediction','A different possible pattern'),true);
+ assert.equal(s.planning.completed,false);
 });
