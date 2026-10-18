@@ -535,7 +535,10 @@ export function createPlanningViews(ctx){
  }
  function viewPlanning(){
   const state=ctx.getState(),p=state.planning,n=p.current;
-  const welcome=state.ui.planningIntroOpen===true||(n==="N00"&&!state.ui.planningIntroSeen);
+  const existingPlan=p.completed||p.completedNodes.length>0||
+   p.visited.some(id=>id!=="N00")||!!(p.fields.aim||p.fields.provisionalTitle||p.fields.idea).trim();
+  const welcome=state.ui.planningIntroOpen===true||
+   (n==="N00"&&!state.ui.planningIntroSeen&&!existingPlan);
   const screen=welcome?planningWelcome():nodePage(state);
   const stage=planningStage(n),stageI=PROGRESS_GROUPS.findIndex(x=>x.id===stage),kickoff=n==="N00",titleStep=n==="N01",ideaMapStep=n==="N00B";
   return '<div class="page planning-page">'+tabletNav()+
