@@ -59,8 +59,32 @@ def first_time(browser,width):
   assert "Complete Planning first" in setup.inner_text()
   assert page.locator('.setup-quick-sparks').count()==1
   assert page.locator('.setup-quick-sparks[open]').count()==1
-  assert page.locator('.living-ribbon .journey-mode-tag.writing').count()==3
-  assert page.locator('.living-ribbon .journey-mode-tag.planning').count()==1
+  assert page.locator('.living-ribbon-part.writing').count()==3
+  assert page.locator('.living-ribbon-part.planning').count()==1
+  assert page.locator('.living-ribbon .journey-mode-tag').count()==0
+  # Check the main Discovery Trail: two zones and four stages, with
+  # colour explaining the task type independently of progress status.
+  page.locator('[data-nav="path"]').first.click()
+  trail=page.locator('.living-trail:not(.is-compact)').first
+  assert trail.is_visible()
+  assert trail.locator('.living-trail-zone-title.plan').count()==1
+  assert trail.locator('.living-trail-zone-title.writing').count()==1
+  assert trail.locator('.living-trail-step.planning').count()==1
+  assert trail.locator('.living-trail-step.writing').count()==3
+  assert trail.locator('.journey-mode-tag').count()==0
+  assert trail.locator('.living-trail-step .chapter-journey-icon').count()==4
+  assert trail.locator('.living-trail-zone-underlay').count()==1
+  cols=page.evaluate("getComputedStyle(document.querySelector('.living-trail-steps')).gridTemplateColumns")
+  assert len(cols.split())==(1 if width<541 else 4),(width,cols)
+  colors=page.evaluate("""() => {
+    const panels=document.querySelectorAll('.living-trail-zone-underlay span');
+    return [...panels].map(p=>getComputedStyle(p).backgroundColor);
+  }""")
+  assert colors[0]!=colors[1],colors
+  without_overflow(page)
+  page.screenshot(path=str(OUT/f"two-zone-discovery-trail-{width}.png"),full_page=True,animations="disabled")
+  page.locator('[data-nav="completing"]').first.click()
+  assert page.locator('[data-source-node="C00"]').count()==1
   without_overflow(page)
   page.screenshot(path=str(OUT/f"setup-quick-sparks-{width}.png"),full_page=True,animations="disabled")
   page.locator('.setup-quick-sparks [data-bind="planning.fields.aim"]').fill("Can a quadratic model an observed pattern?")
