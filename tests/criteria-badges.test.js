@@ -222,14 +222,15 @@ test('Pass 3 conclusion advice honours real results and theoretical scope rather
   assert(!x.details.some(d=>d.label==='Last mathematical finding marked completed'),key);
   assert(x.reminder.includes('cannot verify'),key);
  }
- assert.equal(JSON.stringify({...s,entries:before?JSON.parse(before).entries:[]}).length>0,true);
+ assert.equal(s.entries[0].status,'planned');
 });
 test('Conclusion reflections and presentation references remain student observations, not verified repairs',()=>{
- const s=evidenceFixture(),before=JSON.stringify(s);
+ const s=evidenceFixture();
  s.completion.fields.conclusionFocus='Move a repeated method before the conclusion';
  s.completion.fields.presentationIssue='Graph 1 needs clearer labels';
  s.completion.fields.referencesIssue='Check the attribution for the plotted data';
  s.entries[0].reviewNeeded='yes';
+ const before=JSON.stringify(s);
  const uncertainty=info(s,'completing:C61:uncertainty');
  assert(uncertainty.reminder.includes('outstanding review flag'));
  const conclusion=info(s,'completing:C64:title');
