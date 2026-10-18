@@ -5,7 +5,7 @@ import {createProjectState,normalizeProjectState} from '../src/core/project-stat
 import {planningAnchors,chapterStats,chapterRibbon,discoveryTrail,planningProgress,planningLearningTrail,mathConstellation} from '../src/ui/living-journey.js';
 import {insightItems,insightForCurrent,insightCapture,insightEcho,insightToolkit,insightThreadMap,featuredSparkItems} from '../src/ui/insight-threads.js';
 import {JOURNEY_GROUPS} from '../src/ui/journey.js';
-import {insightConnections,insightTrailLines,insightTrailControls} from '../src/ui/insight-network.js';
+import {insightConnections,insightTrailLines,insightTrailControls,CHAPTER_TRAIL_POINTS,threadGeometry} from '../src/ui/insight-network.js';
 import {journeyMap,journeyRail,groupedDashboard} from '../src/ui/journey-views.js';
 
 test('a fresh project gets a journey, but no invented milestones or result stars',()=>{
@@ -274,6 +274,32 @@ test('Discovery Trail uses one mint planning zone connected to a purple writing 
    assert(html.includes(label),label);
  }
  assert.equal(JSON.stringify(s),JSON.stringify(JSON.parse(before)));
+});
+test('Discovery Trail path starts inside Planning and every visible milestone centres over its own chapter card',()=>{
+ const s=createProjectState();
+ const trail=discoveryTrail(s);
+ assert(trail.includes('viewBox="0 0 1000 155" preserveAspectRatio="none"'));
+ assert(trail.includes('class="living-trail-path"'));
+ assert.equal((trail.match(/class="living-trail-node living-trail-marker /g)||[]).length,4);
+ assert.deepEqual(JOURNEY_GROUPS.map(g=>CHAPTER_TRAIL_POINTS[g.id].x),[125,375,625,875]);
+ assert(CHAPTER_TRAIL_POINTS.plan.x<250);
+ for(const g of JOURNEY_GROUPS.slice(1))assert(CHAPTER_TRAIL_POINTS[g.id].x>250);
+ const positions=[
+  ['plan',12.5,118,'planning'],['setup',37.5,58,'writing'],
+  ['explore',62.5,112,'writing'],['finish',87.5,58,'writing']
+ ];
+ for(const [id,left,top,mode] of positions){
+  const n=JOURNEY_GROUPS.findIndex(g=>g.id===id);
+  assert(trail.includes('class="living-trail-node living-trail-marker not-started '+mode+'" style="left:'+left+'%;top:'+top+'px"'),id);
+  assert(trail.includes('<span class="living-trail-circle">'+(n+1)+'</span>'),id);
+ }
+ assert(trail.includes('M125 118 C250 118 250 58 375 58'));
+ assert.equal(threadGeometry({from:'plan',to:'explore'},0).startsWith('M125 118'),true);
+ const css=readFileSync(new URL('../data/living-journey.css',import.meta.url),'utf8');
+ assert(css.includes('.living-trail-route .living-trail-path .living-trail-svg'));
+ assert(css.includes('vector-effect:non-scaling-stroke'));
+ assert(css.includes('.living-trail-route .living-trail-marker .living-trail-circle'));
+ assert(css.includes('.living-trail-route .living-trail-path{display:none}'));
 });
 test('chapter progress and writing identity remain independent after completing Planning',()=>{
  const s=createProjectState();
