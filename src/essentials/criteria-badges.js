@@ -213,10 +213,12 @@ export const isCriterionSpotPage=(route,node)=>route==='planning'&&node==='N01V'
 export function criterionBadge(key){
  const spot=Object.hasOwn(CRITERION_SPOTS,key)?CRITERION_SPOTS[key]:null;
  if(!spot)return '';
- return '<button type="button" class="criterion-badge" data-criterion-badge="'+escapeHtml(key)+
-  '" aria-label="Criterion '+spot.criterion+' — '+escapeHtml(CRITERIA[spot.criterion].name)+
-  ': advice for '+escapeHtml(spot.location)+'" title="Why Criterion '+spot.criterion+' matters here">'+
-  '<span aria-hidden="true">'+spot.criterion+'</span></button>';
+ const multi=Array.isArray(spot.criteria)&&spot.criteria.length>1;
+ const label=multi?'Criteria A–E':'Criterion '+spot.criterion+' — '+CRITERIA[spot.criterion].name;
+ return '<button type="button" class="criterion-badge'+(multi?' criterion-badge-multi':'')+'" data-criterion-badge="'+escapeHtml(key)+
+  '" aria-label="'+escapeHtml(label)+': advice for '+escapeHtml(spot.location)+
+  '" title="Why '+escapeHtml(label)+' matter'+(multi?'':'s')+' here">'+
+  '<span aria-hidden="true">'+(multi?'A–E':spot.criterion)+'</span></button>';
 }
 export function criterionMarkedField(html,key){
  return html&&Object.hasOwn(CRITERION_SPOTS,key)?'<div class="criterion-marked-field">'+html+criterionBadge(key)+'</div>':html;
@@ -229,7 +231,7 @@ export function criterionPageHeading(title,route,node){
 const block=(name,text)=>'<section class="criterion-popin-part"><h3>'+escapeHtml(name)+'</h3><p>'+escapeHtml(text)+'</p></section>';
 
 /** Native modal gives inert background, Escape behaviour and keyboard focus containment. */
-export function createCriterionBadgeController({getState,openRubric=()=>{}}){
+export function createCriterionBadgeController({getState,openRubric=()=>{},openReview=()=>{}}){
  let dialog=null,origin=null,current='';
  function ensure(){
   if(dialog)return;
@@ -251,14 +253,15 @@ export function createCriterionBadgeController({getState,openRubric=()=>{}}){
   ensure();if(dialog.open)dialog.close();
   current=key;origin=trigger;
   const state=getState(),p=contextualBadgeGuidance(state,key,CRITERION_SPOTS[key]),c=CRITERIA[p.criterion];
+  const multi=Array.isArray(p.criteria)&&p.criteria.length>1;
   const planned=key==='completing:C34B:title'&&!criteriaContext(state).real;
   const why=planned?'An interpretation can support Reflection only when it is based on actual mathematics. A proposed calculation or prediction is not a result.':p.why;
   const strong=planned?'First complete and check a genuine graph, calculation or argument. Then explain what that specific result means for your aim; do not invent findings.':p.strong;
   const level=p.criterion==='E'?courseLevel(state):'';
   dialog.innerHTML='<div class="criterion-popin-header"><div class="criterion-popin-heading">'+
-   '<span class="criterion-popin-letter" aria-hidden="true">'+p.criterion+'</span><div>'+
+   '<span class="criterion-popin-letter'+(multi?' criterion-popin-letter-multi':'')+'" aria-hidden="true">'+(multi?'A–E':p.criterion)+'</span><div>'+
    '<p class="criterion-popin-eyebrow">RELEVANT HERE · '+escapeHtml(p.stage)+'</p>'+
-   '<h2 id="criterionBadgeTitle">Criterion '+p.criterion+' · '+escapeHtml(c.name)+'</h2></div></div>'+
+   '<h2 id="criterionBadgeTitle">'+(multi?'Criteria A–E · '+(p.reviewMode==='draft'?'draft':'final')+' review':'Criterion '+p.criterion+' · '+escapeHtml(c.name))+'</h2></div></div>'+
    '<button type="button" class="criterion-popin-close" data-criterion-badge-close aria-label="Close criterion guidance">×</button></div>'+
    '<div class="criterion-popin-body"><p class="criterion-popin-location" id="criterionBadgeSummary">'+escapeHtml(p.location)+'</p>'+
    block('Why this matters here',why)+
@@ -266,11 +269,18 @@ export function createCriterionBadgeController({getState,openRubric=()=>{}}){
    block('Avoid this',p.avoid)+
    (p.details.length?'<section class="criterion-popin-context" aria-label="Your investigation context"><h3>Using your work</h3>'+
     p.details.map(x=>'<p><strong>'+escapeHtml(x.label)+'</strong> '+escapeHtml(x.text)+'</p>').join('')+'</section>':'')+
+   (multi?'<section class="criterion-popin-all" aria-label="Where to look for each criterion"><h3>What to look for in your actual IA</h3>'+
+    p.reviewRows.map(x=>'<div class="criterion-popin-all-row"><span class="criterion-popin-all-letter">'+x.id+'</span><div><strong>'+escapeHtml(x.title)+'</strong>'+
+     '<p>'+escapeHtml(x.focus)+'</p>'+(x.location?'<p class="criterion-popin-evidence">Your recorded location (recheck it): '+escapeHtml(x.location)+'</p>':'')+'</div></div>').join('')+'</section>':'')+
    '<p class="criterion-popin-note">'+escapeHtml(p.reminder)+'</p>'+
    (p.criterion==='E'?'<p class="criterion-popin-level">'+
     escapeHtml(level?'Your recorded course uses the '+level+' Criterion E reference.':'Confirm whether the SL or HL Criterion E rubric applies to your course.')+'</p>':'')+
    '<p class="criterion-popin-disclaimer">A badge is guidance, not evidence, a score or a predicted mark. IB criteria use best-fit judgement across the actual exploration.</p>'+
-   '<div class="criterion-popin-actions"><button class="btn btn-secondary" type="button" data-criterion-badge-rubric="'+p.criterion+'">Read the full Criterion '+p.criterion+' rubric</button>'+
+   (multi?'<div class="criterion-popin-rubric-links"><span>Read a criterion in full:</span>'+
+    p.criteria.map(id=>'<button type="button" class="criterion-popin-rubric-link" data-criterion-badge-rubric="'+id+'">'+id+'</button>').join('')+'</div>':'')+
+   '<div class="criterion-popin-actions">'+(multi?
+    '<button class="btn btn-secondary" type="button" data-criterion-badge-review="'+p.reviewMode+'">Open my existing '+(p.reviewMode==='draft'?'draft':'final')+' A–E evidence review</button>':
+    '<button class="btn btn-secondary" type="button" data-criterion-badge-rubric="'+p.criterion+'">Read the full Criterion '+p.criterion+' rubric</button>')+
    '<button class="btn btn-quiet" type="button" data-criterion-badge-close>Return to my work</button></div></div>';
   dialog.showModal();
   dialog.querySelector('#criterionBadgeTitle')?.setAttribute('tabindex','-1');
@@ -290,6 +300,12 @@ export function createCriterionBadgeController({getState,openRubric=()=>{}}){
    open(badge.dataset.criterionBadge,badge);return;
   }
   if(!dialog?.open||!dialog.contains(evt.target))return;
+  const review=evt.target.closest('[data-criterion-badge-review]');
+  if(review){
+   evt.preventDefault();evt.stopImmediatePropagation();
+   const mode=review.dataset.criterionBadgeReview,anchor=origin;
+   close();openReview(mode,anchor);return;
+  }
   const rubric=evt.target.closest('[data-criterion-badge-rubric]');
   if(rubric){
    evt.preventDefault();evt.stopImmediatePropagation();
