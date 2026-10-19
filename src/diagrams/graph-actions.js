@@ -88,7 +88,11 @@ export function saveAndLinkGraph(state){
  if(!saved.ok)return saved;
  const reviewNeeded=flagChangedGraph(state,prior,saved.record);
  entry.graphFigureId=saved.record.id;
- if(entry.phase==="first"&&!entry.title.trim())entry.title=saved.record.draft.title;
+ if(entry.phase==="first"&&(!entry.title.trim()||["First purposeful representation","scatter","diagram","table","calculation","other"].includes(entry.title)))
+  entry.title=saved.record.draft.title;
+ if(!entry.technique.trim())
+  entry.technique=saved.record.draft.kind==="scatter"?"Scatter diagram":
+   saved.record.draft.kind==="time"?"Time-series graph":"Function plot";
  entry.kind=saved.record.draft.kind==="scatter"?"scatter":
   saved.record.draft.kind==="function"?"model":"other";
  state.completion.activeEntryIndex=index;state.ui.mathIndex=index;
