@@ -1753,16 +1753,18 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     const hit=evt.target.closest?.("[data-voronoi-site-index],[data-voronoi-cell-index]");
     const index=hit?.dataset.voronoiSiteIndex!==undefined?Number(hit.dataset.voronoiSiteIndex):
       hit?.dataset.voronoiCellIndex!==undefined?Number(hit.dataset.voronoiCellIndex):-1;
-    voronoiPointer={id:evt.pointerId,svg,inverse,bounds,layout,index,startX:evt.clientX,startY:evt.clientY,
+    voronoiPointer={id:evt.pointerId,svg,inverse,bounds,layout,index,
+      isSite:hit?.dataset.voronoiSiteIndex!==undefined,isCell:hit?.dataset.voronoiCellIndex!==undefined,
+      startX:evt.clientX,startY:evt.clientY,
       before:voronoiFrame(studio.draft),tool:studio.tool,dragged:false,
       locked:studio.scenario?.active&&index>=0&&studio.draft.sites[index]?.kind==="observed"};
-    if(index>=0)selectVoronoiSite(studio,index);
+    if(index>=0&&["select","inspect"].includes(studio.tool))selectVoronoiSite(studio,index);
     evt.preventDefault();
   });
   document.addEventListener("pointermove",evt=>{
     const session=voronoiPointer;
     if(!session||evt.pointerId!==session.id||!state.voronoiStudio?.open)return;
-    if(session.tool!=="select"||session.index<0||session.locked)return;
+    if(session.tool!=="select"||!session.isSite||session.index<0||session.locked)return;
     if(!session.dragged&&Math.hypot(evt.clientX-session.startX,evt.clientY-session.startY)<4)return;
     const p=voronoiPointerWorld(session,evt);if(!p)return;
     const studio=state.voronoiStudio;
@@ -1778,7 +1780,8 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     if(session.dragged){
       recordVoronoiHistory(studio,session.before);redrawVoronoiAtScroll();return;
     }
-    if(session.index>=0){
+    if(session.index>=0&&(session.isSite&&session.tool!=="test"||
+      session.isCell&&["select","inspect"].includes(session.tool))){
       selectVoronoiSite(studio,session.index);redrawVoronoiAtScroll();
       if(session.locked&&session.tool==="select")toast("Existing sites are protected in a comparison.");
       return;
