@@ -54,6 +54,12 @@ def compact(p,width):
  assert p.locator('[data-table-preview] svg').is_visible()
  no_overflow(p)
  p.screenshot(path=str(OUT/f"table-studio-compact-{width}.png"),full_page=True,animations="disabled")
+ p.evaluate("""() => {
+  window.__tableTrace = [];
+  document.addEventListener("click", e=>window.__tableTrace.push("clicked:"+(e.target.closest("[data-action]")?.dataset.action||"other")),true);
+  const make=URL.createObjectURL.bind(URL);
+  URL.createObjectURL=blob=>{window.__tableTrace.push("blob:"+blob.type);return make(blob);};
+ }""")
  for fmt,ext in [("svg","svg"),("html","html"),("csv","csv"),("png","png")]:
   print("Checking table export:",fmt,flush=True)
   try:
@@ -61,6 +67,8 @@ def compact(p,width):
     p.locator('[data-action="table-'+fmt+'"]').click()
   except Exception:
    print("Table export feedback:",p.locator("#toast").inner_text(),flush=True)
+   print("Table debug events:",p.evaluate("window.__tableTrace"),flush=True)
+   print("SVG button:",p.locator('[data-action="table-svg"]').evaluate("(e)=>e.outerHTML"),flush=True)
    raise
   assert download.value.suggested_filename.endswith("."+ext)
  p.locator('[data-action="table-use"]').click()
