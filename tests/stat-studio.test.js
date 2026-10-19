@@ -226,3 +226,24 @@ test("invalid data cannot create a false completed step or delete existing stati
  assert.equal(saveStatFigure(studio).ok,false);
  assert.deepEqual(studio.figures.map(f=>f.id),ids);
 });
+
+test("deselecting every group cannot silently reselect or plot another column",()=>{
+ const s=boxSample();
+ s.draft.selected=[];
+ assert.equal(statAnalysis(s.draft).ready,false);
+ assert.ok(statAnalysis(s.draft).problems.some(x=>x.code==="series"));
+});
+test("invalid measurements never silently disappear from a plotted histogram or box plot",()=>{
+ const histogram=rawHistogram();
+ histogram.draft.matrix[2][0]="measurement uncertain";
+ assert.ok(statAnalysis(histogram.draft).problems.some(x=>x.code==="invalid-values"));
+ const box=boxSample();
+ box.draft.matrix[3][0]="NA";
+ assert.ok(statAnalysis(box.draft).problems.some(x=>x.code==="invalid-values"));
+});
+test("numeric year headings can be explicitly or automatically detected in category comparisons",()=>{
+ const r=parseStatTable("Category\t2025\t2026\nFirst\t3\t4\nSecond\t6\t5","auto","bar");
+ assert.equal(r.hasHeaders,true);
+ assert.equal(r.columns[1],"2025");
+ assert.equal(r.matrix.length,2);
+});
