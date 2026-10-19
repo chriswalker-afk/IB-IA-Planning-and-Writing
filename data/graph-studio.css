@@ -89,3 +89,10 @@
  .graph-buttons .btn{flex:1 1 105px}
  .graph-saved-item{flex-wrap:wrap}
 }
+
+.graph-context-note{border:1px solid #d6e6e2;border-radius:10px;background:#f2f9f6;padding:10px 12px;margin:12px 0 15px;font-size:11px;line-height:1.6;color:#3f6765}
+.graph-context-note strong{color:#215e55}
+.graph-context-note ul{margin:5px 0 6px;padding-left:16px}
+.graph-context-note li{margin:3px 0;overflow-wrap:anywhere}
+.graph-context-note p{margin:5px 0 0}
+.graph-reset-row{display:flex;justify-content:flex-end;margin-top:10px}
