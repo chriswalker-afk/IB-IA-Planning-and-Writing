@@ -53,6 +53,21 @@ export function freshGraph(studio){
  studio.activeId="";studio.draft=newGraphDraft();studio.open=true;
 }
 const mathSignature=d=>JSON.stringify([d.kind,d.matrix,d.columns,d.xIndex,d.yIndex,d.expression,d.xMin,d.xMax,d.yMin,d.yMax]);
+function flagChangedGraph(state,previous,current){
+ if(!previous?.entryId||mathSignature(previous.draft)===mathSignature(current.draft))return false;
+ const entry=state.entries.find(x=>x.id===previous.entryId);
+ if(!entry||entry.status!=="completed"||!entry.result?.trim())return false;
+ entry.reviewNeeded="yes";
+ entry.reviewReason="The underlying data, function or graph scales changed. Recheck the corresponding written result and interpretation.";
+ state.completion.stages[entry.phase==="first"?"C30":"C40"]="needs-review";
+ return true;
+}
+export function saveGraphDraft(state){
+ const studio=state.graphStudio,prior=studio.figures.find(x=>x.id===studio.activeId);
+ const saved=saveGraphFigure(studio);
+ if(!saved.ok)return saved;
+ return {...saved,reviewNeeded:flagChangedGraph(state,prior,saved.record)};
+}
 export function saveAndLinkGraph(state){
  const studio=state.graphStudio;
  if(!analyseGraph(studio.draft).ready)return {ok:false,error:"Resolve the required graph quality checks before linking this figure."};
@@ -71,17 +86,12 @@ export function saveAndLinkGraph(state){
  if(!entry)return {ok:false,error:"Could not find a mathematical step to link this graph to."};
  const saved=saveGraphFigure(studio,entry.id);
  if(!saved.ok)return saved;
- const substantiveChange=prior?.entryId===entry.id&&mathSignature(prior.draft)!==mathSignature(saved.record.draft);
- if(substantiveChange&&entry.status==="completed"&&entry.result?.trim()){
-  entry.reviewNeeded="yes";
-  entry.reviewReason="The underlying data, expression or graph scales changed. Recheck what your written result and interpretation establish.";
-  state.completion.stages[entry.phase==="first"?"C30":"C40"]="needs-review";
- }
+ const reviewNeeded=flagChangedGraph(state,prior,saved.record);
  entry.graphFigureId=saved.record.id;
  if(entry.phase==="first"&&!entry.title.trim())entry.title=saved.record.draft.title;
  entry.kind=saved.record.draft.kind==="scatter"?"scatter":
   saved.record.draft.kind==="function"?"model":"other";
  state.completion.activeEntryIndex=index;state.ui.mathIndex=index;
  state.completion.fields.firstType=entry.kind==="scatter"?"scatter":"other";
- return {ok:true,record:saved.record,index,reviewNeeded:substantiveChange&&entry.reviewNeeded==="yes"};
+ return {ok:true,record:saved.record,index,reviewNeeded};
 }
