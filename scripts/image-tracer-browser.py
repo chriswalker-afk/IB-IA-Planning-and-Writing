@@ -53,7 +53,7 @@ def run(p,width):
  no_overflow(p)
  p.locator('[data-action="trace-upload"]').click()
  p.locator("#imageTraceFile").set_input_files({"name":"synthetic-arch.png","mimeType":"image/png","buffer":IMAGE})
- assert p.locator('[data-trace-canvas="true"]').count()==1
+ p.locator('[data-trace-canvas="true"]').wait_for(state="visible",timeout=25000)
  d=saved(p)["imageTracer"]["draft"]
  assert d["imageSrc"].startswith("data:image/")
  assert d["width"]==500 and d["height"]==300
