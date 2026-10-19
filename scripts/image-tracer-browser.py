@@ -97,6 +97,10 @@ def run(p,width):
   p.locator('[data-action="trace-png"]').click()
  assert download.value.suggested_filename.endswith(".png")
  p.locator('[data-action="trace-view"][data-trace-value="photo"]').click()
+ assert p.locator('[data-trace-preview] image').count()==1
+ with p.expect_download() as photo_png:
+  p.locator('[data-action="trace-png"]').click()
+ assert photo_png.value.suggested_filename.endswith("-photo.png")
  p.screenshot(path=str(OUT/f"image-tracer-photo-overlay-{width}.png"),full_page=True,animations="disabled")
  p.locator('[data-action="trace-use"]').click()
  assert p.locator('[data-source-node="C32"]').count()==1
