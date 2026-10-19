@@ -172,6 +172,14 @@ export function presentationDiagnostics(state,type,draft){
    add("small-n","check","Small samples","Quartiles from few observations may be unstable. Avoid broad population claims.");
   if(q.problems.some(x=>x.code==="zero-bar"))
    add("bar-zero","check","Bar-chart baseline","A frequency or percentage bar chart must start at zero or its lengths are misleading.");
+ }else if(type==="trace"){
+  add("tracer-scale","consider","Check image calibration","An image-to-coordinate scale is valid only under your chosen calibration assumptions. Identify reference lengths, units and any perspective distortion.");
+  if(d.perspective==="unsure")add("photo-perspective","check","Perspective has not been considered","Explain whether the photographed plane was parallel to the camera and how this could affect traced lengths and angles.");
+  if(d.limitations)add("photo-limits","consider","Revisit your own tracing limitation",words(d.limitations,220));
+ }else if(type==="voronoi"){
+  add("voronoi-metric","consider","Nearest means straight-line nearest","A Euclidean Voronoi construction compares planar distances, not road travel time, waiting time, demand or optimal service provision.");
+  if(!d.metricConfirmed)add("voronoi-metric-check","check","Confirm the distance model","Explain the coordinate system and why straight-line distance is an appropriate first assumption.");
+  if(d.sites?.some(s=>s.kind==="candidate"))add("voronoi-candidates","consider","Proposed sites are hypothetical","Distinguish proposed sites from existing sites and compare what the new cells establish, without treating them as proven optimal.");
  }else if(type==="table"){
   const q=analyzeTable(d);
   if(d.mode==="compact"){
@@ -188,7 +196,7 @@ export function presentationDiagnostics(state,type,draft){
   if(q.warnings.some(x=>x.code==="missing-observations"))
    add("missing","check","Some observations are missing","Describe the reason for missing values and how the reported n was calculated.");
  }
- if(source==="secondary"&&!cell(d.sourceText))
+ if(source==="secondary"&&!cell(d.sourceText||d.sourceCredit))
   add("credit","check","Give the original source","Credit the original publisher/dataset and relevant date, not just the website used to find it.");
  const planned=p.dataSource||"";
  if(source==="primary"&&planned==="secondary"||source==="secondary"&&planned==="primary")
@@ -208,11 +216,11 @@ export function figureCaption(state,type,draft){
  const d=draft||{},prefix=type==="table"?"Table":"Figure",
   number=words(type==="table"?d.number:d.figureNumber,6),
   title=words(d.title,110),
-  note=words(type==="table"?d.note:d.caption,320);
+  note=words(type==="table"||type==="voronoi"?d.note:d.caption,320);
  let citation="";
  if(type==="graph"&&d.kind==="function")citation="Mathematical function drawn over the stated domain; not observed data.";
  else if(sourceType(d)==="primary")citation="Source: own collected measurements (describe collection in the IA).";
- else if(sourceType(d)==="secondary")citation="Source: "+(words(d.sourceText,400)||"[add original dataset citation]");
+ else if(sourceType(d)==="secondary")citation="Source: "+(words(d.sourceText||d.sourceCredit,400)||"[add original image or dataset citation]");
  else if(sourceType(d)==="theoretical")citation="Calculated/theoretical construction; assumptions stated in the IA.";
  else citation="Source: [confirm the actual source before submission]";
  return [prefix+" "+(number||"[number]")+". "+(title||"[add a descriptive title]"),
@@ -225,10 +233,14 @@ export function handoverQuestions(state,type,draft){
  const method=type==="graph"?draft?.kind==="scatter"?"paired-variable inspection":
   draft?.kind==="time"?"time-series inspection":"the chosen mathematical model":
   type==="stat"?{histogram:"distribution and class intervals",box:"centre, spread and possible outliers",dot:"distribution of repeated and distinct values",bar:"category counts or proportions"}[draft?.kind]||"statistical display":
+  type==="trace"?"calibrated coordinates extracted from an image":
+  type==="voronoi"?"nearest-site regions under a straight-line distance assumption":
   {compact:"selected numerical results",summary:"summary statistics",frequency:"observed category frequencies"}[draft?.mode]||"mathematical results";
  const limitation=type==="graph"&&draft?.kind==="function"?"Which assumptions and feasible domain restrict this model?":
   type==="stat"&&draft?.kind==="bar"?"How do group sizes and percentage denominators affect the comparison?":
   type==="stat"&&draft?.kind==="histogram"?"How do class widths and measurement resolution affect the apparent shape?":
+  type==="trace"?"How might calibration error, resolution or perspective change the traced coordinates?":
+  type==="voronoi"?"How would roads, obstacles, distance metrics or the choice of sites change nearest-site regions?":
   type==="table"?"Are these the smallest set of results needed, with justified precision?":
   "How could sampling, measurement accuracy, data exclusions or model assumptions change the conclusion?";
  return {

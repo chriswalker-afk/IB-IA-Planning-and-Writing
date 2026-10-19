@@ -11,7 +11,7 @@ const point=p=>p&&typeof p==="object"&&finite(p.x)&&finite(p.y)&&p.x>=0&&p.y>=0&
 const source=s=>typeof s==="string"&&s.length<=MAX_IMAGE_CHARS&&/^data:image\/(?:jpeg|png|webp);base64,[a-z0-9+/=\s]+$/i.test(s)?s:"";
 export const newImageTraceDraft=()=>({
  imageSrc:"",width:0,height:0,imageName:"",
- title:"",sourceKind:"unsure",sourceCredit:"",
+ title:"",figureNumber:"1",sourceKind:"unsure",sourceCredit:"",
  xLabel:"x",yLabel:"y",unit:"",knownLength:"",origin:null,direction:null,refA:null,refB:null,
  points:[],mode:"origin",view:"photo",imageOpacity:0.72,showGrid:true,showLine:true,closeShape:false,showLabels:true,
  precision:"unsure",perspective:"unsure",limitations:"",caption:""
@@ -19,7 +19,7 @@ export const newImageTraceDraft=()=>({
 export const newImageTracer=()=>({open:false,draft:newImageTraceDraft(),figures:[],activeId:""});
 export function normalizeTraceDraft(raw){
  const d=newImageTraceDraft(),r=raw&&typeof raw==="object"&&!Array.isArray(raw)?raw:{};
- for(const key of ["imageName","title","sourceKind","sourceCredit","xLabel","yLabel","unit","knownLength","mode","view","precision","perspective","limitations","caption"])
+ for(const key of ["imageName","title","figureNumber","sourceKind","sourceCredit","xLabel","yLabel","unit","knownLength","mode","view","precision","perspective","limitations","caption"])
   d[key]=str(r[key],["sourceCredit","limitations","caption"].includes(key)?500:160)||d[key];
  d.imageSrc=source(r.imageSrc);
  d.width=d.imageSrc&&Number.isInteger(r.width)&&r.width>=32&&r.width<=10000?r.width:0;

@@ -1,4 +1,5 @@
 import {representationEmpty} from "./workspace-ui.js";
+import {renderPresentationCoach,renderFigureHandover} from "./presentation-coach-view.js";
 /** One coherent, student-readable Voronoi authoring surface, with no invented sites. */
 import {analyzeVoronoi,MAX_VORONOI_FIGURES} from "./voronoi-core.js";
 import {renderVoronoiSvg} from "./voronoi-render.js";
@@ -204,6 +205,7 @@ export function renderVoronoiStudio(state,icon,e){
  section("2","Scale, labels and mathematical assumptions",
   "Both axes have equal physical scale. Confirm the units and distance interpretation before using your figure in an IA.",
   field("title","Descriptive figure title",d.title,e,{placeholder:"e.g. Straight-line service areas around local facilities"})+
+   field("figureNumber","Figure number in my IA",d.figureNumber,e,{placeholder:"e.g. 1"})+
   '<div class="voronoi-two">'+field("xLabel","Horizontal axis",d.xLabel,e)+field("yLabel","Vertical axis",d.yLabel,e)+'</div>'+
   select("unitMode","Coordinates and units",d.unitMode,[["unsure","Confirm the unit"],["unit","Both axes have the same distance unit"],["dimensionless","Dimensionless Cartesian units"]],e)+
   (d.unitMode==="unit"?field("unit","Unit on both axes",d.unit,e,{placeholder:"km, m, etc."}):"")+
@@ -243,7 +245,9 @@ export function renderVoronoiStudio(state,icon,e){
  '</div><div class="voronoi-results">'+voronoiPreviewHtml(studio,icon,e)+
  '<section class="voronoi-summary" data-voronoi-summary><h3>Explore your actual results</h3>'+voronoiResultHtml(studio,e)+'</section>'+
  '<section class="voronoi-quality" data-voronoi-quality>'+voronoiQualityHtml(studio,icon,e)+'</section>'+
+  renderPresentationCoach(state,"voronoi",d,icon,e)+
  '<section class="voronoi-output" data-voronoi-output data-representation-step="use">'+voronoiOutputHtml(studio,icon)+'</section>'+
+  renderFigureHandover(state,"voronoi",d,icon,e)+
  '<p class="voronoi-ia-note"><strong>When writing the IA:</strong> Introduce the figure before showing it. Explain the perpendicular-bisector construction where appropriate, then interpret nearest-site results, assumptions and limitations against your actual aim. These automatically calculated cells do not complete your mathematics for you.</p>'+
  '</div></div>'+
  (studio.figures.length?'<details class="voronoi-saved"><summary>'+icon("layers")+' Saved Voronoi figures ('+studio.figures.length+')</summary>'+

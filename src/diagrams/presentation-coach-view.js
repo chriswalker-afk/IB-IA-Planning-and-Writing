@@ -31,7 +31,8 @@ export function renderPresentationCoach(state,type,draft,icon,e){
 export function renderFigureHandover(state,type,draft,icon,e,{id="",linked=false}={}){
  const questions=handoverQuestions(state,type,draft);
  const caption=figureCaption(state,type,draft);
- return '<section class="ia-figure-handover" data-figure-handover="'+type+'" aria-label="Prepare this figure or table for my IA">'+
+ return (linked?'<details class="ia-figure-handover ia-handover-linked" data-figure-handover="'+type+'"><summary>Show IA label, source and writing prompts</summary>':
+  '<section class="ia-figure-handover" data-figure-handover="'+type+'" aria-label="Prepare this figure or table for my IA">')+
   '<div class="ia-handover-head"><span class="ia-handover-icon">'+icon("pencil")+'</span>'+
   '<div><strong>'+(linked?"Use this saved figure in your IA":"Before moving this into your IA")+'</strong>'+
   '<p>Pathfinder creates a label and writing prompts, not your mathematical interpretation. Nothing is automatically inserted into your IA document.</p></div></div>'+
@@ -46,7 +47,7 @@ export function renderFigureHandover(state,type,draft,icon,e,{id="",linked=false
    '<li><strong>Interpret after the output</strong><p>'+e(questions.after)+'</p></li>'+
    '<li><strong>Evaluate a limitation</strong><p>'+e(questions.limitation)+'</p></li>'+
    '<li><strong>Link to the next step</strong><p>'+e(questions.next)+'</p></li></ol>'+
-  '</div></section>';
+  '</div>'+(linked?'</details>':'</section>');
 }
 export function renderHubDatasetEvidence(state,baseAdvice,icon,e){
  const advice=contextualRepresentationAdvice(state,baseAdvice);
