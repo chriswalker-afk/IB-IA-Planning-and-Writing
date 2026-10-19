@@ -397,27 +397,17 @@ test("reopening IA Studio resumes the exact source C-node instead of resetting t
  assert(h.html.includes('data-source-node="C04"'));
 });
 
-test("Phase 5 writing advice respects student control instead of launching a queue of unwanted prompts",()=>{
+test("Introduction keeps optional writing advice accessible without a competing cue queue",()=>{
  const h=createHarness();
  h.write("planning.fields.aim","How do changing measurements influence an outcome?");
  h.write("planning.fields.motivation","My interest in realistic measurements");
  h.nav("completing");
  h.action("completion-open",{node:"C10"});
  assert(h.html.includes("Write your introduction"));
- assert(!h.html.includes("data-writing-cue=")); // Introduction now has one focused workflow.
- h.action("completion-open",{node:"C20"});
- assert(h.html.includes("data-writing-cue="));
- const match=h.html.match(/data-guidance-id="(W\d\d)" data-guidance-key="([^"]+)"/);
- assert(match);
- h.action("guidance-writing-action",{guidanceId:match[1],guidanceKey:match[2],guidanceEvent:"covered-start"});
- assert(h.html.includes("Confirm already covered"));
- h.write("completion.guidanceUi.locationDraft","Introduction, second paragraph");
- h.action("guidance-writing-action",{guidanceId:match[1],guidanceKey:match[2],guidanceEvent:"covered"});
- assert.equal(h.saved.writingLedger[match[2]].location,"Introduction, second paragraph");
- assert(!h.html.includes("Useful writing moment")); // no instant replacement with another cue
- h.action("guidance-more");
- assert(!h.html.includes("Useful writing moment")); // no additional relevance from the same node
- assert.equal(h.saved.writingLedger[match[2]].status,"already-covered");
+ assert(!h.html.includes("data-writing-cue="));
+ assert(!h.html.includes("Useful writing moment"));
+ assert(h.html.includes('data-action="writer-guide-open"'));
+ assert(h.html.includes('data-writing-examples'));
 });
 test("Phase 5 optional limitations never auto-record source possibilities as real weaknesses",()=>{
  const h=createHarness();
