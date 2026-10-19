@@ -213,7 +213,14 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     const studio=studios[type],root=main.querySelector?.('[data-'+roots[type]+']');
     if(!studio?.draft||!root)return;
     const coach=root.querySelector('[data-presentation-coach="'+type+'"]');
-    if(coach)coach.outerHTML=renderPresentationCoach(state,type,studio.draft,icon,e);
+    if(coach){
+      const moreOpen=coach.querySelector("details.ia-coach-more")?.open===true;
+      coach.outerHTML=renderPresentationCoach(state,type,studio.draft,icon,e);
+      if(moreOpen){
+       const extra=root.querySelector("details.ia-coach-more");
+       if(extra)extra.open=true;
+      }
+    }
     const handover=root.querySelector('[data-figure-handover="'+type+'"]');
     if(handover)handover.outerHTML=renderFigureHandover(state,type,studio.draft,icon,e);
   }
