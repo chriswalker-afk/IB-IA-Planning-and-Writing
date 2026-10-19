@@ -61,12 +61,19 @@ with sync_playwright() as pw:
  def journey(p,original):
   baseline=core(saved(p))
   assert p.locator(".living-ribbon .living-ribbon-part").count()==4
-  echo=p.locator(".insight-echo-item.insight-accuracy")
-  assert echo.count()==1 and echo.is_visible()
-  assert "Nearest centimetre" in echo.inner_text()
-  echo.locator('[data-action="insight-jump"]').click()
+  # The current studio exposes two relevant expandable sparks plus the full
+  # library, not the retired insight-echo-item strip.
+  shelf=p.locator('[data-spark-shelf="studio"]')
+  assert shelf.count()==1 and shelf.is_visible()
+  accuracy=shelf.locator('.spark-shelf-featured.insight-accuracy')
+  assert accuracy.count()==1 and accuracy.is_visible()
+  assert "Nearest centimetre" in accuracy.inner_text()
+  accuracy.locator("summary").click()
+  assert "Original resolution: 1 cm" in accuracy.inner_text()
+  accuracy.locator('[data-action="insight-jump"]').click()
   assert p.locator('[data-source-node="C24"]').count()==1
-  assert p.locator(".insight-capture.is-captured.insight-accuracy").count()==1
+  assert p.locator('[data-spark-shelf="studio"]').count()==1
+  assert "Nearest centimetre" in p.locator('[data-spark-shelf="studio"]').inner_text()
   p.locator('[data-nav="path"]:visible').first.click()
   assert p.locator(".living-trail").is_visible()
   assert p.locator(".insight-toolkit").is_visible()
@@ -92,7 +99,8 @@ with sync_playwright() as pw:
   p.screenshot(path=str(OUT/("living-journey-"+str(p.viewport_size["width"])+".png")),full_page=True,animations="disabled")
   p.locator('.insight-toolkit-card[data-insight-type="planning"][data-node="N01"]').click()
   assert p.locator('[data-source-node="N01"]').count()==1
-  assert "Spark saved" in p.locator(".insight-capture").inner_text()
+  assert p.locator(".planning-learning-trail").count()==1
+  assert "How might distance change with time?" in p.locator("#main").inner_text()
   assert core(saved(p))==baseline,(baseline,core(saved(p)))
  for w,h in [(390,844),(1440,1000)]:
   run("thread-navigation-"+str(w),journey,w,h)
