@@ -47,6 +47,8 @@ import {renderTableSvg} from "../src/diagrams/table-studio-render.js";
 import {renderTableStudio,tablePreviewHtml,tableQualityHtml,tableOutputHtml} from "../src/diagrams/table-studio-view.js";
 import {setTableField,setTableColumn,chooseTableMode,toggleTableVariable,toggleTableMeasure,loadTable,freshTable,saveTableDraft,saveAndLinkTable} from "../src/diagrams/table-studio-actions.js";
 import {exportTable} from "../src/diagrams/table-studio-export.js";
+import {nativeGridSummary,editNativeHeading,editNativeCell,pasteNativeRange,NATIVE_MAX_ROWS,NATIVE_PAGE_ROWS} from "../src/diagrams/native-data-core.js";
+import {handleNativeDataAction,nativeStudio,activeNativeType} from "../src/diagrams/native-data-actions.js";
 import {analyzeVoronoi,importVoronoiSites,voronoiBounds} from "../src/diagrams/voronoi-core.js";
 import {renderVoronoiSvg,voronoiLayout} from "../src/diagrams/voronoi-render.js";
 import {voronoiPreviewHtml,voronoiResultHtml,voronoiQualityHtml,voronoiOutputHtml} from "../src/diagrams/voronoi-view.js";
@@ -110,6 +112,7 @@ function createHarness(savedValue){
     analyzeTable,importTableData,newTableDraft,renderTableSvg,renderTableStudio,tablePreviewHtml,tableQualityHtml,
     tableOutputHtml,setTableField,setTableColumn,chooseTableMode,toggleTableVariable,toggleTableMeasure,
     loadTable,freshTable,saveTableDraft,saveAndLinkTable,exportTable,
+    nativeGridSummary,editNativeHeading,editNativeCell,pasteNativeRange,NATIVE_MAX_ROWS,NATIVE_PAGE_ROWS,handleNativeDataAction,nativeStudio,activeNativeType,
     analyzeVoronoi,importVoronoiSites,voronoiBounds,renderVoronoiSvg,voronoiLayout,
     voronoiPreviewHtml,voronoiResultHtml,voronoiQualityHtml,voronoiOutputHtml,
     setVoronoiField,setVoronoiSite,addVoronoiSite,removeVoronoiSite,clearVoronoiMap,useVoronoiMap,
