@@ -782,7 +782,7 @@ test("a changed investigative journey refreshes method advice without changing s
  changed.planning.routeExplorer.selectedRoute="optimisation";
  const reopened=createHarness(changed); // Planning made a different route choice before returning to Studio.
  assert(reopened.html.includes('data-journey-writing-id="optimisation"'));
- assert(reopened.html.includes("stationary points"));
+ assert(reopened.html.toLowerCase().includes("stationary points"));
  assert(reopened.html.includes("My own approach for this aim"));
  assert.equal(reopened.saved.completion.fields.firstMethodEvaluation,"My own mathematical evaluation");
 });

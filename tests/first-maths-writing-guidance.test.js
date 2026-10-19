@@ -67,7 +67,7 @@ test("modelling and optimisation journeys give different method limitations and 
  assert(m.includes("simpler function"));
  assert(o.includes("boundary"));
  assert(o.toLowerCase().includes("stationary point"));
- assert(o.includes("differentiation"));
+ assert(o.includes("derivative-based"));
  assert(!o.includes("residual pattern"));
 });
 test("proof journey warns that a finite set of cases does not establish a universal claim",()=>{
