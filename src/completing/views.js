@@ -524,47 +524,55 @@ export function createCompletingViews(ctx){
     "Write a sentence before each figure, table or calculation. Tell the reader what they are about to see, what question it answers and any essential definitions.",
     context("introduce")+priorNotes+
     (f.methodReason?smallSummary("Method justified on the previous screen",f.methodReason):"")+
-    (entry?criteriaField(entryField("purpose","What I will write BEFORE this mathematical work",
-      "What will the reader see, and why does it help answer my aim?",{type:"textarea",rows:4}),"completing:C32:purpose"):
-     criteriaField(F("firstPurpose","The mathematical question that introduces this first output",
-      "What will the reader see and why does it help answer my aim?",{type:"textarea",rows:4}),"completing:C31:firstPurpose"))+
-    '<p class="field-hint">The introduction belongs in the actual IA document <strong>before</strong> the output. A caption by itself is not enough.</p>');
+    (f.firstPurpose?smallSummary("Your starting mathematical question",f.firstPurpose):"")+
+    '<div class="show-first-writing-field" data-show-first-writing-box="introduce">'+
+    criterionMarkedWritingBox(
+      (entry?entryField("purpose","My words to introduce this figure, table or calculation",
+       "Before Figure 1, explain what it shows, why it is relevant to the aim and any necessary variables or units.",{type:"textarea",rows:5}):
+       F("firstOutputIntroduction","My words to introduce this figure, table or calculation",
+       "Before Figure 1, explain what it will show, why it is relevant to the aim and any necessary variables or units.",{type:"textarea",rows:5})),
+      ["completing:C30:introduceA","completing:C30:introduceB"])+'</div>'+
+    '<p class="field-hint">Use this wording in your <strong>actual IA before</strong> the output, not just as a caption. It is different from the earlier explanation of why you selected the method.</p>');
    const second=cards("show","2","Showing your tables, diagrams and calculations",
-    "Present only mathematics that helps your aim: clear diagrams and axes, units, readable working, source citations and sensible precision.",
+    "Put the genuine mathematical work directly in your IA: readable graphs, labelled diagrams, meaningful calculations, units, source citations and sensible precision.",
     context("show")+
     '<p class="show-first-table-rule"><strong>Never include long raw-data tables, including in appendices.</strong> Keep the full dataset in your working files. Use an informative graph, selected rows or a compact summary table if they make the mathematics clearer.</p>'+
     (entry?
-     entryReviewAlert()+entryChoice("status",[
-      {value:"planned",title:"Still planned",icon:"clock"},
-      {value:"completed",title:"I have produced this real mathematical work",icon:"check-circle"}])+
-     criteriaField(entryField("result","What did you genuinely show or calculate?",
-      "Record the real finding here for your own reference; the figure/calculation goes in your IA document.",{type:"textarea",rows:4}),"completing:C33:title")+
-     entryField("resultRef","Where is it in the actual IA?","e.g. Figure 1 / Equation 1 / page 3")+
-     accuracyNote()+to("C33","Detailed presentation check"):
-     '<p class="show-first-not-ready">First choose a representation and set up its mathematical record. You can then return to this screen to reflect on your actual work.</p>'+
+     entryReviewAlert()+
+     (genuine?smallSummary("Mathematics recorded so far",entry.result):
+      info("Work still to record","Present your actual diagram, table or calculation in your IA, then record a truthful result in the detailed mathematics step."))+
+     (entry.resultRef?smallSummary("Location in your actual IA",entry.resultRef):"")+
+     accuracyNote()+to("C33","Record or check my mathematical result"):
+     '<p class="show-first-not-ready">No writing box is needed here: create the diagram, table or calculations in your actual IA. To keep a record of the result in Pathfinder, choose a representation first.</p>'+
      to("C31","Choose my first representation")));
    const third=cards("reflect","3","Reflecting on the result, aim and prediction",
-    "Immediately after the mathematics, explain what it actually shows, how it relates to your aim, and whether it supports or challenges your original prediction.",
+    "After showing your real mathematics, explain what the result means for your aim and how it compares with your original prediction, if you made one.",
     context("reflect")+smallSummary("My current aim",currentAim())+
-    (plannedPrediction()?smallSummary("My original tentative prediction",plannedPrediction()):info("No prediction required","If you did not make a prediction, reflect on what the result establishes about your aim instead."))+
-    (genuine?criteriaField(entryField("interpretation","What does this real result mean for my aim?",
-     "Interpret the mathematical evidence, not just repeat a calculated number.",{type:"textarea",rows:4}),"completing:C34B:title")+
-     entryField("localTakeaway","What has this mathematics established, and what is still unresolved?",
-      "One focused conclusion to connect to the next part",{type:"textarea",rows:3})+
-     F("predictionComparison","How does this compare with my original prediction (if any)?",
-      "A contradiction or an inconclusive result can be valuable.",{type:"textarea",rows:3})+
-     to("C34","Explore observations and important limitations"):
-     info("Interpret real work, not an expected result","Complete and record the actual figure/calculation first. Do not fill this reflection from a prediction alone.")));
+    (plannedPrediction()?smallSummary("My original tentative prediction",plannedPrediction()):
+     info("No prediction required","If you did not make a prediction, explain what the actual result establishes about your aim instead."))+
+    (!genuine?'<p class="show-first-draft-note">'+icon("info")+
+     ' <strong>Write from evidence.</strong> This space is ready for you, but wait for an actual result before claiming what the mathematics shows. A prediction is not a finding.</p>':"")+
+    '<div class="show-first-writing-field" data-show-first-writing-box="reflect">'+
+    criterionMarkedWritingBox(
+      (entry?entryField("interpretation","My reflection on what this result means",
+       "What does the actual mathematics reveal about my aim? How does it compare with my prediction (if any)? What limits the conclusion?",{type:"textarea",rows:5}):
+       F("firstInterpretation","My reflection on what this result means",
+       "After producing your first real mathematical result: what does it show about your aim, prediction (if any) and any important limitations?",{type:"textarea",rows:5})),
+      ["completing:C30:reflectD","completing:C30:reflectE"])+'</div>'+
+    (genuine?to("C34","Examine observations and important limitations"):""));
    const fourth=cards("next","4","Explaining how results lead to the next steps",
-    "Write a mathematical bridge: which question is unresolved, and why would the proposed next technique help? It is also fine to conclude when the aim is adequately answered.",
+    "Use what you have found to introduce a worthwhile next mathematical question, or explain why it is sensible to conclude.",
     context("next")+
-    (genuine?smallSummary("Finding to build on",entry.localTakeaway||entry.interpretation||entry.result):"")+
-    (genuine?criteriaField(F("nextQuestion","The next mathematical question, if one is worthwhile",
-      "Which unanswered question genuinely follows from this result?",{type:"textarea",rows:3}),"completing:C35:nextQuestion")+
-     criteriaField(F("nextReason","Why would this next step follow?",
-      "Name a method only when you can justify it using the real result.",{type:"textarea",rows:3}),"completing:C35:nextReason")+
-     to("C35","Explore next-step choices, or conclude"):
-     info("Your next step depends on the result","Return here after interpreting your real mathematics. The next technique should never be predetermined by the Planning route.")));
+    (genuine?smallSummary("Finding to build on",entry.localTakeaway||entry.interpretation||entry.result):
+     '<p class="show-first-draft-note">'+icon("info")+
+     ' The next step must follow from <strong>real findings</strong>. You can leave these boxes blank until you have interpreted your result.</p>')+
+    '<div class="show-first-writing-field" data-show-first-writing-box="next">'+
+    criteriaField(F("nextQuestion","What mathematical question remains unanswered? (if any)",
+     "Identify a meaningful question raised by the result, or note that you have enough evidence to conclude.",{type:"textarea",rows:3}),"completing:C30:nextC")+
+    criterionMarkedWritingBox(F("nextReason","My written bridge to the next step (or conclusion)",
+     "Refer to what you actually found. Why would another technique answer the outstanding question, or why is the investigation ready to conclude?",{type:"textarea",rows:5}),
+     ["completing:C30:nextD"])+'</div>'+
+    (genuine?to("C35","Explore relevant next steps, or conclude"):""));
    return{intro:"Show your first mathematics as a connected mathematical story: introduce each output before displaying it, present it selectively, interpret it against your aim, and justify whatever follows.",
     html:'<div class="show-first-sequence" data-show-first-sequence>'+
       '<p class="show-first-sequence-lead">Four parts of your <strong>actual IA writing</strong>. The boxes below save planning and reflection notes; they do not insert text, tables or calculations into your IA.</p>'+
