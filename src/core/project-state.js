@@ -13,6 +13,7 @@ import {newGraphStudio,normalizeGraphStudio} from "../diagrams/graph-core.js";
 import {newImageTracer,normalizeImageTracer} from "../diagrams/image-tracer-core.js";
 import {newStatStudio,normalizeStatStudio} from "../diagrams/stat-studio-core.js";
 import {newTableStudio,normalizeTableStudio} from "../diagrams/table-studio-core.js";
+import {newVoronoiStudio,normalizeVoronoiStudio} from "../diagrams/voronoi-core.js";
 export const STATE_VERSION = 2;
 export const STORAGE_KEY = "ia-pathfinder-prototype-v1"; // Deliberately stable across upgrades.
 export const MAX_ENTRIES = 120;
@@ -56,10 +57,10 @@ export function createProjectState() {
     },
     ui: {
       planStep:0,planMax:0,studioSection:"overview",mathIndex:0,mathPhase:"work",
-      helpKey:"",openCue:"",noteDraft:"",adviceMode:"guided",planningIntroSeen:false,planningIntroOpen:false,lastWorkRoute:"",lastStudioNode:"",latestTitle:"",latestDetail:"",latestNode:"",latestEntry:"",latestAt:""
+      helpKey:"",openCue:"",noteDraft:"",adviceMode:"guided",planningIntroSeen:false,planningIntroOpen:false,lastWorkRoute:"",lastStudioNode:"",representationFilter:"all",latestTitle:"",latestDetail:"",latestNode:"",latestEntry:"",latestAt:""
     },
     scratch: {introduction:"",dataNotes:"",conclusion:"",finalReview:""},
-    entries:[], graphStudio:newGraphStudio(), imageTracer:newImageTracer(), statStudio:newStatStudio(), tableStudio:newTableStudio(), cues:{},cueNotes:{},cueLocations:{},
+    entries:[], graphStudio:newGraphStudio(), imageTracer:newImageTracer(), statStudio:newStatStudio(), tableStudio:newTableStudio(), voronoiStudio:newVoronoiStudio(), cues:{},cueNotes:{},cueLocations:{},
     journey: {
       currentNodeId:"N00",
       answers:{}, // exact sheet/node keyed answers will be populated in Phase 2
@@ -107,6 +108,7 @@ export function normalizeProjectState(value) {
   if(!["overview","intro","data","math","conclusion","review"].includes(u.studioSection))u.studioSection="overview";
   if(!["work","interpret","next"].includes(u.mathPhase))u.mathPhase="work";
   if(!["guided","reduced"].includes(u.adviceMode))u.adviceMode="guided";
+  if(!["all","data","geometry","models","decisions"].includes(u.representationFilter))u.representationFilter="all";
   u.planningIntroSeen=u.planningIntroSeen===true;
   u.planningIntroOpen=u.planningIntroOpen===true;
   const next={
@@ -122,6 +124,7 @@ export function normalizeProjectState(value) {
     imageTracer:normalizeImageTracer(value.imageTracer),
     statStudio:normalizeStatStudio(value.statStudio),
     tableStudio:normalizeTableStudio(value.tableStudio),
+    voronoiStudio:normalizeVoronoiStudio(value.voronoiStudio),
     cues:safeRecord(value.cues),cueNotes:safeRecord(value.cueNotes),cueLocations:safeRecord(value.cueLocations)
   };
   if(value.version===1){
