@@ -202,7 +202,7 @@ export function analyseGraph(draft){
  }
  if(d.title.length>85)warn("long-title","The title may be long at normal IA page width. Consider a shorter title and a fuller caption.");
  if(d.kind!=="function"){
-  if(d.matrix.length===0)fail("data","Paste and import genuine numerical observations.");
+  if(d.matrix.length===0)fail("data","Enter or import genuine numerical observations.");
   if(d.pendingPaste)fail("unparsed","The pasted values changed. Click Read pasted values to update the graph.");
   if(d.kind==="scatter"&&!d.showPoints)fail("scatter-hidden","A scatter diagram must display the observed points.");
   if(d.xIndex===d.yIndex)fail("columns","Choose two different columns for the horizontal and vertical quantities.");

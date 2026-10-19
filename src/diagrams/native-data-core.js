@@ -99,7 +99,7 @@ export function removeNativeColumn(studio,type,index){
  for(const row of d.matrix)row.splice(index,1);
  if(type==="table"){
   d.headings.splice(index,1);d.unitDecisions.splice(index,1);
-  d.selected=[...new Set(d.selected.map(i=>i>index?i-1:i).filter(i=>i!==index&&i<d.columns.length))];
+  d.selected=[...new Set(d.selected.filter(i=>i!==index).map(i=>i>index?i-1:i).filter(i=>i>=0&&i<d.columns.length))];
   d.categoryIndex=Math.min(d.columns.length-1,d.categoryIndex>=index?Math.max(0,d.categoryIndex-1):d.categoryIndex);
  }else if(type==="stat"){
   d.selected=[...new Set(d.selected.filter(i=>i!==index).map(i=>i>index?i-1:i))];
