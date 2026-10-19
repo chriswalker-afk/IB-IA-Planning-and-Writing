@@ -56,6 +56,8 @@ import {renderTableSvg} from "./src/diagrams/table-studio-render.js";
 import {renderTableStudio,tablePreviewHtml,tableQualityHtml,tableOutputHtml} from "./src/diagrams/table-studio-view.js";
 import {setTableField,setTableColumn,chooseTableMode,toggleTableVariable,toggleTableMeasure,loadTable,freshTable,saveTableDraft,saveAndLinkTable} from "./src/diagrams/table-studio-actions.js";
 import {exportTable} from "./src/diagrams/table-studio-export.js";
+import {nativeGridSummary,editNativeHeading,editNativeCell,pasteNativeRange,NATIVE_MAX_ROWS,NATIVE_PAGE_ROWS} from "./src/diagrams/native-data-core.js";
+import {handleNativeDataAction,nativeStudio,activeNativeType} from "./src/diagrams/native-data-actions.js";
 import {analyzeVoronoi,importVoronoiSites,voronoiBounds} from "./src/diagrams/voronoi-core.js";
 import {renderVoronoiSvg,voronoiLayout} from "./src/diagrams/voronoi-render.js";
 import {voronoiPreviewHtml,voronoiResultHtml,voronoiQualityHtml,voronoiOutputHtml} from "./src/diagrams/voronoi-view.js";
@@ -164,6 +166,29 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         }
       }
     }
+  }
+  function refreshNativeWorksheet(type){
+    const studio=nativeStudio(state,type),root=main.querySelector?.('[data-native-grid="'+type+'"]');
+    if(!studio||!root)return;
+    const status=nativeGridSummary(studio.draft),metric=root.querySelector("[data-native-metrics]");
+    if(metric)metric.textContent=status.filled+" entered values · "+status.rows+" working rows · "+
+     (studio.draft.columns.length||2)+" columns"+
+     (status.incomplete?" · "+status.incomplete+" incomplete rows":"");
+    const raw=root.closest("[data-graph-studio],[data-stat-studio],[data-table-studio]")?.
+      querySelector('[data-'+type+'-field="raw"]');
+    if(raw&&studio.draft.raw===""&&raw.value!=="")raw.value="";
+    if(type==="graph")refreshGraphPreview();
+    if(type==="stat")refreshStatPreview();
+    if(type==="table")refreshTablePreview();
+  }
+  function openNativeTool(type){
+    if(!nativeStudio(state,type))return;
+    if(state.completion.current!=="C31")setCompletionNode(state,"C31",{reason:"dataset-transfer"});
+    state.route="completing";
+    state.graphStudio.open=type==="graph";state.statStudio.open=type==="stat";state.tableStudio.open=type==="table";
+    state.imageTracer.open=false;state.voronoiStudio.open=false;
+    save();render();
+    document.querySelector?.('[data-native-grid="'+type+'"]')?.scrollIntoView?.({block:"start",behavior:"auto"});
   }
   function refreshGraphPreview(){
     const d=state.graphStudio?.draft;
@@ -755,6 +780,8 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   }
   function clickAction(el) {
     const action=el.dataset.action||"";
+    if(handleNativeDataAction(state,action,el,{save,render,toast,
+      confirm:message=>window.confirm(message),openTool:openNativeTool}))return;
     if(preview.active&&["import-json","import-report","new-project","merge-apply"].includes(action)){
       toast("Return to your investigation before importing or starting a project.");return;
     }
