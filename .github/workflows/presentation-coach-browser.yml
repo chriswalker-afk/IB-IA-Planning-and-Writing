@@ -1,0 +1,57 @@
+name: IB presentation coach browser acceptance
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+    paths:
+      - 'src/diagrams/presentation-coach-**'
+      - 'src/diagrams/representation-hub.js'
+      - 'src/diagrams/graph-**'
+      - 'src/diagrams/stat-studio-**'
+      - 'src/diagrams/table-studio-**'
+      - 'src/diagrams/image-tracer-**'
+      - 'src/diagrams/voronoi-**'
+      - 'src/completing/views.js'
+      - 'app.js'
+      - 'data/presentation-coach.css'
+      - 'scripts/presentation-coach-browser.py'
+      - 'tests/presentation-coach.test.js'
+      - '.github/workflows/presentation-coach-browser.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Unit regressions and production build
+        run: |
+          npm install --no-audit --no-fund
+          npm test
+          npm run build
+      - name: Install Chromium
+        run: |
+          pip install playwright==1.57.0
+          python -m playwright install --with-deps chromium
+      - name: Test diagram guidance, saved captions and mobile writing journey
+        run: |
+          mkdir -p qa-output
+          python -m http.server 8765 --directory dist > qa-output/presentation-coach-server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID"' EXIT
+          python scripts/presentation-coach-browser.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: presentation-coach-browser-results
+          path: qa-output
+          retention-days: 7
