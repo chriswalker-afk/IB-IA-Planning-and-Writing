@@ -29,6 +29,7 @@ def prepare(browser,width,height):
  p.goto(URL,wait_until="networkidle")
  return context,p
 def enter(p,value):
+ p.locator('details.native-import-details').evaluate("(el)=>el.open=true")
  p.locator('[data-table-field="raw"]').fill(value)
  assert saved(p)["tableStudio"]["draft"]["raw"]==value
  p.locator('[data-action="table-parse"]').click()

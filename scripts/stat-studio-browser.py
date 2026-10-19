@@ -31,6 +31,7 @@ def prepare(browser,width,height):
  p.goto(URL,wait_until="networkidle")
  return context,p
 def read_sheet(p,table):
+ p.locator('details.native-import-details').evaluate("(el)=>el.open=true")
  p.locator('[data-stat-field="raw"]').fill(table)
  assert p.locator('[data-action="stat-png"]').is_disabled()
  p.locator('[data-action="stat-parse"]').click()
