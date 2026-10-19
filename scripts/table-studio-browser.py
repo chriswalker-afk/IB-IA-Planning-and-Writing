@@ -130,6 +130,7 @@ def numerical_summary(p,width):
  p.screenshot(path=str(OUT/f"table-studio-summary-{width}.png"),full_page=True,animations="disabled")
 def category_frequency(p,width):
  new_mode(p,"frequency")
+ p.locator('details.native-import-details').evaluate("(el)=>el.open=true")
  p.locator('[data-table-field="headers"]').select_option("yes")
  enter(p,FREQUENCY)
  standard(p,"Frequency of transport preferences")

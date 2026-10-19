@@ -60,7 +60,7 @@ export function editNativeCell(studio,type,row,col,value){
  const d=studio?.draft;
  if(!d||!validType(type)||!Number.isInteger(row)||row<0||row>=NATIVE_MAX_ROWS||
   !Number.isInteger(col)||col<0||col>=NATIVE_LIMITS[type])return false;
- if(!ensureCols(d,type,Math.max(col+1,columnsFor(d,type))))return false;
+ if(!ensureCols(d,type,Math.max(col+1,d.columns.length||1)))return false;
  while(d.matrix.length<=row)d.matrix.push(Array(d.columns.length).fill(""));
  for(const r of d.matrix)while(r.length<d.columns.length)r.push("");
  d.matrix[row][col]=clean(value,110);
@@ -153,11 +153,11 @@ export function normalizeNativeShelf(raw){
    matrix:Array.isArray(d.matrix)?d.matrix.slice(0,NATIVE_MAX_ROWS)
     .filter(Array.isArray).map(row=>row.slice(0,10).map(x=>clean(x,110))):[],
    sourceKind:["unsure","primary","secondary","theoretical"].includes(d.sourceKind)?d.sourceKind:"unsure",
-   sourceText:clean(d.sourceText,500)})).filter(d=>d.columns.length>=2&&d.matrix.length>0);
+   sourceText:clean(d.sourceText,500)})).filter(d=>d.columns.length>=1&&d.matrix.length>0);
 }
 export function nativeSnapshot(draft,name=""){
- if(!draft?.columns?.length||draft.columns.length<2||!draft.matrix?.length||!countFilled(draft.matrix))
-  return {ok:false,error:"Enter at least one real value and two column headings before saving or reusing this dataset."};
+ if(!draft?.columns?.length||!draft.matrix?.length||!countFilled(draft.matrix))
+  return {ok:false,error:"Enter at least one real value and give each column a heading before saving or reusing this dataset."};
  if(draft.columns.some(h=>!String(h).trim()))
   return {ok:false,error:"Name every column before saving it for another generator."};
  return {ok:true,dataset:{name:clean(String(name).trim()||draft.title?.trim()||draft.columns.slice(0,2).join(" and "),75),
@@ -185,7 +185,7 @@ export function applyNativeDataset(studio,type,dataset){
   return {ok:false,error:"Dataset cannot be read."};
  if(dataset.columns.length>NATIVE_LIMITS[type]||dataset.matrix.length>NATIVE_MAX_ROWS)
   return {ok:false,error:"This tool accepts up to "+NATIVE_LIMITS[type]+" columns and 500 rows. Select a smaller dataset without deleting the original."};
- if(dataset.columns.length<2)return {ok:false,error:"Choose at least two columns."};
+ if(type==="graph"&&dataset.columns.length<2)return {ok:false,error:"Graph Plotter needs two columns containing paired variables."};
  const columns=dataset.columns.map(x=>clean(x,95)),matrix=dataset.matrix.map(r=>
   Array.from({length:columns.length},(_,i)=>clean(r[i]??"",110)));
  d.columns=columns;d.matrix=matrix;invalidatePaste(d);
@@ -195,6 +195,7 @@ export function applyNativeDataset(studio,type,dataset){
   type==="graph"&&dataset.sourceKind==="theoretical"?"theoretical":"unsure";
  d.sourceText=clean(dataset.sourceText,500);
  if(type==="graph"){
+  d.kind="scatter"; // A genuine paired dataset should not be hidden behind an old function graph.
   d.xIndex=0;d.yIndex=1;d.xMin="";d.xMax="";d.yMin="";d.yMax="";
   for(const [axis,i] of [["x",0],["y",1]]){
    const heading=splitHeading(columns[i]);d[axis+"Label"]=heading.label;d[axis+"Unit"]=heading.unit;

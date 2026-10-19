@@ -158,6 +158,27 @@ test("transfer from wider graphs refuses excess columns without truncating or re
  assert.equal(applyNativeDataset(s.tableStudio,"table",valid.dataset).ok,false);
  assert.equal(JSON.stringify(s.tableStudio.draft),before);
 });
+test("single-column observations can be reused for distributions and frequency tables",()=>{
+ const s=createProjectState();
+ editNativeHeading(s.statStudio,"stat",0,"Length (cm)");
+ for(let i=0;i<4;i++)editNativeCell(s.statStudio,"stat",i,0,String(i+1));
+ const saved=nativeSnapshot(s.statStudio.draft);
+ assert.equal(saved.ok,true);
+ assert.equal(saved.dataset.columns.length,1);
+ assert.equal(applyNativeDataset(s.tableStudio,"table",saved.dataset).ok,true);
+ assert.equal(s.tableStudio.draft.matrix.length,4);
+ assert.equal(applyNativeDataset(s.graphStudio,"graph",saved.dataset).ok,false);
+ assert.equal(s.graphStudio.draft.matrix.length,0);
+ saveNativeDataset(s,"stat","Length measurements");
+ assert.equal(normalizeProjectState(JSON.parse(JSON.stringify(s))).dataShelf[0].columns.length,1);
+});
+test("paired native values transferred to an old function graph become a scatter graph",()=>{
+ const s=sample(),snap=nativeSnapshot(s.graphStudio.draft);
+ s.graphStudio.draft.kind="function";
+ assert.equal(applyNativeDataset(s.graphStudio,"graph",snap.dataset).ok,true);
+ assert.equal(s.graphStudio.draft.kind,"scatter");
+ assert.deepEqual(graphData(s.graphStudio.draft).points,[{x:1.23,y:4.5},{x:2.34,y:7}]);
+});
 test("source datasets are independent copies, not hidden live links",()=>{
  const s=sample();saveNativeDataset(s,"graph","Source snapshot");
  const original=s.dataShelf[0].matrix[0][0];
@@ -168,7 +189,7 @@ test("source datasets are independent copies, not hidden live links",()=>{
 test("native dataset shelf rejects malformed project import records",()=>{
  const saved=normalizeNativeShelf([
   {id:"data-good",name:"Clean",columns:["A","B"],matrix:[["1","2"]],sourceKind:"primary"},
-  {id:"data-bad",name:"Invalid",columns:["A"],matrix:[["1"]]},
+  {id:"data-bad",name:"Invalid",columns:[],matrix:[["1"]]},
   {id:"__proto__",name:"Unsafe",columns:["A","B"],matrix:[["1","2"]]}
  ]);
  assert.equal(saved.length,1);
