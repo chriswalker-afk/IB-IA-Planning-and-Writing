@@ -530,7 +530,9 @@ test("contextual rubric bubbles are attached to real writing fields in the three
  state.entries=[{id:'math-sub',phase:'substantial',status:'planned',kind:'model',title:'Investigate a model',result:'',purpose:''}];
  state.completion.activeEntryIndex=0;
  const expects={
-  C20:['completing:C20:source','completing:C20:method','completing:C20:firstBridge','completing:C20:firstChoice','completing:C20:firstPurpose'],
+  C20:['completing:C20:source','completing:C20:method','completing:C20:firstBridge','completing:C20:firstChoice','completing:C20:firstPurpose',
+   'completing:C20:methodIntroduction','completing:C20:methodJustification',
+   'completing:C20:methodEvaluation','completing:C20:methodSuitability'],
   C21S:['completing:C21S:samplingRationale','completing:C21S:responseBias'],
   C21M:['completing:C21M:modelAssumptions','completing:C21M:modelDomain'],
   C21T:['completing:C21T:theoreticalObject'],
@@ -704,4 +706,81 @@ test("theoretical first mathematics follows the saved investigative journey with
  assert(h.html.includes("general"));
  assert(!h.html.includes('data-technique-start-guide="AI05"'));
  assert.equal(h.saved.entries.length,0);
+});
+
+test("first mathematics has three separate writing cards and reuses existing method-reason notes",()=>{
+ const s=createProjectState();s.route="completing";s.completion.current="C20";
+ Object.assign(s.planning.fields,{kind:"statistics",dataSource:"secondary",course:"AI SL",
+  aim:"Does a meaningful relationship exist between two measured quantities?"});
+ s.planning.routeExplorer.selectedRoute="relationships";
+ s.planning.mathSelected=["AI14","AI15"];
+ s.completion.fields.methodLimitation="Existing sampling or source caveat";
+ const h=createHarness(s);
+ const order=["connection","method","evaluation"].map(k=>
+  h.html.indexOf('data-first-maths-writing-part="'+k+'"'));
+ assert(order.every(x=>x>0)&&order.every((x,i)=>i===0||x>order[i-1]));
+ for(const name of ["dataAimLink","methodReason","firstMethodEvaluation","firstPurpose"])
+  assert.equal((h.html.match(new RegExp('data-bind="completion.fields.'+name+'"','g'))||[]).length,1,name);
+ assert(h.html.includes('data-journey-writing-part="method"'));
+ assert(h.html.includes('data-journey-writing-part="evaluation"'));
+ assert(h.html.includes('data-journey-writing-id="relationships"'));
+ assert(h.html.includes("already knows the course mathematics"));
+ assert(h.html.includes("linear association"));
+ assert(h.html.includes("rank method"));
+ for(const key of ["methodIntroduction","methodJustification","methodEvaluation","methodSuitability"])
+  assert.equal((h.html.match(new RegExp('data-criterion-badge="completing:C20:'+key+'"','g'))||[]).length,1,key);
+ h.write("completion.fields.dataAimLink","A first scatter diagram follows from my question.");
+ h.write("completion.fields.methodReason","I will compare paired values using a scatter diagram to inspect mathematical shape.");
+ h.write("completion.fields.firstMethodEvaluation","A linear coefficient may miss curvature; a rank method might be more suitable if the pattern is monotonic.");
+ h.write("completion.fields.firstPurpose","Is the observed association approximately linear?");
+ assert.equal(h.saved.completion.fields.methodLimitation,"Existing sampling or source caveat");
+ assert.equal(h.saved.completion.fields.methodReason,"I will compare paired values using a scatter diagram to inspect mathematical shape.");
+ assert(h.saved.completion.fields.firstMethodEvaluation.includes("rank method"));
+ h.action("completion-open",{node:"C22"});
+ assert(h.html.includes('data-bind="completion.fields.methodReason"'));
+ assert(h.html.includes("I will compare paired values"));
+ h.action("completion-open",{node:"C23"});
+ assert(h.html.includes('data-bind="completion.fields.methodLimitation"'));
+ assert(h.html.includes("Existing sampling or source caveat"));
+ h.action("completion-open",{node:"C30"});
+ assert(h.html.includes("A first scatter diagram follows"));
+ assert(h.html.includes("A linear coefficient may miss curvature"));
+ assert(h.html.includes("I will compare paired values"));
+ assert.equal(h.saved.entries.length,0);
+});
+test("an already-explained bridge does not suppress 2a and 2b writing fields",()=>{
+ const s=createProjectState();s.route="completing";s.completion.current="C20";
+ s.planning.fields.kind="theoretical";
+ s.planning.routeExplorer.selectedRoute="proof";
+ s.completion.fields.firstMathsBridgePlacement="intro";
+ s.completion.fields.dataAimLink="Existing paragraph in my Introduction";
+ s.completion.fields.methodReason="I will test small cases before seeking a general proof.";
+ s.completion.fields.firstMethodEvaluation="Examples alone do not prove a universal statement.";
+ const h=createHarness(s);
+ assert(h.html.includes('data-first-maths-writing-part="connection"'));
+ assert(h.html.includes("There is no need to repeat it"));
+ assert(h.html.includes('data-first-maths-writing-part="method"'));
+ assert(h.html.includes('data-first-maths-writing-part="evaluation"'));
+ assert(h.html.includes("I will test small cases"));
+ assert(h.html.includes("Examples alone do not prove"));
+ assert.equal((h.html.match(/data-bind="completion.fields.dataAimLink"/g)||[]).length,1);
+ assert(h.html.includes('data-journey-writing-id="proof"'));
+ h.write("completion.fields.firstMethodEvaluation","Finite checks are not a general proof; I will look for a logical argument.");
+ assert.equal(h.saved.completion.fields.methodReason,"I will test small cases before seeking a general proof.");
+ assert(h.saved.completion.fields.firstMethodEvaluation.includes("Finite checks"));
+ assert.equal(h.saved.completion.fields.dataAimLink,"Existing paragraph in my Introduction");
+});
+test("a changed investigative journey refreshes method advice without changing saved student's notes",()=>{
+ const s=createProjectState();s.route="completing";s.completion.current="C20";
+ s.planning.fields.kind="modelling";
+ s.planning.routeExplorer.selectedRoute="fitted-models";
+ s.completion.fields.methodReason="My own approach for this aim";
+ s.completion.fields.firstMethodEvaluation="My own mathematical evaluation";
+ const h=createHarness(s);
+ assert(h.html.includes('data-journey-writing-id="fitted-models"'));
+ h.write("planning.routeExplorer.selectedRoute","optimisation");
+ assert(h.html.includes('data-journey-writing-id="optimisation"'));
+ assert(h.html.includes("stationary points"));
+ assert(h.html.includes("My own approach for this aim"));
+ assert.equal(h.saved.completion.fields.firstMethodEvaluation,"My own mathematical evaluation");
 });
