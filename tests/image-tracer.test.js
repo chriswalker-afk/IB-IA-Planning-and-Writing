@@ -187,3 +187,15 @@ test("import-normalizer rejects SVG or arbitrary remote image sources",()=>{
  assert.equal(n.figures.length,1);
  assert.equal(n.figures[0].id,"trace-good");
 });
+
+test("at maximum photo capacity, saving another tracing never deletes earlier student work",()=>{
+ const tracer=prepared();
+ tracer.figures=Array.from({length:6},(_,i)=>({id:"trace-"+i,entryId:"",
+  savedAt:"2026-10-19T00:00:00.000Z",draft:normalizeTraceDraft(prepared().draft)}));
+ tracer.activeId="";
+ const firstIds=tracer.figures.map(x=>x.id);
+ const saving=saveTraceFigure(tracer);
+ assert.equal(saving.ok,false);
+ assert.match(saving.error,/nothing has been overwritten/i);
+ assert.deepEqual(tracer.figures.map(x=>x.id),firstIds);
+});
