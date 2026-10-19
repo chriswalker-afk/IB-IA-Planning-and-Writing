@@ -69,7 +69,7 @@ def data_graph(page,width):
  assert snapshot["entries"][0]["status"]=="planned"
  assert snapshot["entries"][0]["result"]==""
  assert snapshot["entries"][0]["graphFigureId"]==snapshot["graphStudio"]["figures"][0]["id"]
- assert page.locator(".graph-entry-preview svg").count()==1
+ assert page.locator(".graph-entry-preview svg.graph-figure-svg").count()==1
  assert page.locator('[data-action="graph-open"]').count()==1
  page.locator('[data-action="graph-open"]').click()
  assert page.locator('[data-graph-studio]').is_visible()
