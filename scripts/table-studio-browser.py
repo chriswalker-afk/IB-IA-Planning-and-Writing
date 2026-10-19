@@ -88,7 +88,7 @@ def compact(p,width):
    print("SVG button:",p.locator('[data-action="table-svg"]').evaluate("(e)=>e.outerHTML"),flush=True)
    raise
  p.locator('[data-action="table-use"]').click()
- assert p.locator('[data-source-node="C32"]').count()==1
+ assert p.locator('[data-source-node="C30"]').count()==1
  assert p.locator('.ia-table-entry svg.ia-table-svg').count()==1
  state=saved(p)
  assert len(state["tableStudio"]["figures"])==1
