@@ -60,7 +60,7 @@ test("quoted separators and partial cells work without executing or evaluating f
  const s=createProjectState();
  editNativeCell(s.tableStudio,"table",0,0,"=1+2");
  assert.equal(s.tableStudio.draft.matrix[0][0],"=1+2");
- assert.equal(s.tableStudio.draft.matrix[0][1],"");
+ assert.equal(s.tableStudio.draft.matrix[0][1]??"","");
  assert.equal(nativeGridSummary(s.tableStudio.draft).incomplete,1);
 });
 test("grid edits are bounded and invalid large pasted blocks change nothing",()=>{
