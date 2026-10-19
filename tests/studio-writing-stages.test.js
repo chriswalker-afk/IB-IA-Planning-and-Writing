@@ -65,7 +65,7 @@ test('Data guidance rejects invented collection; theoretical guidance does not f
  const empirical=stage(s,'C20');
  assert(empirical.includes('Your plan is not your result'));
  assert(empirical.includes('Get to the mathematics'));
- assert(empirical.includes('connect your first step'));
+ assert(empirical.includes('Connect your first step to your aim'));
  const theoretical=stage(s,'C21T');
  assert(theoretical.includes('there is no need to invent a dataset'));
  assert(theoretical.includes('data-example-topic="proof"'));
