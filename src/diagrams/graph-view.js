@@ -67,7 +67,7 @@ export function renderGraphStudio(state,icon,e){
   field("yMin","y minimum",d.yMin,e,{placeholder:"Auto"})+
   field("yMax","y maximum",d.yMax,e,{placeholder:"Auto"})+'</div>'+
   '<div class="graph-checks">'+check("showGrid","Show light grid lines",d.showGrid)+
-   (d.kind!=="function"?check("showPoints","Show observed points",d.showPoints):"")+
+   (d.kind==="time"?check("showPoints","Show observed points",d.showPoints):"")+
    (d.kind!=="function"?check("includeZeroY","Include zero on vertical axis",d.includeZeroY):"")+'</div>'+
    '<button type="button" class="btn btn-quiet btn-sm" data-action="graph-clear-scale">Reset scales to automatic</button>'+
    '</section></div>'+
@@ -88,7 +88,7 @@ export function renderGraphStudio(state,icon,e){
     '<div class="graph-saved-item"><span><strong>'+e(fig.draft.title||"Untitled graph")+'</strong>'+
      '<small>'+e(fig.savedAt?fig.savedAt.slice(0,10):"Saved")+(fig.entryId?" · linked to a mathematical step":"")+'</small></span>'+
      '<button type="button" class="btn btn-quiet btn-sm" data-action="graph-load" data-graph-id="'+e(fig.id)+'">Edit graph</button></div>').join("")+'</div></details>':"")+
-  '</section>';
+  '<div class="graph-reset-row"><button type="button" class="btn btn-quiet btn-sm" data-action="graph-new">'+icon("plus-circle")+' Start a different graph</button></div></section>';
 }
 export function renderGraphQuality(studio,icon,e){
  const q=analyseGraph(studio.draft);
