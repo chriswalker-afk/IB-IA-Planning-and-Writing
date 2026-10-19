@@ -43,16 +43,13 @@ test('three passes retain selective and specific criteria without new administra
  assert(isCriterionSpotPage('planning','N01V'));
  assert(!isCriterionSpotPage('planning','N03D'));
  assert.deepEqual(criterionFieldSpots('completing','C35'),['completing:C35:nextQuestion','completing:C35:nextReason']);
- assert.deepEqual(criterionFieldSpots('completing','C20'),['completing:C20:source','completing:C20:method']);
- assert.deepEqual(criterionFieldSpots('completing','C21S'),['completing:C21S:samplingRationale','completing:C21S:responseBias']);
- assert.deepEqual(criterionFieldSpots('completing','C24'),['completing:C24:accuracyReason']);
  assert.deepEqual(criterionFieldSpots('completing','C34'),['completing:C34:observation']);
  assert.deepEqual(criterionFieldSpots('completing','C33'),[]);
  assert(isCriterionSpotPage('completing','C31'));
  assert(isCriterionSpotPage('completing','C35'));
  assert(isCriterionSpotPage('completing','C35P'));
  assert(!isCriterionSpotPage('completing','C35H'));
- assert(isCriterionSpotPage('completing','C21S'));
+ assert(!isCriterionSpotPage('completing','C21S'));
  assert(!isCriterionSpotPage('completing','C90'));
  assert(!isCriterionSpotPage('completing','C80'));
  assert.deepEqual(criterionFieldSpots('completing','C61'),

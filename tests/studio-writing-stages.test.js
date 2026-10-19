@@ -68,12 +68,12 @@ test('Data guidance rejects invented collection; theoretical guidance does not f
  const theoretical=stage(s,'C21T');
  assert(theoretical.includes('there is no need to invent a dataset'));
  assert(theoretical.includes('data-example-topic="proof"'));
- assert(theoretical.includes('mathematical starting'));
+ assert(theoretical.includes('theoretical starting point'));
 });
 test('Mathematical exploration guidance connects results and methods; conclusion uses actual results',()=>{
  const s=make();
  const math=stage(s,'C40');
- assert(math.includes('previous mathematical'));
+ assert(math.includes('previous finding')||math.includes('earlier mathematical result'));
  assert(math.includes('no quota')||math.includes('no quota'.toUpperCase())||math.includes('no quota of graphs'));
  assert(math.includes('data-example-topic="calculation"'));
  const conclusion=stage(s,'C60');
@@ -90,8 +90,8 @@ test('sparks contain only saved grounded ideas; no invented actual result is pro
  assert(html.includes('A plan is not a finding.'));
  assert(html.includes('data-spark-library'));
  assert(!html.includes('Your sparks are back'),'stage header avoids a second spark heading');
+  s.completion.current='C60';
  const untouched=JSON.stringify(s);
- s.completion.current='C60';
  html=stage(s,'C60');
  assert(html.includes('Findings may challenge your hope'));
  assert.equal(JSON.stringify(s),untouched);

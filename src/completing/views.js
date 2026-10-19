@@ -1,7 +1,6 @@
 import {chapterRibbon} from '../ui/living-journey.js';
 import {renderFieldGuideTeaser,renderContextualGuide} from './writer-field-guide.js';
 import {renderIntroductionSparkPrompt,renderIntroductionWritingAdvice,renderIntroductionOptionalExamples} from './intro-writing-advice.js';
-import {isStudioWritingNode,renderStudioWritingStage} from "./studio-writing-stages.js";
 import {renderWritingStageFlow} from './stage-writing-flow.js';
 import {isStudioWritingNode,renderStudioWritingStage} from './studio-writing-stages.js';
 import {insightCapture,insightEcho,renderSparkShelf} from '../ui/insight-threads.js';

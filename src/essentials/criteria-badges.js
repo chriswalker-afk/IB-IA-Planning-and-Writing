@@ -227,19 +227,6 @@ const TITLE_SPOTS=Object.freeze({
 });
 export const criterionSpotFor=(route,node)=>TITLE_SPOTS[route+':'+node]||'';
 const FIELD_SPOTS=Object.freeze({
- 'completing:C20':['completing:C20:source','completing:C20:method'],
- 'completing:C21S':['completing:C21S:samplingRationale','completing:C21S:responseBias'],
- 'completing:C21M':['completing:C21M:modelAssumptions','completing:C21M:modelDomain'],
- 'completing:C21T':['completing:C21T:theoreticalObject'],
- 'completing:C22':['completing:C22:methodReason'],
- 'completing:C23':['completing:C23:limitationConsequence'],
- 'completing:C24':['completing:C24:accuracyReason'],
- 'completing:C25':['completing:C25:variableDefinitions'],
- 'completing:C26':['completing:C26:dataAimLink'],
- 'completing:C34A':['completing:C34A:accuracyForResult'],
- 'completing:C34U':['completing:C34U:surpriseCheck'],
- 'completing:C35H':['completing:C35H:nextReason'],
- 'completing:C40D':['completing:C40D:courseWhy'],
  'completing:C31':['completing:C31:firstPurpose'],
  'completing:C32':['completing:C32:purpose'],
  'completing:C34':['completing:C34:observation'],
