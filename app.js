@@ -1328,14 +1328,15 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         "planning.fields.primaryAccuracyBasis","planning.fields.secondaryAccuracyBasis",
         "planning.fields.permissionNeed","planning.fields.practicalBlocker",
         "planning.fields.dataAvailability"].includes(path)||
-       ["completion.fields.scatterDetail","completion.fields.scatterAimRelevance",
+       ["completion.fields.firstMathsBridgePlacement",
+        "completion.fields.scatterDetail","completion.fields.scatterAimRelevance",
         "entries."+state.completion.activeEntryIndex+".methodId",
         "entries."+state.completion.activeEntryIndex+".accuracyRef"].includes(path)||
        /^entries\.\d+\.resultSignal$/.test(path)||
        (/^entries\.\d+\.result$/.test(path)&&["C40","C50"].includes(state.completion.current)&&
         state.entries[Number(path.split(".")[1])]?.status==="completed")){
        render();
-       if(/^entries\.\d+\.resultSignal$/.test(path)){
+       if(/^entries\.\d+\.resultSignal$/.test(path)||path==="completion.fields.firstMathsBridgePlacement"){
          const input=document.querySelector('[data-bind="'+path+'"]');
          if(input)input.focus({preventScroll:true});
        }
