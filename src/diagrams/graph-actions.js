@@ -1,5 +1,5 @@
 /** Student-authorised graph edits and explicit links to the mathematical journey. */
-import {applyPastedGraphData,newGraphDraft,normalizeGraphDraft,saveGraphFigure,splitHeading} from "./graph-core.js";
+import {analyseGraph,applyPastedGraphData,newGraphDraft,normalizeGraphDraft,saveGraphFigure,splitHeading} from "./graph-core.js";
 import {completeEntry,startFirstRepresentation} from "../completing/engine.js";
 
 const ALLOWED=new Set(Object.keys(newGraphDraft()));
@@ -29,6 +29,7 @@ export function chooseGraphType(studio,kind){
  if(old===kind)return true;
  d.kind=kind;
  d.xMin="";d.xMax="";d.yMin="";d.yMax="";
+ if(kind==="scatter")d.showPoints=true;
  if(kind==="function"){
   d.xLabel="x";d.yLabel="f(x)";d.xUnit="";d.yUnit="";
   d.xUnitMode="dimensionless";d.yUnitMode="dimensionless";d.title="";
@@ -54,6 +55,7 @@ export function freshGraph(studio){
 const mathSignature=d=>JSON.stringify([d.kind,d.matrix,d.columns,d.xIndex,d.yIndex,d.expression,d.xMin,d.xMax,d.yMin,d.yMax]);
 export function saveAndLinkGraph(state){
  const studio=state.graphStudio;
+ if(!analyseGraph(studio.draft).ready)return {ok:false,error:"Resolve the required graph quality checks before linking this figure."};
  const prior=studio.figures.find(x=>x.id===studio.activeId);
  let index=-1;
  if(prior?.entryId)index=state.entries.findIndex(x=>x.id===prior.entryId);
