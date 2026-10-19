@@ -273,6 +273,8 @@ export function statAnalysis(raw){
    if(s.box?.iqr===0)warn("zero-iqr","The group '"+s.name+"' has zero IQR. Quartiles or outliers may be less informative.");
   }
   if(d.kind==="box"){
+   if(d.outlierRule==="tukey"&&!d.showOutliers&&series.some(s=>s.box?.outliers.length))
+    fail("hidden-outliers","The whiskers exclude observed outliers. Show those points, or use min–max whiskers and describe the choice.");
    if(d.outlierRule==="tukey")warn("outliers","Whiskers extend to the most extreme non-outlier observations; 1.5 × IQR observations are shown separately.");
    if(series.some(s=>s.values.length<10))warn("small-sample","A small sample produces unstable quartiles. Explain your sampling and any limitations.");
   }
