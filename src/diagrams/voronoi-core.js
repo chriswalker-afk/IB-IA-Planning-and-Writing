@@ -37,7 +37,7 @@ export function normalizeVoronoiDraft(raw){
  if(!["unsure","unit","dimensionless"].includes(d.unitMode))d.unitMode="unsure";
  if(!["unsure","cartesian","latlon"].includes(d.coordSystem))d.coordSystem="unsure";
  if(!["unsure","primary","secondary"].includes(d.sourceKind))d.sourceKind="unsure";
- if(!["auto","manual"].includes(d.regionMode))d.regionMode="auto";
+ if(!["auto","manual","interactive"].includes(d.regionMode))d.regionMode="auto";
  d.sites=(Array.isArray(r.sites)?r.sites:[]).slice(0,MAX_VORONOI_SITES)
   .filter(object).map((s,i)=>({id:/^s-[a-z0-9-]{1,42}$/i.test(s.id)?s.id:"s-"+i,
     name:text(s.name,42),x:finite(s.x)?s.x:null,y:finite(s.y)?s.y:null,
@@ -53,14 +53,35 @@ export function normalizeVoronoiDraft(raw){
  if(finite(r.mapOpacity))d.mapOpacity=Math.max(.15,Math.min(.85,r.mapOpacity));
  return d;
 }
-export const newVoronoiStudio=()=>({open:false,draft:newVoronoiDraft(),figures:[],activeId:""});
+export const newVoronoiStudio=()=>({open:false,draft:newVoronoiDraft(),figures:[],activeId:"",
+ tool:"existing",selectedSiteId:"",history:{past:[],future:[]},
+ scenario:{active:false,before:null,showOriginal:false}});
 export function normalizeVoronoiStudio(raw){
  const r=object(raw)?raw:{};
  const figures=(Array.isArray(r.figures)?r.figures:[]).slice(0,MAX_VORONOI_FIGURES)
   .filter(object).map(f=>({id:text(f.id,65),entryId:text(f.entryId,80),savedAt:text(f.savedAt,42),
    draft:normalizeVoronoiDraft(f.draft)})).filter(f=>/^voronoi-[a-z0-9-]+$/i.test(f.id));
- return {open:r.open===true,draft:normalizeVoronoiDraft(r.draft),figures,
-  activeId:figures.some(f=>f.id===r.activeId)?r.activeId:""};
+ const draft=normalizeVoronoiDraft(r.draft);
+ const frameKeys=["sites","raw","headers","edited","pendingPaste","pairA","pairB","probeX","probeY",
+  "showBisector","regionMode","xMin","xMax","yMin","yMax","xLabel","yLabel","unitMode","unit"];
+ const frame=raw=>{
+  if(!object(raw)||!Array.isArray(raw.sites))return null;
+  const clean=normalizeVoronoiDraft(raw),out={};
+  for(const key of frameKeys)out[key]=clean[key];
+  return out;
+ };
+ const history=object(r.history)?r.history:{};
+ const past=(Array.isArray(history.past)?history.past:[]).slice(-24).map(frame).filter(Boolean);
+ const future=(Array.isArray(history.future)?history.future:[]).slice(-24).map(frame).filter(Boolean);
+ const scenario=object(r.scenario)?r.scenario:{},original=frame(scenario.before);
+ const tool=["existing","select","inspect","test","candidate"].includes(r.tool)?r.tool:
+  draft.placeCandidate?"candidate":draft.sites.length?"select":"existing";
+ return {open:r.open===true,draft,figures,
+  activeId:figures.some(f=>f.id===r.activeId)?r.activeId:"",
+  tool,selectedSiteId:draft.sites.some(s=>s.id===r.selectedSiteId)?r.selectedSiteId:"",
+  history:{past,future},scenario:{active:scenario.active===true&&!!original,
+   before:scenario.active===true?original:null,showOriginal:scenario.showOriginal===true&&!!original}};
+
 }
 export function parseVoronoiSites(raw,headers="yes"){
  if(String(raw||"").length>MAX_VORONOI_RAW)throw new Error("Choose a smaller site list (at most 20,000 characters).");
@@ -90,6 +111,7 @@ export function parseVoronoiSites(raw,headers="yes"){
 export function importVoronoiSites(studio,raw){
  const d=studio.draft,parsed=parseVoronoiSites(raw,d.headers);
  d.raw=String(raw);d.sites=parsed.sites;d.edited=false;d.pendingPaste=false;d.pairA=0;d.pairB=1;
+ if(d.regionMode==="interactive")d.regionMode="auto";
  if(parsed.hasHeaders){
   if(parsed.x.label)d.xLabel=parsed.x.label;
   if(parsed.y.label)d.yLabel=parsed.y.label;
@@ -140,7 +162,7 @@ export function voronoiCells(sites,bounds){
 export function voronoiBounds(d){
  const sites=d.sites;
  if(!sites.length)return null;
- if(d.regionMode==="manual"){
+ if(d.regionMode==="manual"||d.regionMode==="interactive"){
   const raw=[d.xMin,d.xMax,d.yMin,d.yMax];
   if(raw.some(x=>!String(x).trim()))return null;
   const vals=raw.map(finiteCell);
@@ -205,7 +227,7 @@ export function analyzeVoronoi(raw){
   if(Math.hypot(d.sites[i].x-d.sites[j].x,d.sites[i].y-d.sites[j].y)<1e-9)
    fail("coincident","Two sites have identical locations; their Voronoi regions cannot be distinguished.");
  let bounds=voronoiBounds(d);
- if(d.regionMode==="manual"&&!bounds)fail("bounds","Define finite xmin, xmax, ymin and ymax, with positive widths.");
+ if(["manual","interactive"].includes(d.regionMode)&&!bounds)fail("bounds","Define finite xmin, xmax, ymin and ymax, with positive widths.");
  if(bounds){
   if(bounds.xMax-bounds.xMin<1e-10||bounds.yMax-bounds.yMin<1e-10)
    fail("collapsed-domain","The study area is too narrow to make a legible diagram.");
@@ -214,6 +236,8 @@ export function analyzeVoronoi(raw){
  }
  if(d.regionMode==="auto")warn("auto-window",
   "This is an automatically padded rectangular viewing window, not a real geographic or administrative boundary. Region areas depend on the chosen window.");
+ else if(d.regionMode==="interactive")warn("working-window",
+  "This is a working coordinate rectangle, not a justified geographical boundary. Clipped cell areas depend on the chosen limits.");
  else warn("study-area","Cells are clipped to your chosen rectangle. This is only the actual study area if you can justify its bounds.");
  warn("metric-assumption","Voronoi cells compare straight-line distances, not road travel times, cost, safety, catchment demand or optimal facility location.");
  if(d.sites.length>10)warn("many-sites","Site labels may be crowded. Consider a smaller justified investigation area or fewer locations.");
