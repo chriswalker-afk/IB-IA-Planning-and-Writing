@@ -2,6 +2,7 @@ import {chapterRibbon} from '../ui/living-journey.js';
 import {renderFieldGuideTeaser,renderContextualGuide} from './writer-field-guide.js';
 import {renderIntroductionSparkPrompt,renderIntroductionWritingAdvice,renderIntroductionOptionalExamples} from './intro-writing-advice.js';
 import {renderWritingStageFlow} from './stage-writing-flow.js';
+import {isStudioWritingNode,renderStudioWritingStage} from './studio-writing-stages.js';
 import {insightCapture,insightEcho,renderSparkShelf} from '../ui/insight-threads.js';
 import {STATUS_LABELS,currentGroup,JOURNEY_GROUPS} from "../ui/journey.js";
 import {groupedDashboard} from "../ui/journey-views.js";
@@ -36,7 +37,7 @@ export function createCompletingViews(ctx){
   const state=getState(),i=state.completion.activeEntryIndex;
   return i>=0&&i<state.entries.length?field("entries."+i+"."+key,label,placeholder,opts):"";
  };
- const criteriaField=(html,key)=>isAdviceReduced(getState())?html:criterionMarkedField(html,key);
+ const criteriaField=(html,key)=>isStudioWritingNode(getState().completion.current)?criterionMarkedField(html,key):isAdviceReduced(getState())?html:criterionMarkedField(html,key);
  const entryChoice=(key,options)=>{
   const c=getState().completion,i=c.activeEntryIndex;
   return i>=0?choose("entries."+i+"."+key,options,{tight:true}):"";
@@ -339,7 +340,7 @@ export function createCompletingViews(ctx){
     F("actualSourceType","Type of this actual source","",{type:"select",options:[["","To confirm"],["primary","Primary measurements / collection"],["secondary","Published secondary source"],["theoretical","Mathematical definitions / assumptions"]]})+
     F("actualSource","What evidence or mathematical starting material do I actually have?","Source or mathematical object, not a promised dataset",{type:"textarea",rows:3})+
     F("sourceCitation","Original published source and date (if relevant)","URL, publisher or citation")+
-    F("actualMethod","How did I actually obtain or define it?","Describe the real procedure, never invented data collection",{type:"textarea",rows:3})+
+    criterionMarkedWritingBox(F("actualMethod","How did I actually obtain or define it?","Describe the real procedure, never invented data collection",{type:"textarea",rows:3}),["completing:C20:source","completing:C20:method"])+
     field("scratch.dataNotes","Other data/source notes from my earlier work (editable)","Sources, dates, units and assumptions recorded in the earlier prototype",{type:"textarea",rows:3})+
     (s.teacher.pendingApproval?info("Permissions still require care","Do not perform affected restricted collection without meeting consent or school requirements.",true):"")+
     '<div class="button-row">'+sourceAction("Statistics with sampled or secondary data","Statistics questions")+
@@ -350,22 +351,22 @@ export function createCompletingViews(ctx){
    html:F("statisticalPopulation","Population or group the analysis could describe","The true target population, not every person in general")+
     choice("sampleOrCensus",[["sample","Sample"],["census","Attempted census"],["secondary","Existing published observations"],["unsure","Not sure yet"]])+
     F("samplingMethod","How observations were actually selected","Random, stratified, systematic, convenience, already published, etc.")+
-    F("samplingRationale","Why is this design relevant to the aim?","One mathematically meaningful reason",{type:"textarea",rows:2})+
+    criteriaField(F("samplingRationale","Why is this design relevant to the aim?","One mathematically meaningful reason",{type:"textarea",rows:2}),"completing:C21S:samplingRationale")+
     F("sampleSize","Sample size or relevant counts","Only genuine counts")+
     F("pairing","For paired data, were measurements genuinely matched? (if applicable)","Variables/units from the same observation")+
-    F("responseBias","Potential selection, response or group-comparison issue","What could this prevent you generalising?",{type:"textarea",rows:2})+
+    criteriaField(F("responseBias","Potential selection, response or group-comparison issue","What could this prevent you generalising?",{type:"textarea",rows:2}),"completing:C21S:responseBias")+
     F("dataCleaning","Missing, filtered or excluded values and why (if applicable)","Do not discard inconvenient data to force a prediction",{type:"textarea",rows:2})
   };
   case "C21M":return{intro:"A useful model depends on explicit inputs, parameters, assumptions and a defensible range.",
    html:F("modelEvidence","What supports the model?","Measured data, secondary values, mathematical assumptions, or a mixture")+
     F("modelInputs","Variables, parameters, units and sources","e.g. L length (cm), t time (s), V volume (cm³)",{type:"textarea",rows:3})+
-    F("modelAssumptions","Which simplifications matter?","Their purpose and when they may fail",{type:"textarea",rows:3})+
-    F("modelDomain","What input range or constraints make sense?","Domain for which the model is intended")+
+    criteriaField(F("modelAssumptions","Which simplifications matter?","Their purpose and when they may fail",{type:"textarea",rows:3}),"completing:C21M:modelAssumptions")+
+    criteriaField(F("modelDomain","What input range or constraints make sense?","Domain for which the model is intended"),"completing:C21M:modelDomain")+
     F("modelValidation","How could the model be checked, if feasible?","Observed comparisons or a justified simplified case",{type:"textarea",rows:2})+
     F("modelAlternative","An alternative model worth considering (optional)","Only if another form is mathematically plausible")
   };
   case "C21T":return{intro:"A theoretical investigation does not need a pretend dataset or sampling discussion.",
-   html:F("theoreticalObject","What mathematical object, structure or conjecture is involved?","State a precise mathematical problem",{type:"textarea",rows:3})+
+   html:criteriaField(F("theoreticalObject","What mathematical object, structure or conjecture is involved?","State a precise mathematical problem",{type:"textarea",rows:3}),"completing:C21T:theoreticalObject")+
     F("theoreticalCase","One small useful case or potential counterexample","Numerical examples suggest, but do not prove, a general claim",{type:"textarea",rows:2})+
     F("theoreticalAssumptions","Which assumptions, restrictions or terms matter?","Define as needed",{type:"textarea",rows:2})+
     F("theoreticalQuestion","Anything to discuss about course suitability?","Teacher discussion remains optional but useful",{type:"textarea",rows:2})
@@ -373,12 +374,12 @@ export function createCompletingViews(ctx){
   case "C22":return{intro:"Explain why your actual approach fits the mathematical question better than one realistic alternative.",
    html:F("alternativeMethod","Another genuinely feasible method","A different source, measurement tool or modelling assumption",{type:"textarea",rows:2})+
     F("chosenMethod","Which method did you actually choose?","Not simply what you planned",{type:"textarea",rows:2})+
-    F("methodReason","Why is it suitable for this aim?","What makes the resulting mathematics useful, reliable or interpretable?",{type:"textarea",rows:3})+
+    criteriaField(F("methodReason","Why is it suitable for this aim?","What makes the resulting mathematics useful, reliable or interpretable?",{type:"textarea",rows:3}),"completing:C22:methodReason")+
     info("No generic methods essay","Compare only relevant approaches; convenience alone is not a mathematical justification.")
   };
   case "C23":return{intro:"Place collection/source limitations beside the corresponding method, not only at the end.",
    html:F("methodLimitation","Most consequential limitation of your actual source or method","Sampling coverage, variable definitions, source quality or measurement bias",{type:"textarea",rows:3})+
-    F("limitationConsequence","How might it affect the result or restrict a conclusion?","State the consequence for this aim",{type:"textarea",rows:3})+
+    criteriaField(F("limitationConsequence","How might it affect the result or restrict a conclusion?","State the consequence for this aim",{type:"textarea",rows:3}),"completing:C23:limitationConsequence")+
     F("limitationMitigation","What did you actually do to reduce or check it?","If nothing, explain the honest constraint",{type:"textarea",rows:2})+
     F("limitationAcceptable","What can you still reasonably conclude?","Avoid declaring the limitation harmless without justification",{type:"textarea",rows:2})+
     info("Technique-specific limits come later","Only evaluate correlation, regression or optimisation methods if they were actually used.")
@@ -389,20 +390,20 @@ export function createCompletingViews(ctx){
     F("accuracyUnit","Unit","e.g. seconds")+
     F("accuracyResolution","Instrument/source resolution and uncertainty, if known","Nearest 0.1 s, not automatically ±0.1 s")+
     F("accuracyPolicy","Reasonable display accuracy for calculated results","A justified rounding or exact-vs-approximate convention")+
-    F("accuracyReason","Why does that accuracy make sense?","Related input uncertainty, measurement quality or model sensitivity",{type:"textarea",rows:2})+
+    criteriaField(F("accuracyReason","Why does that accuracy make sense?","Related input uncertainty, measurement quality or model sensitivity",{type:"textarea",rows:2}),"completing:C24:accuracyReason")+
     button("Record this quantity","completion-record-accuracy","btn-secondary")+
     accuracyRecords()+
     info("No fixed decimal-place rule","Keep guard digits during working, then report outputs to defensible precision. Don't round an exact symbolic answer unnecessarily.")
   };
   case "C25":return{intro:"Introduce a symbol or term when first needed; use meaningful names and consistent units.",
-   html:F("variableDefinitions","Important symbols with meanings and units","e.g. h = height in m; t = time in seconds",{type:"textarea",rows:4})+
+   html:criteriaField(F("variableDefinitions","Important symbols with meanings and units","e.g. h = height in m; t = time in seconds",{type:"textarea",rows:4}),"completing:C25:variableDefinitions")+
     F("specialistTerms","Any important non-mathematical specialist words","Explain only those needed to understand the investigation",{type:"textarea",rows:2})+
     info("Just in time","Define new mathematical symbols before their first use, including those introduced in later sections.")
   };
   case "C26":return{intro:"Connect your actual evidence and method back to the aim. You may return to the dashboard or begin a first exploration.",
     html:smallSummary("Actual source",f.actualSource||f.theoreticalObject)+
       smallSummary("Method reason",f.methodReason)+
-      F("dataAimLink","Why could this evidence help answer my current aim?","One short explanation in the actual IA's methods/source section",{type:"textarea",rows:3})+
+      criteriaField(F("dataAimLink","Why could this evidence help answer my current aim?","One short explanation in the actual IA's methods/source section",{type:"textarea",rows:3}),"completing:C26:dataAimLink")+
       F("dataStatusSummary","One important uncertainty still to resolve (optional)","Sampling scope, permission, parameter quality or missing source",{type:"textarea",rows:2})
   };
   case "C30":return{intro:"Start with a single useful graph, labelled diagram, numerical case or brief calculation. It should have a mathematical purpose.",
@@ -440,7 +441,7 @@ export function createCompletingViews(ctx){
      {value:"model",title:"Model or calculation",icon:"calculator"},
      {value:"theory",title:"Mathematical conjecture / proof",icon:"book"},
      {value:"other",title:"Other genuine mathematics",icon:"sparkles"}])+
-    entryField("result","What did you actually plot, calculate or find?","Enter only a genuine output, or keep this as planned",{type:"textarea",rows:4})+
+    criteriaField(entryField("result","What did you actually plot, calculate or find?","Enter only a genuine output, or keep this as planned",{type:"textarea",rows:4}),"completing:C33:title")+
     entryField("resultRef","Where is the figure/equation in my own IA?","Figure 1; Equation 2; page 4")+
     accuracySelector()+
     F("firstPresentation","Check title, labels, axes, units, source and readable precision","Anything you need to fix in the real IA",{type:"textarea",rows:2})+
@@ -461,7 +462,7 @@ export function createCompletingViews(ctx){
   case "C34A":return{intro:"Accuracy matters here only if it affects what this particular result can responsibly mean.",
    html:actualRecord()+accuracyNote()+
     accuracySelector()+
-    F("accuracyForResult","Is the display defensible?","A context-based explanation, not arbitrary decimal places",{type:"textarea",rows:3})+
+    criteriaField(F("accuracyForResult","Is the display defensible?","A context-based explanation, not arbitrary decimal places",{type:"textarea",rows:3}),"completing:C34A:accuracyForResult")+
     info("Avoid repeated precision essays","Once justified, apply the decision again only where relevant. Revisit C24 if the underlying source changes.")
   };
   case "C34B":return{intro:"Relate this actual result to your aim, your earlier prediction and its intended benefit.",
@@ -469,7 +470,7 @@ export function createCompletingViews(ctx){
     smallSummary("Original prediction or hope (tentative)",plannedPrediction())+
     smallSummary("Why I expected or hoped this",p.predictionWhy||s.project.predictionWhy)+
     smallSummary("Possible beneficiary",currentBenefit())+
-    entryField("interpretation","What does this actual result mean for my aim?","An honest local conclusion based on mathematics I have done",{type:"textarea",rows:4})+
+    criteriaField(entryField("interpretation","What does this actual result mean for my aim?","An honest local conclusion based on mathematics I have done",{type:"textarea",rows:4}),"completing:C34B:title")+
     entryField("localTakeaway","One sentence: what has this section established?","What do I know now, and what remains unanswered?",{type:"textarea",rows:2})+
     F("predictionComparison","How does the result compare with your starting prediction, conjecture or hope?","What did you actually find out? It need not confirm your early expectation.",{type:"textarea",rows:2})+
     F("benefitFinding","What might this mean for the intended beneficiary?","Only if supported by evidence",{type:"textarea",rows:2})+
@@ -480,7 +481,7 @@ export function createCompletingViews(ctx){
   case "C34U":return{intro:"Surprising, unclear or contradictory findings are valuable. Check possibilities without changing observations to fit a prediction.",
    html:actualRecord()+
     F("surpriseReason","What differs from my expectation, or is uncertain?","An outlier, unclear scatter, sign change, counterexample …",{type:"textarea",rows:3})+
-    F("surpriseCheck","One plausible mathematical or source-based check","Verify an unusual value, check assumptions or compare an honest alternative",{type:"textarea",rows:3})+
+    criteriaField(F("surpriseCheck","One plausible mathematical or source-based check","Verify an unusual value, check assumptions or compare an honest alternative",{type:"textarea",rows:3}),"completing:C34U:surpriseCheck")+
     info("No forced result","You can record an unresolved surprise, save, or revise the mathematical plan while keeping the original observation intact.")
   };
   case "C35":return{intro:"One logical bridge from your last actual result to the next mathematics—or recognise that you have enough to conclude.",
@@ -497,7 +498,7 @@ export function createCompletingViews(ctx){
   case "C35H":return{intro:"Two optional prompts based on what you actually recorded. Neither is a required extra technique.",
    html:bridgeFromPrior()+suggestionCards()+
     F("nextQuestion","My OWN next mathematical question","You may reject all suggestions",{type:"textarea",rows:2})+
-    F("nextReason","Why would answering this follow from my result?","Meaningful mathematical connection",{type:"textarea",rows:3})
+    criteriaField(F("nextReason","Why would answering this follow from my result?","Meaningful mathematical connection",{type:"textarea",rows:3}),"completing:C35H:nextReason")
   };
   case "C35B":return{intro:"Confirm what the actual scatter graph shows before deciding on correlation or fitting a model.",
    html:smallSummary("Last actual scatter result",scatterForNext(s)?.result)+
@@ -513,7 +514,7 @@ export function createCompletingViews(ctx){
   };
   case "C35P":return{intro:"Use this only after you have actually calculated Pearson's correlation coefficient.",
    html:bridgeFromPrior()+coachBlock(sourceResultForNext(s),{allowChoices:false})+
-    F("pmccInterpretation","What value or finding did I calculate and what does it mean?","Describe actual direction and strength of LINEAR association",{type:"textarea",rows:3})+
+    criteriaField(F("pmccInterpretation","What value or finding did I calculate and what does it mean?","Describe actual direction and strength of LINEAR association",{type:"textarea",rows:3}),"completing:C35P:title")+
     (f.scatterPattern?smallSummary("Observed scatter shape",f.scatterPattern):"")+
     F("nextQuestion","My next question, if another is needed","A model, outlier check, different explanation, or no further calculation",{type:"textarea",rows:2})+
     F("nextReason","Why would that next step help the aim?","The actual r and graph—not a planned coefficient—drive the choice",{type:"textarea",rows:2})+
@@ -527,7 +528,7 @@ export function createCompletingViews(ctx){
     html:(entry?entryReviewAlert()+bridgeToActive():info("Return to the first exploration","If you have only a first representation, interpret it and choose a meaningful next question before starting a substantial mathematical section."))+
      (entry?'<div class="completion-active-step">'+
        entryField("title","Mathematical question this section addresses","Meaningful and focussed")+
-       entryField("purpose","Why this technique belongs here, BEFORE the work","Link to the previous result and aim",{type:"textarea",rows:3})+
+       criteriaField(entryField("purpose","Why this technique belongs here, BEFORE the work","Link to the previous result and aim",{type:"textarea",rows:3}),"completing:"+n+":title")+
        entryField("technique","Mathematical technique actually intended or used","e.g. differentiation, regression, algebraic argument")+
        entryField("methodId","Identify the method for relevant help (optional)","",{type:"select",options:METHOD_OPTIONS})+
        preflight(entry)+
@@ -566,7 +567,7 @@ export function createCompletingViews(ctx){
    html:F("technologyTool","Which software, GDC, code or spreadsheet was actually used?","Name the tool")+
     F("technologyInput","Inputs or mathematical operation used","Variables and transformation",{type:"textarea",rows:2})+
     F("technologyOutcome","What numerical or graphical output was produced?","Real result only",{type:"textarea",rows:3})+
-    F("technologyInterpretation","What does that output mathematically mean for the aim?","Your reasoning, not a screenshot with no explanation",{type:"textarea",rows:3})
+    criteriaField(F("technologyInterpretation","What does that output mathematically mean for the aim?","Your reasoning, not a screenshot with no explanation",{type:"textarea",rows:3}),"completing:C40T:title")
   };
   case "C40D":return{intro:"Check whether the mathematics you ACTUALLY use is appropriate and understood.",
    html:actualRecord()+
@@ -576,7 +577,7 @@ export function createCompletingViews(ctx){
       {value:"mixed",title:"Main technique is familiar, but one extension is outside/uncertain",icon:"book"},
       {value:"outside",title:"Verified outside my own course",icon:"book"},
       {value:"unsure",title:"I need to check my course or ask a teacher",icon:"lightbulb"}]):"")+
-    F("courseWhy","What mathematical question does this technique answer?","Why it is genuinely suitable for this investigation",{type:"textarea",rows:3})+
+    criteriaField(F("courseWhy","What mathematical question does this technique answer?","Why it is genuinely suitable for this investigation",{type:"textarea",rows:3}),"completing:C40D:courseWhy")+
     '<details class="guidance-insight"><summary>Check course-level mathematical depth (optional)</summary>'+
       entryChoice("priorLearningOnly",[
         {value:"no",title:"This has course-level mathematical content",icon:"check-circle"},
@@ -589,7 +590,7 @@ export function createCompletingViews(ctx){
    html:(st&&st.knowledge==="syllabus"?info("Routine syllabus mathematics","Apply the technique and interpret it; detailed exposition is unnecessary."):"")+
     (st?entryField("researchSource","Mathematics source I actually used (if any)","Reference to a book/article or teacher-approved resource")+entryField("unfamiliarComponent","Exactly what part was new/outside my course?","Do not label routine course techniques advanced without checking")+entryField("understandingExample","A real mathematical explanation or step showing my own understanding","Relevant only if this idea is genuinely unfamiliar",{type:"textarea",rows:3}):"")+
     F("researchedMethod","Which new mathematical idea did I use?","Technique or theorem, and how you found it")+
-    F("researchedUnderstanding","What have I learned about how it works?","Definitions, assumptions, a demonstration or small explanation",{type:"textarea",rows:4})+
+    criteriaField(F("researchedUnderstanding","What have I learned about how it works?","Definitions, assumptions, a demonstration or small explanation",{type:"textarea",rows:4}),"completing:C40L:title")+
     F("mathsLearning","What did learning this change about my investigation?","A genuine mathematical insight",{type:"textarea",rows:2})+
     info("Use regular course techniques directly","If your technique is on your course, there is usually no need to teach it to the reader.")
   };
@@ -599,7 +600,7 @@ export function createCompletingViews(ctx){
     smallSummary("Original reason for that expectation",p.predictionWhy||s.project.predictionWhy)+
     smallSummary("Intended beneficiary",currentBenefit())+
     guides.conclusionLimitations()+
-    field("scratch.conclusion","My own conclusion notes","State the best-supported answer and limits, in my own words",{type:"textarea",rows:6})
+    criterionMarkedWritingBox(field("scratch.conclusion","My own conclusion notes","State the best-supported answer and limits, in my own words",{type:"textarea",rows:6}),["completing:C61:mainConclusion","completing:C61:uncertainty"])
   };
   case "C61":return{intro:"What essential answer have your actual results established? An uncertain or negative finding is still legitimate.",
    html:actualList()+guides.conclusionLimitations()+
@@ -619,7 +620,7 @@ export function createCompletingViews(ctx){
   };
   case "C64":return{intro:"Keep the ending a synthesis. Method critiques and intermediate reflections belong beside earlier work.",
     html:F("conclusionFocus","What will I remove or relocate from the conclusion?","Repeats, procedural steps, limitations already explained",{type:"textarea",rows:3})+
-      field("scratch.conclusion","My revised concise conclusion notes","My actual mathematical answer, in my own words",{type:"textarea",rows:5})+
+      criteriaField(field("scratch.conclusion","My revised concise conclusion notes","My actual mathematical answer, in my own words",{type:"textarea",rows:5}),"completing:C64:title")+
       smallSummary("Strongest finding",f.mainConclusion)
   };
   case "C70":return{intro:"Review clarity across the actual document, repairing explanations where they originally appear.",
@@ -722,6 +723,9 @@ export function createCompletingViews(ctx){
   const screen=startOptions(node),stage=completionStage(node,s);
   const progress=stage&&s.completion.stages[stage];
   const warning=completionFlags(s);
+  const studioWriting=isStudioWritingNode(node);
+  // Criterion title marks move beside their actual written response where practical.
+  const fieldBadgeInsteadOfTitle=["C33","C34B","C35P","C40","C50","C40T","C40L","C64"].includes(node);
   const topWarnings=warning.length&&["C00","C02","C03","C04","C20"].includes(node)?
     '<div class="completion-top-warnings">'+warning.slice(0,2).map(x=>info("Review needed",x,true)).join("")+'</div>':"";
   const statusControls=stage&&C_MAJOR_STAGES.some(x=>x.id===stage)&&[stage,"C40","C50"].includes(node)?
@@ -730,27 +734,37 @@ export function createCompletingViews(ctx){
       ["working",STATUS_LABELS.working],["complete",STATUS_LABELS.complete],["needs-review",STATUS_LABELS["needs-review"]]].map(([key,text])=>
      '<button data-action="completion-mark" data-stage="'+e(stage)+'" data-status="'+key+'"'+
      ' aria-pressed="'+(progress===key)+'" class="'+(progress===key?"selected":"")+'">'+e(text)+'</button>').join("")+'</div></div>':"";
+  const optionalStudioHelp=studioWriting&&!isAdviceReduced(s)?[
+    guides.writingMoment(node,{embedded:true}),guides.mathsHelp(node),guides.limitsHelp(node),
+    contextualPrompt(node),resourcePrompt(s)
+   ].filter(Boolean).join(""):"";
+  const stagedHtml=studioWriting?renderStudioWritingStage(s,node,{
+    icon,e,taskIntro:screen.intro,reduced:isAdviceReduced(s),help:optionalStudioHelp,
+    taskHtml:screen.html+(screen.extra||"")+insightCapture(s,node)
+   }):screen.html+(screen.extra||"");
   return '<div class="page narrow completing-page">'+tabletNav()+chapterRibbon(s)+
     '<div class="completion-topline"><span>'+icon("route")+' '+e(node==="C04"?"Your IA Studio":(JOURNEY_GROUPS.indexOf(currentGroup(s))+1)+'. '+currentGroup(s).name)+'</span>'+
     '<div class="completion-top-actions"><button type="button" class="advice-mode-toggle" data-action="toggle-advice-mode" aria-pressed="'+isAdviceReduced(s)+'" aria-label="'+(isAdviceReduced(s)?"Show full advice":"Reduce optional advice")+'">'+
       icon(isAdviceReduced(s)?"eye":"eye-off")+' '+(isAdviceReduced(s)?"Show full advice":"Reduce advice")+'</button>'+
     (node==="C04"?"":'<button class="btn btn-quiet btn-sm" data-action="completion-open" data-node="C04">'+icon("layers")+' My stages</button>')+'</div></div>'+
     topWarnings+
-    (node!=="C00"&&node!=="C04"&&node!=="C10"&&!isStuckNode(node)?'<p class="studio-ia-writing-reminder">'+icon("pencil")+
+    (node!=="C00"&&node!=="C04"&&node!=="C10"&&!studioWriting&&!isStuckNode(node)?'<p class="studio-ia-writing-reminder">'+icon("pencil")+
       ' WRITE IN YOUR IA · Use these prompts to develop your own document; nothing is inserted automatically.</p>':'')+
     '<div class="task-shell'+(node==="C00"?' chapter-onboarding-shell':'')+'" data-source-node="'+e(node)+'">'+
-    criterionPageHeading(label,"completing",isAdviceReduced(s)?"":node)+(node==="C10"?"":'<p class="task-intro">'+e(screen.intro)+'</p>')+
-    (node==="C10"?"":insightEcho(s,node))+extra.returnToReview()+(isStuckNode(node)||["C00","C04","C10","C10E"].includes(node)||isAdviceReduced(s)?"":criteriaPanel(s))+
-    screen.html+(screen.extra||"")+
-    (node==="C00"||node==="C10"?"":insightCapture(s,node))+
-    (node==="C00"||node==="C04"||node==="C10"||isStuckNode(node)||isAdviceReduced(s)?"":renderContextualGuide(icon,e,node))+
-    (node==="C00"||node==="C10"||isAdviceReduced(s)?"":essentialsNudge(s))+
-    (node==="C00"||node==="C10"||isStuckNode(node)||node==="C10E"||isAdviceReduced(s)?"":guides.writingMoment(node,{embedded:node!=="C96"}))+
-    (node==="C00"||node==="C10"||isStuckNode(node)||isAdviceReduced(s)?"":guides.mathsHelp(node)+guides.limitsHelp(node)+
+    criterionPageHeading(label,"completing",isAdviceReduced(s)||fieldBadgeInsteadOfTitle?"":node)+
+    (node==="C10"||studioWriting?"":'<p class="task-intro">'+e(screen.intro)+'</p>')+
+    (node==="C10"||studioWriting?"":insightEcho(s,node))+extra.returnToReview()+
+    (studioWriting||isStuckNode(node)||["C00","C04","C10","C10E"].includes(node)||isAdviceReduced(s)?"":criteriaPanel(s))+
+    stagedHtml+
+    (node==="C00"||node==="C10"||studioWriting?"":insightCapture(s,node))+
+    (node==="C00"||node==="C04"||node==="C10"||studioWriting||isStuckNode(node)||isAdviceReduced(s)?"":renderContextualGuide(icon,e,node))+
+    (node==="C00"||node==="C10"||studioWriting||isAdviceReduced(s)?"":essentialsNudge(s))+
+    (node==="C00"||node==="C10"||studioWriting||isStuckNode(node)||node==="C10E"||isAdviceReduced(s)?"":guides.writingMoment(node,{embedded:node!=="C96"}))+
+    (node==="C00"||node==="C10"||studioWriting||isStuckNode(node)||isAdviceReduced(s)?"":guides.mathsHelp(node)+guides.limitsHelp(node)+
     (["C00","C04"].includes(node)?"":contextualPrompt(node)+resourcePrompt(s)))+statusControls+
     (node==="C00"?"":allButtons(node,primaryByNode[node]||[]))+'</div>'+
-    '<p class="small-callout">Only actual mathematics supports a mathematical conclusion. Your planning, predictions and teacher questions remain separate from real findings. No compulsory number of calculations or IA grade.</p>'+
-    (["C00","C04"].includes(node)?"":miniList())+'</div>';
+    (studioWriting?"":'<p class="small-callout">Only actual mathematics supports a mathematical conclusion. Your planning, predictions and teacher questions remain separate from real findings. No compulsory number of calculations or IA grade.</p>')+
+    (studioWriting||["C00","C04"].includes(node)?"":miniList())+'</div>';
  }
  return {viewCompleting:render};
 }

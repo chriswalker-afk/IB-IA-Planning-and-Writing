@@ -402,7 +402,7 @@ const sparkLibraryEntry=(s,node,x,featuredIds)=>{
   icon('chevron-down')+'</summary>'+
   '<div class="spark-library-entry-body">'+sparkFullBody(s,node,x,{featured:!isFeatured})+'</div></details>';
 };
-export function renderSparkShelf(s,node,{surface='planning',libraryOnly=false}={}){
+export function renderSparkShelf(s,node,{surface='planning',libraryOnly=false,hideHeading=false}={}){
  const all=insightItems(s);
  if(!all.length)return '';
  const featured=libraryOnly?[]:featuredSparkItems(s,node),featuredIds=new Set(featured.map(x=>x.id));
@@ -411,7 +411,7 @@ export function renderSparkShelf(s,node,{surface='planning',libraryOnly=false}={
   '<section class="spark-library-group"><h4>'+e(g.label)+' <span>'+g.items.length+'</span></h4>'+
   '<div class="spark-library-entries">'+g.items.map(x=>sparkLibraryEntry(s,node,x,featuredIds)).join('')+'</div></section>').join('');
  return '<section class="planning-compact-recall spark-shelf spark-shelf-'+e(surface)+(libraryOnly?' spark-shelf-library-only':'')+'" aria-label="Your saved sparks" data-spark-shelf="'+e(surface)+'">'+
-  (libraryOnly?'':'<p class="planning-compact-recall-label">'+icon('sparkles')+' Your sparks are back'+
+  (libraryOnly||hideHeading?'':'<p class="planning-compact-recall-label">'+icon('sparkles')+' Your sparks are back'+
   ' <span>Two that matter now · '+all.length+' saved in total</span></p>')+
   '<div class="planning-compact-sparks">'+
   featured.map(x=>sparkFeaturedCard(s,node,x)).join('')+
