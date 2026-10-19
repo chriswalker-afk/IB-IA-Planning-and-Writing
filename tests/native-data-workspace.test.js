@@ -61,7 +61,9 @@ test("quoted separators and partial cells work without executing or evaluating f
  editNativeCell(s.tableStudio,"table",0,0,"=1+2");
  assert.equal(s.tableStudio.draft.matrix[0][0],"=1+2");
  assert.equal(s.tableStudio.draft.matrix[0][1]??"","");
- assert.equal(nativeGridSummary(s.tableStudio.draft).incomplete,1);
+ assert.equal(nativeGridSummary(s.tableStudio.draft).incomplete,0); // One-variable observations are valid.
+ editNativeHeading(s.tableStudio,"table",1,"Distance (m)");
+ assert.equal(nativeGridSummary(s.tableStudio.draft).incomplete,1); // A named second variable is now missing.
 });
 test("grid edits are bounded and invalid large pasted blocks change nothing",()=>{
  const s=sample(),before=JSON.stringify(s.graphStudio.draft);
