@@ -1,4 +1,5 @@
 import {representationEmpty} from "./workspace-ui.js";
+import {renderNativeDataGrid} from "./native-data-view.js";
 /** Cohesive graph editing surface inside C31. Every editor control has a real action. */
 import {analyseGraph,renderGraphSvg,graphData} from "./graph-core.js";
 
@@ -74,15 +75,16 @@ export function renderGraphStudio(state,icon,e){
    ' Your actual results can lead you elsewhere.</p>':"")+
   '<div class="graph-studio-layout">'+
   '<div class="graph-controls">'+
-  (d.kind!=="function"?'<section class="graph-control-card" data-graph-section="data" data-representation-step="create"><h3><span>1</span> Bring in your own data</h3>'+
-   '<p>Copy a rectangular range from Google Sheets and paste it here, including headings if possible. CSV files work too. Nothing is sent to a server.</p>'+
+  (d.kind!=="function"?'<section class="graph-control-card" data-graph-section="data" data-representation-step="create"><h3><span>1</span> Enter your own data</h3>'+
+   '<p>Type paired observations into the worksheet to plot them immediately. Units belong in the headings when appropriate.</p>'+renderNativeDataGrid(state,"graph",icon,e)+
+   '<details class="native-import-details"><summary>Or paste / import an existing spreadsheet</summary>'+
    field("raw","Paste table or CSV",d.raw,e,{rows:5,placeholder:"Paste two or more columns copied from Google Sheets."})+
    '<div class="graph-buttons"><button type="button" class="btn btn-secondary btn-sm" data-action="graph-parse">'+icon("clipboard")+' Read pasted values</button>'+
    '<button type="button" class="btn btn-quiet btn-sm" data-action="graph-upload">'+icon("upload")+' Import CSV</button></div>'+
-   tableExample+
+   tableExample+'</details>'+
    (d.matrix.length?'<p class="graph-import-ok">'+icon("check-circle")+' '+d.matrix.length+' rows and '+d.columns.length+' columns imported. Missing or invalid selected values are flagged below.</p>'+
    '<div class="graph-field-grid">'+selectCols("xIndex","Horizontal (x) column",d.xIndex)+selectCols("yIndex","Vertical (y) column",d.yIndex)+'</div>':
-   representationEmpty(icon,e,{symbol:"table",title:"No data yet",description:"Paste genuine paired data, import CSV, or choose a function graph above."}))+
+   '<p class="native-grid-tip">Enter genuine observations in the worksheet above to start plotting.</p>')+
    '</section>':
    '<section class="graph-control-card" data-graph-section="function" data-representation-step="create"><h3><span>1</span> Define your function</h3>'+
    '<p>Use <code>x</code>, numbers, <code>^</code>, <code>*</code>, brackets, and functions such as <code>sin(x)</code>, <code>sqrt(x)</code> or <code>ln(x)</code>. Trigonometric inputs use radians.</p>'+

@@ -13,6 +13,7 @@ import {newGraphStudio,normalizeGraphStudio} from "../diagrams/graph-core.js";
 import {newImageTracer,normalizeImageTracer} from "../diagrams/image-tracer-core.js";
 import {newStatStudio,normalizeStatStudio} from "../diagrams/stat-studio-core.js";
 import {newTableStudio,normalizeTableStudio} from "../diagrams/table-studio-core.js";
+import {normalizeNativeShelf} from "../diagrams/native-data-core.js";
 import {newVoronoiStudio,normalizeVoronoiStudio} from "../diagrams/voronoi-core.js";
 export const STATE_VERSION = 2;
 export const STORAGE_KEY = "ia-pathfinder-prototype-v1"; // Deliberately stable across upgrades.
@@ -60,7 +61,7 @@ export function createProjectState() {
       helpKey:"",openCue:"",noteDraft:"",adviceMode:"guided",planningIntroSeen:false,planningIntroOpen:false,lastWorkRoute:"",lastStudioNode:"",representationFilter:"all",latestTitle:"",latestDetail:"",latestNode:"",latestEntry:"",latestAt:""
     },
     scratch: {introduction:"",dataNotes:"",conclusion:"",finalReview:""},
-    entries:[], graphStudio:newGraphStudio(), imageTracer:newImageTracer(), statStudio:newStatStudio(), tableStudio:newTableStudio(), voronoiStudio:newVoronoiStudio(), cues:{},cueNotes:{},cueLocations:{},
+    entries:[], dataShelf:[], graphStudio:newGraphStudio(), imageTracer:newImageTracer(), statStudio:newStatStudio(), tableStudio:newTableStudio(), voronoiStudio:newVoronoiStudio(), cues:{},cueNotes:{},cueLocations:{},
     journey: {
       currentNodeId:"N00",
       answers:{}, // exact sheet/node keyed answers will be populated in Phase 2
@@ -120,6 +121,7 @@ export function normalizeProjectState(value) {
     resources:normalizeResourceState(value.resources),
     ideaExplorer:normalizeIdeaState(value.ideaExplorer),
     entries:Array.isArray(value.entries)?value.entries.filter(plain).slice(0,MAX_ENTRIES).map(normalizeEntry):[],
+    dataShelf:normalizeNativeShelf(value.dataShelf),
     graphStudio:normalizeGraphStudio(value.graphStudio),
     imageTracer:normalizeImageTracer(value.imageTracer),
     statStudio:normalizeStatStudio(value.statStudio),
