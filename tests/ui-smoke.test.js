@@ -181,7 +181,7 @@ test("adaptive Planning follows genuine spreadsheet source nodes and retains stu
  h.action('plan-finish-writing');
  assert(h.html.includes('data-source-node="C00"'));
  assert(h.html.includes('Set up: start writing your IA'));
- assert(h.html.includes('Write your introduction'));
+ assert(h.html.includes('Start writing my introduction'));
  assert(h.html.includes('data-action="setup-start-writing"'));
  assert.equal(h.saved.route,'completing');
  assert.equal(h.saved.completion.current,'C00');
@@ -189,7 +189,7 @@ test("adaptive Planning follows genuine spreadsheet source nodes and retains stu
  h.action('setup-start-writing');
  assert(h.html.includes('data-source-node="C10"'));
  assert(h.html.includes('My own working introduction notes'));
- assert(h.html.includes('WRITE IN YOUR IA'));
+ assert(h.html.includes('criterion-writing-bubbles'));
  assert.equal(h.saved.completion.current,'C10');
  assert.equal(h.saved.ui.studioSection,'intro');
  assert.equal(h.saved.planning.completed,true);
@@ -404,6 +404,8 @@ test("Phase 5 writing advice respects student control instead of launching a que
  h.nav("completing");
  h.action("completion-open",{node:"C10"});
  assert(h.html.includes("Write your introduction"));
+ assert(!h.html.includes("data-writing-cue=")); // Introduction now has one focused workflow.
+ h.action("completion-open",{node:"C20"});
  assert(h.html.includes("data-writing-cue="));
  const match=h.html.match(/data-guidance-id="(W\d\d)" data-guidance-key="([^"]+)"/);
  assert(match);
