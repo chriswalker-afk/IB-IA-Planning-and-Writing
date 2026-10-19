@@ -185,8 +185,8 @@ test("changed saved values reopen review of prior completed interpretations, pre
  state.entries[0].status="completed";state.entries[0].result="The medians were similar.";
  setTableField(state.tableStudio,"decimals","3");
  const changed=saveTableDraft(state);
- // Formatting-only changes do not change any mathematical data.
- assert.equal(changed.reviewNeeded,false);
+ // More displayed digits can affect interpretation of claimed accuracy.
+ assert.equal(changed.reviewNeeded,true);
  state.tableStudio.draft.matrix[0][1]="200";
  const updated=saveTableDraft(state);
  assert.equal(updated.ok,true);assert.equal(updated.reviewNeeded,true);
