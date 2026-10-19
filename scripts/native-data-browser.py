@@ -76,7 +76,7 @@ def run_journey(page,width):
  assert stat["sourceKind"]=="primary"
  page.locator('[data-action="stat-kind"][data-stat-value="box"]').click()
  page.locator('[data-stat-field="title"]').fill("Measured times: four readings")
- assert "Time (s)" in page.locator('[data-native-grid="stat"]').inner_text()
+ assert page.locator('[data-native-grid="stat"] [data-native-heading][data-native-col="0"]').input_value()=="Time (s)"
  assert page.locator('[data-native-choices="stat"] input[type=checkbox]').count()>=2
  no_overflow(page)
  # Move same values to Table Studio, whose formatting already sizes columns.
