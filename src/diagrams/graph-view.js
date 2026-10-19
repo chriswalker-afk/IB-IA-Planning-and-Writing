@@ -1,3 +1,4 @@
+import {representationEmpty} from "./workspace-ui.js";
 /** Cohesive graph editing surface inside C31. Every editor control has a real action. */
 import {analyseGraph,renderGraphSvg,graphData} from "./graph-core.js";
 
@@ -20,15 +21,15 @@ const GRAPH_ROUTE_HINTS={
  relationships:"A scatter diagram of genuinely paired measurements is a useful first inspection. Do not fit a line automatically.",
  groups:"Start with a comparable distribution or group chart. The scatter/time/function plotter may not be the right display for your first step.",
  categorical:"This question usually benefits from a two-way summary table or a comparison of proportions, not a numerical scatter plot.",
- variation:"A distribution or box plot may reveal variation better than a connected line. Those chart types are planned next.",
+ variation:"A distribution or box plot may reveal variation better than a connected line. Those diagrams are now available in Statistical Diagrams.",
  "fitted-models":"If a model is derived theoretically, plot it as a function; if fitted from measurements, first inspect actual points.",
  growth:"A chronological plot can help you compare changes between equal time intervals before choosing a growth model.",
  cycles:"Plot a sufficiently long time series before deciding whether a sinusoidal function makes sense.",
- trajectories:"Position-versus-time or coordinate measurements can be plotted. Photo calibration and tracing are planned as a later tool.",
+ trajectories:"Position-versus-time or coordinate measurements can be plotted. Use Image & Coordinate Tracer for calibrated coordinates.",
  optimisation:"A function graph over the feasible domain can illustrate candidate extrema; the graph alone is not proof of the optimum.",
- images:"Photo overlay, coordinate calibration and boundary tracing will need the planned image-tracing tool.",
- triangulation:"A labelled scale-aware geometric diagram is more suitable; the geometry constructor is a planned later tool.",
- voronoi:"A coordinate or map construction is needed; a Voronoi generator is planned for a later pass.",
+ images:"Use Image & Coordinate Tracer for calibration and tracing.",
+ triangulation:"A labelled scale-aware geometric diagram is more suitable; use Image & Coordinate Tracer for calibrated geometry.",
+ voronoi:"A coordinate or map construction is needed; Voronoi Studio is available for nearest-site constructions.",
  finance:"A function graph can compare cost/revenue models; use matching units and a realistic input domain.",
  chance:"Probability trees or distribution charts are often more helpful than a continuous function graph.",
  proof:"Use only a diagram that genuinely helps the argument; plotted examples do not establish a universal proof.",
@@ -60,7 +61,7 @@ export function renderGraphStudio(state,icon,e){
  const problems=q.problems.map(x=>'<li>'+icon("x-circle")+'<span>'+e(x.message)+'</span></li>').join("");
  const warnings=q.warnings.map(x=>'<li>'+icon("alert-circle")+'<span>'+e(x.message)+'</span></li>').join("");
  const zero=q.ready&&q.points.length?"Ready to export":"Add the missing details before exporting";
- return '<section class="graph-studio" data-graph-studio aria-label="Mathematical graph plotter">'+
+ return '<section class="graph-studio representation-studio" data-graph-studio aria-label="Mathematical graph plotter">'+
   '<div class="graph-studio-head"><div><span class="intro-writing-guide-eyebrow">'+icon("chart")+' MY MATHEMATICS · GRAPH STUDIO</span>'+
   '<h2>Build a graph worth including</h2><p>Create one clear mathematical representation, check it at print size and export it to your actual IA document.</p></div>'+
   '<button type="button" class="btn btn-quiet btn-sm" data-action="graph-close">'+icon("x")+' Close plotter</button></div>'+
@@ -73,7 +74,7 @@ export function renderGraphStudio(state,icon,e){
    ' Your actual results can lead you elsewhere.</p>':"")+
   '<div class="graph-studio-layout">'+
   '<div class="graph-controls">'+
-  (d.kind!=="function"?'<section class="graph-control-card" data-graph-section="data"><h3><span>1</span> Bring in your own data</h3>'+
+  (d.kind!=="function"?'<section class="graph-control-card" data-graph-section="data" data-representation-step="create"><h3><span>1</span> Bring in your own data</h3>'+
    '<p>Copy a rectangular range from Google Sheets and paste it here, including headings if possible. CSV files work too. Nothing is sent to a server.</p>'+
    field("raw","Paste table or CSV",d.raw,e,{rows:5,placeholder:"Paste two or more columns copied from Google Sheets."})+
    '<div class="graph-buttons"><button type="button" class="btn btn-secondary btn-sm" data-action="graph-parse">'+icon("clipboard")+' Read pasted values</button>'+
@@ -81,13 +82,13 @@ export function renderGraphStudio(state,icon,e){
    tableExample+
    (d.matrix.length?'<p class="graph-import-ok">'+icon("check-circle")+' '+d.matrix.length+' rows and '+d.columns.length+' columns imported. Missing or invalid selected values are flagged below.</p>'+
    '<div class="graph-field-grid">'+selectCols("xIndex","Horizontal (x) column",d.xIndex)+selectCols("yIndex","Vertical (y) column",d.yIndex)+'</div>':
-   '<p class="graph-import-prompt">No table imported yet. Paste genuine data or choose a function graph above.</p>')+
+   representationEmpty(icon,e,{symbol:"table",title:"No data yet",description:"Paste genuine paired data, import CSV, or choose a function graph above."}))+
    '</section>':
-   '<section class="graph-control-card" data-graph-section="function"><h3><span>1</span> Define your function</h3>'+
+   '<section class="graph-control-card" data-graph-section="function" data-representation-step="create"><h3><span>1</span> Define your function</h3>'+
    '<p>Use <code>x</code>, numbers, <code>^</code>, <code>*</code>, brackets, and functions such as <code>sin(x)</code>, <code>sqrt(x)</code> or <code>ln(x)</code>. Trigonometric inputs use radians.</p>'+
    field("expression","Function y = f(x)",d.expression,e,{placeholder:"e.g. x^2 - 4*x + 3"})+
    '<small>Values are calculated locally. A function graph is not evidence of collected measurements.</small></section>')+
-  '<section class="graph-control-card" data-graph-section="labels"><h3><span>2</span> Make the mathematics clear</h3>'+
+  '<section class="graph-control-card" data-graph-section="labels" data-representation-step="refine"><h3><span>2</span> Make the mathematics clear</h3>'+
   field("title","Descriptive graph title",d.title,e,{placeholder:"e.g. How distance changes with elapsed time"})+
   '<div class="graph-field-grid">'+field("xLabel","Horizontal axis name",d.xLabel,e,{placeholder:"e.g. Time"})+
   field("yLabel","Vertical axis name",d.yLabel,e,{placeholder:"e.g. Distance"})+'</div>'+
@@ -116,7 +117,7 @@ export function renderGraphStudio(state,icon,e){
   '<section class="graph-quality-card" aria-label="Diagram quality checks" data-graph-quality>'+
   renderGraphQuality(studio,icon,e)+
   '</section>'+
-  '<div class="graph-output-actions" data-graph-output>'+
+  '<div class="graph-output-actions" data-graph-output data-representation-step="use">'+
    renderGraphActions(studio,icon,e)+
   '</div>'+
   '<p class="graph-export-note">A saved graph is a working figure, not proof of a result. Copy or download it, put it <strong>after your introduction</strong> in the real IA and interpret only the mathematics you genuinely observe.</p>'+

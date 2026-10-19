@@ -1,3 +1,4 @@
+import {representationEmpty} from "./workspace-ui.js";
 /** Short, readable tables, contextual mathematical help and reliable quality gates. */
 import {analyzeTable,TABLE_MAX_SAVED} from "./table-studio-core.js";
 import {renderTableSvg} from "./table-studio-render.js";
@@ -111,7 +112,7 @@ export function renderTableStudio(state,icon,e){
  const s=state.tableStudio,d=s.draft,route=state.planning?.routeExplorer?.selectedRoute;
  const accuracy=state.planning?.accuracyPlans||[];
  const sparks=accuracy.filter(a=>d.columns.some(h=>h&&[a.quantity,a.symbol].some(ref=>String(ref||"").toLowerCase()===h.toLowerCase())));
- return '<section class="ia-table-studio" data-table-studio aria-label="Mathematical Table Studio">'+
+ return '<section class="ia-table-studio representation-studio" data-table-studio aria-label="Mathematical Table Studio">'+
  '<header class="ia-table-head"><div><span class="intro-writing-guide-eyebrow">'+icon("table")+' MATHEMATICAL TABLE STUDIO</span>'+
  '<h2>Make a table worth showing</h2><p>Turn real information into a short, easy-to-read mathematical table. Pathfinder chooses suitable widths so columns do not stretch across the page.</p></div>'+
  '<button type="button" class="btn btn-quiet btn-sm" data-action="table-close">'+icon("x")+' Close studio</button></header>'+
@@ -119,7 +120,7 @@ export function renderTableStudio(state,icon,e){
  '<div class="ia-table-types" role="group" aria-label="Table purpose">'+kinds.map(([key,title,desc])=>
  '<button type="button" data-action="table-mode" data-table-mode="'+key+'" class="ia-table-type'+(d.mode===key?" selected":"")+'" aria-pressed="'+(d.mode===key)+'"><strong>'+e(title)+'</strong><small>'+e(desc)+'</small></button>').join("")+'</div>'+
  '<div class="ia-table-layout"><div class="ia-table-controls">'+
- '<section class="ia-table-control-card"><h3><span>1</span> Start with real information</h3>'+
+ '<section class="ia-table-control-card" data-representation-step="create"><h3><span>1</span> Start with real information</h3>'+
  '<p>Copy cells from Google Sheets including headings. CSV and TSV files are also supported. The complete imported information stays in your working project.</p>'+
  textarea("raw","Paste your table or dataset",d.raw,e,"Paste copied cells from Google Sheets here")+
  '<div class="ia-table-import-actions"><button type="button" class="btn btn-secondary btn-sm" data-action="table-parse">'+icon("clipboard")+' Read pasted table</button>'+
@@ -127,13 +128,13 @@ export function renderTableStudio(state,icon,e){
  pick("headers","Does the first row contain headings?",d.headers,[["auto","Detect automatically"],["yes","Yes, headings"],["no","No, first row is data"]],e)+
  (d.matrix.length?'<p class="ia-table-imported">'+icon("check-circle")+' '+d.matrix.length+' source rows, '+d.columns.length+' columns'+
  (d.pendingPaste?' · Pasted text changed; read it again.':' · imported.')+'</p>':
- '<p class="ia-table-import-prompt">No measurements have been imported. The table will never be filled with example data.</p>')+
+ representationEmpty(icon,e,{symbol:"table",title:"No information yet",description:"Paste actual values or import CSV/TSV; no example data will be inserted."}))+
  (d.mode==="compact"?'<p class="ia-table-strong-rule"><strong>Maximum 8 rows and 5 columns in the finished table.</strong> Long raw-data tables do not belong in an IA or appendix. For a large dataset, switch to a summary or frequency table rather than making the font smaller.</p>':
  '<p class="ia-table-strong-rule"><strong>Full dataset in; short summary out.</strong> The tool calculates from actual input values without silently selecting only the first few rows.</p>')+
  headerEditors(d,e)+selectionControls(d,e)+unitsEditors(d,e)+
  (d.mode==="frequency"?toggle("showPercent","Include percentage of all responses",d.showPercent):"")+
  '</section>'+
- '<section class="ia-table-control-card"><h3><span>2</span> Title, units and source</h3>'+
+ '<section class="ia-table-control-card" data-representation-step="refine"><h3><span>2</span> Title, units and source</h3>'+
  '<div class="ia-table-two-col">'+input("number","Table number",d.number,e,"e.g. 1")+
  input("title","Descriptive table title",d.title,e,"e.g. Median times for two groups")+'</div>'+
  textarea("purpose","Why is this table useful for my aim?",d.purpose,e,
@@ -157,7 +158,7 @@ export function renderTableStudio(state,icon,e){
  '</section></div>'+
  '<div class="ia-table-preview-stack">'+preview(s,e)+
  '<section class="ia-table-quality-card" data-table-quality>'+quality(s,icon,e)+'</section>'+
- '<section class="ia-table-output-card" data-table-output>'+output(s,icon)+'</section>'+
+ '<section class="ia-table-output-card" data-table-output data-representation-step="use">'+output(s,icon)+'</section>'+
  '<p class="ia-table-ia-reminder"><strong>In your actual IA:</strong> Introduce the table before showing it; then interpret it using your aim and prediction. Do not use long tables, even in appendices. Keep full data in your working files.</p>'+
  '</div></div>'+
  (s.figures.length?'<details class="ia-table-saved"><summary>'+icon("layers")+' Saved tables ('+s.figures.length+')</summary>'+

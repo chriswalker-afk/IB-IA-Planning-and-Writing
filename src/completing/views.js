@@ -639,14 +639,16 @@ export function createCompletingViews(ctx){
       '<p class="show-first-sequence-lead">Four parts of your <strong>actual IA writing</strong>. The boxes below save planning and reflection notes; they do not insert text, tables or calculations into your IA.</p>'+
       first+second+third+fourth+'</div>'};
   }
-  case "C31":return{intro:"Choose a mathematical representation that genuinely helps answer your aim. Pathfinder suggests tools from your provisional investigation pathway; you are always free to choose another or work directly in your IA.",
-   html:choice("firstType",[
+  case "C31":{
+   const toolOpen=Boolean(s.graphStudio?.open||s.statStudio?.open||s.tableStudio?.open||s.imageTracer?.open||s.voronoiStudio?.open);
+   return{intro:"Choose a mathematical representation that genuinely helps answer your aim. Pathfinder suggests tools from your provisional investigation pathway; you are always free to choose another or work directly in your IA.",
+   html:(toolOpen?'<details class="representation-prelude"><summary>'+icon("pencil")+' Review my initial choice and purpose <span>Optional while creating a figure</span></summary><div class="representation-prelude-body">':"")+choice("firstType",[
     ["scatter","Scatter graph with genuine paired data"],["distribution","Distribution or group comparison"],
     ["diagram","Labelled mathematical diagram"],["table","Small numerical table or case"],
     ["calculation","One purposeful calculation"],["theory","Theoretical example or conjecture"],
     ["other","Another suitable representation"],["unsure","Not sure yet"]])+
     criteriaField(F("firstPurpose","Why might this help answer the aim?","The mathematical question it could reveal",{type:"textarea",rows:3}),"completing:C31:firstPurpose")+
-    (f.dataStatus==="not-started"&&p.kind!=="theoretical"?info("Data not ready?","You can define terms, use a clearly labelled provisional case or revisit sources. Do not invent measurements."): "")+
+    (f.dataStatus==="not-started"&&p.kind!=="theoretical"?info("Data not ready?","You can define terms, use a clearly labelled provisional case or revisit sources. Do not invent measurements."): "")+(toolOpen?"</div></details>":"")+
     ((s.voronoiStudio?.open||s.tableStudio?.open||s.statStudio?.open||s.imageTracer?.open||s.graphStudio?.open)?
       renderRepresentationSwitcher(s,icon,e)+
       (s.voronoiStudio?.open?renderVoronoiStudio(s,icon,e):
@@ -654,7 +656,8 @@ export function createCompletingViews(ctx){
        s.statStudio?.open?renderStatStudio(s,icon,e):
        s.imageTracer?.open?renderImageTracer(s,icon,e):renderGraphStudio(s,icon,e)):
       renderRepresentationHub(s,icon,e))
-  };
+   };
+  }
   case "C32":return{intro:"Immediately before the figure or calculation, give your reader a mathematical reason to look at it.",
    html:actualRecord()+graphEntryPanel()+traceEntryPanel()+statEntryPanel()+tableEntryPanel()+voronoiEntryPanel()+
     entryField("title","A short title for this step","e.g. Inspect a scatter graph")+

@@ -1,3 +1,4 @@
+import {representationEmpty} from "./workspace-ui.js";
 /** Image tracing studio: coordinate calibration and careful IB-style mathematical communication. */
 import {
  imageTraceChecks,traceCoordinates,traceCalibration,tracedMeasurements,
@@ -82,7 +83,7 @@ export function tracePreviewHtml(tracer,icon,e){
     '<div class="trace-image-board">'+
      (d.view==="photo"?renderTraceOverlaySvg(d,{interactive:true}):renderCleanTraceSvg(d))+
     '</div>':
-   '<div class="trace-placeholder">'+icon("image")+'<strong>Start with a photograph</strong><p>Upload a JPG, PNG or WebP of the shape, trajectory or real situation you want to model.</p></div>')+
+   representationEmpty(icon,e,{symbol:"image",title:"Start with a photograph",description:"Upload a JPG, PNG or WebP of the real situation to model.",action:"trace-upload",actionText:"Choose photograph"}))+
   '<p class="trace-scale-status">'+(c?
    icon("check-circle")+' Reference '+e(d.knownLength)+" "+e(d.unit||"units")+
     ' = '+Math.round(c.referencePixels)+' working pixels · 1 pixel ≈ '+e(c.unitsPerPixel.toPrecision(3))+' '+e(d.unit||"units"):
@@ -105,14 +106,14 @@ export function traceWorkingHtml(tracer,icon,e){
 export function renderImageTracer(state,icon,e){
  const tracer=state.imageTracer,d=tracer.draft,route=state.planning?.routeExplorer?.selectedRoute,
   advice=routes[route],full=tracer.figures.length>=MAX_TRACE_FIGURES;
- return '<section class="image-tracer" data-image-tracer aria-label="Image and coordinate tracer">'+
+ return '<section class="image-tracer representation-studio" data-image-tracer aria-label="Image and coordinate tracer">'+
   '<header class="trace-studio-header"><div><div class="intro-writing-guide-eyebrow">'+icon("image")+' IMAGE & COORDINATE STUDIO</div>'+
   '<h2>Turn your photograph into mathematics</h2>'+
   '<p>Trace an actual object, geometry or trajectory, using your own origin and scale. The photograph remains distinct from the mathematical coordinate plot.</p></div>'+
   '<button type="button" class="btn btn-quiet btn-sm" data-action="trace-close">'+icon("x")+' Close tracer</button></header>'+
   (advice?'<aside class="trace-journey-advice"><strong>Based on your investigative pathway:</strong> '+e(advice)+'</aside>':"")+
   '<div class="trace-studio-columns"><div class="trace-control-stack">'+
-  '<section class="trace-control-card"><h3><span class="trace-step-index">1</span> Import a real image</h3>'+
+  '<section class="trace-control-card" data-representation-step="create"><h3><span class="trace-step-index">1</span> Import a real image</h3>'+
   '<p>Choose a well-lit, front-on photograph of a flat surface, ideally showing a ruler or known distance in the same plane.</p>'+
   '<div class="trace-buttons"><button type="button" class="btn btn-secondary btn-sm" data-action="trace-upload">'+icon("upload")+' Upload photo</button>'+
   (d.imageSrc?'<button type="button" class="btn btn-quiet btn-sm" data-action="trace-rotate-left">'+icon("rotate-ccw")+' Rotate left</button>'+
@@ -133,7 +134,7 @@ export function renderImageTracer(state,icon,e){
   '<div class="trace-field-grid">'+field("xLabel","Horizontal mathematical variable",d.xLabel,e,{placeholder:"e.g. Horizontal position"})+
    field("yLabel","Vertical mathematical variable",d.yLabel,e,{placeholder:"e.g. Vertical position"})+'</div>'+
   '</section>'+
-  '<section class="trace-control-card"><h3><span class="trace-step-index">3</span> Explain and check your figure</h3>'+
+  '<section class="trace-control-card" data-representation-step="refine"><h3><span class="trace-step-index">3</span> Explain and check your figure</h3>'+
   field("title","Descriptive figure title",d.title,e,{placeholder:"e.g. Coordinates extracted from a photographed bridge arch"})+
   select("sourceKind","Where is the photo from?",d.sourceKind,[["unsure","Choose image origin"],...TYPES],e)+
   (d.sourceKind==="secondary"?field("sourceCredit","Original image source (required)",d.sourceCredit,e,{placeholder:"Creator, location, date, link or permission"}):"")+
@@ -149,7 +150,7 @@ export function renderImageTracer(state,icon,e){
   '</section></div>'+
   '<div class="trace-output-stack">'+tracePreviewHtml(tracer,icon,e)+traceWorkingHtml(tracer,icon,e)+
   '<section class="trace-quality-card" data-trace-quality>'+traceQualityHtml(tracer,icon,e)+'</section>'+
-  '<section class="trace-output-card" data-trace-output>'+traceOutputHtml(tracer,icon,e)+'</section>'+
+  '<section class="trace-output-card" data-trace-output data-representation-step="use">'+traceOutputHtml(tracer,icon,e)+'</section>'+
   '<p class="trace-writing-reminder"><strong>WRITE IN YOUR IA:</strong> Introduce the image and mathematical purpose before inserting this figure. Define the coordinate system and known reference length, then reflect on actual findings and limitations. Exporting a figure never marks mathematical work complete.</p></div></div>'+
   (tracer.figures.length?'<details class="trace-saved-figures"><summary>'+icon("layers")+' Saved traced figures ('+tracer.figures.length+')</summary>'+
    '<div class="trace-saved-list">'+tracer.figures.map(x=>'<div class="trace-saved-item"><div><strong>'+e(x.draft.title||"Untitled trace")+'</strong>'+

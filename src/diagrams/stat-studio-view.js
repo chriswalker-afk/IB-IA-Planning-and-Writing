@@ -1,3 +1,4 @@
+import {representationEmpty} from "./workspace-ui.js";
 /** One consistent student-facing interface for all four statistical pathways. */
 import {STAT_TYPES,statAnalysis,MAX_STAT_FIGURES} from "./stat-studio-core.js";
 import {renderStatSvg} from "./stat-studio-render.js";
@@ -109,7 +110,7 @@ function accuracyEcho(state,e){
 export function renderStatStudio(state,icon,e){
  const studio=state.statStudio,d=studio.draft,q=statAnalysis(d);
  const isHistogram=d.kind==="histogram";
- return '<section class="stat-studio" data-stat-studio aria-label="Statistical diagram Studio">'+
+ return '<section class="stat-studio representation-studio" data-stat-studio aria-label="Statistical diagram Studio">'+
  '<header class="stat-studio-head"><div><span class="intro-writing-guide-eyebrow">'+icon("chart")+' STATISTICAL DIAGRAM STUDIO</span>'+
  '<h2>Help your data tell a mathematical story</h2><p>Build clear, honest diagrams from your actual measurements and compare their limitations.</p></div>'+
  '<button type="button" class="btn btn-quiet btn-sm" data-action="stat-close">'+icon("x")+' Close studio</button></header>'+
@@ -117,7 +118,7 @@ export function renderStatStudio(state,icon,e){
  '<div class="stat-type-switch" role="group" aria-label="Statistical diagram type">'+STAT_TYPES.map(([kind,label,desc])=>
   '<button type="button" class="stat-type'+(d.kind===kind?" selected":"")+'" data-action="stat-kind" data-stat-value="'+kind+'" aria-pressed="'+(d.kind===kind)+'"><strong>'+e(label)+'</strong><small>'+e(desc)+'</small></button>').join("")+'</div>'+
  '<div class="stat-studio-layout"><div class="stat-control-stack">'+
- '<section class="stat-control-card"><h3><span>1</span> Bring in genuine data</h3>'+
+ '<section class="stat-control-card" data-representation-step="create"><h3><span>1</span> Bring in genuine data</h3>'+
  '<p>'+e(kindDesc[d.kind])+'</p>'+
  field("raw","Paste values from Google Sheets",d.raw,e,{rows:5,placeholder:d.kind==="bar"?
    "Category\\tGroup A\\tGroup B\\nBefore\\t12\\t15\\nAfter\\t18\\t20":
@@ -129,7 +130,7 @@ export function renderStatStudio(state,icon,e){
  select("headers","First row of the selected data",d.headers,[["auto","Detect headings"],["yes","Contains headings"],["no","Contains actual observations"]],e)+
  (d.matrix.length?'<p class="stat-import-status">'+icon("check-circle")+' '+d.matrix.length+' rows and '+d.columns.length+' columns imported.'+
   (d.pendingPaste?' Your latest edits have not been parsed yet.':'')+'</p>':
-  '<p class="stat-placeholder-inline">Paste copied table cells or import a CSV file. No examples or imaginary data will be inserted.</p>')+
+  representationEmpty(icon,e,{symbol:"chart",title:"No observations yet",description:"Paste real measurements or import a dataset to build the selected statistical diagram."}))+
  (isHistogram?select("histogramInput","My histogram starts from",d.histogramInput,[["raw","Individual measurements"],["table","Class intervals and frequencies"]],e):"")+
  selectedControls(d,e)+
  (isHistogram&&d.histogramInput==="raw"?'<div class="stat-form-grid">'+
@@ -142,7 +143,7 @@ export function renderStatStudio(state,icon,e){
  (d.kind==="bar"?select("barMode","How do you want to compare groups?",d.barMode,[
   ["count","Compare actual counts"],["percent","Percent of each group's total"]],e):"")+
  '</section>'+
- '<section class="stat-control-card"><h3><span>2</span> Labels, provenance and precision</h3>'+
+ '<section class="stat-control-card" data-representation-step="refine"><h3><span>2</span> Labels, provenance and precision</h3>'+
  field("title","Descriptive diagram title",d.title,e,{placeholder:"e.g. Comparison of measured walking speeds"})+
  field("variable",d.kind==="bar"?"Categorical characteristic":"Numerical measurement",d.variable,e,{placeholder:d.kind==="bar"?"e.g. Preferred transport":"e.g. Walking speed"})+
  (d.kind!=="bar"?select("unitMode","Does the measurement have units?",d.unitMode,[
@@ -164,7 +165,7 @@ export function renderStatStudio(state,icon,e){
  '<div class="stat-preview-stack">'+statPreviewHtml(studio,icon,e)+
  '<section class="stat-summary-card" data-stat-summary><h3>Compact numerical summary</h3>'+statSummaryHtml(studio,icon,e)+'</section>'+
  '<section class="stat-quality-card" data-stat-quality>'+statQualityHtml(studio,icon,e)+'</section>'+
- '<section class="stat-output-card" data-stat-output>'+statOutputHtml(studio,icon,e)+'</section>'+
+ '<section class="stat-output-card" data-stat-output data-representation-step="use">'+statOutputHtml(studio,icon,e)+'</section>'+
  '<p class="stat-ia-reminder"><strong>Write in your actual IA:</strong> Introduce the diagram before it appears. Follow it with the interpretation in the context of your aim, sampling, prediction and limitations. Keep raw data tables in your working files—not in the IA or appendix.</p>'+
  '</div></div>'+
  (studio.figures.length?'<details class="stat-saved"><summary>'+icon("layers")+' Saved statistical diagrams ('+studio.figures.length+')</summary>'+

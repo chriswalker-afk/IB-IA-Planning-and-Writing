@@ -1,3 +1,4 @@
+import {representationEmpty} from "./workspace-ui.js";
 /** One coherent, student-readable Voronoi authoring surface, with no invented sites. */
 import {analyzeVoronoi,MAX_VORONOI_FIGURES} from "./voronoi-core.js";
 import {renderVoronoiSvg} from "./voronoi-render.js";
@@ -11,7 +12,7 @@ const field=(key,label,value,e,{placeholder="",rows=0,hint=""}={})=>
  (hint?'<small>'+e(hint)+'</small>':"")+'</label>';
 const check=(key,label,checked)=>'<label class="voronoi-check"><input type="checkbox" data-voronoi-field="'+key+'"'+(checked?" checked":"")+'><span>'+label+'</span></label>';
 const section=(n,title,description,html)=>
- '<section class="voronoi-panel"><h3><span class="voronoi-step">'+n+'</span>'+title+'</h3>'+
+ '<section class="voronoi-panel"'+(n==="1"?' data-representation-step="create"':n==="2"?' data-representation-step="refine"':"")+'><h3><span class="voronoi-step">'+n'</span>'+title+'</h3>'+
  (description?'<p class="voronoi-description">'+description+'</p>':"")+html+'</section>';
 const groups={
  voronoi:"Locations and Voronoi diagrams",
@@ -64,9 +65,9 @@ export function voronoiOutputHtml(studio,icon){
    '<button type="button" class="btn btn-secondary btn-sm" data-action="'+action+'"'+disabled+'>'+icon(i)+label+'</button>').join("")+
   '</div><p>Place the figure <strong>after</strong> introducing it in your IA. Describe the coordinates, perpendicular-bisector principle, study boundary, limitations and what the construction reveals about your aim.</p>';
 }
-function siteEditor(studio,e){
+function siteEditor(studio,e,icon){
  const d=studio.draft;
- if(!d.sites.length)return '<p class="voronoi-muted">The editable site list appears after you import or add genuine coordinates.</p>';
+ if(!d.sites.length)return representationEmpty(icon,e,{symbol:"map",title:"No sites yet",description:"Enter site coordinates above or import actual coordinates."});
  return '<div class="voronoi-site-editor" aria-label="Edit site positions">'+d.sites.map((s,i)=>
  '<div class="voronoi-site-row"><label><span>Name</span><input type="text" data-voronoi-site="'+i+'" data-voronoi-site-key="name" value="'+e(s.name)+'" aria-label="Site '+(i+1)+' name"></label>'+
  '<label><span>x</span><input type="number" step="any" data-voronoi-site="'+i+'" data-voronoi-site-key="x" value="'+(s.x??"")+'" aria-label="Site '+(i+1)+' x coordinate"></label>'+
@@ -93,7 +94,7 @@ export function renderVoronoiStudio(state,icon,e){
  field("xMin","Left boundary",d.xMin,e,{placeholder:"0"})+field("xMax","Right boundary",d.xMax,e,{placeholder:"100"})+
  field("yMin","Bottom boundary",d.yMin,e,{placeholder:"0"})+field("yMax","Top boundary",d.yMax,e,{placeholder:"60"})+'</div>':"";
  const options=d.sites.map((s,i)=>[String(i),s.name]);
- return '<section data-voronoi-studio class="voronoi-studio" aria-label="Voronoi Studio">'+
+ return '<section data-voronoi-studio class="voronoi-studio representation-studio" aria-label="Voronoi Studio">'+
  '<header class="voronoi-header"><div><span class="intro-writing-guide-eyebrow">'+icon("map")+' VORONOI STUDIO</span>'+
  '<h2>Which site is nearest — and what does that really mean?</h2>'+
  '<p>Build mathematically accurate Voronoi cells from real Cartesian coordinates, then explore distances and justified hypothetical sites.</p></div>'+
@@ -109,7 +110,7 @@ export function renderVoronoiStudio(state,icon,e){
   select("headers","First row of pasted range",d.headers,[["yes","Has column headings"],["no","Contains actual site data"]],e)+
   (d.sites.length?'<p class="voronoi-imported">'+icon("check-circle")+' '+d.sites.length+' site(s) in the working diagram'+
     (d.pendingPaste?' — newer pasted text needs reading.':'.')+'</p>':"")+
-  siteEditor(studio,e)+
+  siteEditor(studio,e,icon)+
   '<div class="voronoi-divider"><strong>Compare a proposed new location</strong></div>'+siteInput(studio,e,icon))+
  section("2","Scale, labels and mathematical assumptions",
   "Both axes have equal physical scale. Confirm the units and distance interpretation before using your figure in an IA.",
@@ -152,7 +153,7 @@ export function renderVoronoiStudio(state,icon,e){
  '</div><div class="voronoi-results">'+voronoiPreviewHtml(studio)+
  '<section class="voronoi-summary" data-voronoi-summary><h3>Explore your actual results</h3>'+voronoiResultHtml(studio,e)+'</section>'+
  '<section class="voronoi-quality" data-voronoi-quality>'+voronoiQualityHtml(studio,icon,e)+'</section>'+
- '<section class="voronoi-output" data-voronoi-output>'+voronoiOutputHtml(studio,icon)+'</section>'+
+ '<section class="voronoi-output" data-voronoi-output data-representation-step="use">'+voronoiOutputHtml(studio,icon)+'</section>'+
  '<p class="voronoi-ia-note"><strong>When writing the IA:</strong> Introduce the figure before showing it. Explain the perpendicular-bisector construction where appropriate, then interpret nearest-site results, assumptions and limitations against your actual aim. These automatically calculated cells do not complete your mathematics for you.</p>'+
  '</div></div>'+
  (studio.figures.length?'<details class="voronoi-saved"><summary>'+icon("layers")+' Saved Voronoi figures ('+studio.figures.length+')</summary>'+

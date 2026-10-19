@@ -61,7 +61,7 @@ import {renderVoronoiSvg,voronoiLayout} from "./src/diagrams/voronoi-render.js";
 import {voronoiPreviewHtml,voronoiResultHtml,voronoiQualityHtml,voronoiOutputHtml} from "./src/diagrams/voronoi-view.js";
 import {setVoronoiField,setVoronoiSite,addVoronoiSite,removeVoronoiSite,clearVoronoiMap,useVoronoiMap,beginVoronoi,loadVoronoi,saveVoronoiDraft,saveAndLinkVoronoi} from "./src/diagrams/voronoi-actions.js";
 import {exportVoronoi} from "./src/diagrams/voronoi-export.js";
-import {renderRepresentationHub,renderRepresentationSwitcher} from "./src/diagrams/representation-hub.js";
+import {renderRepresentationHub,renderRepresentationSwitcher,representationFocusActive} from "./src/diagrams/representation-hub.js";
 import {renderWriterFieldGuide} from "./src/completing/writer-field-guide.js";
 import {C_MAJOR_STAGES,setCompletionNode,moveCompletionRoute,completionBack,markCompletionStage,setCompletionField,addAccuracyDecision,completionSuggestions,sectionForNode,targetForSection,completionStage,completeEntry,latestRealResult,sourceResultForNext,flagDependentMathematics,acknowledgeMathReview} from "./src/completing/engine.js";
 
@@ -460,6 +460,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   function render(opts={}) {
     detachIdeaMapGraph();
     const map={home:viewHome,planning:viewPlanning,completing:viewCompleting,path:viewPath,report:viewReport};
+    document.body.classList.toggle("representation-focus-active",representationFocusActive(state));
     main.innerHTML=previewBanner()+stuckViews.returnBanner()+map[state.route]();
     detachIdeaMapGraph=attachIdeaMapGraph(main);
     if(preview.active)setSaveStatus("Sample preview only");
@@ -1126,6 +1127,12 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         if(!["all","data","geometry","models","decisions"].includes(value))break;
         state.ui.representationFilter=value;
         save();render();break;
+      }
+      case "representation-jump":{
+        const step=el.dataset.representationStep;
+        if(!["create","refine","use"].includes(step))break;
+        main.querySelector('[data-representation-step="'+step+'"]')?.scrollIntoView({block:"start",behavior:"smooth"});
+        break;
       }
       case "representation-back":{
         state.graphStudio.open=false;state.imageTracer.open=false;
