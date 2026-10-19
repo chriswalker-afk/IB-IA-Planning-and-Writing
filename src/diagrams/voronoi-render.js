@@ -44,7 +44,7 @@ export function renderVoronoiSvg(raw,options={}){
  const q=analyzeVoronoi(raw),d=q.draft,b=q.bounds||VORONOI_STARTER_BOUNDS;
  const interactive=options.interactive===true,selectedId=options.selectedSiteId||"";
 
- const body=['<svg class="voronoi-svg" data-voronoi-canvas="true" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="'+E(d.title||"Student Voronoi construction")+'" viewBox="0 0 '+W+" "+H+'" width="'+W+'" height="'+H+'">',
+ const body=['<svg class="voronoi-svg" data-voronoi-canvas="true"'+(interactive?' data-voronoi-interactive="true"':'')+' xmlns="http://www.w3.org/2000/svg" role="img" aria-label="'+E(d.title||"Student Voronoi construction")+'" viewBox="0 0 '+W+" "+H+'" width="'+W+'" height="'+H+'">',
   '<rect width="'+W+'" height="'+H+'" fill="#fff"/>',
   text(d.title||"Voronoi studio — add title and sites",W/2,40,'font-family="Arial,sans-serif" font-size="22" font-weight="700" fill="#24464e" text-anchor="middle"'),
   text("Euclidean nearest-site regions — displayed cells clipped to the stated rectangular study window",W/2,67,
