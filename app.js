@@ -56,6 +56,12 @@ import {renderTableSvg} from "./src/diagrams/table-studio-render.js";
 import {renderTableStudio,tablePreviewHtml,tableQualityHtml,tableOutputHtml} from "./src/diagrams/table-studio-view.js";
 import {setTableField,setTableColumn,chooseTableMode,toggleTableVariable,toggleTableMeasure,loadTable,freshTable,saveTableDraft,saveAndLinkTable} from "./src/diagrams/table-studio-actions.js";
 import {exportTable} from "./src/diagrams/table-studio-export.js";
+import {analyzeVoronoi,importVoronoiSites,voronoiBounds} from "./src/diagrams/voronoi-core.js";
+import {renderVoronoiSvg,voronoiLayout} from "./src/diagrams/voronoi-render.js";
+import {voronoiPreviewHtml,voronoiResultHtml,voronoiQualityHtml,voronoiOutputHtml} from "./src/diagrams/voronoi-view.js";
+import {setVoronoiField,setVoronoiSite,addVoronoiSite,removeVoronoiSite,clearVoronoiMap,useVoronoiMap,beginVoronoi,loadVoronoi,saveVoronoiDraft,saveAndLinkVoronoi} from "./src/diagrams/voronoi-actions.js";
+import {exportVoronoi} from "./src/diagrams/voronoi-export.js";
+import {renderRepresentationHub,renderRepresentationSwitcher} from "./src/diagrams/representation-hub.js";
 import {renderWriterFieldGuide} from "./src/completing/writer-field-guide.js";
 import {C_MAJOR_STAGES,setCompletionNode,moveCompletionRoute,completionBack,markCompletionStage,setCompletionField,addAccuracyDecision,completionSuggestions,sectionForNode,targetForSection,completionStage,completeEntry,latestRealResult,sourceResultForNext,flagDependentMathematics,acknowledgeMathReview} from "./src/completing/engine.js";
 
@@ -173,7 +179,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   function navigateGraph(){
     if(state.completion.current!=="C31")setCompletionNode(state,"C31",{reason:"graph-editor"});
     state.graphStudio.open=true;
-    state.imageTracer.open=false;state.statStudio.open=false;state.tableStudio.open=false;
+    state.imageTracer.open=false;state.statStudio.open=false;state.tableStudio.open=false;state.voronoiStudio.open=false;
     const entry=completeEntry(state);
     if(entry?.graphFigureId&&state.graphStudio.figures.some(x=>x.id===entry.graphFigureId))
       loadSavedGraph(state.graphStudio,entry.graphFigureId);
@@ -197,7 +203,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   function navigateTrace(){
     if(state.completion.current!=="C31")setCompletionNode(state,"C31",{reason:"trace-editor"});
     state.graphStudio.open=false;
-    state.imageTracer.open=true;state.statStudio.open=false;state.tableStudio.open=false;
+    state.imageTracer.open=true;state.statStudio.open=false;state.tableStudio.open=false;state.voronoiStudio.open=false;
     const entry=completeEntry(state);
     if(entry?.imageTraceId&&state.imageTracer.figures.some(x=>x.id===entry.imageTraceId))
       restoreSavedTrace(state.imageTracer,entry.imageTraceId);
@@ -218,7 +224,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   }
   function navigateStat(){
     if(state.completion.current!=="C31")setCompletionNode(state,"C31",{reason:"stat-editor"});
-    state.graphStudio.open=false;state.imageTracer.open=false;state.statStudio.open=true;state.tableStudio.open=false;
+    state.graphStudio.open=false;state.imageTracer.open=false;state.statStudio.open=true;state.tableStudio.open=false;state.voronoiStudio.open=false;
     const entry=completeEntry(state);
     if(entry?.statFigureId&&state.statStudio.figures.some(f=>f.id===entry.statFigureId))
       loadStat(state.statStudio,entry.statFigureId);
@@ -239,12 +245,34 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   function navigateTable(){
     if(state.completion.current!=="C31")setCompletionNode(state,"C31",{reason:"table-editor"});
     state.graphStudio.open=false;state.imageTracer.open=false;state.statStudio.open=false;
-    state.tableStudio.open=true;
+    state.tableStudio.open=true;state.voronoiStudio.open=false;
     const entry=completeEntry(state);
     if(entry?.tableFigureId&&state.tableStudio.figures.some(x=>x.id===entry.tableFigureId))
       loadTable(state.tableStudio,entry.tableFigureId);
     save();render();
     document.querySelector?.("[data-table-studio]")?.scrollIntoView?.({block:"start",behavior:"auto"});
+  }
+  function refreshVoronoiPreview(){
+    if(!state.voronoiStudio?.open||state.completion.current!=="C31")return;
+    const root=main.querySelector?.("[data-voronoi-studio]");if(!root)return;
+    const preview=root.querySelector("[data-voronoi-preview]");
+    if(preview)preview.outerHTML=voronoiPreviewHtml(state.voronoiStudio);
+    const summary=root.querySelector("[data-voronoi-summary]");
+    if(summary)summary.innerHTML='<h3>Explore your actual results</h3>'+voronoiResultHtml(state.voronoiStudio,e);
+    const quality=root.querySelector("[data-voronoi-quality]");
+    if(quality)quality.innerHTML=voronoiQualityHtml(state.voronoiStudio,icon,e);
+    const output=root.querySelector("[data-voronoi-output]");
+    if(output)output.innerHTML=voronoiOutputHtml(state.voronoiStudio,icon);
+  }
+  function navigateVoronoi(){
+    if(state.completion.current!=="C31")setCompletionNode(state,"C31",{reason:"voronoi-editor"});
+    state.graphStudio.open=false;state.imageTracer.open=false;state.statStudio.open=false;state.tableStudio.open=false;
+    state.voronoiStudio.open=true;
+    const entry=completeEntry(state);
+    if(entry?.voronoiFigureId&&state.voronoiStudio.figures.some(x=>x.id===entry.voronoiFigureId))
+      loadVoronoi(state.voronoiStudio,entry.voronoiFigureId);
+    save();render();
+    document.querySelector?.("[data-voronoi-studio]")?.scrollIntoView?.({block:"start",behavior:"auto"});
   }
   function updateBoundField(path,value) {
     if(path.startsWith("planning.fields.")){
@@ -1093,6 +1121,87 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         toast("Question selected as a possibility. Write your own mathematical reason before starting.");
         break;
       }
+      case "representation-filter":{
+        const value=el.dataset.representationFilter;
+        if(!["all","data","geometry","models","decisions"].includes(value))break;
+        state.ui.representationFilter=value;
+        save();render();break;
+      }
+      case "representation-back":{
+        state.graphStudio.open=false;state.imageTracer.open=false;
+        state.statStudio.open=false;state.tableStudio.open=false;state.voronoiStudio.open=false;
+        save();render();break;
+      }
+      case "voronoi-open":navigateVoronoi();break;
+      case "voronoi-close":state.voronoiStudio.open=false;save();render();break;
+      case "voronoi-parse":{
+        try{
+          const parsed=importVoronoiSites(state.voronoiStudio,state.voronoiStudio.draft.raw);
+          save();render();
+          toast("Site coordinates imported",parsed.sites+" genuine sites recognised. Confirm equal distance units and a meaningful study window.");
+        }catch(error){toast("Could not read site coordinates",error.message);}
+        break;
+      }
+      case "voronoi-upload":document.querySelector("#voronoiCsvFile")?.click();break;
+      case "voronoi-map-upload":document.querySelector("#voronoiMapFile")?.click();break;
+      case "voronoi-map-clear":{
+        if(state.voronoiStudio.draft.mapSrc&&!window.confirm("Remove the background map? Your site coordinates and saved versions will remain."))break;
+        clearVoronoiMap(state.voronoiStudio);save();render();
+        toast("Background map cleared","Coordinates and Voronoi cells have been retained.");break;
+      }
+      case "voronoi-add-site":{
+        const d=state.voronoiStudio.draft;
+        const result=addVoronoiSite(state.voronoiStudio,{name:d.addName,x:d.addX,y:d.addY,kind:d.addType});
+        if(!result.ok){toast(result.error);break;}
+        save();render();
+        toast(result.site.kind==="candidate"?"Hypothetical site added":"Site added",
+          "The nearest-site regions now reflect the additional site. A candidate is a what-if scenario, not evidence of an actual facility.");
+        break;
+      }
+      case "voronoi-delete-site":{
+        const index=Number(el.dataset.siteIndex);
+        if(!removeVoronoiSite(state.voronoiStudio,index))break;
+        save();render();toast("Site removed","Recheck whether the remaining locations still answer your aim.");break;
+      }
+      case "voronoi-new":{
+        if(state.voronoiStudio.draft.sites.length&&state.voronoiStudio.draft.title.trim()&&
+          !window.confirm("Start a new Voronoi diagram? Save your current editable version first."))break;
+        beginVoronoi(state.voronoiStudio);save();render();toast("New Voronoi diagram ready");break;
+      }
+      case "voronoi-load":{
+        if(!loadVoronoi(state.voronoiStudio,el.dataset.voronoiId)){toast("Saved diagram not found.");break;}
+        save();render();toast("Saved Voronoi diagram loaded for editing");break;
+      }
+      case "voronoi-save":{
+        const record=saveVoronoiDraft(state);
+        if(!record.ok){toast(record.error);break;}
+        save();render();
+        toast("Voronoi diagram saved",record.reviewNeeded?
+         "Changes to this geometry require revisiting a previous written result.":
+         "Editable figure saved locally and in your JSON backup, not automatically inserted into your IA.");
+        break;
+      }
+      case "voronoi-use":{
+        const result=saveAndLinkVoronoi(state);
+        if(!result.ok){toast(result.error);break;}
+        setCompletionNode(state,"C32",{reason:"linked-voronoi"});
+        save();render();
+        toast("Voronoi construction linked to first mathematics",result.reviewNeeded?
+         "Recheck interpretations after the changed site locations or assumptions.":
+         "Introduce the figure in your own IA and justify the distance model. Constructing cells does not prove optimal placement.");
+        break;
+      }
+      case "voronoi-svg":case "voronoi-png":case "voronoi-csv":case "voronoi-copy":{
+        const format=action.slice("voronoi-".length);
+        const existing=state.voronoiStudio.figures.find(x=>x.id===state.voronoiStudio.activeId);
+        const record=existing?.entryId?saveVoronoiDraft(state):{ok:true,reviewNeeded:false};
+        if(!record.ok){toast(record.error);break;}
+        if(existing?.entryId)save();
+        exportVoronoi(state.voronoiStudio.draft,format).then(message=>toast(message,
+         record.reviewNeeded?"Earlier mathematical interpretations of this figure now need review.":""))
+         .catch(error=>toast("Voronoi export unavailable",error.message||"Try downloading the SVG."));
+        break;
+      }
       case "table-open":navigateTable();break;
       case "table-close":state.tableStudio.open=false;save();render();break;
       case "table-mode":{
@@ -1554,6 +1663,22 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   document.addEventListener("click",evt=>{
     // SVG is an actual student input surface. Convert screen taps into photo
     // pixel coordinates using its viewBox transform, including on phones.
+    const voronoiTap=evt.target.closest?.("[data-voronoi-place]");
+    if(voronoiTap&&state.voronoiStudio?.open&&state.voronoiStudio.draft.placeCandidate){
+      const svg=voronoiTap.closest("[data-voronoi-canvas]");
+      const matrix=svg?.getScreenCTM?.(),q=analyzeVoronoi(state.voronoiStudio.draft);
+      if(!matrix||!q.bounds)return;
+      const point=svg.createSVGPoint();point.x=evt.clientX;point.y=evt.clientY;
+      const pixel=point.matrixTransform(matrix.inverse()),L=voronoiLayout(q.bounds);
+      const x=q.bounds.xMin+(pixel.x-L.left)/L.scale,
+       y=q.bounds.yMax-(pixel.y-L.top)/L.scale;
+      if(x<q.bounds.xMin||x>q.bounds.xMax||y<q.bounds.yMin||y>q.bounds.yMax)return;
+      const result=addVoronoiSite(state.voronoiStudio,{name:"",x,y,kind:"candidate"});
+      if(!result.ok){toast(result.error);return;}
+      const scroll=window.scrollY;save();render();window.scrollTo({top:scroll,behavior:"auto"});
+      toast("Proposed location added","This hypothetical site changes the tessellation; it is not a claim that a facility exists.");
+      return;
+    }
     const traceTap=evt.target.closest?.("[data-trace-tap]");
     if(traceTap&&state.imageTracer?.open){
       const svg=traceTap.closest("[data-trace-canvas]");
@@ -1614,6 +1739,20 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   });
   document.addEventListener("input",evt=>{
     const target=evt.target;
+    if(target.dataset.voronoiSite!==undefined){
+      if(setVoronoiSite(state.voronoiStudio,Number(target.dataset.voronoiSite),
+          target.dataset.voronoiSiteKey,target.value)){
+        save();refreshVoronoiPreview();
+      }
+      return;
+    }
+    if(target.dataset.voronoiField!==undefined){
+      if(setVoronoiField(state.voronoiStudio,target.dataset.voronoiField,
+        target.type==="checkbox"?target.checked:target.value)){
+        save();refreshVoronoiPreview();
+      }
+      return;
+    }
     if(target.dataset.tableCol!==undefined){
       const index=Number(target.dataset.tableCol);
       if(setTableColumn(state.tableStudio,index,target.dataset.tablePart,target.value)){
@@ -1692,6 +1831,27 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   });
   document.addEventListener("change",evt=>{
     const target=evt.target;
+    if(target.dataset.voronoiSite!==undefined){
+      const index=Number(target.dataset.voronoiSite),key=target.dataset.voronoiSiteKey;
+      const old=state.voronoiStudio.draft.sites[index]?.[key];
+      if(setVoronoiSite(state.voronoiStudio,index,key,target.value)){
+        save();
+        if(target.tagName==="SELECT"){const cursor=captureReturn(target);render();restoreReturn(cursor);}
+        else if(String(old)!==target.value)refreshVoronoiPreview();
+      }
+      return;
+    }
+    if(target.dataset.voronoiField!==undefined){
+      const key=target.dataset.voronoiField,value=target.type==="checkbox"?target.checked:target.value;
+      const old=state.voronoiStudio.draft[key];
+      if(setVoronoiField(state.voronoiStudio,key,value)){
+        save();
+        if(target.tagName==="SELECT"||target.type==="checkbox"){
+          const cursor=captureReturn(target);render();restoreReturn(cursor);
+        }else if(old!==value)refreshVoronoiPreview();
+      }
+      return;
+    }
     if(target.dataset.tableVariable!==undefined){
       const ok=toggleTableVariable(state.tableStudio,Number(target.dataset.tableVariable),target.checked);
       if(!ok)toast("Choose no more than four comparable numerical groups for the summary.");
@@ -1890,12 +2050,37 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       save();render();toast("Image pasted","The image is kept on this device. Calibrate before exporting.");
     }catch(error){toast("Image paste unavailable",error.message);}
   });
+  $("#voronoiCsvFile").addEventListener("change",async evt=>{
+    const input=evt.target,file=input.files?.[0];if(!file)return;
+    try{
+      if(file.size>20000)throw new Error("Select at most 20 KB of site coordinates.");
+      const data=importVoronoiSites(state.voronoiStudio,await file.text());
+      state.voronoiStudio.open=true;
+      state.graphStudio.open=false;state.imageTracer.open=false;state.statStudio.open=false;state.tableStudio.open=false;
+      if(state.completion.current!=="C31")setCompletionNode(state,"C31",{reason:"voronoi-csv"});
+      save();render();toast("Voronoi site data imported",data.sites+" valid sites.");
+    }catch(error){toast("Voronoi coordinate import unavailable",error.message);}
+    finally{input.value="";}
+  });
+  $("#voronoiMapFile").addEventListener("change",async evt=>{
+    const input=evt.target,file=input.files?.[0];if(!file)return;
+    try{
+      const image=await importTracePhoto(file);
+      useVoronoiMap(state.voronoiStudio,image);
+      state.voronoiStudio.open=true;
+      state.graphStudio.open=false;state.imageTracer.open=false;state.statStudio.open=false;state.tableStudio.open=false;
+      if(state.completion.current!=="C31")setCompletionNode(state,"C31",{reason:"voronoi-map"});
+      save();render();
+      toast("Map image imported locally","Set the four coordinate bounds, credit the image and confirm that its scale and projection match.");
+    }catch(error){toast("Voronoi image import unavailable",error.message||"Use PNG, JPG or WebP.");}
+    finally{input.value="";}
+  });
   $("#tableCsvFile").addEventListener("change",async evt=>{
     const input=evt.target,file=input.files?.[0];if(!file)return;
     try{
       if(file.size>85000)throw new Error("Choose a smaller CSV/TSV file, at most 85 KB.");
       const imported=importTableData(state.tableStudio,await file.text());
-      state.tableStudio.open=true;state.statStudio.open=false;state.graphStudio.open=false;state.imageTracer.open=false;
+      state.tableStudio.open=true;state.statStudio.open=false;state.graphStudio.open=false;state.imageTracer.open=false;state.voronoiStudio.open=false;
       if(state.completion.current!=="C31")setCompletionNode(state,"C31",{reason:"table-csv"});
       save();render();
       toast("Table data imported",imported.rows+" source rows. Long raw tables cannot be exported directly.");
@@ -1907,7 +2092,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     try{
       if(file.size>85000)throw new Error("Choose a smaller CSV/TSV file, no larger than 85 KB.");
       const result=importStatValues(state.statStudio,await file.text());
-      state.statStudio.open=true;state.imageTracer.open=false;state.graphStudio.open=false;state.tableStudio.open=false;
+      state.statStudio.open=true;state.imageTracer.open=false;state.graphStudio.open=false;state.tableStudio.open=false;state.voronoiStudio.open=false;
       if(state.completion.current!=="C31")setCompletionNode(state,"C31",{reason:"statistics-csv"});
       save();render();
       toast("Statistical table imported",result.rows+" rows recognised. Check selected columns and units.");
@@ -1919,7 +2104,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     try{
       if(file.size>85000)throw new Error("Choose a smaller CSV or TSV file, under 85 KB.");
       const raw=await file.text(),result=importGraphTable(state.graphStudio,raw);
-      state.graphStudio.open=true;state.statStudio.open=false;state.imageTracer.open=false;state.tableStudio.open=false;setCompletionNode(state,"C31",{reason:"graph-csv"});
+      state.graphStudio.open=true;state.statStudio.open=false;state.imageTracer.open=false;state.tableStudio.open=false;state.voronoiStudio.open=false;setCompletionNode(state,"C31",{reason:"graph-csv"});
       save();render();
       toast("CSV data imported",result.rows+" rows and "+result.columns+" columns read. Confirm source, labels and units.");
     }catch(err){toast("Could not import CSV",err.message);}
