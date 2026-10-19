@@ -38,7 +38,7 @@ export const C_FIELD_DEFAULTS=Object.freeze({
  accuracyReason:"",accuracyPolicy:"",accuracyDataType:"",
  variableDefinitions:"",specialistTerms:"",sourceReferences:"",
  dataAimLink:"",dataStatusSummary:"",
- firstType:"",firstPurpose:"",firstDefinitions:"",firstPresentation:"",
+ firstType:"",firstPurpose:"",firstOutputIntroduction:"",firstDefinitions:"",firstPresentation:"",
  firstResultSummary:"",firstObservedFeature:"",firstInterpretation:"",
  accuracyForResult:"",aimLinkedResult:"",predictionComparison:"",
  benefitFinding:"",surpriseReason:"",surpriseCheck:"",
@@ -321,10 +321,10 @@ export function startFirstRepresentation(state){
  const id="math-"+(Date.now().toString(36))+"-"+(state.entries.length+1);
  state.entries.push({
   id,phase:"first",title:f.firstType||state.planning.fields.figureOther||"First purposeful representation",
-  purpose:f.firstPurpose||state.planning.fields.figurePurpose||"",
+  purpose:f.firstOutputIntroduction||f.firstPurpose||state.planning.fields.figurePurpose||"",
   technique:"",kind:"",status:"planned",knowledge:"unsure",knowledgeNotes:"",
-  result:"",resultRef:"",observation:"",observationText:"",interpretation:"",limitations:"",
-  localTakeaway:"",nextQuestion:"",nextWhy:"",bridge:"",accuracyRef:"",
+  result:"",resultRef:"",observation:"",observationText:"",interpretation:f.firstInterpretation||"",limitations:"",
+  localTakeaway:f.firstResultSummary||"",nextQuestion:"",nextWhy:"",bridge:"",accuracyRef:"",
   createdAt:new Date().toISOString()
  });
  state.completion.activeEntryIndex=state.entries.length-1;
