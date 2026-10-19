@@ -12,6 +12,8 @@ import {renderImageTracer} from "../diagrams/image-tracer-view.js";
 import {renderTraceOverlaySvg,renderCleanTraceSvg} from "../diagrams/image-tracer-core.js";
 import {renderStatStudio} from "../diagrams/stat-studio-view.js";
 import {renderStatSvg} from "../diagrams/stat-studio-render.js";
+import {renderTableStudio} from "../diagrams/table-studio-view.js";
+import {renderTableSvg} from "../diagrams/table-studio-render.js";
 import {insightCapture,insightEcho,renderSparkShelf} from '../ui/insight-threads.js';
 import {STATUS_LABELS,currentGroup,JOURNEY_GROUPS} from "../ui/journey.js";
 import {groupedDashboard} from "../ui/journey-views.js";
@@ -201,6 +203,16 @@ export function createCompletingViews(ctx){
    '<p>This is a saved, editable figure—not an automatically written IA result. Introduce the figure before displaying it, then discuss what it genuinely reveals, your sampling and its limitations. Keep raw tables out of the IA and appendix.</p>'+
    '<div class="stat-entry-figure">'+renderStatSvg(fig.draft)+'</div>'+
    '<button type="button" class="btn btn-secondary btn-sm" data-action="stat-open">'+icon("pencil")+' Edit or export this diagram</button></section>';
+ };
+ const tableEntryPanel=()=>{
+  const state=getState(),entry=completeEntry(state),id=entry?.tableFigureId;
+  const fig=id?state.tableStudio?.figures?.find(x=>x.id===id):null;
+  if(!fig)return "";
+  return '<section class="ia-table-entry" aria-label="Linked mathematical table">'+
+   '<h3>'+icon("table")+' Your saved mathematical table: '+e(fig.draft.title||"Untitled table")+'</h3>'+
+   '<p>This formatted table is saved in Pathfinder but not inserted into your IA document. Introduce it before displaying it, then interpret only genuine results. Do not include long raw tables in your IA or appendix.</p>'+
+   renderTableSvg(fig.draft)+
+   '<button type="button" class="btn btn-secondary btn-sm" data-action="table-open">'+icon("pencil")+' Edit or export this table</button></section>';
  };
  const actualRecord=()=>{
   const st=completeEntry(getState());
@@ -571,7 +583,7 @@ export function createCompletingViews(ctx){
     '<p class="field-hint">Use this wording in your <strong>actual IA before</strong> the output, not just as a caption. It is different from the earlier explanation of why you selected the method.</p>');
    const second=cards("show","2","Showing your tables, diagrams and calculations",
     "Put the genuine mathematical work directly in your IA: readable graphs, labelled diagrams, meaningful calculations, units, source citations and sensible precision.",
-    context("show")+graphEntryPanel()+traceEntryPanel()+statEntryPanel()+
+    context("show")+graphEntryPanel()+traceEntryPanel()+statEntryPanel()+tableEntryPanel()+
     '<p class="show-first-table-rule"><strong>Never include long raw-data tables, including in appendices.</strong> Keep the full dataset in your working files. Use an informative graph, selected rows or a compact summary table if they make the mathematics clearer.</p>'+
     (entry?
      entryReviewAlert()+
@@ -622,7 +634,7 @@ export function createCompletingViews(ctx){
     ["other","Another suitable representation"],["unsure","Not sure yet"]])+
     criteriaField(F("firstPurpose","Why might this help answer the aim?","The mathematical question it could reveal",{type:"textarea",rows:3}),"completing:C31:firstPurpose")+
     (f.dataStatus==="not-started"&&p.kind!=="theoretical"?info("Data not ready?","You can define terms, use a clearly labelled provisional case or revisit sources. Do not invent measurements."): "")+
-    (s.statStudio?.open?renderStatStudio(s,icon,e):s.imageTracer?.open?renderImageTracer(s,icon,e):s.graphStudio?.open?renderGraphStudio(s,icon,e):
+    (s.tableStudio?.open?renderTableStudio(s,icon,e):s.statStudio?.open?renderStatStudio(s,icon,e):s.imageTracer?.open?renderImageTracer(s,icon,e):s.graphStudio?.open?renderGraphStudio(s,icon,e):
     '<section class="graph-studio-launch"><div><strong>'+icon("chart")+' Make an IA-ready graph</strong>'+
     '<p>Paste genuine values from Google Sheets or plot a function. Pathfinder checks titles, axes, units, source and scale before allowing export. You can still use your own software or choose no diagram.</p></div>'+
     '<button type="button" class="btn btn-primary" data-action="graph-open">'+icon("chart")+' Open graph plotter</button></section>'+
@@ -631,10 +643,13 @@ export function createCompletingViews(ctx){
     '<button type="button" class="btn btn-secondary" data-action="trace-open">'+icon("image")+' Open image tracer</button></section>'+
     '<section class="stat-launch"><div><strong>'+icon("chart")+' Build a statistical diagram</strong>'+
     '<p>Make frequency-density histograms, box plots, dot plots and comparative categorical bars. Paste actual data from Google Sheets, check mathematical conventions and scales, then export and interpret the diagram in your IA.</p></div>'+
-    '<button type="button" class="btn btn-secondary" data-action="stat-open">'+icon("chart")+' Open statistics studio</button></section>')
+    '<button type="button" class="btn btn-secondary" data-action="stat-open">'+icon("chart")+' Open statistics studio</button></section>'+
+    '<section class="ia-table-launch"><div><strong>'+icon("table")+' Format a compact mathematical table</strong>'+
+    '<p>Paste cells from Google Sheets. Automatically fit headings, units and columns to the page. Show a small results table, calculate a summary of larger data, or build a frequency table—never an oversized raw-data table.</p></div>'+
+    '<button type="button" class="btn btn-secondary" data-action="table-open">'+icon("table")+' Open Table Studio</button></section>')
   };
   case "C32":return{intro:"Immediately before the figure or calculation, give your reader a mathematical reason to look at it.",
-   html:actualRecord()+graphEntryPanel()+traceEntryPanel()+statEntryPanel()+
+   html:actualRecord()+graphEntryPanel()+traceEntryPanel()+statEntryPanel()+tableEntryPanel()+
     entryField("title","A short title for this step","e.g. Inspect a scatter graph")+
     criteriaField(entryField("purpose","Mathematical purpose BEFORE it","What question should this graph/calculation help answer?",{type:"textarea",rows:3}),"completing:C32:purpose")+
     entryField("technique","Mathematical technique being used","e.g. plot observed paired values")+
@@ -645,7 +660,7 @@ export function createCompletingViews(ctx){
     accuracySelector()+accuracyNote()
   };
   case "C33":return{intro:"Create the actual figure or short calculation in your IA document. Describe what you did here without copying an invented result.",
-   html:entryReviewAlert()+actualRecord()+graphEntryPanel()+traceEntryPanel()+statEntryPanel()+
+   html:entryReviewAlert()+actualRecord()+graphEntryPanel()+traceEntryPanel()+statEntryPanel()+tableEntryPanel()+
     entryChoice("status",[
      {value:"planned",title:"Still planned",icon:"clock"},
      {value:"completed",title:"I have actually produced the figure or calculation",icon:"check-circle"}])+
