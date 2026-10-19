@@ -37,6 +37,10 @@ import {updatePrimaryQuantity,editPrimaryQuantity,removePrimaryQuantity,reusePri
 import {applySuggestedTimeline,localToday,validDate,timelineWeek} from "./src/planning/timeline.js";
 import { createStudioViews } from "./src/ui/studio-views.js";
 import {createCompletingViews} from "./src/completing/views.js";
+import {newGraphDraft,saveGraphFigure,renderGraphSvg,graphData,splitHeading,analyseGraph} from "./src/diagrams/graph-core.js";
+import {renderGraphQuality,renderGraphActions} from "./src/diagrams/graph-view.js";
+import {updateGraphField,chooseGraphType,importGraphTable,loadSavedGraph,freshGraph,saveAndLinkGraph} from "./src/diagrams/graph-actions.js";
+import {exportGraphFigure} from "./src/diagrams/graph-export.js";
 import {renderWriterFieldGuide} from "./src/completing/writer-field-guide.js";
 import {C_MAJOR_STAGES,setCompletionNode,moveCompletionRoute,completionBack,markCompletionStage,setCompletionField,addAccuracyDecision,completionSuggestions,sectionForNode,targetForSection,completionStage,completeEntry,latestRealResult,sourceResultForNext,flagDependentMathematics,acknowledgeMathReview} from "./src/completing/engine.js";
 
@@ -138,6 +142,27 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         }
       }
     }
+  }
+  function refreshGraphPreview(){
+    const d=state.graphStudio?.draft;
+    const image=main.querySelector?.("[data-graph-preview]");
+    if(!image||!d)return;
+    image.innerHTML=renderGraphSvg(d);
+    const quality=main.querySelector?.("[data-graph-quality]");
+    if(quality)quality.innerHTML=renderGraphQuality(state.graphStudio,icon,e);
+    const actions=main.querySelector?.("[data-graph-output]");
+    if(actions)actions.innerHTML=renderGraphActions(state.graphStudio,icon,e);
+    const status=main.querySelector?.("[data-graph-preview-meta]");
+    if(status)status.textContent=d.kind==="function"?"Function (not collected observations)":graphData(d).points.length+" paired observations plotted";
+  }
+  function navigateGraph(){
+    if(state.completion.current!=="C31")setCompletionNode(state,"C31",{reason:"graph-editor"});
+    state.graphStudio.open=true;
+    const entry=completeEntry(state);
+    if(entry?.graphFigureId&&state.graphStudio.figures.some(x=>x.id===entry.graphFigureId))
+      loadSavedGraph(state.graphStudio,entry.graphFigureId);
+    save();render();
+    document.querySelector?.("[data-graph-studio]")?.scrollIntoView?.({block:"start",behavior:"auto"});
   }
   function updateBoundField(path,value) {
     if(path.startsWith("planning.fields.")){
@@ -986,6 +1011,57 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         toast("Question selected as a possibility. Write your own mathematical reason before starting.");
         break;
       }
+      case "graph-open":navigateGraph();break;
+      case "graph-close":
+        state.graphStudio.open=false;save();render();break;
+      case "graph-type":{
+        if(!chooseGraphType(state.graphStudio,el.dataset.graphValue))break;
+        save();render();break;
+      }
+      case "graph-new":{
+        freshGraph(state.graphStudio);save();render();
+        toast("New graph started","Previously saved graph drafts remain available below the editor.");break;
+      }
+      case "graph-clear-scale":{
+        const d=state.graphStudio.draft;
+        for(const key of ["xMin","xMax","yMin","yMax"])d[key]="";
+        save();render();break;
+      }
+      case "graph-upload":
+        document.querySelector?.("#graphCsvFile")?.click?.();break;
+      case "graph-parse":{
+        try{
+          const result=importGraphTable(state.graphStudio,state.graphStudio.draft.raw);
+          save();render();
+          toast("Spreadsheet values imported",result.rows+" rows and "+result.columns+" columns recognised. Check your labels, units and source.");
+        }catch(err){toast("Could not import these values",err.message);}
+        break;
+      }
+      case "graph-load":{
+        if(!loadSavedGraph(state.graphStudio,el.dataset.graphId)){toast("Saved graph not found.");break;}
+        save();render();toast("Graph loaded for editing");break;
+      }
+      case "graph-save":{
+        const result=saveGraphFigure(state.graphStudio);
+        if(!result.ok){toast(result.error);break;}
+        save();render();toast("Graph draft saved","It is stored on this device and included in your JSON project backup. It is not yet in your IA.");break;
+      }
+      case "graph-use":{
+        const result=saveAndLinkGraph(state);
+        if(!result.ok){toast(result.error);break;}
+        setCompletionNode(state,"C32",{reason:"linked-graph"});
+        save();render();
+        toast("Graph linked to your first maths",result.reviewNeeded?
+         "You changed the underlying mathematics: review your previous interpretation.":
+         "Next, write your introductory sentence and put the saved figure in your own IA document. No result has been marked as completed.");
+        break;
+      }
+      case "graph-svg":case "graph-png":case "graph-copy":{
+        const format=action.slice("graph-".length);
+        exportGraphFigure(state.graphStudio.draft,format).then(message=>toast(message))
+          .catch(error=>toast("Graph export unavailable",error.message||"Try downloading the PNG instead."));
+        break;
+      }
       case "completion-route":handleCompletionResult(moveCompletionRoute(state,el.dataset.condition));break;
       case "completion-open":handleCompletionResult(setCompletionNode(state,el.dataset.node,{reason:"student-revisit"}));break;
       case "completion-back":handleCompletionResult(completionBack(state));break;
@@ -1238,6 +1314,12 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   });
   document.addEventListener("input",evt=>{
     const target=evt.target;
+    if(target.dataset.graphField!==undefined){
+      if(updateGraphField(state.graphStudio,target.dataset.graphField,target.type==="checkbox"?target.checked:target.value)){
+        save();refreshGraphPreview();
+      }
+      return;
+    }
     if(target.dataset.ideaInput!==undefined){
       if(ideaInput(state,target.dataset.ideaInput,target.value,{savedId:target.dataset.ideaSaved||""}))save();
       return;
@@ -1284,6 +1366,16 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   });
   document.addEventListener("change",evt=>{
     const target=evt.target;
+    if(target.dataset.graphField!==undefined){
+      if(updateGraphField(state.graphStudio,target.dataset.graphField,target.type==="checkbox"?target.checked:target.value)){
+        save();
+        if(target.tagName==="SELECT"||target.type==="checkbox"){
+          const position=captureReturn(target);
+          render();restoreReturn(position);
+        }else refreshGraphPreview();
+      }
+      return;
+    }
     if(target.dataset.ideaDifficulty!==undefined){
       if(ideaDifficultyInput(state,target.dataset.ideaDifficulty,target.checked))save();
       return;
@@ -1373,6 +1465,17 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       if(!window.confirm("Replace the current local project with this backup?"))return;
       state=imported;state.route="home";save();closeDrawer();render({top:true});toast("Project backup restored.");
     }catch(err){window.alert("This file could not be imported. "+err.message);}
+    finally{input.value="";}
+  });
+  $("#graphCsvFile").addEventListener("change",async evt=>{
+    const input=evt.target,file=input.files?.[0];if(!file)return;
+    try{
+      if(file.size>85000)throw new Error("Choose a smaller CSV or TSV file, under 85 KB.");
+      const raw=await file.text(),result=importGraphTable(state.graphStudio,raw);
+      state.graphStudio.open=true;setCompletionNode(state,"C31",{reason:"graph-csv"});
+      save();render();
+      toast("CSV data imported",result.rows+" rows and "+result.columns+" columns read. Confirm source, labels and units.");
+    }catch(err){toast("Could not import CSV",err.message);}
     finally{input.value="";}
   });
   $("#reportImportFile").addEventListener("change",async event=>{
