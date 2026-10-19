@@ -833,3 +833,15 @@
 .show-first-source-reminder{font-size:11px;line-height:1.6;color:#55706c;margin:10px 0}
 .show-first-source-reminder>.icon{height:14px;width:14px;vertical-align:middle}
 @media(max-width:640px){.show-first-part{padding:13px}.show-first-part-heading{gap:9px}.show-first-part-heading h3{font-size:15px}.show-first-spark-grid{grid-template-columns:minmax(0,1fr)}}
+
+
+/* The three student-authored C30 writing moments use distinct, obvious writing boxes. */
+.show-first-writing-field{margin:15px 0 12px;min-width:0}
+.show-first-writing-field .field-group{margin-bottom:12px}
+.show-first-writing-field .field-label{font-size:12px;font-weight:800;line-height:1.55}
+.show-first-writing-field textarea.field{min-height:115px;line-height:1.65}
+.show-first-writing-field .criterion-marked-writing-box textarea.field{min-height:132px}
+.show-first-writing-field .criterion-marked-field{min-width:0}
+.show-first-draft-note{margin:12px 0;font-size:11px;line-height:1.7;color:#6a604b;background:#fffaf0;border:1px solid #eaddbd;border-radius:10px;padding:10px 12px}
+.show-first-draft-note>.icon{height:15px;width:15px;vertical-align:middle;margin-right:5px}
+@media(max-width:640px){.show-first-writing-field{margin:12px 0}.show-first-writing-field textarea.field{min-height:112px}}
