@@ -25,7 +25,7 @@ export function statSummaryCSV(raw){
    s.box.max,s.box.iqr,s.box.lowWhisker,s.box.highWhisker,s.box.outliers.length])];
  }else if(d.kind==="dot"){
   rows=[["Group","Measurement"],...r.series.flatMap(s=>s.values.map(v=>[s.name,v]))];
- }else rows=[["Category",...r.names],
+ }else rows=[["Category",...r.names.map(name=>name+(d.barMode==="percent"?" (%)":" (count)"))],
   ...r.categories.map(cat=>[cat.category,...cat.values])];
  return rows.map(row=>row.map(cell).join(",")).join("\r\n")+"\r\n";
 }
