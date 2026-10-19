@@ -115,7 +115,7 @@ export function renderImageTracer(state,icon,e){
   '<div class="trace-studio-columns"><div class="trace-control-stack">'+
   '<section class="trace-control-card" data-representation-step="create"><h3><span class="trace-step-index">1</span> Import a real image</h3>'+
   '<p>Choose a well-lit, front-on photograph of a flat surface, ideally showing a ruler or known distance in the same plane.</p>'+
-  '<div class="trace-buttons"><button type="button" class="btn btn-secondary btn-sm" data-action="trace-upload">'+icon("upload")+' Upload photo</button>'+
+  '<div class="trace-buttons">'+(d.imageSrc?'<button type="button" class="btn btn-secondary btn-sm" data-action="trace-upload">'+icon("upload")+' Replace photo</button>':"")+
   (d.imageSrc?'<button type="button" class="btn btn-quiet btn-sm" data-action="trace-rotate-left">'+icon("rotate-ccw")+' Rotate left</button>'+
    '<button type="button" class="btn btn-quiet btn-sm" data-action="trace-rotate-right">'+icon("rotate-cw")+' Rotate right</button>':"")+'</div>'+
   (d.imageSrc?'<p class="trace-import-confirm">'+icon("check-circle")+' '+e(d.imageName||"Imported image")+' · Image processed locally</p>':"")+

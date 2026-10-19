@@ -7,6 +7,9 @@ body.representation-focus-active .completing-page>.task-shell{padding:clamp(15px
 body.representation-focus-active .completing-page .task-intro{max-width:900px}
 body.representation-focus-active .completion-topline{margin-bottom:8px}
 body.representation-focus-active .representation-studio{margin-top:10px}
+/* Frequent live previews should not restart the page entrance animation while editing. */
+body.representation-focus-active .page{animation:none}
+
 .representation-workspace-header{margin:12px 0 16px;min-width:0}
 .representation-workspace-bar{display:flex;align-items:center;justify-content:space-between;gap:15px;border-radius:16px 16px 0 0;background:linear-gradient(110deg,#e9f6ee,#f0f5fb);border:1px solid #cce2d9;padding:12px 15px}
 .representation-workspace-identity{display:flex;align-items:center;gap:11px;min-width:0;color:#234e50}
