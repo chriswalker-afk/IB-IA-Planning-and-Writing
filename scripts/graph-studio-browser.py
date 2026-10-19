@@ -93,7 +93,7 @@ def function_graph(page,width):
  page.screenshot(path=str(OUT/f"graph-studio-function-{width}.png"),full_page=True,animations="disabled")
  page.locator('[data-graph-field="expression"]').fill("window.alert(1)")
  assert page.locator('[data-action="graph-png"]').is_disabled()
- assert "Unknown function or variable" in page.locator('[data-graph-quality]').inner_text()
+ assert "Unexpected character" in page.locator('[data-graph-quality]').inner_text()
  # Choosing a function does not invent observations or overwrite earlier work.
  assert saved(page)["entries"][0]["status"]=="planned"
 
