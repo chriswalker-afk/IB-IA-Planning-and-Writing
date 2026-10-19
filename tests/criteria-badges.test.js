@@ -10,7 +10,7 @@ import {createProjectState} from '../src/core/project-state.js';
 
 test('three passes retain selective and specific criteria without new administrative badges',()=>{
  const keys=Object.keys(CRITERION_SPOTS);
- assert.equal(keys.length,49);
+ assert.equal(keys.length,55); // 49 established spots plus six contextual C30 writing bubbles.
  for(const [key,criterion] of [
   ['planning:N01V:benefit','C'],['planning:N02M:title','E'],
   ['completing:C10:aim','A'],['completing:C10:motivation','C'],
@@ -24,6 +24,9 @@ test('three passes retain selective and specific criteria without new administra
   ['completing:C22:methodReason','C'],['completing:C23:limitationConsequence','D'],
   ['completing:C24:accuracyReason','B'],['completing:C25:variableDefinitions','B'],
   ['completing:C26:dataAimLink','A'],
+  ['completing:C30:introduceA','A'],['completing:C30:introduceB','B'],
+  ['completing:C30:reflectD','D'],['completing:C30:reflectE','E'],
+  ['completing:C30:nextC','C'],['completing:C30:nextD','D'],
   ['completing:C34A:accuracyForResult','B'],['completing:C34U:surpriseCheck','D'],
   ['completing:C35H:nextReason','C'],['completing:C40D:courseWhy','E'],
   ['completing:C34B:title','D'],['completing:C70N:title','B'],
@@ -45,6 +48,7 @@ test('three passes retain selective and specific criteria without new administra
  assert.equal(criterionSpotFor('completing','C20'),'');
  assert(isCriterionSpotPage('planning','N01V'));
  assert(!isCriterionSpotPage('planning','N03D'));
+ assert.deepEqual(criterionFieldSpots('completing','C30'),['completing:C30:introduceA','completing:C30:introduceB','completing:C30:reflectD','completing:C30:reflectE','completing:C30:nextC','completing:C30:nextD']);
  assert.deepEqual(criterionFieldSpots('completing','C35'),['completing:C35:nextQuestion','completing:C35:nextReason']);
  assert.deepEqual(criterionFieldSpots('completing','C34'),['completing:C34:observation']);
  assert.deepEqual(criterionFieldSpots('completing','C33'),[]);
