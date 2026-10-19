@@ -13,7 +13,7 @@ export const finiteCell=x=>{
 };
 const cleanRows=rows=>Array.isArray(rows)?rows.slice(0,MAX_ROWS).filter(Array.isArray).map(r=>r.slice(0,MAX_COLS).map(x=>text(x,110))):[];
 export const newGraphDraft=()=>({
- kind:"scatter",raw:"",columns:[],matrix:[],xIndex:0,yIndex:1,
+ kind:"scatter",raw:"",columns:[],matrix:[],pendingPaste:false,xIndex:0,yIndex:1,
  title:"",xLabel:"",yLabel:"",xUnit:"",yUnit:"",xUnitMode:"unsure",yUnitMode:"unsure",
  expression:"",sourceKind:"unsure",sourceText:"",caption:"",
  xMin:"",xMax:"",yMin:"",yMax:"",showGrid:true,showPoints:true,includeZeroY:false
@@ -68,7 +68,7 @@ export function readPastedGraphData(raw){
  const records=splitDelimited(input,delimiter);
  if(records.length<2)throw new Error("Paste at least two rows. Include column headers if available.");
  if(records[0].length<2)throw new Error("At least two columns are needed for a graph.");
- if(records.length>MAX_ROWS+1)throw new Error("This first plotter supports up to 500 rows; choose a meaningful range.");
+ if(records.length>MAX_ROWS+(records[0].some(x=>finiteCell(x)===null)?1:0))throw new Error("This first plotter supports up to 500 data rows; choose a meaningful range.");
  if(records.some(r=>r.length>MAX_COLS))throw new Error("Select at most 10 columns from the sheet.");
  const width=Math.max(...records.map(r=>r.length));
  const first=records[0],hasHeaders=first.some(x=>finiteCell(x)===null);
@@ -86,7 +86,7 @@ export const splitHeading=x=>{
 };
 export function applyPastedGraphData(studio,raw){
  const d=studio.draft,parsed=readPastedGraphData(raw);
- d.raw=String(raw);d.columns=parsed.columns;d.matrix=parsed.matrix;
+ d.raw=String(raw);d.columns=parsed.columns;d.matrix=parsed.matrix;d.pendingPaste=false;
  d.xIndex=0;d.yIndex=1;
  const x=splitHeading(d.columns[0]),y=splitHeading(d.columns[1]);
  d.xLabel=x.label;d.yLabel=y.label;
@@ -203,6 +203,8 @@ export function analyseGraph(draft){
  if(d.title.length>85)warn("long-title","The title may be long at normal IA page width. Consider a shorter title and a fuller caption.");
  if(d.kind!=="function"){
   if(d.matrix.length===0)fail("data","Paste and import genuine numerical observations.");
+  if(d.pendingPaste)fail("unparsed","The pasted values changed. Click Read pasted values to update the graph.");
+  if(d.kind==="scatter"&&!d.showPoints)fail("scatter-hidden","A scatter diagram must display the observed points.");
   if(d.xIndex===d.yIndex)fail("columns","Choose two different columns for the horizontal and vertical quantities.");
   if(d.sourceKind==="unsure")fail("source-kind","Confirm whether the plotted values are primary or published data.");
   if(d.sourceKind==="secondary"&&!d.sourceText.trim())fail("source","Credit the original published source of the data.");
