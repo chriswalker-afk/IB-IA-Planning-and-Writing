@@ -1,0 +1,56 @@
+name: Graph Studio browser acceptance
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'src/diagrams/**'
+      - 'src/completing/views.js'
+      - 'src/completing/engine.js'
+      - 'src/completing/entry-record.js'
+      - 'src/core/project-state.js'
+      - 'app.js'
+      - 'index.html'
+      - 'data/graph-studio.css'
+      - 'tests/graph-studio.test.js'
+      - 'tests/ui-smoke.test.js'
+      - 'scripts/graph-studio-browser.py'
+      - '.github/workflows/graph-studio-browser.yml'
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test and build Graph Studio
+        run: |
+          npm install --no-audit --no-fund
+          npm test
+          npm run build
+      - name: Install Chromium
+        run: |
+          pip install playwright==1.57.0
+          python -m playwright install --with-deps chromium
+      - name: Verify graphs and exports on desktop and phone
+        run: |
+          mkdir -p qa-output
+          python -m http.server 8765 --directory dist > qa-output/graph-server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID"' EXIT
+          python scripts/graph-studio-browser.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: graph-studio-browser-results
+          path: qa-output
+          retention-days: 7
