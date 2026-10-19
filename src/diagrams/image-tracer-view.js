@@ -70,7 +70,7 @@ export function traceOutputHtml(tracer,icon,e){
 }
 export function tracePreviewHtml(tracer,icon,e){
  const d=tracer.draft,q=imageTraceChecks(d),c=q.calibration;
- return '<section class="trace-preview-card"><div class="trace-preview-top"><strong>Live mathematical figure</strong>'+
+ return '<section class="trace-preview-card" data-trace-preview><div class="trace-preview-top"><strong>Live mathematical figure</strong>'+
   '<span class="trace-preview-subhead">'+(d.imageSrc?e(d.width+" × "+d.height+" working pixels"):"Choose an image")+'</span></div>'+
   (d.imageSrc?
     '<div class="trace-view-controls" role="group" aria-label="Choose figure view">'+
@@ -94,7 +94,7 @@ export function traceWorkingHtml(tracer,icon,e){
   (d.closeShape?"Boundary perimeter":"Open-path length")+': '+e(measureFmt(m.perimeter,d))+' '+e(d.unit||"units")+
   (m.area!==null?' · Enclosed area: '+e(measureFmt(m.area,d))+' '+e(d.unit||"units")+'²':"")+
   '</p><p class="trace-table-caution">These values assume a flat calibrated plane and straight segments between points, not an exact boundary or verified uncertainty.</p>':"";
- return '<section class="trace-working-card"><div class="trace-working-header"><h3>Extracted coordinates <span>'+d.points.length+' points</span></h3>'+
+ return '<section class="trace-working-card" data-trace-working><div class="trace-working-header"><h3>Extracted coordinates <span>'+d.points.length+' points</span></h3>'+
   '<div class="trace-mini-actions"><button type="button" class="btn btn-quiet btn-sm" data-action="trace-undo"'+(!d.points.length&&!d.refB&&!d.refA&&!d.direction&&!d.origin?" disabled":"")+'>'+
   icon("undo-2")+' Undo last point</button>'+
   '<button type="button" class="btn btn-quiet btn-sm" data-action="trace-clear-points"'+(!d.points.length?" disabled":"")+'>'+
