@@ -127,7 +127,7 @@ export function analyzeTable(raw){
  if(d.sourceKind==="unsure")fail("source","Identify whether the table uses your own data or an external source.");
  if(d.sourceKind==="secondary"&&!d.sourceText.trim())fail("credit","Credit the published data source.");
  if(d.note.length>190)fail("note-length","Keep the table note short; explain the fuller reasoning in your IA text.");
- if(!d.matrix.length)fail("data","Paste genuine table cells from Google Sheets and select Read pasted table.");
+ if(!d.matrix.length)fail("data","Enter actual data in the worksheet, or paste and import existing data.");
  if(d.pendingPaste)fail("unparsed","The pasted cells have changed. Read the latest values before exporting.");
  const headings=d.headings;
  if(headings.some(h=>!h.trim()))fail("headings","Every displayed column needs a meaningful heading.");

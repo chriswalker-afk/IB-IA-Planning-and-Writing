@@ -1,4 +1,5 @@
 import {representationEmpty} from "./workspace-ui.js";
+import {renderNativeDataGrid} from "./native-data-view.js";
 /** Short, readable tables, contextual mathematical help and reliable quality gates. */
 import {analyzeTable,TABLE_MAX_SAVED} from "./table-studio-core.js";
 import {renderTableSvg} from "./table-studio-render.js";
@@ -75,6 +76,11 @@ function selectionControls(d,e){
   (d.measures.includes("iqr")?pick("quartileRule","Quartile convention",d.quartileRule,[
    ["halves","Median of lower and upper halves"],["linear","Linear interpolation (n − 1)p"]],e):"");
 }
+export function tableDataChoices(studio,e){
+ const d=studio.draft;
+ return headerEditors(d,e)+selectionControls(d,e)+unitsEditors(d,e)+
+  (d.mode==="frequency"?toggle("showPercent","Include percentage of all responses",d.showPercent):"");
+}
 function preview(studio,e){
  const check=analyzeTable(studio.draft);
  return '<section class="ia-table-preview" data-table-preview>'+
@@ -121,18 +127,19 @@ export function renderTableStudio(state,icon,e){
  '<button type="button" data-action="table-mode" data-table-mode="'+key+'" class="ia-table-type'+(d.mode===key?" selected":"")+'" aria-pressed="'+(d.mode===key)+'"><strong>'+e(title)+'</strong><small>'+e(desc)+'</small></button>').join("")+'</div>'+
  '<div class="ia-table-layout"><div class="ia-table-controls">'+
  '<section class="ia-table-control-card" data-representation-step="create"><h3><span>1</span> Start with real information</h3>'+
- '<p>Copy cells from Google Sheets including headings. CSV and TSV files are also supported. The complete imported information stays in your working project.</p>'+
+ '<p>Type source values directly in the worksheet. Finished tables automatically wrap headings and size columns.</p>'+renderNativeDataGrid(state,"table",icon,e)+
+  '<details class="native-import-details"><summary>Or paste / import an existing spreadsheet</summary>'+
  textarea("raw","Paste your table or dataset",d.raw,e,"Paste copied cells from Google Sheets here")+
  '<div class="ia-table-import-actions"><button type="button" class="btn btn-secondary btn-sm" data-action="table-parse">'+icon("clipboard")+' Read pasted table</button>'+
  '<button type="button" class="btn btn-quiet btn-sm" data-action="table-upload">'+icon("upload")+' Import CSV / TSV</button></div>'+
- pick("headers","Does the first row contain headings?",d.headers,[["auto","Detect automatically"],["yes","Yes, headings"],["no","No, first row is data"]],e)+
+ pick("headers","Does the first row contain headings?",d.headers,[["auto","Detect automatically"],["yes","Yes, headings"],["no","No, first row is data"]],e)+'</details>'+
  (d.matrix.length?'<p class="ia-table-imported">'+icon("check-circle")+' '+d.matrix.length+' source rows, '+d.columns.length+' columns'+
  (d.pendingPaste?' · Pasted text changed; read it again.':' · imported.')+'</p>':
- representationEmpty(icon,e,{symbol:"table",title:"No information yet",description:"Paste actual values or import CSV/TSV; no example data will be inserted."}))+
+ '<p class="native-grid-tip">Enter actual source values in the worksheet; none have been invented.</p>')+
  (d.mode==="compact"?'<p class="ia-table-strong-rule"><strong>Maximum 8 rows and 5 columns in the finished table.</strong> Long raw-data tables do not belong in an IA or appendix. For a large dataset, switch to a summary or frequency table rather than making the font smaller.</p>':
  '<p class="ia-table-strong-rule"><strong>Full dataset in; short summary out.</strong> The tool calculates from actual input values without silently selecting only the first few rows.</p>')+
- headerEditors(d,e)+selectionControls(d,e)+unitsEditors(d,e)+
- (d.mode==="frequency"?toggle("showPercent","Include percentage of all responses",d.showPercent):"")+
+ '<div data-native-choices="table">'+tableDataChoices(s,e)+'</div>'+
+ 
  '</section>'+
  '<section class="ia-table-control-card" data-representation-step="refine"><h3><span>2</span> Title, units and source</h3>'+
  '<div class="ia-table-two-col">'+input("number","Table number",d.number,e,"e.g. 1")+

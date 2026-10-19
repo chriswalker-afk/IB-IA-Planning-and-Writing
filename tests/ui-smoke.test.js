@@ -29,7 +29,7 @@ import {planningMove,planAutoAdvance,planningBack,planningEdit,applyPlanningFiel
 import {createStudioViews} from "../src/ui/studio-views.js";
 import {createCompletingViews} from "../src/completing/views.js";
 import {newGraphDraft,saveGraphFigure,renderGraphSvg,graphData,splitHeading,analyseGraph} from "../src/diagrams/graph-core.js";
-import {renderGraphQuality,renderGraphActions} from "../src/diagrams/graph-view.js";
+import {renderGraphQuality,renderGraphActions,graphSourceChoices} from "../src/diagrams/graph-view.js";
 import {updateGraphField,chooseGraphType,importGraphTable,loadSavedGraph,freshGraph,saveAndLinkGraph,saveGraphDraft} from "../src/diagrams/graph-actions.js";
 import {exportGraphFigure} from "../src/diagrams/graph-export.js";
 import {imageTraceChecks,renderTraceOverlaySvg,renderCleanTraceSvg,traceCoordinates,traceCalibration} from "../src/diagrams/image-tracer-core.js";
@@ -39,14 +39,16 @@ import {importTracePhoto,rotateTracePhoto} from "../src/diagrams/image-tracer-up
 import {exportTraceFigure} from "../src/diagrams/image-tracer-export.js";
 import {statAnalysis,importStatTable,newStatDraft} from "../src/diagrams/stat-studio-core.js";
 import {renderStatSvg} from "../src/diagrams/stat-studio-render.js";
-import {renderStatStudio,statPreviewHtml,statSummaryHtml,statQualityHtml,statOutputHtml} from "../src/diagrams/stat-studio-view.js";
+import {renderStatStudio,statDataChoices,statPreviewHtml,statSummaryHtml,statQualityHtml,statOutputHtml} from "../src/diagrams/stat-studio-view.js";
 import {setStatField,changeStatKind,toggleStatSeries,importStatValues,freshStat,loadStat,saveStatDraft,saveAndLinkStat} from "../src/diagrams/stat-studio-actions.js";
 import {exportStat} from "../src/diagrams/stat-studio-export.js";
 import {analyzeTable,importTableData,newTableDraft} from "../src/diagrams/table-studio-core.js";
 import {renderTableSvg} from "../src/diagrams/table-studio-render.js";
-import {renderTableStudio,tablePreviewHtml,tableQualityHtml,tableOutputHtml} from "../src/diagrams/table-studio-view.js";
+import {renderTableStudio,tableDataChoices,tablePreviewHtml,tableQualityHtml,tableOutputHtml} from "../src/diagrams/table-studio-view.js";
 import {setTableField,setTableColumn,chooseTableMode,toggleTableVariable,toggleTableMeasure,loadTable,freshTable,saveTableDraft,saveAndLinkTable} from "../src/diagrams/table-studio-actions.js";
 import {exportTable} from "../src/diagrams/table-studio-export.js";
+import {nativeGridSummary,editNativeHeading,editNativeCell,pasteNativeRange,NATIVE_MAX_ROWS,NATIVE_PAGE_ROWS} from "../src/diagrams/native-data-core.js";
+import {handleNativeDataAction,nativeStudio,activeNativeType} from "../src/diagrams/native-data-actions.js";
 import {analyzeVoronoi,importVoronoiSites,voronoiBounds} from "../src/diagrams/voronoi-core.js";
 import {renderVoronoiSvg,voronoiLayout} from "../src/diagrams/voronoi-render.js";
 import {voronoiPreviewHtml,voronoiResultHtml,voronoiQualityHtml,voronoiOutputHtml} from "../src/diagrams/voronoi-view.js";
@@ -98,18 +100,19 @@ function createHarness(savedValue){
     KEY:"ia-pathfinder-prototype-v1",
     readRecordValue,updateRecordValue,icon,escapeHtml,cleanUrl,button,
     referenceNodeForPrototypeStep,createPlanningViews,createStudioViews,createCompletingViews,renderWriterFieldGuide,createProjectViews,
-    newGraphDraft,saveGraphFigure,renderGraphSvg,graphData,splitHeading,analyseGraph,renderGraphQuality,renderGraphActions,
+    newGraphDraft,saveGraphFigure,renderGraphSvg,graphData,splitHeading,analyseGraph,renderGraphQuality,renderGraphActions,graphSourceChoices,
     updateGraphField,chooseGraphType,importGraphTable,loadSavedGraph,freshGraph,saveAndLinkGraph,saveGraphDraft,exportGraphFigure,
     imageTraceChecks,renderTraceOverlaySvg,renderCleanTraceSvg,traceCoordinates,traceCalibration,renderImageTracer,
     tracePreviewHtml,traceWorkingHtml,traceQualityHtml,traceOutputHtml,setTraceField,setTraceView,setTraceTool,
     usePhoto,tapTrace,undoTracer,removeTracerPoint,startNewTrace,restoreSavedTrace,saveTraceDraft,saveAndLinkTrace,
     importTracePhoto,rotateTracePhoto,exportTraceFigure,
     statAnalysis,importStatTable,newStatDraft,renderStatSvg,renderStatStudio,statPreviewHtml,statSummaryHtml,
-    statQualityHtml,statOutputHtml,setStatField,changeStatKind,toggleStatSeries,importStatValues,freshStat,loadStat,
+    statQualityHtml,statOutputHtml,statDataChoices,setStatField,changeStatKind,toggleStatSeries,importStatValues,freshStat,loadStat,
     saveStatDraft,saveAndLinkStat,exportStat,
     analyzeTable,importTableData,newTableDraft,renderTableSvg,renderTableStudio,tablePreviewHtml,tableQualityHtml,
-    tableOutputHtml,setTableField,setTableColumn,chooseTableMode,toggleTableVariable,toggleTableMeasure,
+    tableOutputHtml,tableDataChoices,setTableField,setTableColumn,chooseTableMode,toggleTableVariable,toggleTableMeasure,
     loadTable,freshTable,saveTableDraft,saveAndLinkTable,exportTable,
+    nativeGridSummary,editNativeHeading,editNativeCell,pasteNativeRange,NATIVE_MAX_ROWS,NATIVE_PAGE_ROWS,handleNativeDataAction,nativeStudio,activeNativeType,
     analyzeVoronoi,importVoronoiSites,voronoiBounds,renderVoronoiSvg,voronoiLayout,
     voronoiPreviewHtml,voronoiResultHtml,voronoiQualityHtml,voronoiOutputHtml,
     setVoronoiField,setVoronoiSite,addVoronoiSite,removeVoronoiSite,clearVoronoiMap,useVoronoiMap,

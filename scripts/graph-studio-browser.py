@@ -38,6 +38,7 @@ def data_graph(page,width):
  assert page.locator('[data-graph-quality]').is_visible()
  assert page.locator('[data-action="graph-png"]').is_disabled()
  no_overflow(page)
+ page.locator('details.native-import-details').evaluate("(el)=>el.open=true")
  page.locator('[data-graph-field="raw"]').fill(SAMPLE)
  assert saved(page)["graphStudio"]["draft"]["pendingPaste"] is True
  page.locator('[data-action="graph-parse"]').click()

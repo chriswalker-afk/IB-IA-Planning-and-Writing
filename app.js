@@ -38,7 +38,7 @@ import {applySuggestedTimeline,localToday,validDate,timelineWeek} from "./src/pl
 import { createStudioViews } from "./src/ui/studio-views.js";
 import {createCompletingViews} from "./src/completing/views.js";
 import {newGraphDraft,saveGraphFigure,renderGraphSvg,graphData,splitHeading,analyseGraph} from "./src/diagrams/graph-core.js";
-import {renderGraphQuality,renderGraphActions} from "./src/diagrams/graph-view.js";
+import {renderGraphQuality,renderGraphActions,graphSourceChoices} from "./src/diagrams/graph-view.js";
 import {updateGraphField,chooseGraphType,importGraphTable,loadSavedGraph,freshGraph,saveAndLinkGraph,saveGraphDraft} from "./src/diagrams/graph-actions.js";
 import {exportGraphFigure} from "./src/diagrams/graph-export.js";
 import {imageTraceChecks,renderTraceOverlaySvg,renderCleanTraceSvg,traceCoordinates,traceCalibration} from "./src/diagrams/image-tracer-core.js";
@@ -48,14 +48,16 @@ import {importTracePhoto,rotateTracePhoto} from "./src/diagrams/image-tracer-upl
 import {exportTraceFigure} from "./src/diagrams/image-tracer-export.js";
 import {statAnalysis,importStatTable,newStatDraft} from "./src/diagrams/stat-studio-core.js";
 import {renderStatSvg} from "./src/diagrams/stat-studio-render.js";
-import {renderStatStudio,statPreviewHtml,statSummaryHtml,statQualityHtml,statOutputHtml} from "./src/diagrams/stat-studio-view.js";
+import {renderStatStudio,statDataChoices,statPreviewHtml,statSummaryHtml,statQualityHtml,statOutputHtml} from "./src/diagrams/stat-studio-view.js";
 import {setStatField,changeStatKind,toggleStatSeries,importStatValues,freshStat,loadStat,saveStatDraft,saveAndLinkStat} from "./src/diagrams/stat-studio-actions.js";
 import {exportStat} from "./src/diagrams/stat-studio-export.js";
 import {analyzeTable,importTableData,newTableDraft} from "./src/diagrams/table-studio-core.js";
 import {renderTableSvg} from "./src/diagrams/table-studio-render.js";
-import {renderTableStudio,tablePreviewHtml,tableQualityHtml,tableOutputHtml} from "./src/diagrams/table-studio-view.js";
+import {renderTableStudio,tableDataChoices,tablePreviewHtml,tableQualityHtml,tableOutputHtml} from "./src/diagrams/table-studio-view.js";
 import {setTableField,setTableColumn,chooseTableMode,toggleTableVariable,toggleTableMeasure,loadTable,freshTable,saveTableDraft,saveAndLinkTable} from "./src/diagrams/table-studio-actions.js";
 import {exportTable} from "./src/diagrams/table-studio-export.js";
+import {nativeGridSummary,editNativeHeading,editNativeCell,pasteNativeRange,NATIVE_MAX_ROWS,NATIVE_PAGE_ROWS} from "./src/diagrams/native-data-core.js";
+import {handleNativeDataAction,nativeStudio,activeNativeType} from "./src/diagrams/native-data-actions.js";
 import {analyzeVoronoi,importVoronoiSites,voronoiBounds} from "./src/diagrams/voronoi-core.js";
 import {renderVoronoiSvg,voronoiLayout} from "./src/diagrams/voronoi-render.js";
 import {voronoiPreviewHtml,voronoiResultHtml,voronoiQualityHtml,voronoiOutputHtml} from "./src/diagrams/voronoi-view.js";
@@ -164,6 +166,42 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         }
       }
     }
+  }
+  function refreshNativeWorksheet(type){
+    const studio=nativeStudio(state,type),root=main.querySelector?.('[data-native-grid="'+type+'"]');
+    if(!studio||!root)return;
+    const status=nativeGridSummary(studio.draft),metric=root.querySelector("[data-native-metrics]");
+    if(metric)metric.textContent=status.filled+" entered values · "+status.rows+" working rows · "+
+     (studio.draft.columns.length||2)+" columns"+
+     (status.incomplete?" · "+status.incomplete+" incomplete rows":"");
+    const raw=root.closest("[data-graph-studio],[data-stat-studio],[data-table-studio]")?.
+      querySelector('[data-'+type+'-field="raw"]');
+    if(raw&&studio.draft.raw===""&&raw.value!=="")raw.value="";
+    const options=main.querySelector?.('[data-native-choices="'+type+'"]');
+    if(options)options.innerHTML=type==="graph"?graphSourceChoices(studio,icon,e):
+     type==="stat"?statDataChoices(studio,e):tableDataChoices(studio,e);
+    if(type==="graph"){
+     for(const key of ["xLabel","yLabel"]){
+      const input=main.querySelector?.('[data-graph-field="'+key+'"]');
+      if(input&&document.activeElement!==input)input.value=studio.draft[key];
+     }
+    }
+    if(type==="stat"){
+     const input=main.querySelector?.('[data-stat-field="variable"]');
+     if(input&&document.activeElement!==input)input.value=studio.draft.variable;
+    }
+    if(type==="graph")refreshGraphPreview();
+    if(type==="stat")refreshStatPreview();
+    if(type==="table")refreshTablePreview();
+  }
+  function openNativeTool(type){
+    if(!nativeStudio(state,type))return;
+    if(state.completion.current!=="C31")setCompletionNode(state,"C31",{reason:"dataset-transfer"});
+    state.route="completing";
+    state.graphStudio.open=type==="graph";state.statStudio.open=type==="stat";state.tableStudio.open=type==="table";
+    state.imageTracer.open=false;state.voronoiStudio.open=false;
+    save();render();
+    document.querySelector?.('[data-native-grid="'+type+'"]')?.scrollIntoView?.({block:"start",behavior:"auto"});
   }
   function refreshGraphPreview(){
     const d=state.graphStudio?.draft;
@@ -755,6 +793,8 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   }
   function clickAction(el) {
     const action=el.dataset.action||"";
+    if(handleNativeDataAction(state,action,el,{save,render,toast,
+      confirm:message=>window.confirm(message),openTool:openNativeTool}))return;
     if(preview.active&&["import-json","import-report","new-project","merge-apply"].includes(action)){
       toast("Return to your investigation before importing or starting a project.");return;
     }
@@ -1872,6 +1912,16 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   });
   document.addEventListener("input",evt=>{
     const target=evt.target;
+    if(target.dataset.nativeHeading!==undefined||target.dataset.nativeCell!==undefined){
+      const type=target.dataset.nativeType,studio=nativeStudio(state,type);
+      if(!studio||type!==activeNativeType(state))return;
+      const col=Number(target.dataset.nativeCol);
+      const ok=target.dataset.nativeHeading!==undefined?
+       editNativeHeading(studio,type,col,target.value):
+       editNativeCell(studio,type,Number(target.dataset.nativeRow),col,target.value);
+      if(ok){save();refreshNativeWorksheet(type);}
+      return;
+    }
     if(target.dataset.voronoiSite!==undefined){
       if(setVoronoiSite(state.voronoiStudio,Number(target.dataset.voronoiSite),
           target.dataset.voronoiSiteKey,target.value)){
@@ -1961,6 +2011,22 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         preview.textContent=value.length>90?value.slice(0,89)+"…":value||"Still developing";
       });
     }
+  });
+  document.addEventListener("paste",evt=>{
+    const target=evt.target;
+    if(target?.dataset?.nativeHeading===undefined&&target?.dataset?.nativeCell===undefined)return;
+    const raw=evt.clipboardData?.getData("text/plain")||"";
+    if(!/[\t\r\n]/.test(raw))return;
+    const type=target.dataset.nativeType,studio=nativeStudio(state,type);
+    if(!studio||type!==activeNativeType(state))return;
+    evt.preventDefault();
+    const result=pasteNativeRange(studio,type,
+     target.dataset.nativeHeading!==undefined?0:Number(target.dataset.nativeRow),
+     Number(target.dataset.nativeCol),raw,{headings:target.dataset.nativeHeading!==undefined});
+    if(!result.ok){toast("Cannot paste this data block",result.error);return;}
+    studio.nativePage=Math.floor((target.dataset.nativeHeading!==undefined?0:Number(target.dataset.nativeRow))/NATIVE_PAGE_ROWS);
+    save();render();
+    toast("Cells pasted",result.rows+" rows and "+result.cols+" columns added. Check units and missing values.");
   });
   document.addEventListener("change",evt=>{
     const target=evt.target;
@@ -2132,6 +2198,24 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   });
   document.addEventListener("submit",evt=>{if(evt.target.closest(".resource-filter-form"))evt.preventDefault();});
   document.addEventListener("keydown",evt=>{
+    const target=evt.target;
+    if(target?.dataset?.nativeCell!==undefined&&evt.key==="Enter"){
+      const type=target.dataset.nativeType,studio=nativeStudio(state,type);
+      if(studio&&type===activeNativeType(state)){
+       evt.preventDefault();
+       const row=Number(target.dataset.nativeRow)+(evt.shiftKey?-1:1),col=Number(target.dataset.nativeCol);
+       if(row<0||row>=NATIVE_MAX_ROWS)return;
+       let next=main.querySelector?.('[data-native-cell][data-native-row="'+row+'"][data-native-col="'+col+'"]');
+       if(!next){
+        editNativeCell(studio,type,row,col,"");
+        studio.nativePage=Math.floor(row/NATIVE_PAGE_ROWS);
+        save();render();
+        next=main.querySelector?.('[data-native-cell][data-native-row="'+row+'"][data-native-col="'+col+'"]');
+       }
+       next?.focus?.();next?.select?.();
+      }
+      return;
+    }
     // Keyboard users can inspect/adjust sites and place points on a focused grid.
     const hit=evt.target.closest?.("[data-voronoi-site-index],[data-voronoi-cell-index],[data-voronoi-plane]");
     if(hit&&state.voronoiStudio?.open&&!state.voronoiStudio.scenario?.showOriginal){

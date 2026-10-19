@@ -1,4 +1,5 @@
 import {representationEmpty} from "./workspace-ui.js";
+import {renderNativeDataGrid} from "./native-data-view.js";
 /** One consistent student-facing interface for all four statistical pathways. */
 import {STAT_TYPES,statAnalysis,MAX_STAT_FIGURES} from "./stat-studio-core.js";
 import {renderStatSvg} from "./stat-studio-render.js";
@@ -107,6 +108,7 @@ function accuracyEcho(state,e){
   relevant.slice(0,2).map(p=>e([p.quantity,p.resolution,p.unit].filter(Boolean).join(" · "))).join("; ")+
   '. Confirm the actual measurement resolution before selecting class widths or reporting quartiles.</aside>';
 }
+export const statDataChoices=(studio,e)=>selectedControls(studio.draft,e);
 export function renderStatStudio(state,icon,e){
  const studio=state.statStudio,d=studio.draft,q=statAnalysis(d);
  const isHistogram=d.kind==="histogram";
@@ -119,7 +121,8 @@ export function renderStatStudio(state,icon,e){
   '<button type="button" class="stat-type'+(d.kind===kind?" selected":"")+'" data-action="stat-kind" data-stat-value="'+kind+'" aria-pressed="'+(d.kind===kind)+'"><strong>'+e(label)+'</strong><small>'+e(desc)+'</small></button>').join("")+'</div>'+
  '<div class="stat-studio-layout"><div class="stat-control-stack">'+
  '<section class="stat-control-card" data-representation-step="create"><h3><span>1</span> Bring in genuine data</h3>'+
- '<p>'+e(kindDesc[d.kind])+'</p>'+
+ '<p>'+e(kindDesc[d.kind])+'</p>'+renderNativeDataGrid(state,"stat",icon,e)+
+  '<details class="native-import-details"><summary>Or paste / import an existing spreadsheet</summary>'+
  field("raw","Paste values from Google Sheets",d.raw,e,{rows:5,placeholder:d.kind==="bar"?
    "Category\\tGroup A\\tGroup B\\nBefore\\t12\\t15\\nAfter\\t18\\t20":
    d.kind==="histogram"&&d.histogramInput==="table"?
@@ -127,12 +130,12 @@ export function renderStatStudio(state,icon,e){
    "Length (cm)\\tGroup B (cm)\\n10.3\\t12.0\\n11.4\\t13.2"})+
  '<div class="stat-data-actions"><button type="button" class="btn btn-secondary btn-sm" data-action="stat-parse">'+icon("clipboard")+' Read pasted table</button>'+
  '<button type="button" class="btn btn-quiet btn-sm" data-action="stat-upload">'+icon("upload")+' Import CSV / TSV</button></div>'+
- select("headers","First row of the selected data",d.headers,[["auto","Detect headings"],["yes","Contains headings"],["no","Contains actual observations"]],e)+
+ select("headers","First row of the selected data",d.headers,[["auto","Detect headings"],["yes","Contains headings"],["no","Contains actual observations"]],e)+'</details>'+
  (d.matrix.length?'<p class="stat-import-status">'+icon("check-circle")+' '+d.matrix.length+' rows and '+d.columns.length+' columns imported.'+
   (d.pendingPaste?' Your latest edits have not been parsed yet.':'')+'</p>':
-  representationEmpty(icon,e,{symbol:"chart",title:"No observations yet",description:"Paste real measurements or import a dataset to build the selected statistical diagram."}))+
+  '<p class="native-grid-tip">Start by entering actual measurements or category counts in the worksheet above.</p>')+
  (isHistogram?select("histogramInput","My histogram starts from",d.histogramInput,[["raw","Individual measurements"],["table","Class intervals and frequencies"]],e):"")+
- selectedControls(d,e)+
+ '<div data-native-choices="stat">'+statDataChoices(studio,e)+'</div>'+
  (isHistogram&&d.histogramInput==="raw"?'<div class="stat-form-grid">'+
   field("binWidth","Class width (required)",d.binWidth,e,{placeholder:"e.g. 5",hint:"Choose an interpretable interval, not just the prettiest shape."})+
   field("binStart","First boundary (optional)",d.binStart,e,{placeholder:"Automatically aligned"})+'</div>':"")+
