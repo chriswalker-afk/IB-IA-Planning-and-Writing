@@ -32,6 +32,11 @@ import {newGraphDraft,saveGraphFigure,renderGraphSvg,graphData,splitHeading,anal
 import {renderGraphQuality,renderGraphActions} from "../src/diagrams/graph-view.js";
 import {updateGraphField,chooseGraphType,importGraphTable,loadSavedGraph,freshGraph,saveAndLinkGraph,saveGraphDraft} from "../src/diagrams/graph-actions.js";
 import {exportGraphFigure} from "../src/diagrams/graph-export.js";
+import {imageTraceChecks,renderTraceOverlaySvg,renderCleanTraceSvg,traceCoordinates,traceCalibration} from "../src/diagrams/image-tracer-core.js";
+import {renderImageTracer,tracePreviewHtml,traceWorkingHtml,traceQualityHtml,traceOutputHtml} from "../src/diagrams/image-tracer-view.js";
+import {setTraceField,setTraceView,setTraceTool,usePhoto,tapTrace,undoTracer,removeTracerPoint,startNewTrace,restoreSavedTrace,saveTraceDraft,saveAndLinkTrace} from "../src/diagrams/image-tracer-actions.js";
+import {importTracePhoto,rotateTracePhoto} from "../src/diagrams/image-tracer-upload.js";
+import {exportTraceFigure} from "../src/diagrams/image-tracer-export.js";
 import {renderWriterFieldGuide} from "../src/completing/writer-field-guide.js";
 import {setCompletionNode,moveCompletionRoute,completionBack,markCompletionStage,setCompletionField,addAccuracyDecision,completionSuggestions,sectionForNode,targetForSection,completeEntry,latestRealResult,flagDependentMathematics,acknowledgeMathReview} from "../src/completing/engine.js";
 import {createProjectViews} from "../src/ui/project-views.js";
@@ -52,7 +57,7 @@ function createHarness(savedValue){
   const store=new Map(savedValue?[["ia-pathfinder-prototype-v1",JSON.stringify(savedValue)]]:[]);
   const classList={add(){},remove(){},toggle(){}};
   const elements={};
-  for(const id of ["#main","#drawerLayer","#saveStatus","#pathCount","#sideMilestones","#importFile","#reportImportFile","#graphCsvFile","#toast"]){
+  for(const id of ["#main","#drawerLayer","#saveStatus","#pathCount","#sideMilestones","#importFile","#reportImportFile","#graphCsvFile","#imageTraceFile","#toast"]){
     elements[id]={innerHTML:"",textContent:"",hidden:id==="#drawerLayer",classList,focus(){},addEventListener(n,cb){events["file-"+n]=cb;}};
   }
   elements["#drawerLayer"].querySelector=()=>({focus(){}});
@@ -78,6 +83,10 @@ function createHarness(savedValue){
     referenceNodeForPrototypeStep,createPlanningViews,createStudioViews,createCompletingViews,renderWriterFieldGuide,createProjectViews,
     newGraphDraft,saveGraphFigure,renderGraphSvg,graphData,splitHeading,analyseGraph,renderGraphQuality,renderGraphActions,
     updateGraphField,chooseGraphType,importGraphTable,loadSavedGraph,freshGraph,saveAndLinkGraph,saveGraphDraft,exportGraphFigure,
+    imageTraceChecks,renderTraceOverlaySvg,renderCleanTraceSvg,traceCoordinates,traceCalibration,renderImageTracer,
+    tracePreviewHtml,traceWorkingHtml,traceQualityHtml,traceOutputHtml,setTraceField,setTraceView,setTraceTool,
+    usePhoto,tapTrace,undoTracer,removeTracerPoint,startNewTrace,restoreSavedTrace,saveTraceDraft,saveAndLinkTrace,
+    importTracePhoto,rotateTracePhoto,exportTraceFigure,
     setCompletionNode,moveCompletionRoute,completionBack,markCompletionStage,setCompletionField,addAccuracyDecision,completionSuggestions,sectionForNode,targetForSection,completeEntry,latestRealResult,flagDependentMathematics,acknowledgeMathReview,
     createHandoverViews,createPlanningEnvelope,getFieldDiff,mergePlanningEnvelope,modelFromEnvelope,suggestedFilename,
     actOnWritingCue,eligibleWritingCues,selectLimitation,recordLimitation,limitationContextKey,relevantLimitations,relevantBivariateOptions,resultFamily,routeNextQuestions,sourceResultForNext,
