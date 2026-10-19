@@ -1,0 +1,52 @@
+name: Voronoi interactive browser acceptance
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+    paths:
+      - 'src/diagrams/voronoi-**'
+      - 'src/completing/views.js'
+      - 'app.js'
+      - 'data/representation-voronoi.css'
+      - 'data/representation-workspace.css'
+      - 'scripts/voronoi-interactive-browser.py'
+      - 'tests/voronoi-interactions.test.js'
+      - '.github/workflows/voronoi-interactive-browser.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Unit tests and production build
+        run: |
+          npm install --no-audit --no-fund
+          npm test
+          npm run build
+      - name: Install Chromium
+        run: |
+          pip install playwright==1.57.0
+          python -m playwright install --with-deps chromium
+      - name: Click, drag, compare and export on desktop and phone
+        run: |
+          mkdir -p qa-output
+          python -m http.server 8765 --directory dist > qa-output/voronoi-server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID"' EXIT
+          python scripts/voronoi-interactive-browser.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: voronoi-interactive-browser-results
+          path: qa-output
+          retention-days: 7

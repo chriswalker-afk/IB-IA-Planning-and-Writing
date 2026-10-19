@@ -61,6 +61,7 @@ import {renderVoronoiSvg,voronoiLayout} from "./src/diagrams/voronoi-render.js";
 import {voronoiPreviewHtml,voronoiResultHtml,voronoiQualityHtml,voronoiOutputHtml} from "./src/diagrams/voronoi-view.js";
 import {setVoronoiField,setVoronoiSite,addVoronoiSite,removeVoronoiSite,clearVoronoiMap,useVoronoiMap,beginVoronoi,loadVoronoi,saveVoronoiDraft,saveAndLinkVoronoi} from "./src/diagrams/voronoi-actions.js";
 import {exportVoronoi} from "./src/diagrams/voronoi-export.js";
+import {displayVoronoiBounds,coordinateFromCanvas,canvasPosition,voronoiFrame,recordVoronoiHistory,applyVoronoiFrame,undoVoronoi,redoVoronoi,freezeVoronoiWindow,fitVoronoiSites,setVoronoiTool,selectVoronoiSite,moveVoronoiSite,proposeVoronoiComparison,showVoronoiComparison,finishVoronoiComparison,selectNearestBisector} from "./src/diagrams/voronoi-interactions.js";
 import {renderRepresentationHub,renderRepresentationSwitcher,representationFocusActive} from "./src/diagrams/representation-hub.js";
 import {renderWriterFieldGuide} from "./src/completing/writer-field-guide.js";
 import {C_MAJOR_STAGES,setCompletionNode,moveCompletionRoute,completionBack,markCompletionStage,setCompletionField,addAccuracyDecision,completionSuggestions,sectionForNode,targetForSection,completionStage,completeEntry,latestRealResult,sourceResultForNext,flagDependentMathematics,acknowledgeMathReview} from "./src/completing/engine.js";
@@ -256,13 +257,24 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     if(!state.voronoiStudio?.open||state.completion.current!=="C31")return;
     const root=main.querySelector?.("[data-voronoi-studio]");if(!root)return;
     const preview=root.querySelector("[data-voronoi-preview]");
-    if(preview)preview.outerHTML=voronoiPreviewHtml(state.voronoiStudio);
+    if(preview)preview.outerHTML=voronoiPreviewHtml(state.voronoiStudio,icon,e);
     const summary=root.querySelector("[data-voronoi-summary]");
     if(summary)summary.innerHTML='<h3>Explore your actual results</h3>'+voronoiResultHtml(state.voronoiStudio,e);
     const quality=root.querySelector("[data-voronoi-quality]");
     if(quality)quality.innerHTML=voronoiQualityHtml(state.voronoiStudio,icon,e);
     const output=root.querySelector("[data-voronoi-output]");
     if(output)output.innerHTML=voronoiOutputHtml(state.voronoiStudio,icon);
+    const current=state.voronoiStudio;
+    root.querySelectorAll?.("[data-voronoi-site]").forEach(input=>{
+      if(document.activeElement===input)return;
+      const site=current.draft.sites[Number(input.dataset.voronoiSite)];
+      if(!site)return;
+      const key=input.dataset.voronoiSiteKey;
+      const value=site[key];if(input.value!==String(value??""))input.value=String(value??"");
+    });
+    root.querySelectorAll?.(".voronoi-site-row").forEach((row,i)=>{
+      row.classList.toggle("selected",current.draft.sites[i]?.id===current.selectedSiteId);
+    });
   }
   function navigateVoronoi(){
     if(state.completion.current!=="C31")setCompletionNode(state,"C31",{reason:"voronoi-editor"});
@@ -1141,9 +1153,59 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       }
       case "voronoi-open":navigateVoronoi();break;
       case "voronoi-close":state.voronoiStudio.open=false;save();render();break;
+      case "voronoi-tool":{
+        if(state.voronoiStudio.scenario?.showOriginal)break;
+        if(setVoronoiTool(state.voronoiStudio,el.dataset.voronoiTool)){save();refreshVoronoiPreview();}
+        break;
+      }
+      case "voronoi-undo":case "voronoi-redo":{
+        if(state.voronoiStudio.scenario?.showOriginal)break;
+        const changed=action==="voronoi-undo"?undoVoronoi(state.voronoiStudio):redoVoronoi(state.voronoiStudio);
+        if(changed){save();render();}
+        break;
+      }
+      case "voronoi-fit":{
+        const studio=state.voronoiStudio;
+        if(studio.scenario?.active)break;
+        if(studio.draft.regionMode==="manual"&&!window.confirm("Replace your justified study boundary with a fitted working window?"))break;
+        if(fitVoronoiSites(studio)){save();render();}
+        break;
+      }
+      case "voronoi-select-site":{
+        if(selectVoronoiSite(state.voronoiStudio,Number(el.dataset.siteIndex))){save();refreshVoronoiPreview();}
+        break;
+      }
+      case "voronoi-bisector-selected":{
+        const before=voronoiFrame(state.voronoiStudio.draft);
+        if(selectNearestBisector(state.voronoiStudio)){
+          recordVoronoiHistory(state.voronoiStudio,before);save();render();
+        }break;
+      }
+      case "voronoi-scenario-start":{
+        if(proposeVoronoiComparison(state.voronoiStudio)){save();render();}
+        else toast("Add two distinct sites before starting a comparison.");
+        break;
+      }
+      case "voronoi-scenario-view":{
+        const studio=state.voronoiStudio;
+        if(showVoronoiComparison(studio,!studio.scenario.showOriginal)){save();render();}
+        break;
+      }
+      case "voronoi-scenario-restore":case "voronoi-scenario-keep":{
+        if(action==="voronoi-scenario-restore"&&!window.confirm("Restore the original sites and discard this what-if arrangement? Your earlier source positions are retained."))break;
+        if(finishVoronoiComparison(state.voronoiStudio,{restore:action==="voronoi-scenario-restore"})){
+          save();render();toast(action==="voronoi-scenario-restore"?"Original arrangement restored":
+            "Hypothetical version kept","Proposed sites remain labelled and distinct from existing sites.");
+        }break;
+      }
       case "voronoi-parse":{
+        if(state.voronoiStudio.scenario?.active){toast("Finish the what-if comparison before replacing the source sites.");break;}
         try{
+          const before=voronoiFrame(state.voronoiStudio.draft);
           const parsed=importVoronoiSites(state.voronoiStudio,state.voronoiStudio.draft.raw);
+          recordVoronoiHistory(state.voronoiStudio,before);
+          state.voronoiStudio.selectedSiteId="";
+          setVoronoiTool(state.voronoiStudio,"select");
           save();render();
           toast("Site coordinates imported",parsed.sites+" genuine sites recognised. Confirm equal distance units and a meaningful study window.");
         }catch(error){toast("Could not read site coordinates",error.message);}
@@ -1157,8 +1219,9 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         toast("Background map cleared","Coordinates and Voronoi cells have been retained.");break;
       }
       case "voronoi-add-site":{
-        const d=state.voronoiStudio.draft;
-        const result=addVoronoiSite(state.voronoiStudio,{name:d.addName,x:d.addX,y:d.addY,kind:d.addType});
+        const studio=state.voronoiStudio,d=studio.draft;
+        if(studio.scenario?.active&&d.addType==="observed"){toast("Existing sites are locked during a comparison. Choose Proposed location.");break;}
+        const result=addVoronoiSite(studio,{name:d.addName,x:d.addX,y:d.addY,kind:d.addType});
         if(!result.ok){toast(result.error);break;}
         save();render();
         toast(result.site.kind==="candidate"?"Hypothetical site added":"Site added",
@@ -1167,7 +1230,9 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       }
       case "voronoi-delete-site":{
         const index=Number(el.dataset.siteIndex);
-        if(!removeVoronoiSite(state.voronoiStudio,index))break;
+        if(!removeVoronoiSite(state.voronoiStudio,index)){
+          toast("That site is protected during the what-if comparison.");break;
+        }
         save();render();toast("Site removed","Recheck whether the remaining locations still answer your aim.");break;
       }
       case "voronoi-new":{
@@ -1667,25 +1732,86 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         state=newState();save();closeDrawer();nav("home");toast("A fresh workspace is ready.");break;
     }
   }
-  document.addEventListener("click",evt=>{
-    // SVG is an actual student input surface. Convert screen taps into photo
-    // pixel coordinates using its viewBox transform, including on phones.
-    const voronoiTap=evt.target.closest?.("[data-voronoi-place]");
-    if(voronoiTap&&state.voronoiStudio?.open&&state.voronoiStudio.draft.placeCandidate){
-      const svg=voronoiTap.closest("[data-voronoi-canvas]");
-      const matrix=svg?.getScreenCTM?.(),q=analyzeVoronoi(state.voronoiStudio.draft);
-      if(!matrix||!q.bounds)return;
-      const point=svg.createSVGPoint();point.x=evt.clientX;point.y=evt.clientY;
-      const pixel=point.matrixTransform(matrix.inverse()),L=voronoiLayout(q.bounds);
-      const x=q.bounds.xMin+(pixel.x-L.left)/L.scale,
-       y=q.bounds.yMax-(pixel.y-L.top)/L.scale;
-      if(x<q.bounds.xMin||x>q.bounds.xMax||y<q.bounds.yMin||y>q.bounds.yMax)return;
-      const result=addVoronoiSite(state.voronoiStudio,{name:"",x,y,kind:"candidate"});
-      if(!result.ok){toast(result.error);return;}
-      const scroll=window.scrollY;save();render();window.scrollTo({top:scroll,behavior:"auto"});
-      toast("Proposed location added","This hypothetical site changes the tessellation; it is not a claim that a facility exists.");
+  // Native pointer editing; document-level tracking survives live SVG replacements.
+  let voronoiPointer=null;
+  function voronoiPointerWorld(session,event){
+    const p=session.svg.createSVGPoint();p.x=event.clientX;p.y=event.clientY;
+    return coordinateFromCanvas(session.layout,session.bounds,p.matrixTransform(session.inverse));
+  }
+  function redrawVoronoiAtScroll(){
+    const top=window.scrollY;
+    save();render();window.scrollTo({top,behavior:"auto"});
+  }
+  document.addEventListener("pointerdown",evt=>{
+    if(!state.voronoiStudio?.open||state.completion.current!=="C31"||state.voronoiStudio.scenario?.showOriginal)return;
+    const svg=evt.target.closest?.("[data-voronoi-canvas]");
+    if(!svg||evt.button>0)return;
+    const transform=svg.getScreenCTM?.();if(!transform)return;
+    const studio=state.voronoiStudio,bounds=displayVoronoiBounds(studio.draft),layout=voronoiLayout(bounds);
+    if(!layout)return;
+    let inverse;try{inverse=transform.inverse();}catch{return;}
+    const hit=evt.target.closest?.("[data-voronoi-site-index],[data-voronoi-cell-index]");
+    const index=hit?.dataset.voronoiSiteIndex!==undefined?Number(hit.dataset.voronoiSiteIndex):
+      hit?.dataset.voronoiCellIndex!==undefined?Number(hit.dataset.voronoiCellIndex):-1;
+    voronoiPointer={id:evt.pointerId,svg,inverse,bounds,layout,index,
+      isSite:hit?.dataset.voronoiSiteIndex!==undefined,isCell:hit?.dataset.voronoiCellIndex!==undefined,
+      startX:evt.clientX,startY:evt.clientY,
+      before:voronoiFrame(studio.draft),tool:studio.tool,dragged:false,
+      locked:studio.scenario?.active&&index>=0&&studio.draft.sites[index]?.kind==="observed"};
+    if(index>=0&&["select","inspect"].includes(studio.tool))selectVoronoiSite(studio,index);
+    evt.preventDefault();
+  });
+  document.addEventListener("pointermove",evt=>{
+    const session=voronoiPointer;
+    if(!session||evt.pointerId!==session.id||!state.voronoiStudio?.open)return;
+    if(session.tool!=="select"||!session.isSite||session.index<0||session.locked)return;
+    if(!session.dragged&&Math.hypot(evt.clientX-session.startX,evt.clientY-session.startY)<4)return;
+    const p=voronoiPointerWorld(session,evt);if(!p)return;
+    const studio=state.voronoiStudio;
+    freezeVoronoiWindow(studio);
+    const moved=moveVoronoiSite(studio,session.index,p.x,p.y,{record:false});
+    if(moved.ok&&moved.changed){session.dragged=true;refreshVoronoiPreview();}
+    evt.preventDefault();
+  });
+  document.addEventListener("pointerup",evt=>{
+    const session=voronoiPointer;
+    if(!session||evt.pointerId!==session.id)return;
+    voronoiPointer=null;const studio=state.voronoiStudio;if(!studio?.open)return;
+    if(session.dragged){
+      recordVoronoiHistory(studio,session.before);redrawVoronoiAtScroll();return;
+    }
+    if(session.index>=0&&(session.isSite&&session.tool!=="test"||
+      session.isCell&&["select","inspect"].includes(session.tool))){
+      selectVoronoiSite(studio,session.index);redrawVoronoiAtScroll();
+      if(session.locked&&session.tool==="select")toast("Existing sites are protected in a comparison.");
       return;
     }
+    if(Math.hypot(evt.clientX-session.startX,evt.clientY-session.startY)>9)return;
+    const p=voronoiPointerWorld(session,evt);if(!p)return;
+    if(session.tool==="existing"||session.tool==="candidate"){
+      if(studio.scenario?.active&&session.tool==="existing"){
+        toast("Use Place proposed during a what-if comparison.");return;
+      }
+      const before=voronoiFrame(studio.draft);
+      freezeVoronoiWindow(studio);
+      const result=addVoronoiSite(studio,{name:"",x:canvasPosition(p.x),y:canvasPosition(p.y),
+        kind:session.tool==="candidate"?"candidate":"observed"},before);
+      if(!result.ok){applyVoronoiFrame(studio.draft,before);toast(result.error);return;}
+      redrawVoronoiAtScroll();return;
+    }
+    if(session.tool==="test"){
+      const before=voronoiFrame(studio.draft);
+      studio.draft.probeX=String(canvasPosition(p.x));
+      studio.draft.probeY=String(canvasPosition(p.y));
+      recordVoronoiHistory(studio,before);redrawVoronoiAtScroll();
+    }
+  });
+  document.addEventListener("pointercancel",evt=>{
+    if(!voronoiPointer||evt.pointerId!==voronoiPointer.id)return;
+    const before=voronoiPointer.before;voronoiPointer=null;
+    applyVoronoiFrame(state.voronoiStudio.draft,before);redrawVoronoiAtScroll();
+  });
+  document.addEventListener("click",evt=>{
     const traceTap=evt.target.closest?.("[data-trace-tap]");
     if(traceTap&&state.imageTracer?.open){
       const svg=traceTap.closest("[data-trace-canvas]");
@@ -2006,6 +2132,71 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   });
   document.addEventListener("submit",evt=>{if(evt.target.closest(".resource-filter-form"))evt.preventDefault();});
   document.addEventListener("keydown",evt=>{
+    // Keyboard users can inspect/adjust sites and place points on a focused grid.
+    const hit=evt.target.closest?.("[data-voronoi-site-index],[data-voronoi-cell-index],[data-voronoi-plane]");
+    if(hit&&state.voronoiStudio?.open&&!state.voronoiStudio.scenario?.showOriginal){
+      const studio=state.voronoiStudio,bounds=displayVoronoiBounds(studio.draft);
+      const index=hit.dataset.voronoiSiteIndex!==undefined?Number(hit.dataset.voronoiSiteIndex):
+        hit.dataset.voronoiCellIndex!==undefined?Number(hit.dataset.voronoiCellIndex):-1;
+      const arrow={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,1],ArrowDown:[0,-1]}[evt.key];
+      if(index>=0&&arrow&&studio.tool==="select"){
+        evt.preventDefault();
+        const site=studio.draft.sites[index];
+        if(!site)return;
+        const k=evt.shiftKey?20:100;
+        const dx=(bounds.xMax-bounds.xMin)/k,dy=(bounds.yMax-bounds.yMin)/k;
+        const result=moveVoronoiSite(studio,index,site.x+arrow[0]*dx,site.y+arrow[1]*dy);
+        if(result.ok&&result.changed){
+          redrawVoronoiAtScroll();
+          document.querySelector?.('[data-voronoi-site-index="'+index+'"]')?.focus?.();
+        }else if(!result.ok)toast(result.error);
+        return;
+      }
+      if(hit.dataset.voronoiPlane!==undefined&&arrow){
+        evt.preventDefault();
+        const cursor=studio.keyboardCursor||{x:(bounds.xMin+bounds.xMax)/2,y:(bounds.yMin+bounds.yMax)/2};
+        const center=cursor.x<bounds.xMin||cursor.x>bounds.xMax||cursor.y<bounds.yMin||cursor.y>bounds.yMax?
+          {x:(bounds.xMin+bounds.xMax)/2,y:(bounds.yMin+bounds.yMax)/2}:cursor;
+        const fraction=evt.shiftKey?100:20;
+        studio.keyboardCursor={
+          x:Math.max(bounds.xMin,Math.min(bounds.xMax,canvasPosition(center.x+arrow[0]*(bounds.xMax-bounds.xMin)/fraction))),
+          y:Math.max(bounds.yMin,Math.min(bounds.yMax,canvasPosition(center.y+arrow[1]*(bounds.yMax-bounds.yMin)/fraction)))
+        };
+        studio.cursorVisible=true;save();refreshVoronoiPreview();
+        document.querySelector?.("[data-voronoi-plane]")?.focus?.();
+        return;
+      }
+      if(evt.key==="Enter"||evt.key===" "){
+        evt.preventDefault();
+        if(index>=0){
+          selectVoronoiSite(studio,index);save();refreshVoronoiPreview();
+          document.querySelector?.('[data-voronoi-site-index="'+index+'"]')?.focus?.();
+          return;
+        }
+        if(hit.dataset.voronoiPlane!==undefined){
+          const cursor=studio.keyboardCursor||{x:5,y:5},at={
+            x:Math.min(bounds.xMax,Math.max(bounds.xMin,cursor.x)),
+            y:Math.min(bounds.yMax,Math.max(bounds.yMin,cursor.y))};
+          if(studio.tool==="existing"||studio.tool==="candidate"){
+            if(studio.scenario?.active&&studio.tool==="existing"){
+              toast("Place proposals, not measured sites, during a comparison.");return;
+            }
+            const before=voronoiFrame(studio.draft);
+            freezeVoronoiWindow(studio);
+            const result=addVoronoiSite(studio,{name:"",x:at.x,y:at.y,
+              kind:studio.tool==="candidate"?"candidate":"observed"},before);
+            if(!result.ok){applyVoronoiFrame(studio.draft,before);toast(result.error);return;}
+            redrawVoronoiAtScroll();
+          }else if(studio.tool==="test"){
+            const before=voronoiFrame(studio.draft);
+            studio.draft.probeX=String(at.x);studio.draft.probeY=String(at.y);
+            recordVoronoiHistory(studio,before);redrawVoronoiAtScroll();
+          }else return;
+          document.querySelector?.("[data-voronoi-plane]")?.focus?.();
+          return;
+        }
+      }
+    }
     if(evt.key==="Escape"&&!layer.hidden&&!document.querySelector("dialog[open]")){evt.preventDefault();dismissDrawer();}
     if(evt.key==="Tab"&&!layer.hidden){
       const focusable=[...layer.querySelectorAll('button:not([disabled]),a[href],input:not([disabled]),textarea:not([disabled]),select:not([disabled]),summary')].filter(el=>el.getClientRects().length);

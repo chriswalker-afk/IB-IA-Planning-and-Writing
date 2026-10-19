@@ -2,6 +2,7 @@
 import {newVoronoiDraft,normalizeVoronoiDraft,analyzeVoronoi,importVoronoiSites,
  saveVoronoiFigure,voronoiSignature,MAX_VORONOI_SITES} from "./voronoi-core.js";
 import {completeEntry,startFirstRepresentation} from "../completing/engine.js";
+import {voronoiFrame,recordVoronoiHistory,setVoronoiTool} from "./voronoi-interactions.js";
 const strings=new Set(["raw","headers","title","xLabel","yLabel","unitMode","unit",
  "coordSystem","sourceKind","sourceCredit","regionMode","xMin","xMax","yMin","yMax",
  "mapCredit","probeX","probeY","note","addName","addX","addY","addType"]);
@@ -10,6 +11,8 @@ const booleans=new Set(["showGrid","showSites","showLabels","showBisector","show
 const selects=new Set(["pairA","pairB"]);
 export function setVoronoiField(studio,key,value){
  const d=studio?.draft;if(!d)return false;
+ if(studio.scenario?.active&&["regionMode","xMin","xMax","yMin","yMax","raw","headers"].includes(key))return false;
+ if(key==="placeCandidate")setVoronoiTool(studio,value?"candidate":"select");
  if(strings.has(key)){
   if(typeof value!=="string")return false;
   const prev=d[key];
@@ -32,17 +35,20 @@ export function setVoronoiField(studio,key,value){
 export function setVoronoiSite(studio,index,field,value){
  const d=studio?.draft,p=d?.sites?.[index];
  if(!p)return false;
- if(field==="name"){p.name=String(value).slice(0,42);d.edited=true;return true;}
- if(field==="kind"&&["observed","candidate"].includes(value)){p.kind=value;d.edited=true;return true;}
- if(field==="x"||field==="y"){
+ if(studio.scenario?.active&&p.kind==="observed")return false;
+ const before=voronoiFrame(d);
+ if(field==="name")p.name=String(value).slice(0,42);
+ else if(field==="kind"&&["observed","candidate"].includes(value))p.kind=value;
+ else if(field==="x"||field==="y"){
   const n=String(value).trim()?Number(value):NaN;
   p[field]=Number.isFinite(n)&&Math.abs(n)<=1e8?n:null;
-  d.edited=true;return true;
- }
- return false;
+ }else return false;
+ if(JSON.stringify(before.sites)===JSON.stringify(d.sites))return true;
+ d.edited=true;recordVoronoiHistory(studio,before);return true;
 }
-export function addVoronoiSite(studio,site){
+export function addVoronoiSite(studio,site,historyFrame=null){
  const d=studio.draft;
+ const before=historyFrame||voronoiFrame(d);
  if(d.sites.length>=MAX_VORONOI_SITES)return{ok:false,error:"Use at most eighteen sites for a readable diagram."};
  const x=Number(site.x),y=Number(site.y);
  if(!String(site.x).trim()||!String(site.y).trim()||
@@ -58,15 +64,19 @@ export function addVoronoiSite(studio,site){
   return{ok:false,error:"A site already exists at these coordinates."};
  const newSite={id:"s-"+Date.now().toString(36)+"-"+d.sites.length,name,x,y,kind};
  d.sites.push(newSite);d.addName="";d.addX="";d.addY="";
- d.edited=true;d.placeCandidate=false;
+ d.edited=true;d.placeCandidate=studio.tool==="candidate";
+ recordVoronoiHistory(studio,before);studio.selectedSiteId=newSite.id;
  return{ok:true,site:newSite};
 }
 export function removeVoronoiSite(studio,index){
  const d=studio.draft;
  if(!Number.isInteger(index)||index<0||index>=d.sites.length)return false;
- d.sites.splice(index,1);
- d.pairA=0;d.pairB=d.sites.length>1?1:0;
- d.edited=true;return true;
+ if(studio.scenario?.active&&d.sites[index].kind==="observed")return false;
+ const before=voronoiFrame(d),removed=d.sites[index].id;
+ d.sites.splice(index,1);d.pairA=0;d.pairB=d.sites.length>1?1:0;
+ d.edited=true;if(studio.selectedSiteId===removed)studio.selectedSiteId="";
+ recordVoronoiHistory(studio,before);
+ return true;
 }
 export function clearVoronoiMap(studio){
  const d=studio.draft;
@@ -82,11 +92,15 @@ export function useVoronoiMap(studio,image){
 }
 export function beginVoronoi(studio){
  studio.activeId="";studio.draft=newVoronoiDraft();studio.open=true;
+ studio.tool="existing";studio.selectedSiteId="";studio.history={past:[],future:[]};
+ studio.scenario={active:false,before:null,showOriginal:false};
 }
 export function loadVoronoi(studio,id){
  const fig=studio.figures.find(f=>f.id===id);
  if(!fig)return false;
  studio.activeId=id;studio.draft=normalizeVoronoiDraft(fig.draft);studio.open=true;
+ studio.tool="select";studio.selectedSiteId="";studio.history={past:[],future:[]};
+ studio.scenario={active:false,before:null,showOriginal:false};
  return true;
 }
 export function noteVoronoiChange(state,previous,record){
