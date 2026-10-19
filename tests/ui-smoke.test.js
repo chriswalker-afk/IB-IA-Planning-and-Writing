@@ -42,6 +42,11 @@ import {renderStatSvg} from "../src/diagrams/stat-studio-render.js";
 import {renderStatStudio,statPreviewHtml,statSummaryHtml,statQualityHtml,statOutputHtml} from "../src/diagrams/stat-studio-view.js";
 import {setStatField,changeStatKind,toggleStatSeries,importStatValues,freshStat,loadStat,saveStatDraft,saveAndLinkStat} from "../src/diagrams/stat-studio-actions.js";
 import {exportStat} from "../src/diagrams/stat-studio-export.js";
+import {analyzeTable,importTableData,newTableDraft} from "../src/diagrams/table-studio-core.js";
+import {renderTableSvg} from "../src/diagrams/table-studio-render.js";
+import {renderTableStudio,tablePreviewHtml,tableQualityHtml,tableOutputHtml} from "../src/diagrams/table-studio-view.js";
+import {setTableField,setTableColumn,chooseTableMode,toggleTableVariable,toggleTableMeasure,loadTable,freshTable,saveTableDraft,saveAndLinkTable} from "../src/diagrams/table-studio-actions.js";
+import {exportTable} from "../src/diagrams/table-studio-export.js";
 import {renderWriterFieldGuide} from "../src/completing/writer-field-guide.js";
 import {setCompletionNode,moveCompletionRoute,completionBack,markCompletionStage,setCompletionField,addAccuracyDecision,completionSuggestions,sectionForNode,targetForSection,completeEntry,latestRealResult,flagDependentMathematics,acknowledgeMathReview} from "../src/completing/engine.js";
 import {createProjectViews} from "../src/ui/project-views.js";
@@ -62,7 +67,7 @@ function createHarness(savedValue){
   const store=new Map(savedValue?[["ia-pathfinder-prototype-v1",JSON.stringify(savedValue)]]:[]);
   const classList={add(){},remove(){},toggle(){}};
   const elements={};
-  for(const id of ["#main","#drawerLayer","#saveStatus","#pathCount","#sideMilestones","#importFile","#reportImportFile","#graphCsvFile","#imageTraceFile","#statCsvFile","#toast"]){
+  for(const id of ["#main","#drawerLayer","#saveStatus","#pathCount","#sideMilestones","#importFile","#reportImportFile","#graphCsvFile","#imageTraceFile","#statCsvFile","#tableCsvFile","#toast"]){
     elements[id]={innerHTML:"",textContent:"",hidden:id==="#drawerLayer",classList,focus(){},addEventListener(n,cb){events["file-"+n]=cb;}};
   }
   elements["#drawerLayer"].querySelector=()=>({focus(){}});
@@ -95,6 +100,9 @@ function createHarness(savedValue){
     statAnalysis,importStatTable,newStatDraft,renderStatSvg,renderStatStudio,statPreviewHtml,statSummaryHtml,
     statQualityHtml,statOutputHtml,setStatField,changeStatKind,toggleStatSeries,importStatValues,freshStat,loadStat,
     saveStatDraft,saveAndLinkStat,exportStat,
+    analyzeTable,importTableData,newTableDraft,renderTableSvg,renderTableStudio,tablePreviewHtml,tableQualityHtml,
+    tableOutputHtml,setTableField,setTableColumn,chooseTableMode,toggleTableVariable,toggleTableMeasure,
+    loadTable,freshTable,saveTableDraft,saveAndLinkTable,exportTable,
     setCompletionNode,moveCompletionRoute,completionBack,markCompletionStage,setCompletionField,addAccuracyDecision,completionSuggestions,sectionForNode,targetForSection,completeEntry,latestRealResult,flagDependentMathematics,acknowledgeMathReview,
     createHandoverViews,createPlanningEnvelope,getFieldDiff,mergePlanningEnvelope,modelFromEnvelope,suggestedFilename,
     actOnWritingCue,eligibleWritingCues,selectLimitation,recordLimitation,limitationContextKey,relevantLimitations,relevantBivariateOptions,resultFamily,routeNextQuestions,sourceResultForNext,
