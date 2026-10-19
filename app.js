@@ -41,6 +41,11 @@ import {newGraphDraft,saveGraphFigure,renderGraphSvg,graphData,splitHeading,anal
 import {renderGraphQuality,renderGraphActions} from "./src/diagrams/graph-view.js";
 import {updateGraphField,chooseGraphType,importGraphTable,loadSavedGraph,freshGraph,saveAndLinkGraph,saveGraphDraft} from "./src/diagrams/graph-actions.js";
 import {exportGraphFigure} from "./src/diagrams/graph-export.js";
+import {imageTraceChecks,renderTraceOverlaySvg,renderCleanTraceSvg,traceCoordinates,traceCalibration} from "./src/diagrams/image-tracer-core.js";
+import {renderImageTracer,tracePreviewHtml,traceWorkingHtml,traceQualityHtml,traceOutputHtml} from "./src/diagrams/image-tracer-view.js";
+import {setTraceField,setTraceView,setTraceTool,usePhoto,tapTrace,undoTracer,removeTracerPoint,startNewTrace,restoreSavedTrace,saveTraceDraft,saveAndLinkTrace} from "./src/diagrams/image-tracer-actions.js";
+import {importTracePhoto,rotateTracePhoto} from "./src/diagrams/image-tracer-upload.js";
+import {exportTraceFigure} from "./src/diagrams/image-tracer-export.js";
 import {renderWriterFieldGuide} from "./src/completing/writer-field-guide.js";
 import {C_MAJOR_STAGES,setCompletionNode,moveCompletionRoute,completionBack,markCompletionStage,setCompletionField,addAccuracyDecision,completionSuggestions,sectionForNode,targetForSection,completionStage,completeEntry,latestRealResult,sourceResultForNext,flagDependentMathematics,acknowledgeMathReview} from "./src/completing/engine.js";
 
@@ -158,11 +163,36 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   function navigateGraph(){
     if(state.completion.current!=="C31")setCompletionNode(state,"C31",{reason:"graph-editor"});
     state.graphStudio.open=true;
+    state.imageTracer.open=false;
     const entry=completeEntry(state);
     if(entry?.graphFigureId&&state.graphStudio.figures.some(x=>x.id===entry.graphFigureId))
       loadSavedGraph(state.graphStudio,entry.graphFigureId);
     save();render();
     document.querySelector?.("[data-graph-studio]")?.scrollIntoView?.({block:"start",behavior:"auto"});
+  }
+  function refreshTracePreview(){
+    const tracer=state.imageTracer;
+    if(!tracer?.open||state.completion.current!=="C31")return;
+    const mainRoot=document.querySelector?.("[data-image-tracer]");
+    if(!mainRoot)return;
+    const photo=mainRoot.querySelector("[data-trace-preview]");
+    if(photo)photo.outerHTML=tracePreviewHtml(tracer,icon,e);
+    const list=mainRoot.querySelector("[data-trace-working]");
+    if(list)list.outerHTML=traceWorkingHtml(tracer,icon,e);
+    const quality=mainRoot.querySelector("[data-trace-quality]");
+    if(quality)quality.innerHTML=traceQualityHtml(tracer,icon,e);
+    const output=mainRoot.querySelector("[data-trace-output]");
+    if(output)output.innerHTML=traceOutputHtml(tracer,icon,e);
+  }
+  function navigateTrace(){
+    if(state.completion.current!=="C31")setCompletionNode(state,"C31",{reason:"trace-editor"});
+    state.graphStudio.open=false;
+    state.imageTracer.open=true;
+    const entry=completeEntry(state);
+    if(entry?.imageTraceId&&state.imageTracer.figures.some(x=>x.id===entry.imageTraceId))
+      restoreSavedTrace(state.imageTracer,entry.imageTraceId);
+    save();render();
+    document.querySelector?.("[data-image-tracer]")?.scrollIntoView?.({block:"start",behavior:"auto"});
   }
   function updateBoundField(path,value) {
     if(path.startsWith("planning.fields.")){
@@ -1011,6 +1041,88 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         toast("Question selected as a possibility. Write your own mathematical reason before starting.");
         break;
       }
+      case "trace-open":navigateTrace();break;
+      case "trace-close":
+        state.imageTracer.open=false;save();render();break;
+      case "trace-upload":
+        document.querySelector("#imageTraceFile")?.click();break;
+      case "trace-mode":{
+        if(!setTraceTool(state.imageTracer,el.dataset.traceValue))break;
+        save();render();
+        document.querySelector?.("[data-trace-preview]")?.scrollIntoView?.({block:"center",behavior:"smooth"});
+        break;
+      }
+      case "trace-view":{
+        if(!setTraceView(state.imageTracer,el.dataset.traceValue))break;
+        save();refreshTracePreview();break;
+      }
+      case "trace-new":{
+        if(state.imageTracer.draft.imageSrc&&state.imageTracer.draft.points.length&&!window.confirm(
+          "Start a fresh tracing? Saved tracings remain available, but changes not saved to the current tracing will be lost."))break;
+        startNewTrace(state.imageTracer);save();render();
+        toast("New tracing ready","Your saved tracings remain available below the studio.");break;
+      }
+      case "trace-load":{
+        if(!restoreSavedTrace(state.imageTracer,el.dataset.traceId)){toast("Saved tracing not found.");break;}
+        save();render();toast("Saved tracing loaded for editing");break;
+      }
+      case "trace-undo":{
+        if(!undoTracer(state.imageTracer)){toast("Nothing to undo yet.");break;}
+        save();render();break;
+      }
+      case "trace-delete-point":{
+        if(!removeTracerPoint(state.imageTracer,Number(el.dataset.traceIndex))){toast("Point not found.");break;}
+        save();render();break;
+      }
+      case "trace-clear-points":{
+        if(state.imageTracer.draft.points.length&&!window.confirm("Clear all traced points? The photograph and calibration remain."))break;
+        state.imageTracer.draft.points=[];state.imageTracer.draft.mode="trace";
+        save();render();break;
+      }
+      case "trace-rotate-left":case "trace-rotate-right":{
+        const d=state.imageTracer.draft;
+        if(!d.imageSrc){toast("Upload a photograph first.");break;}
+        if((d.points.length||d.origin||d.refA)&&!window.confirm(
+          "Rotating the image resets coordinate points, origin and calibration. Continue?"))break;
+        const beforeSrc=d.imageSrc;
+        rotateTracePhoto(beforeSrc,action==="trace-rotate-right").then(img=>{
+          if(state.imageTracer.draft.imageSrc!==beforeSrc)return;
+          usePhoto(state.imageTracer,{...img,name:d.imageName});
+          save();render();toast("Photograph rotated","Mark the origin, x direction and reference again.");
+        }).catch(error=>toast("Could not rotate photograph",error.message));
+        break;
+      }
+      case "trace-save":{
+        const result=saveTraceDraft(state);
+        if(!result.ok){toast(result.error);break;}
+        save();render();
+        toast("Tracing draft saved",result.reviewNeeded?
+          "The tracing changed. Check earlier mathematics and interpretation before using that result.":
+          "This editable tracing is now included in your local project and JSON backup, not inserted into your IA.");
+        break;
+      }
+      case "trace-use":{
+        const result=saveAndLinkTrace(state);
+        if(!result.ok){toast(result.error);break;}
+        setCompletionNode(state,"C32",{reason:"linked-trace"});
+        save();render();
+        toast("Tracing linked to first mathematics",result.reviewNeeded?
+         "The tracing changed; recheck any interpretation of the previous measurements.":
+         "Introduce the figure in your own IA and explain the calibration. Creating it has not completed the mathematics.");
+        break;
+      }
+      case "trace-svg":case "trace-png":case "trace-copy":case "trace-csv":{
+        const format=action.slice("trace-".length);
+        // Align the exported figure with the saved linked mathematical record.
+        const linked=state.imageTracer.figures.find(x=>x.id===state.imageTracer.activeId);
+        const record=linked?.entryId?saveTraceDraft(state):{ok:true,reviewNeeded:false};
+        if(!record.ok){toast(record.error);break;}
+        if(linked?.entryId)save();
+        exportTraceFigure(state.imageTracer.draft,format).then(message=>toast(message,
+          record.reviewNeeded?"Any earlier interpretation of this altered tracing now needs review.":""))
+          .catch(error=>toast("Tracing export unavailable",error.message||"Try downloading a PNG instead."));
+        break;
+      }
       case "graph-open":navigateGraph();break;
       case "graph-close":
         state.graphStudio.open=false;save();render();break;
@@ -1276,6 +1388,22 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     }
   }
   document.addEventListener("click",evt=>{
+    // SVG is an actual student input surface. Convert screen taps into photo
+    // pixel coordinates using its viewBox transform, including on phones.
+    const traceTap=evt.target.closest?.("[data-trace-tap]");
+    if(traceTap&&state.imageTracer?.open){
+      const svg=traceTap.closest("[data-trace-canvas]");
+      const transform=svg?.getScreenCTM?.();
+      if(!svg||!transform)return;
+      const point=svg.createSVGPoint();
+      point.x=evt.clientX;point.y=evt.clientY;
+      const imagePoint=point.matrixTransform(transform.inverse());
+      const result=tapTrace(state.imageTracer,imagePoint.x,imagePoint.y);
+      if(!result.ok){toast(result.error);return;}
+      const oldY=window.scrollY;
+      save();render();window.scrollTo({top:oldY,behavior:"auto"});
+      return;
+    }
     const navButton=evt.target.closest("[data-nav]");
     if(navButton){nav(navButton.dataset.nav);return;}
     const choice=evt.target.closest("[data-choice]");
@@ -1322,6 +1450,13 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   });
   document.addEventListener("input",evt=>{
     const target=evt.target;
+    if(target.dataset.traceField!==undefined){
+      const value=target.type==="checkbox"?target.checked:target.value;
+      if(setTraceField(state.imageTracer,target.dataset.traceField,value)){
+        save();refreshTracePreview();
+      }
+      return;
+    }
     if(target.dataset.graphField!==undefined){
       if(updateGraphField(state.graphStudio,target.dataset.graphField,target.type==="checkbox"?target.checked:target.value)){
         save();refreshGraphPreview();
@@ -1374,6 +1509,16 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   });
   document.addEventListener("change",evt=>{
     const target=evt.target;
+    if(target.dataset.traceField!==undefined){
+      const value=target.type==="checkbox"?target.checked:target.value;
+      if(setTraceField(state.imageTracer,target.dataset.traceField,value)){
+        save();
+        if(target.tagName==="SELECT"||target.type==="checkbox"){
+          const previous=captureReturn(target);render();restoreReturn(previous);
+        }else refreshTracePreview();
+      }
+      return;
+    }
     if(target.dataset.graphField!==undefined){
       if(updateGraphField(state.graphStudio,target.dataset.graphField,target.type==="checkbox"?target.checked:target.value)){
         save();
@@ -1468,12 +1613,42 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     const input=evt.target;const file=input.files&&input.files[0];
     if(!file)return;
     try{
-      if(file.size>2_000_000)throw new Error("That backup is too large for this prototype.");
+      if(file.size>4_000_000)throw new Error("This project backup exceeds the supported 4 MB limit. Remove large unused images or use a smaller project export.");
       const imported=normalise(JSON.parse(await file.text()));
       if(!window.confirm("Replace the current local project with this backup?"))return;
       state=imported;state.route="home";save();closeDrawer();render({top:true});toast("Project backup restored.");
     }catch(err){window.alert("This file could not be imported. "+err.message);}
     finally{input.value="";}
+  });
+  $("#imageTraceFile").addEventListener("change",async evt=>{
+    const input=evt.target,file=input.files?.[0];if(!file)return;
+    try{
+      const draft=state.imageTracer.draft;
+      if(draft.imageSrc&&(draft.points.length||draft.origin||draft.refA)&&!window.confirm(
+        "Replacing this photo clears its origin, reference measurements and traced points. Continue?"))return;
+      setSaveStatus("Preparing photograph on this device…");
+      const result=await importTracePhoto(file);
+      usePhoto(state.imageTracer,result);
+      state.imageTracer.open=true;state.graphStudio.open=false;
+      if(state.completion.current!=="C31")setCompletionNode(state,"C31",{reason:"trace-photo"});
+      save();render();
+      toast("Photograph ready","Set the origin, positive x direction and reference scale. The picture stays on this device.");
+    }catch(error){toast("Could not import photograph",error.message||"Choose a JPG or PNG.");}
+    finally{input.value="";}
+  });
+  document.addEventListener("paste",async evt=>{
+    if(!state.imageTracer?.open||state.completion.current!=="C31"||!evt.target.closest?.(".image-tracer"))return;
+    if(evt.target.closest("input,textarea,[contenteditable]"))return;
+    const item=[...(evt.clipboardData?.items||[])].find(x=>x.kind==="file"&&/^image/(png|jpeg|webp)$/.test(x.type));
+    const file=item?.getAsFile?.();
+    if(!file)return;
+    evt.preventDefault();
+    if(state.imageTracer.draft.points.length&&!window.confirm("Replace this photo and clear the tracing?"))return;
+    try{
+      const picture=await importTracePhoto(file);
+      usePhoto(state.imageTracer,picture);
+      save();render();toast("Image pasted","The image is kept on this device. Calibrate before exporting.");
+    }catch(error){toast("Image paste unavailable",error.message);}
   });
   $("#graphCsvFile").addEventListener("change",async evt=>{
     const input=evt.target,file=input.files?.[0];if(!file)return;
