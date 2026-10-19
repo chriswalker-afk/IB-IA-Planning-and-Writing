@@ -280,6 +280,13 @@ def writing_sections(browser,width):
    "result":"The calculation gave 12.5" if node in ("C34B","C60","C61","C64") else "",
    "purpose":"To understand my aim","interpretation":"This narrows my prediction."}]
   state["completion"]["activeEntryIndex"]=0
+  if node=="C20":
+   state["planning"]["fields"].update({
+    "kind":"statistics","dataSource":"both",
+    "primaryWhat":"Measured heights in centimetres",
+    "secondaryPublisher":"Official public height dataset","course":"AI SL"})
+   state["planning"]["routeExplorer"]["selectedRoute"]="relationships"
+   state["planning"]["mathSelected"]=["AI14"]
   ctx,page=open_fixture(browser,state,width)
   try:
    main=page.locator('[data-source-node="'+node+'"]')
@@ -307,10 +314,35 @@ def writing_sections(browser,width):
     without_overflow(page)
     page.screenshot(path=str(OUT/f"studio-writing-{node}-{width}.png"),full_page=True,animations="disabled")
    if node=="C20":
+    assert "Introducing your first mathematics" in main.inner_text()
+    assert main.locator('[data-first-maths-context]').count()==1
+    assert "Primary + secondary data" in main.inner_text()
+    assert "Official public height dataset" in main.inner_text()
+    assert "Relationships between two variables" in main.inner_text()
+    assert "Plot paired measurements" in main.inner_text()
+    assert main.locator('[data-criterion-badge="completing:C20:firstBridge"]').count()==1
+    assert main.locator('[data-criterion-badge="completing:C20:firstChoice"]').count()==1
+    assert main.locator('[data-criterion-badge="completing:C20:firstPurpose"]').count()==1
+    assert main.locator('[data-first-maths-source-details]').count()==1
+    assert not main.locator('[data-first-maths-source-details]').get_attribute('open')
+    main.locator('[data-bind="completion.fields.dataAimLink"]').fill("The first plot lets me examine whether my aim has a meaningful relation.")
+    main.locator('[data-bind="completion.fields.firstPurpose"]').fill("What mathematical pattern do the actual values support?")
+    assert stored(page)["completion"]["fields"]["firstPurpose"]=="What mathematical pattern do the actual values support?"
+    main.locator('[data-first-maths-source-details]>summary').click()
+    assert main.locator('[data-first-maths-source-details][open]').count()==1
     assert main.locator('[data-criterion-badge="completing:C20:source"]').count()==1
     assert main.locator('[data-criterion-badge="completing:C20:method"]').count()==1
-    page.locator('[data-bind="completion.fields.actualMethod"]').fill("I used the real measurements.")
+    main.locator('[data-bind="completion.fields.actualMethod"]').fill("I used the real measurements.")
     assert stored(page)["completion"]["fields"]["actualMethod"]=="I used the real measurements."
+    main.locator('[data-first-maths-source-details]>summary').click()
+    main.locator('[data-bind="completion.fields.firstMathsBridgePlacement"]').select_option("intro")
+    assert "There is no need to repeat it" in main.inner_text()
+    assert main.locator('[data-bind="completion.fields.dataAimLink"]').count()==1  # saved earlier note still accessible on request
+    without_overflow(page)
+    main.locator('[data-action="completion-open"][data-node="C30"]').click()
+    assert page.locator('[data-source-node="C30"]').count()==1
+    assert "What mathematical pattern do the actual values support?" in page.locator('[data-source-node="C30"]').inner_text()
+    assert "You already explained why this follows from your aim" in page.locator('[data-source-node="C30"]').inner_text()
    if node=="C40":
     assert main.locator('[data-criterion-badge="completing:C40:title"]').count()==1
     page.locator('[data-bind="entries.0.purpose"]').fill("The prior result justified this step.")

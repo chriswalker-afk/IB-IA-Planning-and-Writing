@@ -44,7 +44,7 @@ test('main stage pages offer four high-value tips; substeps keep optional advice
  const s=make();
  for(const node of ['C20','C30','C40','C50','C60']){
   const html=stage(s,node);
-  assert.equal((html.match(/data-studio-tip="/g)||[]).length,4,node);
+  assert.equal((html.match(node==='C20'?/data-first-maths-tip="/g:/data-studio-tip="/g)||[]).length,4,node);
   assert(html.includes('studio-stage-advice-cards'),node);
   assert(!html.includes('studio-stage-more-advice'),node);
  }
@@ -63,8 +63,9 @@ test('main stage pages offer four high-value tips; substeps keep optional advice
 test('Data guidance rejects invented collection; theoretical guidance does not force a dataset',()=>{
  const s=make();
  const empirical=stage(s,'C20');
- assert(empirical.includes('A proposed survey, source or method is not evidence'));
- assert(empirical.includes('sampling'));
+ assert(empirical.includes('Your plan is not your result'));
+ assert(empirical.includes('Get to the mathematics'));
+ assert(empirical.includes('Connect your first step to your aim'));
  const theoretical=stage(s,'C21T');
  assert(theoretical.includes('there is no need to invent a dataset'));
  assert(theoretical.includes('data-example-topic="proof"'));
@@ -87,7 +88,7 @@ test('sparks contain only saved grounded ideas; no invented actual result is pro
  s.planning.fields.primaryWhat='Measure a possible future variable';
  let html=stage(s,'C20');
  assert(html.includes('Does the amount of dough affect volume?'));
- assert(html.includes('A plan is not a finding.'));
+ assert(html.includes('These are your choices, brought back when they can help'));
  assert(html.includes('data-spark-library'));
  assert(!html.includes('Your sparks are back'),'stage header avoids a second spark heading');
   s.completion.current='C60';

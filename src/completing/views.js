@@ -3,6 +3,7 @@ import {renderFieldGuideTeaser,renderContextualGuide} from './writer-field-guide
 import {renderIntroductionSparkPrompt,renderIntroductionWritingAdvice,renderIntroductionOptionalExamples} from './intro-writing-advice.js';
 import {renderWritingStageFlow} from './stage-writing-flow.js';
 import {isStudioWritingNode,renderStudioWritingStage} from './studio-writing-stages.js';
+import {firstMathsContext} from "./first-maths-bridge.js";
 import {insightCapture,insightEcho,renderSparkShelf} from '../ui/insight-threads.js';
 import {STATUS_LABELS,currentGroup,JOURNEY_GROUPS} from "../ui/journey.js";
 import {groupedDashboard} from "../ui/journey-views.js";
@@ -327,26 +328,95 @@ export function createCompletingViews(ctx){
      sparks:renderIntroductionSparkPrompt(s,icon,e)+renderSparkShelf(s,"C10",{surface:"studio",libraryOnly:true}),
      task,
      examples:renderIntroductionOptionalExamples(icon)
-    })};
+    })+
+    '<div class="intro-first-maths-next"><div><strong>Ready for the first piece of mathematics?</strong>'+
+      '<p>Your Introduction opens the story. Next, connect your first purposeful mathematical step to your aim, using the choices you made in Planning.</p></div>'+
+      '<button type="button" class="btn btn-primary" data-action="completion-open" data-node="C20">'+
+       'Introduce my first maths '+icon("arrow-right")+'</button></div>'};
   }
   case "C10E":return{intro:"Compare original fictional introductions, then return to your own investigation.",html:exampleInline(s,{topic:"introduction"})};
-  case "C20":return{intro:"What data, measurements or mathematical objects are actually available now? This is different from the collection plan.",
-   html:smallSummary("Planned evidence",p.dataSource==="secondary"?p.secondaryUrl||p.secondaryPublisher:p.primaryWhat||p.theoreticalCase)+
+  case "C20":{
+   const ctx=firstMathsContext(s),placement=f.firstMathsBridgePlacement;
+   const covered=placement==="intro";
+   const linkHelp=ctx.activeRoute?
+     "How would your first step ("+ctx.proposedMove.toLowerCase()+") help address this aim? Do not predict the result.":
+     "A sentence or two linking your chosen first mathematical question to the aim, not a list of future techniques.";
+   const linkPrompt=criterionMarkedWritingBox(
+    F("dataAimLink","How does this first mathematics connect to my aim?",linkHelp,{type:"textarea",rows:3}),
+    ["completing:C20:firstBridge","completing:C20:firstChoice"]);
+   const where=F("firstMathsBridgePlacement","Have I already explained why I am starting here?","",{
+    type:"select",options:[
+     ["","Choose when ready"],
+     ["intro","Yes — the connection is clear in my Introduction"],
+     ["before","No — I will add a short bridge before the first mathematics"],
+     ["unsure","I'm not sure yet; I will decide when drafting"]
+    ]});
+   const introductionLink=covered?
+    '<p class="first-maths-link-already">'+icon("check-circle")+
+     ' You have already explained this connection in your Introduction. There is no need to repeat it. Begin the mathematics directly.</p>'+
+     (f.dataAimLink?'<details class="first-maths-saved-bridge"><summary>Review an earlier bridge note '+icon("chevron-right")+'</summary>'+linkPrompt+'</details>':""):
+     '<div class="first-maths-bridge-writing">'+
+      '<p class="first-maths-bridge-lead">In your actual IA, introduce the reason for this first step in <strong>one or two sentences</strong> just before the work. If you prefer to make this connection in your Introduction, choose that option above and skip repeating it.</p>'+
+      linkPrompt+'</div>';
+   const introFields='<section class="first-maths-bridge-work" data-first-maths-bridge>'+
+    '<h3>'+icon("route")+' From aim to mathematics</h3>'+
+    '<p class="first-maths-bridge-context">Choose where the reader will understand <em>why this is a sensible mathematical starting point</em>. There is no need to outline your entire investigation.</p>'+
+    where+introductionLink+
+    '<div class="first-maths-first-question">'+
+    criteriaField(F("firstPurpose","What mathematical question will this first step explore?",
+      "What do I want to learn from this graph, model, calculation, or small case?",{type:"textarea",rows:3}),
+      "completing:C20:firstPurpose")+
+    '<p class="field-hint">This is your own starting question. It carries forward to the first exploration, so you will not need to enter it again.</p></div>'+
+    '</section>';
+   const dataKind=ctx.sourceKey;
+   const routeChecks='<div class="first-maths-route-help"><strong>Optional targeted preparation</strong>'+
+    '<p>Use only the checks that matter for your actual source and mathematics. You may return after your first figure or calculation.</p>'+
+    '<div class="button-row">'+
+    (dataKind==="theoretical"?sourceAction("Theoretical or no-data exploration","Check mathematical definitions"):
+     dataKind==="undecided"?
+      sourceAction("Statistics with sampled or secondary data","Check sampling")+
+      sourceAction("Empirical modelling or measured model inputs","Check model assumptions")+
+      sourceAction("Theoretical or no-data exploration","Check mathematical definitions"):
+     (p.kind==="statistics"?
+      sourceAction("Statistics with sampled or secondary data","Check sampling / population"):
+      p.kind==="modelling"?
+      sourceAction("Empirical modelling or measured model inputs","Check model assumptions"):
+      sourceAction("Statistics with sampled or secondary data","Check sampling when relevant")+
+      sourceAction("Empirical modelling or measured model inputs","Check models when relevant")))+
+    '</div></div>';
+   const sourceDetails='<details class="first-maths-optional-source" data-first-maths-source-details>'+
+    '<summary>'+icon("layers")+' <span><strong>Source, sampling and accuracy details (when relevant)</strong>'+
+    '<small>Review what you actually obtained; add information beside the mathematics rather than writing a long methods report.</small></span>'+
+    icon("chevron-right")+'</summary><div class="first-maths-source-body">'+
+    smallSummary("Earlier planned evidence",
+      dataKind==="theoretical"?p.theoreticalCase:
+      dataKind==="both"?[p.primaryWhat,p.secondaryPublisher||p.secondaryUrl].filter(Boolean).join(" + "):
+      dataKind==="secondary"?p.secondaryPublisher||p.secondaryUrl:p.primaryWhat)+
     choice("dataStatus",[
      ["not-started","Not yet obtained"],["candidate","Candidate source — not verified"],
      ["partial","Some usable material"],["ready","Usable material confirmed"],
      ["theoretical","Theoretical mathematics — no dataset"]])+
     extra.sourceManager()+
-    F("actualSourceType","Type of this actual source","",{type:"select",options:[["","To confirm"],["primary","Primary measurements / collection"],["secondary","Published secondary source"],["theoretical","Mathematical definitions / assumptions"]]})+
-    F("actualSource","What evidence or mathematical starting material do I actually have?","Source or mathematical object, not a promised dataset",{type:"textarea",rows:3})+
+    F("actualSourceType","Type of actual source","",{type:"select",options:[
+     ["","To confirm"],["primary","Primary measurements / collection"],["secondary","Published secondary source"],
+     ["theoretical","Mathematical definitions / assumptions"]]})+
+    F("actualSource","What evidence or mathematical starting material do I actually have?",
+      "Source or mathematical object, not a promised dataset",{type:"textarea",rows:3})+
     F("sourceCitation","Original published source and date (if relevant)","URL, publisher or citation")+
-    criterionMarkedWritingBox(F("actualMethod","How did I actually obtain or define it?","Describe the real procedure, never invented data collection",{type:"textarea",rows:3}),["completing:C20:source","completing:C20:method"])+
-    field("scratch.dataNotes","Other data/source notes from my earlier work (editable)","Sources, dates, units and assumptions recorded in the earlier prototype",{type:"textarea",rows:3})+
-    (s.teacher.pendingApproval?info("Permissions still require care","Do not perform affected restricted collection without meeting consent or school requirements.",true):"")+
-    '<div class="button-row">'+sourceAction("Statistics with sampled or secondary data","Statistics questions")+
-      sourceAction("Empirical modelling or measured model inputs","Modelling questions")+
-      sourceAction("Theoretical or no-data exploration","Theoretical questions")+'</div>'
-  };
+    criterionMarkedWritingBox(F("actualMethod","How did I actually obtain or define it?",
+     "Describe only what actually happened; do not invent data collection",{type:"textarea",rows:3}),
+     ["completing:C20:source","completing:C20:method"])+
+    field("scratch.dataNotes","My earlier source notes","Sources, dates, units and assumptions",{type:"textarea",rows:3})+
+    (s.teacher.pendingApproval?info("Permissions still require care",
+      "Do not perform affected restricted collection without meeting consent or school requirements.",true):"")+
+    routeChecks+'</div></details>';
+   const proceed='<div class="first-maths-continue"><div><strong>Ready to show the mathematics?</strong>'+
+    '<p>Move to your first real diagram, graph, model, calculation or theoretical case. If the data is not available, prepare the step without inventing results.</p></div>'+
+    '<button type="button" class="btn btn-primary" data-action="completion-open" data-node="C30">'+
+    'Begin first mathematics '+icon("arrow-right")+'</button></div>';
+   return{intro:"Introduce one purposeful mathematical step that connects naturally to your aim. Use your saved source and route choices, but do not treat a plan as a result.",
+    html:introFields+proceed+sourceDetails};
+  }
   case "C21S":return{intro:"If you have actual observations, record how the population or sample was defined and what can responsibly be inferred.",
    html:F("statisticalPopulation","Population or group the analysis could describe","The true target population, not every person in general")+
     choice("sampleOrCensus",[["sample","Sample"],["census","Attempted census"],["secondary","Existing published observations"],["unsure","Not sure yet"]])+
@@ -400,16 +470,26 @@ export function createCompletingViews(ctx){
     F("specialistTerms","Any important non-mathematical specialist words","Explain only those needed to understand the investigation",{type:"textarea",rows:2})+
     info("Just in time","Define new mathematical symbols before their first use, including those introduced in later sections.")
   };
-  case "C26":return{intro:"Connect your actual evidence and method back to the aim. You may return to the dashboard or begin a first exploration.",
+  case "C26":return{intro:"Check that your first piece of mathematics has a clear purpose, then begin. There is no need to repeat material already introduced in the IA.",
     html:smallSummary("Actual source",f.actualSource||f.theoreticalObject)+
-      smallSummary("Method reason",f.methodReason)+
-      criteriaField(F("dataAimLink","Why could this evidence help answer my current aim?","One short explanation in the actual IA's methods/source section",{type:"textarea",rows:3}),"completing:C26:dataAimLink")+
+      smallSummary("Mathematical purpose for first step",f.firstPurpose)+
+      smallSummary("Method reason (if relevant)",f.methodReason)+
+      (f.firstMathsBridgePlacement==="intro"?
+       info("Already explained in your Introduction","You said your Introduction already connects this first step to your aim. Do not repeat it unless your mathematical starting point has changed."):
+       criteriaField(F("dataAimLink","How does this first step support my aim? (review the earlier note)",
+        "The same link you may have written on the first-maths screen",{type:"textarea",rows:3}),
+        "completing:C26:dataAimLink"))+
       F("dataStatusSummary","One important uncertainty still to resolve (optional)","Sampling scope, permission, parameter quality or missing source",{type:"textarea",rows:2})
   };
-  case "C30":return{intro:"Start with a single useful graph, labelled diagram, numerical case or brief calculation. It should have a mathematical purpose.",
+  case "C30":return{intro:"Begin the first genuine graph, labelled diagram, simple case or calculation. Its mathematical purpose should be clear from your opening.",
     html:(p.figureOther||p.figureType||p.firstAction?smallSummary("Earlier first-step idea (optional)",p.figureOther||p.figureType||p.firstAction):"")+
-      (p.figurePurpose?smallSummary("Earlier planned purpose",p.figurePurpose):"")+
-      info("First purposeful mathematics","Explain why this representation might be useful BEFORE creating it. Then describe what it ACTUALLY shows and what follows.")
+      (f.firstPurpose?smallSummary("Your first mathematical question",f.firstPurpose):
+       p.figurePurpose?smallSummary("Earlier planned purpose",p.figurePurpose):"")+
+      (f.firstMathsBridgePlacement==="intro"?
+       info("You already explained why this follows from your aim","Move straight into the mathematics. Only define the quantities and symbols needed at first use."):
+       f.dataAimLink?smallSummary("Why the first maths follows your aim",f.dataAimLink):
+       info("Give the first mathematical step a reason","If your Introduction has not already made the link, add one or two sentences explaining why this graph, small case or calculation helps answer your aim."))+
+      info("First purposeful mathematics","Show the real mathematics rather than describing every future technique. Explain what your genuine result shows, then decide what logically follows.")
   };
   case "C31":return{intro:"Choose an initial representation that could genuinely reveal the next mathematical question.",
    html:choice("firstType",[
@@ -719,7 +799,7 @@ export function createCompletingViews(ctx){
  };
  function render(){
   const s=getState(),c=s.completion||{current:"C00",stages:{}},node=c.current;
-  const label=node==="C00"?"Set up: start writing your IA":(titleMap.get(node)||"IA Studio");
+  const label=node==="C00"?"Set up: start writing your IA":node==="C20"?"Introducing your first mathematics":(titleMap.get(node)||"IA Studio");
   const screen=startOptions(node),stage=completionStage(node,s);
   const progress=stage&&s.completion.stages[stage];
   const warning=completionFlags(s);
