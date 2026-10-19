@@ -5,7 +5,7 @@ export const ENTRY_BASE=Object.freeze({
  title:"",purpose:"",technique:"",methodId:"",knowledge:"unsure",knowledgeNotes:"",unfamiliarComponent:"",researchSource:"",understandingExample:"",mathsInsight:"",methodChangeReason:"",priorLearningOnly:"",
  kind:"",status:"planned",result:"",resultRef:"",observation:"",observationText:"",resultSignal:"",
  interpretation:"",localTakeaway:"",limitations:"",nextQuestion:"",nextWhy:"",
- bridge:"",graphFigureId:"",imageTraceId:"",statFigureId:"",tableFigureId:"",accuracyRef:"",accuracyRefs:Object.freeze([]),sourceRefs:Object.freeze([]),reviewNeeded:"",reviewReason:"",reviewCheckedAt:"",createdAt:""
+ bridge:"",graphFigureId:"",imageTraceId:"",statFigureId:"",tableFigureId:"",voronoiFigureId:"",accuracyRef:"",accuracyRefs:Object.freeze([]),sourceRefs:Object.freeze([]),reviewNeeded:"",reviewReason:"",reviewCheckedAt:"",createdAt:""
 });
 export function normalizeEntry(raw){
  if(!raw||typeof raw!=="object"||Array.isArray(raw))return {...ENTRY_BASE};
