@@ -9,6 +9,7 @@ import {createPlanningState,normalizePlanningState} from "../planning/engine.js"
 import {createCompletionState,normalizeCompletionState} from "../completing/engine.js";
 import {migrateEvidenceLinks} from "../completing/evidence-links.js";
 import {normalizeEntry} from "../completing/entry-record.js";
+import {newGraphStudio,normalizeGraphStudio} from "../diagrams/graph-core.js";
 export const STATE_VERSION = 2;
 export const STORAGE_KEY = "ia-pathfinder-prototype-v1"; // Deliberately stable across upgrades.
 export const MAX_ENTRIES = 120;
@@ -55,7 +56,7 @@ export function createProjectState() {
       helpKey:"",openCue:"",noteDraft:"",adviceMode:"guided",planningIntroSeen:false,planningIntroOpen:false,lastWorkRoute:"",lastStudioNode:"",latestTitle:"",latestDetail:"",latestNode:"",latestEntry:"",latestAt:""
     },
     scratch: {introduction:"",dataNotes:"",conclusion:"",finalReview:""},
-    entries:[], cues:{},cueNotes:{},cueLocations:{},
+    entries:[], graphStudio:newGraphStudio(), cues:{},cueNotes:{},cueLocations:{},
     journey: {
       currentNodeId:"N00",
       answers:{}, // exact sheet/node keyed answers will be populated in Phase 2
@@ -114,6 +115,7 @@ export function normalizeProjectState(value) {
     resources:normalizeResourceState(value.resources),
     ideaExplorer:normalizeIdeaState(value.ideaExplorer),
     entries:Array.isArray(value.entries)?value.entries.filter(plain).slice(0,MAX_ENTRIES).map(normalizeEntry):[],
+    graphStudio:normalizeGraphStudio(value.graphStudio),
     cues:safeRecord(value.cues),cueNotes:safeRecord(value.cueNotes),cueLocations:safeRecord(value.cueLocations)
   };
   if(value.version===1){
