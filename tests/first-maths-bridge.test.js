@@ -53,7 +53,8 @@ test("secondary and combined data give distinct contextual advice without confus
  assert.equal(firstMathsExampleTopic(s),"model");
  let html=renderFirstMathsSparks(s,icon,escapeHtml);
  assert(html.includes("A published statistics service"));
- assert(!html.includes("Measured lengths and times"));
+ assert.equal(ctx.sourceDetails,"A published statistics service");
+ assert(html.includes('data-first-maths-source="secondary"'));
  s=make("statistics","both","relationships");
  ctx=firstMathsContext(s);
  assert.equal(ctx.sourceKey,"both");
@@ -88,7 +89,8 @@ test("the journey can change without treating a mismatched route as a prescripti
  s.planning.fields.firstAction="I would like to investigate a quadratic pattern";
  html=renderFirstMathsSparks(s,icon,escapeHtml);
  assert(html.includes("I would like to investigate a quadratic pattern"));
- assert(!html.includes("Define variables and constraints"));
+ const shownFirstMove=html.split('data-first-maths-move')[1].split('</article>')[0];
+ assert(!shownFirstMove.includes("Define variables and constraints")); // An old route can remain in the full saved-spark archive.
 });
 test("missing Planning information still gives an honest route into the first mathematics",()=>{
  const s=createProjectState();const ctx=firstMathsContext(s);
