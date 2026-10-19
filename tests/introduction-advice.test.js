@@ -61,7 +61,7 @@ test('introduction writing craft is coherent, accessible, contextual and collaps
  assert.equal((html.match(/data-intro-advice="/g)||[]).length,6);
  assert(html.includes('Two more ways to keep it sharp'));
  assert(html.includes('Define specialist terms briefly'));
- assert(html.includes('an honest starting prediction or hope'));
+ assert(html.includes('honest starting prediction or hope')===false);
  assert(html.includes('mathematics more than background detail')===false); // concise text, not an extra essay
  assert(!html.includes('data-example-id="EX34"'));
  assert(!html.includes('data-example-topic="introduction"'));

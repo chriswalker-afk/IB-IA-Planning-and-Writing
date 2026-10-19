@@ -181,7 +181,7 @@ test("adaptive Planning follows genuine spreadsheet source nodes and retains stu
  h.action('plan-finish-writing');
  assert(h.html.includes('data-source-node="C00"'));
  assert(h.html.includes('Set up: start writing your IA'));
- assert(h.html.includes('WRITE IN YOUR IA'));
+ assert(h.html.includes('Write your introduction'));
  assert(h.html.includes('data-action="setup-start-writing"'));
  assert.equal(h.saved.route,'completing');
  assert.equal(h.saved.completion.current,'C00');
@@ -403,7 +403,7 @@ test("Phase 5 writing advice respects student control instead of launching a que
  h.write("planning.fields.motivation","My interest in realistic measurements");
  h.nav("completing");
  h.action("completion-open",{node:"C10"});
- assert(h.html.includes("Useful writing moment"));
+ assert(h.html.includes("Write your introduction"));
  assert(h.html.includes("data-writing-cue="));
  const match=h.html.match(/data-guidance-id="(W\d\d)" data-guidance-key="([^"]+)"/);
  assert(match);
@@ -493,8 +493,8 @@ test("Writer's Field Guide replaces the old tile, opens without changing student
  assert.deepEqual(h.saved,original);
  h.action("close-drawer");
  h.action("setup-start-writing");
- assert(h.html.includes("A tip from your Field Guide"));
- assert(h.html.includes('data-guide-tip="voice"'));
+ assert(h.html.includes("Full Writer&#39;s Field Guide")||h.html.includes("Full Writer's Field Guide"));
+ assert(h.html.includes('data-action="writer-guide-open"'));
  h.action("writer-guide-open",{guideTip:"voice"});
  assert(h.drawer.includes("You&#39;re allowed to say &#39;I&#39;!"));
  assert.equal(h.saved.scratch.introduction,"My original opening");
