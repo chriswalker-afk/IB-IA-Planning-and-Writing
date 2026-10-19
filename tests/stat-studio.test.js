@@ -247,3 +247,14 @@ test("numeric year headings can be explicitly or automatically detected in categ
  assert.equal(r.columns[1],"2025");
  assert.equal(r.matrix.length,2);
 });
+
+test("a box plot cannot suppress actual observations by hiding Tukey outliers",()=>{
+ const s=boxSample();
+ assert.equal(statAnalysis(s.draft).ready,true);
+ s.draft.showOutliers=false;
+ const result=statAnalysis(s.draft);
+ assert.equal(result.ready,false);
+ assert.ok(result.problems.some(p=>p.code==="hidden-outliers"));
+ s.draft.outlierRule="minmax";
+ assert.equal(statAnalysis(s.draft).ready,true);
+});
