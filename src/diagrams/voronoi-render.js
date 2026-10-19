@@ -44,7 +44,7 @@ export function renderVoronoiSvg(raw,options={}){
  const q=analyzeVoronoi(raw),d=q.draft,b=q.bounds||VORONOI_STARTER_BOUNDS;
  const interactive=options.interactive===true,selectedId=options.selectedSiteId||"";
 
- const body=['<svg class="voronoi-svg" data-voronoi-canvas="true"'+(interactive?' data-voronoi-interactive="true"':'')+' xmlns="http://www.w3.org/2000/svg" role="img" aria-label="'+E(d.title||"Student Voronoi construction")+'" viewBox="0 0 '+W+" "+H+'" width="'+W+'" height="'+H+'">',
+ const body=['<svg class="voronoi-svg" data-voronoi-canvas="true"'+(interactive?' data-voronoi-interactive="true"':'')+' xmlns="http://www.w3.org/2000/svg" role="'+(interactive?"group":"img")+'" aria-label="'+E(d.title||"Student Voronoi construction")+'" viewBox="0 0 '+W+" "+H+'" width="'+W+'" height="'+H+'">',
   '<rect width="'+W+'" height="'+H+'" fill="#fff"/>',
   text(d.title||"Voronoi studio — add title and sites",W/2,40,'font-family="Arial,sans-serif" font-size="22" font-weight="700" fill="#24464e" text-anchor="middle"'),
   text("Euclidean nearest-site regions — displayed cells clipped to the stated rectangular study window",W/2,67,
@@ -105,6 +105,16 @@ export function renderVoronoiSvg(raw,options={}){
   if(interactive)body.push('<circle cx="'+coord(x)+'" cy="'+coord(y)+'" r="13" fill="transparent" pointer-events="all"'+
    ' data-voronoi-site-index="'+i+'" role="button" tabindex="0" aria-label="Select '+E(site.name)+', x '+fmt(site.x)+', y '+fmt(site.y)+'"/>');
  });
+ if(interactive&&options.cursorVisible&&options.cursor&&Number.isFinite(options.cursor.x)&&Number.isFinite(options.cursor.y)){
+  const cx=L.x(options.cursor.x),cy=L.y(options.cursor.y);
+  if(cx>=L.left&&cx<=L.left+L.width&&cy>=L.top&&cy<=L.top+L.height){
+   body.push('<circle cx="'+coord(cx)+'" cy="'+coord(cy)+'" r="9" fill="none" stroke="#c06435" stroke-width="2" stroke-dasharray="3 2" pointer-events="none"/>');
+   body.push(line(cx-15,cy,cx-10,cy,'stroke="#c06435" stroke-width="2" pointer-events="none"'));
+   body.push(line(cx+10,cy,cx+15,cy,'stroke="#c06435" stroke-width="2" pointer-events="none"'));
+   body.push(line(cx,cy-15,cx,cy-10,'stroke="#c06435" stroke-width="2" pointer-events="none"'));
+   body.push(line(cx,cy+10,cx,cy+15,'stroke="#c06435" stroke-width="2" pointer-events="none"'));
+  }
+ }
  if(q.probe){
   const px=L.x(q.probe.x),py=L.y(q.probe.y),winner=d.sites[q.nearest.index];
   body.push(line(px,py,L.x(winner.x),L.y(winner.y),'stroke="#9b5b29" stroke-width="2" stroke-dasharray="6 4"'));
