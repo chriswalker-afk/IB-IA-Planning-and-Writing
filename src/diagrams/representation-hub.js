@@ -119,7 +119,7 @@ export function renderRepresentationSwitcher(state,icon,e){
   ["voronoi",state.voronoiStudio?.open]
  ].some(([id,open])=>t.id===id&&open));
  const steps=[["create","1 · Create"],["refine","2 · Refine"],["use","3 · Use in IA"]];
- return '<div class="representation-workspace-header" data-representation-workspace>'+
+ return '<div class="representation-workspace-header" data-representation-workspace data-representation-switcher>'+
   '<nav class="representation-workspace-bar" aria-label="Mathematical tool navigation">'+
   '<div class="representation-workspace-identity"><span class="representation-workspace-mark">'+
     icon(active?.icon||"layers")+'</span><span><small>IA Studio / Explore &amp; explain</small>'+

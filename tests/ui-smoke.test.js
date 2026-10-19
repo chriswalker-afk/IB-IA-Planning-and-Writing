@@ -52,7 +52,7 @@ import {renderVoronoiSvg,voronoiLayout} from "../src/diagrams/voronoi-render.js"
 import {voronoiPreviewHtml,voronoiResultHtml,voronoiQualityHtml,voronoiOutputHtml} from "../src/diagrams/voronoi-view.js";
 import {setVoronoiField,setVoronoiSite,addVoronoiSite,removeVoronoiSite,clearVoronoiMap,useVoronoiMap,beginVoronoi,loadVoronoi,saveVoronoiDraft,saveAndLinkVoronoi} from "../src/diagrams/voronoi-actions.js";
 import {exportVoronoi} from "../src/diagrams/voronoi-export.js";
-import {renderRepresentationHub,renderRepresentationSwitcher} from "../src/diagrams/representation-hub.js";
+import {renderRepresentationHub,renderRepresentationSwitcher,representationFocusActive} from "../src/diagrams/representation-hub.js";
 import {renderWriterFieldGuide} from "../src/completing/writer-field-guide.js";
 import {setCompletionNode,moveCompletionRoute,completionBack,markCompletionStage,setCompletionField,addAccuracyDecision,completionSuggestions,sectionForNode,targetForSection,completeEntry,latestRealResult,flagDependentMathematics,acknowledgeMathReview} from "../src/completing/engine.js";
 import {createProjectViews} from "../src/ui/project-views.js";
@@ -113,7 +113,7 @@ function createHarness(savedValue){
     voronoiPreviewHtml,voronoiResultHtml,voronoiQualityHtml,voronoiOutputHtml,
     setVoronoiField,setVoronoiSite,addVoronoiSite,removeVoronoiSite,clearVoronoiMap,useVoronoiMap,
     beginVoronoi,loadVoronoi,saveVoronoiDraft,saveAndLinkVoronoi,exportVoronoi,
-    renderRepresentationHub,renderRepresentationSwitcher,
+    renderRepresentationHub,renderRepresentationSwitcher,representationFocusActive,
     setCompletionNode,moveCompletionRoute,completionBack,markCompletionStage,setCompletionField,addAccuracyDecision,completionSuggestions,sectionForNode,targetForSection,completeEntry,latestRealResult,flagDependentMathematics,acknowledgeMathReview,
     createHandoverViews,createPlanningEnvelope,getFieldDiff,mergePlanningEnvelope,modelFromEnvelope,suggestedFilename,
     actOnWritingCue,eligibleWritingCues,selectLimitation,recordLimitation,limitationContextKey,relevantLimitations,relevantBivariateOptions,resultFamily,routeNextQuestions,sourceResultForNext,
