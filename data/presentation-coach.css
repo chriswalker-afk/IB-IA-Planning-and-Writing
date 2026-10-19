@@ -1,0 +1,61 @@
+/* Pass 4: one coherent context -> evidence -> writing journey. */
+.ia-hub-evidence{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;margin:11px 0 17px;border:1px solid #d2e5de;background:#f6fbf9;border-radius:13px;color:#315b56}
+.ia-hub-evidence-mark{width:36px;height:36px;border:1px solid #cce5da;border-radius:12px;flex:none;display:grid;place-items:center;background:#fff;color:#297c66}
+.ia-hub-evidence-mark .icon{width:19px;height:19px}
+.ia-hub-evidence strong{font-size:13px;line-height:1.4}
+.ia-hub-evidence p{font-size:12px;line-height:1.65;color:#42685d;margin:4px 0 5px}
+.ia-hub-evidence small{font-size:10px;line-height:1.55;color:#658177}
+.ia-presentation-coach{border:1px solid #d4e4dd;border-radius:14px;background:#fff;overflow:hidden;margin:15px 0;max-width:100%;min-width:0}
+.ia-coach-header{display:flex;align-items:flex-start;gap:10px;padding:14px 15px;background:linear-gradient(115deg,#eff8f3,#f4f8fc);border-bottom:1px solid #d9e8e1}
+.ia-coach-icon,.ia-handover-icon{display:grid;place-items:center;flex:none;background:#fff;border:1px solid #cfe4db;border-radius:11px;width:35px;height:35px;color:#287661}
+.ia-coach-icon .icon,.ia-handover-icon .icon{width:19px;height:19px}
+.ia-coach-header strong,.ia-handover-head strong{font-size:13px;color:#234e49}
+.ia-coach-header p,.ia-handover-head p{font-size:11px;line-height:1.6;color:#607a75;margin:4px 0 0}
+.ia-coach-kicker{display:inline-flex;align-items:center;gap:5px;letter-spacing:.07em;font-size:10px;font-weight:850;color:#477666}
+.ia-coach-kicker .icon{width:14px;height:14px}
+.ia-coach-checks{padding:13px 15px 4px}
+.ia-coach-checks>.ia-coach-kicker{margin-bottom:8px}
+.ia-coach-checks>p{font-size:11px;line-height:1.55;color:#637d73}
+.ia-coach-point{display:flex;gap:9px;padding:9px 3px;border-bottom:1px solid #edf1ef;color:#365951}
+.ia-coach-point:last-child{border-bottom:0}
+.ia-coach-point-icon{flex:none;width:26px;height:26px;border-radius:8px;background:#edf7f1;display:grid;place-items:center;color:#418470}
+.ia-coach-point-icon .icon{width:15px;height:15px}
+.ia-coach-important .ia-coach-point-icon{background:#fff4e5;color:#95662a}
+.ia-coach-point strong{font-size:11px;line-height:1.4}
+.ia-coach-point p{font-size:11px;line-height:1.55;color:#647871;margin:3px 0 0}
+.ia-coach-sparks{padding:12px 15px 13px;background:#f8fbf9;border-top:1px solid #e2eee8}
+.ia-coach-sparks>p{margin:4px 0 10px;font-size:10px;line-height:1.55;color:#648074}
+.ia-coach-spark{display:flex;align-items:flex-start;gap:7px;margin:7px 0;padding:9px;border:1px solid #ddebe4;background:#fff;border-radius:9px}
+.ia-coach-spark>.icon{flex:none;width:16px;height:16px;color:#459078;margin-top:2px}
+.ia-coach-spark>div{min-width:0;flex:1}
+.ia-coach-spark strong{font-size:11px;color:#305e54}
+.ia-coach-spark p{margin:3px 0 0;color:#5e7770;font-size:10px;line-height:1.6;overflow-wrap:anywhere}
+.ia-coach-spark-status{font-size:9px;flex:none;border:1px solid #d4e4de;border-radius:6px;padding:3px 5px;color:#607c72;background:#f3f7f5}
+.ia-coach-spark-status.confirmed{background:#eaf6ef;color:#2c7256;border-color:#cae6d6}
+.ia-coach-no-sparks{display:flex;gap:7px;align-items:flex-start;margin:0;padding:12px 15px;background:#f8faf9;font-size:10px;line-height:1.5;color:#647d74}
+.ia-coach-no-sparks .icon{width:16px;height:16px;flex:none;color:#659b88}
+.ia-coach-criteria{font-size:10px;line-height:1.55;color:#799087;border-top:1px solid #e4ede7;padding:10px 15px;margin:0!important}
+.ia-figure-handover{padding:0;border:1px solid #cadfdb;border-radius:14px;overflow:hidden;background:#fff;margin:16px 0;min-width:0;max-width:100%}
+.ia-handover-head{padding:13px 15px;background:linear-gradient(110deg,#e9f5ef,#eef4fd);display:flex;align-items:flex-start;gap:11px;border-bottom:1px solid #d2e4dc}
+.ia-handover-caption{padding:14px 15px;display:flex;flex-direction:column;align-items:flex-start;gap:9px}
+.ia-handover-caption-text{white-space:pre-line;margin:0!important;padding:12px 13px;border-radius:9px;background:#f6faf8;border:1px solid #dae7df;color:#2f5450;font-size:12px;line-height:1.75;overflow-wrap:anywhere;width:100%;box-sizing:border-box}
+.ia-handover-caption button{display:inline-flex;align-items:center;gap:7px;min-height:37px}
+.ia-handover-caption button .icon{width:14px;height:14px}
+.ia-handover-caption small{font-size:10px;line-height:1.5;color:#66847a}
+.ia-handover-journey{padding:13px 15px 15px;border-top:1px solid #e5ece8}
+.ia-handover-journey ol{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:7px;counter-reset:writerstep}
+.ia-handover-journey li{position:relative;counter-increment:writerstep;margin:0;padding:9px 9px 9px 42px;background:#f8fbf9;border:1px solid #e3ebe6;border-radius:9px}
+.ia-handover-journey li:before{content:counter(writerstep);display:grid;place-items:center;position:absolute;left:9px;top:9px;width:24px;height:24px;border-radius:7px;color:#2f7360;background:#e5f3e9;font-size:11px;font-weight:800}
+.ia-handover-journey li strong{font-size:11px;color:#365c53}
+.ia-handover-journey li p{font-size:11px;line-height:1.55;margin:3px 0 0;color:#58736b}
+.ia-figure-handover button:focus-visible{outline:3px solid #62aa91;outline-offset:3px}
+.graph-entry-preview .ia-figure-handover,.stat-entry-preview .ia-figure-handover,.ia-table-entry .ia-figure-handover{margin:12px 0}
+@media(max-width:700px){
+ .ia-coach-header,.ia-handover-head{padding:11px}
+ .ia-hub-evidence{padding:11px}
+ .ia-coach-checks,.ia-coach-sparks,.ia-handover-caption,.ia-handover-journey{padding:11px}
+ .ia-coach-spark{flex-wrap:wrap}
+ .ia-coach-spark-status{margin-left:23px}
+ .ia-handover-caption button{max-width:100%;white-space:normal;text-align:left}
+}
+@media(prefers-reduced-motion:reduce){.ia-presentation-coach *,.ia-figure-handover *{scroll-behavior:auto}}
