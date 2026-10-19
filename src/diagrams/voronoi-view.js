@@ -146,30 +146,39 @@ export function voronoiOutputHtml(studio,icon){
 }
 function siteEditor(studio,e,icon){
  const d=studio.draft;
- if(!d.sites.length)return representationEmpty(icon,e,{symbol:"map",title:"No sites yet",description:"Enter site coordinates above or import actual coordinates."});
- return '<div class="voronoi-site-editor" aria-label="Edit site positions">'+d.sites.map((s,i)=>
- '<div class="voronoi-site-row"><label><span>Name</span><input type="text" data-voronoi-site="'+i+'" data-voronoi-site-key="name" value="'+e(s.name)+'" aria-label="Site '+(i+1)+' name"></label>'+
- '<label><span>x</span><input type="number" step="any" data-voronoi-site="'+i+'" data-voronoi-site-key="x" value="'+(s.x??"")+'" aria-label="Site '+(i+1)+' x coordinate"></label>'+
- '<label><span>y</span><input type="number" step="any" data-voronoi-site="'+i+'" data-voronoi-site-key="y" value="'+(s.y??"")+'" aria-label="Site '+(i+1)+' y coordinate"></label>'+
- '<label><span>Type</span><select data-voronoi-site="'+i+'" data-voronoi-site-key="kind">'+
- opt("observed","Existing",s.kind,e)+opt("candidate","Proposed",s.kind,e)+'</select></label>'+
- '<button type="button" class="btn btn-quiet btn-sm" data-action="voronoi-delete-site" data-site-index="'+i+'" aria-label="Remove '+e(s.name)+'">Remove</button></div>').join("")+'</div>';
+ if(!d.sites.length)return representationEmpty(icon,e,{symbol:"map",title:"Start by clicking the grid",description:"Choose Place existing, then click the blank coordinate plane. No spreadsheet is needed."});
+ return '<div class="voronoi-site-editor" data-voronoi-site-editor aria-label="Edit site positions">'+
+ d.sites.map((site,i)=>{
+  const locked=studio.scenario?.active&&site.kind==="observed"?" disabled":"";
+  return '<div class="voronoi-site-row'+(studio.selectedSiteId===site.id?" selected":"")+'">'+
+  '<button type="button" class="voronoi-site-select" data-action="voronoi-select-site" data-site-index="'+i+
+   '" aria-label="Select '+e(site.name)+'">'+icon("eye")+'</button>'+
+  '<label><span>Name</span><input type="text"'+locked+' data-voronoi-site="'+i+
+   '" data-voronoi-site-key="name" value="'+e(site.name)+'" aria-label="Site '+(i+1)+' name"></label>'+
+  '<label><span>x</span><input type="number" step="any"'+locked+' data-voronoi-site="'+i+
+   '" data-voronoi-site-key="x" value="'+(site.x??"")+'" aria-label="Site '+(i+1)+' x coordinate"></label>'+
+  '<label><span>y</span><input type="number" step="any"'+locked+' data-voronoi-site="'+i+
+   '" data-voronoi-site-key="y" value="'+(site.y??"")+'" aria-label="Site '+(i+1)+' y coordinate"></label>'+
+  '<label><span>Type</span><select'+locked+' data-voronoi-site="'+i+'" data-voronoi-site-key="kind">'+
+   opt("observed","Existing / defined",site.kind,e)+opt("candidate","Proposed",site.kind,e)+'</select></label>'+
+  '<button type="button" class="btn btn-quiet btn-sm" data-action="voronoi-delete-site" data-site-index="'+i+'"'+locked+
+   ' aria-label="Remove '+e(site.name)+'">Remove</button></div>';
+ }).join("")+'</div>';
 }
 function siteInput(studio,e,icon){
  const d=studio.draft;
  return '<div class="voronoi-add-grid">'+
- field("addName","Name (optional)",d.addName,e,{placeholder:"Candidate A"})+
- field("addX","x coordinate",d.addX,e,{placeholder:"e.g. 12.5"})+
+ field("addName","Name (optional)",d.addName,e,{placeholder:"Site A"})+
+ field("addX","x coordinate",d.addX,e,{placeholder:"e.g. 3.5"})+
  field("addY","y coordinate",d.addY,e,{placeholder:"e.g. 8.0"})+
- select("addType","Location type",d.addType,[["candidate","Proposed location"],["observed","Existing measured site"]],e)+
+ select("addType","Location type",d.addType,[["observed","Existing / defined site"],["candidate","Proposed (hypothetical)"]],e)+
  '</div><div class="voronoi-inline-actions">'+
- '<button type="button" class="btn btn-secondary btn-sm" data-action="voronoi-add-site">'+icon("plus-circle")+' Add location</button>'+
- (d.sites.length>=2?check("placeCandidate","Tap diagram to add a proposed location",d.placeCandidate):"")+
- '</div><p class="voronoi-small">A proposed location changes the construction as a <strong>what-if scenario</strong>. It is not real evidence that a facility exists or that this site is optimal.</p>';
+ '<button type="button" class="btn btn-secondary btn-sm" data-action="voronoi-add-site">'+icon("plus-circle")+' Add coordinates</button>'+
+ '</div><p class="voronoi-small">These cells and the canvas edit the same data. Existing / defined positions require a real source. Proposed sites are a what-if, not evidence of existing facilities.</p>';
 }
 export function renderVoronoiStudio(state,icon,e){
  const studio=state.voronoiStudio,d=studio.draft,route=state.planning?.routeExplorer?.selectedRoute;
- const bounds=d.regionMode==="manual"?'<div class="voronoi-four">'+
+ const bounds=["manual","interactive"].includes(d.regionMode)?'<div class="voronoi-four">'+
  field("xMin","Left boundary",d.xMin,e,{placeholder:"0"})+field("xMax","Right boundary",d.xMax,e,{placeholder:"100"})+
  field("yMin","Bottom boundary",d.yMin,e,{placeholder:"0"})+field("yMax","Top boundary",d.yMax,e,{placeholder:"60"})+'</div>':"";
  const options=d.sites.map((s,i)=>[String(i),s.name]);
@@ -182,15 +191,15 @@ export function renderVoronoiStudio(state,icon,e){
   '. A straight-line nearest-site region is a model, not automatically a road catchment, population distribution or optimal solution.</aside>':"")+
  '<div class="voronoi-layout"><div class="voronoi-controls">'+
  section("1","Bring in your site coordinates",
-  "Copy two columns (x, y) or three (site name, x, y) from Google Sheets. Coordinates must refer to the same flat coordinate system.",
-  field("raw","Paste sites from Google Sheets",d.raw,e,{rows:5,placeholder:"Site\\tx (km)\\ty (km)\\nA\\t2\\t3\\nB\\t7\\t6"})+
+  "Click the coordinate grid to add sites, or use the editor below. Existing datasets can still be imported.",
+  field("raw","Paste genuine sites from Google Sheets",d.raw,e,{rows:5,placeholder:"Site\\tx (km)\\ty (km)\\nA\\t2\\t3\\nB\\t7\\t6"})+
   '<div class="voronoi-inline-actions"><button type="button" class="btn btn-secondary btn-sm" data-action="voronoi-parse">'+icon("clipboard")+' Read pasted sites</button>'+
   '<button type="button" class="btn btn-quiet btn-sm" data-action="voronoi-upload">'+icon("upload")+' Import CSV / TSV</button></div>'+
   select("headers","First row of pasted range",d.headers,[["yes","Has column headings"],["no","Contains actual site data"]],e)+
   (d.sites.length?'<p class="voronoi-imported">'+icon("check-circle")+' '+d.sites.length+' site(s) in the working diagram'+
     (d.pendingPaste?' — newer pasted text needs reading.':'.')+'</p>':"")+
   siteEditor(studio,e,icon)+
-  '<div class="voronoi-divider"><strong>Compare a proposed new location</strong></div>'+siteInput(studio,e,icon))+
+  '<div class="voronoi-divider"><strong>Or add precise coordinates</strong></div>'+siteInput(studio,e,icon))+
  section("2","Scale, labels and mathematical assumptions",
   "Both axes have equal physical scale. Confirm the units and distance interpretation before using your figure in an IA.",
   field("title","Descriptive figure title",d.title,e,{placeholder:"e.g. Straight-line service areas around local facilities"})+
@@ -203,7 +212,8 @@ export function renderVoronoiStudio(state,icon,e){
   '<p class="voronoi-small">If travel times, roads or obstacles matter, discuss why a straight-line construction might fail. If you start with geographic latitude/longitude, convert to an appropriate planar projection before calculating distances.</p>'+
   select("sourceKind","Source of site coordinates",d.sourceKind,[["unsure","Choose origin"],["primary","Coordinates I measured or defined"],["secondary","Published or externally provided coordinates"]],e)+
   (d.sourceKind==="secondary"?field("sourceCredit","Coordinate data citation",d.sourceCredit,e,{placeholder:"Dataset, publisher and access details"}):"")+
-  select("regionMode","Where do the cells end?",d.regionMode,[["auto","Automatic viewing rectangle (not a real boundary)"],
+  select("regionMode","Where do the cells end?",d.regionMode,[["auto","Automatically fitted viewing rectangle"],
+   ["interactive","Fixed working rectangle (not an actual boundary)"],
    ["manual","My justified rectangular study area"]],e)+bounds+
   '<p class="voronoi-small">The area and shape of clipped cells depend on this rectangle. An automatically chosen box should never be described as a real geographical boundary.</p>')+
  section("3","Optional map background",
