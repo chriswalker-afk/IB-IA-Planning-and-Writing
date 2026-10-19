@@ -38,7 +38,7 @@ import {applySuggestedTimeline,localToday,validDate,timelineWeek} from "./src/pl
 import { createStudioViews } from "./src/ui/studio-views.js";
 import {createCompletingViews} from "./src/completing/views.js";
 import {newGraphDraft,saveGraphFigure,renderGraphSvg,graphData,splitHeading,analyseGraph} from "./src/diagrams/graph-core.js";
-import {renderGraphQuality,renderGraphActions} from "./src/diagrams/graph-view.js";
+import {renderGraphQuality,renderGraphActions,graphSourceChoices} from "./src/diagrams/graph-view.js";
 import {updateGraphField,chooseGraphType,importGraphTable,loadSavedGraph,freshGraph,saveAndLinkGraph,saveGraphDraft} from "./src/diagrams/graph-actions.js";
 import {exportGraphFigure} from "./src/diagrams/graph-export.js";
 import {imageTraceChecks,renderTraceOverlaySvg,renderCleanTraceSvg,traceCoordinates,traceCalibration} from "./src/diagrams/image-tracer-core.js";
@@ -48,12 +48,12 @@ import {importTracePhoto,rotateTracePhoto} from "./src/diagrams/image-tracer-upl
 import {exportTraceFigure} from "./src/diagrams/image-tracer-export.js";
 import {statAnalysis,importStatTable,newStatDraft} from "./src/diagrams/stat-studio-core.js";
 import {renderStatSvg} from "./src/diagrams/stat-studio-render.js";
-import {renderStatStudio,statPreviewHtml,statSummaryHtml,statQualityHtml,statOutputHtml} from "./src/diagrams/stat-studio-view.js";
+import {renderStatStudio,statDataChoices,statPreviewHtml,statSummaryHtml,statQualityHtml,statOutputHtml} from "./src/diagrams/stat-studio-view.js";
 import {setStatField,changeStatKind,toggleStatSeries,importStatValues,freshStat,loadStat,saveStatDraft,saveAndLinkStat} from "./src/diagrams/stat-studio-actions.js";
 import {exportStat} from "./src/diagrams/stat-studio-export.js";
 import {analyzeTable,importTableData,newTableDraft} from "./src/diagrams/table-studio-core.js";
 import {renderTableSvg} from "./src/diagrams/table-studio-render.js";
-import {renderTableStudio,tablePreviewHtml,tableQualityHtml,tableOutputHtml} from "./src/diagrams/table-studio-view.js";
+import {renderTableStudio,tableDataChoices,tablePreviewHtml,tableQualityHtml,tableOutputHtml} from "./src/diagrams/table-studio-view.js";
 import {setTableField,setTableColumn,chooseTableMode,toggleTableVariable,toggleTableMeasure,loadTable,freshTable,saveTableDraft,saveAndLinkTable} from "./src/diagrams/table-studio-actions.js";
 import {exportTable} from "./src/diagrams/table-studio-export.js";
 import {nativeGridSummary,editNativeHeading,editNativeCell,pasteNativeRange,NATIVE_MAX_ROWS,NATIVE_PAGE_ROWS} from "./src/diagrams/native-data-core.js";
@@ -177,6 +177,19 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     const raw=root.closest("[data-graph-studio],[data-stat-studio],[data-table-studio]")?.
       querySelector('[data-'+type+'-field="raw"]');
     if(raw&&studio.draft.raw===""&&raw.value!=="")raw.value="";
+    const options=main.querySelector?.('[data-native-choices="'+type+'"]');
+    if(options)options.innerHTML=type==="graph"?graphSourceChoices(studio,icon,e):
+     type==="stat"?statDataChoices(studio,e):tableDataChoices(studio,e);
+    if(type==="graph"){
+     for(const key of ["xLabel","yLabel"]){
+      const input=main.querySelector?.('[data-graph-field="'+key+'"]');
+      if(input&&document.activeElement!==input)input.value=studio.draft[key];
+     }
+    }
+    if(type==="stat"){
+     const input=main.querySelector?.('[data-stat-field="variable"]');
+     if(input&&document.activeElement!==input)input.value=studio.draft.variable;
+    }
     if(type==="graph")refreshGraphPreview();
     if(type==="stat")refreshStatPreview();
     if(type==="table")refreshTablePreview();
