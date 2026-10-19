@@ -54,9 +54,14 @@ def compact(p,width):
  assert p.locator('[data-table-preview] svg').is_visible()
  no_overflow(p)
  p.screenshot(path=str(OUT/f"table-studio-compact-{width}.png"),full_page=True,animations="disabled")
- for fmt,ext in [("png","png"),("svg","svg"),("html","html"),("csv","csv")]:
-  with p.expect_download() as download:
-   p.locator('[data-action="table-'+fmt+'"]').click()
+ for fmt,ext in [("svg","svg"),("html","html"),("csv","csv"),("png","png")]:
+  print("Checking table export:",fmt,flush=True)
+  try:
+   with p.expect_download(timeout=12000) as download:
+    p.locator('[data-action="table-'+fmt+'"]').click()
+  except Exception:
+   print("Table export feedback:",p.locator("#toast").inner_text(),flush=True)
+   raise
   assert download.value.suggested_filename.endswith("."+ext)
  p.locator('[data-action="table-use"]').click()
  assert p.locator('[data-source-node="C32"]').count()==1
