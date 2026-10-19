@@ -46,6 +46,11 @@ import {renderImageTracer,tracePreviewHtml,traceWorkingHtml,traceQualityHtml,tra
 import {setTraceField,setTraceView,setTraceTool,usePhoto,tapTrace,undoTracer,removeTracerPoint,startNewTrace,restoreSavedTrace,saveTraceDraft,saveAndLinkTrace} from "./src/diagrams/image-tracer-actions.js";
 import {importTracePhoto,rotateTracePhoto} from "./src/diagrams/image-tracer-upload.js";
 import {exportTraceFigure} from "./src/diagrams/image-tracer-export.js";
+import {statAnalysis,importStatTable,newStatDraft} from "./src/diagrams/stat-studio-core.js";
+import {renderStatSvg} from "./src/diagrams/stat-studio-render.js";
+import {renderStatStudio,statPreviewHtml,statSummaryHtml,statQualityHtml,statOutputHtml} from "./src/diagrams/stat-studio-view.js";
+import {setStatField,changeStatKind,toggleStatSeries,importStatValues,freshStat,loadStat,saveStatDraft,saveAndLinkStat} from "./src/diagrams/stat-studio-actions.js";
+import {exportStat} from "./src/diagrams/stat-studio-export.js";
 import {renderWriterFieldGuide} from "./src/completing/writer-field-guide.js";
 import {C_MAJOR_STAGES,setCompletionNode,moveCompletionRoute,completionBack,markCompletionStage,setCompletionField,addAccuracyDecision,completionSuggestions,sectionForNode,targetForSection,completionStage,completeEntry,latestRealResult,sourceResultForNext,flagDependentMathematics,acknowledgeMathReview} from "./src/completing/engine.js";
 
@@ -163,7 +168,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   function navigateGraph(){
     if(state.completion.current!=="C31")setCompletionNode(state,"C31",{reason:"graph-editor"});
     state.graphStudio.open=true;
-    state.imageTracer.open=false;
+    state.imageTracer.open=false;state.statStudio.open=false;
     const entry=completeEntry(state);
     if(entry?.graphFigureId&&state.graphStudio.figures.some(x=>x.id===entry.graphFigureId))
       loadSavedGraph(state.graphStudio,entry.graphFigureId);
@@ -187,12 +192,33 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   function navigateTrace(){
     if(state.completion.current!=="C31")setCompletionNode(state,"C31",{reason:"trace-editor"});
     state.graphStudio.open=false;
-    state.imageTracer.open=true;
+    state.imageTracer.open=true;state.statStudio.open=false;
     const entry=completeEntry(state);
     if(entry?.imageTraceId&&state.imageTracer.figures.some(x=>x.id===entry.imageTraceId))
       restoreSavedTrace(state.imageTracer,entry.imageTraceId);
     save();render();
     document.querySelector?.("[data-image-tracer]")?.scrollIntoView?.({block:"start",behavior:"auto"});
+  }
+  function refreshStatPreview(){
+    if(!state.statStudio?.open||state.completion.current!=="C31")return;
+    const root=main.querySelector?.("[data-stat-studio]");if(!root)return;
+    const preview=root.querySelector("[data-stat-preview]");
+    if(preview)preview.outerHTML=statPreviewHtml(state.statStudio,icon,e);
+    const summary=root.querySelector("[data-stat-summary]");
+    if(summary)summary.innerHTML='<h3>Compact numerical summary</h3>'+statSummaryHtml(state.statStudio,icon,e);
+    const quality=root.querySelector("[data-stat-quality]");
+    if(quality)quality.innerHTML=statQualityHtml(state.statStudio,icon,e);
+    const output=root.querySelector("[data-stat-output]");
+    if(output)output.innerHTML=statOutputHtml(state.statStudio,icon,e);
+  }
+  function navigateStat(){
+    if(state.completion.current!=="C31")setCompletionNode(state,"C31",{reason:"stat-editor"});
+    state.graphStudio.open=false;state.imageTracer.open=false;state.statStudio.open=true;
+    const entry=completeEntry(state);
+    if(entry?.statFigureId&&state.statStudio.figures.some(f=>f.id===entry.statFigureId))
+      loadStat(state.statStudio,entry.statFigureId);
+    save();render();
+    document.querySelector?.("[data-stat-studio]")?.scrollIntoView?.({block:"start",behavior:"auto"});
   }
   function updateBoundField(path,value) {
     if(path.startsWith("planning.fields.")){
@@ -1041,6 +1067,65 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         toast("Question selected as a possibility. Write your own mathematical reason before starting.");
         break;
       }
+      case "stat-open":navigateStat();break;
+      case "stat-close":state.statStudio.open=false;save();render();break;
+      case "stat-kind":{
+        if(!changeStatKind(state.statStudio,el.dataset.statValue))break;
+        save();render();break;
+      }
+      case "stat-new":{
+        if(state.statStudio.draft.matrix.length&&state.statStudio.draft.title.trim()&&!window.confirm(
+          "Start a fresh statistical diagram? Save this one first if you want to keep it editable."))break;
+        freshStat(state.statStudio);save();render();
+        toast("New statistical diagram started","Earlier saved statistical diagrams remain available below.");break;
+      }
+      case "stat-parse":{
+        try{
+          const result=importStatValues(state.statStudio,state.statStudio.draft.raw);
+          save();render();
+          toast("Statistical table imported",result.rows+" rows and "+result.columns+" columns recognised. Verify your variables, units and categories.");
+        }catch(error){toast("Could not read the statistical table",error.message);}
+        break;
+      }
+      case "stat-upload":document.querySelector("#statCsvFile")?.click();break;
+      case "stat-reset-scale":{
+        state.statStudio.draft.min="";state.statStudio.draft.max="";
+        save();render();break;
+      }
+      case "stat-load":{
+        if(!loadStat(state.statStudio,el.dataset.statId)){toast("Saved statistical diagram not found.");break;}
+        save();render();toast("Saved statistical diagram loaded for editing");break;
+      }
+      case "stat-save":{
+        const record=saveStatDraft(state);
+        if(!record.ok){toast(record.error);break;}
+        save();render();
+        toast("Statistical diagram saved",record.reviewNeeded?
+         "The statistics changed. Recheck any completed conclusion based on this diagram.":
+         "This editable figure is saved locally and included in your project backup, not inserted into your IA.");
+        break;
+      }
+      case "stat-use":{
+        const record=saveAndLinkStat(state);
+        if(!record.ok){toast(record.error);break;}
+        setCompletionNode(state,"C32",{reason:"linked-statistics"});
+        save();render();
+        toast("Statistical diagram linked to your first mathematics",record.reviewNeeded?
+         "Your earlier numerical interpretation now needs checking.":
+         "Next, introduce this figure in your actual IA, then explain only the results genuinely supported by the data.");
+        break;
+      }
+      case "stat-svg":case "stat-png":case "stat-copy":case "stat-csv":{
+        const format=action.slice("stat-".length);
+        const old=state.statStudio.figures.find(x=>x.id===state.statStudio.activeId);
+        const linked=old?.entryId?saveStatDraft(state):{ok:true,reviewNeeded:false};
+        if(!linked.ok){toast(linked.error);break;}
+        if(old?.entryId)save();
+        exportStat(state.statStudio.draft,format).then(message=>toast(message,
+          linked.reviewNeeded?"Any earlier interpretation of changed statistics now needs review.":""))
+          .catch(error=>toast("Statistical export unavailable",error.message||"Try SVG or CSV instead."));
+        break;
+      }
       case "trace-open":navigateTrace();break;
       case "trace-close":
         state.imageTracer.open=false;save();render();break;
@@ -1450,6 +1535,12 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   });
   document.addEventListener("input",evt=>{
     const target=evt.target;
+    if(target.dataset.statField!==undefined){
+      if(setStatField(state.statStudio,target.dataset.statField,target.type==="checkbox"?target.checked:target.value)){
+        save();refreshStatPreview();
+      }
+      return;
+    }
     if(target.dataset.traceField!==undefined){
       const value=target.type==="checkbox"?target.checked:target.value;
       if(setTraceField(state.imageTracer,target.dataset.traceField,value)){
@@ -1509,6 +1600,23 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   });
   document.addEventListener("change",evt=>{
     const target=evt.target;
+    if(target.dataset.statSeries!==undefined){
+      const index=Number(target.dataset.statSeries),changed=toggleStatSeries(state.statStudio,index,target.checked);
+      if(!changed){
+        toast("Select at most five measurement groups (four for bar charts), not the category column.");
+      }
+      save();render();return;
+    }
+    if(target.dataset.statField!==undefined){
+      if(setStatField(state.statStudio,target.dataset.statField,target.type==="checkbox"?target.checked:target.value)){
+        save();
+        if(target.tagName==="SELECT"||target.type==="checkbox"){
+          const place=captureReturn(target);
+          render();restoreReturn(place);
+        }else refreshStatPreview();
+      }
+      return;
+    }
     if(target.dataset.traceField!==undefined){
       const value=target.type==="checkbox"?target.checked:target.value;
       if(setTraceField(state.imageTracer,target.dataset.traceField,value)){
@@ -1629,7 +1737,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       setSaveStatus("Preparing photograph on this device…");
       const result=await importTracePhoto(file);
       usePhoto(state.imageTracer,result);
-      state.imageTracer.open=true;state.graphStudio.open=false;
+      state.imageTracer.open=true;state.graphStudio.open=false;state.statStudio.open=false;
       if(state.completion.current!=="C31")setCompletionNode(state,"C31",{reason:"trace-photo"});
       save();render();
       toast("Photograph ready","Set the origin, positive x direction and reference scale. The picture stays on this device.");
@@ -1650,12 +1758,24 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       save();render();toast("Image pasted","The image is kept on this device. Calibrate before exporting.");
     }catch(error){toast("Image paste unavailable",error.message);}
   });
+  $("#statCsvFile").addEventListener("change",async evt=>{
+    const input=evt.target,file=input.files?.[0];if(!file)return;
+    try{
+      if(file.size>85000)throw new Error("Choose a smaller CSV/TSV file, no larger than 85 KB.");
+      const result=importStatValues(state.statStudio,await file.text());
+      state.statStudio.open=true;state.imageTracer.open=false;state.graphStudio.open=false;
+      if(state.completion.current!=="C31")setCompletionNode(state,"C31",{reason:"statistics-csv"});
+      save();render();
+      toast("Statistical table imported",result.rows+" rows recognised. Check selected columns and units.");
+    }catch(error){toast("Statistical import unavailable",error.message);}
+    finally{input.value="";}
+  });
   $("#graphCsvFile").addEventListener("change",async evt=>{
     const input=evt.target,file=input.files?.[0];if(!file)return;
     try{
       if(file.size>85000)throw new Error("Choose a smaller CSV or TSV file, under 85 KB.");
       const raw=await file.text(),result=importGraphTable(state.graphStudio,raw);
-      state.graphStudio.open=true;setCompletionNode(state,"C31",{reason:"graph-csv"});
+      state.graphStudio.open=true;state.statStudio.open=false;state.imageTracer.open=false;setCompletionNode(state,"C31",{reason:"graph-csv"});
       save();render();
       toast("CSV data imported",result.rows+" rows and "+result.columns+" columns read. Confirm source, labels and units.");
     }catch(err){toast("Could not import CSV",err.message);}
