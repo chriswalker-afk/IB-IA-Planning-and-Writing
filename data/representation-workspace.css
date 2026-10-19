@@ -1,0 +1,57 @@
+/* Stage C31 only: spacious, consistent mathematical workspaces */
+body.representation-focus-active .app-grid{grid-template-columns:minmax(0,1fr)}
+body.representation-focus-active .sidebar{display:none}
+body.representation-focus-active .main{padding:clamp(12px,2vw,25px) clamp(14px,2.4vw,38px) 85px}
+body.representation-focus-active .completing-page{max-width:1530px;width:100%}
+body.representation-focus-active .completing-page>.task-shell{padding:clamp(15px,2.3vw,31px)}
+body.representation-focus-active .completing-page .task-intro{max-width:900px}
+body.representation-focus-active .completion-topline{margin-bottom:8px}
+body.representation-focus-active .representation-studio{margin-top:10px}
+.representation-workspace-header{margin:12px 0 16px;min-width:0}
+.representation-workspace-bar{display:flex;align-items:center;justify-content:space-between;gap:15px;border-radius:16px 16px 0 0;background:linear-gradient(110deg,#e9f6ee,#f0f5fb);border:1px solid #cce2d9;padding:12px 15px}
+.representation-workspace-identity{display:flex;align-items:center;gap:11px;min-width:0;color:#234e50}
+.representation-workspace-mark{width:41px;height:41px;border-radius:12px;display:grid;place-items:center;background:#fff;border:1px solid #cfe4dc;color:#287968;flex:none}
+.representation-workspace-mark .icon{width:23px;height:23px}
+.representation-workspace-identity>span:last-child{display:grid;gap:3px;min-width:0}
+.representation-workspace-identity small{font-size:10px;color:#607b78;line-height:1.3;font-weight:700}
+.representation-workspace-identity strong{font-size:15px;line-height:1.3}
+.representation-workspace-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.representation-workspace-actions .btn{min-height:39px;display:inline-flex;gap:7px;align-items:center}
+.representation-workspace-actions .icon{width:15px;height:15px}
+.representation-workspace-steps{display:flex;gap:0;overflow-x:auto;border-inline:1px solid #cce2d9;background:white;border-bottom:1px solid #dce9e4}
+.representation-workspace-steps button{appearance:none;background:#fff;border:0;border-right:1px solid #e3eee9;cursor:pointer;min-height:43px;padding:9px 20px;color:#416d6b;font:750 12px/1.4 inherit;white-space:nowrap}
+.representation-workspace-steps button:hover{background:#edf8f2;color:#176454}
+.representation-workspace-steps button:focus-visible,.representation-prelude summary:focus-visible,.representation-empty-action:focus-visible{outline:3px solid #63b397;outline-offset:-3px}
+.representation-workspace-guidance{display:flex;gap:9px;align-items:flex-start;margin:0;padding:10px 15px;border:1px solid #cce2d9;border-top:0;border-radius:0 0 14px 14px;background:#fbfdfb;color:#527672;font-size:11px;line-height:1.5}
+.representation-workspace-guidance .icon{height:17px;width:17px;flex:none}
+.representation-prelude{margin:12px 0 17px;border:1px solid #d4e4e0;background:#f8fcfa;border-radius:12px;overflow:hidden}
+.representation-prelude>summary{display:flex;align-items:center;gap:9px;padding:12px 14px;cursor:pointer;color:#386c68;font-size:12px;font-weight:800;list-style:none}
+.representation-prelude>summary::-webkit-details-marker{display:none}
+.representation-prelude>summary .icon{height:17px;width:17px}
+.representation-prelude>summary span{font-size:10px;color:#6c8582;font-weight:500;margin-left:auto}
+.representation-prelude-body{padding:12px 17px 17px;border-top:1px solid #d8e8e1;background:white}
+.representation-studio .btn{min-height:37px;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.representation-studio .btn:focus-visible{outline:3px solid #68b89c;outline-offset:2px}
+.representation-studio [data-representation-step]{scroll-margin-top:115px}
+.representation-empty{display:flex;align-items:center;gap:12px;border:1px dashed #c9ddd6;background:#f6faf8;color:#396665;padding:14px;border-radius:12px;min-width:0;flex-wrap:wrap}
+.representation-empty-symbol{display:grid;place-items:center;flex:none;width:36px;height:36px;border-radius:10px;background:#e8f4ee;color:#2a8170}
+.representation-empty-symbol .icon{width:19px;height:19px}
+.representation-empty-copy{flex:1;min-width:165px}
+.representation-empty-copy strong{font-size:12px;line-height:1.5}
+.representation-empty-copy p{margin:3px 0 0;font-size:11px;line-height:1.65;color:#66817e}
+.representation-empty-action{margin-left:auto}
+@media(max-width:1100px){body.representation-focus-active .app-grid{display:block}body.representation-focus-active .completing-page{max-width:100%}}
+@media(max-width:700px){
+ body.representation-focus-active .main{padding:13px 11px calc(92px + env(safe-area-inset-bottom,0px))}
+ body.representation-focus-active .completing-page>.task-shell{padding:14px 12px}
+ .representation-workspace-bar{align-items:stretch;flex-direction:column;padding:11px 12px}
+ .representation-workspace-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+ .representation-workspace-actions .btn{font-size:11px;padding:8px 7px;min-width:0}
+ .representation-workspace-steps button{flex:1;padding:9px 10px;font-size:11px}
+ .representation-prelude>summary{flex-wrap:wrap}
+ .representation-prelude>summary span{margin-left:26px}
+ .representation-empty{align-items:flex-start}
+ .representation-empty-action{margin-left:48px}
+ .representation-studio [data-representation-step]{scroll-margin-top:72px}
+}
+@media print{.representation-workspace-header{display:none!important}.representation-prelude>summary{display:none!important}.representation-prelude-body{display:block}}

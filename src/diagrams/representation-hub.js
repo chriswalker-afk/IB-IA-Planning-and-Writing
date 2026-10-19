@@ -106,12 +106,32 @@ export function renderRepresentationHub(state,icon,e){
  ' <strong>After creating a diagram or table:</strong> introduce it in your IA <em>before</em> showing it. Then interpret it against your aim, prediction (if any), precision and justified next mathematical step. Long raw-data tables belong in working files, not the IA or appendix.</p>'+
  '</section>';
 }
+/** A larger canvas is activated only in C31 while one tool is open. */
+export function representationFocusActive(state){
+ return state?.route==="completing"&&state.completion?.current==="C31"&&
+  Boolean(state.graphStudio?.open||state.statStudio?.open||state.tableStudio?.open||
+   state.imageTracer?.open||state.voronoiStudio?.open);
+}
 export function renderRepresentationSwitcher(state,icon,e){
  const active=REPRESENTATION_TOOLS.find(t=>[
-  ["graph",state.graphStudio?.open],["stat",state.statStudio?.open],["table",state.tableStudio?.open],
-  ["trace",state.imageTracer?.open],["voronoi",state.voronoiStudio?.open]
+  ["graph",state.graphStudio?.open],["stat",state.statStudio?.open],
+  ["table",state.tableStudio?.open],["trace",state.imageTracer?.open],
+  ["voronoi",state.voronoiStudio?.open]
  ].some(([id,open])=>t.id===id&&open));
- return '<div class="representation-switcher" data-representation-switcher>'+
- '<span>'+icon(active?.icon||"layers")+' Using '+e(active?.title||"a representation tool")+'</span>'+
- '<button type="button" class="btn btn-secondary btn-sm" data-action="representation-back">'+icon("arrow-left")+' Choose a different tool</button></div>';
+ const steps=[["create","1 · Create"],["refine","2 · Refine"],["use","3 · Use in IA"]];
+ return '<div class="representation-workspace-header" data-representation-workspace>'+
+  '<nav class="representation-workspace-bar" aria-label="Mathematical tool navigation">'+
+  '<div class="representation-workspace-identity"><span class="representation-workspace-mark">'+
+    icon(active?.icon||"layers")+'</span><span><small>IA Studio / Explore &amp; explain</small>'+
+    '<strong>'+e(active?.title||"Mathematical workspace")+'</strong></span></div>'+
+  '<div class="representation-workspace-actions">'+
+   '<button type="button" class="btn btn-quiet btn-sm" data-action="completion-open" data-node="C30">'+
+    icon("arrow-left")+' Back to my IA</button>'+
+   '<button type="button" class="btn btn-secondary btn-sm" data-action="representation-back">'+
+    icon("grid-2x2")+' All tools</button></div></nav>'+
+  '<nav class="representation-workspace-steps" aria-label="Jump within this generator">'+
+   steps.map(([id,label])=>'<button type="button" data-action="representation-jump" data-representation-step="'+id+
+    '" aria-label="'+e("Go to "+label.replace(/^[0-9] · /,""))+'">'+e(label)+'</button>').join("")+
+  '</nav><p class="representation-workspace-guidance">'+icon("info")+
+   ' Explore with genuine or clearly identified hypothetical information. Refine the presentation, then save and use it in your own IA when ready.</p></div>';
 }
