@@ -71,7 +71,7 @@ def histogram(p,width):
    p.locator('[data-action="stat-'+fmt+'"]').click()
   assert download.value.suggested_filename.endswith("."+fmt)
  p.locator('[data-action="stat-use"]').click()
- assert p.locator('[data-source-node="C32"]').count()==1
+ assert p.locator('[data-source-node="C30"]').count()==1
  state=snapshot(p)
  assert len(state["statStudio"]["figures"])==1
  assert state["entries"][0]["status"]=="planned"
