@@ -1703,21 +1703,32 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       save();render();return;
     }
     if(target.dataset.tableCol!==undefined){
-      const index=Number(target.dataset.tableCol);
-      if(setTableColumn(state.tableStudio,index,target.dataset.tablePart,target.value)){
+      const index=Number(target.dataset.tableCol),key=target.dataset.tablePart;
+      const original=key==="heading"?state.tableStudio.draft.headings[index]:
+        state.tableStudio.draft.unitDecisions[index]?.[key==="unitMode"?"mode":"unit"];
+      if(setTableColumn(state.tableStudio,index,key,target.value)){
         save();
         if(target.tagName==="SELECT"){
           const cursor=captureReturn(target);render();restoreReturn(cursor);
-        }else refreshTablePreview();
+        }else if(original!==target.value){
+          // Rare autofill/change without input; avoid replacing buttons on a normal blur.
+          refreshTablePreview();
+        }
       }
       return;
     }
     if(target.dataset.tableField!==undefined){
-      if(setTableField(state.tableStudio,target.dataset.tableField,target.type==="checkbox"?target.checked:target.value)){
+      const key=target.dataset.tableField,value=target.type==="checkbox"?target.checked:target.value;
+      const original=state.tableStudio.draft[key];
+      if(setTableField(state.tableStudio,key,value)){
         save();
         if(target.tagName==="SELECT"||target.type==="checkbox"){
           const cursor=captureReturn(target);render();restoreReturn(cursor);
-        }else refreshTablePreview();
+        }else if(original!==value){
+          // The input handler already refreshed live output while typing.
+          // Rendering again during blur can remove a button before its click fires.
+          refreshTablePreview();
+        }
       }
       return;
     }
