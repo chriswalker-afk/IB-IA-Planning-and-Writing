@@ -76,7 +76,7 @@ def histogram(p,width):
  assert state["entries"][0]["status"]=="planned"
  assert state["entries"][0]["result"]==""
  assert state["entries"][0]["statFigureId"]==state["statStudio"]["figures"][0]["id"]
- assert p.locator(".stat-entry-preview svg").count()==1
+ assert p.locator(".stat-entry-preview svg.stat-figure-svg").count()==1
  p.reload(wait_until="networkidle")
  assert len(snapshot(p)["statStudio"]["figures"])==1
  assert p.locator(".stat-entry-preview").is_visible()
