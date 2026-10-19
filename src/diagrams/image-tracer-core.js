@@ -286,9 +286,10 @@ export function saveTraceFigure(studio,entryId=""){
  const past=studio.figures.find(x=>x.id===id);
  const record={id,entryId:entryId||past?.entryId||"",savedAt:new Date().toISOString(),draft:normalizeTraceDraft(studio.draft)};
  const index=studio.figures.findIndex(x=>x.id===id);
+ if(index<0&&studio.figures.length>=MAX_TRACE_FIGURES)
+  return {ok:false,error:"This project has six saved image tracings. Edit an existing tracing or export a project backup before starting another; nothing has been overwritten."};
  if(index>=0)studio.figures[index]=record;
  else studio.figures.push(record);
- studio.figures=studio.figures.slice(-MAX_TRACE_FIGURES);
  studio.activeId=id;
  return {ok:true,record};
 }
