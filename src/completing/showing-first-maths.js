@@ -163,7 +163,7 @@ export function renderShowingMathsSparks(state,icon,e){
  const accuracy=p.firstAccuracy||state?.completion?.accuracyDecisions?.map(x=>[x.quantity,x.resolution,x.policy].filter(Boolean).join(": ")).filter(Boolean).join("; ")||"Check original measurement/source precision when it affects this result.";
  const mini=(name,value)=>'<div class="show-first-spark"><strong>'+e(name)+'</strong><p>'+e(value)+'</p></div>';
  return '<section class="studio-stage-sparks show-first-sparks" aria-label="Relevant saved sparks">'+
-  '<div class="studio-stage-sparks-head">'+icon("sparkles")+' <div><span class="intro-writing-guide-eyebrow">FROM YOUR INVESTIGATION</span><h2>Bring your aim and prediction back</h2><p>These saved choices guide the writing; check them against the work you actually carried out.</p></div></div>'+
+  '<div class="studio-stage-sparks-head">'+icon("sparkles")+' <div><span class="intro-writing-guide-eyebrow">FROM YOUR INVESTIGATION</span><h2>Use your relevant sparks</h2><p>These saved choices guide the writing; check them against the work you actually carried out.</p></div></div>'+
   '<div class="show-first-spark-grid">'+mini("Your aim",ctx.aim||"Return to Planning to define your aim.")+
   mini("Original prediction (if any)",pred)+mini("Relevant accuracy",accuracy)+
   (f.firstPurpose?mini("First mathematical question",f.firstPurpose):"")+'</div>'+
