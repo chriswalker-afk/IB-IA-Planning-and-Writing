@@ -62,7 +62,7 @@ import {voronoiPreviewHtml,voronoiResultHtml,voronoiQualityHtml,voronoiOutputHtm
 import {setVoronoiField,setVoronoiSite,addVoronoiSite,removeVoronoiSite,clearVoronoiMap,useVoronoiMap,beginVoronoi,loadVoronoi,saveVoronoiDraft,saveAndLinkVoronoi} from "./src/diagrams/voronoi-actions.js";
 import {exportVoronoi} from "./src/diagrams/voronoi-export.js";
 import {displayVoronoiBounds,coordinateFromCanvas,canvasPosition,voronoiFrame,
- recordVoronoiHistory,undoVoronoi,redoVoronoi,freezeVoronoiWindow,fitVoronoiSites,
+ recordVoronoiHistory,applyVoronoiFrame,undoVoronoi,redoVoronoi,freezeVoronoiWindow,fitVoronoiSites,
  setVoronoiTool,selectVoronoiSite,moveVoronoiSite,proposeVoronoiComparison,
  showVoronoiComparison,finishVoronoiComparison,selectNearestBisector}
  from "./src/diagrams/voronoi-interactions.js";
@@ -1736,25 +1736,83 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         state=newState();save();closeDrawer();nav("home");toast("A fresh workspace is ready.");break;
     }
   }
-  document.addEventListener("click",evt=>{
-    // SVG is an actual student input surface. Convert screen taps into photo
-    // pixel coordinates using its viewBox transform, including on phones.
-    const voronoiTap=evt.target.closest?.("[data-voronoi-place]");
-    if(voronoiTap&&state.voronoiStudio?.open&&state.voronoiStudio.draft.placeCandidate){
-      const svg=voronoiTap.closest("[data-voronoi-canvas]");
-      const matrix=svg?.getScreenCTM?.(),q=analyzeVoronoi(state.voronoiStudio.draft);
-      if(!matrix||!q.bounds)return;
-      const point=svg.createSVGPoint();point.x=evt.clientX;point.y=evt.clientY;
-      const pixel=point.matrixTransform(matrix.inverse()),L=voronoiLayout(q.bounds);
-      const x=q.bounds.xMin+(pixel.x-L.left)/L.scale,
-       y=q.bounds.yMax-(pixel.y-L.top)/L.scale;
-      if(x<q.bounds.xMin||x>q.bounds.xMax||y<q.bounds.yMin||y>q.bounds.yMax)return;
-      const result=addVoronoiSite(state.voronoiStudio,{name:"",x,y,kind:"candidate"});
-      if(!result.ok){toast(result.error);return;}
-      const scroll=window.scrollY;save();render();window.scrollTo({top:scroll,behavior:"auto"});
-      toast("Proposed location added","This hypothetical site changes the tessellation; it is not a claim that a facility exists.");
+  // Native pointer editing; document-level tracking survives live SVG replacements.
+  let voronoiPointer=null;
+  function voronoiPointerWorld(session,event){
+    const p=session.svg.createSVGPoint();p.x=event.clientX;p.y=event.clientY;
+    return coordinateFromCanvas(session.layout,session.bounds,p.matrixTransform(session.inverse));
+  }
+  function redrawVoronoiAtScroll(){
+    const top=window.scrollY;
+    save();render();window.scrollTo({top,behavior:"auto"});
+  }
+  document.addEventListener("pointerdown",evt=>{
+    if(!state.voronoiStudio?.open||state.completion.current!=="C31"||state.voronoiStudio.scenario?.showOriginal)return;
+    const svg=evt.target.closest?.("[data-voronoi-canvas]");
+    if(!svg||evt.button>0)return;
+    const transform=svg.getScreenCTM?.();if(!transform)return;
+    const studio=state.voronoiStudio,bounds=displayVoronoiBounds(studio.draft),layout=voronoiLayout(bounds);
+    if(!layout)return;
+    let inverse;try{inverse=transform.inverse();}catch{return;}
+    const hit=evt.target.closest?.("[data-voronoi-site-index],[data-voronoi-cell-index]");
+    const index=hit?.dataset.voronoiSiteIndex!==undefined?Number(hit.dataset.voronoiSiteIndex):
+      hit?.dataset.voronoiCellIndex!==undefined?Number(hit.dataset.voronoiCellIndex):-1;
+    voronoiPointer={id:evt.pointerId,svg,inverse,bounds,layout,index,startX:evt.clientX,startY:evt.clientY,
+      before:voronoiFrame(studio.draft),tool:studio.tool,dragged:false,
+      locked:studio.scenario?.active&&index>=0&&studio.draft.sites[index]?.kind==="observed"};
+    if(index>=0)selectVoronoiSite(studio,index);
+    evt.preventDefault();
+  });
+  document.addEventListener("pointermove",evt=>{
+    const session=voronoiPointer;
+    if(!session||evt.pointerId!==session.id||!state.voronoiStudio?.open)return;
+    if(session.tool!=="select"||session.index<0||session.locked)return;
+    if(!session.dragged&&Math.hypot(evt.clientX-session.startX,evt.clientY-session.startY)<4)return;
+    const p=voronoiPointerWorld(session,evt);if(!p)return;
+    const studio=state.voronoiStudio;
+    freezeVoronoiWindow(studio);
+    const moved=moveVoronoiSite(studio,session.index,p.x,p.y,{record:false});
+    if(moved.ok&&moved.changed){session.dragged=true;refreshVoronoiPreview();}
+    evt.preventDefault();
+  });
+  document.addEventListener("pointerup",evt=>{
+    const session=voronoiPointer;
+    if(!session||evt.pointerId!==session.id)return;
+    voronoiPointer=null;const studio=state.voronoiStudio;if(!studio?.open)return;
+    if(session.dragged){
+      recordVoronoiHistory(studio,session.before);redrawVoronoiAtScroll();return;
+    }
+    if(session.index>=0){
+      selectVoronoiSite(studio,session.index);redrawVoronoiAtScroll();
+      if(session.locked&&session.tool==="select")toast("Existing sites are protected in a comparison.");
       return;
     }
+    if(Math.hypot(evt.clientX-session.startX,evt.clientY-session.startY)>9)return;
+    const p=voronoiPointerWorld(session,evt);if(!p)return;
+    if(session.tool==="existing"||session.tool==="candidate"){
+      if(studio.scenario?.active&&session.tool==="existing"){
+        toast("Use Place proposed during a what-if comparison.");return;
+      }
+      const before=voronoiFrame(studio.draft);
+      freezeVoronoiWindow(studio);
+      const result=addVoronoiSite(studio,{name:"",x:canvasPosition(p.x),y:canvasPosition(p.y),
+        kind:session.tool==="candidate"?"candidate":"observed"},before);
+      if(!result.ok){applyVoronoiFrame(studio.draft,before);toast(result.error);return;}
+      redrawVoronoiAtScroll();return;
+    }
+    if(session.tool==="test"){
+      const before=voronoiFrame(studio.draft);
+      studio.draft.probeX=String(canvasPosition(p.x));
+      studio.draft.probeY=String(canvasPosition(p.y));
+      recordVoronoiHistory(studio,before);redrawVoronoiAtScroll();
+    }
+  });
+  document.addEventListener("pointercancel",evt=>{
+    if(!voronoiPointer||evt.pointerId!==voronoiPointer.id)return;
+    const before=voronoiPointer.before;voronoiPointer=null;
+    applyVoronoiFrame(state.voronoiStudio.draft,before);redrawVoronoiAtScroll();
+  });
+  document.addEventListener("click",evt=>{
     const traceTap=evt.target.closest?.("[data-trace-tap]");
     if(traceTap&&state.imageTracer?.open){
       const svg=traceTap.closest("[data-trace-canvas]");
