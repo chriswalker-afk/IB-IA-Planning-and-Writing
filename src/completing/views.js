@@ -1,12 +1,13 @@
 import {chapterRibbon} from '../ui/living-journey.js';
 import {renderFieldGuideTeaser,renderContextualGuide} from './writer-field-guide.js';
-import {renderIntroductionSparkPrompt,renderIntroductionWritingAdvice} from './intro-writing-advice.js';
-import {insightCapture,insightEcho} from '../ui/insight-threads.js';
+import {renderIntroductionSparkPrompt,renderIntroductionWritingAdvice,renderIntroductionOptionalExamples} from './intro-writing-advice.js';
+import {renderWritingStageFlow} from './stage-writing-flow.js';
+import {insightCapture,insightEcho,renderSparkShelf} from '../ui/insight-threads.js';
 import {STATUS_LABELS,currentGroup,JOURNEY_GROUPS} from "../ui/journey.js";
 import {groupedDashboard} from "../ui/journey-views.js";
 import {examplePrompt,exampleInline} from "../examples/views.js";
 import {criteriaPanel,essentialsNudge} from "../essentials/views.js";
-import {criterionPageHeading,criterionMarkedField} from "../essentials/criteria-badges.js";
+import {criterionPageHeading,criterionMarkedField,criterionMarkedWritingBox} from "../essentials/criteria-badges.js";
 import {resourcePrompt} from "../resources/views.js";
 import {createStuckViews} from '../help/stuck-views.js';
 import {isStuckNode} from '../help/stuck-state.js';
@@ -310,11 +311,23 @@ export function createCompletingViews(ctx){
     html:stageDashboard()+'<button type="button" class="writer-guide-overview" data-action="writer-guide-open">'+icon("book")+' Open the Writer\'s Field Guide '+icon("arrow-right")+'</button>'+miniList()+
       '<div class="button-row">'+sourceAction("Save progress","Save a full project backup")+
       sourceAction("I'm stuck / Something isn't working","I'm stuck")+'</div>'};
-  case "C10":return{intro:"Introduce your mathematical aim and genuine motivation in a few focused paragraphs. Where useful, share what you think or hope to discover and why. Start your mathematical journey without listing every planned calculation.",
-    html:renderIntroductionWritingAdvice(icon,e,{reduced:isAdviceReduced(s)})+
-      field("scratch.introduction","My own working introduction notes","Optional private notes: my precise aim, genuine motivation, an honest starting prediction or hope (and why), and only essential non-mathematical background.",{type:"textarea",rows:5})+
-      info("Your real IA is a separate document","Write these paragraphs in your actual Word or Google Docs file. Updating the prediction spark above saves it in Pathfinder for later comparison but does not insert text into your IA or establish a finding.")
-   };
+  case "C10":{
+   const notes=field("scratch.introduction","My own working introduction notes","Optional private notes for yourself, not the final IA text.",{type:"textarea",rows:5});
+   const task='<section class="intro-writing-task" aria-labelledby="intro-writing-task-heading">'+
+    '<div class="intro-writing-task-head"><span class="intro-writing-task-symbol">'+icon("pencil")+'</span><div>'+
+     '<span class="intro-writing-task-eyebrow">YOUR WRITING TASK</span>'+
+     '<h2 id="intro-writing-task-heading">Write your introduction</h2>'+
+     '<p>In your actual IA document, write a few focused paragraphs that introduce your aim, your motivation and, if useful, a tentative prediction. You do not need to list every technique you might use.</p></div></div>'+
+    criterionMarkedWritingBox(notes,["completing:C10:aim","completing:C10:motivation"])+
+    '<p class="intro-writing-task-footnote">Your notes here are private to Pathfinder. The <strong>A</strong> and <strong>C</strong> bubbles explain how presentation and personal engagement relate to the writing; they are not marks or an assessment of your draft.</p></section>';
+   return{intro:"",
+    html:renderWritingStageFlow({
+     advice:renderIntroductionWritingAdvice(icon,e,{reduced:isAdviceReduced(s)}),
+     sparks:renderIntroductionSparkPrompt(s,icon,e)+renderSparkShelf(s,"C10",{surface:"studio",libraryOnly:true}),
+     task,
+     examples:renderIntroductionOptionalExamples(icon)
+    })};
+  }
   case "C10E":return{intro:"Compare original fictional introductions, then return to your own investigation.",html:exampleInline(s,{topic:"introduction"})};
   case "C20":return{intro:"What data, measurements or mathematical objects are actually available now? This is different from the collection plan.",
    html:smallSummary("Planned evidence",p.dataSource==="secondary"?p.secondaryUrl||p.secondaryPublisher:p.primaryWhat||p.theoreticalCase)+
@@ -723,18 +736,17 @@ export function createCompletingViews(ctx){
       icon(isAdviceReduced(s)?"eye":"eye-off")+' '+(isAdviceReduced(s)?"Show full advice":"Reduce advice")+'</button>'+
     (node==="C04"?"":'<button class="btn btn-quiet btn-sm" data-action="completion-open" data-node="C04">'+icon("layers")+' My stages</button>')+'</div></div>'+
     topWarnings+
-    (node!=="C00"&&node!=="C04"&&!isStuckNode(node)?'<p class="studio-ia-writing-reminder">'+icon("pencil")+
+    (node!=="C00"&&node!=="C04"&&node!=="C10"&&!isStuckNode(node)?'<p class="studio-ia-writing-reminder">'+icon("pencil")+
       ' WRITE IN YOUR IA · Use these prompts to develop your own document; nothing is inserted automatically.</p>':'')+
     '<div class="task-shell'+(node==="C00"?' chapter-onboarding-shell':'')+'" data-source-node="'+e(node)+'">'+
-    criterionPageHeading(label,"completing",isAdviceReduced(s)?"":node)+'<p class="task-intro">'+e(screen.intro)+'</p>'+
-    (node==="C10"?renderIntroductionSparkPrompt(s,icon,e):"")+
-    insightEcho(s,node)+extra.returnToReview()+(isStuckNode(node)||["C00","C04","C10","C10E"].includes(node)||isAdviceReduced(s)?"":criteriaPanel(s))+
+    criterionPageHeading(label,"completing",isAdviceReduced(s)?"":node)+(node==="C10"?"":'<p class="task-intro">'+e(screen.intro)+'</p>')+
+    (node==="C10"?"":insightEcho(s,node))+extra.returnToReview()+(isStuckNode(node)||["C00","C04","C10","C10E"].includes(node)||isAdviceReduced(s)?"":criteriaPanel(s))+
     screen.html+(screen.extra||"")+
-    (node==="C00"?"":insightCapture(s,node))+
-    (node==="C00"||node==="C04"||isStuckNode(node)||isAdviceReduced(s)?"":renderContextualGuide(icon,e,node))+
-    (node==="C00"||isAdviceReduced(s)?"":essentialsNudge(s))+
-    (node==="C00"||isStuckNode(node)||node==="C10E"||isAdviceReduced(s)?"":guides.writingMoment(node,{embedded:node!=="C96"}))+
-    (node==="C00"||isStuckNode(node)||isAdviceReduced(s)?"":guides.mathsHelp(node)+guides.limitsHelp(node)+
+    (node==="C00"||node==="C10"?"":insightCapture(s,node))+
+    (node==="C00"||node==="C04"||node==="C10"||isStuckNode(node)||isAdviceReduced(s)?"":renderContextualGuide(icon,e,node))+
+    (node==="C00"||node==="C10"||isAdviceReduced(s)?"":essentialsNudge(s))+
+    (node==="C00"||node==="C10"||isStuckNode(node)||node==="C10E"||isAdviceReduced(s)?"":guides.writingMoment(node,{embedded:node!=="C96"}))+
+    (node==="C00"||node==="C10"||isStuckNode(node)||isAdviceReduced(s)?"":guides.mathsHelp(node)+guides.limitsHelp(node)+
     (["C00","C04"].includes(node)?"":contextualPrompt(node)+resourcePrompt(s)))+statusControls+
     (node==="C00"?"":allButtons(node,primaryByNode[node]||[]))+'</div>'+
     '<p class="small-callout">Only actual mathematics supports a mathematical conclusion. Your planning, predictions and teacher questions remain separate from real findings. No compulsory number of calculations or IA grade.</p>'+

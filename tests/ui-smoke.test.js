@@ -253,9 +253,14 @@ test("Set up welcomes students, recommends Planning and captures missing provisi
  h.action('setup-start-writing');
  assert.equal(h.saved.completion.current,'C10');
  assert(h.html.includes('My own working introduction notes'));
- assert(h.html.includes('WRITE IN YOUR IA'));
- assert(h.html.includes('Bring these three ideas into your introduction'));
- assert(h.html.includes('non-mathematical specialist background brief'));
+ assert(h.html.includes('Write your introduction'));
+ assert(h.html.includes('Turn your sparks into an opening'));
+ assert(h.html.includes('data-writing-stage-flow'));
+ for(const part of ['advice','sparks','task','examples'])assert(h.html.includes('data-writing-stage-part="'+part+'"'));
+ assert(h.html.includes('criterion-writing-bubbles'));
+ assert(!h.html.includes('intro-criteria-mini'));
+ assert(!h.html.includes('spark-shelf-featured'));
+ assert(h.html.includes('data-writing-examples'));
  assert(h.html.includes('Start the journey; don&#39;t write an itinerary'));
  assert(h.html.includes('data-intro-spark="aim"'));
  assert(h.html.includes('data-intro-spark="motivation"'));

@@ -160,12 +160,19 @@ def first_time(browser,width):
   page.locator('[data-action="setup-start-writing"]').click()
   assert page.locator('[data-source-node="C10"]').count()==1
   assert page.locator('[data-bind="scratch.introduction"]').count()==1
-  assert "WRITE IN YOUR IA" in page.locator(".studio-ia-writing-reminder").inner_text()
-  assert "Bring these three ideas into your introduction" in page.locator('.intro-spark-brief').inner_text()
+  assert "Write your introduction" in page.locator(".intro-writing-task").inner_text()
+  assert "Turn your sparks into an opening" in page.locator('.intro-spark-brief').inner_text()
+  assert page.locator('.writing-stage-flow [data-writing-stage-part]').count()==4
+  parts=page.locator('.writing-stage-flow [data-writing-stage-part]')
+  assert [parts.nth(i).get_attribute("data-writing-stage-part") for i in range(4)]==["advice","sparks","task","examples"]
+  assert page.locator('.criterion-marked-writing-box .criterion-writing-bubbles .criterion-badge').count()==2
+  assert page.locator('.intro-criteria-mini').count()==0
+  assert page.locator('.spark-shelf-featured').count()==0
+  assert page.locator('.spark-shelf-library-only .spark-library').count()==1
   assert page.locator('.intro-spark-needed[data-intro-spark-state="ready"]').count()==2
   assert page.locator('.intro-spark-needed[data-intro-spark="prediction"]').count()==1
-  assert "non-mathematical specialist background brief" in page.locator('.intro-spark-brief').inner_text()
   assert "Define specialist terms briefly" in page.locator('.intro-writing-guide').inner_text()
+  assert page.locator('.intro-prediction-update[open]').count()==1
   page.locator('[data-bind="planning.fields.prediction"]').fill("I suspect a curved relationship.")
   page.locator('[data-bind="planning.fields.predictionWhy"]').fill("A few small cases suggest the changes increase.")
   assert stored(page)["planning"]["fields"]["prediction"]=="I suspect a curved relationship."
@@ -185,7 +192,9 @@ def first_time(browser,width):
   page.locator('[data-intro-advice="context"] > summary').click()
   page.locator('.intro-advice-extra-group > summary').click()
   assert page.locator('[data-intro-advice="uncertain"] > summary').is_visible()
-  page.locator('[data-intro-advice="context"] [data-example-id="EX34"]').click()
+  page.locator('.intro-examples-panel > summary').click()
+  assert page.locator('.intro-examples-panel[open]').count()==1
+  page.locator('.intro-examples-panel [data-example-id="EX34"]').click()
   assert page.locator('#exampleDialog[open] [data-example-card="EX34"]').count()==1
   assert page.locator('#exampleDialog[open] .ex-introduction-feature').count()==3
   page.locator('#exampleDialog [data-example-close]').click()
@@ -194,9 +203,9 @@ def first_time(browser,width):
   assert "few focused paragraphs" in page.locator('#criterionBadgeDialog[open]').inner_text()
   page.locator('#criterionBadgeDialog [data-criterion-badge-close]').first.click()
   without_overflow(page)
-  assert page.locator('.writer-guide-return [data-guide-tip="voice"]').count()==1
-  page.locator('.writer-guide-return [data-guide-tip="voice"]').click()
-  assert page.locator('.writer-guide-drawer [data-guide-card="voice"][open]').count()==1
+  assert page.locator('.writer-guide-return').count()==0
+  page.locator('.intro-advice-guide-action [data-action="writer-guide-open"]').click()
+  assert page.locator('.writer-guide-drawer').is_visible()
   page.locator('.writer-guide-drawer .drawer-header [data-action="close-drawer"]').click()
   assert page.locator('[data-source-node="C10"]').count()==1
   # The original fixture's page-init script resets storage on EVERY reload.
