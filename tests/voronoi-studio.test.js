@@ -49,7 +49,7 @@ test("CSV parsing detects extra columns, duplicates and missing coordinates rath
  assert.throws(()=>parseVoronoiSites("Site,x,y\nA,0,0\nB,0,0","yes"),/same coordinates/);
  assert.throws(()=>parseVoronoiSites("Site,x,y\nA,2,4\nB,,5","yes"),/row 2/i);
  assert.throws(()=>parseVoronoiSites("Site,x,y,color\nA,1,2,red\nB,2,3,blue","yes"),/2 columns|3 columns/);
- assert.throws(()=>parseVoronoiSites("Site,x,y\nA,1,2","yes"),/at least two/);
+ assert.throws(()=>parseVoronoiSites("Site,x,y\nA,1,2","yes"),/at least two/i);
 });
 test("Voronoi perpendicular-bisector geometry divides an axis-aligned rectangle correctly",()=>{
  const bounds={xMin:0,xMax:10,yMin:0,yMax:10},
