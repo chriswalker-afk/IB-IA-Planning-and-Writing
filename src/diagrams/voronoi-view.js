@@ -12,7 +12,7 @@ const field=(key,label,value,e,{placeholder="",rows=0,hint=""}={})=>
  (hint?'<small>'+e(hint)+'</small>':"")+'</label>';
 const check=(key,label,checked)=>'<label class="voronoi-check"><input type="checkbox" data-voronoi-field="'+key+'"'+(checked?" checked":"")+'><span>'+label+'</span></label>';
 const section=(n,title,description,html)=>
- '<section class="voronoi-panel"'+(n==="1"?' data-representation-step="create"':n==="2"?' data-representation-step="refine"':"")+'><h3><span class="voronoi-step">'+n'</span>'+title+'</h3>'+
+ '<section class="voronoi-panel"'+(n==="1"?' data-representation-step="create"':n==="2"?' data-representation-step="refine"':"")+'><h3><span class="voronoi-step">'+n+'</span>'+title+'</h3>'+
  (description?'<p class="voronoi-description">'+description+'</p>':"")+html+'</section>';
 const groups={
  voronoi:"Locations and Voronoi diagrams",
