@@ -20,7 +20,7 @@ export function newVoronoiDraft(){
   mapSrc:"",mapWidth:0,mapHeight:0,mapName:"",mapCredit:"",mapConfirmed:false,mapOpacity:.42,
   showGrid:true,showSites:true,showLabels:true,showBisector:false,showAreas:false,
   pairA:0,pairB:1,probeX:"",probeY:"",note:"",
-  addName:"",addX:"",addY:"",addType:"candidate",placeCandidate:false
+  addName:"",addX:"",addY:"",addType:"observed",placeCandidate:false
  };
 }
 export function normalizeVoronoiDraft(raw){

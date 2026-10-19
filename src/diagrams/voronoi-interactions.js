@@ -79,6 +79,8 @@ export function setVoronoiTool(studio,tool){
  if(!VORONOI_TOOLS.includes(tool))return false;
  studio.tool=tool;
  studio.draft.placeCandidate=tool==="candidate";
+ if(tool==="existing")studio.draft.addType="observed";
+ if(tool==="candidate")studio.draft.addType="candidate";
  return true;
 }
 export function selectVoronoiSite(studio,index){
@@ -125,7 +127,7 @@ export function finishVoronoiComparison(studio,{restore=false}={}){
  }
  studio.scenario={active:false,before:null,showOriginal:false};
  setVoronoiTool(studio,"select");
- studio.selectedSiteId="";
+ studio.draft.addType="observed";studio.selectedSiteId="";
  return true;
 }
 export function originalVoronoiDraft(studio){
