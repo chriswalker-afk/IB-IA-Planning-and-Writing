@@ -69,6 +69,17 @@ def compact(p,width):
    p.wait_for_timeout(500)
    print("Table debug events:",p.evaluate("window.__tableTrace"),flush=True)
    print("Download events:",[x.suggested_filename for x in downloads],flush=True)
+   if not downloads:
+    print("Button click target diagnosis:",p.locator('[data-action="table-'+fmt+'"]').evaluate("""(btn)=>{
+      const rect=btn.getBoundingClientRect(),x=rect.x+rect.width/2,y=rect.y+rect.height/2;
+      return {x,y,buttonDisabled:btn.disabled,style:getComputedStyle(btn).pointerEvents,
+       coveringElement:document.elementFromPoint(x,y)?.outerHTML?.slice(0,260),
+       parent:btn.parentElement?.outerHTML?.slice(0,260)}
+    }"""),flush=True)
+    p.locator('[data-action="table-'+fmt+'"]').dispatch_event("click")
+    p.wait_for_timeout(250)
+    print("After synthetic click:",p.evaluate("window.__tableTrace"),flush=True)
+    print("Download events after synthetic:",[x.suggested_filename for x in downloads],flush=True)
    assert downloads and downloads[-1].suggested_filename.endswith("."+ext)
   except Exception:
    print("Table export feedback:",p.locator("#toast").inner_text(),flush=True)
