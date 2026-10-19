@@ -1,6 +1,7 @@
 /** Accurate axes, matching x/y scale and optionally calibrated map overlay. */
 import {escapeGraph} from "./graph-core.js";
 import {analyzeVoronoi,bisectorInBounds} from "./voronoi-core.js";
+import {VORONOI_STARTER_BOUNDS} from "./voronoi-interactions.js";
 const E=escapeGraph,W=1000,H=690,LEFT=135,TOP=110,PLOT_WIDTH=790,PLOT_HEIGHT=440;
 const colours=["#b5e1d0","#bdd9f1","#efcce0","#ffe3bb","#dcd5f5","#c9e7e4",
  "#f3d4b4","#d3dcee","#d8eabf","#e4d4e5","#f4dfa5","#bcdcc6"];
@@ -39,19 +40,15 @@ function captionLines(input,max=123,maxLines=2){
  if(curr&&out.length<maxLines)out.push(curr);
  return out;
 }
-export function renderVoronoiSvg(raw){
- const q=analyzeVoronoi(raw),d=q.draft,b=q.bounds;
+export function renderVoronoiSvg(raw,options={}){
+ const q=analyzeVoronoi(raw),d=q.draft,b=q.bounds||VORONOI_STARTER_BOUNDS;
+ const interactive=options.interactive===true,selectedId=options.selectedSiteId||"";
+
  const body=['<svg class="voronoi-svg" data-voronoi-canvas="true" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="'+E(d.title||"Student Voronoi construction")+'" viewBox="0 0 '+W+" "+H+'" width="'+W+'" height="'+H+'">',
   '<rect width="'+W+'" height="'+H+'" fill="#fff"/>',
   text(d.title||"Voronoi studio — add title and sites",W/2,40,'font-family="Arial,sans-serif" font-size="22" font-weight="700" fill="#24464e" text-anchor="middle"'),
   text("Euclidean nearest-site regions — displayed cells clipped to the stated rectangular study window",W/2,67,
    'font-family="Arial,sans-serif" font-size="12" fill="#627781" text-anchor="middle"')];
- if(!q.cells.length||!b){
-  body.push('<rect x="130" y="110" width="790" height="440" fill="#f5faf8" stroke="#cfdedc" rx="12"/>');
-  body.push(text("Import two or more valid site coordinates to see a real construction",W/2,330,
-   'font-family="Arial,sans-serif" font-size="17" fill="#607b7c" text-anchor="middle"'));
-  body.push('</svg>');return body.join("");
- }
  const L=voronoiLayout(b),labelUnit=d.unitMode==="unit"&&d.unit.trim()?" ("+d.unit+")":"";
  const axisX=(d.xLabel||"Horizontal coordinate")+labelUnit;
  const axisY=(d.yLabel||"Vertical coordinate")+labelUnit;
@@ -61,11 +58,21 @@ export function renderVoronoiSvg(raw){
   body.push('<image href="'+E(d.mapSrc)+'" x="'+coord(L.left)+'" y="'+coord(L.top)+'" width="'+coord(L.width)+
    '" height="'+coord(L.height)+'" preserveAspectRatio="none" opacity="'+d.mapOpacity.toFixed(2)+'" clip-path="url(#voronoi-domain-clip)"/>');
  }
+ if(interactive)body.push('<rect class="voronoi-canvas-plane" data-voronoi-plane="true" x="'+coord(L.left)+'" y="'+coord(L.top)+
+  '" width="'+coord(L.width)+'" height="'+coord(L.height)+
+  '" fill="transparent" pointer-events="all" tabindex="0" role="button" aria-label="Voronoi coordinate plane"/>');
+ if(!q.cells.length)body.push(text(d.sites.length?
+  "One site placed. Add another to create the first perpendicular bisector.":
+  "Choose Place existing and click the grid to add the first site.",W/2,L.top+L.height/2,
+  'font-family="Arial,sans-serif" font-size="17" text-anchor="middle" fill="#5d8181" pointer-events="none"'));
  // Cell fills remain translucent when a real map is underneath, not fake map colours.
  for(const [i,c] of q.cells.entries()){
   if(c.polygon.length<3)continue;
+  const selected=selectedId&&selectedId===c.site.id;
   body.push('<path d="'+closedPolygon(c.polygon,L)+'" fill="'+colours[i%colours.length]+'" fill-opacity="'+
-   (d.mapSrc?".48":".72")+'" stroke="#396974" stroke-width="1.7" stroke-linejoin="round" clip-path="url(#voronoi-domain-clip)"/>');
+   (selected?".87":d.mapSrc?".48":".72")+'" stroke="'+(selected?"#156d60":"#396974")+
+   '" stroke-width="'+(selected?"3.5":"1.7")+'" stroke-linejoin="round" clip-path="url(#voronoi-domain-clip)"'+
+   (interactive?' data-voronoi-cell-index="'+i+'" role="button" tabindex="0" aria-label="Inspect cell for '+E(c.name)+'"':"")+'/>');
  }
  if(d.showGrid){
   for(const t of ticks(b.xMin,b.xMax))
@@ -85,14 +92,18 @@ export function renderVoronoiSvg(raw){
   body.push(text(fmt(cell.area)+labelUnit.replace(/[()]/g,"")+"²",L.x(cx),L.y(cy)+14,
    'font-size="11" font-family="Arial,sans-serif" text-anchor="middle" fill="#435a67"'));
  });
- if(d.showSites)q.cells.forEach((cell,i)=>{
-  const site=cell.site,x=L.x(site.x),y=L.y(site.y);
+ if(d.showSites||interactive)d.sites.forEach((site,i)=>{
+  if(!Number.isFinite(site.x)||!Number.isFinite(site.y))return;
+  const x=L.x(site.x),y=L.y(site.y),selected=selectedId===site.id;
+  if(selected&&interactive)body.push('<circle cx="'+coord(x)+'" cy="'+coord(y)+'" r="15" fill="none" stroke="#1a8c73" stroke-width="2.7" pointer-events="none"/>');
   if(site.kind==="candidate"){
-   body.push('<path d="M'+coord(x)+' '+coord(y-8)+' L'+coord(x+8)+' '+coord(y)+' L'+coord(x)+' '+coord(y+8)+' L'+coord(x-8)+' '+coord(y)+' Z" fill="#b25742" stroke="#fff" stroke-width="2"/>');
-  }else body.push('<circle cx="'+coord(x)+'" cy="'+coord(y)+'" r="6" fill="#1f4961" stroke="#fff" stroke-width="2.2"/>');
+   body.push('<path d="M'+coord(x)+' '+coord(y-8)+' L'+coord(x+8)+' '+coord(y)+' L'+coord(x)+' '+coord(y+8)+' L'+coord(x-8)+' '+coord(y)+' Z" fill="#b25742" stroke="#fff" stroke-width="2" pointer-events="none"/>');
+  }else body.push('<circle cx="'+coord(x)+'" cy="'+coord(y)+'" r="6" fill="#1f4961" stroke="#fff" stroke-width="2.2" pointer-events="none"/>');
   if(d.showLabels)body.push(text((site.kind==="candidate"?"Proposed: ":"")+ (site.name.length>20?site.name.slice(0,18)+"…":site.name),
    Math.min(LEFT+PLOT_WIDTH-10,Math.max(LEFT+10,x+9)),Math.max(TOP+16,y-12),
-   'font-family="Arial,sans-serif" font-size="12" font-weight="700" fill="#233f4c" text-anchor="start" stroke="#fff" stroke-width="3" paint-order="stroke"'));
+   'font-family="Arial,sans-serif" font-size="12" font-weight="700" fill="#233f4c" text-anchor="start" stroke="#fff" stroke-width="3" paint-order="stroke" pointer-events="none"'));
+  if(interactive)body.push('<circle cx="'+coord(x)+'" cy="'+coord(y)+'" r="13" fill="transparent" pointer-events="all"'+
+   ' data-voronoi-site-index="'+i+'" role="button" tabindex="0" aria-label="Select '+E(site.name)+', x '+fmt(site.x)+', y '+fmt(site.y)+'"/>');
  });
  if(q.probe){
   const px=L.x(q.probe.x),py=L.y(q.probe.y),winner=d.sites[q.nearest.index];
@@ -100,8 +111,6 @@ export function renderVoronoiSvg(raw){
   body.push('<circle cx="'+coord(px)+'" cy="'+coord(py)+'" r="8" fill="#fcf2da" stroke="#9a5b29" stroke-width="2.3"/>');
   body.push(text("P",px+10,py+22,'font-size="14" font-family="Arial,sans-serif" font-weight="700" fill="#774c29"'));
  }
- if(d.placeCandidate)body.push('<rect data-voronoi-place="true" class="voronoi-tap-layer" x="'+coord(L.left)+'" y="'+coord(L.top)+
-  '" width="'+coord(L.width)+'" height="'+coord(L.height)+'" fill="transparent" pointer-events="all" role="button" aria-label="Tap to place proposed location"/>');
  // Coordinate axes always use the same physical scale, never a stretched graph.
  body.push(line(L.left,L.top+L.height,L.left+L.width,L.top+L.height,'stroke="#304e5b" stroke-width="1.8"'));
  body.push(line(L.left,L.top,L.left,L.top+L.height,'stroke="#304e5b" stroke-width="1.8"'));
@@ -117,7 +126,7 @@ export function renderVoronoiSvg(raw){
   'font-family="Arial,sans-serif" font-size="16" font-weight="700" fill="#2c505d" text-anchor="middle"'));
  body.push(text(axisY,45,TOP+PLOT_HEIGHT/2,
   'font-family="Arial,sans-serif" font-size="16" font-weight="700" fill="#2c505d" text-anchor="middle" transform="rotate(-90 45 '+(TOP+PLOT_HEIGHT/2)+')"'));
- const siteLine=d.sites.length+" measured/defined site(s)"+(q.nearest?
+ const siteLine=d.sites.filter(s=>s.kind==="observed").length+" existing / defined and "+d.sites.filter(s=>s.kind==="candidate").length+" proposed site(s)"+(q.nearest?
   "   ·   Test P is nearest to "+q.nearest.tied.join(" / ")+", distance "+fmt(q.nearest.distance)+(d.unitMode==="unit"?" "+d.unit:""):"");
  body.push(text(siteLine.slice(0,126),W/2,TOP+PLOT_HEIGHT+112,
   'font-family="Arial,sans-serif" font-size="12" fill="#526d77" text-anchor="middle"'));
