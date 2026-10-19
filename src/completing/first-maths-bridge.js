@@ -6,6 +6,7 @@ import {routeById} from "../planning/investigative-routes.js";
 import {renderSparkShelf} from "../ui/insight-threads.js";
 import {exampleButton} from "../examples/views.js";
 import {essentialsButton} from "../essentials/views.js";
+import {techniqueStartingGuide,orderSelectedTechniqueGuides,sourceAdviceForTechnique} from "./technique-start-advice.js";
 
 const has=x=>typeof x==="string"&&!!x.trim();
 const firstNonempty=(...items)=>items.find(has)||"";
@@ -36,6 +37,7 @@ export function firstMathsContext(state){
   .map(id=>techniqueById.get(id)).filter(Boolean);
  const matching=selected.filter(x=>!p.course||x.course===p.course);
  const oldMaths=!selected.length?firstNonempty(state?.project?.mathsCustom,p.otherMaths):"";
+ const customMaths=firstNonempty(p.otherMaths);
  const firstIdea=firstNonempty(p.firstAction,p.figurePurpose);
  const proposedMove=firstIdea||activeRoute?.first?.[0]||"Choose one mathematical object, graph, small case or calculation";
  const mathematicalQuestion=firstNonempty(activeRoute?.question,p.figurePurpose);
@@ -48,7 +50,7 @@ export function firstMathsContext(state){
  const recordedActual=has(c.actualSource)||has(c.theoreticalObject)||
   (Array.isArray(state?.completion?.sourceRecords)&&state.completion.sourceRecords.some(x=>
    has(x?.fields?.actualSource)||has(x?.fields?.theoreticalObject)));
- return {kind,sourceKey,source,route,activeRoute,mismatched,selected,matching,oldMaths,
+ return {kind,sourceKey,source,route,activeRoute,mismatched,selected,matching,oldMaths,customMaths,
   firstIdea,proposedMove,mathematicalQuestion,sourceDetails,status,recordedActual,
   aim:firstNonempty(p.aim,state?.project?.aim),
   bridgePlacement:c.firstMathsBridgePlacement||"",bridgeNote:c.dataAimLink||"",
@@ -99,6 +101,100 @@ export function renderFirstMathsAdvice(state,icon,e,{reduced=false}={}){
  '</section>';
 }
 const planningLink=(icon,label,node)=>'<button type="button" class="first-maths-edit-plan" data-action="insight-jump" data-insight-type="planning" data-node="'+node+'">'+label+' '+icon("arrow-up-right")+'</button>';
+
+/** Specific beginning → diagnostic check → logical next move. All methods are
+ * potential tools from Planning, not a prepared itinerary or a finding. */
+const stepCell=(icon,e,index,title,copy)=>'<section class="first-maths-guide-step">'+
+ '<span class="first-maths-guide-step-title"><span class="first-maths-guide-step-number">'+index+'</span>'+
+ '<strong>'+title+'</strong></span><p>'+e(copy)+'</p></section>';
+const guideCard=(math,sourceKey,icon,e,{compact=false,unverified=false}={})=>{
+ const guide=techniqueStartingGuide(math.id);
+ if(!guide)return "";
+ return '<article class="first-maths-guide-card'+(compact?' is-secondary':'')+
+  '" data-technique-start-guide="'+e(math.id)+'" data-source-context="'+e(sourceKey)+'">'+
+  '<div class="first-maths-guide-card-header"><span class="first-maths-guide-symbol">'+
+   icon(guide.mode==="abstract"?"sigma":guide.mode==="data"?"chart":"compass")+
+   '</span><div><span class="first-maths-guide-eyebrow">'+(compact?'ANOTHER OPTION':'A GOOD WAY TO BEGIN')+'</span>'+
+   '<h4>'+e(math.label)+'</h4></div></div>'+
+  (unverified?'<p class="first-maths-guide-check">'+icon("alert-circle")+
+   ' Your current course choice differs from this menu item. Check suitability with your teacher.</p>':'')+
+  '<div class="first-maths-guide-steps">'+
+   stepCell(icon,e,1,"Try first",guide.first)+
+   stepCell(icon,e,2,"Look for",guide.look)+
+   stepCell(icon,e,3,"Then decide",guide.next)+'</div>'+
+  '<div class="first-maths-guide-source">'+icon("layers")+
+   '<p><strong>For your starting material</strong> '+e(sourceAdviceForTechnique(sourceKey,guide.mode))+'</p></div>'+
+  (math.caution?'<p class="first-maths-guide-caution">'+icon("lightbulb")+
+   '<span><strong>Watch out:</strong> '+e(math.caution)+'</span></p>':'')+
+  '</article>';
+};
+const routeGuideCard=(route,sourceKey,icon,e)=>{
+ if(!route)return "";
+ const signals=Array.isArray(route.branches)?route.branches.slice(0,2):[];
+ return '<article class="first-maths-guide-card first-maths-route-guide" data-route-start-guide="'+e(route.id)+'">'+
+  '<div class="first-maths-guide-card-header"><span class="first-maths-guide-symbol">'+icon("route")+'</span>'+
+   '<div><span class="first-maths-guide-eyebrow">A STARTING IDEA FROM YOUR CHOSEN JOURNEY</span><h4>'+e(route.title)+'</h4></div></div>'+
+  '<div class="first-maths-guide-steps">'+
+   stepCell(icon,e,1,"Try first",route.first[1])+
+   stepCell(icon,e,2,"Look for",route.question)+
+   stepCell(icon,e,3,"Then decide",signals.length?
+    'Respond to what the actual mathematics shows. For example, '+signals.map(x=>
+     x.signal.toLowerCase()+': '+x.next).join(' Alternatively, '):
+    'Use the first real finding to decide whether a second mathematical step would genuinely help.')+
+   '</div>'+
+  '<div class="first-maths-guide-source">'+icon("layers")+
+   '<p><strong>For your starting material</strong> '+e(sourceAdviceForTechnique(sourceKey,
+    route.family==="data"?"data":route.family==="reasoning"?"abstract":"flex"))+'</p></div>'+
+  (route.caution?'<p class="first-maths-guide-caution">'+icon("lightbulb")+
+   '<span><strong>Watch out:</strong> '+e(route.caution)+'</span></p>':'')+
+ '</article>';
+};
+const customGuideCard=(name,icon,e)=>'<article class="first-maths-guide-card is-secondary" data-custom-maths-start>'+
+ '<div class="first-maths-guide-card-header"><span class="first-maths-guide-symbol">'+icon("lightbulb")+
+ '</span><div><span class="first-maths-guide-eyebrow">YOUR OWN MATHEMATICAL IDEA</span><h4>'+e(name)+'</h4></div></div>'+
+ '<div class="first-maths-guide-steps">'+
+  stepCell(icon,e,1,"Try first","Define a precise mathematical question and write down one legitimate example, diagram, expression or observation you could investigate.")+
+  stepCell(icon,e,2,"Look for","What structure, pattern, restriction or relationship could the first example reveal?")+
+  stepCell(icon,e,3,"Then decide","Choose a technique only after the first reasoning shows how it would advance your aim; ask your teacher about course suitability if uncertain.")+
+ '</div></article>';
+
+export function renderSelectedMathematicsAdvice(state,icon,e){
+ const ctx=firstMathsContext(state);
+ const order=orderSelectedTechniqueGuides(ctx.selected,ctx.activeRoute?.id,ctx?.selected.length?
+  state?.planning?.fields?.course:"");
+ const first=order.active[0]||order.other[0];
+ const others=order.active.length?order.active.slice(1).concat(order.other):order.other.slice(1);
+ const extraCustom=ctx.customMaths&&
+  (!ctx.selected.length||!ctx.selected.some(x=>x.label.toLowerCase()===ctx.customMaths.toLowerCase()));
+ const showRoute=!ctx.selected.length&&ctx.activeRoute;
+ const fallback=!ctx.selected.length&&!ctx.activeRoute&&!extraCustom;
+ const opening=first?guideCard(first,ctx.sourceKey,icon,e,{unverified:order.other.some(x=>x.id===first.id)}):
+  showRoute?routeGuideCard(ctx.activeRoute,ctx.sourceKey,icon,e):
+  extraCustom?customGuideCard(ctx.customMaths,icon,e):
+  '<div class="first-maths-guide-empty">'+icon("compass")+
+   '<p><strong>No technique needed yet.</strong> Start with the mathematical aim and choose one small, genuine example, diagram or representation that might reveal something useful. Revisit your choices once you know what the first step shows.</p></div>';
+ const optional=[
+  ...others.map(math=>({label:math.label,html:guideCard(math,ctx.sourceKey,icon,e,
+   {compact:true,unverified:order.other.some(x=>x.id===math.id)})})),
+  ...(extraCustom&&first?[{label:ctx.customMaths,html:customGuideCard(ctx.customMaths,icon,e)}]:[])
+ ];
+ const otherHtml=optional.length?'<details class="first-maths-other-guides" data-first-maths-other-guides>'+
+  '<summary>'+icon("layers")+'<span><strong>Advice for my other mathematical possibilities ('+optional.length+')</strong>'+
+   '<small>Open only the techniques you might actually use next.</small></span>'+icon("chevron-right")+'</summary>'+
+   '<div class="first-maths-other-guides-content">'+optional.map((x,i)=>
+    '<details class="first-maths-other-technique" data-other-technique="'+i+'">'+
+    '<summary>'+icon("chevron-right")+' '+e(x.label)+'</summary>'+x.html+'</details>').join("")+
+   '</div></details>':'';
+ return '<div class="first-maths-starting-guidance" data-first-maths-starting-guidance>'+
+  '<div class="first-maths-starting-guidance-head">'+icon("lightbulb")+
+   '<div><h3>How could I actually start?</h3>'+
+   '<p>Pick one genuine mathematical opening. Look at what it reveals before deciding whether to use another technique.</p></div></div>'+
+  opening+otherHtml+
+  (fallback?'<p class="first-maths-starting-hint">Choosing a specific technique in Planning is optional. A clear mathematical question is enough to begin.</p>':
+   '<p class="first-maths-starting-hint">These are possible mathematical directions, not instructions to follow or evidence already collected. You decide what fits your aim.</p>')+
+ '</div>';
+}
+
 export function renderFirstMathsSparks(state,icon,e){
  const ctx=firstMathsContext(state),maths=ctx.matching,all=ctx.selected;
  const route=ctx.activeRoute;
@@ -131,9 +227,10 @@ export function renderFirstMathsSparks(state,icon,e){
     '</div>'+planningLink(icon,'Review source choices',ctx.sourceKey==="theoretical"?'N02M':'N03')+'</div>'+
   (topicHtml?'<div class="first-maths-planned-techniques"><strong>Mathematics you considered in Planning</strong>'+topicHtml+
     '<p>These are possibilities, not a checklist or evidence of mathematics already done.</p></div>':'')+
+  renderSelectedMathematicsAdvice(state,icon,e)+
   (ctx.mismatched?'<p class="first-maths-plan-review" role="status">Your earlier journey belongs to a different investigation type. Review it before treating its first move as relevant.</p>':'')+
   (all.length&&maths.length<all.length?'<p class="first-maths-plan-review">Some selected mathematics belongs to a different course from the one now recorded. Check suitability; it is not automatically part of your IA.</p>':'')+
-  (route?'<aside class="first-maths-question"><strong>'+icon("lightbulb")+' One mathematical question to consider</strong><p>'+e(route.question)+'</p>'+
+  (route&&!ctx.selected.length?'<aside class="first-maths-question"><strong>'+icon("lightbulb")+' One mathematical question to consider</strong><p>'+e(route.question)+'</p>'+
     '<small>A starting suggestion — write and decide your own mathematical question.</small></aside>':'')+
   renderSparkShelf(state,"C20",{surface:"studio",libraryOnly:true})+
  '</section>';

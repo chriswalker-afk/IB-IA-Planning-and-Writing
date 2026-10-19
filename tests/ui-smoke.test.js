@@ -653,3 +653,55 @@ test("first-maths source details remain editable without becoming an unrelated m
  assert.equal(h.saved.completion.fields.actualMethod,"I used the published data and verified its definitions");
  assert(h.html.includes('Introduce your first mathematical step'));
 });
+
+test("first maths presents technique-specific mathematical reasoning, not just selected chips",()=>{
+ const state=createProjectState();state.route="completing";state.completion.current="C20";
+ Object.assign(state.planning.fields,{
+  kind:"modelling",dataSource:"primary",course:"AI SL",
+  aim:"How can I model the volume of a changing container?",
+  primaryWhat:"Dimensions and capacity measurements"
+ });
+ state.planning.mathSelected=["AI05"];
+ const before=JSON.stringify(state);
+ const h=createHarness(state);
+ assert(h.html.includes('data-technique-start-guide="AI05"'));
+ for(const message of ["Quadratic or cubic models","How could I actually start?","Try first","Look for","Then decide",
+  "turning point","scatter plot","quadratic from a cubic"])
+  assert(h.html.includes(message),message);
+ assert(h.html.includes('data-source-context="primary"'));
+ assert(h.html.includes("permitted"));
+ assert(h.html.includes('data-bind="completion.fields.firstPurpose"'));
+ assert.equal(JSON.stringify(h.saved.planning.fields),JSON.stringify(state.planning.fields));
+ assert.equal(JSON.stringify(h.saved.planning.mathSelected),JSON.stringify(state.planning.mathSelected));
+ assert.equal(h.saved.entries.length,0);
+});
+test("multiple mathematical choices provide one contextual starting suggestion and optional alternatives",()=>{
+ const s=createProjectState();s.route="completing";s.completion.current="C20";
+ Object.assign(s.planning.fields,{course:"AI SL",kind:"statistics",dataSource:"secondary"});
+ s.planning.fields.secondaryPublisher="An official dataset";
+ s.planning.routeExplorer.selectedRoute="relationships";
+ s.planning.mathSelected=["AI15","AI14","AI16"];
+ const h=createHarness(s);
+ assert(h.html.includes('data-first-maths-other-guides'));
+ assert(h.html.includes('Advice for my other mathematical possibilities (2)'));
+ assert(h.html.includes('data-technique-start-guide="AI14"'));
+ assert(h.html.includes('data-technique-start-guide="AI15"'));
+ assert(h.html.includes('data-technique-start-guide="AI16"'));
+ assert(h.html.indexOf('data-technique-start-guide="AI14"')<h.html.indexOf('data-technique-start-guide="AI15"'));
+ assert(h.html.includes("published data"));
+ assert(h.html.includes("Cite the source"));
+ assert(h.html.includes("An official dataset"));
+ assert(h.html.includes('data-first-maths-source-details'));
+});
+test("theoretical first mathematics follows the saved investigative journey without inventing observations",()=>{
+ const s=createProjectState();s.route="completing";s.completion.current="C20";
+ Object.assign(s.planning.fields,{course:"AA SL",kind:"theoretical",
+  theoreticalCase:"Test a conjecture for integer n"});
+ s.planning.routeExplorer.selectedRoute="proof";
+ const h=createHarness(s);
+ assert(h.html.includes('data-route-start-guide="proof"'));
+ assert(h.html.includes("Explore a few small cases"));
+ assert(h.html.includes("general"));
+ assert(!h.html.includes('data-technique-start-guide="AI05"'));
+ assert.equal(h.saved.entries.length,0);
+});

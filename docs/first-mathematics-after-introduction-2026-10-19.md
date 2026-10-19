@@ -30,3 +30,26 @@ The Introduction now has a direct action labelled **Introduce my first maths**, 
 - Unit tests cover each source choice (primary, secondary, both, theoretical, undecided), route relevance and mismatch, selected course techniques, honest missing information, safe HTML escaping and preservation through state normalization.
 - Studio integration tests verify one purpose field reused at C31/C30, skip-once advice when already included in the Introduction, conditional source details, criterion bubbles and student mathematical records remaining unchanged.
 - Browser acceptance tests cover 390px mobile and 1360px desktop and clicking the first mathematical step, optional source details, example viewers, rubric popovers and autosaved fields.
+ 
+
+## Additional pass: meaningful advice for every selected mathematical starting point
+
+The Planning technique pills alone did not tell students how to actually begin their first piece of mathematics. The same panel now shows a focused **How could I actually start?** guide immediately beneath the selected techniques:
+
+- **Try first:** a mathematical opening, including any essential first observation, sketch, definition or test of a simple case.
+- **Look for:** the particular mathematical feature that would justify (or challenge) the technique — e.g. linearity, curvature, repeatability, independent observations or model constraints.
+- **Then decide:** a conditional next mathematical step, based on what genuine evidence or reasoning shows rather than a fixed chain of techniques.
+- **For your starting material / Watch out:** practical distinctions for primary, secondary, combined and theoretical routes; plus the actual course catalogue's technique-specific caveat.
+
+There are individually authored guides for **all 51 available mathematics choices** (26 AI SL and 25 AA SL), including regression, correlation, sampling, chi-squared, functions, sequences, proof, optimisation, calculus, geometry and financial models. A separate fallback turns **all 16 optional investigative journeys** into actionable opening advice for students who chose a journey but not a particular technique. Another fallback helps students who entered custom mathematics or have not decided yet without pretending it is curriculum-certified.
+
+If a student selected several techniques, the page highlights **one** plausible opening choice, using the chosen investigative route to favour an informative diagnostic before an advanced later method. The others stay behind an **Advice for my other mathematical possibilities** disclosure, with individual guides students can open when relevant. Nothing is auto-filled into their IA, and the selected mathematics and previous sparks are not erased. Mismatches with the current course are visible rather than silently recommended.
+
+Examples of specificity:
+- Quadratic/cubic modelling: first plot paired values or derive a function from constraints; establish that a straight line is inadequate before considering a quadratic, and use a cubic only if warranted by structure and enough information.
+- Pearson and linear regression: make and inspect a real scatter plot for approximate linearity and influential points **before** applying a coefficient or fitting a line.
+- Chi-squared tests: begin with genuine frequency tables, meaningful categories, independence and expected counts before carrying out a formal test.
+- Optimisation: define objective and constraints, examine domain and boundaries before applying differentiation.
+- Proof: state the precise claim, test small cases and search for counterexamples before general algebraic justification; examples are not proof.
+
+Every guide is authored for a real mathematical question, not a generic 'use this method to calculate...' instruction. Tests enforce catalogue coverage, ensure no IA findings are invented, exercise source contexts and all 16 routes, and verify desktop/phone layout and optional details.

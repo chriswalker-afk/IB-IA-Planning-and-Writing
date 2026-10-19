@@ -675,3 +675,56 @@
 .intro-first-maths-next p{font-size:11px;line-height:1.55;margin:4px 0 0;color:#607770}
 .intro-first-maths-next>.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;flex:none;min-height:43px}
 @media(max-width:760px){.intro-first-maths-next{flex-direction:column;align-items:stretch}.intro-first-maths-next>.btn{width:100%}}
+
+
+/* Contextual first-mathematics advice: show one immediately useful route,
+   keep 50+ alternative course techniques behind native disclosures. */
+.first-maths-starting-guidance{margin-top:14px}
+.first-maths-starting-guidance-head{display:flex;gap:10px;align-items:flex-start;margin:14px 0 11px}
+.first-maths-starting-guidance-head>.icon{height:19px;width:19px;flex:none;color:#8b6aaa;margin-top:2px}
+.first-maths-starting-guidance-head h3{font-size:15px;line-height:1.35;color:#473e67;margin:0}
+.first-maths-starting-guidance-head p{font-size:11px;line-height:1.55;color:#687d75;margin:4px 0 0}
+.first-maths-guide-card{border:1px solid #d9caec;background:linear-gradient(140deg,#fcfaff 0%,#fff 85%);border-radius:13px;padding:15px;margin:0;min-width:0}
+.first-maths-guide-card-header{display:flex;align-items:center;gap:10px;margin-bottom:13px}
+.first-maths-guide-symbol{border-radius:11px;display:grid;place-items:center;flex:none;width:37px;height:37px;background:#eee5fa;color:#695285}
+.first-maths-guide-symbol>.icon{width:19px;height:19px}
+.first-maths-guide-eyebrow{display:block;color:#76638f;letter-spacing:.065em;font-size:9px;line-height:1.4;font-weight:800}
+.first-maths-guide-card-header h4{font-size:15px;line-height:1.4;color:#382f4f;font-weight:795;margin:3px 0 0}
+.first-maths-guide-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.first-maths-guide-step{min-width:0;border:1px solid #e2dee9;background:#fff;border-radius:9px;padding:11px 12px}
+.first-maths-guide-step-title{display:flex;align-items:center;gap:7px;color:#4b4564;font-size:11px;line-height:1.5}
+.first-maths-guide-step-number{display:grid;place-items:center;width:23px;height:23px;border-radius:7px;background:#e9e0f4;color:#604681;font-size:11px;font-weight:840;flex:none}
+.first-maths-guide-step p{color:#485663;font-size:11px;line-height:1.65;margin:7px 0 0;overflow-wrap:anywhere}
+.first-maths-guide-source{display:flex;align-items:flex-start;gap:8px;margin-top:11px;background:#f0f7f2;border:1px solid #d3e5d7;border-radius:9px;padding:10px 11px}
+.first-maths-guide-source>.icon{width:17px;height:17px;color:#2a7a67;flex:none;margin-top:2px}
+.first-maths-guide-source p{font-size:11px;line-height:1.58;color:#48675e;margin:0;overflow-wrap:anywhere}
+.first-maths-guide-source strong{color:#276956}
+.first-maths-guide-caution{display:flex;gap:7px;margin:10px 2px 0;font-size:11px;line-height:1.6;color:#7b643e}
+.first-maths-guide-caution>.icon{flex:none;width:15px;height:15px;margin-top:1px}
+.first-maths-guide-caution strong{color:#775f2d}
+.first-maths-guide-check{display:flex;gap:7px;align-items:flex-start;font-size:11px;line-height:1.55;padding:8px 10px;color:#855a32;background:#fff5df;border:1px solid #f2dfbc;border-radius:9px;margin:0 0 11px}
+.first-maths-guide-check>.icon{flex:none;width:15px;height:15px;margin-top:2px}
+.first-maths-starting-hint{margin:9px 3px 4px;font-size:11px;line-height:1.6;color:#738579}
+.first-maths-guide-empty{display:flex;gap:10px;align-items:flex-start;background:#fff;border:1px dashed #d6d6e3;border-radius:10px;padding:14px}
+.first-maths-guide-empty>.icon{flex:none;width:19px;height:19px;color:#8264a0}
+.first-maths-guide-empty p{font-size:12px;line-height:1.6;margin:0;color:#53636b}
+.first-maths-other-guides{margin-top:11px;background:#fff;border:1px solid #ddd5e9;border-radius:11px;overflow:hidden}
+.first-maths-other-guides>summary{padding:12px 14px;display:flex;align-items:center;gap:9px;cursor:pointer;list-style:none}
+.first-maths-other-guides>summary::-webkit-details-marker,.first-maths-other-technique>summary::-webkit-details-marker{display:none}
+.first-maths-other-guides>summary>.icon:first-child{width:20px;height:20px;color:#725c91;flex:none}
+.first-maths-other-guides>summary>span{flex:1;min-width:0}
+.first-maths-other-guides>summary strong{color:#564579;font-size:12px;line-height:1.4}
+.first-maths-other-guides>summary small{display:block;color:#797186;font-size:11px;line-height:1.45;margin-top:3px}
+.first-maths-other-guides>summary>.icon:last-child{width:18px;height:18px;color:#746087;flex:none;transition:transform .15s}
+.first-maths-other-guides[open]>summary>.icon:last-child{transform:rotate(90deg)}
+.first-maths-other-guides-content{padding:4px 13px 13px;border-top:1px solid #ebe4ef}
+.first-maths-other-technique{border-bottom:1px solid #ece6f2}
+.first-maths-other-technique:last-child{border-bottom:0}
+.first-maths-other-technique>summary{display:flex;align-items:center;gap:7px;cursor:pointer;padding:11px 2px;font-size:12px;font-weight:730;color:#60527c;list-style:none}
+.first-maths-other-technique>summary>.icon{width:15px;height:15px;flex:none;transition:transform .15s}
+.first-maths-other-technique[open]>summary>.icon{transform:rotate(90deg)}
+.first-maths-other-technique>.first-maths-guide-card{margin:0 0 13px}
+.first-maths-guide-card.is-secondary{background:#fcfbfd;border-color:#e6daed;padding:11px}
+.first-maths-guide-card.is-secondary .first-maths-guide-steps{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media(max-width:780px){.first-maths-guide-steps,.first-maths-guide-card.is-secondary .first-maths-guide-steps{grid-template-columns:1fr;gap:7px}.first-maths-guide-card{padding:12px}.first-maths-guide-step{padding:10px 12px}.first-maths-guide-step p{margin-top:4px}.first-maths-guide-card-header h4{font-size:14px}}
+@media(prefers-reduced-motion:reduce){.first-maths-other-guides>summary>.icon:last-child,.first-maths-other-technique>summary>.icon{transition:none}}
