@@ -786,3 +786,65 @@ test("a changed investigative journey refreshes method advice without changing s
  assert(reopened.html.includes("My own approach for this aim"));
  assert.equal(reopened.saved.completion.fields.firstMethodEvaluation,"My own mathematical evaluation");
 });
+
+
+test("showing first mathematics always provides three writing areas with the correct criteria, but no writing box in section two",()=>{
+ const s=createProjectState();s.route="completing";s.completion.current="C30";
+ s.planning.fields.aim="How does a measured quantity vary?";
+ const h=createHarness(s);
+ for(const part of ["introduce","reflect","next"])
+  assert(h.html.includes('data-show-first-writing-box="'+part+'"'),part);
+ const blocks=["introduce","show","reflect","next"].map(name=>{
+  const start=h.html.indexOf('data-show-first-part="'+name+'"');
+  return {name,start};
+ });
+ assert(blocks.every(x=>x.start>=0),JSON.stringify(blocks));
+ assert(blocks.every((x,i)=>i===0||x.start>blocks[i-1].start),"writing parts should appear in order");
+ const showPart=h.html.slice(blocks[1].start,blocks[2].start);
+ assert(!showPart.includes("<textarea"),"section two should not have a writing textarea");
+ for(const key of ["firstOutputIntroduction","firstInterpretation","nextQuestion","nextReason"])
+  assert(h.html.includes('data-bind="completion.fields.'+key+'"'),key);
+ for(const key of ["introduceA","introduceB","reflectD","reflectE","nextC","nextD"])
+  assert.equal((h.html.match(new RegExp('data-criterion-badge="completing:C30:'+key+'"','g'))||[]).length,1,key);
+ h.write("completion.fields.firstOutputIntroduction","The first graph will display X against Y to investigate whether they are related.");
+ h.write("completion.fields.firstInterpretation","Draft: I must inspect the real graph before interpreting it.");
+ h.write("completion.fields.nextQuestion","Should I test whether a linear pattern is plausible?");
+ h.write("completion.fields.nextReason","I can justify this only after inspecting the actual points.");
+ const saved=h.saved;
+ assert.equal(saved.completion.fields.firstOutputIntroduction,"The first graph will display X against Y to investigate whether they are related.");
+ assert.equal(saved.completion.fields.firstInterpretation,"Draft: I must inspect the real graph before interpreting it.");
+ assert.equal(saved.completion.fields.nextQuestion,"Should I test whether a linear pattern is plausible?");
+ assert.equal(saved.completion.fields.nextReason,"I can justify this only after inspecting the actual points.");
+ assert.equal(saved.entries.length,0,"draft boxes should not invent a completed mathematical record");
+ h.action("completion-open",{node:"C20"});h.action("completion-open",{node:"C30"});
+ assert(h.html.includes("The first graph will display X against Y"));
+ assert(h.html.includes("I can justify this only after inspecting"));
+});
+test("first mathematical writing drafts transfer to the real entry when it is created and keep the same criteria bubbles",()=>{
+ const s=createProjectState();s.route="completing";s.completion.current="C30";
+ s.completion.fields.firstOutputIntroduction="Before Figure 1 I will show the observed paired quantities.";
+ s.completion.fields.firstInterpretation="Provisional reflection to check after producing the diagram.";
+ s.completion.fields.firstPurpose="What form does the relationship have?";
+ const h=createHarness(s);
+ h.action("completion-open",{node:"C31"});
+ h.action("completion-route",{condition:"Chosen useful initial representation or calculation"});
+ assert.equal(h.saved.completion.current,"C32");
+ assert.equal(h.saved.entries.length,1);
+ assert.equal(h.saved.entries[0].status,"planned");
+ assert.equal(h.saved.entries[0].purpose,"Before Figure 1 I will show the observed paired quantities.");
+ assert.equal(h.saved.entries[0].interpretation,"Provisional reflection to check after producing the diagram.");
+ h.action("completion-open",{node:"C30"});
+ assert(h.html.includes('data-bind="entries.0.purpose"'));
+ assert(h.html.includes('data-bind="entries.0.interpretation"'));
+ assert(h.html.includes('data-criterion-badge="completing:C30:introduceA"'));
+ assert(h.html.includes('data-criterion-badge="completing:C30:reflectD"'));
+ assert(h.html.includes('data-bind="completion.fields.nextReason"'));
+ const start=h.html.indexOf('data-show-first-part="show"'),end=h.html.indexOf('data-show-first-part="reflect"');
+ assert(!h.html.slice(start,end).includes("<textarea"),"section two has no writing box even with a record");
+ h.write("entries.0.interpretation","The actual result changes my initial expectation.");
+ h.write("entries.0.result","The plotted data are curved.");
+ h.choose("entries.0.status","completed");
+ assert.equal(h.saved.entries[0].interpretation,"The actual result changes my initial expectation.");
+ assert.equal(normalizeProjectState(h.saved).entries[0].interpretation,"The actual result changes my initial expectation.");
+ assert.equal(normalizeProjectState(h.saved).completion.fields.firstOutputIntroduction,"Before Figure 1 I will show the observed paired quantities.");
+});
