@@ -1,0 +1,112 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {createProjectState} from '../src/core/project-state.js';
+import {escapeHtml,icon} from '../src/ui/primitives.js';
+import {isStudioWritingNode,renderStudioWritingStage,STUDIO_WRITING_GROUPS,STUDIO_WRITING_NODES} from '../src/completing/studio-writing-stages.js';
+import {renderSparkShelf} from '../src/ui/insight-threads.js';
+const make=()=>{
+ const s=createProjectState();s.route='completing';s.completion.current='C20';
+ s.planning.fields.aim='Does the amount of dough affect volume?';
+ s.planning.fields.motivation='I wanted to explore a real pattern.';
+ s.planning.fields.prediction='I expect an increase';
+ return s;
+};
+const stage=(s,node,opts={})=>renderStudioWritingStage(s,node,{
+ icon,e:escapeHtml,taskHtml:'<textarea data-bind="completion.fields.exampleNote"></textarea>',
+ taskIntro:'Only describe real evidence and mathematics',...opts
+});
+test('four-part layout is consistently present through all three writing sections',()=>{
+ const keys=Object.keys(STUDIO_WRITING_GROUPS);
+ assert.deepEqual(keys,['data','maths','conclusion']);
+ assert.equal(STUDIO_WRITING_NODES.length,31);
+ assert.equal(new Set(STUDIO_WRITING_NODES).size,31);
+ const s=make(),before=JSON.stringify(s);
+ for(const [group,nodes] of Object.entries(STUDIO_WRITING_GROUPS)){
+  for(const node of nodes){
+   const html=stage(s,node);
+   const sections=['advice','sparks','task','examples'];
+   const order=sections.map(k=>html.indexOf('data-writing-stage-part="'+k+'"'));
+   assert(order.every(x=>x>=0),node+' missing one part');
+   assert(order.every((x,i)=>i===0||x>order[i-1]),node+' not logically ordered');
+   assert(html.includes('data-stage-advice="'+group+'"'),node);
+   assert(html.includes('data-writing-examples'),node);
+   assert(html.includes('data-example-topic='),node);
+   assert(html.includes('actual IA document'),node);
+   assert(html.includes('data-bind="completion.fields.exampleNote"'),node);
+   assert(!html.includes('Why this matters in the criteria'),node);
+   assert.equal((html.match(/data-writing-examples/g)||[]).length,1,node);
+  }
+ }
+ assert.equal(JSON.stringify(s),before,'read-only writing views must not change student planning or results');
+ assert(!isStudioWritingNode('C10'));assert(!isStudioWritingNode('C80'));
+});
+test('main stage pages offer four high-value tips; substeps keep optional advice collapsed',()=>{
+ const s=make();
+ for(const node of ['C20','C30','C40','C50','C60']){
+  const html=stage(s,node);
+  assert.equal((html.match(/data-studio-tip="/g)||[]).length,4,node);
+  assert(html.includes('studio-stage-advice-cards'),node);
+  assert(!html.includes('studio-stage-more-advice'),node);
+ }
+ for(const node of ['C21S','C24','C32','C34B','C61','C64']){
+  const html=stage(s,node);
+  assert(html.includes('studio-stage-more-advice'),node);
+  assert(html.includes('One thing to keep in mind'),node);
+ }
+ for(const node of ['C20','C30','C60']){
+  const html=stage(s,node,{reduced:true});
+  assert(!html.includes('data-studio-tip='),node);
+  assert(html.includes('data-writing-examples'),node);
+  assert(html.includes('data-writing-stage-part="task"'),node);
+ }
+});
+test('Data guidance rejects invented collection; theoretical guidance does not force a dataset',()=>{
+ const s=make();
+ const empirical=stage(s,'C20');
+ assert(empirical.includes('A proposed survey, source or method is not evidence'));
+ assert(empirical.includes('sampling'));
+ const theoretical=stage(s,'C21T');
+ assert(theoretical.includes('there is no need to invent a dataset'));
+ assert(theoretical.includes('data-example-topic="proof"'));
+ assert(theoretical.includes('mathematical starting'));
+});
+test('Mathematical exploration guidance connects results and methods; conclusion uses actual results',()=>{
+ const s=make();
+ const math=stage(s,'C40');
+ assert(math.includes('previous mathematical'));
+ assert(math.includes('no quota')||math.includes('no quota'.toUpperCase())||math.includes('no quota of graphs'));
+ assert(math.includes('data-example-topic="calculation"'));
+ const conclusion=stage(s,'C60');
+ assert(conclusion.includes('actual mathematical results'));
+ assert(conclusion.includes('no new')||conclusion.includes('No new')||conclusion.includes('new mathematics'));
+ assert(conclusion.includes('data-example-topic="conclusion"'));
+ assert(conclusion.includes('prediction'));
+});
+test('sparks contain only saved grounded ideas; no invented actual result is promoted',()=>{
+ const s=make();
+ s.planning.fields.primaryWhat='Measure a possible future variable';
+ let html=stage(s,'C20');
+ assert(html.includes('Does the amount of dough affect volume?'));
+ assert(html.includes('A plan is not a finding.'));
+ assert(html.includes('data-spark-library'));
+ assert(!html.includes('Your sparks are back'),'stage header avoids a second spark heading');
+ const untouched=JSON.stringify(s);
+ s.completion.current='C60';
+ html=stage(s,'C60');
+ assert(html.includes('Findings may challenge your hope'));
+ assert.equal(JSON.stringify(s),untouched);
+});
+test('extra mathematical help remains available but not forced into the main flow',()=>{
+ const s=make();
+ const html=stage(s,'C34',{help:'EXISTING_HELP_AND_WRITING_LEDGER'});
+ assert(html.includes('EXISTING_HELP_AND_WRITING_LEDGER'));
+ assert(html.includes('studio-stage-more-help'));
+ assert(html.indexOf('EXISTING_HELP_AND_WRITING_LEDGER')>html.indexOf('data-writing-stage-part="examples"'));
+ assert(!html.includes('EXISTING_HELP_AND_WRITING_LEDGER</section>'));
+});
+test('user-supplied saved sparks render as escaped text rather than executable HTML',()=>{
+ const s=make();s.planning.fields.aim='<img src=x onerror=alert(1)>';
+ const html=stage(s,'C60');
+ assert(html.includes('&lt;img'));
+ assert(!html.includes('<img'));
+});

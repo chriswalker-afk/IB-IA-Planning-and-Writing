@@ -479,3 +479,92 @@
 @media(prefers-reduced-motion:reduce){
  .intro-prediction-head>.icon:last-child{transition:none}
 }
+
+
+/* Shared stage-writing pattern for Data & Methods, Mathematical Exploration,
+   and Conclusion. Progressive disclosure: useful detail without repeated walls. */
+.studio-stage-advice,.studio-stage-sparks,.studio-stage-writing-task{border-radius:16px;min-width:0}
+.studio-stage-advice{background:linear-gradient(130deg,#faf7fe 0%,#fff 95%);border:1px solid #ded8e9;padding:15px 18px}
+.studio-stage-advice-head,.studio-stage-sparks-head,.studio-stage-writing-task-head{display:flex;align-items:flex-start;gap:12px}
+.studio-stage-advice-head h2,.studio-stage-sparks-head h2,.studio-stage-writing-task-head h2{font-size:18px;line-height:1.35;margin:3px 0 5px;color:#263f47}
+.studio-stage-advice-head p,.studio-stage-sparks-head p,.studio-stage-writing-task-head p{color:#63747a;font-size:12px;line-height:1.62;margin:0}
+.studio-stage-icon{flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:13px;background:#eee6f7;color:#675092}
+.studio-stage-icon>.icon{width:22px;height:22px}
+.studio-stage-advice-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:15px}
+.studio-stage-advice-cards .studio-stage-tip{min-width:0}
+.studio-stage-advice-cards .studio-stage-tip>summary{padding:10px 11px;min-height:64px;align-items:center}
+.studio-stage-advice-cards .studio-stage-tip[open]{grid-column:span 2}
+.studio-stage-advice-cards .studio-stage-tip .intro-advice-tip-copy{gap:3px}
+.studio-stage-advice-cards .studio-stage-tip .intro-advice-tip-copy strong{font-size:12px}
+.studio-stage-advice-cards .studio-stage-tip .intro-advice-tip-copy>span{font-size:10.5px;line-height:1.52}
+.studio-stage-advice-cards .studio-stage-tip .intro-advice-tip-body{padding:0 13px 13px}
+.studio-stage-advice-cards .studio-stage-tip .intro-advice-tip-body>p{font-size:12px;line-height:1.6}
+.studio-stage-advice-cards .studio-stage-tip .intro-advice-example p{font-size:11px}
+.studio-stage-guide-link{display:inline-flex;gap:6px;align-items:center;border:0;background:transparent;color:#645085;font-size:11px;font-weight:790;padding:9px 3px 1px;margin-top:10px;cursor:pointer}
+.studio-stage-guide-link>.icon{width:15px;height:15px}
+.studio-stage-guide-link:hover{text-decoration:underline}
+.studio-stage-guide-link:focus-visible{outline:2px solid #8f7ac0;outline-offset:3px;border-radius:6px}
+.studio-stage-more-advice{border-top:1px solid #ebe5f1;margin-top:12px;padding-top:8px}
+.studio-stage-more-advice>summary{display:flex;gap:8px;align-items:center;cursor:pointer;list-style:none;font-size:12px;font-weight:780;color:#624e8b;padding:6px 0}
+.studio-stage-more-advice>summary::-webkit-details-marker{display:none}
+.studio-stage-more-advice>summary>.icon{width:16px;height:16px}
+.studio-stage-more-advice>summary>.icon:last-child{margin-left:auto;transition:transform .15s}
+.studio-stage-more-advice[open]>summary>.icon:last-child{transform:rotate(90deg)}
+.studio-stage-sparks{background:linear-gradient(125deg,#f2f9f4,#fbfefd);border:1px solid #cee3d7;padding:15px 18px}
+.studio-stage-sparks-head{gap:12px;margin-bottom:12px}
+.studio-stage-sparks-head>.icon{flex:none;width:22px;height:22px;margin-top:2px;color:#297a6a}
+.studio-stage-sparks-head h2{color:#26574e;font-size:16px}
+.studio-stage-sparks-head .intro-writing-guide-eyebrow{color:#287669}
+.studio-stage-sparks .spark-shelf{margin:0}
+.studio-stage-sparks .planning-compact-sparks{margin:0}
+.studio-stage-sparks .spark-library{margin-top:9px}
+.studio-stage-empty-sparks{color:#668174;background:#fff;border:1px dashed #bdd7c9;padding:12px;border-radius:10px;font-size:12px;line-height:1.6;margin:0}
+.studio-stage-writing-task{background:#fff;border:1px solid #d8cde8;padding:17px 20px}
+.studio-stage-writing-task-head{margin-bottom:12px}
+.studio-stage-writing-task-head>.intro-writing-task-symbol{width:40px;height:40px}
+.studio-stage-writing-task-head h2{font-size:18px}
+.studio-stage-writing-task .studio-stage-writing-location{display:flex;align-items:flex-start;gap:8px;border:1px solid #ebe3f3;background:#f9f7fc;color:#625878;border-radius:10px;padding:11px 12px;margin:0 0 16px;font-size:11px;line-height:1.55}
+.studio-stage-writing-location>.icon{flex:none;width:16px;height:16px;color:#695292}
+.studio-stage-writing-task .criterion-marked-writing-box{margin:0 0 14px 13px}
+.studio-stage-writing-task .criterion-marked-field>.criterion-badge{z-index:2}
+.studio-stage-writing-task .field-group>.field-label{font-size:12px}
+.studio-stage-writing-task .completion-active-step{max-width:100%}
+.studio-stage-writing-task .completion-evidence-anchor{margin-bottom:13px}
+.studio-stage-writing-task>.insight-capture{margin-top:15px}
+.studio-stage-examples{border-radius:14px;background:#f7faf9;border:1px solid #d7e7de;overflow:hidden}
+.studio-stage-examples>summary{display:flex;gap:11px;align-items:center;padding:15px;cursor:pointer;list-style:none}
+.studio-stage-examples>summary::-webkit-details-marker{display:none}
+.studio-stage-examples>summary>.icon:first-child{flex:none;width:22px;height:22px;color:#287669}
+.studio-stage-examples>summary>.icon:last-child{flex:none;width:17px;height:17px;color:#618875;transition:transform .15s}
+.studio-stage-examples[open]>summary>.icon:last-child{transform:rotate(90deg)}
+.studio-stage-examples>summary>span{display:grid;gap:4px;flex:1;min-width:0}
+.studio-stage-examples>summary strong{font-size:13px;color:#275a50}
+.studio-stage-examples>summary small{font-size:11px;line-height:1.55;color:#617970}
+.studio-stage-example-actions,.studio-stage-support-actions{display:flex;flex-wrap:wrap;gap:8px;padding:0 15px 10px}
+.studio-stage-example-actions>.ex-trigger{border:1px solid #d1e1d6;background:#fff;border-radius:9px;padding:9px 12px;font-weight:780;font-size:11px;color:#20705f}
+.studio-stage-example-note{margin:0;padding:0 15px 12px;font-size:11px;line-height:1.6;color:#63776e}
+.studio-stage-more-help{margin:0 15px 13px;background:#fff;border:1px solid #dce5df;border-radius:10px}
+.studio-stage-more-help>summary{display:flex;align-items:center;gap:7px;list-style:none;cursor:pointer;padding:11px;font-size:12px;font-weight:750;color:#2e6657}
+.studio-stage-more-help>summary::-webkit-details-marker{display:none}
+.studio-stage-more-help>summary>.icon{width:15px;height:15px}
+.studio-stage-more-help>summary>.icon:last-child{margin-left:auto}
+.studio-stage-help-content{padding:4px 11px 13px}
+.studio-stage-help-content>.criteria-writing-tools,.studio-stage-help-content>.guidance-optional,.studio-stage-help-content>.completion-help{margin-top:8px}
+.studio-stage-support-actions{border-top:1px solid #e5eee7;padding:10px 15px 14px}
+.studio-stage-support-actions>.btn{font-size:11px}
+@media(max-width:760px){
+ .studio-stage-advice,.studio-stage-sparks,.studio-stage-writing-task{padding:13px}
+ .studio-stage-advice-cards{grid-template-columns:1fr}
+ .studio-stage-advice-cards .studio-stage-tip[open]{grid-column:1}
+ .studio-stage-writing-task .criterion-marked-writing-box{margin-left:0}
+ .studio-stage-writing-task-head,.studio-stage-advice-head{gap:9px}
+}
+@media(max-width:440px){
+ .studio-stage-example-actions,.studio-stage-support-actions{flex-direction:column}
+ .studio-stage-example-actions>.ex-trigger,.studio-stage-support-actions>.btn{width:100%;justify-content:center}
+ .studio-stage-sparks-head{gap:9px}
+ .studio-stage-writing-task-head h2{font-size:16px}
+}
+@media(prefers-reduced-motion:reduce){
+ .studio-stage-examples>summary>.icon:last-child,.studio-stage-more-advice>summary>.icon:last-child{transition:none}
+}

@@ -263,12 +263,75 @@ def completed_plan(browser,width):
  finally:
   ctx.close()
 
+def writing_sections(browser,width):
+ nodes=("C20","C21S","C21T","C24","C30","C33","C34B","C40","C50","C60","C61","C64")
+ for node in nodes:
+  state=copy.deepcopy(BASE)
+  state["route"]="completing"
+  state["completion"]["current"]=node
+  state["planning"]["fields"].update({
+   "aim":"How does a genuine variable relate to a result?",
+   "motivation":"I noticed a mathematical relationship.",
+   "prediction":"I expect the pattern may curve.","predictionWhy":"My early cases suggest that.",
+   "kind":"theoretical" if node=="C21T" else "modelling"})
+  state["entries"]=[{"id":"math-stage-test","phase":"substantial" if node in ("C40","C50") else "first",
+   "status":"completed" if node in ("C34B","C60","C61","C64") else "planned",
+   "title":"One mathematical step","kind":"model",
+   "result":"The calculation gave 12.5" if node in ("C34B","C60","C61","C64") else "",
+   "purpose":"To understand my aim","interpretation":"This narrows my prediction."}]
+  state["completion"]["activeEntryIndex"]=0
+  ctx,page=open_fixture(browser,state,width)
+  try:
+   main=page.locator('[data-source-node="'+node+'"]')
+   assert main.count()==1,node
+   parts=main.locator('[data-writing-stage-part]')
+   assert [parts.nth(i).get_attribute('data-writing-stage-part') for i in range(4)]==[
+    'advice','sparks','task','examples'],node
+   assert main.locator('.studio-stage-examples').count()==1,node
+   assert main.locator('.studio-stage-sparks .spark-library').count()==1,node
+   assert main.locator('.criteria-panel').count()==0,node
+   assert "actual IA document" in main.locator('.studio-stage-writing-task').inner_text(),node
+   if node in ("C20","C30","C40","C50","C60"):
+    assert main.locator('.studio-stage-tip').count()==4,node
+   else: assert main.locator('.studio-stage-more-advice').count()==1,node
+   without_overflow(page)
+   if node in ("C20","C40","C60"):
+    main.locator('.studio-stage-examples>summary').click()
+    main.locator('.studio-stage-example-actions [data-example-topic]').click()
+    assert page.locator('#exampleDialog[open]').count()==1,node
+    page.locator('#exampleDialog [data-example-close]').click()
+    assert main.locator('.studio-stage-writing-task [data-criterion-badge]').count()>=1,node
+    main.locator('.studio-stage-writing-task [data-criterion-badge]').first.click()
+    assert page.locator('#criterionBadgeDialog[open]').count()==1,node
+    page.locator('#criterionBadgeDialog [data-criterion-badge-close]').first.click()
+    without_overflow(page)
+    page.screenshot(path=str(OUT/f"studio-writing-{node}-{width}.png"),full_page=True,animations="disabled")
+   if node=="C20":
+    assert main.locator('[data-criterion-badge="completing:C20:source"]').count()==1
+    assert main.locator('[data-criterion-badge="completing:C20:method"]').count()==1
+    page.locator('[data-bind="completion.fields.actualMethod"]').fill("I used the real measurements.")
+    assert stored(page)["completion"]["fields"]["actualMethod"]=="I used the real measurements."
+   if node=="C40":
+    assert main.locator('[data-criterion-badge="completing:C40:title"]').count()==1
+    page.locator('[data-bind="entries.0.purpose"]').fill("The prior result justified this step.")
+    assert stored(page)["entries"][0]["purpose"]=="The prior result justified this step."
+   if node=="C60":
+    assert main.locator('[data-criterion-badge="completing:C61:mainConclusion"]').count()==1
+    assert main.locator('[data-criterion-badge="completing:C61:uncertainty"]').count()==1
+    page.locator('[data-bind="scratch.conclusion"]').fill("My real result supports a limited answer.")
+    assert stored(page)["scratch"]["conclusion"]=="My real result supports a limited answer."
+   if node=="C21T":
+    assert main.locator('[data-bind="completion.fields.theoreticalObject"]').count()==1
+    assert "no need to invent a dataset" in main.inner_text()
+  finally:
+   ctx.close()
+
 def main():
  results=[]
  with sync_playwright() as p:
   browser=p.chromium.launch(headless=True)
   for width in (1360,390):
-   for scenario,fn in (("new",first_time),("completed",completed_plan)):
+   for scenario,fn in (("new",first_time),("completed",completed_plan),("writing-stages",writing_sections)):
     try:
      fn(browser,width)
      results.append({"scenario":scenario,"width":width,"status":"passed"})

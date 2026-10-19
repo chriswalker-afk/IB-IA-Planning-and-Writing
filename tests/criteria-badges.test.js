@@ -10,10 +10,19 @@ import {createProjectState} from '../src/core/project-state.js';
 
 test('three passes retain selective and specific criteria without new administrative badges',()=>{
  const keys=Object.keys(CRITERION_SPOTS);
- assert.equal(keys.length,26);
+ assert.equal(keys.length,42);
  for(const [key,criterion] of [
   ['planning:N01V:benefit','C'],['planning:N02M:title','E'],
   ['completing:C10:aim','A'],['completing:C10:motivation','C'],
+  ['completing:C20:source','A'],['completing:C20:method','C'],
+  ['completing:C21S:samplingRationale','C'],['completing:C21S:responseBias','D'],
+  ['completing:C21M:modelAssumptions','E'],['completing:C21M:modelDomain','D'],
+  ['completing:C21T:theoreticalObject','E'],
+  ['completing:C22:methodReason','C'],['completing:C23:limitationConsequence','D'],
+  ['completing:C24:accuracyReason','B'],['completing:C25:variableDefinitions','B'],
+  ['completing:C26:dataAimLink','A'],
+  ['completing:C34A:accuracyForResult','B'],['completing:C34U:surpriseCheck','D'],
+  ['completing:C35H:nextReason','C'],['completing:C40D:courseWhy','E'],
   ['completing:C34B:title','D'],['completing:C70N:title','B'],
   ['completing:C31:firstPurpose','E'],['completing:C32:purpose','A'],
   ['completing:C33:title','B'],['completing:C34:observation','E'],
@@ -34,13 +43,16 @@ test('three passes retain selective and specific criteria without new administra
  assert(isCriterionSpotPage('planning','N01V'));
  assert(!isCriterionSpotPage('planning','N03D'));
  assert.deepEqual(criterionFieldSpots('completing','C35'),['completing:C35:nextQuestion','completing:C35:nextReason']);
+ assert.deepEqual(criterionFieldSpots('completing','C20'),['completing:C20:source','completing:C20:method']);
+ assert.deepEqual(criterionFieldSpots('completing','C21S'),['completing:C21S:samplingRationale','completing:C21S:responseBias']);
+ assert.deepEqual(criterionFieldSpots('completing','C24'),['completing:C24:accuracyReason']);
  assert.deepEqual(criterionFieldSpots('completing','C34'),['completing:C34:observation']);
  assert.deepEqual(criterionFieldSpots('completing','C33'),[]);
  assert(isCriterionSpotPage('completing','C31'));
  assert(isCriterionSpotPage('completing','C35'));
  assert(isCriterionSpotPage('completing','C35P'));
  assert(!isCriterionSpotPage('completing','C35H'));
- assert(!isCriterionSpotPage('completing','C21S'));
+ assert(isCriterionSpotPage('completing','C21S'));
  assert(!isCriterionSpotPage('completing','C90'));
  assert(!isCriterionSpotPage('completing','C80'));
  assert.deepEqual(criterionFieldSpots('completing','C61'),

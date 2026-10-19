@@ -492,3 +492,89 @@ test("Writer's Field Guide replaces the old tile, opens without changing student
  assert.equal(h.saved.scratch.introduction,"My original opening");
  assert.equal(h.saved.planning.fields.aim,"Is larger pizza better value?");
 });
+
+test("all three writing chapters use the same four-part scaffold and preserve navigation",()=>{
+ const groups={
+  data:['C20','C21S','C21M','C21T','C22','C23','C24','C25','C26'],
+  maths:['C30','C31','C32','C33','C34','C34A','C34B','C34U','C35','C35H','C35B','C35P','C40','C50','C40T','C40D','C40L'],
+  conclusion:['C60','C61','C62','C63','C64']
+ };
+ const state=createProjectState();state.route='completing';
+ state.planning.fields.aim='How does my mathematical expression behave?';
+ state.planning.fields.motivation='I discovered a surprising pattern.';
+ state.planning.fields.prediction='I think it increases.';
+ state.entries=[{id:'math-first',phase:'first',status:'planned',kind:'other',title:'First representation',result:''}];
+ state.completion.activeEntryIndex=0;
+ for(const [group,nodes] of Object.entries(groups)){
+  for(const node of nodes){
+   state.completion.current=node;
+   const h=createHarness(state);
+   assert(h.html.includes('data-source-node="'+node+'"'),node);
+   assert(h.html.includes('data-stage-advice="'+group+'"'),node);
+   assert(h.html.includes('Use your relevant sparks'),node);
+   const positions=['advice','sparks','task','examples'].map(k=>h.html.indexOf('data-writing-stage-part="'+k+'"'));
+   assert(positions.every(v=>v>0)&&positions.every((v,i)=>i===0||v>positions[i-1]),node);
+   assert(h.html.includes('studio-stage-writing-location'),node);
+   assert(h.html.includes('data-writing-examples'),node);
+   assert(!h.html.includes('criteria-panel task-support'),node);
+   assert(!h.html.includes('studio-ia-writing-reminder'),node);
+   assert(h.html.includes('data-action="completion-route"')||h.html.includes('data-action="completion-open"'),node);
+   assert.equal(h.saved.completion.current,node);
+   assert.equal(h.saved.planning.fields.prediction,'I think it increases.');
+  }
+ }
+});
+test("contextual rubric bubbles are attached to real writing fields in the three new chapters",()=>{
+ const state=createProjectState();state.route='completing';
+ state.planning.fields.aim='An answerable mathematical question';
+ state.entries=[{id:'math-sub',phase:'substantial',status:'planned',kind:'model',title:'Investigate a model',result:'',purpose:''}];
+ state.completion.activeEntryIndex=0;
+ const expects={
+  C20:['completing:C20:source','completing:C20:method'],
+  C21S:['completing:C21S:samplingRationale','completing:C21S:responseBias'],
+  C21M:['completing:C21M:modelAssumptions','completing:C21M:modelDomain'],
+  C21T:['completing:C21T:theoreticalObject'],
+  C22:['completing:C22:methodReason'],
+  C23:['completing:C23:limitationConsequence'],
+  C24:['completing:C24:accuracyReason'],
+  C25:['completing:C25:variableDefinitions'],
+  C26:['completing:C26:dataAimLink'],
+  C31:['completing:C31:firstPurpose'],
+  C32:['completing:C32:purpose'],
+  C33:['completing:C33:title'],
+  C34:['completing:C34:observation'],
+  C34A:['completing:C34A:accuracyForResult'],
+  C34B:['completing:C34B:title'],
+  C34U:['completing:C34U:surpriseCheck'],
+  C35:['completing:C35:nextQuestion','completing:C35:nextReason'],
+  C35H:['completing:C35H:nextReason'],
+  C35P:['completing:C35P:title'],
+  C40:['completing:C40:title'],
+  C50:['completing:C50:title'],
+  C40T:['completing:C40T:title'],
+  C40D:['completing:C40D:courseWhy'],
+  C40L:['completing:C40L:title'],
+  C60:['completing:C61:mainConclusion','completing:C61:uncertainty'],
+  C61:['completing:C61:mainConclusion','completing:C61:uncertainty'],
+  C62:['completing:C62:benefit'],
+  C63:['completing:C63:extension'],
+  C64:['completing:C64:title']
+ };
+ for(const [node,keys] of Object.entries(expects)){
+  state.completion.current=node;
+  const h=createHarness(state);
+  for(const key of keys)assert.equal(h.html.split('data-criterion-badge="'+key+'"').length-1,1,node+': '+key);
+ }
+});
+test("student notes and actual results remain unchanged when a stage is reorganised",()=>{
+ const state=createProjectState();state.route='completing';state.completion.current='C60';
+ state.planning.fields.aim='What can I genuinely conclude?';
+ state.scratch.conclusion='The actual mathematical conclusion is still being written.';
+ state.entries=[{id:'result-1',phase:'first',status:'completed',kind:'theory',title:'A case',result:'Found a counterexample',interpretation:'So the general claim was false'}];
+ const h=createHarness(state);
+ assert(h.html.includes('Found a counterexample'));
+ assert(h.html.includes('scratch.conclusion'));
+ assert.equal(h.saved.scratch.conclusion,state.scratch.conclusion);
+ assert.equal(h.saved.entries[0].result,'Found a counterexample');
+ assert(!h.html.includes('Your prediction is correct'));
+});
