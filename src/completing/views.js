@@ -4,6 +4,7 @@ import {renderIntroductionSparkPrompt,renderIntroductionWritingAdvice,renderIntr
 import {renderWritingStageFlow} from './stage-writing-flow.js';
 import {isStudioWritingNode,renderStudioWritingStage} from './studio-writing-stages.js';
 import {firstMathsContext} from "./first-maths-bridge.js";
+import {renderJourneyWritingAdvice} from "./first-maths-writing-guidance.js";
 import {insightCapture,insightEcho,renderSparkShelf} from '../ui/insight-threads.js';
 import {STATUS_LABELS,currentGroup,JOURNEY_GROUPS} from "../ui/journey.js";
 import {groupedDashboard} from "../ui/journey-views.js";
@@ -358,16 +359,41 @@ export function createCompletingViews(ctx){
      '<div class="first-maths-bridge-writing">'+
       '<p class="first-maths-bridge-lead">In your actual IA, introduce the reason for this first step in <strong>one or two sentences</strong> just before the work. If you prefer to make this connection in your Introduction, choose that option above and skip repeating it.</p>'+
       linkPrompt+'</div>';
-   const introFields='<section class="first-maths-bridge-work" data-first-maths-bridge>'+
-    '<h3>'+icon("route")+' From aim to mathematics</h3>'+
-    '<p class="first-maths-bridge-context">Choose where the reader will understand <em>why this is a sensible mathematical starting point</em>. There is no need to outline your entire investigation.</p>'+
-    where+introductionLink+
+   const writingPart=(id,number,title,description,content)=>'<section class="first-maths-writing-part" data-first-maths-writing-part="'+id+'">'+
+    '<div class="first-maths-writing-part-head"><span class="first-maths-writing-part-number" aria-hidden="true">'+number+'</span>'+
+    '<div><h3>'+e(title)+'</h3><p>'+e(description)+'</p></div></div>'+content+'</section>';
+   const bridgePart=writingPart("connection","1","Connect your Introduction to the first maths",
+    "Make the mathematics follow naturally from your aim. Explain why this is a sensible first step, but do not repeat a clear explanation from the Introduction.",
+    '<div class="first-maths-bridge-choice">'+where+introductionLink+'</div>');
+   const methodPart=writingPart("method","2a","Introduce and justify your mathematical method",
+    "In your actual IA, name the mathematics you are about to use and explain why you selected it. Assume your reader already knows the course mathematics.",
+    renderJourneyWritingAdvice(s,"method",icon,e,{reduced:isAdviceReduced(s)})+
+    (f.chosenMethod?smallSummary("Earlier named method (editable in the optional Methods step)",f.chosenMethod):"")+
+    '<div class="first-maths-primary-writing-field">'+criterionMarkedWritingBox(
+      F("methodReason","My method and why I chose it",
+       "Introduce the maths, the question it can help answer, and why it fits my aim. No textbook-style explanation of familiar course maths.",
+       {type:"textarea",rows:5}),
+      ["completing:C20:methodIntroduction","completing:C20:methodJustification"])+'</div>'+
     '<div class="first-maths-first-question">'+
-    criteriaField(F("firstPurpose","What mathematical question will this first step explore?",
-      "What do I want to learn from this graph, model, calculation, or small case?",{type:"textarea",rows:3}),
-      "completing:C20:firstPurpose")+
-    '<p class="field-hint">This is your own starting question. It carries forward to the first exploration, so you will not need to enter it again.</p></div>'+
-    '</section>';
+    criteriaField(F("firstPurpose","The mathematical question for my first figure or calculation",
+      "What should this first step reveal about my aim? (This answer is reused in the first exploration.)",
+      {type:"textarea",rows:2}),"completing:C20:firstPurpose")+
+    '<p class="field-hint">This question is saved for your first exploration. It is not another paragraph to repeat in the IA.</p></div>');
+   const evaluationPart=writingPart("evaluation","2b","Evaluate the method, alternatives and limitations",
+    "Discuss mathematical assumptions or restrictions that matter, consider a plausible alternative, and justify why your method suits this particular aim.",
+    renderJourneyWritingAdvice(s,"evaluation",icon,e,{reduced:isAdviceReduced(s)})+
+    '<div class="first-maths-primary-writing-field">'+criterionMarkedWritingBox(
+      F("firstMethodEvaluation","My mathematical limitations, alternatives and justification",
+       "What does this method assume or fail to establish? What alternative could help? Why will I begin with this method for my aim?",
+       {type:"textarea",rows:5}),
+      ["completing:C20:methodEvaluation","completing:C20:methodSuitability"])+'</div>'+
+    '<p class="first-maths-writing-revisit">'+icon("lightbulb")+
+    ' If you have not carried out the method yet, describe these as possible limitations. Revisit them after genuine results; do not claim a comparison or difficulty has already occurred.</p>');
+   const introFields='<div class="first-maths-writing-sequence" data-first-maths-writing-sequence>'+
+    '<div class="first-maths-writing-sequence-head"><span class="first-maths-writing-sequence-icon">'+icon("pencil")+'</span>'+
+    '<div><h3>Three short parts of your mathematical story</h3>'+
+    '<p>Develop each part in your <strong>actual IA document</strong>. These boxes save your notes in Pathfinder; they do not write or insert paragraphs for you.</p></div></div>'+
+    bridgePart+methodPart+evaluationPart+'</div>';
    const dataKind=ctx.sourceKey;
    const routeChecks='<div class="first-maths-route-help"><strong>Optional targeted preparation</strong>'+
     '<p>Use only the checks that matter for your actual source and mathematics. You may return after your first figure or calculation.</p>'+
@@ -474,6 +500,7 @@ export function createCompletingViews(ctx){
     html:smallSummary("Actual source",f.actualSource||f.theoreticalObject)+
       smallSummary("Mathematical purpose for first step",f.firstPurpose)+
       smallSummary("Method reason (if relevant)",f.methodReason)+
+      smallSummary("Mathematical method limitations and alternatives to revisit",f.firstMethodEvaluation)+
       (f.firstMathsBridgePlacement==="intro"?
        info("Already explained in your Introduction","You said your Introduction already connects this first step to your aim. Do not repeat it unless your mathematical starting point has changed."):
        criteriaField(F("dataAimLink","How does this first step support my aim? (review the earlier note)",
@@ -485,6 +512,8 @@ export function createCompletingViews(ctx){
     html:(p.figureOther||p.figureType||p.firstAction?smallSummary("Earlier first-step idea (optional)",p.figureOther||p.figureType||p.firstAction):"")+
       (f.firstPurpose?smallSummary("Your first mathematical question",f.firstPurpose):
        p.figurePurpose?smallSummary("Earlier planned purpose",p.figurePurpose):"")+
+      (f.methodReason?smallSummary("Why you chose the opening mathematics (planning note)",f.methodReason):"")+
+      (f.firstMethodEvaluation?smallSummary("Possible mathematical limits or alternatives to check",f.firstMethodEvaluation):"")+
       (f.firstMathsBridgePlacement==="intro"?
        info("You already explained why this follows from your aim","Move straight into the mathematics. Only define the quantities and symbols needed at first use."):
        f.dataAimLink?smallSummary("Why the first maths follows your aim",f.dataAimLink):

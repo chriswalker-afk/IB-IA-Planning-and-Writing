@@ -728,3 +728,72 @@
 .first-maths-guide-card.is-secondary .first-maths-guide-steps{grid-template-columns:repeat(3,minmax(0,1fr))}
 @media(max-width:780px){.first-maths-guide-steps,.first-maths-guide-card.is-secondary .first-maths-guide-steps{grid-template-columns:1fr;gap:7px}.first-maths-guide-card{padding:12px}.first-maths-guide-step{padding:10px 12px}.first-maths-guide-step p{margin-top:4px}.first-maths-guide-card-header h4{font-size:14px}}
 @media(prefers-reduced-motion:reduce){.first-maths-other-guides>summary>.icon:last-child,.first-maths-other-technique>summary>.icon{transition:none}}
+
+
+/* First mathematics, three distinct writing jobs. Sections remain easy to scan
+   and remain in the student's actual-IA workflow; no text is auto-inserted. */
+.first-maths-writing-sequence{min-width:0;display:flex;flex-direction:column;gap:13px;margin-bottom:17px}
+.first-maths-writing-sequence-head{display:flex;align-items:flex-start;gap:11px;padding:10px 2px 1px}
+.first-maths-writing-sequence-icon{width:38px;height:38px;flex:none;display:grid;place-items:center;background:#ede8f4;color:#71528e;border-radius:11px}
+.first-maths-writing-sequence-icon>.icon{height:20px;width:20px}
+.first-maths-writing-sequence-head h3{font-size:16px;color:#2a4851;line-height:1.4;margin:0 0 4px}
+.first-maths-writing-sequence-head p{font-size:11px;line-height:1.62;color:#637677;margin:0}
+.first-maths-writing-part{padding:15px 17px 17px;border-radius:14px;border:1px solid #d9e5e1;background:#fcfefd;min-width:0;scroll-margin-top:90px}
+.first-maths-writing-part[data-first-maths-writing-part="method"]{border-color:#ddd3ea;background:#fefcff}
+.first-maths-writing-part[data-first-maths-writing-part="evaluation"]{border-color:#e7dccb;background:#fffdf9}
+.first-maths-writing-part-head{display:flex;align-items:flex-start;gap:11px;margin-bottom:14px;min-width:0}
+.first-maths-writing-part-number{width:39px;height:39px;display:grid;place-items:center;background:#e3f2e9;color:#245e54;font-size:14px;font-weight:840;border-radius:12px;flex:none;line-height:1}
+.first-maths-writing-part[data-first-maths-writing-part="method"] .first-maths-writing-part-number{background:#ece5f6;color:#65498f}
+.first-maths-writing-part[data-first-maths-writing-part="evaluation"] .first-maths-writing-part-number{background:#faedd7;color:#88622b}
+.first-maths-writing-part-head h3{font-size:17px;line-height:1.35;color:#24464d;margin:0 0 5px}
+.first-maths-writing-part-head p{font-size:12px;line-height:1.62;color:#5e7074;margin:0}
+.first-maths-bridge-choice{margin-left:10px;min-width:0}
+.first-maths-bridge-choice>.field-group{margin-bottom:9px}
+.first-maths-writing-part .first-maths-bridge-writing{margin:7px 0 0}
+.first-maths-writing-part .first-maths-bridge-lead{color:#586a6f}
+.first-maths-writing-part .first-maths-first-question{margin-top:12px}
+.first-maths-writing-part .first-maths-first-question .field-group{margin-bottom:4px}
+.first-maths-writing-part .first-maths-first-question .field-hint{padding-top:4px;margin-bottom:0}
+.first-maths-writing-part .first-maths-primary-writing-field{margin:14px 0 0 11px;min-width:0}
+.first-maths-writing-part .first-maths-primary-writing-field .field-group{margin-bottom:0}
+.first-maths-writing-part .first-maths-primary-writing-field textarea.field{min-height:125px}
+.first-maths-writing-part .first-maths-primary-writing-field .field-label{font-size:12px;font-weight:800}
+.first-maths-writing-part .first-maths-writing-revisit{display:flex;align-items:flex-start;gap:8px;color:#746344;font-size:11px;line-height:1.6;margin:11px 0 0}
+.first-maths-writing-revisit>.icon{flex:none;width:17px;height:17px;margin-top:1px}
+.first-maths-journey-writing-advice{border-radius:11px;border:1px solid #e5dff0;background:#faf8fe;padding:13px;min-width:0}
+.first-maths-writing-part[data-first-maths-writing-part="evaluation"] .first-maths-journey-writing-advice{background:#fff9ee;border-color:#eddfca}
+.first-maths-journey-writing-head{display:flex;align-items:center;gap:10px}
+.first-maths-journey-writing-icon{width:32px;height:32px;border-radius:10px;flex:none;display:grid;place-items:center;background:#ece3f4;color:#6a4f8d}
+.first-maths-writing-part[data-first-maths-writing-part="evaluation"] .first-maths-journey-writing-icon{background:#f5ead4;color:#87632f}
+.first-maths-journey-writing-icon>.icon{height:17px;width:17px}
+.first-maths-journey-writing-head>div{min-width:0}
+.first-maths-journey-writing-head strong{font-size:12px;color:#433654;line-height:1.45;display:block;margin-top:3px}
+.first-maths-writing-part[data-first-maths-writing-part="evaluation"] .first-maths-journey-writing-head strong{color:#685034}
+.first-maths-journey-writing-points{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:12px}
+.first-maths-journey-writing-advice[data-journey-writing-part="evaluation"] .first-maths-journey-writing-points{grid-template-columns:repeat(3,minmax(0,1fr))}
+.first-maths-journey-writing-point{border:1px solid #e8e4ee;background:#fff;border-radius:9px;padding:10px;min-width:0}
+.first-maths-journey-writing-point>strong{color:#634c82;font-size:11px;display:block;margin-bottom:7px;line-height:1.45}
+.first-maths-journey-writing-advice[data-journey-writing-part="evaluation"] .first-maths-journey-writing-point>strong{color:#816335}
+.first-maths-writing-guidance-row{display:flex;gap:7px;align-items:flex-start}
+.first-maths-writing-guidance-bullet{width:19px;height:19px;flex:none;display:grid;place-items:center;background:#f1ebf6;color:#71568e;border-radius:6px}
+.first-maths-journey-writing-advice[data-journey-writing-part="evaluation"] .first-maths-writing-guidance-bullet{background:#faf0da;color:#946e35}
+.first-maths-writing-guidance-bullet>.icon{height:12px;width:12px}
+.first-maths-writing-guidance-row p{font-size:11px;line-height:1.6;color:#586470;margin:0;overflow-wrap:anywhere}
+.first-maths-journey-writing-reminder{display:flex;gap:7px;align-items:flex-start;margin:11px 0 0;color:#6a5b7a;font-size:10.5px;line-height:1.6}
+.first-maths-writing-part[data-first-maths-writing-part="evaluation"] .first-maths-journey-writing-reminder{color:#7a674c}
+.first-maths-journey-writing-reminder>.icon{width:16px;height:16px;flex:none;margin-top:1px}
+.first-maths-journey-writing-notes{font-size:10.5px;line-height:1.6;color:#748078;margin:10px 0 0}
+.first-maths-journey-writing-reduced{font-size:11px;line-height:1.62;color:#56686f;margin:9px 0 0}
+@media(max-width:900px){
+ .first-maths-journey-writing-advice[data-journey-writing-part="evaluation"] .first-maths-journey-writing-points{grid-template-columns:1fr}
+ .first-maths-journey-writing-points{grid-template-columns:1fr}
+}
+@media(max-width:760px){
+ .first-maths-writing-sequence{gap:11px}
+ .first-maths-writing-part{padding:13px}
+ .first-maths-writing-part-head h3{font-size:15px}
+ .first-maths-bridge-choice,.first-maths-writing-part .first-maths-primary-writing-field{margin-left:0}
+ .first-maths-writing-part .first-maths-primary-writing-field textarea.field{min-height:115px}
+ .first-maths-writing-part .first-maths-bridge-writing>.criterion-marked-writing-box{margin-left:0}
+ .first-maths-writing-part-head{gap:9px}
+}

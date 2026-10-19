@@ -32,7 +32,7 @@ export const C_FIELD_DEFAULTS=Object.freeze({
  modelEvidence:"",modelInputs:"",modelAssumptions:"",modelDomain:"",
  modelValidation:"",modelAlternative:"",modelSensitivity:"",
  theoreticalObject:"",theoreticalCase:"",theoreticalAssumptions:"",theoreticalQuestion:"",
- alternativeMethod:"",chosenMethod:"",methodReason:"",methodLimitation:"",
+ alternativeMethod:"",chosenMethod:"",methodReason:"",methodLimitation:"",firstMethodEvaluation:"",
  limitationConsequence:"",limitationMitigation:"",limitationAcceptable:"",
  accuracyQuantity:"",accuracySymbol:"",accuracyUnit:"",accuracyResolution:"",
  accuracyReason:"",accuracyPolicy:"",accuracyDataType:"",

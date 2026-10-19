@@ -10,12 +10,14 @@ import {createProjectState} from '../src/core/project-state.js';
 
 test('three passes retain selective and specific criteria without new administrative badges',()=>{
  const keys=Object.keys(CRITERION_SPOTS);
- assert.equal(keys.length,45);
+ assert.equal(keys.length,49);
  for(const [key,criterion] of [
   ['planning:N01V:benefit','C'],['planning:N02M:title','E'],
   ['completing:C10:aim','A'],['completing:C10:motivation','C'],
   ['completing:C20:source','A'],['completing:C20:method','C'],
   ['completing:C20:firstBridge','A'],['completing:C20:firstChoice','C'],['completing:C20:firstPurpose','E'],
+  ['completing:C20:methodIntroduction','E'],['completing:C20:methodJustification','C'],
+  ['completing:C20:methodEvaluation','D'],['completing:C20:methodSuitability','E'],
   ['completing:C21S:samplingRationale','C'],['completing:C21S:responseBias','D'],
   ['completing:C21M:modelAssumptions','E'],['completing:C21M:modelDomain','D'],
   ['completing:C21T:theoreticalObject','E'],

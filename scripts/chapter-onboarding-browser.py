@@ -335,11 +335,27 @@ def writing_sections(browser,width):
     assert main.locator('[data-criterion-badge="completing:C20:firstBridge"]').count()==1
     assert main.locator('[data-criterion-badge="completing:C20:firstChoice"]').count()==1
     assert main.locator('[data-criterion-badge="completing:C20:firstPurpose"]').count()==1
+    assert [p.get_attribute("data-first-maths-writing-part") for p in main.locator('[data-first-maths-writing-part]').all()]==["connection","method","evaluation"]
+    assert main.locator('[data-journey-writing-part="method"][data-journey-writing-id="relationships"]').count()==1
+    assert main.locator('[data-journey-writing-part="evaluation"][data-journey-writing-id="relationships"]').count()==1
+    assert main.locator('[data-criterion-badge="completing:C20:methodIntroduction"]').count()==1
+    assert main.locator('[data-criterion-badge="completing:C20:methodJustification"]').count()==1
+    assert main.locator('[data-criterion-badge="completing:C20:methodEvaluation"]').count()==1
+    assert main.locator('[data-criterion-badge="completing:C20:methodSuitability"]').count()==1
+    assert "linear association" in main.locator('[data-journey-writing-part="evaluation"]').inner_text()
+    assert "rank method" in main.locator('[data-journey-writing-part="evaluation"]').inner_text()
     assert main.locator('[data-first-maths-source-details]').count()==1
     assert not main.locator('[data-first-maths-source-details]').get_attribute('open')
     main.locator('[data-bind="completion.fields.dataAimLink"]').fill("The first plot lets me examine whether my aim has a meaningful relation.")
     main.locator('[data-bind="completion.fields.firstPurpose"]').fill("What mathematical pattern do the actual values support?")
+    main.locator('[data-bind="completion.fields.methodReason"]').fill("I will use a scatter diagram first because the aim depends on the pattern.")
+    main.locator('[data-bind="completion.fields.firstMethodEvaluation"]').fill("Pearson r may miss curvature; I will consider an alternative model if the shape warrants it.")
     assert stored(page)["completion"]["fields"]["firstPurpose"]=="What mathematical pattern do the actual values support?"
+    assert stored(page)["completion"]["fields"]["methodReason"].startswith("I will use a scatter")
+    assert "Pearson r may miss curvature" in stored(page)["completion"]["fields"]["firstMethodEvaluation"]
+    main.locator('[data-criterion-badge="completing:C20:methodEvaluation"]').click()
+    assert page.locator('#criterionBadgeDialog[open]').count()==1
+    page.locator('#criterionBadgeDialog [data-criterion-badge-close]').first.click()
     main.locator('[data-first-maths-source-details]>summary').click()
     assert main.locator('[data-first-maths-source-details][open]').count()==1
     assert main.locator('[data-criterion-badge="completing:C20:source"]').count()==1
@@ -355,6 +371,8 @@ def writing_sections(browser,width):
     assert page.locator('[data-source-node="C30"]').count()==1
     assert "What mathematical pattern do the actual values support?" in page.locator('[data-source-node="C30"]').inner_text()
     assert "You already explained why this follows from your aim" in page.locator('[data-source-node="C30"]').inner_text()
+    assert "I will use a scatter diagram first" in page.locator('[data-source-node="C30"]').inner_text()
+    assert "Pearson r may miss curvature" in page.locator('[data-source-node="C30"]').inner_text()
    if node=="C40":
     assert main.locator('[data-criterion-badge="completing:C40:title"]').count()==1
     page.locator('[data-bind="entries.0.purpose"]').fill("The prior result justified this step.")
@@ -393,6 +411,11 @@ def modelling_math_start(browser,width):
   assert "published data" in card.inner_text()
   assert "Cite the source" in card.inner_text()
   assert main.locator('[data-first-maths-other-guides]').count()==0
+  assert main.locator('[data-first-maths-writing-part]').count()==3
+  assert main.locator('[data-journey-writing-part="method"][data-journey-writing-origin="technique"]').count()==1
+  assert main.locator('[data-journey-writing-part="evaluation"][data-journey-writing-origin="technique"]').count()==1
+  assert main.locator('[data-bind="completion.fields.methodReason"]').count()==1
+  assert main.locator('[data-bind="completion.fields.firstMethodEvaluation"]').count()==1
   assert main.locator('[data-first-maths-source-details]').count()==1
   without_overflow(page)
   page.screenshot(path=str(OUT/f"first-maths-model-{width}.png"),full_page=True,animations="disabled")
