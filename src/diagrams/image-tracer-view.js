@@ -100,7 +100,7 @@ export function traceWorkingHtml(tracer,icon,e){
   '<button type="button" class="btn btn-quiet btn-sm" data-action="trace-clear-points"'+(!d.points.length?" disabled":"")+'>'+
   icon("trash-2")+' Clear tracing</button></div></div>'+
   traceCoordinatesTable(tracer,e,icon)+stat+
-  '<p class="trace-table-caution">Use the exported CSV if you want to analyse these points in Google Sheets. Decide independently whether a line, polygon or fitted curve is mathematically justified.</p></section>';
+  '<p class="trace-table-caution">Keep the full point list or CSV in your working files: do not add long raw-coordinate tables to the IA or appendix. In your IA, show a purposeful labelled figure and only the calculations or summary values the reader needs. Decide independently whether a curve is justified.</p></section>';
 }
 export function renderImageTracer(state,icon,e){
  const tracer=state.imageTracer,d=tracer.draft,route=state.planning?.routeExplorer?.selectedRoute,
