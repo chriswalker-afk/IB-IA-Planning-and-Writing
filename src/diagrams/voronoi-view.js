@@ -2,6 +2,7 @@ import {representationEmpty} from "./workspace-ui.js";
 /** One coherent, student-readable Voronoi authoring surface, with no invented sites. */
 import {analyzeVoronoi,MAX_VORONOI_FIGURES} from "./voronoi-core.js";
 import {renderVoronoiSvg} from "./voronoi-render.js";
+import {originalVoronoiDraft,voronoiInspection,voronoiComparison} from "./voronoi-interactions.js";
 const opt=(value,label,selected,e)=>'<option value="'+e(value)+'"'+(String(value)===String(selected)?" selected":"")+'>'+e(label)+'</option>';
 const select=(key,name,value,options,e)=>'<label class="voronoi-field"><span>'+e(name)+'</span><select data-voronoi-field="'+key+'">'+
  options.map(([v,l])=>opt(v,l,value,e)).join("")+'</select></label>';
@@ -22,21 +23,99 @@ const groups={
  relationships:"Relationships between two variables",
  finance:"Business and financial decisions"
 };
-export function voronoiPreviewHtml(studio){
+const TOOLS=[
+ ["existing","Place existing","plus-circle"],
+ ["select","Move / edit","mouse-pointer-click"],
+ ["inspect","Inspect cells","eye"],
+ ["test","Test location","map"],
+ ["candidate","Place proposed","plus-circle"]
+];
+const tidy=n=>Number.isFinite(n)?Number(n.toPrecision(5)).toString():"—";
+export function voronoiInspectionHtml(studio,icon=()=>"",e=x=>String(x)){
+ const info=voronoiInspection(studio);
+ if(!info)return '<div class="voronoi-inspect-hint" data-voronoi-inspection>'+
+  'Select a site or its cell to inspect coordinates, clipped area and the nearest neighbour.</div>';
+ const {site,cell,neighbours,bisector}=info;
+ const unit=studio.draft.unitMode==="unit"?e(studio.draft.unit):"coordinate units";
+ return '<section class="voronoi-inspection" data-voronoi-inspection aria-live="polite">'+
+  '<div class="voronoi-inspection-heading"><strong>'+e(site.name)+'</strong>'+
+   '<small>'+(site.kind==="candidate"?"Hypothetical proposal":"Existing / defined site")+'</small></div>'+
+  '<p>Site coordinates: <strong>('+tidy(site.x)+', '+tidy(site.y)+')</strong></p>'+
+  (cell?'<p>Clipped region area: <strong>'+tidy(cell.area)+'</strong> '+unit+
+   '² · '+cell.polygon.length+' vertices</p>':
+   '<p>Add another distinct site to construct the cells.</p>')+
+  (bisector?'<p>Closest other site: <strong>'+e(bisector.other.name)+'</strong>, distance <strong>'+
+   tidy(neighbours[0].distance)+'</strong> '+unit+'</p>'+
+   '<p class="voronoi-math">Perpendicular bisector with '+e(bisector.other.name)+
+   ': ('+tidy(bisector.normal.x)+')(x − '+tidy(bisector.midpoint.x)+') + ('+
+    tidy(bisector.normal.y)+')(y − '+tidy(bisector.midpoint.y)+') = 0</p>'+
+   '<button type="button" class="btn btn-secondary btn-sm" data-action="voronoi-bisector-selected">'+
+    icon("eye")+' Show this bisector</button>':"")+
+  '<p class="voronoi-inspect-limit">All areas refer to the displayed rectangle, not necessarily an actual geographical boundary.</p>'+
+ '</section>';
+}
+export function voronoiComparisonHtml(studio,icon=()=>"",e=x=>String(x)){
+ const result=voronoiComparison(studio);
+ if(!result)return "";
+ const unit=studio.draft.unitMode==="unit"?e(studio.draft.unit)+"²":"coordinate units²";
+ return '<section class="voronoi-comparison" data-voronoi-comparison>'+
+  '<div class="voronoi-inspection-heading"><strong>'+icon("layers")+' Before / after comparison</strong>'+
+   '<small>Same rectangular window</small></div>'+
+  '<p>The original configuration is preserved. Proposed sites are hypothetical, not collected evidence.</p>'+
+  '<div class="voronoi-comparison-table"><table><thead><tr><th>Site</th><th>Original</th><th>What-if</th><th>Change</th></tr></thead><tbody>'+
+  result.changes.map(row=>'<tr><td>'+e(row.name)+(row.kind==="candidate"?' <em>Proposed</em>':"")+'</td>'+
+   '<td>'+(row.before===null?"—":tidy(row.before))+'</td><td>'+tidy(row.after)+'</td>'+
+   '<td>'+(row.delta===null?"new":(row.delta>0?"+":"")+tidy(row.delta))+'</td></tr>').join("")+
+  '</tbody></table></div><small>Clipped areas in '+unit+'. Results depend on the study window.</small>'+
+ '</section>';
+}
+export function voronoiPreviewHtml(studio,icon=()=>"",e=x=>String(x)){
+ const original=studio.scenario?.active&&studio.scenario.showOriginal;
+ const draft=original?originalVoronoiDraft(studio):studio.draft;
+ const tools=TOOLS.map(([id,label,glyph])=>'<button type="button" class="voronoi-tool'+
+  (!original&&studio.tool===id?" active":"")+'" data-action="voronoi-tool" data-voronoi-tool="'+id+
+  '" aria-pressed="'+(!original&&studio.tool===id)+'"'+(original?" disabled":"")+'>'+
+  icon(glyph)+'<span>'+e(label)+'</span></button>').join("");
+ const history='<div class="voronoi-history-controls" role="group" aria-label="Undo and view">'+
+  '<button type="button" class="btn btn-quiet btn-sm" data-action="voronoi-undo"'+
+   (!studio.history?.past?.length||original?" disabled":"")+'>'+icon("undo-2")+' Undo</button>'+
+  '<button type="button" class="btn btn-quiet btn-sm" data-action="voronoi-redo"'+
+   (!studio.history?.future?.length||original?" disabled":"")+'>'+icon("rotate-cw")+' Redo</button>'+
+  '<button type="button" class="btn btn-quiet btn-sm" data-action="voronoi-fit"'+
+   (!studio.draft.sites.length||studio.scenario?.active?" disabled":"")+'>'+icon("grid-2x2")+' Fit sites</button></div>';
+ const scenario=studio.scenario?.active?
+  '<div class="voronoi-scenario-bar"><strong>'+icon("layers")+' What-if comparison</strong>'+
+   '<div><button type="button" class="btn btn-secondary btn-sm" data-action="voronoi-scenario-view">'+
+    (original?"Show changes":"Show original")+'</button>'+
+   '<button type="button" class="btn btn-quiet btn-sm" data-action="voronoi-scenario-restore">Restore original</button>'+
+   '<button type="button" class="btn btn-secondary btn-sm" data-action="voronoi-scenario-keep">Keep what-if version</button></div></div>':
+  '<div class="voronoi-scenario-start"><span>Compare proposed locations without losing the original.</span>'+
+  '<button type="button" class="btn btn-secondary btn-sm" data-action="voronoi-scenario-start"'+
+   (studio.draft.sites.length<2?" disabled":"")+'>'+icon("layers")+' Start comparison</button></div>';
+ const help={existing:"Click the grid to place an existing / defined site. Confirm your source before export.",
+  select:"Select a site, then drag it or edit its coordinates. Changes to measured positions must be documented.",
+  inspect:"Select a coloured cell or site to inspect its geometry and perpendicular bisector.",
+  test:"Click a location to calculate the nearest site and its Euclidean distance.",
+  candidate:"Click to add a hypothetical site. Do not report it as an observed location."};
  return '<div class="voronoi-preview" data-voronoi-preview>'+
- '<div class="voronoi-preview-heading"><strong>Voronoi construction</strong><small>Equal x/y scale · genuine coordinates</small></div>'+
- '<div class="voronoi-svg-wrap">'+renderVoronoiSvg(studio.draft)+'</div>'+
- '<p>Each cell contains points at least as close to its site as to any other. The cells are clipped to the displayed rectangular domain, which must not be mistaken for a geographic boundary.</p>'+
- '</div>';
+  '<div class="voronoi-preview-heading"><strong>Build your Voronoi diagram</strong><small>Equal x/y scale · '+
+   studio.draft.sites.length+' sites</small></div>'+
+  '<div class="voronoi-canvas-toolbar" role="toolbar" aria-label="Voronoi drawing tools">'+tools+'</div>'+
+  history+scenario+
+  '<p class="voronoi-canvas-help" role="status">'+(original?
+    "Viewing the original. Choose Show changes to return to your proposal.":help[studio.tool]||help.existing)+'</p>'+
+  '<div class="voronoi-svg-wrap">'+renderVoronoiSvg(draft,{interactive:!original,selectedSiteId:studio.selectedSiteId})+'</div>'+
+  '<p>Cells use straight-line distance and are clipped to a rectangle. A working window is not automatically a real study boundary.</p>'+
+  voronoiInspectionHtml(studio,icon,e)+voronoiComparisonHtml(studio,icon,e)+'</div>';
 }
 export function voronoiResultHtml(studio,e){
  const q=analyzeVoronoi(studio.draft),unit=q.draft.unitMode==="unit"?" "+e(q.draft.unit):"";
- if(!q.cells.length)return '<p class="voronoi-muted">Add genuine coordinates to calculate your clipped nearest-site regions.</p>';
+ if(!q.cells.length)return '<p class="voronoi-muted">Place a second distinct site to construct Voronoi cells. Confirm coordinates, source, metric and study limits before exporting.</p>';
  const list=q.cells.map((c,i)=>'<tr><td>'+e(c.name)+(c.site.kind==="candidate"?
   ' <em>(proposed)</em>':"")+'</td><td>'+c.polygon.length+'</td>'+
   '<td>'+Number(c.area.toPrecision(5))+(unit?" "+unit+"²":"")+'</td></tr>').join("");
  return '<p class="voronoi-stats-lead">'+q.cells.length+' sites · '+
-  (q.bounds.manual?"Specified study rectangle":"Automatic viewing window")+
+  (q.draft.regionMode==="manual"?"Specified study rectangle":q.draft.regionMode==="interactive"?"Working coordinate window":"Automatic viewing window")+
   ' · Area '+Number(q.domainArea.toPrecision(5))+(unit?unit+"²":"")+'</p>'+
   '<div class="voronoi-summary-table-wrap"><table class="voronoi-summary-table"><thead><tr><th>Site</th><th>Cell vertices</th><th>Clipped area</th></tr></thead><tbody>'+
   list+'</tbody></table></div>'+
@@ -150,7 +229,7 @@ export function renderVoronoiStudio(state,icon,e){
   check("showLabels","Show site names",d.showLabels)+
   check("showAreas","Label cell areas within the study rectangle",d.showAreas)+'</div>'+
   field("note","Short caption or limitation to explain in your IA",d.note,e,{rows:2,placeholder:"What would change if roads, demand or a different boundary were considered?"}))+
- '</div><div class="voronoi-results">'+voronoiPreviewHtml(studio)+
+ '</div><div class="voronoi-results">'+voronoiPreviewHtml(studio,icon,e)+
  '<section class="voronoi-summary" data-voronoi-summary><h3>Explore your actual results</h3>'+voronoiResultHtml(studio,e)+'</section>'+
  '<section class="voronoi-quality" data-voronoi-quality>'+voronoiQualityHtml(studio,icon,e)+'</section>'+
  '<section class="voronoi-output" data-voronoi-output data-representation-step="use">'+voronoiOutputHtml(studio,icon)+'</section>'+
