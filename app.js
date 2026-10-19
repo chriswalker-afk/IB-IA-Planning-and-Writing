@@ -1639,7 +1639,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   document.addEventListener("paste",async evt=>{
     if(!state.imageTracer?.open||state.completion.current!=="C31"||!evt.target.closest?.(".image-tracer"))return;
     if(evt.target.closest("input,textarea,[contenteditable]"))return;
-    const item=[...(evt.clipboardData?.items||[])].find(x=>x.kind==="file"&&/^image/(png|jpeg|webp)$/.test(x.type));
+    const item=[...(evt.clipboardData?.items||[])].find(x=>x.kind==="file"&&["image/png","image/jpeg","image/webp"].includes(x.type));
     const file=item?.getAsFile?.();
     if(!file)return;
     evt.preventDefault();
