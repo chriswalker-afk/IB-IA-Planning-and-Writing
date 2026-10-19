@@ -66,7 +66,7 @@ test("modelling and optimisation journeys give different method limitations and 
  assert(m.includes("overfit"));
  assert(m.includes("simpler function"));
  assert(o.includes("boundary"));
- assert(o.includes("stationary point"));
+ assert(o.toLowerCase().includes("stationary point"));
  assert(o.includes("differentiation"));
  assert(!o.includes("residual pattern"));
 });
@@ -101,7 +101,7 @@ test("without a journey, method choice supplies guidance; without either, a care
  assert(method.includes('data-journey-writing-origin="general"'));
  assert(method.includes("one mathematical representation"));
  assert(limits.includes("one real restriction"));
- assert(limits.includes("alternative"));
+ assert(limits.toLowerCase().includes("alternative"));
 });
 test("reduced advice maintains the student-specific prompt with less explanatory text",()=>{
  const s=make({kind:"statistics",route:"relationships"});

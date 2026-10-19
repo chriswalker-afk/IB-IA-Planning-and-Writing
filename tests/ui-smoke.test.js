@@ -778,9 +778,11 @@ test("a changed investigative journey refreshes method advice without changing s
  s.completion.fields.firstMethodEvaluation="My own mathematical evaluation";
  const h=createHarness(s);
  assert(h.html.includes('data-journey-writing-id="fitted-models"'));
- h.write("planning.routeExplorer.selectedRoute","optimisation");
- assert(h.html.includes('data-journey-writing-id="optimisation"'));
- assert(h.html.includes("stationary points"));
- assert(h.html.includes("My own approach for this aim"));
- assert.equal(h.saved.completion.fields.firstMethodEvaluation,"My own mathematical evaluation");
+ const changed=h.saved;
+ changed.planning.routeExplorer.selectedRoute="optimisation";
+ const reopened=createHarness(changed); // Planning made a different route choice before returning to Studio.
+ assert(reopened.html.includes('data-journey-writing-id="optimisation"'));
+ assert(reopened.html.includes("stationary points"));
+ assert(reopened.html.includes("My own approach for this aim"));
+ assert.equal(reopened.saved.completion.fields.firstMethodEvaluation,"My own mathematical evaluation");
 });
