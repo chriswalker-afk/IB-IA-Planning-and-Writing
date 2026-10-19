@@ -22,14 +22,14 @@ export function newStatDraft(){
   selected:[0],categoryIndex:0,lowIndex:0,highIndex:1,frequencyIndex:2,
   histogramInput:"raw",binWidth:"",binStart:"",barMode:"count",
   quartileRule:"halves",outlierRule:"tukey",
-  title:"",variable:"",unit:"",unitMode:"unsure",sourceKind:"unsure",sourceText:"",
+  title:"",figureNumber:"1",variable:"",unit:"",unitMode:"unsure",sourceKind:"unsure",sourceText:"",
   caption:"",min:"",max:"",showGrid:true,showOutliers:true,showLabels:true
  };
 }
 export function normalizeStatDraft(raw){
  const d=newStatDraft(),r=valid(raw)?raw:{};
  for(const key of ["kind","raw","headers","histogramInput","binWidth","binStart","barMode",
-  "quartileRule","outlierRule","title","variable","unit","unitMode","sourceKind","sourceText",
+  "quartileRule","outlierRule","title","figureNumber","variable","unit","unitMode","sourceKind","sourceText",
   "caption","min","max"]){
   const cap=key==="raw"?MAX_STAT_RAW:key==="sourceText"?480:key==="caption"?480:150;
   d[key]=txt(r[key],cap)|| (typeof r[key]==="string"?"":d[key]);

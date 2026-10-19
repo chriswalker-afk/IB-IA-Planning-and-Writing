@@ -1,5 +1,6 @@
 import {representationEmpty} from "./workspace-ui.js";
 import {renderNativeDataGrid} from "./native-data-view.js";
+import {renderPresentationCoach,renderFigureHandover} from "./presentation-coach-view.js";
 /** Cohesive graph editing surface inside C31. Every editor control has a real action. */
 import {analyseGraph,renderGraphSvg,graphData} from "./graph-core.js";
 
@@ -99,10 +100,12 @@ export function renderGraphStudio(state,icon,e){
    '<small>Values are calculated locally. A function graph is not evidence of collected measurements.</small></section>')+
   '<section class="graph-control-card" data-graph-section="labels" data-representation-step="refine"><h3><span>2</span> Make the mathematics clear</h3>'+
   field("title","Descriptive graph title",d.title,e,{placeholder:"e.g. How distance changes with elapsed time"})+
+  field("figureNumber","Figure number in my IA",d.figureNumber,e,{placeholder:"e.g. 1"})+
   '<div class="graph-field-grid">'+field("xLabel","Horizontal axis name",d.xLabel,e,{placeholder:"e.g. Time"})+
   field("yLabel","Vertical axis name",d.yLabel,e,{placeholder:"e.g. Distance"})+'</div>'+
   '<div class="graph-field-grid">'+unit("x")+unit("y")+'</div>'+
   renderGraphAccuracyEcho(state,e)+
+  field("caption","Optional mathematical caption",d.caption,e,{rows:2,placeholder:"e.g. Observed values before selecting a model"})+
   (d.kind!=="function"?pick("sourceKind","Where did these data come from?",d.sourceKind,[
    ["unsure","Select the genuine origin"],["primary","My own observations / measurements"],["secondary","Published / secondary source"],["theoretical","Calculated or constructed example"]
   ],e)+
@@ -125,10 +128,10 @@ export function renderGraphStudio(state,icon,e){
    '<div class="graph-preview-meta" data-graph-preview-meta>'+e(d.kind==="function"?"Function (not collected observations)":data.points.length+" paired observations plotted")+'</div></section>'+
   '<section class="graph-quality-card" aria-label="Diagram quality checks" data-graph-quality>'+
   renderGraphQuality(studio,icon,e)+
-  '</section>'+
+  '</section>'+renderPresentationCoach(state,"graph",d,icon,e)+
   '<div class="graph-output-actions" data-graph-output data-representation-step="use">'+
    renderGraphActions(studio,icon,e)+
-  '</div>'+
+  '</div>'+renderFigureHandover(state,"graph",d,icon,e)+
   '<p class="graph-export-note">A saved graph is a working figure, not proof of a result. Copy or download it, put it <strong>after your introduction</strong> in the real IA and interpret only the mathematics you genuinely observe.</p>'+
   '</div></div>'+
   (studio.figures.length?'<details class="graph-saved-figures"><summary>'+icon("layers")+' Saved graph drafts ('+studio.figures.length+')</summary>'+

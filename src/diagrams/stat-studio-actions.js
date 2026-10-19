@@ -3,7 +3,7 @@ import {newStatDraft,normalizeStatDraft,statAnalysis,statSignature,importStatTab
 import {completeEntry,startFirstRepresentation} from "../completing/engine.js";
 
 const TEXT=new Set(["raw","headers","histogramInput","binWidth","binStart","barMode",
- "quartileRule","outlierRule","title","variable","unit","unitMode","sourceKind","sourceText",
+ "quartileRule","outlierRule","title","figureNumber","variable","unit","unitMode","sourceKind","sourceText",
  "caption","min","max"]);
 const SELECT=new Set(["categoryIndex","lowIndex","highIndex","frequencyIndex"]);
 const CHECK=new Set(["showGrid","showOutliers","showLabels"]);

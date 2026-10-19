@@ -3,6 +3,8 @@
  * boxes. Advice follows a student's explicitly selected provisional route,
  * falling back to their own first-type selection, never invented analysis.
  */
+import {contextualRepresentationAdvice} from "./presentation-coach-core.js";
+import {renderHubDatasetEvidence} from "./presentation-coach-view.js";
 export const REPRESENTATION_TOOLS=Object.freeze([
  {id:"graph",title:"Graph plotter",action:"graph-open",icon:"chart",
   detail:"Scatter plots, time series and function graphs with axis and unit checks.",
@@ -72,9 +74,10 @@ export function representationAdvice(state){
   why:chosen?.why||["A possible starting tool, not a prescribed technique.","Choose tools only when they help communicate genuine mathematics."]};
 }
 export function renderRepresentationHub(state,icon,e){
- const advice=representationAdvice(state),filter=state.ui?.representationFilter||"all",
-  first=advice.ids.map((id,i)=>({...REPRESENTATION_TOOLS.find(tool=>tool.id===id),reason:advice.why[i]}));
- const chosen=new Set(advice.ids),all=REPRESENTATION_TOOLS.filter(t=>!chosen.has(t.id));
+ const advice=representationAdvice(state),suggestions=contextualRepresentationAdvice(state,advice),
+  filter=state.ui?.representationFilter||"all",
+  first=suggestions.ids.map((id,i)=>({...REPRESENTATION_TOOLS.find(tool=>tool.id===id),reason:suggestions.why[i]}));
+ const chosen=new Set(suggestions.ids),all=REPRESENTATION_TOOLS.filter(t=>!chosen.has(t.id));
  const recommended='<div class="representation-feature-grid">'+first.map(t=>
   '<button type="button" class="representation-card representation-card-featured" data-action="'+t.action+'">'+
   '<span class="representation-card-top">'+icon(t.icon)+' <span>Relevant suggestion</span></span>'+
@@ -92,7 +95,8 @@ export function renderRepresentationHub(state,icon,e){
  '<p>Start from your investigative aim. A clear, purposeful figure is more valuable than using extra mathematics just to make the IA look complicated.</p></div></header>'+
  '<div class="representation-context"><div><span class="representation-context-kicker">'+icon("route")+' YOUR PATHWAY</span>'+
  '<strong>'+e(advice.reason)+'</strong><p>These recommendations come from your <em>provisional</em> planning choice. They do not identify a pattern in your actual data or require you to use either method.</p></div>'+
- '<span class="representation-context-count">2 suggestions</span></div>'+
+ '<span class="representation-context-count">'+suggestions.ids.length+' suggestions</span></div>'+
+  renderHubDatasetEvidence(state,advice,icon,e)+
  recommended+
  '<div class="representation-browse-head"><div><h3>Browse the other mathematical tools</h3>'+
  '<p>Nothing is locked. You can always use your own software or select a mathematical calculation that needs no diagram.</p></div></div>'+
