@@ -845,3 +845,27 @@
 .show-first-draft-note{margin:12px 0;font-size:11px;line-height:1.7;color:#6a604b;background:#fffaf0;border:1px solid #eaddbd;border-radius:10px;padding:10px 12px}
 .show-first-draft-note>.icon{height:15px;width:15px;vertical-align:middle;margin-right:5px}
 @media(max-width:640px){.show-first-writing-field{margin:12px 0}.show-first-writing-field textarea.field{min-height:112px}}
+
+/* One first-mathematics screen: the generator catalogue is a tool, not a fifth writing step. */
+.show-first-planned-move{border:1px solid #cddfd9;background:linear-gradient(125deg,#edf7f3,#fbfdfa);border-radius:13px;padding:14px 16px;margin:14px 0}
+.show-first-planned-label{display:flex;align-items:center;gap:7px;font-size:10px;font-weight:850;letter-spacing:.085em;color:#2d776c;margin-bottom:7px}
+.show-first-planned-label .icon{width:17px;height:17px}
+.show-first-planned-move strong{display:block;font-size:15px;line-height:1.45;color:#184d48}
+.show-first-planned-move p{color:#526d68;font-size:12px;line-height:1.6;margin:5px 0 0}
+.show-first-tool-picker{margin:15px 0;border:1px solid #d3dfe8;border-radius:13px;background:#fff;overflow:hidden}
+.show-first-tool-picker>summary{display:flex;align-items:center;gap:12px;padding:15px 16px;cursor:pointer;list-style:none;color:#234c58}
+.show-first-tool-picker>summary::-webkit-details-marker{display:none}
+.show-first-tool-picker>summary>.icon{width:22px;height:22px;flex:none;color:#28776e}
+.show-first-tool-picker>summary>span{display:grid;gap:4px;min-width:0;flex:1}
+.show-first-tool-picker>summary strong{font-size:14px}
+.show-first-tool-picker>summary small{font-size:11px;font-weight:500;line-height:1.55;color:#62777e}
+.show-first-tool-picker>summary>.icon:last-child{width:17px;height:17px;color:#667e83;transition:transform .18s ease}
+.show-first-tool-picker[open]>summary>.icon:last-child{transform:rotate(90deg)}
+.show-first-tool-picker>summary:focus-visible{outline:3px solid #71a9a3;outline-offset:-4px;border-radius:12px}
+.show-first-tool-picker-body{border-top:1px solid #e0e7eb;padding:2px 13px 0;min-width:0}
+.show-first-tool-picker-body .representation-hub{margin:10px 0}
+@media(max-width:640px){
+ .show-first-planned-move{padding:12px}
+ .show-first-tool-picker>summary{padding:13px 12px;gap:9px}
+ .show-first-tool-picker-body{padding:2px 10px 0}
+}

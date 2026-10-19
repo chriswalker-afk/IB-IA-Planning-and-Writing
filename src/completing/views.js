@@ -71,6 +71,9 @@ export function createCompletingViews(ctx){
  const selectStage=(id)=>'<button type="button" class="btn btn-quiet btn-sm" data-action="completion-open" data-node="'+e(id)+'">'+e(titleMap.get(id)||id)+icon("arrow-right")+'</button>';
  const relevantRoute=(route)=>{
   if(route.to==="C10E")return false; // Replaced by the visible, read-only comparison viewer.
+  // C31 is now a generator workspace, not a compulsory decision page. Legacy routes still work.
+  if((getState().completion.current==="C30"&&route.to==="C31")||
+     (getState().completion.current==="C31"&&route.to==="C32"))return false;
   const s=getState(),f=s.completion.fields,prior=latestRealResult(s),entry=completeEntry(s),
   current=s.completion.current,kind=s.planning.fields.kind||s.project.kind;
   if(current==="C04"&&["C10","C20","C30","C40","C50","C60","C70","C80","C90"].includes(route.to))
@@ -578,6 +581,8 @@ export function createCompletingViews(ctx){
   };
   case "C30":{
    const reduced=isAdviceReduced(s),entry=completeEntry(s);
+   const plannedMaths=firstMathsContext(s);
+   const hasPlannedMove=Boolean(plannedMaths.firstIdea||plannedMaths.activeRoute);
    const genuine=entry?.status==="completed"&&!!entry.result?.trim();
    const cards=(id,num,title,description,html)=>'<section class="show-first-part" data-show-first-part="'+id+'">'+
     '<div class="show-first-part-heading"><span class="show-first-part-number">'+num+'</span><div><h3>'+e(title)+'</h3><p>'+e(description)+'</p></div></div>'+html+'</section>';
@@ -601,17 +606,30 @@ export function createCompletingViews(ctx){
       ["completing:C30:introduceA","completing:C30:introduceB"])+'</div>'+
     '<p class="field-hint">Use this wording in your <strong>actual IA before</strong> the output, not just as a caption. It is different from the earlier explanation of why you selected the method.</p>');
    const second=cards("show","2","Showing your tables, diagrams and calculations",
-    "Put the genuine mathematical work directly in your IA: readable graphs, labelled diagrams, meaningful calculations, units, source citations and sensible precision.",
-    context("show")+graphEntryPanel()+traceEntryPanel()+statEntryPanel()+tableEntryPanel()+voronoiEntryPanel()+
+    "Show genuine mathematical work: clear diagrams or tables where useful, concise calculations, units, citations and defensible precision.",
+    context("show")+
+    (hasPlannedMove?
+     '<div class="show-first-planned-move"><span class="show-first-planned-label">'+icon("sparkles")+
+      ' FROM YOUR PLANNING</span><strong>'+e(plannedMaths.proposedMove)+'</strong>'+
+      '<p>This is a possible starting point, not a completed result. Change it if your actual evidence suggests something better.</p></div>':
+     info("Begin with a useful mathematical question",
+      "You can make a purposeful calculation or theoretical case without any diagram. Choose only a representation that helps answer your aim."))+
+    '<details class="show-first-tool-picker" data-show-first-tools>'+
+      '<summary>'+icon("layers")+' <span><strong>Open diagram &amp; table tools</strong>'+
+      '<small>Pathway-aware suggestions, graph plotter, statistics, formatted tables, tracing and Voronoi diagrams</small></span>'+
+      icon("chevron-right")+'</summary>'+
+      '<div class="show-first-tool-picker-body">'+renderRepresentationHub(s,icon,e)+'</div></details>'+
+    graphEntryPanel()+traceEntryPanel()+statEntryPanel()+tableEntryPanel()+voronoiEntryPanel()+
     '<p class="show-first-table-rule"><strong>Never include long raw-data tables, including in appendices.</strong> Keep the full dataset in your working files. Use an informative graph, selected rows or a compact summary table if they make the mathematics clearer.</p>'+
     (entry?
      entryReviewAlert()+
      (genuine?smallSummary("Mathematics recorded so far",entry.result):
-      info("Work still to record","Present your actual diagram, table or calculation in your IA, then record a truthful result in the detailed mathematics step."))+
+      info("Work still to record","Present your actual diagram, table or calculation in your IA, then record a truthful result here."))+
      (entry.resultRef?smallSummary("Location in your actual IA",entry.resultRef):"")+
      accuracyNote()+to("C33","Record or check my mathematical result"):
-     '<p class="show-first-not-ready">No writing box is needed here: create the diagram, table or calculations in your actual IA. To keep a record of the result in Pathfinder, choose a representation first.</p>'+
-     to("C31","Choose my first representation")));
+     '<p class="show-first-not-ready">Once you have genuine mathematics, record a short result here. No diagram is required if a calculation or theoretical case is more useful.</p>'+
+     '<button type="button" class="btn btn-primary" data-action="completion-first-record">'+
+       icon("calculator")+' Record or check my mathematical result '+icon("arrow-right")+'</button>'));
    const third=cards("reflect","3","Reflecting on the result, aim and prediction",
     "After showing your real mathematics, explain what the result means for your aim and how it compares with your original prediction, if you made one.",
     context("reflect")+smallSummary("My current aim",currentAim())+
@@ -626,7 +644,7 @@ export function createCompletingViews(ctx){
        F("firstInterpretation","My reflection on what this result means",
        "After producing your first real mathematical result: what does it show about your aim, prediction (if any) and any important limitations?",{type:"textarea",rows:5})),
       ["completing:C30:reflectD","completing:C30:reflectE"])+'</div>'+
-    (genuine?to("C34","Examine observations and important limitations"):""));
+    (genuine?to("C34","Inspect a new observation or limitation (optional)"):""));
    const fourth=cards("next","4","Explaining how results lead to the next steps",
     "Use what you have found to introduce a worthwhile next mathematical question, or explain why it is sensible to conclude.",
     context("next")+
@@ -639,7 +657,7 @@ export function createCompletingViews(ctx){
     criterionMarkedWritingBox(F("nextReason","My written bridge to the next step (or conclusion)",
      "Refer to what you actually found. Why would another technique answer the outstanding question, or why is the investigation ready to conclude?",{type:"textarea",rows:5}),
      ["completing:C30:nextD"])+'</div>'+
-    (genuine?to("C35","Explore relevant next steps, or conclude"):""));
+    (genuine?to("C35","Decide whether another mathematical step is needed"):""));
    return{intro:"Show your first mathematics as a connected mathematical story: introduce each output before displaying it, present it selectively, interpret it against your aim, and justify whatever follows.",
     html:'<div class="show-first-sequence" data-show-first-sequence>'+
       '<p class="show-first-sequence-lead">Four parts of your <strong>actual IA writing</strong>. The boxes below save planning and reflection notes; they do not insert text, tables or calculations into your IA.</p>'+
@@ -647,27 +665,39 @@ export function createCompletingViews(ctx){
   }
   case "C31":{
    const toolOpen=Boolean(s.graphStudio?.open||s.statStudio?.open||s.tableStudio?.open||s.imageTracer?.open||s.voronoiStudio?.open);
-   return{intro:"Choose a mathematical representation that genuinely helps answer your aim. Pathfinder suggests tools from your provisional investigation pathway; you are always free to choose another or work directly in your IA.",
-   html:(toolOpen?'<details class="representation-prelude"><summary>'+icon("pencil")+' Review my initial choice and purpose <span>Optional while creating a figure</span></summary><div class="representation-prelude-body">':"")+choice("firstType",[
-    ["scatter","Scatter graph with genuine paired data"],["distribution","Distribution or group comparison"],
-    ["diagram","Labelled mathematical diagram"],["table","Small numerical table or case"],
-    ["calculation","One purposeful calculation"],["theory","Theoretical example or conjecture"],
-    ["other","Another suitable representation"],["unsure","Not sure yet"]])+
-    criteriaField(F("firstPurpose","Why might this help answer the aim?","The mathematical question it could reveal",{type:"textarea",rows:3}),"completing:C31:firstPurpose")+
-    (f.dataStatus==="not-started"&&p.kind!=="theoretical"?info("Data not ready?","You can define terms, use a clearly labelled provisional case or revisit sources. Do not invent measurements."): "")+(toolOpen?"</div></details>":"")+
-    ((s.voronoiStudio?.open||s.tableStudio?.open||s.statStudio?.open||s.imageTracer?.open||s.graphStudio?.open)?
-      renderRepresentationSwitcher(s,icon,e)+
+   const toolHtml=toolOpen?
+     renderRepresentationSwitcher(s,icon,e)+
       (s.voronoiStudio?.open?renderVoronoiStudio(s,icon,e):
        s.tableStudio?.open?renderTableStudio(s,icon,e):
        s.statStudio?.open?renderStatStudio(s,icon,e):
        s.imageTracer?.open?renderImageTracer(s,icon,e):renderGraphStudio(s,icon,e)):
-      renderRepresentationHub(s,icon,e))
+     renderRepresentationHub(s,icon,e);
+   return{intro:toolOpen?
+     "Create or refine a representation here. Your writing and next mathematical decisions stay together on the four-part first-mathematics screen.":
+     "The representation tools now belong to Show your mathematics. Return there to introduce, show and interpret your first result in one place.",
+    html:toolOpen?toolHtml:
+      info("Your first-move decision is already part of the writing screen",
+       "These tools are optional. Use your earlier investigative route and write a new justification only if your actual method changes.")+
+      '<button type="button" class="btn btn-secondary" data-action="completion-open" data-node="C30">'+
+        icon("arrow-left")+' Back to showing my mathematics</button>'+
+      toolHtml+
+      '<details class="representation-prelude"><summary>'+icon("pencil")+
+        ' Review an earlier first-move choice (optional)</summary><div class="representation-prelude-body">'+
+       choice("firstType",[
+        ["scatter","Scatter graph with genuine paired data"],["distribution","Distribution or group comparison"],
+        ["diagram","Labelled mathematical diagram"],["table","Small numerical table or case"],
+        ["calculation","One purposeful calculation"],["theory","Theoretical example or conjecture"],
+        ["other","Another suitable representation"],["unsure","Not sure yet"]])+
+       criteriaField(F("firstPurpose","Why might this help answer the aim?","The mathematical question it could reveal",{type:"textarea",rows:3}),"completing:C31:firstPurpose")+
+      '</div></details>'
    };
   }
-  case "C32":return{intro:"Immediately before the figure or calculation, give your reader a mathematical reason to look at it.",
+  case "C32":return{intro:"Optional first-output details. If you have already introduced your mathematics in the four-part writing screen, do not write the same explanation again.",
    html:actualRecord()+graphEntryPanel()+traceEntryPanel()+statEntryPanel()+tableEntryPanel()+voronoiEntryPanel()+
     entryField("title","A short title for this step","e.g. Inspect a scatter graph")+
+    '<details class="representation-prelude"><summary>Review or adjust the purpose (optional, not another IA paragraph)</summary>'+
     criteriaField(entryField("purpose","Mathematical purpose BEFORE it","What question should this graph/calculation help answer?",{type:"textarea",rows:3}),"completing:C32:purpose")+
+    '</details>'+
     entryField("technique","Mathematical technique being used","e.g. plot observed paired values")+
     entryField("resultRef","Where will the figure or work appear in my IA?","e.g. Figure 1 in my Word document")+
     F("firstDefinitions","Variables, units or assumptions the reader needs here","Only what is not already defined",{type:"textarea",rows:2})+
@@ -677,6 +707,8 @@ export function createCompletingViews(ctx){
   };
   case "C33":return{intro:"Create the actual figure or short calculation in your IA document. Describe what you did here without copying an invented result.",
    html:entryReviewAlert()+actualRecord()+graphEntryPanel()+traceEntryPanel()+statEntryPanel()+tableEntryPanel()+voronoiEntryPanel()+
+    entryField("title","Short title for this mathematical result","e.g. Compare the two distributions")+
+    entryField("technique","Mathematics actually used","e.g. Compare medians and interquartile ranges")+
     entryChoice("status",[
      {value:"planned",title:"Still planned",icon:"clock"},
      {value:"completed",title:"I have actually produced the figure or calculation",icon:"check-circle"}])+
@@ -714,7 +746,10 @@ export function createCompletingViews(ctx){
     smallSummary("Original prediction or hope (tentative)",plannedPrediction())+
     smallSummary("Why I expected or hoped this",p.predictionWhy||s.project.predictionWhy)+
     smallSummary("Possible beneficiary",currentBenefit())+
-    criteriaField(entryField("interpretation","What does this actual result mean for my aim?","An honest local conclusion based on mathematics I have done",{type:"textarea",rows:4}),"completing:C34B:title")+
+    (st?.phase==="first"&&filled(st.interpretation)?
+      smallSummary("Your interpretation from Show your mathematics",st.interpretation)+
+      '<p class="field-hint">Already written for this result. Edit it on the main first-mathematics screen rather than repeating it here.</p>':
+      criteriaField(entryField("interpretation","What does this actual result mean for my aim?","An honest local conclusion based on mathematics I have done",{type:"textarea",rows:4}),"completing:C34B:title"))+
     entryField("localTakeaway","One sentence: what has this section established?","What do I know now, and what remains unanswered?",{type:"textarea",rows:2})+
     F("predictionComparison","How does the result compare with your starting prediction, conjecture or hope?","What did you actually find out? It need not confirm your early expectation.",{type:"textarea",rows:2})+
     F("benefitFinding","What might this mean for the intended beneficiary?","Only if supported by evidence",{type:"textarea",rows:2})+
@@ -730,9 +765,14 @@ export function createCompletingViews(ctx){
   };
   case "C35":return{intro:"One logical bridge from your last actual result to the next mathematics—or recognise that you have enough to conclude.",
    html:bridgeFromPrior()+coachBlock(sourceResultForNext(s),{showDepth:false})+nextCoachQuestions()+
-    criteriaField(F("nextQuestion","What worthwhile mathematical question remains unanswered?","It should arise from the previous local takeaway",{type:"textarea",rows:3}),"completing:C35:nextQuestion")+
+    (sourceResultForNext(s)?.phase==="first"&&filled(f.nextQuestion)?
+      smallSummary("Your next question from Show your mathematics",f.nextQuestion):
+      criteriaField(F("nextQuestion","What worthwhile mathematical question remains unanswered?","It should arise from the previous local takeaway",{type:"textarea",rows:3}),"completing:C35:nextQuestion"))+
     F("nextMethod","Which technique might answer THAT question?","Course-appropriate if possible; it can be undecided")+
-    criteriaField(F("nextReason","Why would this next technique follow from the previous result?","Explain the bridge BEFORE the new mathematics in your real IA",{type:"textarea",rows:3}),"completing:C35:nextReason")+
+    (sourceResultForNext(s)?.phase==="first"&&filled(f.nextReason)?
+      smallSummary("Your earlier justification for the next step",f.nextReason)+
+      '<p class="field-hint">This bridge is already saved on the four-part first-mathematics screen. There is no need to rewrite it.</p>':
+      criteriaField(F("nextReason","Why would this next technique follow from the previous result?","Explain the bridge BEFORE the new mathematics in your real IA",{type:"textarea",rows:3}),"completing:C35:nextReason"))+
     info("No prescribed number of mathematical sections","Another technique is useful only if it answers a genuine next question. An honest conclusion may be the best next step.")+
     '<div class="button-row">'+sourceAction("Show me relevant NEXT mathematical ideas","Help me think of a next step")+
     (canViewScatterFollowup(s)?sourceAction("Show bivariate options for actual scatter pattern","Interpret my scatter pattern"):"")+
@@ -963,7 +1003,7 @@ export function createCompletingViews(ctx){
  };
  function render(){
   const s=getState(),c=s.completion||{current:"C00",stages:{}},node=c.current;
-  const label=node==="C00"?"Set up: start writing your IA":node==="C20"?"Introducing your first mathematics":(titleMap.get(node)||"IA Studio");
+  const label=node==="C00"?"Set up: start writing your IA":node==="C20"?"Introducing your first mathematics":node==="C31"?"Diagram & table tools":(titleMap.get(node)||"IA Studio");
   const screen=startOptions(node),stage=completionStage(node,s);
   const progress=stage&&s.completion.stages[stage];
   const warning=completionFlags(s);

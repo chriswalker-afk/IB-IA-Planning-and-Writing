@@ -149,3 +149,42 @@ test("Course check in C40D edits the same mathematical record as C40 rather than
  assert(html.includes('data-choice-path="entries.0.knowledge"'));
  assert(!html.includes('data-choice-path="completion.fields.courseLevel"'));
 });
+
+test("first-mathematics writing screen includes all generators and records maths without a duplicate first-move page",()=>{
+ const {state,view}=fixture();
+ state.planning.routeExplorer.selectedRoute="groups";
+ setCompletionNode(state,"C30");
+ const html=view.viewCompleting();
+ assert.match(html,/data-show-first-part="show"/);
+ assert.match(html,/data-show-first-tools/);
+ for(const action of ["graph-open","stat-open","table-open","trace-open","voronoi-open"]){
+  assert.ok(html.includes('data-action="'+action+'"'),action);
+ }
+ assert.match(html,/FROM YOUR PLANNING/);
+ assert.match(html,/data-action="completion-first-record"/);
+ assert(!html.includes('data-condition="Begin purposeful initial exploration"'));
+ setCompletionNode(state,"C31");
+ const legacy=view.viewCompleting();
+ assert.match(legacy,/Diagram &amp; table tools/);
+ assert.match(legacy,/data-node="C30"/);
+ assert(!legacy.includes('data-condition="Chosen useful initial representation or calculation"'));
+});
+test("first-mathematics next-question writing is reused rather than requested twice",()=>{
+ const {state,view}=fixture();
+ startFirstRepresentation(state);
+ const entry=state.entries[0];
+ entry.status="completed";entry.result="Both groups have different spreads";
+ entry.interpretation="The second group is more variable";
+ state.completion.fields.nextQuestion="Are the spreads sensitive to an outlier?";
+ state.completion.fields.nextReason="A single high value may be distorting the range.";
+ setCompletionNode(state,"C34B");
+ const reflection=view.viewCompleting();
+ assert.match(reflection,/Your interpretation from Show your mathematics/);
+ assert(!reflection.includes('data-path="entries.0.interpretation"'));
+ setCompletionNode(state,"C35");
+ const next=view.viewCompleting();
+ assert.match(next,/Your next question from Show your mathematics/);
+ assert.match(next,/Your earlier justification for the next step/);
+ assert(!next.includes('data-path="completion.fields.nextQuestion"'));
+ assert(!next.includes('data-path="completion.fields.nextReason"'));
+});

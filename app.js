@@ -68,7 +68,7 @@ import {renderRepresentationHub,renderRepresentationSwitcher,representationFocus
 import {renderPresentationCoach,renderFigureHandover} from "./src/diagrams/presentation-coach-view.js";
 import {figureCaption} from "./src/diagrams/presentation-coach-core.js";
 import {renderWriterFieldGuide} from "./src/completing/writer-field-guide.js";
-import {C_MAJOR_STAGES,setCompletionNode,moveCompletionRoute,completionBack,markCompletionStage,setCompletionField,addAccuracyDecision,completionSuggestions,sectionForNode,targetForSection,completionStage,completeEntry,latestRealResult,sourceResultForNext,flagDependentMathematics,acknowledgeMathReview} from "./src/completing/engine.js";
+import {C_MAJOR_STAGES,setCompletionNode,moveCompletionRoute,completionBack,markCompletionStage,setCompletionField,startFirstRepresentation,addAccuracyDecision,completionSuggestions,sectionForNode,targetForSection,completionStage,completeEntry,latestRealResult,sourceResultForNext,flagDependentMathematics,acknowledgeMathReview} from "./src/completing/engine.js";
 
 import { createProjectViews } from "./src/ui/project-views.js";
 import { createProjectState as newState, normalizeProjectState as normalise, persistProjectState, STORAGE_KEY as KEY } from "./src/core/project-state.js";
@@ -531,6 +531,14 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     if(!result?.ok){toast(result?.error||"Please review this mathematical decision.");return;}
     if(result.targetRoute==="planning"){nav("planning");return;}
     nav("completing");
+  }
+  function returnToShowingFirstMaths(reason){
+    // Generators remain editable, but they are not an extra writing stage.
+    state.graphStudio.open=false;state.imageTracer.open=false;state.statStudio.open=false;
+    state.tableStudio.open=false;state.voronoiStudio.open=false;
+    setCompletionNode(state,"C30",{reason});
+    save();render();
+    document.querySelector?.('[data-show-first-part="show"]')?.scrollIntoView?.({block:"start",behavior:"auto"});
   }
   let detachIdeaMapGraph=()=>{};
   function render(opts={}) {
@@ -1340,8 +1348,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       case "voronoi-use":{
         const result=saveAndLinkVoronoi(state);
         if(!result.ok){toast(result.error);break;}
-        setCompletionNode(state,"C32",{reason:"linked-voronoi"});
-        save();render();
+        returnToShowingFirstMaths("linked-voronoi");
         toast("Voronoi construction linked to first mathematics",result.reviewNeeded?
          "Recheck interpretations after the changed site locations or assumptions.":
          "Introduce the figure in your own IA and justify the distance model. Constructing cells does not prove optimal placement.");
@@ -1392,8 +1399,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       case "table-use":{
         const result=saveAndLinkTable(state);
         if(!result.ok){toast(result.error);break;}
-        setCompletionNode(state,"C32",{reason:"linked-table"});
-        save();render();
+        returnToShowingFirstMaths("linked-table");
         toast("Formatted table linked to first mathematics",result.reviewNeeded?
          "Your previous result needs reviewing against the changed table.":
          "Introduce the table in your actual IA before displaying it. Creating it has not marked the mathematics as complete.");
@@ -1452,8 +1458,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       case "stat-use":{
         const record=saveAndLinkStat(state);
         if(!record.ok){toast(record.error);break;}
-        setCompletionNode(state,"C32",{reason:"linked-statistics"});
-        save();render();
+        returnToShowingFirstMaths("linked-statistics");
         toast("Statistical diagram linked to your first mathematics",record.reviewNeeded?
          "Your earlier numerical interpretation now needs checking.":
          "Next, introduce this figure in your actual IA, then explain only the results genuinely supported by the data.");
@@ -1533,8 +1538,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       case "trace-use":{
         const result=saveAndLinkTrace(state);
         if(!result.ok){toast(result.error);break;}
-        setCompletionNode(state,"C32",{reason:"linked-trace"});
-        save();render();
+        returnToShowingFirstMaths("linked-trace");
         toast("Tracing linked to first mathematics",result.reviewNeeded?
          "The tracing changed; recheck any interpretation of the previous measurements.":
          "Introduce the figure in your own IA and explain the calibration. Creating it has not completed the mathematics.");
@@ -1592,8 +1596,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       case "graph-use":{
         const result=saveAndLinkGraph(state);
         if(!result.ok){toast(result.error);break;}
-        setCompletionNode(state,"C32",{reason:"linked-graph"});
-        save();render();
+        returnToShowingFirstMaths("linked-graph");
         toast("Graph linked to your first maths",result.reviewNeeded?
          "You changed the underlying mathematics: review your previous interpretation.":
          "Next, write your introductory sentence and put the saved figure in your own IA document. No result has been marked as completed.");
@@ -1610,6 +1613,11 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
           result.reviewNeeded?"The changed graph also flagged your earlier mathematical interpretation for review.":""))
           .catch(error=>toast("Graph export unavailable",error.message||"Try downloading the PNG instead."));
         break;
+      }
+      case "completion-first-record":{
+        const result=startFirstRepresentation(state);
+        if(!result.ok){toast(result.error);break;}
+        handleCompletionResult(setCompletionNode(state,"C33",{reason:"first-maths-record"}));break;
       }
       case "completion-route":handleCompletionResult(moveCompletionRoute(state,el.dataset.condition));break;
       case "completion-open":handleCompletionResult(setCompletionNode(state,el.dataset.node,{reason:"student-revisit"}));break;
