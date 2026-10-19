@@ -6,6 +6,8 @@ import {isStudioWritingNode,renderStudioWritingStage} from './studio-writing-sta
 import {firstMathsContext} from "./first-maths-bridge.js";
 import {renderJourneyWritingAdvice} from "./first-maths-writing-guidance.js";
 import {renderShowingMathsContext} from "./showing-first-maths.js";
+import {renderGraphStudio} from "../diagrams/graph-view.js";
+import {renderGraphSvg} from "../diagrams/graph-core.js";
 import {insightCapture,insightEcho,renderSparkShelf} from '../ui/insight-threads.js';
 import {STATUS_LABELS,currentGroup,JOURNEY_GROUPS} from "../ui/journey.js";
 import {groupedDashboard} from "../ui/journey-views.js";
@@ -165,6 +167,16 @@ export function createCompletingViews(ctx){
     (previous?'<p class="completion-recheck-reference"><strong>Updated earlier finding:</strong> '+e(previous)+'</p>':"")+
     '<p>This preserves your result and writing. Review the purpose, calculations and interpretation in your IA before confirming.</p>'+
     '<button type="button" class="btn btn-secondary" data-action="completion-entry-reviewed" data-index="'+i+'">I have checked this connection</button></div>';
+ };
+ const graphEntryPanel=()=>{
+  const state=getState(),entry=completeEntry(state),id=entry?.graphFigureId;
+  const fig=id?state.graphStudio?.figures?.find(x=>x.id===id):null;
+  if(!fig)return "";
+  return '<section class="graph-entry-preview" aria-label="Linked mathematical graph">'+
+   '<h3>'+icon("chart")+' Your saved graph draft: '+e(fig.draft.title||"Untitled graph")+'</h3>'+
+   '<p>This graph is saved in Pathfinder, not automatically inserted into your IA. Copy or download it, then put it <strong>after</strong> the sentence introducing it. Interpret only real results.</p>'+
+   '<div class="graph-svg-wrap">'+renderGraphSvg(fig.draft)+'</div>'+
+   '<button type="button" class="btn btn-secondary btn-sm" data-action="graph-open">'+icon("pencil")+' Edit or export this graph</button></section>';
  };
  const actualRecord=()=>{
   const st=completeEntry(getState());
@@ -535,7 +547,7 @@ export function createCompletingViews(ctx){
     '<p class="field-hint">Use this wording in your <strong>actual IA before</strong> the output, not just as a caption. It is different from the earlier explanation of why you selected the method.</p>');
    const second=cards("show","2","Showing your tables, diagrams and calculations",
     "Put the genuine mathematical work directly in your IA: readable graphs, labelled diagrams, meaningful calculations, units, source citations and sensible precision.",
-    context("show")+
+    context("show")+graphEntryPanel()+
     '<p class="show-first-table-rule"><strong>Never include long raw-data tables, including in appendices.</strong> Keep the full dataset in your working files. Use an informative graph, selected rows or a compact summary table if they make the mathematics clearer.</p>'+
     (entry?
      entryReviewAlert()+
@@ -578,17 +590,21 @@ export function createCompletingViews(ctx){
       '<p class="show-first-sequence-lead">Four parts of your <strong>actual IA writing</strong>. The boxes below save planning and reflection notes; they do not insert text, tables or calculations into your IA.</p>'+
       first+second+third+fourth+'</div>'};
   }
-  case "C31":return{intro:"Choose an initial representation that could genuinely reveal the next mathematical question.",
+  case "C31":return{intro:"Choose one representation that answers a useful first mathematical question. Create a clear graph here, bring your own figure, or continue without a diagram.",
    html:choice("firstType",[
     ["scatter","Scatter graph with genuine paired data"],["distribution","Distribution or group comparison"],
     ["diagram","Labelled mathematical diagram"],["table","Small numerical table or case"],
     ["calculation","One purposeful calculation"],["theory","Theoretical example or conjecture"],
     ["other","Another suitable representation"],["unsure","Not sure yet"]])+
     criteriaField(F("firstPurpose","Why might this help answer the aim?","The mathematical question it could reveal",{type:"textarea",rows:3}),"completing:C31:firstPurpose")+
-    (f.dataStatus==="not-started"&&p.kind!=="theoretical"?info("Data not ready?","You can define terms, use a clearly labelled provisional case or revisit sources. Do not invent measurements."): "")
+    (f.dataStatus==="not-started"&&p.kind!=="theoretical"?info("Data not ready?","You can define terms, use a clearly labelled provisional case or revisit sources. Do not invent measurements."): "")+
+    (s.graphStudio?.open?renderGraphStudio(s,icon,e):
+    '<section class="graph-studio-launch"><div><strong>'+icon("chart")+' Make an IA-ready graph</strong>'+
+    '<p>Paste genuine values from Google Sheets or plot a function. Pathfinder checks titles, axes, units, source and scale before allowing export. You can still use your own software or choose no diagram.</p></div>'+
+    '<button type="button" class="btn btn-primary" data-action="graph-open">'+icon("chart")+' Open graph plotter</button></section>')
   };
   case "C32":return{intro:"Immediately before the figure or calculation, give your reader a mathematical reason to look at it.",
-   html:actualRecord()+
+   html:actualRecord()+graphEntryPanel()+
     entryField("title","A short title for this step","e.g. Inspect a scatter graph")+
     criteriaField(entryField("purpose","Mathematical purpose BEFORE it","What question should this graph/calculation help answer?",{type:"textarea",rows:3}),"completing:C32:purpose")+
     entryField("technique","Mathematical technique being used","e.g. plot observed paired values")+
@@ -599,7 +615,7 @@ export function createCompletingViews(ctx){
     accuracySelector()+accuracyNote()
   };
   case "C33":return{intro:"Create the actual figure or short calculation in your IA document. Describe what you did here without copying an invented result.",
-   html:entryReviewAlert()+actualRecord()+
+   html:entryReviewAlert()+actualRecord()+graphEntryPanel()+
     entryChoice("status",[
      {value:"planned",title:"Still planned",icon:"clock"},
      {value:"completed",title:"I have actually produced the figure or calculation",icon:"check-circle"}])+
