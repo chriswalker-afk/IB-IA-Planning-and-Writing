@@ -54,7 +54,7 @@ export function normalizeVoronoiDraft(raw){
  return d;
 }
 export const newVoronoiStudio=()=>({open:false,draft:newVoronoiDraft(),figures:[],activeId:"",
- tool:"existing",selectedSiteId:"",history:{past:[],future:[]},
+ tool:"existing",selectedSiteId:"",keyboardCursor:{x:5,y:5},cursorVisible:false,history:{past:[],future:[]},
  scenario:{active:false,before:null,showOriginal:false}});
 export function normalizeVoronoiStudio(raw){
  const r=object(raw)?raw:{};
@@ -79,6 +79,8 @@ export function normalizeVoronoiStudio(raw){
  return {open:r.open===true,draft,figures,
   activeId:figures.some(f=>f.id===r.activeId)?r.activeId:"",
   tool,selectedSiteId:draft.sites.some(s=>s.id===r.selectedSiteId)?r.selectedSiteId:"",
+  keyboardCursor:{x:finite(r.keyboardCursor?.x)?r.keyboardCursor.x:5,
+   y:finite(r.keyboardCursor?.y)?r.keyboardCursor.y:5},cursorVisible:r.cursorVisible===true,
   history:{past,future},scenario:{active:scenario.active===true&&!!original,
    before:scenario.active===true?original:null,showOriginal:scenario.showOriginal===true&&!!original}};
 
