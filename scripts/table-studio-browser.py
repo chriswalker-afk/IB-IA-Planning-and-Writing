@@ -60,17 +60,21 @@ def compact(p,width):
   const make=URL.createObjectURL.bind(URL);
   URL.createObjectURL=blob=>{window.__tableTrace.push("blob:"+blob.type);return make(blob);};
  }""")
+ downloads=[]
+ p.on("download",lambda download:downloads.append(download))
  for fmt,ext in [("svg","svg"),("html","html"),("csv","csv"),("png","png")]:
   print("Checking table export:",fmt,flush=True)
   try:
-   with p.expect_download(timeout=12000) as download:
-    p.locator('[data-action="table-'+fmt+'"]').click()
+   p.locator('[data-action="table-'+fmt+'"]').click(timeout=4000)
+   p.wait_for_timeout(500)
+   print("Table debug events:",p.evaluate("window.__tableTrace"),flush=True)
+   print("Download events:",[x.suggested_filename for x in downloads],flush=True)
+   assert downloads and downloads[-1].suggested_filename.endswith("."+ext)
   except Exception:
    print("Table export feedback:",p.locator("#toast").inner_text(),flush=True)
    print("Table debug events:",p.evaluate("window.__tableTrace"),flush=True)
    print("SVG button:",p.locator('[data-action="table-svg"]').evaluate("(e)=>e.outerHTML"),flush=True)
    raise
-  assert download.value.suggested_filename.endswith("."+ext)
  p.locator('[data-action="table-use"]').click()
  assert p.locator('[data-source-node="C32"]').count()==1
  assert p.locator('.ia-table-entry svg.ia-table-svg').count()==1
