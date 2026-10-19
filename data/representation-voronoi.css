@@ -211,3 +211,5 @@ body.representation-focus-active .voronoi-layout{grid-template-columns:minmax(29
  .voronoi-scenario-bar>div>*{flex:1 1 auto}
 }
 @media(prefers-reduced-motion:reduce){.voronoi-tool{transition:none}}
+
+.voronoi-svg [data-voronoi-plane]:focus-visible,.voronoi-svg [data-voronoi-site-index]:focus-visible,.voronoi-svg [data-voronoi-cell-index]:focus-visible{outline:none;stroke:#c06435;stroke-width:3;stroke-dasharray:5 4}
