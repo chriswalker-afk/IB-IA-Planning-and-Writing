@@ -20,25 +20,28 @@ export function newVoronoiDraft(){
   mapSrc:"",mapWidth:0,mapHeight:0,mapName:"",mapCredit:"",mapConfirmed:false,mapOpacity:.42,
   showGrid:true,showSites:true,showLabels:true,showBisector:false,showAreas:false,
   pairA:0,pairB:1,probeX:"",probeY:"",note:"",
-  addName:"",addX:"",addY:""
+  addName:"",addX:"",addY:"",addType:"candidate",placeCandidate:false
  };
 }
 export function normalizeVoronoiDraft(raw){
  const d=newVoronoiDraft(),r=object(raw)?raw:{};
  for(const key of ["raw","headers","title","xLabel","yLabel","unitMode","unit",
   "coordSystem","sourceKind","sourceCredit","regionMode","xMin","xMax","yMin","yMax",
-  "mapName","mapCredit","probeX","probeY","note","addName","addX","addY"]){
+  "mapName","mapCredit","probeX","probeY","note","addName","addX","addY","addType"]){
   if(typeof r[key]==="string")d[key]=text(r[key],key==="raw"?MAX_VORONOI_RAW:
    ["sourceCredit","mapCredit","note"].includes(key)?550:160);
  }
  if(!["yes","no"].includes(d.headers))d.headers="yes";
+ if(!["candidate","observed"].includes(d.addType))d.addType="candidate";
+ d.placeCandidate=r.placeCandidate===true;
  if(!["unsure","unit","dimensionless"].includes(d.unitMode))d.unitMode="unsure";
  if(!["unsure","cartesian","latlon"].includes(d.coordSystem))d.coordSystem="unsure";
  if(!["unsure","primary","secondary"].includes(d.sourceKind))d.sourceKind="unsure";
  if(!["auto","manual"].includes(d.regionMode))d.regionMode="auto";
  d.sites=(Array.isArray(r.sites)?r.sites:[]).slice(0,MAX_VORONOI_SITES)
   .filter(object).map((s,i)=>({id:/^s-[a-z0-9-]{1,42}$/i.test(s.id)?s.id:"s-"+i,
-    name:text(s.name,42),x:finite(s.x)?s.x:null,y:finite(s.y)?s.y:null}));
+    name:text(s.name,42),x:finite(s.x)?s.x:null,y:finite(s.y)?s.y:null,
+    kind:s.kind==="candidate"?"candidate":"observed"}));
  for(const flag of flags)if(typeof r[flag]==="boolean")d[flag]=r[flag];
  d.metricConfirmed=r.metricConfirmed===true;
  d.pairA=Number.isInteger(r.pairA)&&r.pairA>=0&&r.pairA<d.sites.length?r.pairA:0;
@@ -71,7 +74,7 @@ export function parseVoronoiSites(raw,headers="yes"){
   const name=three?row[0].trim():"Site "+(i+1),x=finiteCell(row[three?1:0]),y=finiteCell(row[three?2:1]);
   if(!name||name.length>42||x===null||y===null||Math.abs(x)>1e8||Math.abs(y)>1e8)
    throw new Error("Check row "+(i+1)+": every site needs a short name and two finite Cartesian coordinates.");
-  return {id:"s-"+i,name,x,y};
+  return {id:"s-"+i,name,x,y,kind:"observed"};
  });
  const seen=new Set();
  for(const s of sites){
@@ -215,6 +218,8 @@ export function analyzeVoronoi(raw){
  warn("metric-assumption","Voronoi cells compare straight-line distances, not road travel times, cost, safety, catchment demand or optimal facility location.");
  if(d.sites.length>10)warn("many-sites","Site labels may be crowded. Consider a smaller justified investigation area or fewer locations.");
  if(d.edited)warn("edited","Site locations were changed after importing. Check source accuracy and document changes.");
+ if(d.sites.some(s=>s.kind==="candidate"))warn("candidate",
+  "A proposed candidate is a hypothetical location. Distinguish this what-if geometry from existing site locations and do not claim an optimum from the tessellation alone.");
  if(d.showAreas)warn("area-context","Cell areas refer only to this rectangular domain, in squared coordinate units; they do not measure population or demand.");
  let mapRatio=null;
  if(d.mapSrc){
