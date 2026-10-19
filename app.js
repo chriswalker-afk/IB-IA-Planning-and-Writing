@@ -65,6 +65,8 @@ import {setVoronoiField,setVoronoiSite,addVoronoiSite,removeVoronoiSite,clearVor
 import {exportVoronoi} from "./src/diagrams/voronoi-export.js";
 import {displayVoronoiBounds,coordinateFromCanvas,canvasPosition,voronoiFrame,recordVoronoiHistory,applyVoronoiFrame,undoVoronoi,redoVoronoi,freezeVoronoiWindow,fitVoronoiSites,setVoronoiTool,selectVoronoiSite,moveVoronoiSite,proposeVoronoiComparison,showVoronoiComparison,finishVoronoiComparison,selectNearestBisector} from "./src/diagrams/voronoi-interactions.js";
 import {renderRepresentationHub,renderRepresentationSwitcher,representationFocusActive} from "./src/diagrams/representation-hub.js";
+import {renderPresentationCoach,renderFigureHandover} from "./src/diagrams/presentation-coach-view.js";
+import {figureCaption} from "./src/diagrams/presentation-coach-core.js";
 import {renderWriterFieldGuide} from "./src/completing/writer-field-guide.js";
 import {C_MAJOR_STAGES,setCompletionNode,moveCompletionRoute,completionBack,markCompletionStage,setCompletionField,addAccuracyDecision,completionSuggestions,sectionForNode,targetForSection,completionStage,completeEntry,latestRealResult,sourceResultForNext,flagDependentMathematics,acknowledgeMathReview} from "./src/completing/engine.js";
 
@@ -203,6 +205,18 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     save();render();
     document.querySelector?.('[data-native-grid="'+type+'"]')?.scrollIntoView?.({block:"start",behavior:"auto"});
   }
+  function refreshPresentation(type){
+    const studios={graph:state.graphStudio,stat:state.statStudio,table:state.tableStudio,
+      trace:state.imageTracer,voronoi:state.voronoiStudio};
+    const roots={graph:"graph-studio",stat:"stat-studio",table:"table-studio",
+      trace:"image-tracer",voronoi:"voronoi-studio"};
+    const studio=studios[type],root=main.querySelector?.('[data-'+roots[type]+']');
+    if(!studio?.draft||!root)return;
+    const coach=root.querySelector('[data-presentation-coach="'+type+'"]');
+    if(coach)coach.outerHTML=renderPresentationCoach(state,type,studio.draft,icon,e);
+    const handover=root.querySelector('[data-figure-handover="'+type+'"]');
+    if(handover)handover.outerHTML=renderFigureHandover(state,type,studio.draft,icon,e);
+  }
   function refreshGraphPreview(){
     const d=state.graphStudio?.draft;
     const image=main.querySelector?.("[data-graph-preview]");
@@ -214,6 +228,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     if(actions)actions.innerHTML=renderGraphActions(state.graphStudio,icon,e);
     const status=main.querySelector?.("[data-graph-preview-meta]");
     if(status)status.textContent=d.kind==="function"?"Function (not collected observations)":graphData(d).points.length+" paired observations plotted";
+    refreshPresentation("graph");
   }
   function navigateGraph(){
     if(state.completion.current!=="C31")setCompletionNode(state,"C31",{reason:"graph-editor"});
@@ -238,6 +253,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     if(quality)quality.innerHTML=traceQualityHtml(tracer,icon,e);
     const output=mainRoot.querySelector("[data-trace-output]");
     if(output)output.innerHTML=traceOutputHtml(tracer,icon,e);
+    refreshPresentation("trace");
   }
   function navigateTrace(){
     if(state.completion.current!=="C31")setCompletionNode(state,"C31",{reason:"trace-editor"});
@@ -260,6 +276,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     if(quality)quality.innerHTML=statQualityHtml(state.statStudio,icon,e);
     const output=root.querySelector("[data-stat-output]");
     if(output)output.innerHTML=statOutputHtml(state.statStudio,icon,e);
+    refreshPresentation("stat");
   }
   function navigateStat(){
     if(state.completion.current!=="C31")setCompletionNode(state,"C31",{reason:"stat-editor"});
@@ -280,6 +297,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     if(quality)quality.innerHTML=tableQualityHtml(state.tableStudio,icon,e);
     const output=root.querySelector("[data-table-output]");
     if(output)output.innerHTML=tableOutputHtml(state.tableStudio,icon);
+    refreshPresentation("table");
   }
   function navigateTable(){
     if(state.completion.current!=="C31")setCompletionNode(state,"C31",{reason:"table-editor"});
@@ -302,6 +320,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     if(quality)quality.innerHTML=voronoiQualityHtml(state.voronoiStudio,icon,e);
     const output=root.querySelector("[data-voronoi-output]");
     if(output)output.innerHTML=voronoiOutputHtml(state.voronoiStudio,icon);
+    refreshPresentation("voronoi");
     const current=state.voronoiStudio;
     root.querySelectorAll?.("[data-voronoi-site]").forEach(input=>{
       if(document.activeElement===input)return;
@@ -795,6 +814,24 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     const action=el.dataset.action||"";
     if(handleNativeDataAction(state,action,el,{save,render,toast,
       confirm:message=>window.confirm(message),openTool:openNativeTool}))return;
+    if(action==="presentation-copy-caption"){
+      const type=el.dataset.presentationType,
+        studios={graph:state.graphStudio,stat:state.statStudio,table:state.tableStudio,
+          trace:state.imageTracer,voronoi:state.voronoiStudio},
+        studio=studios[type];
+      if(!studio){toast("Unknown figure type");return;}
+      const id=el.dataset.presentationId||"";
+      const draft=id?studio.figures.find(f=>f.id===id)?.draft:
+        studio.open?studio.draft:null;
+      if(!draft){toast("Figure unavailable","Open or restore the saved version before copying its label.");return;}
+      const caption=figureCaption(state,type,draft);
+      if(typeof navigator!=="undefined"&&navigator.clipboard?.writeText){
+        navigator.clipboard.writeText(caption)
+          .then(()=>toast("Label and source copied","Check the citation and numbering before pasting. Write your own mathematical interpretation."))
+          .catch(()=>toast("Could not copy automatically","Select and copy the visible caption manually."));
+      }else toast("Clipboard unavailable","Select and copy the label shown in your IA handover.");
+      return;
+    }
     if(preview.active&&["import-json","import-report","new-project","merge-apply"].includes(action)){
       toast("Return to your investigation before importing or starting a project.");return;
     }
