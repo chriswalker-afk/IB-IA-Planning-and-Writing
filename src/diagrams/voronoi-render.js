@@ -87,8 +87,10 @@ export function renderVoronoiSvg(raw){
  });
  if(d.showSites)q.cells.forEach((cell,i)=>{
   const site=cell.site,x=L.x(site.x),y=L.y(site.y);
-  body.push('<circle cx="'+coord(x)+'" cy="'+coord(y)+'" r="6" fill="#1f4961" stroke="#fff" stroke-width="2.2"/>');
-  if(d.showLabels)body.push(text(site.name.length>24?site.name.slice(0,22)+"…":site.name,
+  if(site.kind==="candidate"){
+   body.push('<path d="M'+coord(x)+' '+coord(y-8)+' L'+coord(x+8)+' '+coord(y)+' L'+coord(x)+' '+coord(y+8)+' L'+coord(x-8)+' '+coord(y)+' Z" fill="#b25742" stroke="#fff" stroke-width="2"/>');
+  }else body.push('<circle cx="'+coord(x)+'" cy="'+coord(y)+'" r="6" fill="#1f4961" stroke="#fff" stroke-width="2.2"/>');
+  if(d.showLabels)body.push(text((site.kind==="candidate"?"Proposed: ":"")+ (site.name.length>20?site.name.slice(0,18)+"…":site.name),
    Math.min(LEFT+PLOT_WIDTH-10,Math.max(LEFT+10,x+9)),Math.max(TOP+16,y-12),
    'font-family="Arial,sans-serif" font-size="12" font-weight="700" fill="#233f4c" text-anchor="start" stroke="#fff" stroke-width="3" paint-order="stroke"'));
  });
