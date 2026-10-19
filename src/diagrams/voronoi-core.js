@@ -161,7 +161,6 @@ export function voronoiCells(sites,bounds){
 }
 export function voronoiBounds(d){
  const sites=d.sites;
- if(!sites.length)return null;
  if(d.regionMode==="manual"||d.regionMode==="interactive"){
   const raw=[d.xMin,d.xMax,d.yMin,d.yMax];
   if(raw.some(x=>!String(x).trim()))return null;
@@ -169,8 +168,9 @@ export function voronoiBounds(d){
   if(vals.some(x=>x===null))return null;
   const [xMin,xMax,yMin,yMax]=vals;
   if(xMax<=xMin||yMax<=yMin)return null;
-  return {xMin,xMax,yMin,yMax,manual:true};
+  return {xMin,xMax,yMin,yMax,manual:d.regionMode==="manual"};
  }
+ if(!sites.length)return null;
  const xs=sites.map(s=>s.x).filter(finite),ys=sites.map(s=>s.y).filter(finite);
  if(!xs.length||!ys.length)return null;
  const xMin=Math.min(...xs),xMax=Math.max(...xs),yMin=Math.min(...ys),yMax=Math.max(...ys);
