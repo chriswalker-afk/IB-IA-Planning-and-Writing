@@ -103,7 +103,7 @@ def run(p,width):
  assert photo_png.value.suggested_filename.endswith("-photo.png")
  p.screenshot(path=str(OUT/f"image-tracer-photo-overlay-{width}.png"),full_page=True,animations="disabled")
  p.locator('[data-action="trace-use"]').click()
- assert p.locator('[data-source-node="C32"]').count()==1
+ assert p.locator('[data-source-node="C30"]').count()==1
  assert p.locator('.trace-entry-panel .image-trace-svg').count()==1
  result=saved(p)
  assert len(result["entries"])==1 and result["entries"][0]["status"]=="planned"
