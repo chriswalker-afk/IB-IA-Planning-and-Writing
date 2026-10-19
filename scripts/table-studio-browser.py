@@ -121,7 +121,8 @@ def numerical_summary(p,width):
  p.locator('[data-table-measure="sd"]').check()
  assert p.locator('[data-action="table-use"]').is_enabled()
  assert len(saved(p)["tableStudio"]["draft"]["measures"])==3
- p.locator('[data-table-measure="iqr"]').check()
+ # A fourth selection is deliberately rejected once three measures are chosen.
+ p.locator('[data-table-measure="iqr"]').click()
  assert len(saved(p)["tableStudio"]["draft"]["measures"])==3
  assert p.locator('[data-action="table-use"]').is_enabled()
  no_overflow(p)
