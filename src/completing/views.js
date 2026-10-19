@@ -5,6 +5,7 @@ import {renderWritingStageFlow} from './stage-writing-flow.js';
 import {isStudioWritingNode,renderStudioWritingStage} from './studio-writing-stages.js';
 import {firstMathsContext} from "./first-maths-bridge.js";
 import {renderJourneyWritingAdvice} from "./first-maths-writing-guidance.js";
+import {renderShowingMathsContext} from "./showing-first-maths.js";
 import {insightCapture,insightEcho,renderSparkShelf} from '../ui/insight-threads.js';
 import {STATUS_LABELS,currentGroup,JOURNEY_GROUPS} from "../ui/journey.js";
 import {groupedDashboard} from "../ui/journey-views.js";
@@ -508,18 +509,63 @@ export function createCompletingViews(ctx){
         "completing:C26:dataAimLink"))+
       F("dataStatusSummary","One important uncertainty still to resolve (optional)","Sampling scope, permission, parameter quality or missing source",{type:"textarea",rows:2})
   };
-  case "C30":return{intro:"Begin the first genuine graph, labelled diagram, simple case or calculation. Its mathematical purpose should be clear from your opening.",
-    html:(p.figureOther||p.figureType||p.firstAction?smallSummary("Earlier first-step idea (optional)",p.figureOther||p.figureType||p.firstAction):"")+
-      (f.firstPurpose?smallSummary("Your first mathematical question",f.firstPurpose):
-       p.figurePurpose?smallSummary("Earlier planned purpose",p.figurePurpose):"")+
-      (f.methodReason?smallSummary("Why you chose the opening mathematics (planning note)",f.methodReason):"")+
-      (f.firstMethodEvaluation?smallSummary("Possible mathematical limits or alternatives to check",f.firstMethodEvaluation):"")+
-      (f.firstMathsBridgePlacement==="intro"?
-       info("You already explained why this follows from your aim","Move straight into the mathematics. Only define the quantities and symbols needed at first use."):
-       f.dataAimLink?smallSummary("Why the first maths follows your aim",f.dataAimLink):
-       info("Give the first mathematical step a reason","If your Introduction has not already made the link, add one or two sentences explaining why this graph, small case or calculation helps answer your aim."))+
-      info("First purposeful mathematics","Show the real mathematics rather than describing every future technique. Explain what your genuine result shows, then decide what logically follows.")
-  };
+  case "C30":{
+   const reduced=isAdviceReduced(s),entry=completeEntry(s);
+   const genuine=entry?.status==="completed"&&!!entry.result?.trim();
+   const cards=(id,num,title,description,html)=>'<section class="show-first-part" data-show-first-part="'+id+'">'+
+    '<div class="show-first-part-heading"><span class="show-first-part-number">'+num+'</span><div><h3>'+e(title)+'</h3><p>'+e(description)+'</p></div></div>'+html+'</section>';
+   const to=(node,text)=>'<button type="button" class="btn btn-secondary btn-sm" data-action="completion-open" data-node="'+node+'">'+e(text)+' '+icon("arrow-right")+'</button>';
+   const context=phase=>renderShowingMathsContext(s,phase,icon,e,{reduced});
+   const first=cards("introduce","1","Introducing diagrams, tables and calculations",
+    "Write a sentence before each figure, table or calculation. Tell the reader what they are about to see, what question it answers and any essential definitions.",
+    context("introduce")+
+    (f.methodReason?smallSummary("Method justified on the previous screen",f.methodReason):"")+
+    (entry?criteriaField(entryField("purpose","What I will write BEFORE this mathematical work",
+      "What will the reader see, and why does it help answer my aim?",{type:"textarea",rows:4}),"completing:C32:purpose"):
+     criteriaField(F("firstPurpose","The mathematical question that introduces this first output",
+      "What will the reader see and why does it help answer my aim?",{type:"textarea",rows:4}),"completing:C31:firstPurpose"))+
+    '<p class="field-hint">The introduction belongs in the actual IA document <strong>before</strong> the output. A caption by itself is not enough.</p>');
+   const second=cards("show","2","Showing your tables, diagrams and calculations",
+    "Present only mathematics that helps your aim: clear diagrams and axes, units, readable working, source citations and sensible precision.",
+    context("show")+
+    '<p class="show-first-table-rule"><strong>Never include long raw-data tables, including in appendices.</strong> Keep the full dataset in your working files. Use an informative graph, selected rows or a compact summary table if they make the mathematics clearer.</p>'+
+    (entry?
+     entryReviewAlert()+entryChoice("status",[
+      {value:"planned",title:"Still planned",icon:"clock"},
+      {value:"completed",title:"I have produced this real mathematical work",icon:"check-circle"}])+
+     criteriaField(entryField("result","What did you genuinely show or calculate?",
+      "Record the real finding here for your own reference; the figure/calculation goes in your IA document.",{type:"textarea",rows:4}),"completing:C33:title")+
+     entryField("resultRef","Where is it in the actual IA?","e.g. Figure 1 / Equation 1 / page 3")+
+     accuracyNote()+to("C33","Detailed presentation check"):
+     '<p class="show-first-not-ready">First choose a representation and set up its mathematical record. You can then return to this screen to reflect on your actual work.</p>'+
+     to("C31","Choose my first representation")));
+   const third=cards("reflect","3","Reflecting on the result, aim and prediction",
+    "Immediately after the mathematics, explain what it actually shows, how it relates to your aim, and whether it supports or challenges your original prediction.",
+    context("reflect")+smallSummary("My current aim",currentAim())+
+    (plannedPrediction()?smallSummary("My original tentative prediction",plannedPrediction()):info("No prediction required","If you did not make a prediction, reflect on what the result establishes about your aim instead."))+
+    (genuine?criteriaField(entryField("interpretation","What does this real result mean for my aim?",
+     "Interpret the mathematical evidence, not just repeat a calculated number.",{type:"textarea",rows:4}),"completing:C34B:title")+
+     entryField("localTakeaway","What has this mathematics established, and what is still unresolved?",
+      "One focused conclusion to connect to the next part",{type:"textarea",rows:3})+
+     F("predictionComparison","How does this compare with my original prediction (if any)?",
+      "A contradiction or an inconclusive result can be valuable.",{type:"textarea",rows:3})+
+     to("C34","Explore observations and important limitations"):
+     info("Interpret real work, not an expected result","Complete and record the actual figure/calculation first. Do not fill this reflection from a prediction alone.")));
+   const fourth=cards("next","4","Explaining how results lead to the next steps",
+    "Write a mathematical bridge: which question is unresolved, and why would the proposed next technique help? It is also fine to conclude when the aim is adequately answered.",
+    context("next")+
+    (genuine?smallSummary("Finding to build on",entry.localTakeaway||entry.interpretation||entry.result):"")+
+    (genuine?criteriaField(F("nextQuestion","The next mathematical question, if one is worthwhile",
+      "Which unanswered question genuinely follows from this result?",{type:"textarea",rows:3}),"completing:C35:nextQuestion")+
+     criteriaField(F("nextReason","Why would this next step follow?",
+      "Name a method only when you can justify it using the real result.",{type:"textarea",rows:3}),"completing:C35:nextReason")+
+     to("C35","Explore next-step choices, or conclude"):
+     info("Your next step depends on the result","Return here after interpreting your real mathematics. The next technique should never be predetermined by the Planning route.")));
+   return{intro:"Show your first mathematics as a connected mathematical story: introduce each output before displaying it, present it selectively, interpret it against your aim, and justify whatever follows.",
+    html:'<div class="show-first-sequence" data-show-first-sequence>'+
+      '<p class="show-first-sequence-lead">Four parts of your <strong>actual IA writing</strong>. The boxes below save planning and reflection notes; they do not insert text, tables or calculations into your IA.</p>'+
+      first+second+third+fourth+'</div>'};
+  }
   case "C31":return{intro:"Choose an initial representation that could genuinely reveal the next mathematical question.",
    html:choice("firstType",[
     ["scatter","Scatter graph with genuine paired data"],["distribution","Distribution or group comparison"],
