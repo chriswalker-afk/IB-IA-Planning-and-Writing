@@ -108,6 +108,7 @@ function accuracyEcho(state,e){
   relevant.slice(0,2).map(p=>e([p.quantity,p.resolution,p.unit].filter(Boolean).join(" · "))).join("; ")+
   '. Confirm the actual measurement resolution before selecting class widths or reporting quartiles.</aside>';
 }
+export const statDataChoices=(studio,e)=>selectedControls(studio.draft,e);
 export function renderStatStudio(state,icon,e){
  const studio=state.statStudio,d=studio.draft,q=statAnalysis(d);
  const isHistogram=d.kind==="histogram";
@@ -134,7 +135,7 @@ export function renderStatStudio(state,icon,e){
   (d.pendingPaste?' Your latest edits have not been parsed yet.':'')+'</p>':
   '<p class="native-grid-tip">Start by entering actual measurements or category counts in the worksheet above.</p>')+
  (isHistogram?select("histogramInput","My histogram starts from",d.histogramInput,[["raw","Individual measurements"],["table","Class intervals and frequencies"]],e):"")+
- selectedControls(d,e)+
+ '<div data-native-choices="stat">'+statDataChoices(studio,e)+'</div>'+
  (isHistogram&&d.histogramInput==="raw"?'<div class="stat-form-grid">'+
   field("binWidth","Class width (required)",d.binWidth,e,{placeholder:"e.g. 5",hint:"Choose an interpretable interval, not just the prettiest shape."})+
   field("binStart","First boundary (optional)",d.binStart,e,{placeholder:"Automatically aligned"})+'</div>':"")+

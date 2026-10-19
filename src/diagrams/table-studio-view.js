@@ -76,6 +76,11 @@ function selectionControls(d,e){
   (d.measures.includes("iqr")?pick("quartileRule","Quartile convention",d.quartileRule,[
    ["halves","Median of lower and upper halves"],["linear","Linear interpolation (n − 1)p"]],e):"");
 }
+export function tableDataChoices(studio,e){
+ const d=studio.draft;
+ return headerEditors(d,e)+selectionControls(d,e)+unitsEditors(d,e)+
+  (d.mode==="frequency"?toggle("showPercent","Include percentage of all responses",d.showPercent):"");
+}
 function preview(studio,e){
  const check=analyzeTable(studio.draft);
  return '<section class="ia-table-preview" data-table-preview>'+
@@ -133,8 +138,8 @@ export function renderTableStudio(state,icon,e){
  '<p class="native-grid-tip">Enter actual source values in the worksheet; none have been invented.</p>')+
  (d.mode==="compact"?'<p class="ia-table-strong-rule"><strong>Maximum 8 rows and 5 columns in the finished table.</strong> Long raw-data tables do not belong in an IA or appendix. For a large dataset, switch to a summary or frequency table rather than making the font smaller.</p>':
  '<p class="ia-table-strong-rule"><strong>Full dataset in; short summary out.</strong> The tool calculates from actual input values without silently selecting only the first few rows.</p>')+
- headerEditors(d,e)+selectionControls(d,e)+unitsEditors(d,e)+
- (d.mode==="frequency"?toggle("showPercent","Include percentage of all responses",d.showPercent):"")+
+ '<div data-native-choices="table">'+tableDataChoices(s,e)+'</div>'+
+ 
  '</section>'+
  '<section class="ia-table-control-card" data-representation-step="refine"><h3><span>2</span> Title, units and source</h3>'+
  '<div class="ia-table-two-col">'+input("number","Table number",d.number,e,"e.g. 1")+
