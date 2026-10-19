@@ -104,8 +104,9 @@ export function voronoiPreviewHtml(studio,icon=()=>"",e=x=>String(x)){
   history+scenario+
   '<p class="voronoi-canvas-help" role="status">'+(original?
     "Viewing the original. Choose Show changes to return to your proposal.":help[studio.tool]||help.existing)+'</p>'+
-  '<div class="voronoi-svg-wrap">'+renderVoronoiSvg(draft,{interactive:!original,selectedSiteId:studio.selectedSiteId})+'</div>'+
-  '<p>Cells use straight-line distance and are clipped to a rectangle. A working window is not automatically a real study boundary.</p>'+
+  '<div class="voronoi-svg-wrap">'+renderVoronoiSvg(draft,{interactive:!original,selectedSiteId:studio.selectedSiteId,
+   cursor:studio.keyboardCursor,cursorVisible:studio.cursorVisible})+'</div>'+
+  '<p>Keyboard: Tab to the grid, use arrow keys to position the orange cursor and Enter to place or test. You can also type exact coordinates. Cells are clipped to a rectangle; a working window is not automatically a real study boundary.</p>'+
   voronoiInspectionHtml(studio,icon,e)+voronoiComparisonHtml(studio,icon,e)+'</div>';
 }
 export function voronoiResultHtml(studio,e){
