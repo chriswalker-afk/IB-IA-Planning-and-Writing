@@ -63,7 +63,7 @@ def data_graph(page,width):
  no_overflow(page)
  page.screenshot(path=str(OUT/f"graph-studio-scatter-{width}.png"),full_page=True,animations="disabled")
  page.locator('[data-action="graph-use"]').click()
- assert page.locator('[data-source-node="C32"]').count()==1
+ assert page.locator('[data-source-node="C30"]').count()==1
  snapshot=saved(page)
  assert len(snapshot["graphStudio"]["figures"])==1
  assert len(snapshot["entries"])==1
