@@ -13,7 +13,7 @@ import {MAX_ENTRIES} from "../core/limits.js";
 export const C_NODE_IDS=Object.freeze(C_NODES.map(x=>x.id));
 export const C_MAJOR_STAGES=Object.freeze([
  {id:"C10",key:"intro",name:"Introduction",icon:"pencil"},
- {id:"C20",key:"data",name:"Sources & methods",icon:"flask"},
+ {id:"C20",key:"data",name:"Introduce first maths",icon:"compass"},
  {id:"C30",key:"first",name:"First exploration",icon:"chart"},
  {id:"C40",key:"math",name:"Mathematics",icon:"calculator"},
  {id:"C60",key:"conclusion",name:"Conclusion",icon:"flag"},
@@ -25,6 +25,7 @@ export const C_STAGE_STATUS=Object.freeze(["not-started","working","complete","n
 export const C_FIELD_DEFAULTS=Object.freeze({
  changedSincePlanning:"",permissionStatus:"",permissionNotes:"",courseConcern:"",
  dataStatus:"",actualSource:"",actualSourceType:"",sourceCitation:"",actualMethod:"",methodAim:"",
+ firstMathsBridgePlacement:"",
  actualDate:"",sourcePopulation:"",dataCount:"",collectionStatus:"",
  statisticalPopulation:"",sampleOrCensus:"",samplingMethod:"",samplingRationale:"",
  sampleSize:"",responseBias:"",pairing:"",groupFairness:"",dataCleaning:"",

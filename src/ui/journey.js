@@ -3,7 +3,7 @@ import {C_NODES} from '../completing/catalog.js';
 export const STATUS_LABELS=Object.freeze({'not-started':'Not started',working:'Working on it',complete:'Ready for now','needs-review':'Needs review'});
 export const JOURNEY_GROUPS=Object.freeze([
  {id:'plan',name:'Planning',icon:'compass',mode:'planning',role:'PLAN ONLY',description:'Shape your question and possible approach',stages:['plan']},
- {id:'setup',name:'Start writing',icon:'pencil',mode:'writing',role:'WRITE IN IA',description:'Introduction, sources and methods',stages:['C10','C20']},
+ {id:'setup',name:'Start writing',icon:'pencil',mode:'writing',role:'WRITE IN IA',description:'Introduction and the first mathematical step',stages:['C10','C20']},
  {id:'explore',name:'Explore & explain',icon:'chart',mode:'writing',role:'WRITE IN IA',description:'Mathematics, results and interpretation',stages:['C30','C40']},
  {id:'finish',name:'Conclude & review',icon:'flag',mode:'writing',role:'WRITE IN IA',description:'Conclusions, presentation and final checks',stages:['C60','C70','C80','C90']}
 ]);
@@ -44,7 +44,7 @@ export function groupTarget(s,g){
 export function resumeLabel(s){
  if(resumeRoute(s)==='planning')return 'Continue my planning';
  if(s.completion?.current==='C00')return 'Start writing in IA Studio';
- const name=C_NODES.find(n=>n.id===s.completion.current)?.label||'my IA Studio';
+ const name=s.completion.current==='C20'?'Introducing your first mathematics':C_NODES.find(n=>n.id===s.completion.current)?.label||'my IA Studio';
  return 'Continue: '+(name.length>65?name.slice(0,62)+'...':name);
 }
 export function rememberCheckpoint(s,title,detail,node='',entryId=''){

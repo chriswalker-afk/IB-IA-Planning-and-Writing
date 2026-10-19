@@ -511,7 +511,7 @@ test("all three writing chapters use the same four-part scaffold and preserve na
    const h=createHarness(state);
    assert(h.html.includes('data-source-node="'+node+'"'),node);
    assert(h.html.includes('data-stage-advice="'+group+'"'),node);
-   assert(h.html.includes('Use your relevant sparks'),node);
+   assert(h.html.includes(node==='C20'?'Your mathematical starting points':'Use your relevant sparks'),node);
    const positions=['advice','sparks','task','examples'].map(k=>h.html.indexOf('data-writing-stage-part="'+k+'"'));
    assert(positions.every(v=>v>0)&&positions.every((v,i)=>i===0||v>positions[i-1]),node);
    assert(h.html.includes('studio-stage-writing-location'),node);
@@ -530,7 +530,7 @@ test("contextual rubric bubbles are attached to real writing fields in the three
  state.entries=[{id:'math-sub',phase:'substantial',status:'planned',kind:'model',title:'Investigate a model',result:'',purpose:''}];
  state.completion.activeEntryIndex=0;
  const expects={
-  C20:['completing:C20:source','completing:C20:method'],
+  C20:['completing:C20:source','completing:C20:method','completing:C20:firstBridge','completing:C20:firstChoice','completing:C20:firstPurpose'],
   C21S:['completing:C21S:samplingRationale','completing:C21S:responseBias'],
   C21M:['completing:C21M:modelAssumptions','completing:C21M:modelDomain'],
   C21T:['completing:C21T:theoreticalObject'],
@@ -577,4 +577,79 @@ test("student notes and actual results remain unchanged when a stage is reorgani
  assert.equal(h.saved.scratch.conclusion,state.scratch.conclusion);
  assert.equal(h.saved.entries[0].result,'Found a counterexample');
  assert(!h.html.includes('Your prediction is correct'));
+});
+
+test("after Introduction, first maths reuses the selected route and actual source status without duplicate IA prose",()=>{
+ const state=createProjectState();state.route='completing';state.completion.current='C10';
+ Object.assign(state.planning.fields,{
+  aim:'Is there a linear relationship between two measured quantities?',
+  motivation:'My interest in a real pattern',kind:'statistics',dataSource:'both',course:'AI SL',
+  primaryWhat:'Measurements collected from a local experiment',
+  secondaryPublisher:'A published scientific table',
+  figurePurpose:'Start by inspecting paired values'
+ });
+ state.planning.routeExplorer.selectedRoute='relationships';
+ state.planning.mathSelected=['AI14','AI15'];
+ const h=createHarness(state);
+ assert(h.html.includes('Introduce my first maths'));
+ h.action("completion-open",{node:"C20"});
+ assert.equal(h.saved.completion.current,'C20');
+ assert(h.html.includes('data-first-maths-context'));
+ assert(h.html.includes('Primary + secondary data'));
+ assert(h.html.includes('Measurements collected from a local experiment'));
+ assert(h.html.includes('A published scientific table'));
+ assert(h.html.includes('Relationships between two variables'));
+ assert(h.html.includes('Plot paired measurements')||h.html.includes('Start by inspecting paired values'));
+ assert(h.html.includes('data-bind="completion.fields.firstMathsBridgePlacement"'));
+ assert(h.html.includes('data-bind="completion.fields.dataAimLink"'));
+ assert(h.html.includes('data-bind="completion.fields.firstPurpose"'));
+ assert(h.html.includes('data-first-maths-source-details'));
+ assert(h.html.includes('data-action="completion-open" data-node="C30"'));
+ h.write('completion.fields.dataAimLink','I will inspect the paired quantities to assess the form of a relationship.');
+ h.write('completion.fields.firstPurpose','What shape does the genuine data suggest?');
+ assert.equal(h.saved.completion.fields.dataAimLink,'I will inspect the paired quantities to assess the form of a relationship.');
+ h.action("completion-open",{node:"C30"});
+ assert(h.html.includes('I will inspect the paired quantities to assess'));
+ assert(h.html.includes('What shape does the genuine data suggest?'));
+ h.action("completion-open",{node:"C31"});
+ assert(h.html.includes('data-bind="completion.fields.firstPurpose"'));
+ assert.equal(h.saved.planning.fields.dataSource,'both');
+ assert.equal(h.saved.planning.routeExplorer.selectedRoute,'relationships');
+ assert.deepEqual(h.saved.planning.mathSelected,['AI14','AI15']);
+});
+test("students who made the mathematical link in their Introduction skip repeated bridge writing",()=>{
+ const s=createProjectState();s.route='completing';s.completion.current='C20';
+ s.planning.fields.kind='theoretical';s.planning.fields.theoreticalCase='The diagonals in polygons';
+ s.planning.routeExplorer.selectedRoute='proof';
+ const h=createHarness(s);
+ assert(h.html.includes('Mathematical objects / theoretical cases'));
+ assert(h.html.includes('Explore a few small cases'));
+ assert(h.html.includes('data-bind="completion.fields.dataAimLink"'));
+ h.choose("completion.fields.firstMathsBridgePlacement","intro");
+ assert.equal(h.saved.completion.fields.firstMathsBridgePlacement,'intro');
+ assert(h.html.includes('There is no need to repeat it'));
+ assert(!h.html.includes('data-bind="completion.fields.dataAimLink"'));
+ assert(h.html.includes('data-bind="completion.fields.firstPurpose"'));
+ assert(h.html.includes('data-bind="completion.fields.actualSource"'));
+ h.action("completion-open",{node:"C30"});
+ assert(h.html.includes('You already explained why this follows from your aim'));
+ assert.equal(h.saved.entries.length,0);
+});
+test("first-maths source details remain editable without becoming an unrelated mandatory lab report",()=>{
+ const s=createProjectState();s.route='completing';s.completion.current='C20';
+ s.planning.fields.kind='statistics';s.planning.fields.dataSource='secondary';
+ s.planning.fields.secondaryPublisher='Published census table';
+ s.completion.fields.actualSource='The genuine table originally selected';
+ s.completion.fields.actualMethod='I transcribed published values with units';
+ s.completion.fields.dataStatus='partial';
+ const h=createHarness(s);
+ assert(h.html.includes('Published census table'));
+ assert(h.html.includes('data-first-maths-source-details'));
+ for(const k of ['actualSource','actualMethod','dataStatus'])
+  assert(h.html.includes(k));
+ assert(h.html.includes('I transcribed published values with units'));
+ assert.equal(h.saved.completion.fields.actualSource,'The genuine table originally selected');
+ h.write("completion.fields.actualMethod","I used the published data and verified its definitions");
+ assert.equal(h.saved.completion.fields.actualMethod,"I used the published data and verified its definitions");
+ assert(h.html.includes('Introduce your first mathematical step'));
 });
