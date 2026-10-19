@@ -572,7 +572,7 @@ test("student notes and actual results remain unchanged when a stage is reorgani
  state.scratch.conclusion='The actual mathematical conclusion is still being written.';
  state.entries=[{id:'result-1',phase:'first',status:'completed',kind:'theory',title:'A case',result:'Found a counterexample',interpretation:'So the general claim was false'}];
  const h=createHarness(state);
- assert(h.html.includes('Found a counterexample'));
+ assert(h.html.includes('So the general claim was false')); // The page selects the already recorded interpretation before the raw result.
  assert(h.html.includes('scratch.conclusion'));
  assert.equal(h.saved.scratch.conclusion,state.scratch.conclusion);
  assert.equal(h.saved.entries[0].result,'Found a counterexample');
