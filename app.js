@@ -39,7 +39,7 @@ import { createStudioViews } from "./src/ui/studio-views.js";
 import {createCompletingViews} from "./src/completing/views.js";
 import {newGraphDraft,saveGraphFigure,renderGraphSvg,graphData,splitHeading,analyseGraph} from "./src/diagrams/graph-core.js";
 import {renderGraphQuality,renderGraphActions} from "./src/diagrams/graph-view.js";
-import {updateGraphField,chooseGraphType,importGraphTable,loadSavedGraph,freshGraph,saveAndLinkGraph} from "./src/diagrams/graph-actions.js";
+import {updateGraphField,chooseGraphType,importGraphTable,loadSavedGraph,freshGraph,saveAndLinkGraph,saveGraphDraft} from "./src/diagrams/graph-actions.js";
 import {exportGraphFigure} from "./src/diagrams/graph-export.js";
 import {renderWriterFieldGuide} from "./src/completing/writer-field-guide.js";
 import {C_MAJOR_STAGES,setCompletionNode,moveCompletionRoute,completionBack,markCompletionStage,setCompletionField,addAccuracyDecision,completionSuggestions,sectionForNode,targetForSection,completionStage,completeEntry,latestRealResult,sourceResultForNext,flagDependentMathematics,acknowledgeMathReview} from "./src/completing/engine.js";
@@ -1042,9 +1042,11 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         save();render();toast("Graph loaded for editing");break;
       }
       case "graph-save":{
-        const result=saveGraphFigure(state.graphStudio);
+        const result=saveGraphDraft(state);
         if(!result.ok){toast(result.error);break;}
-        save();render();toast("Graph draft saved","It is stored on this device and included in your JSON project backup. It is not yet in your IA.");break;
+        save();render();toast("Graph draft saved",result.reviewNeeded?
+         "The diagram changed: review any completed mathematics or interpretations linked to it.":
+         "It is stored on this device and included in your JSON project backup. It is not yet in your IA.");break;
       }
       case "graph-use":{
         const result=saveAndLinkGraph(state);
@@ -1058,7 +1060,13 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       }
       case "graph-svg":case "graph-png":case "graph-copy":{
         const format=action.slice("graph-".length);
-        exportGraphFigure(state.graphStudio.draft,format).then(message=>toast(message))
+        // Keep the linked copy and its review status aligned with any exported edits.
+        const prior=state.graphStudio.figures.find(x=>x.id===state.graphStudio.activeId);
+        const result=prior?.entryId?saveGraphDraft(state):{ok:true,reviewNeeded:false};
+        if(!result.ok){toast(result.error);break;}
+        if(prior?.entryId)save();
+        exportGraphFigure(state.graphStudio.draft,format).then(message=>toast(message,
+          result.reviewNeeded?"The changed graph also flagged your earlier mathematical interpretation for review.":""))
           .catch(error=>toast("Graph export unavailable",error.message||"Try downloading the PNG instead."));
         break;
       }
