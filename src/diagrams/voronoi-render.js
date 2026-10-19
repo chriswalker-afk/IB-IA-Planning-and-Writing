@@ -41,7 +41,7 @@ function captionLines(input,max=123,maxLines=2){
 }
 export function renderVoronoiSvg(raw){
  const q=analyzeVoronoi(raw),d=q.draft,b=q.bounds;
- const body=['<svg class="voronoi-svg" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="'+E(d.title||"Student Voronoi construction")+'" viewBox="0 0 '+W+" "+H+'" width="'+W+'" height="'+H+'">',
+ const body=['<svg class="voronoi-svg" data-voronoi-canvas="true" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="'+E(d.title||"Student Voronoi construction")+'" viewBox="0 0 '+W+" "+H+'" width="'+W+'" height="'+H+'">',
   '<rect width="'+W+'" height="'+H+'" fill="#fff"/>',
   text(d.title||"Voronoi studio — add title and sites",W/2,40,'font-family="Arial,sans-serif" font-size="22" font-weight="700" fill="#24464e" text-anchor="middle"'),
   text("Euclidean nearest-site regions — displayed cells clipped to the stated rectangular study window",W/2,67,
@@ -100,6 +100,8 @@ export function renderVoronoiSvg(raw){
   body.push('<circle cx="'+coord(px)+'" cy="'+coord(py)+'" r="8" fill="#fcf2da" stroke="#9a5b29" stroke-width="2.3"/>');
   body.push(text("P",px+10,py+22,'font-size="14" font-family="Arial,sans-serif" font-weight="700" fill="#774c29"'));
  }
+ if(d.placeCandidate)body.push('<rect data-voronoi-place="true" class="voronoi-tap-layer" x="'+coord(L.left)+'" y="'+coord(L.top)+
+  '" width="'+coord(L.width)+'" height="'+coord(L.height)+'" fill="transparent" pointer-events="all" role="button" aria-label="Tap to place proposed location"/>');
  // Coordinate axes always use the same physical scale, never a stretched graph.
  body.push(line(L.left,L.top+L.height,L.left+L.width,L.top+L.height,'stroke="#304e5b" stroke-width="1.8"'));
  body.push(line(L.left,L.top,L.left,L.top+L.height,'stroke="#304e5b" stroke-width="1.8"'));
