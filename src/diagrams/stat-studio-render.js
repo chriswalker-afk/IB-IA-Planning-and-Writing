@@ -174,7 +174,7 @@ export function renderStatSvg(raw){
   parts.push(tag("Add or correct your data and labels to see an IA-ready diagram",W/2,TOP+PH/2,
     'text-anchor="middle" font-family="Arial,sans-serif" font-size="17" fill="#687e85"'));
   // Show a preview when just metadata is missing, but never when mathematical data are invalid.
-  if(!q.problems.some(p=>["histogram-data","histogram-empty","histogram-n","observations","series","bar-data",
+  if(!q.problems.some(p=>["histogram-data","histogram-empty","histogram-n","invalid-values","dot-stack","observations","series","bar-data",
     "categories","data","pending","dot-crowded","cropped-classes","cropped-points","cropped-bars"].includes(p.code)))return renderer(q);
   return footer(q.draft,parts);
  }
