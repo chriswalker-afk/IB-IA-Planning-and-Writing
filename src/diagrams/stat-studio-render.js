@@ -1,182 +1,327 @@
-/** Responsive, white-background, IA-printable statistical diagrams. */
-import {escapeGraph} from "./graph-core.js";
-import {statAnalysis} from "./stat-studio-core.js";
-const W=960,H=630,LEFT=119,RIGHT=47,TOP=102,PH=394,PW=W-LEFT-RIGHT;
-const E=escapeGraph;
-const fmt=(v,d=3)=>Number(v.toFixed(d)).toString();
-const number=x=>typeof x==="number"&&Number.isFinite(x);
-function tickStep(span,target=6){
- if(!number(span)||span<=0)return 1;
- const b=10**Math.floor(Math.log10(span/target)),m=span/target/b;
- return b*(m<=1?1:m<=2?2:m<=2.5?2.5:m<=5?5:10);
+/**
+ * Statistical diagram mathematics for IB IA Pathfinder.
+ * Genuine student data only: no seeded points, auto-fitted distributions, or server transfer.
+ * Quartile conventions are explicit; histogram height is frequency density.
+ */
+import {escapeGraph,finiteCell,splitHeading} from "./graph-core.js";
+
+export const STAT_TYPES=Object.freeze([
+ ["histogram","Histogram","Continuous measurements with class widths and frequency density."],
+ ["box","Box plot","Distribution, median, IQR and possible outliers; compare groups."],
+ ["dot","Dot plot","See actual measured values and repeated readings."],
+ ["bar","Comparative bar chart","Compare categories using counts or within-group percentages."]
+]);
+export const MAX_STAT_ROWS=500,MAX_STAT_COLS=9,MAX_STAT_FIGURES=12,MAX_STAT_RAW=85000;
+const txt=(v,n=120)=>typeof v==="string"?v.slice(0,n):"";
+const finite=v=>typeof v==="number"&&Number.isFinite(v);
+const ncell=x=>finiteCell(x);
+const valid=v=>v&&typeof v==="object"&&!Array.isArray(v);
+export function newStatDraft(){
+ return {
+  kind:"histogram",raw:"",columns:[],matrix:[],pendingPaste:false,headers:"auto",
+  selected:[0],categoryIndex:0,lowIndex:0,highIndex:1,frequencyIndex:2,
+  histogramInput:"raw",binWidth:"",binStart:"",barMode:"count",
+  quartileRule:"halves",outlierRule:"tukey",
+  title:"",variable:"",unit:"",unitMode:"unsure",sourceKind:"unsure",sourceText:"",
+  caption:"",min:"",max:"",showGrid:true,showOutliers:true,showLabels:true
+ };
 }
-function ticks(low,high){
- const step=tickStep(high-low),start=Math.ceil((low-1e-10*step)/step)*step;
- const result=[];for(let k=0;k<30;k++){const v=start+k*step;if(v>high+step/1e8)break;result.push(Number(v.toPrecision(12)));}
- return result;
+export function normalizeStatDraft(raw){
+ const d=newStatDraft(),r=valid(raw)?raw:{};
+ for(const key of ["kind","raw","headers","histogramInput","binWidth","binStart","barMode",
+  "quartileRule","outlierRule","title","variable","unit","unitMode","sourceKind","sourceText",
+  "caption","min","max"]){
+  const cap=key==="raw"?MAX_STAT_RAW:key==="sourceText"?480:key==="caption"?480:150;
+  d[key]=txt(r[key],cap)|| (typeof r[key]==="string"?"":d[key]);
+ }
+ if(!STAT_TYPES.some(t=>t[0]===d.kind))d.kind="histogram";
+ if(!["auto","yes","no"].includes(d.headers))d.headers="auto";
+ if(!["raw","table"].includes(d.histogramInput))d.histogramInput="raw";
+ if(!["count","percent"].includes(d.barMode))d.barMode="count";
+ if(!["halves","linear"].includes(d.quartileRule))d.quartileRule="halves";
+ if(!["tukey","minmax"].includes(d.outlierRule))d.outlierRule="tukey";
+ if(!["unit","dimensionless","unsure"].includes(d.unitMode))d.unitMode="unsure";
+ if(!["primary","secondary","unsure"].includes(d.sourceKind))d.sourceKind="unsure";
+ d.columns=Array.isArray(r.columns)?r.columns.slice(0,MAX_STAT_COLS).map(x=>txt(x,110)):[];
+ d.matrix=Array.isArray(r.matrix)?r.matrix.slice(0,MAX_STAT_ROWS)
+  .filter(Array.isArray).map(row=>row.slice(0,MAX_STAT_COLS).map(x=>txt(x,115))):[];
+ const selected=Array.isArray(r.selected)?r.selected.filter(Number.isInteger):[];
+ d.selected=[...new Set(selected.filter(x=>x>=0&&x<d.columns.length))].slice(0,5);
+ if(!d.selected.length)d.selected=d.columns.length?[Math.min(d.columns.length-1,0)]:[0];
+ for(const key of ["categoryIndex","lowIndex","highIndex","frequencyIndex"]){
+  d[key]=Number.isInteger(r[key])?Math.min(Math.max(0,r[key]),Math.max(0,d.columns.length-1)):d[key];
+ }
+ for(const key of ["pendingPaste","showGrid","showOutliers","showLabels"]){
+  if(typeof r[key]==="boolean")d[key]=r[key];
+ }
+ return d;
 }
-const tag=(text,x,y,options="")=>'<text x="'+fmt(x,2)+'" y="'+fmt(y,2)+'" '+options+'>'+E(text)+'</text>';
-const line=(x1,y1,x2,y2,options="")=>'<line x1="'+fmt(x1,2)+'" y1="'+fmt(y1,2)+'" x2="'+fmt(x2,2)+'" y2="'+fmt(y2,2)+'" '+options+'/>';
-const axisLabel=(d,orientation)=>{
- const unit=d.unitMode==="unit"&&d.unit.trim()?" ("+d.unit+")":"";
- return orientation==="x"?(d.variable||"Value")+unit:"Group";
+export const newStatStudio=()=>({open:false,draft:newStatDraft(),figures:[],activeId:""});
+export function normalizeStatStudio(raw){
+ const s=newStatStudio(),r=valid(raw)?raw:{};
+ const figures=(Array.isArray(r.figures)?r.figures:[]).slice(0,MAX_STAT_FIGURES).filter(valid)
+  .map(f=>({id:txt(f.id,65),entryId:txt(f.entryId,80),savedAt:txt(f.savedAt,38),draft:normalizeStatDraft(f.draft)}))
+  .filter(f=>/^stat-[a-z0-9-]+$/i.test(f.id));
+ return {open:r.open===true,draft:normalizeStatDraft(r.draft),figures,
+  activeId:figures.some(f=>f.id===r.activeId)?r.activeId:""};
+}
+function parseDelimited(s,delimiter){
+ const rows=[];let current=[],cell="",inQuote=false;
+ for(let i=0;i<s.length;i++){
+  const c=s[i];
+  if(c==='"'){
+   if(inQuote&&s[i+1]==='"'){cell+='"';i++;}
+   else inQuote=!inQuote;
+  }else if(c===delimiter&&!inQuote){current.push(cell.trim());cell="";}
+  else if((c==="\r"||c==="\n")&&!inQuote){
+   if(c==="\r"&&s[i+1]==="\n")i++;
+   current.push(cell.trim());if(current.some(x=>x!==""))rows.push(current);
+   current=[];cell="";
+  }else cell+=c;
+ }
+ if(inQuote)throw new Error("One quoted cell is unfinished. Check the copied table.");
+ current.push(cell.trim());if(current.some(x=>x!==""))rows.push(current);
+ return rows;
+}
+export function parseStatTable(raw,headers="auto",kind="box"){
+ const s=String(raw??"");
+ if(!s.trim())throw new Error("Paste genuine measurements or a frequency table from Google Sheets.");
+ if(s.length>MAX_STAT_RAW)throw new Error("Data exceed 85,000 characters. Select a smaller range.");
+ const delimiter=s.includes("\t")?"\t":s.includes(";")&&!s.includes(",")?";":",";
+ const rows=parseDelimited(s,delimiter);
+ if(!rows.length)throw new Error("No table rows were found.");
+ if(rows.length>MAX_STAT_ROWS+1)throw new Error("Select at most 500 data rows.");
+ const width=Math.max(...rows.map(row=>row.length));
+ if(width>MAX_STAT_COLS)throw new Error("Use no more than 9 columns at once.");
+ if(rows.some(row=>row.length!==width))throw new Error("All rows must contain the same number of columns. Check your selection or CSV commas.");
+ const first=rows[0];
+ const hasHeaders=headers==="yes"||headers!=="no"&&(
+  kind==="bar"?
+   first.slice(1).some(x=>ncell(x)===null):
+   first.some(x=>ncell(x)===null)
+ );
+ const columns=Array.from({length:width},(_,i)=>
+  hasHeaders?txt(first[i]||"Column "+(i+1),110):"Column "+(i+1));
+ const matrix=rows.slice(hasHeaders?1:0).map(row=>row.map(x=>txt(x,115)));
+ if(matrix.length===0)throw new Error("No actual data rows were found.");
+ if(matrix.length>MAX_STAT_ROWS)throw new Error("Select at most 500 data rows.");
+ return {columns,matrix,hasHeaders,delimiter};
+}
+export function importStatTable(studio,raw){
+ const d=studio.draft;
+ const data=parseStatTable(raw,d.headers,d.kind);
+ d.raw=String(raw).slice(0,MAX_STAT_RAW);
+ d.columns=data.columns;d.matrix=data.matrix;d.pendingPaste=false;
+ const numeric=data.columns.map((_,i)=>({
+  index:i,valid:data.matrix.filter(row=>ncell(row[i])!==null).length
+ })).filter(x=>x.valid>0).sort((a,b)=>b.valid-a.valid||a.index-b.index);
+ d.selected=numeric.slice(0,d.kind==="histogram"?1:Math.min(4,numeric.length)).map(x=>x.index);
+ if(!d.selected.length)d.selected=[0];
+ if(d.kind==="bar"){
+  d.categoryIndex=0;d.selected=numeric.filter(x=>x.index!==d.categoryIndex).slice(0,4).map(x=>x.index);
+ }else if(d.kind==="histogram"&&d.histogramInput==="table"){
+  d.lowIndex=0;d.highIndex=1;d.frequencyIndex=2;
+ }
+ const heading=data.columns[d.selected[0]??0]||"";
+ const split=splitHeading(heading);
+ if(!d.variable.trim()||d.variable==="Value")d.variable=split.label;
+ if(split.unit){d.unit=split.unit;d.unitMode="unit";}
+ return {rows:data.matrix.length,columns:data.columns.length,hasHeaders:data.hasHeaders};
+}
+const median=sorted=>{
+ if(!sorted.length)return null;
+ const n=sorted.length,m=n>>1;
+ return n%2?sorted[m]:(sorted[m-1]+sorted[m])/2;
 };
-function base(d,subtitle){
- const parts=['<svg xmlns="http://www.w3.org/2000/svg" class="stat-figure-svg" role="img" aria-label="'+E(d.title||"Student statistics diagram")+'" viewBox="0 0 '+W+' '+H+'" width="'+W+'" height="'+H+'">',
-  '<rect width="'+W+'" height="'+H+'" fill="#fff"/>',
-  tag(d.title||"Statistical diagram",W/2,38,'font-size="21" font-family="Arial,sans-serif" font-weight="700" text-anchor="middle" fill="#243e49"'),
-  tag(subtitle,W/2,66,'font-size="13" font-family="Arial,sans-serif" text-anchor="middle" fill="#57717b"'),
-  '<rect x="'+LEFT+'" y="'+TOP+'" width="'+PW+'" height="'+PH+'" fill="#fcfdfd" stroke="#b8cbd0" stroke-width="1.3"/>'];
- return parts;
+function quantileLinear(sorted,p){
+ if(sorted.length===1)return sorted[0];
+ const index=p*(sorted.length-1),a=Math.floor(index),b=Math.ceil(index);
+ return sorted[a]+(sorted[b]-sorted[a])*(index-a);
 }
-function footer(d,parts,method=""){
- const source=d.sourceKind==="secondary"?"Source: "+(d.sourceText||"not supplied"):d.sourceKind==="primary"?"Source: student's collected data":"Source not yet confirmed";
- if(method)parts.push(tag(method,W/2,H-64,'font-family="Arial,sans-serif" font-size="12" fill="#536b75" text-anchor="middle"'));
- parts.push(tag(source.slice(0,140),W/2,H-37,'font-family="Arial,sans-serif" font-size="12" fill="#536b75" text-anchor="middle"'));
- if(d.caption.trim())parts.push(tag(d.caption.slice(0,135),W/2,H-17,'font-family="Arial,sans-serif" font-size="11" fill="#697981" text-anchor="middle"'));
- parts.push("</svg>");
- return parts.join("");
+export function boxStats(values,rule="halves",outlierRule="tukey"){
+ const a=values.slice().sort((x,y)=>x-y),n=a.length;
+ if(!n)return null;
+ const med=median(a);
+ const lower=a.slice(0,Math.floor(n/2)),upper=a.slice(Math.ceil(n/2));
+ const q1=rule==="linear"?quantileLinear(a,.25):(median(lower)??a[0]);
+ const q3=rule==="linear"?quantileLinear(a,.75):(median(upper)??a[n-1]);
+ const iqr=q3-q1,fences=[q1-1.5*iqr,q3+1.5*iqr];
+ const outliers=outlierRule==="tukey"?a.filter(x=>x<fences[0]||x>fences[1]):[];
+ const core=outlierRule==="tukey"?a.filter(x=>x>=fences[0]&&x<=fences[1]):a;
+ return {n,min:a[0],q1,median:med,q3,max:a[n-1],iqr,
+  lowWhisker:core[0]??a[0],highWhisker:core.at(-1)??a[n-1],outliers,fences,values:a};
 }
-function horizontalNumeric(parts,low,high,label,grid=true){
- const X=x=>LEFT+PW*(x-low)/(high-low);
- for(const t of ticks(low,high)){
-  const px=X(t);
-  if(grid)parts.push(line(px,TOP,px,TOP+PH,'stroke="#e1eaed" stroke-width="1"'));
-  parts.push(line(px,TOP+PH,px,TOP+PH+6,'stroke="#38535e" stroke-width="1.5"'));
-  parts.push(tag(fmt(t,6),px,TOP+PH+26,'font-family="Arial,sans-serif" font-size="12" fill="#36515e" text-anchor="middle"'));
+const numericCols=d=>d.selected.filter(i=>i>=0&&i<d.columns.length);
+function columnData(d,index){
+ const values=[];let skipped=0;
+ for(const row of d.matrix){
+  if(row[index]==="")continue;
+  const value=ncell(row[index]);
+  if(value===null)skipped++;
+  else values.push(value);
  }
- parts.push(tag(label,LEFT+PW/2,H-86,'font-family="Arial,sans-serif" font-size="17" font-weight="700" fill="#294956" text-anchor="middle"'));
- return X;
+ return {values,skipped};
 }
-function verticalNumeric(parts,max,label,grid=true){
- const yMax=max>0?max:1;
- const Y=y=>TOP+PH-(y/yMax)*PH;
- for(const t of ticks(0,yMax)){
-  const py=Y(t);
-  if(grid)parts.push(line(LEFT,py,LEFT+PW,py,'stroke="#e1eaed" stroke-width="1"'));
-  parts.push(line(LEFT-6,py,LEFT,py,'stroke="#38535e" stroke-width="1.5"'));
-  parts.push(tag(fmt(t,6),LEFT-12,py+4,'font-family="Arial,sans-serif" font-size="12" fill="#36515e" text-anchor="end"'));
+function buildRawHistogram(d){
+ const col=numericCols(d)[0],source=columnData(d,col),values=source.values;
+ if(values.length<2)return {bins:[],values,...source,error:"At least two numerical measurements are required."};
+ const width=ncell(d.binWidth),startText=d.binStart.trim(),start=startText?ncell(startText):null;
+ if(width===null||width<=0)return {bins:[],...source,error:"Choose a positive class width. An equal-width histogram still needs a justified width."};
+ if(startText&&start===null)return {bins:[],...source,error:"The first class boundary must be a number."};
+ const low=startText?start:Math.floor(Math.min(...values)/width)*width;
+ if(low>Math.min(...values))return {bins:[],...source,error:"The first boundary is above some observations."};
+ const high=Math.max(...values);
+ const count=Math.floor((high-low)/width+1e-10)+1;
+ if(count>36)return {bins:[],...source,error:"This width creates more than 36 classes. Widen your intervals."};
+ if(!Number.isFinite(count)||count<=0)return {bins:[],...source,error:"Class boundaries are not valid for these data."};
+ const bins=Array.from({length:count},(_,i)=>({low:low+i*width,high:low+(i+1)*width,frequency:0}));
+ for(const v of values){
+  const index=Math.max(0,Math.min(count-1,Math.floor((v-low)/width+1e-10)));
+  bins[index].frequency++;
  }
- parts.push(tag(label,37,TOP+PH/2,'transform="rotate(-90 37 '+(TOP+PH/2)+')" font-family="Arial,sans-serif" font-size="17" font-weight="700" fill="#294956" text-anchor="middle"'));
- return Y;
+ return {bins:bins.map(b=>({...b,density:b.frequency/(b.high-b.low)})),values,skipped:source.skipped};
 }
-function niceUpper(n){const step=tickStep(n||1);return Math.max(step,Math.ceil(n/step+1e-8)*step);}
-function paddedRange(min,max){
- const span=max-min,margin=span>0?span*.10:Math.max(.5,Math.abs(min)*.15,1);
- return [min-margin,max+margin];
-}
-function histogram(q){
- const {draft:d,result:r,override}=q,bins=r.bins||[];
- const total=bins.reduce((s,b)=>s+b.frequency,0),parts=base(d,"Frequency density represents frequency ÷ class width   ·   n = "+total);
- const min=override?override[0]:(bins.length?Math.min(...bins.map(x=>x.low)):0);
- const max=override?override[1]:(bins.length?Math.max(...bins.map(x=>x.high)):10);
- const xrange=max>min?[min,max]:[0,10],X=horizontalNumeric(parts,...xrange,axisLabel(d,"x"),d.showGrid);
- const yHigh=niceUpper(Math.max(.1,...bins.map(b=>b.density))*1.10);
- const Y=verticalNumeric(parts,yHigh,"Frequency density",d.showGrid);
- parts.push('<defs><clipPath id="stat-histo-clip"><rect x="'+LEFT+'" y="'+TOP+'" width="'+PW+'" height="'+PH+'"/></clipPath></defs><g clip-path="url(#stat-histo-clip)">');
- for(const b of bins){
-  const x=X(b.low),right=X(b.high),top=Y(b.density),width=Math.max(0,right-x);
-  parts.push('<rect x="'+fmt(x)+'" y="'+fmt(top)+'" width="'+fmt(width)+'" height="'+fmt(Y(0)-top)+'" fill="#58a19d" fill-opacity=".83" stroke="#23586b" stroke-width="1.5"/>');
-  if(d.showLabels&&width>45&&b.frequency>0)
-   parts.push(tag(String(b.frequency),x+width/2,Math.max(TOP+14,top-7),'font-size="12" font-family="Arial,sans-serif" fill="#284953" font-weight="700" text-anchor="middle"'));
+function buildGroupedHistogram(d){
+ const indices=[d.lowIndex,d.highIndex,d.frequencyIndex];
+ if(new Set(indices).size!==3)return {bins:[],error:"Choose three different columns: lower boundary, upper boundary and frequency."};
+ if(d.columns.length<3)return {bins:[],error:"A grouped-frequency histogram needs lower, upper and frequency columns."};
+ const bins=[];
+ for(const [i,row] of d.matrix.entries()){
+  const [a,b,f]=indices.map(index=>ncell(row[index]));
+  if(a===null||b===null||f===null)return {bins:[],error:"Row "+(i+1)+" has a missing or non-numeric boundary or frequency."};
+  if(b<=a)return {bins:[],error:"Row "+(i+1)+" must have an upper boundary greater than its lower boundary."};
+  if(!Number.isSafeInteger(f)||f<0)return {bins:[],error:"Row "+(i+1)+" needs a non-negative whole-number frequency."};
+  bins.push({low:a,high:b,frequency:f,density:f/(b-a)});
  }
- parts.push('</g>');
- return footer(d,parts,"Bars touch only for adjacent classes. Displayed bar labels give frequencies, not densities.");
-}
-function boxes(q){
- const {draft:d,result:r,override}=q,series=r.series||[];
- const values=series.flatMap(s=>s.values);
- const range=override||paddedRange(Math.min(0,...values),Math.max(1,...values));
- const parts=base(d,"Five-number summaries with "+(d.quartileRule==="halves"?"median-of-halves":"linear-interpolated")+" quartiles   ·   "+series.length+" group(s)");
- const X=horizontalNumeric(parts,...range,axisLabel(d,"x"),d.showGrid);
- const space=PH/Math.max(1,series.length),colors=["#248779","#457cb5","#a7668b","#b18c3b","#6b73b5"];
- for(let i=0;i<series.length;i++){
-  const s=series[i],v=s.box;if(!v)continue;
-  const y=TOP+space*(i+.5),height=Math.min(44,space*.53),color=colors[i%colors.length];
-  parts.push(line(X(v.lowWhisker),y,X(v.highWhisker),y,'stroke="'+color+'" stroke-width="3"'));
-  for(const n of [v.lowWhisker,v.highWhisker])
-   parts.push(line(X(n),y-height*.37,X(n),y+height*.37,'stroke="'+color+'" stroke-width="2.8"'));
-  parts.push('<rect x="'+fmt(X(v.q1))+'" y="'+fmt(y-height/2)+'" width="'+fmt(Math.max(1,X(v.q3)-X(v.q1)))+'" height="'+fmt(height)+'" fill="'+color+'" fill-opacity=".30" stroke="'+color+'" stroke-width="2.6"/>');
-  parts.push(line(X(v.median),y-height/2,X(v.median),y+height/2,'stroke="#2a324d" stroke-width="3.4"'));
-  if(d.showOutliers)for(const n of v.outliers){
-   parts.push('<circle cx="'+fmt(X(n))+'" cy="'+fmt(y)+'" r="5" fill="#fff" stroke="'+color+'" stroke-width="2.2"/>');
-  }
-  const text=s.name.length>24?s.name.slice(0,24)+"…":s.name;
-  parts.push(tag(text,LEFT-12,y-3,'font-family="Arial,sans-serif" font-size="13" fill="#294952" font-weight="700" text-anchor="end"'));
-  parts.push(tag("n = "+v.n,LEFT-12,y+13,'font-family="Arial,sans-serif" font-size="11" fill="#637983" text-anchor="end"'));
-  if(d.showLabels)parts.push(tag("Median "+fmt(v.median,4),LEFT+PW-2,y-height/2-7,
-   'font-family="Arial,sans-serif" font-size="11" fill="#546e75" text-anchor="end"'));
+ bins.sort((a,b)=>a.low-b.low);
+ if(bins.length>36)return {bins:[],error:"Choose no more than 36 class intervals."};
+ for(let i=1;i<bins.length;i++){
+  const tolerance=Math.max(1,Math.abs(bins[i].low),Math.abs(bins[i-1].high))*1e-10;
+  if(bins[i].low<bins[i-1].high-tolerance)return {bins:[],error:"Class intervals overlap. A histogram must allocate each measurement to one interval."};
  }
- return footer(d,parts,d.outlierRule==="tukey"?
-  "Whiskers show non-outlier extremes; separate circles mark points beyond 1.5 × IQR.":
-  "Whiskers show actual minimum and maximum; no outlier identification requested.");
+ return {bins,values:[],skipped:0};
 }
-function dots(q){
- const {draft:d,result:r,override}=q,series=r.series||[];
- const values=series.flatMap(s=>s.values);
- const range=override||paddedRange(Math.min(0,...values),Math.max(1,...values));
- const parts=base(d,"Dot plot shows individual measured observations, without joining points");
- const X=horizontalNumeric(parts,...range,axisLabel(d,"x"),d.showGrid);
- const space=PH/Math.max(1,series.length),colors=["#208879","#5074b1","#a35e91","#b28c34","#6f7bb2"];
- series.forEach((s,i)=>{
-  const y0=TOP+(i+1)*space-Math.max(12,space*.19),color=colors[i%colors.length];
-  parts.push(line(LEFT,y0+5,LEFT+PW,y0+5,'stroke="#afc3c8" stroke-width="1" stroke-dasharray="3 5"'));
-  const counts=new Map();
-  for(const value of s.values)counts.set(value,(counts.get(value)||0)+1);
-  for(const [v,n] of [...counts.entries()].sort((a,b)=>a[0]-b[0]))
-   for(let k=0;k<n;k++){
-    const radius=Math.max(2.8,Math.min(5,space/(2*(n+1))));
-    parts.push('<circle cx="'+fmt(X(v))+'" cy="'+fmt(y0-k*radius*2.22)+'" r="'+fmt(radius)+'" stroke="#fff" stroke-width="1" fill="'+color+'"/>');
-   }
-  parts.push(tag(s.name.length>24?s.name.slice(0,24)+"…":s.name,LEFT-12,y0-space*.22,
-   'font-size="12" font-weight="700" text-anchor="end" font-family="Arial,sans-serif" fill="#31515c"'));
-  parts.push(tag("n = "+s.values.length,LEFT-12,y0-space*.22+16,
-   'font-size="11" text-anchor="end" font-family="Arial,sans-serif" fill="#607984"'));
- });
- return footer(d,parts,"Each dot represents one observation. Duplicated values are stacked vertically.");
+function barAnalysis(d){
+ const categories=[],names=numericCols(d).filter(i=>i!==d.categoryIndex);
+ if(!names.length)return {categories:[],error:"Choose at least one numerical group column, different from the category column."};
+ const seen=new Set();
+ for(let i=0;i<d.matrix.length;i++){
+  const row=d.matrix[i],category=(row[d.categoryIndex]||"").trim();
+  if(!category)return {categories:[],error:"Row "+(i+1)+" has an empty category."};
+  if(seen.has(category))return {categories:[],error:"The category '"+category+"' appears more than once. Combine it before graphing."};
+  seen.add(category);
+  const counts=names.map(index=>ncell(row[index]));
+  if(counts.some(x=>x===null||x<0||!Number.isSafeInteger(x)))
+   return {categories:[],error:"Row "+(i+1)+" needs a non-negative whole-number count in every selected group."};
+  categories.push({category,counts});
+ }
+ const totals=names.map((_,i)=>categories.reduce((s,r)=>s+r.counts[i],0));
+ if(d.barMode==="percent"&&totals.some(n=>n<=0))
+  return {categories:[],error:"A group with zero observations cannot be converted into percentages."};
+ return {categories:categories.map(c=>({...c,values:c.counts.map((n,i)=>d.barMode==="count"?n:100*n/totals[i])})),
+  names:names.map(i=>d.columns[i]),totals};
 }
-function bars(q){
- const {draft:d,result:r,override}=q,rows=r.categories||[],groups=r.names||[],totals=r.totals||[],
-  maxObserved=Math.max(0,...rows.flatMap(c=>c.values));
- const Ymax=override?override[1]:d.barMode==="percent"?100:niceUpper(maxObserved*1.13);
- const parts=base(d,(d.barMode==="percent"?"Within-group proportions":"Observed group frequencies")+"   ·   "+
-  groups.map((n,i)=>n+" (n="+totals[i]+")").join("   ·   "));
- const Y=verticalNumeric(parts,Ymax,d.barMode==="percent"?"Percentage of group (%)":"Frequency (count)",d.showGrid);
- const colors=["#348d81","#6182be","#b3698d","#b28c42"];
- const nCat=Math.max(1,rows.length),band=PW/nCat,usable=band*.78,groupW=usable/Math.max(1,groups.length);
- rows.forEach((cat,i)=>{
-  const start=LEFT+i*band+(band-usable)/2;
-  cat.values.forEach((v,j)=>{
-   const x=start+j*groupW+.6,w=Math.max(1,groupW-1.2),top=Y(v);
-   parts.push('<rect x="'+fmt(x)+'" y="'+fmt(top)+'" width="'+fmt(w)+'" height="'+fmt(Y(0)-top)+'" fill="'+colors[j%colors.length]+'" fill-opacity=".86" stroke="#fff" stroke-width=".6"/>');
-   if(d.showLabels&&w>=26&&v>0)
-    parts.push(tag(fmt(v,d.barMode==="percent"?1:0),x+w/2,Math.max(TOP+12,top-8),
-     'font-family="Arial,sans-serif" font-size="11" fill="#334f58" text-anchor="middle"'));
+export function statAnalysis(raw){
+ const d=normalizeStatDraft(raw),problems=[],warnings=[];
+ const fail=(code,message)=>problems.push({code,message});
+ const warn=(code,message)=>warnings.push({code,message});
+ if(!d.title.trim())fail("title","Give your diagram a descriptive title.");
+ if(!d.variable.trim())fail("variable","Name the measured quantity or categorical characteristic.");
+ if(d.kind!=="bar"){
+  if(d.unitMode==="unsure")fail("unit-decision","Confirm whether the quantity has a unit.");
+  if(d.unitMode==="unit"&&!d.unit.trim())fail("unit","Give the measured unit.");
+ }
+ if(d.sourceKind==="unsure")fail("source-kind","Confirm where the genuine data came from.");
+ if(d.sourceKind==="secondary"&&!d.sourceText.trim())fail("source","Credit the original published dataset.");
+ if(!d.matrix.length)fail("data","Paste a genuine table and choose Read pasted table.");
+ if(d.pendingPaste)fail("pending","The pasted data have changed. Select Read pasted table to use the latest values.");
+ if(d.title.length>95)warn("title-length","The title may be too long to read when printed.");
+ if(d.matrix.length>300)warn("many-rows","Large data tables should stay in working files, not the IA or appendix.");
+ let result={kind:d.kind};
+ if(d.kind==="histogram"){
+  const data=d.histogramInput==="table"?buildGroupedHistogram(d):buildRawHistogram(d);
+  if(data.error)fail("histogram-data",data.error);
+  const bins=data.bins||[];
+  if(bins.length<1&&!data.error)fail("histogram-empty","No usable histogram classes were found.");
+  const total=bins.reduce((s,b)=>s+b.frequency,0);
+  if(total<2&&!data.error)fail("histogram-n","At least two observations are needed.");
+  const gaps=bins.some((b,i)=>i>0&&b.low>bins[i-1].high+Math.max(1,Math.abs(b.low))*1e-10);
+  if(gaps)warn("class-gaps","The intervals contain gaps. Show these as empty space on the continuous x-axis; do not close them visually.");
+  if(d.histogramInput==="raw"&&data.skipped)warn("skipped",data.skipped+" non-numeric row(s) were ignored. Check them against the original data.");
+  if(d.histogramInput==="raw"&&bins.length>20)warn("many-bins","Consider whether many narrow bins communicate the distribution effectively.");
+  if(d.histogramInput==="table")warn("class-assumption","Explain how grouped data and the class boundaries were obtained; original values cannot be recovered from frequencies.");
+  result={...result,bins,total,skipped:data.skipped||0};
+ }else if(d.kind==="box"||d.kind==="dot"){
+  const series=numericCols(d).map(i=>{
+   const data=columnData(d,i);
+   return {index:i,name:d.columns[i]||"Group "+(i+1),...data,
+    box:d.kind==="box"?boxStats(data.values,d.quartileRule,d.outlierRule):null};
   });
-  const label=cat.category;
-  if(label.length>21){
-   parts.push(tag(label.slice(0,19)+"…",LEFT+(i+.5)*band,TOP+PH+25,'font-family="Arial,sans-serif" font-size="12" fill="#34505d" text-anchor="middle"'));
-  }else parts.push(tag(label,LEFT+(i+.5)*band,TOP+PH+25,'font-family="Arial,sans-serif" font-size="12" fill="#34505d" text-anchor="middle"'));
- });
- groups.forEach((g,i)=>{
-  const start=LEFT+(i%2)*PW/2,yy=TOP+PH+61+Math.floor(i/2)*19;
-  parts.push('<rect x="'+fmt(start)+'" y="'+fmt(yy-11)+'" width="13" height="13" rx="2" fill="'+colors[i%colors.length]+'"/>');
-  parts.push(tag((g.length>39?g.slice(0,38)+"…":g)+" (n="+totals[i]+")",start+21,yy,
-   'font-family="Arial,sans-serif" font-size="12" fill="#31505c"'));
- });
- return footer(d,parts,"Categories are discrete; bar lengths begin at zero. "+(d.barMode==="percent"?"Each group totals 100%.":"Group denominators are shown in the legend."));
-}
-export function renderStatSvg(raw){
- const q=statAnalysis(raw);
- const renderer={histogram,box:boxes,dot:dots,bar:bars}[q.draft.kind];
- if(!q.ready){
-  const parts=base(q.draft,"Working preview — complete the statistical diagram checks to export.");
-  parts.push(tag("Add or correct your data and labels to see an IA-ready diagram",W/2,TOP+PH/2,
-    'text-anchor="middle" font-family="Arial,sans-serif" font-size="17" fill="#687e85"'));
-  // Show a preview when just metadata is missing, but never when mathematical data are invalid.
-  if(!q.problems.some(p=>["histogram-data","histogram-empty","histogram-n","observations","series","bar-data",
-    "categories","data","pending","dot-crowded","cropped-classes","cropped-points","cropped-bars"].includes(p.code)))return renderer(q);
-  return footer(q.draft,parts);
+  if(!series.length)fail("series","Select at least one numeric column.");
+  if(series.some(s=>s.name.length>24))fail("series-labels","Shorten group headings to 24 characters or fewer for a readable diagram.");
+  if(series.some(s=>s.values.length<(d.kind==="box"?5:2)))
+   fail("observations",d.kind==="box"?"Each box plot requires at least five usable measurements.":"Each dot plot requires at least two usable measurements.");
+  for(const s of series){
+   if(s.skipped)warn("skipped",s.skipped+" invalid value(s) in '"+s.name+"' were ignored; check the original sheet.");
+   if(s.values.length>120&&d.kind==="dot")fail("dot-crowded","The dot plot would contain over 120 points in '"+s.name+"'. Use a histogram or box plot.");
+   if(d.kind==="dot"){
+    const counts=new Map();
+    for(const v of s.values)counts.set(v,(counts.get(v)||0)+1);
+    if(Math.max(0,...counts.values())>22)fail("dot-stack","More than 22 identical values in '"+s.name+"' would stack too high. Consider a frequency diagram.");
+   }
+   if(s.box?.iqr===0)warn("zero-iqr","The group '"+s.name+"' has zero IQR. Quartiles or outliers may be less informative.");
+  }
+  if(d.kind==="box"){
+   if(d.outlierRule==="tukey")warn("outliers","Whiskers extend to the most extreme non-outlier observations; 1.5 × IQR observations are shown separately.");
+   if(series.some(s=>s.values.length<10))warn("small-sample","A small sample produces unstable quartiles. Explain your sampling and any limitations.");
+  }
+  if(d.kind==="dot"&&series.some(s=>new Set(s.values).size>50))warn("overplot","Many unique values may produce crowded dots. A box plot or histogram may communicate better.");
+  result={...result,series};
+ }else if(d.kind==="bar"){
+  const b=barAnalysis(d);
+  if(b.error)fail("bar-data",b.error);
+  if(b.categories.length<2&&!b.error)fail("categories","Use at least two meaningful categories.");
+  if(b.categories.length>12)fail("category-limit","Use at most 12 categories, or combine minor categories with justification.");
+  if(b.categories.some(c=>c.category.length>21))fail("category-labels","Shorten long category labels in your working table and explain any abbreviations.");
+  if(b.names?.some(name=>name.length>38))fail("legend-labels","Shorten long group headings so the legend can be read at printed size.");
+  if((b.names||[]).length>4)fail("group-limit","Use at most four groups for a readable comparison.");
+  if(b.totals?.length>1&&d.barMode==="count"){
+   const small=Math.min(...b.totals),large=Math.max(...b.totals);
+   if(small===0||large>small*1.25)warn("group-size","The groups have different sample sizes. Counts can mislead: consider percentages of each group's total.");
+  }
+  if(d.barMode==="percent")warn("percent-denominator","Percentages use each group's total across the displayed categories as the denominator. Check whether that matches your population or sampling question.");
+  result={...result,...b};
  }
- return renderer(q);
+ let override=null;
+ const lo=d.min.trim()?ncell(d.min):null,hi=d.max.trim()?ncell(d.max):null;
+ if(d.min.trim()||d.max.trim()){
+  if(lo===null||hi===null||hi<=lo)fail("range","Give both valid manual axis limits, with maximum greater than minimum.");
+  else override=[lo,hi];
+ }
+ if(d.kind==="bar"&&override&&override[0]!==0)fail("zero-bar","A categorical bar chart must start its frequency/percentage axis at zero.");
+ if(d.kind==="histogram"&&override){
+  if(override[0]>Math.min(...(result.bins||[{low:0}]).map(x=>x.low))||
+     override[1]<Math.max(...(result.bins||[{high:1}]).map(x=>x.high)))
+   fail("cropped-classes","The chosen horizontal range must include every class boundary.");
+ }
+ if((d.kind==="dot"||d.kind==="box")&&override&&result.series?.some(s=>s.values.some(x=>x<override[0]||x>override[1])))
+  fail("cropped-points","The chosen horizontal scale excludes observations or outliers.");
+ if(d.kind==="bar"&&override&&result.categories?.some(c=>c.values.some(x=>x>override[1])))
+  fail("cropped-bars","The upper scale limit cuts off a bar.");
+ return {draft:d,ready:problems.length===0,problems,warnings,result,override};
+}
+export const statSignature=d=>JSON.stringify([d.kind,d.matrix,d.columns,d.selected,d.categoryIndex,d.lowIndex,
+ d.highIndex,d.frequencyIndex,d.histogramInput,d.binWidth,d.binStart,d.barMode,d.quartileRule,d.outlierRule,d.min,d.max]);
+export function saveStatFigure(studio,entryId=""){
+ const q=statAnalysis(studio.draft);
+ if(!q.ready)return {ok:false,error:"Resolve the required statistical diagram checks first.",checks:q};
+ const previous=studio.figures.find(f=>f.id===studio.activeId);
+ if(!previous&&studio.figures.length>=MAX_STAT_FIGURES)
+  return {ok:false,error:"Twelve saved statistical diagrams are already stored. Earlier work will not be discarded."};
+ const id=previous?.id||"stat-"+Date.now().toString(36)+"-"+Math.floor(Math.random()*10000).toString(36);
+ const record={id,entryId:entryId||previous?.entryId||"",savedAt:new Date().toISOString(),draft:q.draft};
+ const index=studio.figures.findIndex(f=>f.id===id);
+ if(index>=0)studio.figures[index]=record;else studio.figures.push(record);
+ studio.activeId=id;
+ return {ok:true,record};
 }
