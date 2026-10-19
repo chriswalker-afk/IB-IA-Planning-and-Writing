@@ -286,7 +286,7 @@ def writing_sections(browser,width):
     "primaryWhat":"Measured heights in centimetres",
     "secondaryPublisher":"Official public height dataset","course":"AI SL"})
    state["planning"]["routeExplorer"]["selectedRoute"]="relationships"
-   state["planning"]["mathSelected"]=["AI14"]
+   state["planning"]["mathSelected"]=["AI15","AI14"]
   ctx,page=open_fixture(browser,state,width)
   try:
    main=page.locator('[data-source-node="'+node+'"]')
@@ -320,6 +320,18 @@ def writing_sections(browser,width):
     assert "Official public height dataset" in main.inner_text()
     assert "Relationships between two variables" in main.inner_text()
     assert "Plot paired measurements" in main.inner_text()
+    assert main.locator('[data-first-maths-starting-guidance]').count()==1
+    assert main.locator('[data-technique-start-guide="AI14"]').count()==1
+    assert main.locator('[data-technique-start-guide="AI15"]').count()==1
+    assert main.locator('[data-first-maths-other-guides]').count()==1
+    assert main.locator('[data-first-maths-other-guides]').get_attribute("open") is None
+    assert "Look for" in main.locator('[data-technique-start-guide="AI14"]').inner_text()
+    assert "Then decide" in main.locator('[data-technique-start-guide="AI14"]').inner_text()
+    main.locator('[data-first-maths-other-guides]>summary').click()
+    main.locator('[data-other-technique="0"]>summary').click()
+    assert "approximately linear" in main.locator('[data-technique-start-guide="AI15"]').inner_text()
+    without_overflow(page)
+    main.locator('[data-first-maths-other-guides]>summary').click()
     assert main.locator('[data-criterion-badge="completing:C20:firstBridge"]').count()==1
     assert main.locator('[data-criterion-badge="completing:C20:firstChoice"]').count()==1
     assert main.locator('[data-criterion-badge="completing:C20:firstPurpose"]').count()==1
@@ -358,12 +370,42 @@ def writing_sections(browser,width):
   finally:
    ctx.close()
 
+def modelling_math_start(browser,width):
+ state=copy.deepcopy(BASE)
+ state["route"]="completing"
+ state["completion"]["current"]="C20"
+ state["planning"]["fields"].update({
+  "kind":"modelling","dataSource":"secondary","course":"AI SL",
+  "aim":"Does a quadratic model explain a genuine relationship?",
+  "secondaryPublisher":"Public mathematical dataset"})
+ state["planning"]["mathSelected"]=["AI05"]
+ ctx,page=open_fixture(browser,state,width)
+ try:
+  main=page.locator('[data-source-node="C20"]')
+  assert main.count()==1
+  card=main.locator('[data-technique-start-guide="AI05"]')
+  assert card.count()==1
+  assert "Quadratic or cubic models" in card.inner_text()
+  assert "scatter plot" in card.inner_text()
+  assert "turning point" in card.inner_text()
+  assert "quadratic from a cubic" in card.inner_text()
+  assert "simplest justified model" in card.inner_text()
+  assert "published data" in card.inner_text()
+  assert "Cite the source" in card.inner_text()
+  assert main.locator('[data-first-maths-other-guides]').count()==0
+  assert main.locator('[data-first-maths-source-details]').count()==1
+  without_overflow(page)
+  page.screenshot(path=str(OUT/f"first-maths-model-{width}.png"),full_page=True,animations="disabled")
+  assert stored(page)["entries"]==state["entries"]
+ finally:
+  ctx.close()
+
 def main():
  results=[]
  with sync_playwright() as p:
   browser=p.chromium.launch(headless=True)
   for width in (1360,390):
-   for scenario,fn in (("new",first_time),("completed",completed_plan),("writing-stages",writing_sections)):
+   for scenario,fn in (("new",first_time),("completed",completed_plan),("writing-stages",writing_sections),("maths-model-start",modelling_math_start)):
     try:
      fn(browser,width)
      results.append({"scenario":scenario,"width":width,"status":"passed"})
