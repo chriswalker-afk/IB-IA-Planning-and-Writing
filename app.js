@@ -2129,6 +2129,71 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   });
   document.addEventListener("submit",evt=>{if(evt.target.closest(".resource-filter-form"))evt.preventDefault();});
   document.addEventListener("keydown",evt=>{
+    // Keyboard users can inspect/adjust sites and place points on a focused grid.
+    const hit=evt.target.closest?.("[data-voronoi-site-index],[data-voronoi-cell-index],[data-voronoi-plane]");
+    if(hit&&state.voronoiStudio?.open&&!state.voronoiStudio.scenario?.showOriginal){
+      const studio=state.voronoiStudio,bounds=displayVoronoiBounds(studio.draft);
+      const index=hit.dataset.voronoiSiteIndex!==undefined?Number(hit.dataset.voronoiSiteIndex):
+        hit.dataset.voronoiCellIndex!==undefined?Number(hit.dataset.voronoiCellIndex):-1;
+      const arrow={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,1],ArrowDown:[0,-1]}[evt.key];
+      if(index>=0&&arrow&&studio.tool==="select"){
+        evt.preventDefault();
+        const site=studio.draft.sites[index];
+        if(!site)return;
+        const k=evt.shiftKey?20:100;
+        const dx=(bounds.xMax-bounds.xMin)/k,dy=(bounds.yMax-bounds.yMin)/k;
+        const result=moveVoronoiSite(studio,index,site.x+arrow[0]*dx,site.y+arrow[1]*dy);
+        if(result.ok&&result.changed){
+          redrawVoronoiAtScroll();
+          document.querySelector?.('[data-voronoi-site-index="'+index+'"]')?.focus?.();
+        }else if(!result.ok)toast(result.error);
+        return;
+      }
+      if(hit.dataset.voronoiPlane!==undefined&&arrow){
+        evt.preventDefault();
+        const cursor=studio.keyboardCursor||{x:(bounds.xMin+bounds.xMax)/2,y:(bounds.yMin+bounds.yMax)/2};
+        const center=cursor.x<bounds.xMin||cursor.x>bounds.xMax||cursor.y<bounds.yMin||cursor.y>bounds.yMax?
+          {x:(bounds.xMin+bounds.xMax)/2,y:(bounds.yMin+bounds.yMax)/2}:cursor;
+        const fraction=evt.shiftKey?100:20;
+        studio.keyboardCursor={
+          x:Math.max(bounds.xMin,Math.min(bounds.xMax,canvasPosition(center.x+arrow[0]*(bounds.xMax-bounds.xMin)/fraction))),
+          y:Math.max(bounds.yMin,Math.min(bounds.yMax,canvasPosition(center.y+arrow[1]*(bounds.yMax-bounds.yMin)/fraction)))
+        };
+        studio.cursorVisible=true;save();refreshVoronoiPreview();
+        document.querySelector?.("[data-voronoi-plane]")?.focus?.();
+        return;
+      }
+      if(evt.key==="Enter"||evt.key===" "){
+        evt.preventDefault();
+        if(index>=0){
+          selectVoronoiSite(studio,index);save();refreshVoronoiPreview();
+          document.querySelector?.('[data-voronoi-site-index="'+index+'"]')?.focus?.();
+          return;
+        }
+        if(hit.dataset.voronoiPlane!==undefined){
+          const cursor=studio.keyboardCursor||{x:5,y:5},at={
+            x:Math.min(bounds.xMax,Math.max(bounds.xMin,cursor.x)),
+            y:Math.min(bounds.yMax,Math.max(bounds.yMin,cursor.y))};
+          if(studio.tool==="existing"||studio.tool==="candidate"){
+            if(studio.scenario?.active&&studio.tool==="existing"){
+              toast("Place proposals, not measured sites, during a comparison.");return;
+            }
+            const before=voronoiFrame(studio.draft);
+            freezeVoronoiWindow(studio);
+            const result=addVoronoiSite(studio,{name:"",x:at.x,y:at.y,
+              kind:studio.tool==="candidate"?"candidate":"observed"},before);
+            if(!result.ok){applyVoronoiFrame(studio.draft,before);toast(result.error);return;}
+            redrawVoronoiAtScroll();
+          }else if(studio.tool==="test"){
+            const before=voronoiFrame(studio.draft);
+            studio.draft.probeX=String(at.x);studio.draft.probeY=String(at.y);
+            recordVoronoiHistory(studio,before);redrawVoronoiAtScroll();
+          }else return;
+          document.querySelector?.("[data-voronoi-plane]")?.focus?.();
+          return;
+        }
+      }
+    }
     if(evt.key==="Escape"&&!layer.hidden&&!document.querySelector("dialog[open]")){evt.preventDefault();dismissDrawer();}
     if(evt.key==="Tab"&&!layer.hidden){
       const focusable=[...layer.querySelectorAll('button:not([disabled]),a[href],input:not([disabled]),textarea:not([disabled]),select:not([disabled]),summary')].filter(el=>el.getClientRects().length);
