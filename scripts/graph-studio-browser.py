@@ -71,8 +71,9 @@ def data_graph(page,width):
  assert snapshot["entries"][0]["result"]==""
  assert snapshot["entries"][0]["graphFigureId"]==snapshot["graphStudio"]["figures"][0]["id"]
  assert page.locator(".graph-entry-preview svg.graph-figure-svg").count()==1
- assert page.locator('[data-action="graph-open"]').count()==1
- page.locator('[data-action="graph-open"]').click()
+ # The embedded tool catalogue also offers graph-open; reopen the saved figure itself.
+ assert page.locator('.graph-entry-preview [data-action="graph-open"]').count()==1
+ page.locator('.graph-entry-preview [data-action="graph-open"]').click()
  assert page.locator('[data-graph-studio]').is_visible()
  assert page.locator('[data-graph-field="raw"]').input_value()==SAMPLE
  page.reload(wait_until="networkidle")
