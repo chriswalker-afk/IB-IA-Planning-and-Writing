@@ -25,7 +25,7 @@ def prepare(browser,width,height):
   "kind":"statistics"})
  context=browser.new_context(viewport={"width":width,"height":height},accept_downloads=True)
  page=context.new_page();page.set_default_timeout(12000)
- page.add_init_script("localStorage.setItem("+json.dumps(KEY)+","+json.dumps(json.dumps(state))+");")
+ page.add_init_script("if(!localStorage.getItem("+json.dumps(KEY)+"))localStorage.setItem("+json.dumps(KEY)+","+json.dumps(json.dumps(state))+");")
  page.goto(URL,wait_until="networkidle")
  return context,page
 
