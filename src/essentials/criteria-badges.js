@@ -59,6 +59,48 @@ export const CRITERION_SPOTS=Object.freeze({
  "completing:C34U:surpriseCheck":Object.freeze({"criterion":"D","location":"Respond mathematically to a surprising or unclear finding","stage":"IA Studio · Mathematical Exploration · reflection","why":"Reflection involves checking the meaning of a genuine unexpected result and deciding what it warrants.","strong":"Identify one plausible mathematical check, different assumption, counterexample or source verification that follows from the actual finding.","avoid":"Do not alter observations to agree with a prediction or manufacture a result to make the investigation exciting.","reminder":"An unresolved surprise can be recorded honestly; it need not generate extra calculations."}),
  "completing:C35H:nextReason":Object.freeze({"criterion":"C","location":"Explain an independent next mathematical question","stage":"IA Studio · Mathematical Exploration · next step","why":"Independent decisions are meaningful when the student selects a follow-up in response to mathematical evidence.","strong":"Choose an optional follow-up only when it logically resolves a real question raised by the previous result.","avoid":"Avoid accepting suggested mathematics merely to add difficulty or length.","reminder":"A decision not to carry out another technique can also be mathematically justified."}),
  "completing:C40D:courseWhy":Object.freeze({"criterion":"E","location":"Justify suitable mathematics for the investigation","stage":"IA Studio · Mathematical Exploration · course suitability","why":"Criterion E concerns relevance, correctness and understanding, not apparent mathematical sophistication.","strong":"Explain which question the chosen mathematics actually answers and ensure your understanding of the technique and course level is sound.","avoid":"Avoid claiming an unfamiliar technique must earn more credit, or presenting a standard technique as beyond the syllabus without checking.","reminder":"No unperformed calculation or procedural description substitutes for genuine mathematics."}),
+ "completing:C30:introduceA":Object.freeze({
+  criterion:"A",location:"Introduce this graph, diagram, table or calculation before showing it",stage:"IA Studio · Showing first mathematics · 1",
+  why:"Criterion A rewards a coherent mathematical exploration. A reader needs to know how an individual representation follows from the aim and why it is worth looking at.",
+  strong:"Write one or two sentences immediately before the output. Identify what will be displayed and the specific question it helps answer, without repeating your earlier method justification.",
+  avoid:"Avoid dropping in an unexplained graphic, using the caption as the entire introduction, or describing a result before it has been produced.",
+  reminder:"This writing helps your IA flow; a completed box is not an awarded criterion mark."
+ }),
+ "completing:C30:introduceB":Object.freeze({
+  criterion:"B",location:"Give readers the essential mathematical context for the first output",stage:"IA Studio · Showing first mathematics · 1",
+  why:"Criterion B concerns mathematical communication: quantities, notation and representations need to be understandable when they appear.",
+  strong:"Name the relevant variables, units, mathematical objects or assumptions that have not already been defined, and refer to the figure or calculation appropriately.",
+  avoid:"Avoid undefined symbols, ambiguous graph labels, unnecessary re-explanations of syllabus mathematics or relying solely on a caption.",
+  reminder:"The real diagram or calculation still needs clear labels, notation and units; this short introduction supports rather than replaces those checks."
+ }),
+ "completing:C30:reflectD":Object.freeze({
+  criterion:"D",location:"Reflect on what your actual first result means for your aim and prediction",stage:"IA Studio · Showing first mathematics · 3",
+  why:"Reflection is more than repeating a number or describing a graph. It considers the implications of a genuine finding for the investigation question and earlier expectation.",
+  strong:"Explain what the observed result supports, challenges or leaves undecided. Compare with your tentative prediction if you made one and qualify conclusions where real limitations matter.",
+  avoid:"Avoid treating a planned outcome as observed, forcing a result to agree with your prediction, or ending with an unsupported conclusion.",
+  reminder:"Wait for an actual mathematical result before asserting what it shows. Meaningful reflection develops throughout the exploration."
+ }),
+ "completing:C30:reflectE":Object.freeze({
+  criterion:"E",location:"Interpret the mathematical feature correctly before reflecting",stage:"IA Studio · Showing first mathematics · 3",
+  why:"Relevant mathematics must be understood as well as calculated. The kind of conclusion depends on what the representation can mathematically establish.",
+  strong:"Identify the real value, pattern, domain, turning point, distribution feature, counterexample or logical result, then describe its meaning for this aim.",
+  avoid:"Avoid interpreting a correlation as causation, a few cases as proof, an approximate result as exact, or a model beyond its justified domain.",
+  reminder:"This bubble highlights correct mathematical interpretation; it does not assess the mathematical work for you."
+ }),
+ "completing:C30:nextC":Object.freeze({
+  criterion:"C",location:"Choose a genuinely worthwhile next mathematical question",stage:"IA Studio · Showing first mathematics · 4",
+  why:"Personal engagement can be demonstrated by making informed mathematical choices that respond to what you have discovered, rather than following a predetermined list of techniques.",
+  strong:"Identify a gap, complication or interesting consequence that emerged from the real result. If nothing important remains, choosing to conclude can be equally well justified.",
+  avoid:"Avoid adding techniques for length, automatically using every method selected in Planning, or inventing an unresolved question.",
+  reminder:"Independent decisions become evidence of engagement through the actual development of the mathematics, not by filling in this prompt."
+ }),
+ "completing:C30:nextD":Object.freeze({
+  criterion:"D",location:"Explain the mathematical bridge from a result to what follows",stage:"IA Studio · Showing first mathematics · 4",
+  why:"A meaningful next step reflects on what the previous result established, where its mathematical restrictions lie, and how a new question could improve the answer to the aim.",
+  strong:"Use your actual result to justify the next calculation, model, check or proof. Write the transition in the IA before the new mathematics, or explain why the investigation has sufficient evidence to conclude.",
+  avoid:"Avoid announcing the next method with no link to the preceding work, inventing limitations to justify more calculations, or treating a prediction as evidence.",
+  reminder:"Another calculation is not compulsory: a considered mathematical stopping point can be an appropriate next step."
+ }),
  'completing:C31:firstPurpose':Object.freeze({
   criterion:'E',location:'Why might this help answer the aim?',stage:'IA Studio · select an initial representation',
   why:'A mathematical representation is useful when it could answer a specific part of your investigation question.',
@@ -234,6 +276,7 @@ const TITLE_SPOTS=Object.freeze({
 });
 export const criterionSpotFor=(route,node)=>TITLE_SPOTS[route+':'+node]||'';
 const FIELD_SPOTS=Object.freeze({
+ 'completing:C30':['completing:C30:introduceA','completing:C30:introduceB','completing:C30:reflectD','completing:C30:reflectE','completing:C30:nextC','completing:C30:nextD'],
  'completing:C31':['completing:C31:firstPurpose'],
  'completing:C32':['completing:C32:purpose'],
  'completing:C34':['completing:C34:observation'],
