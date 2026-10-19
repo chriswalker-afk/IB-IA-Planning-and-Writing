@@ -59,3 +59,9 @@
  .ia-handover-caption button{max-width:100%;white-space:normal;text-align:left}
 }
 @media(prefers-reduced-motion:reduce){.ia-presentation-coach *,.ia-figure-handover *{scroll-behavior:auto}}
+
+/* Saved representations expose optional writing guidance without repeating C30's boxes. */
+.ia-handover-linked>summary{padding:13px 15px;cursor:pointer;font-size:12px;font-weight:750;color:#2a705c;background:#eef8f2;list-style-position:inside}
+.ia-handover-linked>summary:hover{background:#e5f4eb}
+.ia-handover-linked>summary:focus-visible{outline:3px solid #62aa91;outline-offset:-3px}
+.ia-handover-linked[open]>summary{border-bottom:1px solid #d7e7df}
