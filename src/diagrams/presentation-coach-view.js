@@ -1,15 +1,28 @@
 /** Accessible, compact student-facing advice. Never writes the IA for students. */
-import {presentationSparks,presentationDiagnostics,figureCaption,handoverQuestions,contextualRepresentationAdvice} from "./presentation-coach-core.js";
+import {presentationSparks,presentationDiagnostics,figureCaption,handoverQuestions,contextualRepresentationAdvice,suggestedDiagramMode} from "./presentation-coach-core.js";
 
 const sparkIcon={aim:"target",planned:"sparkles",confirmed:"check-circle"};
 export function renderPresentationCoach(state,type,draft,icon,e){
  const sparks=presentationSparks(state,type,draft);
  const diagnostics=presentationDiagnostics(state,type,draft);
  const matched=sparks.filter(x=>x.kind==="planned"||x.kind==="confirmed");
+ const recommended=suggestedDiagramMode(state,type,draft),current=type==="table"?draft?.mode:draft?.kind;
+ const attr={graphValue:"data-graph-value",statValue:"data-stat-value",tableMode:"data-table-mode"};
+ const recommendBlock=recommended?
+  '<div class="ia-coach-recommendation"><div><span class="ia-coach-kicker">A SUITABLE STARTING VIEW</span>'+
+   '<strong>'+e(recommended.name)+'</strong><p>'+e(recommended.reason)+'</p>'+
+   '<small>Based on your '+e(recommended.from==="current worksheet"?"working values":"saved pathway")+
+    '. A suggestion, not an automatic mathematical decision.</small></div>'+
+   (recommended.mode===current?' <span class="ia-coach-current">Currently selected</span>':
+    '<button type="button" class="btn btn-secondary btn-sm" data-action="'+recommended.action+'"'+
+     (recommended.key?' '+attr[recommended.key]+'="'+e(recommended.mode)+'"':"")+
+    '>Try this view '+icon("arrow-right")+'</button>')+'</div>':"";
+
  return '<section class="ia-presentation-coach" data-presentation-coach="'+type+'" aria-label="Contextual mathematical presentation advice">'+
   '<header class="ia-coach-header"><span class="ia-coach-icon">'+icon("lightbulb")+'</span>'+
    '<div><strong>Make this mathematics communicate</strong>'+
    '<p>Advice responds to your current values and earlier decisions. It does not decide which model fits or award an IB grade.</p></div></header>'+
+  recommendBlock+
   '<div class="ia-coach-checks"><span class="ia-coach-kicker">CHECK THE MATHEMATICS</span>'+
    (diagnostics.length?diagnostics.map(item=>
     '<article class="ia-coach-point '+(item.tone==="check"?"ia-coach-important":"")+'">'+

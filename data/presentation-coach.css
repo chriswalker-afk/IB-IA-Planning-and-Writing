@@ -65,3 +65,13 @@
 .ia-handover-linked>summary:hover{background:#e5f4eb}
 .ia-handover-linked>summary:focus-visible{outline:3px solid #62aa91;outline-offset:-3px}
 .ia-handover-linked[open]>summary{border-bottom:1px solid #d7e7df}
+
+.ia-coach-recommendation{padding:12px 15px;display:flex;align-items:center;gap:12px;justify-content:space-between;background:#f9fcfa;border-bottom:1px solid #e3ede7}
+.ia-coach-recommendation>div{min-width:0;flex:1}
+.ia-coach-recommendation strong{display:block;margin-top:4px;font-size:12px;color:#2b6055}
+.ia-coach-recommendation p{margin:3px 0!important;font-size:11px!important;line-height:1.55!important;color:#557368!important}
+.ia-coach-recommendation small{font-size:10px;color:#739087;line-height:1.5}
+.ia-coach-recommendation .btn{flex:none;display:inline-flex;align-items:center;gap:6px;max-width:100%;min-height:36px}
+.ia-coach-recommendation .btn .icon{width:14px;height:14px}
+.ia-coach-current{display:inline-block;border-radius:7px;padding:6px 9px;background:#e5f2e9;color:#2e795e;font-size:10px;font-weight:800;flex:none}
+@media(max-width:700px){.ia-coach-recommendation{padding:11px;flex-wrap:wrap}.ia-coach-recommendation .btn{width:100%;justify-content:center}.ia-coach-current{margin:0 0 0 auto}}

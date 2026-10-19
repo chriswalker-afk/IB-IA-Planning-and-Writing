@@ -14,7 +14,7 @@ import {renderImageTracer} from "../src/diagrams/image-tracer-view.js";
 import {renderVoronoiStudio} from "../src/diagrams/voronoi-view.js";
 import {
  describeWorkingData,contextualRepresentationAdvice,relevantAccuracySparks,
- presentationSparks,presentationDiagnostics,figureCaption,handoverQuestions
+ presentationSparks,presentationDiagnostics,figureCaption,handoverQuestions,suggestedDiagramMode
 } from "../src/diagrams/presentation-coach-core.js";
 import {
  renderPresentationCoach,renderFigureHandover,renderHubDatasetEvidence
@@ -212,6 +212,42 @@ test("figure number and source fields are maintained across project backup resto
  assert.equal(restored.statStudio.draft.figureNumber,"12");
  assert.equal(restored.imageTracer.draft.figureNumber,"13");
  assert.equal(restored.voronoiStudio.draft.figureNumber,"14");
+});
+test("contextual mode nudge suggests scatter for paired data, never fits a model automatically",()=>{
+ const s=paired(),result=suggestedDiagramMode(s,"graph",s.graphStudio.draft);
+ assert.equal(result.mode,"scatter");
+ assert.equal(result.action,"graph-type");
+ assert.match(result.reason,/before deciding/);
+ assert.equal(s.graphStudio.draft.kind,"scatter");
+});
+test("numeric samples suggest dots for few values and histograms for many",()=>{
+ const s=createProjectState(),d=s.statStudio.draft;
+ d.columns=["Time (s)"];
+ d.matrix=Array.from({length:10},(_,i)=>[String(i)]);
+ assert.equal(suggestedDiagramMode(s,"stat",d).mode,"dot");
+ d.matrix=Array.from({length:45},(_,i)=>[String(i)]);
+ assert.equal(suggestedDiagramMode(s,"stat",d).mode,"histogram");
+});
+test("real category counts suggest bar charts, continuous category measurements do not",()=>{
+ const s=createProjectState(),d=s.statStudio.draft;
+ d.columns=["Transport","Frequency"];d.matrix=[["Walk","12"],["Bus","6"],["Cycle","8"]];
+ assert.equal(suggestedDiagramMode(s,"stat",d).mode,"bar");
+ d.matrix[0][1]="12.5";
+ assert.equal(suggestedDiagramMode(s,"stat",d).mode,"table");
+});
+test("a long table prompts summary instead of tiny or truncated raw text",()=>{
+ const s=createProjectState(),d=s.tableStudio.draft;
+ d.columns=["Trial","Time (s)"];
+ d.matrix=Array.from({length:20},(_,i)=>[String(i),String(i*1.1)]);
+ assert.equal(suggestedDiagramMode(s,"table",d).mode,"summary");
+});
+test("recommendation buttons use existing real actions and never silently switch modes",()=>{
+ const s=createProjectState(),d=s.statStudio.draft;
+ d.kind="histogram";d.columns=["Value"];d.matrix=[["1"],["2"],["3"]];
+ const html=renderPresentationCoach(s,"stat",d,icon,esc);
+ assert.match(html,/data-action="stat-kind"/);
+ assert.match(html,/data-stat-value="dot"/);
+ assert.equal(d.kind,"histogram");
 });
 test("the site never turns a planned source into an automatically verified citation",()=>{
  const s=createProjectState();
