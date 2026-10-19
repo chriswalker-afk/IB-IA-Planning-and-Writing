@@ -16,6 +16,39 @@ const field=(key,label,value,e,{placeholder="",hint="",rows=0}={})=>{
 const pick=(key,label,value,choices,e)=>'<label class="graph-form-field"><span>'+e(label)+'</span>'+
  '<select data-graph-field="'+key+'">'+choices.map(([v,n])=>opt(e(v),e(n),value)).join("")+'</select></label>';
 const check=(key,label,value)=>'<label class="graph-check"><input type="checkbox" data-graph-field="'+key+'"'+(value?" checked":"")+'><span>'+label+'</span></label>';
+const GRAPH_ROUTE_HINTS={
+ relationships:"A scatter diagram of genuinely paired measurements is a useful first inspection. Do not fit a line automatically.",
+ groups:"Start with a comparable distribution or group chart. The scatter/time/function plotter may not be the right display for your first step.",
+ categorical:"This question usually benefits from a two-way summary table or a comparison of proportions, not a numerical scatter plot.",
+ variation:"A distribution or box plot may reveal variation better than a connected line. Those chart types are planned next.",
+ "fitted-models":"If a model is derived theoretically, plot it as a function; if fitted from measurements, first inspect actual points.",
+ growth:"A chronological plot can help you compare changes between equal time intervals before choosing a growth model.",
+ cycles:"Plot a sufficiently long time series before deciding whether a sinusoidal function makes sense.",
+ trajectories:"Position-versus-time or coordinate measurements can be plotted. Photo calibration and tracing are planned as a later tool.",
+ optimisation:"A function graph over the feasible domain can illustrate candidate extrema; the graph alone is not proof of the optimum.",
+ images:"Photo overlay, coordinate calibration and boundary tracing will need the planned image-tracing tool.",
+ triangulation:"A labelled scale-aware geometric diagram is more suitable; the geometry constructor is a planned later tool.",
+ voronoi:"A coordinate or map construction is needed; a Voronoi generator is planned for a later pass.",
+ finance:"A function graph can compare cost/revenue models; use matching units and a realistic input domain.",
+ chance:"Probability trees or distribution charts are often more helpful than a continuous function graph.",
+ proof:"Use only a diagram that genuinely helps the argument; plotted examples do not establish a universal proof.",
+ iteration:"A sequence plot may suggest behaviour, but a dedicated iteration/cobweb diagram will be more informative."
+};
+export function renderGraphAccuracyEcho(state,e){
+ const d=state.graphStudio.draft,plan=state.planning?.accuracyPlans||[],actual=state.completion?.accuracyDecisions||[];
+ const norm=x=>String(x||"").trim().toLowerCase();
+ const matches=[...plan.map(x=>({...x,context:"Planned recording accuracy (confirm with actual source)"})),
+  ...actual.map(x=>({...x,context:"Recorded actual-source precision"}))].filter(x=>
+   [d.xLabel,d.yLabel].some(label=>norm(label)&&[x.quantity,x.symbol].some(name=>norm(name)===norm(label))));
+ if(!matches.length){
+  const previous=state.planning?.fields?.firstAccuracy;
+  return previous?'<p class="graph-context-note">'+e("Earlier intended accuracy: "+previous+". Reconfirm it for the source you actually used before deciding reported precision.")+'</p>':"";
+ }
+ return '<aside class="graph-context-note" aria-label="Relevant accuracy sparks">'+
+  '<strong>Related accuracy sparks</strong><ul>'+matches.slice(0,4).map(x=>
+  '<li><strong>'+e(x.quantity||x.symbol)+'</strong> '+e([x.unit&&"("+x.unit+")",x.resolution||x.policy||"",x.context].filter(Boolean).join(" · "))+'</li>').join("")+
+  '</ul><p>Do not invent extra measurement precision or apply one universal decimal-place rule. Check the actual source before rounding.</p></aside>';
+}
 const tableExample='<span class="graph-inline-example">Example column headings: <code>Time (s)</code> and <code>Distance (m)</code></span>';
 export function renderGraphStudio(state,icon,e){
  const studio=state.graphStudio,d=studio.draft,q=analyseGraph(d),data=graphData(d);
@@ -34,6 +67,10 @@ export function renderGraphStudio(state,icon,e){
   '<div class="graph-type-picker" role="group" aria-label="Choose a graph type">'+
   types.map(([id,name,description])=>'<button class="graph-type'+(d.kind===id?" selected":"")+'" type="button" aria-pressed="'+(d.kind===id)+'" data-action="graph-type" data-graph-value="'+id+'"><strong>'+e(name)+'</strong><small>'+e(description)+'</small></button>').join("")+
   '</div>'+
+  (GRAPH_ROUTE_HINTS[state.planning?.routeExplorer?.selectedRoute]?
+   '<p class="graph-context-note"><strong>From your proposed mathematical pathway:</strong> '+
+   e(GRAPH_ROUTE_HINTS[state.planning.routeExplorer.selectedRoute])+
+   ' Your actual results can lead you elsewhere.</p>':"")+
   '<div class="graph-studio-layout">'+
   '<div class="graph-controls">'+
   (d.kind!=="function"?'<section class="graph-control-card" data-graph-section="data"><h3><span>1</span> Bring in your own data</h3>'+
@@ -55,6 +92,7 @@ export function renderGraphStudio(state,icon,e){
   '<div class="graph-field-grid">'+field("xLabel","Horizontal axis name",d.xLabel,e,{placeholder:"e.g. Time"})+
   field("yLabel","Vertical axis name",d.yLabel,e,{placeholder:"e.g. Distance"})+'</div>'+
   '<div class="graph-field-grid">'+unit("x")+unit("y")+'</div>'+
+  renderGraphAccuracyEcho(state,e)+
   (d.kind!=="function"?pick("sourceKind","Where did these data come from?",d.sourceKind,[
    ["unsure","Select the genuine origin"],["primary","My own observations / measurements"],["secondary","Published / secondary source"],["theoretical","Calculated or constructed example"]
   ],e)+
