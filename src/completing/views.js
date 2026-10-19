@@ -516,9 +516,13 @@ export function createCompletingViews(ctx){
     '<div class="show-first-part-heading"><span class="show-first-part-number">'+num+'</span><div><h3>'+e(title)+'</h3><p>'+e(description)+'</p></div></div>'+html+'</section>';
    const to=(node,text)=>'<button type="button" class="btn btn-secondary btn-sm" data-action="completion-open" data-node="'+node+'">'+e(text)+' '+icon("arrow-right")+'</button>';
    const context=phase=>renderShowingMathsContext(s,phase,icon,e,{reduced});
+   const priorNotes=(f.firstMathsBridgePlacement==="intro"?
+     info("You already explained why this follows from your aim","Do not repeat the same bridge sentence before the mathematics. Briefly introduce this particular figure or calculation instead."):
+     f.dataAimLink?smallSummary("Why your first maths follows your aim",f.dataAimLink):"")+
+     (f.firstMethodEvaluation?smallSummary("Mathematical limitations and alternatives to revisit",f.firstMethodEvaluation):"");
    const first=cards("introduce","1","Introducing diagrams, tables and calculations",
     "Write a sentence before each figure, table or calculation. Tell the reader what they are about to see, what question it answers and any essential definitions.",
-    context("introduce")+
+    context("introduce")+priorNotes+
     (f.methodReason?smallSummary("Method justified on the previous screen",f.methodReason):"")+
     (entry?criteriaField(entryField("purpose","What I will write BEFORE this mathematical work",
       "What will the reader see, and why does it help answer my aim?",{type:"textarea",rows:4}),"completing:C32:purpose"):
