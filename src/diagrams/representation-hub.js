@@ -80,7 +80,7 @@ export function renderRepresentationHub(state,icon,e){
   '<span class="representation-card-top">'+icon(t.icon)+' <span>Relevant suggestion</span></span>'+
   '<strong>'+e(t.title)+'</strong><small>'+e(t.reason)+'</small>'+
   '<span class="representation-card-cta">Open tool '+icon("arrow-right")+'</span></button>').join("")+'</div>';
- const visible=filter==="all"?all:REPRESENTATION_TOOLS.filter(t=>t.groups.includes(filter));
+ const visible=filter==="all"?all:REPRESENTATION_TOOLS.filter(t=>t.groups.includes(filter)&&!chosen.has(t.id));
  const catalog='<div class="representation-catalog" data-representation-catalog>'+
  (visible.length?visible.map(t=>
   '<button type="button" class="representation-card representation-card-small" data-action="'+t.action+'">'+
