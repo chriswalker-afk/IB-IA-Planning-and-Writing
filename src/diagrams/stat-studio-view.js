@@ -1,5 +1,6 @@
 import {representationEmpty} from "./workspace-ui.js";
 import {renderNativeDataGrid} from "./native-data-view.js";
+import {renderPresentationCoach,renderFigureHandover} from "./presentation-coach-view.js";
 /** One consistent student-facing interface for all four statistical pathways. */
 import {STAT_TYPES,statAnalysis,MAX_STAT_FIGURES} from "./stat-studio-core.js";
 import {renderStatSvg} from "./stat-studio-render.js";
@@ -148,6 +149,7 @@ export function renderStatStudio(state,icon,e){
  '</section>'+
  '<section class="stat-control-card" data-representation-step="refine"><h3><span>2</span> Labels, provenance and precision</h3>'+
  field("title","Descriptive diagram title",d.title,e,{placeholder:"e.g. Comparison of measured walking speeds"})+
+ field("figureNumber","Figure number in my IA",d.figureNumber,e,{placeholder:"e.g. 1"})+
  field("variable",d.kind==="bar"?"Categorical characteristic":"Numerical measurement",d.variable,e,{placeholder:d.kind==="bar"?"e.g. Preferred transport":"e.g. Walking speed"})+
  (d.kind!=="bar"?select("unitMode","Does the measurement have units?",d.unitMode,[
   ["unsure","Select units or dimensionless"],["unit","It has units"],["dimensionless","Dimensionless measurement"]],e):"")+
@@ -168,7 +170,9 @@ export function renderStatStudio(state,icon,e){
  '<div class="stat-preview-stack">'+statPreviewHtml(studio,icon,e)+
  '<section class="stat-summary-card" data-stat-summary><h3>Compact numerical summary</h3>'+statSummaryHtml(studio,icon,e)+'</section>'+
  '<section class="stat-quality-card" data-stat-quality>'+statQualityHtml(studio,icon,e)+'</section>'+
+ renderPresentationCoach(state,"stat",d,icon,e)+
  '<section class="stat-output-card" data-stat-output data-representation-step="use">'+statOutputHtml(studio,icon,e)+'</section>'+
+ renderFigureHandover(state,"stat",d,icon,e)+
  '<p class="stat-ia-reminder"><strong>Write in your actual IA:</strong> Introduce the diagram before it appears. Follow it with the interpretation in the context of your aim, sampling, prediction and limitations. Keep raw data tables in your working files—not in the IA or appendix.</p>'+
  '</div></div>'+
  (studio.figures.length?'<details class="stat-saved"><summary>'+icon("layers")+' Saved statistical diagrams ('+studio.figures.length+')</summary>'+

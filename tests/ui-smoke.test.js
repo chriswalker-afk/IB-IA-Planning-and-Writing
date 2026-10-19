@@ -55,6 +55,8 @@ import {voronoiPreviewHtml,voronoiResultHtml,voronoiQualityHtml,voronoiOutputHtm
 import {setVoronoiField,setVoronoiSite,addVoronoiSite,removeVoronoiSite,clearVoronoiMap,useVoronoiMap,beginVoronoi,loadVoronoi,saveVoronoiDraft,saveAndLinkVoronoi} from "../src/diagrams/voronoi-actions.js";
 import {exportVoronoi} from "../src/diagrams/voronoi-export.js";
 import {renderRepresentationHub,renderRepresentationSwitcher,representationFocusActive} from "../src/diagrams/representation-hub.js";
+import {renderPresentationCoach,renderFigureHandover} from "../src/diagrams/presentation-coach-view.js";
+import {figureCaption} from "../src/diagrams/presentation-coach-core.js";
 import {displayVoronoiBounds,coordinateFromCanvas,canvasPosition,voronoiFrame,recordVoronoiHistory,applyVoronoiFrame,undoVoronoi,redoVoronoi,freezeVoronoiWindow,fitVoronoiSites,setVoronoiTool,selectVoronoiSite,moveVoronoiSite,proposeVoronoiComparison,showVoronoiComparison,finishVoronoiComparison,selectNearestBisector} from "../src/diagrams/voronoi-interactions.js";
 import {renderWriterFieldGuide} from "../src/completing/writer-field-guide.js";
 import {setCompletionNode,moveCompletionRoute,completionBack,markCompletionStage,setCompletionField,addAccuracyDecision,completionSuggestions,sectionForNode,targetForSection,completeEntry,latestRealResult,flagDependentMathematics,acknowledgeMathReview} from "../src/completing/engine.js";
@@ -117,7 +119,7 @@ function createHarness(savedValue){
     voronoiPreviewHtml,voronoiResultHtml,voronoiQualityHtml,voronoiOutputHtml,
     setVoronoiField,setVoronoiSite,addVoronoiSite,removeVoronoiSite,clearVoronoiMap,useVoronoiMap,
     beginVoronoi,loadVoronoi,saveVoronoiDraft,saveAndLinkVoronoi,exportVoronoi,
-    renderRepresentationHub,renderRepresentationSwitcher,representationFocusActive,
+    renderRepresentationHub,renderRepresentationSwitcher,representationFocusActive,renderPresentationCoach,renderFigureHandover,figureCaption,
     displayVoronoiBounds,coordinateFromCanvas,canvasPosition,voronoiFrame,recordVoronoiHistory,applyVoronoiFrame,undoVoronoi,redoVoronoi,freezeVoronoiWindow,fitVoronoiSites,setVoronoiTool,selectVoronoiSite,moveVoronoiSite,proposeVoronoiComparison,showVoronoiComparison,finishVoronoiComparison,selectNearestBisector,
     setCompletionNode,moveCompletionRoute,completionBack,markCompletionStage,setCompletionField,addAccuracyDecision,completionSuggestions,sectionForNode,targetForSection,completeEntry,latestRealResult,flagDependentMathematics,acknowledgeMathReview,
     createHandoverViews,createPlanningEnvelope,getFieldDiff,mergePlanningEnvelope,modelFromEnvelope,suggestedFilename,

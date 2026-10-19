@@ -17,6 +17,7 @@ import {renderTableSvg} from "../diagrams/table-studio-render.js";
 import {renderVoronoiStudio} from "../diagrams/voronoi-view.js";
 import {renderVoronoiSvg} from "../diagrams/voronoi-render.js";
 import {renderRepresentationHub,renderRepresentationSwitcher} from "../diagrams/representation-hub.js";
+import {renderFigureHandover} from "../diagrams/presentation-coach-view.js";
 import {insightCapture,insightEcho,renderSparkShelf} from '../ui/insight-threads.js';
 import {STATUS_LABELS,currentGroup,JOURNEY_GROUPS} from "../ui/journey.js";
 import {groupedDashboard} from "../ui/journey-views.js";
@@ -185,6 +186,7 @@ export function createCompletingViews(ctx){
    '<h3>'+icon("chart")+' Your saved graph draft: '+e(fig.draft.title||"Untitled graph")+'</h3>'+
    '<p>This graph is saved in Pathfinder, not automatically inserted into your IA. Copy or download it, then put it <strong>after</strong> the sentence introducing it. Interpret only real results.</p>'+
    '<div class="graph-svg-wrap">'+renderGraphSvg(fig.draft)+'</div>'+
+   renderFigureHandover(state,"graph",fig.draft,icon,e,{id:fig.id,linked:true})+
    '<button type="button" class="btn btn-secondary btn-sm" data-action="graph-open">'+icon("pencil")+' Edit or export this graph</button></section>';
  };
  const traceEntryPanel=()=>{
@@ -195,6 +197,7 @@ export function createCompletingViews(ctx){
    '<h3>'+icon("image")+' Your saved coordinate tracing: '+e(fig.draft.title||"Untitled tracing")+'</h3>'+
    '<p>This image and its traced points are saved in Pathfinder, not automatically added to the IA. Introduce the figure in your writing before inserting it. Explain your scale and any photographic limitations.</p>'+
    '<div class="trace-entry-photo">'+(fig.draft.view==="math"?renderCleanTraceSvg(fig.draft):renderTraceOverlaySvg(fig.draft))+'</div>'+
+   renderFigureHandover(state,"trace",fig.draft,icon,e,{id:fig.id,linked:true})+
    '<button type="button" class="btn btn-secondary btn-sm" data-action="trace-open">'+icon("pencil")+' Edit or export this tracing</button></section>';
  };
  const statEntryPanel=()=>{
@@ -205,6 +208,7 @@ export function createCompletingViews(ctx){
    '<h3>'+icon("chart")+' Your saved statistical diagram: '+e(fig.draft.title||"Untitled statistical diagram")+'</h3>'+
    '<p>This is a saved, editable figure—not an automatically written IA result. Introduce the figure before displaying it, then discuss what it genuinely reveals, your sampling and its limitations. Keep raw tables out of the IA and appendix.</p>'+
    '<div class="stat-entry-figure">'+renderStatSvg(fig.draft)+'</div>'+
+   renderFigureHandover(state,"stat",fig.draft,icon,e,{id:fig.id,linked:true})+
    '<button type="button" class="btn btn-secondary btn-sm" data-action="stat-open">'+icon("pencil")+' Edit or export this diagram</button></section>';
  };
  const tableEntryPanel=()=>{
@@ -215,6 +219,7 @@ export function createCompletingViews(ctx){
    '<h3>'+icon("table")+' Your saved mathematical table: '+e(fig.draft.title||"Untitled table")+'</h3>'+
    '<p>This formatted table is saved in Pathfinder but not inserted into your IA document. Introduce it before displaying it, then interpret only genuine results. Do not include long raw tables in your IA or appendix.</p>'+
    renderTableSvg(fig.draft)+
+   renderFigureHandover(state,"table",fig.draft,icon,e,{id:fig.id,linked:true})+
    '<button type="button" class="btn btn-secondary btn-sm" data-action="table-open">'+icon("pencil")+' Edit or export this table</button></section>';
  };
  const voronoiEntryPanel=()=>{
@@ -225,6 +230,7 @@ export function createCompletingViews(ctx){
    '<h3>'+icon("map")+' Your saved nearest-site construction: '+e(fig.draft.title||"Untitled Voronoi diagram")+'</h3>'+
    '<p>Introduce this diagram before displaying it in your actual IA. Explain the perpendicular bisectors and the chosen coordinate system; a nearest-site region does not establish the best site, real travel time or service demand.</p>'+
    renderVoronoiSvg(fig.draft)+
+   renderFigureHandover(state,"voronoi",fig.draft,icon,e,{id:fig.id,linked:true})+
    '<button type="button" class="btn btn-secondary btn-sm" data-action="voronoi-open">'+icon("pencil")+' Edit or export this construction</button></section>';
  };
  const actualRecord=()=>{

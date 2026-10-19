@@ -14,7 +14,7 @@ const safeImage=s=>typeof s==="string"&&s.length<=MAX_IMAGE_CHARS&&/^data:image\
 const flags=["showGrid","showSites","showLabels","showBisector","showAreas","mapConfirmed","pendingPaste","edited"];
 export function newVoronoiDraft(){
  return {raw:"",headers:"yes",sites:[],pendingPaste:false,edited:false,
-  title:"",xLabel:"Horizontal coordinate",yLabel:"Vertical coordinate",unitMode:"unsure",unit:"",
+  title:"",figureNumber:"1",xLabel:"Horizontal coordinate",yLabel:"Vertical coordinate",unitMode:"unsure",unit:"",
   coordSystem:"unsure",metricConfirmed:false,sourceKind:"unsure",sourceCredit:"",
   regionMode:"auto",xMin:"",xMax:"",yMin:"",yMax:"",
   mapSrc:"",mapWidth:0,mapHeight:0,mapName:"",mapCredit:"",mapConfirmed:false,mapOpacity:.42,
@@ -25,7 +25,7 @@ export function newVoronoiDraft(){
 }
 export function normalizeVoronoiDraft(raw){
  const d=newVoronoiDraft(),r=object(raw)?raw:{};
- for(const key of ["raw","headers","title","xLabel","yLabel","unitMode","unit",
+ for(const key of ["raw","headers","title","figureNumber","xLabel","yLabel","unitMode","unit",
   "coordSystem","sourceKind","sourceCredit","regionMode","xMin","xMax","yMin","yMax",
   "mapName","mapCredit","probeX","probeY","note","addName","addX","addY","addType"]){
   if(typeof r[key]==="string")d[key]=text(r[key],key==="raw"?MAX_VORONOI_RAW:

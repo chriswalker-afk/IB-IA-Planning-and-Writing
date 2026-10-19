@@ -1,4 +1,5 @@
 import {representationEmpty} from "./workspace-ui.js";
+import {renderPresentationCoach,renderFigureHandover} from "./presentation-coach-view.js";
 /** Image tracing studio: coordinate calibration and careful IB-style mathematical communication. */
 import {
  imageTraceChecks,traceCoordinates,traceCalibration,tracedMeasurements,
@@ -136,6 +137,7 @@ export function renderImageTracer(state,icon,e){
   '</section>'+
   '<section class="trace-control-card" data-representation-step="refine"><h3><span class="trace-step-index">3</span> Explain and check your figure</h3>'+
   field("title","Descriptive figure title",d.title,e,{placeholder:"e.g. Coordinates extracted from a photographed bridge arch"})+
+   field("figureNumber","Figure number in my IA",d.figureNumber,e,{placeholder:"e.g. 1"})+
   select("sourceKind","Where is the photo from?",d.sourceKind,[["unsure","Choose image origin"],...TYPES],e)+
   (d.sourceKind==="secondary"?field("sourceCredit","Original image source (required)",d.sourceCredit,e,{placeholder:"Creator, location, date, link or permission"}):"")+
   select("perspective","Is the photographed surface front-on?",d.perspective,[
@@ -150,7 +152,9 @@ export function renderImageTracer(state,icon,e){
   '</section></div>'+
   '<div class="trace-output-stack">'+tracePreviewHtml(tracer,icon,e)+traceWorkingHtml(tracer,icon,e)+
   '<section class="trace-quality-card" data-trace-quality>'+traceQualityHtml(tracer,icon,e)+'</section>'+
+   renderPresentationCoach(state,"trace",d,icon,e)+
   '<section class="trace-output-card" data-trace-output data-representation-step="use">'+traceOutputHtml(tracer,icon,e)+'</section>'+
+   renderFigureHandover(state,"trace",d,icon,e)+
   '<p class="trace-writing-reminder"><strong>WRITE IN YOUR IA:</strong> Introduce the image and mathematical purpose before inserting this figure. Define the coordinate system and known reference length, then reflect on actual findings and limitations. Exporting a figure never marks mathematical work complete.</p></div></div>'+
   (tracer.figures.length?'<details class="trace-saved-figures"><summary>'+icon("layers")+' Saved traced figures ('+tracer.figures.length+')</summary>'+
    '<div class="trace-saved-list">'+tracer.figures.map(x=>'<div class="trace-saved-item"><div><strong>'+e(x.draft.title||"Untitled trace")+'</strong>'+

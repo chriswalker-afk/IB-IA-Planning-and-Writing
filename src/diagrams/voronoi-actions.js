@@ -3,7 +3,7 @@ import {newVoronoiDraft,normalizeVoronoiDraft,analyzeVoronoi,importVoronoiSites,
  saveVoronoiFigure,voronoiSignature,MAX_VORONOI_SITES} from "./voronoi-core.js";
 import {completeEntry,startFirstRepresentation} from "../completing/engine.js";
 import {voronoiFrame,recordVoronoiHistory,setVoronoiTool} from "./voronoi-interactions.js";
-const strings=new Set(["raw","headers","title","xLabel","yLabel","unitMode","unit",
+const strings=new Set(["raw","headers","title","figureNumber","xLabel","yLabel","unitMode","unit",
  "coordSystem","sourceKind","sourceCredit","regionMode","xMin","xMax","yMin","yMax",
  "mapCredit","probeX","probeY","note","addName","addX","addY","addType"]);
 const booleans=new Set(["showGrid","showSites","showLabels","showBisector","showAreas",

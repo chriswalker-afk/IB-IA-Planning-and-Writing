@@ -1,5 +1,6 @@
 import {representationEmpty} from "./workspace-ui.js";
 import {renderNativeDataGrid} from "./native-data-view.js";
+import {renderPresentationCoach,renderFigureHandover} from "./presentation-coach-view.js";
 /** Short, readable tables, contextual mathematical help and reliable quality gates. */
 import {analyzeTable,TABLE_MAX_SAVED} from "./table-studio-core.js";
 import {renderTableSvg} from "./table-studio-render.js";
@@ -165,7 +166,9 @@ export function renderTableStudio(state,icon,e){
  '</section></div>'+
  '<div class="ia-table-preview-stack">'+preview(s,e)+
  '<section class="ia-table-quality-card" data-table-quality>'+quality(s,icon,e)+'</section>'+
+ renderPresentationCoach(state,"table",d,icon,e)+
  '<section class="ia-table-output-card" data-table-output data-representation-step="use">'+output(s,icon)+'</section>'+
+ renderFigureHandover(state,"table",d,icon,e)+
  '<p class="ia-table-ia-reminder"><strong>In your actual IA:</strong> Introduce the table before showing it; then interpret it using your aim and prediction. Do not use long tables, even in appendices. Keep full data in your working files.</p>'+
  '</div></div>'+
  (s.figures.length?'<details class="ia-table-saved"><summary>'+icon("layers")+' Saved tables ('+s.figures.length+')</summary>'+

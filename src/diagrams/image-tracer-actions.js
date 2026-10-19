@@ -4,7 +4,7 @@ import {
  imageTraceChecks,saveTraceFigure,traceSignature
 } from "./image-tracer-core.js";
 import {completeEntry,startFirstRepresentation} from "../completing/engine.js";
-const TEXT=new Set(["title","sourceKind","sourceCredit","xLabel","yLabel","unit","knownLength","precision","perspective","limitations","caption"]);
+const TEXT=new Set(["title","figureNumber","sourceKind","sourceCredit","xLabel","yLabel","unit","knownLength","precision","perspective","limitations","caption"]);
 const BOOL=new Set(["showGrid","showLine","closeShape","showLabels"]);
 export function setTraceField(tracer,key,value){
  const d=tracer?.draft;if(!d)return false;

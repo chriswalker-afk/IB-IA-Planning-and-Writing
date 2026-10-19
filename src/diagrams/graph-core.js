@@ -14,7 +14,7 @@ export const finiteCell=x=>{
 const cleanRows=rows=>Array.isArray(rows)?rows.slice(0,MAX_ROWS).filter(Array.isArray).map(r=>r.slice(0,MAX_COLS).map(x=>text(x,110))):[];
 export const newGraphDraft=()=>({
  kind:"scatter",raw:"",columns:[],matrix:[],pendingPaste:false,xIndex:0,yIndex:1,
- title:"",xLabel:"",yLabel:"",xUnit:"",yUnit:"",xUnitMode:"unsure",yUnitMode:"unsure",
+ title:"",figureNumber:"1",xLabel:"",yLabel:"",xUnit:"",yUnit:"",xUnitMode:"unsure",yUnitMode:"unsure",
  expression:"",sourceKind:"unsure",sourceText:"",caption:"",
  xMin:"",xMax:"",yMin:"",yMax:"",showGrid:true,showPoints:true,includeZeroY:false
 });
