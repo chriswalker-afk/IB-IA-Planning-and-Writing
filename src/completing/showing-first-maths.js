@@ -142,7 +142,7 @@ const ADVICE=[
  ["Make the next step earn its place","The next technique must follow from a real finding.","Identify what the current mathematics has not yet resolved. A new graph or calculation is useful only if it addresses that gap; a conclusion is also a valid next step.","Next I will use a quadratic because it is harder.","The curved residuals suggest the linear model misses a feature, so I will compare ..."]
 ];
 export function renderShowingMathsAdvice(state,icon,e,{reduced=false}={}){
- const cards=ADVICE.map((t,i)=>'<details class="intro-advice-tip studio-stage-tip" data-show-first-tip="'+i+'"><summary>'+
+ const cards=ADVICE.map((t,i)=>'<details class="intro-advice-tip studio-stage-tip" data-show-first-tip="'+i+'" data-studio-tip="'+i+'"><summary>'+
   '<span class="intro-advice-tip-icon">'+icon(["pencil","chart","target","route"][i])+'</span>'+
   '<span class="intro-advice-tip-copy"><strong>'+e(t[0])+'</strong><span>'+e(t[1])+'</span></span>'+icon("chevron-right")+'</summary>'+
   '<div class="intro-advice-tip-body"><p>'+e(t[2])+'</p><div class="intro-advice-example"><p><strong>Instead of</strong> '+e(t[3])+'</p><p><strong>Try</strong> '+e(t[4])+'</p></div></div></details>').join("");
