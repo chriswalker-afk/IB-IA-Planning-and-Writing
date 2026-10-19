@@ -12,6 +12,7 @@ import {normalizeEntry} from "../completing/entry-record.js";
 import {newGraphStudio,normalizeGraphStudio} from "../diagrams/graph-core.js";
 import {newImageTracer,normalizeImageTracer} from "../diagrams/image-tracer-core.js";
 import {newStatStudio,normalizeStatStudio} from "../diagrams/stat-studio-core.js";
+import {newTableStudio,normalizeTableStudio} from "../diagrams/table-studio-core.js";
 export const STATE_VERSION = 2;
 export const STORAGE_KEY = "ia-pathfinder-prototype-v1"; // Deliberately stable across upgrades.
 export const MAX_ENTRIES = 120;
@@ -58,7 +59,7 @@ export function createProjectState() {
       helpKey:"",openCue:"",noteDraft:"",adviceMode:"guided",planningIntroSeen:false,planningIntroOpen:false,lastWorkRoute:"",lastStudioNode:"",latestTitle:"",latestDetail:"",latestNode:"",latestEntry:"",latestAt:""
     },
     scratch: {introduction:"",dataNotes:"",conclusion:"",finalReview:""},
-    entries:[], graphStudio:newGraphStudio(), imageTracer:newImageTracer(), statStudio:newStatStudio(), cues:{},cueNotes:{},cueLocations:{},
+    entries:[], graphStudio:newGraphStudio(), imageTracer:newImageTracer(), statStudio:newStatStudio(), tableStudio:newTableStudio(), cues:{},cueNotes:{},cueLocations:{},
     journey: {
       currentNodeId:"N00",
       answers:{}, // exact sheet/node keyed answers will be populated in Phase 2
@@ -120,6 +121,7 @@ export function normalizeProjectState(value) {
     graphStudio:normalizeGraphStudio(value.graphStudio),
     imageTracer:normalizeImageTracer(value.imageTracer),
     statStudio:normalizeStatStudio(value.statStudio),
+    tableStudio:normalizeTableStudio(value.tableStudio),
     cues:safeRecord(value.cues),cueNotes:safeRecord(value.cueNotes),cueLocations:safeRecord(value.cueLocations)
   };
   if(value.version===1){
