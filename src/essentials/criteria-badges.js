@@ -237,6 +237,15 @@ export function criterionBadge(key){
 export function criterionMarkedField(html,key){
  return html&&Object.hasOwn(CRITERION_SPOTS,key)?'<div class="criterion-marked-field">'+html+criterionBadge(key)+'</div>':html;
 }
+/** Same contextual criterion bubbles as Planning, with a compact group for
+ * writing boxes linked to two meaningful criteria. Both remain optional help. */
+export function criterionMarkedWritingBox(html,keys=[]){
+ const valid=[...new Set(keys)].filter(k=>Object.hasOwn(CRITERION_SPOTS,k));
+ if(!html||!valid.length)return html;
+ return '<div class="criterion-marked-field criterion-marked-writing-box">'+html+
+  '<div class="criterion-writing-bubbles" role="group" aria-label="Relevant IA marking criteria">'+
+  valid.map(k=>criterionBadge(k)).join("")+'</div></div>';
+}
 export function criterionPageHeading(title,route,node){
  const key=criterionSpotFor(route,node),name=escapeHtml(title);
  return key?'<div class="criterion-title-row"><h1 class="task-heading">'+name+'</h1>'+criterionBadge(key)+'</div>':

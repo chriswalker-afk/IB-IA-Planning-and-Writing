@@ -152,7 +152,7 @@ test('the introduction keeps two featured sparks while a saved prediction and ra
  assert.deepEqual(featured,['aim','motivation']);
  const library=renderSparkShelf(s,'C10',{surface:'studio'});
  assert(library.includes('data-spark-id="prediction"'));
- assert(library.includes('href="#intro-prediction-spark"'));
+ assert(library.includes('data-action="intro-prediction-open"'));
  assert(!library.includes('data-spark-editor="prediction"')); // A single editor in the Introduction avoids contradictory copies.
  assert(library.includes('Why I thought or hoped this'));
 });

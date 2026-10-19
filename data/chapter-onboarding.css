@@ -399,3 +399,83 @@
  .intro-prediction-fields textarea.field{min-height:78px}
 }
 @media print{.intro-prediction-fields{display:none}}
+
+/* Consistent order for IA Studio writing tasks. This template is first used
+   on Introduction, ready to extend stage by stage without multiplying help. */
+.writing-stage-flow{display:flex;flex-direction:column;gap:17px;margin:12px 0 14px;min-width:0}
+.writing-stage-part{min-width:0}
+.writing-stage-part>.intro-writing-guide,.writing-stage-part>.intro-spark-brief{margin:0}
+.writing-stage-advice .intro-writing-guide{padding:15px 17px}
+.writing-stage-advice .intro-writing-guide-head{margin-bottom:11px}
+.writing-stage-advice .intro-writing-guide-head h2{font-size:16px}
+.writing-stage-advice .intro-advice-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.writing-stage-advice .intro-advice-tip>summary{min-height:62px;padding:10px}
+.writing-stage-advice .intro-advice-tip[open]{grid-column:span 2}
+.writing-stage-advice .intro-advice-tip-body{padding:0 13px 14px}
+.writing-stage-advice .intro-advice-extra-cards{grid-template-columns:1fr}
+.writing-stage-advice .intro-advice-extra-cards .intro-advice-tip[open]{grid-column:1}
+.intro-advice-guide-action{border-top:1px solid #eee7f2;padding-top:11px}
+.intro-advice-guide-action button{border:0;background:transparent;color:#655083;font-size:11px;font-weight:800;display:inline-flex;align-items:center;gap:7px;padding:5px}
+.intro-advice-guide-action button .icon{width:15px;height:15px}
+.intro-advice-guide-action button:hover{text-decoration:underline}
+.intro-spark-value{display:block;color:#325d52;font-size:11px;line-height:1.55;margin-top:5px;overflow-wrap:anywhere;white-space:pre-wrap;font-weight:570}
+.intro-spark-needed-copy{align-self:center}
+.intro-spark-needed .intro-spark-needed-status{font-size:9px}
+.intro-spark-needed:not(.intro-spark-optional)>button{border-color:#bed8cc;background:#f4fbf7;color:#16695c;min-height:36px}
+.intro-spark-needed:not(.intro-spark-optional)>button:hover{background:#e7f6ed}
+.intro-spark-brief{padding:15px 17px}
+.intro-spark-brief>p{margin:8px 0 0}
+.intro-prediction-update{padding:0;overflow:hidden;scroll-margin-top:90px}
+.intro-prediction-update>.intro-prediction-head{cursor:pointer;list-style:none;padding:12px 13px;align-items:center;margin:0}
+.intro-prediction-update>.intro-prediction-head::-webkit-details-marker{display:none}
+.intro-prediction-head>span:nth-child(2){flex:1;min-width:0;display:grid;gap:3px}
+.intro-prediction-head strong{display:block;color:#4d4838;font-size:12px;line-height:1.5}
+.intro-prediction-head>.icon:last-child{color:#805e31;flex:none;width:15px;height:15px;transition:transform .15s}
+.intro-prediction-update[open] .intro-prediction-head>.icon:last-child{transform:rotate(90deg)}
+.intro-prediction-update>.intro-prediction-lead{font-size:11px;line-height:1.6;color:#6c624f;margin:0 13px 10px}
+.intro-prediction-update>.intro-prediction-fields{padding:0 13px 0}
+.intro-prediction-update>.intro-prediction-note{padding:0 13px 13px;margin:10px 0 0}
+.spark-shelf-library-only{margin:9px 0 0}
+.spark-shelf-library-only .planning-compact-sparks{display:block}
+.spark-shelf-library-only .spark-library{width:100%;max-width:100%}
+.spark-shelf-library-only .spark-library>summary{min-height:40px;max-width:none}
+.spark-shelf-library-only .spark-library:not([open])>summary>span{flex-direction:row;align-items:center;gap:8px}
+.intro-writing-task{border:1px solid #d7cbe8;border-radius:17px;padding:16px 19px;background:#fff}
+.intro-writing-task-head{display:flex;gap:11px;align-items:flex-start;margin-bottom:16px}
+.intro-writing-task-symbol{flex:none;width:40px;height:40px;display:grid;place-items:center;border-radius:13px;background:#eee6f7;color:#644c8f}
+.intro-writing-task-symbol .icon{width:21px;height:21px}
+.intro-writing-task-eyebrow{font-size:9px;letter-spacing:.09em;font-weight:850;color:#72539c}
+.intro-writing-task-head h2{font-size:18px;line-height:1.3;color:#263e44;margin:3px 0 6px}
+.intro-writing-task-head p{font-size:12px;line-height:1.6;color:#5a6c70;margin:0}
+.intro-writing-task>.criterion-marked-field{margin-left:13px}
+.intro-writing-task>.criterion-marked-field .field-group{margin-bottom:0}
+.intro-writing-task .field-group>.field-label{font-size:12px;font-weight:800}
+.intro-writing-task .field-group textarea.field{min-height:140px}
+.intro-writing-task-footnote{margin:12px 0 0;color:#637674;font-size:11px;line-height:1.6}
+.intro-examples-panel{border:1px solid #dae8e0;border-radius:14px;background:#f8fbf8;overflow:hidden}
+.intro-examples-panel>summary{display:flex;align-items:center;gap:10px;padding:14px;cursor:pointer;list-style:none}
+.intro-examples-panel>summary::-webkit-details-marker{display:none}
+.intro-examples-panel>summary>.icon:first-child{width:22px;height:22px;color:#297366}
+.intro-examples-panel>summary>span{flex:1;min-width:0;display:grid;gap:3px}
+.intro-examples-panel>summary strong{font-size:13px;color:#1c5f50}
+.intro-examples-panel>summary small{font-size:11px;line-height:1.5;color:#608076}
+.intro-examples-panel>summary>.icon:last-child{width:15px;height:15px;color:#598477}
+.intro-examples-panel[open]>summary>.icon:last-child{transform:rotate(90deg)}
+.intro-examples-choices{display:flex;flex-wrap:wrap;gap:8px;padding:0 14px 10px}
+.intro-examples-choices .ex-trigger{border-radius:9px;background:#e6f2ec;color:#176a5a;font-size:12px;font-weight:800;padding:9px 12px}
+.intro-examples-panel>p{font-size:11px;line-height:1.6;color:#627970;padding:0 14px 14px;margin:0}
+@media(max-width:760px){
+ .writing-stage-advice .intro-advice-cards{grid-template-columns:1fr}
+ .writing-stage-advice .intro-advice-tip[open]{grid-column:1}
+ .intro-writing-task{padding:13px}
+ .intro-writing-task>.criterion-marked-field{margin-left:0}
+}
+@media(max-width:440px){
+ .writing-stage-flow{gap:13px}
+ .intro-writing-task-head{gap:9px}
+ .intro-writing-task-head p{font-size:11px}
+ .intro-spark-needed .intro-spark-value{max-width:100%}
+}
+@media(prefers-reduced-motion:reduce){
+ .intro-prediction-head>.icon:last-child{transition:none}
+}

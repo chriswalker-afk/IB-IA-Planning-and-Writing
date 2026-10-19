@@ -65,3 +65,15 @@
  .criterion-popin-actions>.btn{flex:1 1 170px}
 }
 @media(prefers-reduced-motion:reduce){.criterion-badge{transition:none}}
+
+/* Reusable two-criterion annotation for a single writing box. Popovers and
+   rubric wording are the same as the existing Planning criterion bubbles. */
+.criterion-marked-writing-box{position:relative}
+.criterion-marked-writing-box>.criterion-writing-bubbles{position:absolute;z-index:2;left:-16px;top:44px;display:flex;flex-direction:column;gap:12px}
+.criterion-marked-writing-box>.criterion-writing-bubbles>.criterion-badge{box-shadow:0 0 0 3px #fff}
+.criterion-marked-writing-box textarea.field{padding-left:35px}
+@media(max-width:620px){
+ .criterion-marked-writing-box>.criterion-writing-bubbles{left:auto;right:5px;top:1px;flex-direction:row;gap:8px}
+ .criterion-marked-writing-box>.field-group>.field-label{min-height:40px;padding-right:94px}
+ .criterion-marked-writing-box textarea.field{padding-left:12px}
+}

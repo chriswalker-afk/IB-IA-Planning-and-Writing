@@ -378,7 +378,7 @@ const sparkFullBody=(s,node,x,{featured=false}={})=>
   e(x.needsReview?'Needs review · '+x.where:x.where)+'</div>'+
  (node==='C10'&&x.id==='prediction'?
   '<p class="spark-library-featured-hint">Edit the original prediction and your reason once in the Introduction prompt above, where they are saved for later reference.</p>'+
-  '<a class="spark-shelf-action" href="#intro-prediction-spark">'+icon('arrow-up-right')+' Edit my prediction in the Introduction</a>':
+  '<button type="button" class="spark-shelf-action" data-action="intro-prediction-open">'+icon('arrow-up-right')+' Edit my prediction in the Introduction</button>':
   sparkEditor(s,x,{preview:!featured}));
 const sparkFeaturedCard=(s,node,x)=>{
  const key=inlineSparkKey(s,x),path=key?' data-spark-preview-path="planning.fields.'+e(key)+'"':'';
@@ -402,21 +402,21 @@ const sparkLibraryEntry=(s,node,x,featuredIds)=>{
   icon('chevron-down')+'</summary>'+
   '<div class="spark-library-entry-body">'+sparkFullBody(s,node,x,{featured:!isFeatured})+'</div></details>';
 };
-export function renderSparkShelf(s,node,{surface='planning'}={}){
+export function renderSparkShelf(s,node,{surface='planning',libraryOnly=false}={}){
  const all=insightItems(s);
  if(!all.length)return '';
- const featured=featuredSparkItems(s,node),featuredIds=new Set(featured.map(x=>x.id));
+ const featured=libraryOnly?[]:featuredSparkItems(s,node),featuredIds=new Set(featured.map(x=>x.id));
  const groups=sparkLibraryGroups.map(g=>({label:g.label,items:all.filter(g.test)})).filter(g=>g.items.length);
  const groupHtml=groups.map(g=>
   '<section class="spark-library-group"><h4>'+e(g.label)+' <span>'+g.items.length+'</span></h4>'+
   '<div class="spark-library-entries">'+g.items.map(x=>sparkLibraryEntry(s,node,x,featuredIds)).join('')+'</div></section>').join('');
- return '<section class="planning-compact-recall spark-shelf spark-shelf-'+e(surface)+'" aria-label="Your saved sparks" data-spark-shelf="'+e(surface)+'">'+
-  '<p class="planning-compact-recall-label">'+icon('sparkles')+' Your sparks are back'+
-  ' <span>Two that matter now · '+all.length+' saved in total</span></p>'+
+ return '<section class="planning-compact-recall spark-shelf spark-shelf-'+e(surface)+(libraryOnly?' spark-shelf-library-only':'')+'" aria-label="Your saved sparks" data-spark-shelf="'+e(surface)+'">'+
+  (libraryOnly?'':'<p class="planning-compact-recall-label">'+icon('sparkles')+' Your sparks are back'+
+  ' <span>Two that matter now · '+all.length+' saved in total</span></p>')+
   '<div class="planning-compact-sparks">'+
   featured.map(x=>sparkFeaturedCard(s,node,x)).join('')+
   '<details class="spark-library" data-spark-library><summary>'+icon('layers')+
-  '<span><strong>View all sparks</strong><small>'+all.length+' collected</small></span>'+
+  '<span><strong>'+(libraryOnly?'Browse all saved sparks':'View all sparks')+'</strong><small>'+all.length+' collected</small></span>'+
   icon('chevron-down')+'</summary>'+
   '<div class="spark-library-panel"><p class="spark-library-intro">Every saved spark so far, including provisional choices and real mathematical findings. Open any one to revisit it or edit its original information.</p>'+
   '<div class="spark-library-groups">'+groupHtml+'</div>'+

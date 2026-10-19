@@ -80,35 +80,35 @@ export const INTRODUCTION_TIPS=Object.freeze([
   }
 ].map(Object.freeze));
 
-import {criterionBadge} from "../essentials/criteria-badges.js";
 import {exampleButton} from "../examples/views.js";
 const has=v=>typeof v==="string"&&!!v.trim();
-const introSpark=(icon,e,{kind,hasValue,title,description,sourceNode,optional=false})=>
+const introSpark=(icon,e,{kind,hasValue,title,description,value="",sourceNode,optional=false})=>
   '<div class="intro-spark-needed'+(optional?' intro-spark-optional':'')+'" data-intro-spark="'+kind+
    '" data-intro-spark-state="'+(hasValue?'ready':'missing')+'">'+
    '<span class="intro-spark-needed-icon">'+icon(kind==="aim"?"target":kind==="prediction"?"lightbulb":"compass")+'</span>'+
-   '<span class="intro-spark-needed-copy"><strong>'+e(title)+'</strong><small>'+e(description)+'</small></span>'+
+   '<span class="intro-spark-needed-copy"><strong>'+e(title)+'</strong><small>'+e(description)+'</small>'+
+     (hasValue?'<span class="intro-spark-value">'+e(value.length>160?value.slice(0,159)+'…':value)+'</span>':'')+'</span>'+
    (optional?'<span class="intro-spark-needed-status intro-spark-prediction-status" aria-live="polite">'+(hasValue?'Spark saved':'To consider')+'</span>'+
-    '<a class="intro-spark-edit-link" href="#intro-prediction-spark">Review and update '+icon("arrow-right")+'</a>':
-    hasValue?'<span class="intro-spark-needed-status">Use in your IA</span>':
-    '<button type="button" data-action="insight-jump" data-insight-type="planning" data-node="'+sourceNode+'">Add in Planning '+icon("arrow-right")+'</button>')+'</div>';
+    '<button type="button" class="intro-spark-edit-link" data-action="intro-prediction-open">Review and update '+icon("arrow-right")+'</button>':
+    '<button type="button" data-action="insight-jump" data-insight-type="planning" data-node="'+sourceNode+'">'+
+     (hasValue?'Review spark':'Add in Planning')+' '+icon("arrow-right")+'</button>')+'</div>';
 function predictionEditor(state,icon,e){
  const p=state.planning?.fields||{};
  const prediction=p.prediction||state.project?.prediction||"";
  const why=p.predictionWhy||state.project?.predictionWhy||"";
- return '<section class="intro-prediction-update" id="intro-prediction-spark" aria-labelledby="intro-prediction-heading">'+
-  '<div class="intro-prediction-head"><span class="intro-prediction-icon">'+icon("lightbulb")+'</span><div>'+
-   '<span class="intro-prediction-eyebrow">WRITE IT · SAVE THE SPARK</span>'+
-   '<h3 id="intro-prediction-heading">What do you think — or hope — you will discover?</h3></div></div>'+
-  '<div class="intro-prediction-steps"><p><strong>In your actual IA:</strong> Write a sentence or two about an honest starting expectation, conjecture, or what you hope the investigation will help you understand — and <em>why</em>.</p>'+
-  '<p><strong>In Pathfinder:</strong> Review or update your original prediction spark below. It will return when you interpret mathematical results, even if those findings challenge your expectation.</p></div>'+
+ return '<details class="intro-prediction-update" id="intro-prediction-spark" aria-labelledby="intro-prediction-heading"'+(!has(prediction)||!has(why)?' open':'')+'>'+
+  '<summary class="intro-prediction-head"><span class="intro-prediction-icon">'+icon("lightbulb")+'</span><span>'+
+   '<span class="intro-prediction-eyebrow">OPTIONAL · EDIT YOUR ORIGINAL SPARK</span>'+
+   '<strong id="intro-prediction-heading">Refine my prediction or hope, and why</strong></span>'+
+   icon("chevron-right")+'</summary>'+
+  '<p class="intro-prediction-lead">In your real IA, say briefly what you think or hope you will find out, and why. Here, update the same spark so you can revisit it when interpreting your findings.</p>'+
   '<div class="intro-prediction-fields">'+
    '<div class="field-group"><label class="field-label" for="intro-prediction-value">My tentative prediction, conjecture or hope</label>'+
    '<textarea rows="2" class="field" id="intro-prediction-value" data-bind="planning.fields.prediction" placeholder="I think … / I suspect … / I hope to find out whether …">'+e(prediction)+'</textarea></div>'+
    '<div class="field-group"><label class="field-label" for="intro-prediction-why">Why do I expect or hope this?</label>'+
    '<textarea rows="2" class="field" id="intro-prediction-why" data-bind="planning.fields.predictionWhy" placeholder="An observation, a mathematical pattern, my experience or an honest question …">'+e(why)+'</textarea></div></div>'+
   '<p class="intro-prediction-note">'+icon("sparkles")+' These edits save directly to your original Planning spark, not to your IA document. A prediction is <strong>not a mathematical result</strong>, and you never need to manufacture one: write what you genuinely hope to learn if a prediction is not yet sensible.</p>'+
-  '</section>';
+  '</details>';
 }
 /** Read only except the explicitly bound, user-editable original prediction spark. */
 export function renderIntroductionSparkPrompt(state,icon,e){
@@ -118,25 +118,24 @@ export function renderIntroductionSparkPrompt(state,icon,e){
  return '<section class="intro-spark-brief" aria-labelledby="intro-spark-heading">'+
   '<div class="intro-spark-brief-heading"><span class="intro-spark-brief-symbol">'+icon("sparkles")+'</span>'+
    '<div><span class="intro-spark-brief-eyebrow">FROM PLANNING → INTO YOUR IA</span>'+
-   '<h2 id="intro-spark-heading">Bring these three ideas into your introduction</h2></div></div>'+
-  '<p><strong>Write your mathematical aim and genuine motivation</strong> in your actual IA. Where useful, add what you <strong>predict or hope to discover, and why</strong>. Your saved sparks are starting points, not finished IA paragraphs or proof of completed writing.</p>'+
+   '<h2 id="intro-spark-heading">Turn your sparks into an opening</h2></div></div>'+
+  '<p>Use your <strong>aim</strong> and <strong>motivation</strong> to begin. Optionally add what you predict or hope to discover, <strong>and why</strong>. Write this in your actual IA document, not in a spark.</p>'+
   '<div class="intro-spark-needed-list">'+
-   introSpark(icon,e,{kind:"aim",hasValue:has(aim),title:"Your mathematical aim",description:"State precisely what you want to investigate, not just the topic.",sourceNode:"N01A"})+
-   introSpark(icon,e,{kind:"motivation",hasValue:has(motive),title:"Your genuine motivation",description:"Explain what made you curious and why the answer interests you.",sourceNode:"N01V"})+
-   introSpark(icon,e,{kind:"prediction",hasValue:has(prediction),optional:true,title:"Your starting prediction or hope (optional)",description:"What do you expect or want to find out, and why? Keep it tentative.",sourceNode:"N01P"})+'</div>'+
-  '<p class="intro-spark-lastline">Aim and motivation belong in your opening. A tentative prediction or a question you hope to resolve may also help. Keep any <strong>non-mathematical specialist background brief</strong>: define essential unfamiliar terms, then return to the mathematics.</p>'+
+   introSpark(icon,e,{kind:"aim",hasValue:has(aim),title:"Your mathematical aim",description:"Turn this into an explicit mathematical question.",value:aim,sourceNode:"N01A"})+
+   introSpark(icon,e,{kind:"motivation",hasValue:has(motive),title:"Your genuine motivation",description:"Say what made you curious in your own words.",value:motive,sourceNode:"N01V"})+
+   introSpark(icon,e,{kind:"prediction",hasValue:has(prediction),optional:true,title:"Prediction or hope (optional)",description:"Explain your expectation or question, without claiming an answer.",value:prediction,sourceNode:"N01P"})+'</div>'+
+
   predictionEditor(state,icon,e)+'</section>';
 }
 function adviceCard(t,i,icon,e){
- return '<details class="intro-advice-tip'+(t.essential?' intro-advice-essential':'')+'" data-intro-advice="'+e(t.id)+'"'+(i===0?' open':'')+'>'+
+ return '<details class="intro-advice-tip'+(t.essential?' intro-advice-essential':'')+'" data-intro-advice="'+e(t.id)+'"'+''+'>'+
   '<summary><span class="intro-advice-tip-icon">'+icon(t.icon)+'</span>'+
    '<span class="intro-advice-tip-copy"><small>'+e(t.label)+'</small><strong>'+e(t.title)+'</strong><span>'+e(t.hook)+'</span></span>'+
    '<span class="intro-advice-tip-chevron">'+icon("chevron-right")+'</span></summary>'+
   '<div class="intro-advice-tip-body"><p>'+e(t.body)+'</p>'+
    '<div class="intro-advice-example"><p><strong>Instead of</strong> '+e(t.weak)+'</p>'+
    '<p><strong>Try</strong> '+e(t.strong)+'</p><small>'+e(t.learn)+'</small></div>'+
-   '<button type="button" class="intro-advice-guide-link" data-action="writer-guide-open" data-guide-tip="'+e(t.guide)+'">Explore the related Field Guide tip '+icon("arrow-right")+'</button>'+
-   (t.id==="context"?'<div class="intro-advice-example-link">'+exampleButton("See a specialist vocabulary example",{id:"EX34"})+'</div>':"")+
+
   '</div></details>';
 }
 export function renderIntroductionWritingAdvice(icon,e,{reduced=false}={}){
@@ -146,23 +145,21 @@ export function renderIntroductionWritingAdvice(icon,e,{reduced=false}={}){
  return '<section class="intro-writing-guide" aria-labelledby="intro-guide-heading">'+
  '<div class="intro-writing-guide-head"><span class="intro-writing-guide-icon">'+icon("book")+'</span><div>'+
   '<span class="intro-writing-guide-eyebrow">WRITING GUIDE · INTRODUCTION</span>'+
-  '<h2 id="intro-guide-heading">Write the opening, not the ending</h2>'+
-  '<p>Your reader should understand your <strong>aim</strong>, <strong>motivation</strong> and, if helpful, an honest starting prediction or hope. Define unfamiliar non-mathematical terms briefly; the maths matters more than background detail.</p>'+
+  '<h2 id="intro-guide-heading">Before you write</h2>'+
+  '<p>Keep your introduction short, personal and mathematically focused. Open a tip only if you need more guidance.</p>'+
  '</div></div>'+
  '<div class="intro-advice-cards">'+main.map((t,i)=>adviceCard(t,i,icon,e)).join("")+'</div>'+
  '<details class="intro-advice-extra-group"><summary>'+icon("sparkles")+
   '<span><strong>Two more ways to keep it sharp</strong><small>Concision and an honest prediction or hope</small></span>'+icon("chevron-right")+'</summary>'+
   '<div class="intro-advice-cards intro-advice-extra-cards">'+extra.map((t,i)=>adviceCard(t,i+main.length,icon,e)).join("")+'</div></details>'+
- '<section class="intro-criteria-mini" aria-labelledby="intro-criteria-heading">'+
-  '<h3 id="intro-criteria-heading">Why this matters in the criteria</h3>'+
-  '<p>These are writing opportunities, not marks awarded for following tips. Tap a criterion letter for fuller guidance.</p>'+
-  '<div class="intro-criteria-grid">'+
-   '<div class="intro-criterion-mini"><span><strong>A · Presentation</strong><small>Clear aim, necessary context, a few focused paragraphs. Concise across the <em>whole</em> IA.</small></span>'+
-   criterionBadge("completing:C10:aim")+'</div>'+
-   '<div class="intro-criterion-mini"><span><strong>C · Personal engagement</strong><small>Genuine motivation starts the story. Independent mathematical decisions later show the engagement.</small></span>'+
-   criterionBadge("completing:C10:motivation")+'</div></div>'+
- '</section>'+
- '<div class="intro-advice-example-actions"><div><strong>See an introduction in action</strong><p>Compare fictional introductions and discover which features matter.</p></div>'+
- exampleButton("Compare introductions",{topic:"introduction"})+'</div>'+
- '<p class="intro-advice-final-note">A useful target is <strong>a few short paragraphs</strong>, not a prescribed IB word limit. You can return and revise this opening as your mathematical investigation develops.</p></section>';
+ '<div class="intro-advice-guide-action"><button type="button" data-action="writer-guide-open">'+icon("book")+' Full Writer\'s Field Guide '+icon("arrow-right")+'</button></div></section>';
+}
+
+/** One optional example entrance after the student's primary writing task. */
+export function renderIntroductionOptionalExamples(icon){
+ return '<details class="intro-examples-panel" data-writing-examples><summary>'+icon("book")+
+  '<span><strong>Compare introductions (optional)</strong><small>See examples of an engaging aim, an authentic motivation, and just enough background.</small></span>'+icon("chevron-right")+'</summary>'+
+  '<div class="intro-examples-choices">'+exampleButton("Compare introductions",{topic:"introduction"})+
+  exampleButton("Specialist vocabulary example",{id:"EX34"})+'</div>'+
+  '<p>Fictional teaching examples — use the ideas, not the wording. Your mathematics and motivation must remain your own.</p></details>';
 }

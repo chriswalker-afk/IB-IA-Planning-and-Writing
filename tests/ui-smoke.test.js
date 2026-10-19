@@ -181,7 +181,7 @@ test("adaptive Planning follows genuine spreadsheet source nodes and retains stu
  h.action('plan-finish-writing');
  assert(h.html.includes('data-source-node="C00"'));
  assert(h.html.includes('Set up: start writing your IA'));
- assert(h.html.includes('WRITE IN YOUR IA'));
+ assert(h.html.includes('Start writing my introduction'));
  assert(h.html.includes('data-action="setup-start-writing"'));
  assert.equal(h.saved.route,'completing');
  assert.equal(h.saved.completion.current,'C00');
@@ -189,7 +189,7 @@ test("adaptive Planning follows genuine spreadsheet source nodes and retains stu
  h.action('setup-start-writing');
  assert(h.html.includes('data-source-node="C10"'));
  assert(h.html.includes('My own working introduction notes'));
- assert(h.html.includes('WRITE IN YOUR IA'));
+ assert(h.html.includes('criterion-writing-bubbles'));
  assert.equal(h.saved.completion.current,'C10');
  assert.equal(h.saved.ui.studioSection,'intro');
  assert.equal(h.saved.planning.completed,true);
@@ -253,9 +253,14 @@ test("Set up welcomes students, recommends Planning and captures missing provisi
  h.action('setup-start-writing');
  assert.equal(h.saved.completion.current,'C10');
  assert(h.html.includes('My own working introduction notes'));
- assert(h.html.includes('WRITE IN YOUR IA'));
- assert(h.html.includes('Bring these three ideas into your introduction'));
- assert(h.html.includes('non-mathematical specialist background brief'));
+ assert(h.html.includes('Write your introduction'));
+ assert(h.html.includes('Turn your sparks into an opening'));
+ assert(h.html.includes('data-writing-stage-flow'));
+ for(const part of ['advice','sparks','task','examples'])assert(h.html.includes('data-writing-stage-part="'+part+'"'));
+ assert(h.html.includes('criterion-writing-bubbles'));
+ assert(!h.html.includes('intro-criteria-mini'));
+ assert(!h.html.includes('spark-shelf-featured'));
+ assert(h.html.includes('data-writing-examples'));
  assert(h.html.includes('Start the journey; don&#39;t write an itinerary'));
  assert(h.html.includes('data-intro-spark="aim"'));
  assert(h.html.includes('data-intro-spark="motivation"'));
@@ -392,25 +397,17 @@ test("reopening IA Studio resumes the exact source C-node instead of resetting t
  assert(h.html.includes('data-source-node="C04"'));
 });
 
-test("Phase 5 writing advice respects student control instead of launching a queue of unwanted prompts",()=>{
+test("Introduction keeps optional writing advice accessible without a competing cue queue",()=>{
  const h=createHarness();
  h.write("planning.fields.aim","How do changing measurements influence an outcome?");
  h.write("planning.fields.motivation","My interest in realistic measurements");
  h.nav("completing");
  h.action("completion-open",{node:"C10"});
- assert(h.html.includes("Useful writing moment"));
- assert(h.html.includes("data-writing-cue="));
- const match=h.html.match(/data-guidance-id="(W\d\d)" data-guidance-key="([^"]+)"/);
- assert(match);
- h.action("guidance-writing-action",{guidanceId:match[1],guidanceKey:match[2],guidanceEvent:"covered-start"});
- assert(h.html.includes("Confirm already covered"));
- h.write("completion.guidanceUi.locationDraft","Introduction, second paragraph");
- h.action("guidance-writing-action",{guidanceId:match[1],guidanceKey:match[2],guidanceEvent:"covered"});
- assert.equal(h.saved.writingLedger[match[2]].location,"Introduction, second paragraph");
- assert(!h.html.includes("Useful writing moment")); // no instant replacement with another cue
- h.action("guidance-more");
- assert(!h.html.includes("Useful writing moment")); // no additional relevance from the same node
- assert.equal(h.saved.writingLedger[match[2]].status,"already-covered");
+ assert(h.html.includes("Write your introduction"));
+ assert(!h.html.includes("data-writing-cue="));
+ assert(!h.html.includes("Useful writing moment"));
+ assert(h.html.includes('data-action="writer-guide-open"'));
+ assert(h.html.includes('data-writing-examples'));
 });
 test("Phase 5 optional limitations never auto-record source possibilities as real weaknesses",()=>{
  const h=createHarness();
@@ -488,8 +485,8 @@ test("Writer's Field Guide replaces the old tile, opens without changing student
  assert.deepEqual(h.saved,original);
  h.action("close-drawer");
  h.action("setup-start-writing");
- assert(h.html.includes("A tip from your Field Guide"));
- assert(h.html.includes('data-guide-tip="voice"'));
+ assert(h.html.includes("Full Writer&#39;s Field Guide")||h.html.includes("Full Writer's Field Guide"));
+ assert(h.html.includes('data-action="writer-guide-open"'));
  h.action("writer-guide-open",{guideTip:"voice"});
  assert(h.drawer.includes("You&#39;re allowed to say &#39;I&#39;!"));
  assert.equal(h.saved.scratch.introduction,"My original opening");

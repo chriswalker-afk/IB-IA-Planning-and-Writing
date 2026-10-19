@@ -643,6 +643,16 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       return;
     }
     if(changeNavAction(action,el)!==false)return;
+    if(action==="intro-prediction-open"){
+      const panel=$("#intro-prediction-spark",main);
+      if(panel){
+        panel.open=true;
+        panel.scrollIntoView?.({behavior:"auto",block:"start"});
+        const field=panel.querySelector('[data-bind="planning.fields.prediction"]');
+        field?.focus({preventScroll:true});
+      }
+      return;
+    }
     const support=stuckAction(state,action,el.dataset);
     if(support){
       if(!support.ok){toast(support.error);return;}
