@@ -4,7 +4,7 @@ import {
  newGraphDraft,newGraphStudio,normalizeGraphStudio,readPastedGraphData,applyPastedGraphData,
  graphData,analyseGraph,compileGraphFunction,renderGraphSvg,saveGraphFigure
 } from "../src/diagrams/graph-core.js";
-import {updateGraphField,chooseGraphType,saveAndLinkGraph,loadSavedGraph,freshGraph} from "../src/diagrams/graph-actions.js";
+import {updateGraphField,chooseGraphType,saveAndLinkGraph,saveGraphDraft,loadSavedGraph,freshGraph} from "../src/diagrams/graph-actions.js";
 import {renderGraphStudio} from "../src/diagrams/graph-view.js";
 import {createProjectState,normalizeProjectState} from "../src/core/project-state.js";
 import {escapeHtml,icon} from "../src/ui/primitives.js";
@@ -142,4 +142,17 @@ test("invalid graph cannot secretly create a mathematical record",()=>{
  const result=saveAndLinkGraph(state);
  assert.equal(result.ok,false);
  assert.equal(JSON.stringify(state.entries),before);
+});
+
+test("saving a changed linked graph flags existing completed mathematics, without deleting its result",()=>{
+ const s=createProjectState();s.completion.current="C31";s.graphStudio=validData();
+ const saved=saveAndLinkGraph(s);assert.equal(saved.ok,true);
+ s.entries[0].status="completed";s.entries[0].result="The data suggest an increasing trend.";
+ updateGraphField(s.graphStudio,"raw",dataset.replace("4.5","45"));
+ applyPastedGraphData(s.graphStudio,s.graphStudio.draft.raw);
+ const changed=saveGraphDraft(s);
+ assert.equal(changed.ok,true);assert.equal(changed.reviewNeeded,true);
+ assert.equal(s.entries[0].reviewNeeded,"yes");
+ assert.equal(s.entries[0].result,"The data suggest an increasing trend.");
+ assert.equal(s.completion.stages.C30,"needs-review");
 });
