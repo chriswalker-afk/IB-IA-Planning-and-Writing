@@ -47,7 +47,7 @@ export function normalizeStatDraft(raw){
   .filter(Array.isArray).map(row=>row.slice(0,MAX_STAT_COLS).map(x=>txt(x,115))):[];
  const selected=Array.isArray(r.selected)?r.selected.filter(Number.isInteger):[];
  d.selected=[...new Set(selected.filter(x=>x>=0&&x<d.columns.length))].slice(0,5);
- if(!d.selected.length)d.selected=d.columns.length?[Math.min(d.columns.length-1,0)]:[0];
+ if(!d.selected.length&&!Array.isArray(r.selected))d.selected=[0];
  for(const key of ["categoryIndex","lowIndex","highIndex","frequencyIndex"]){
   d[key]=Number.isInteger(r[key])?Math.min(Math.max(0,r[key]),Math.max(0,d.columns.length-1)):d[key];
  }
@@ -97,7 +97,7 @@ export function parseStatTable(raw,headers="auto",kind="box"){
  const first=rows[0];
  const hasHeaders=headers==="yes"||headers!=="no"&&(
   kind==="bar"?
-   first.slice(1).some(x=>ncell(x)===null):
+   first.slice(1).some(x=>ncell(x)===null)||/^(category|choice|response|option|type|class|group|item|outcome|answer|year)$/i.test(first[0].trim()):
    first.some(x=>ncell(x)===null)
  );
  const columns=Array.from({length:width},(_,i)=>
@@ -247,7 +247,7 @@ export function statAnalysis(raw){
   if(total<2&&!data.error)fail("histogram-n","At least two observations are needed.");
   const gaps=bins.some((b,i)=>i>0&&b.low>bins[i-1].high+Math.max(1,Math.abs(b.low))*1e-10);
   if(gaps)warn("class-gaps","The intervals contain gaps. Show these as empty space on the continuous x-axis; do not close them visually.");
-  if(d.histogramInput==="raw"&&data.skipped)warn("skipped",data.skipped+" non-numeric row(s) were ignored. Check them against the original data.");
+  if(d.histogramInput==="raw"&&data.skipped)fail("invalid-values",data.skipped+" non-numeric value(s) are present. Correct or remove them in the source before graphing.");
   if(d.histogramInput==="raw"&&bins.length>20)warn("many-bins","Consider whether many narrow bins communicate the distribution effectively.");
   if(d.histogramInput==="table")warn("class-assumption","Explain how grouped data and the class boundaries were obtained; original values cannot be recovered from frequencies.");
   result={...result,bins,total,skipped:data.skipped||0};
@@ -262,12 +262,13 @@ export function statAnalysis(raw){
   if(series.some(s=>s.values.length<(d.kind==="box"?5:2)))
    fail("observations",d.kind==="box"?"Each box plot requires at least five usable measurements.":"Each dot plot requires at least two usable measurements.");
   for(const s of series){
-   if(s.skipped)warn("skipped",s.skipped+" invalid value(s) in '"+s.name+"' were ignored; check the original sheet.");
+   if(s.skipped)fail("invalid-values",s.skipped+" invalid value(s) in '"+s.name+"'. Correct or remove them in the source before graphing.");
    if(s.values.length>120&&d.kind==="dot")fail("dot-crowded","The dot plot would contain over 120 points in '"+s.name+"'. Use a histogram or box plot.");
    if(d.kind==="dot"){
     const counts=new Map();
     for(const v of s.values)counts.set(v,(counts.get(v)||0)+1);
-    if(Math.max(0,...counts.values())>22)fail("dot-stack","More than 22 identical values in '"+s.name+"' would stack too high. Consider a frequency diagram.");
+    const maxStack=Math.max(1,Math.min(22,Math.floor((394/Math.max(1,series.length))*.75/5.8)));
+    if(Math.max(0,...counts.values())>maxStack)fail("dot-stack","Repeated observations in '"+s.name+"' would overlap at print size. Use fewer groups or a frequency diagram.");
    }
    if(s.box?.iqr===0)warn("zero-iqr","The group '"+s.name+"' has zero IQR. Quartiles or outliers may be less informative.");
   }
