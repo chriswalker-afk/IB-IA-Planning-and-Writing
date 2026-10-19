@@ -77,8 +77,15 @@ def test_voronoi(p,width):
  assert "Hospital" in p.locator('[data-voronoi-summary]').inner_text()
  assert p.locator('[data-action="voronoi-use"]').is_enabled()
  # Tap the real plotted domain to add an explicitly proposed site.
- p.locator('[data-voronoi-field="placeCandidate"]').check()
- p.locator('[data-voronoi-place]').click(position={"x":30,"y":25})
+ p.locator('[data-voronoi-tool="candidate"]').click()
+ p.locator('[data-voronoi-canvas]').scroll_into_view_if_needed()
+ point=p.evaluate("""()=>{
+   const svg=document.querySelector('[data-voronoi-canvas]');
+   const p=svg.createSVGPoint();p.x=530;p.y=330;
+   const q=p.matrixTransform(svg.getScreenCTM());
+   return {x:q.x,y:q.y};
+ }""")
+ p.mouse.click(point["x"],point["y"])
  assert len(state(p)["voronoiStudio"]["draft"]["sites"])==4
  assert state(p)["voronoiStudio"]["draft"]["sites"][-1]["kind"]=="candidate"
  assert "proposed" in p.locator('[data-voronoi-summary]').inner_text().lower()

@@ -74,7 +74,7 @@ export function voronoiPreviewHtml(studio,icon=()=>"",e=x=>String(x)){
  const draft=original?originalVoronoiDraft(studio):studio.draft;
  const tools=TOOLS.map(([id,label,glyph])=>'<button type="button" class="voronoi-tool'+
   (!original&&studio.tool===id?" active":"")+'" data-action="voronoi-tool" data-voronoi-tool="'+id+
-  '" aria-pressed="'+(!original&&studio.tool===id)+'"'+(original?" disabled":"")+'>'+
+  '" aria-pressed="'+(!original&&studio.tool===id)+'"'+(original||studio.scenario?.active&&id==="existing"?" disabled":"")+'>'+
   icon(glyph)+'<span>'+e(label)+'</span></button>').join("");
  const history='<div class="voronoi-history-controls" role="group" aria-label="Undo and view">'+
   '<button type="button" class="btn btn-quiet btn-sm" data-action="voronoi-undo"'+
