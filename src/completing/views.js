@@ -8,6 +8,8 @@ import {renderJourneyWritingAdvice} from "./first-maths-writing-guidance.js";
 import {renderShowingMathsContext} from "./showing-first-maths.js";
 import {renderGraphStudio} from "../diagrams/graph-view.js";
 import {renderGraphSvg} from "../diagrams/graph-core.js";
+import {renderImageTracer} from "../diagrams/image-tracer-view.js";
+import {renderTraceOverlaySvg,renderCleanTraceSvg} from "../diagrams/image-tracer-core.js";
 import {insightCapture,insightEcho,renderSparkShelf} from '../ui/insight-threads.js';
 import {STATUS_LABELS,currentGroup,JOURNEY_GROUPS} from "../ui/journey.js";
 import {groupedDashboard} from "../ui/journey-views.js";
@@ -177,6 +179,16 @@ export function createCompletingViews(ctx){
    '<p>This graph is saved in Pathfinder, not automatically inserted into your IA. Copy or download it, then put it <strong>after</strong> the sentence introducing it. Interpret only real results.</p>'+
    '<div class="graph-svg-wrap">'+renderGraphSvg(fig.draft)+'</div>'+
    '<button type="button" class="btn btn-secondary btn-sm" data-action="graph-open">'+icon("pencil")+' Edit or export this graph</button></section>';
+ };
+ const traceEntryPanel=()=>{
+  const state=getState(),entry=completeEntry(state),id=entry?.imageTraceId;
+  const fig=id?state.imageTracer?.figures?.find(x=>x.id===id):null;
+  if(!fig)return "";
+  return '<section class="trace-entry-panel" aria-label="Linked coordinate tracing">'+
+   '<h3>'+icon("image")+' Your saved coordinate tracing: '+e(fig.draft.title||"Untitled tracing")+'</h3>'+
+   '<p>This image and its traced points are saved in Pathfinder, not automatically added to the IA. Introduce the figure in your writing before inserting it. Explain your scale and any photographic limitations.</p>'+
+   '<div class="trace-entry-photo">'+(fig.draft.view==="math"?renderCleanTraceSvg(fig.draft):renderTraceOverlaySvg(fig.draft))+'</div>'+
+   '<button type="button" class="btn btn-secondary btn-sm" data-action="trace-open">'+icon("pencil")+' Edit or export this tracing</button></section>';
  };
  const actualRecord=()=>{
   const st=completeEntry(getState());
@@ -547,7 +559,7 @@ export function createCompletingViews(ctx){
     '<p class="field-hint">Use this wording in your <strong>actual IA before</strong> the output, not just as a caption. It is different from the earlier explanation of why you selected the method.</p>');
    const second=cards("show","2","Showing your tables, diagrams and calculations",
     "Put the genuine mathematical work directly in your IA: readable graphs, labelled diagrams, meaningful calculations, units, source citations and sensible precision.",
-    context("show")+graphEntryPanel()+
+    context("show")+graphEntryPanel()+traceEntryPanel()+
     '<p class="show-first-table-rule"><strong>Never include long raw-data tables, including in appendices.</strong> Keep the full dataset in your working files. Use an informative graph, selected rows or a compact summary table if they make the mathematics clearer.</p>'+
     (entry?
      entryReviewAlert()+
@@ -598,13 +610,16 @@ export function createCompletingViews(ctx){
     ["other","Another suitable representation"],["unsure","Not sure yet"]])+
     criteriaField(F("firstPurpose","Why might this help answer the aim?","The mathematical question it could reveal",{type:"textarea",rows:3}),"completing:C31:firstPurpose")+
     (f.dataStatus==="not-started"&&p.kind!=="theoretical"?info("Data not ready?","You can define terms, use a clearly labelled provisional case or revisit sources. Do not invent measurements."): "")+
-    (s.graphStudio?.open?renderGraphStudio(s,icon,e):
+    (s.imageTracer?.open?renderImageTracer(s,icon,e):s.graphStudio?.open?renderGraphStudio(s,icon,e):
     '<section class="graph-studio-launch"><div><strong>'+icon("chart")+' Make an IA-ready graph</strong>'+
     '<p>Paste genuine values from Google Sheets or plot a function. Pathfinder checks titles, axes, units, source and scale before allowing export. You can still use your own software or choose no diagram.</p></div>'+
-    '<button type="button" class="btn btn-primary" data-action="graph-open">'+icon("chart")+' Open graph plotter</button></section>')
+    '<button type="button" class="btn btn-primary" data-action="graph-open">'+icon("chart")+' Open graph plotter</button></section>'+
+    '<section class="trace-studio-launch"><div><strong>'+icon("image")+' Trace coordinates from a photograph</strong>'+
+    '<p>Import a real image, define your origin, direction and a known scale, then mark points. Switch between the photograph and a clean coordinate plot; export an annotated figure or CSV. Perspective and precision checks are included.</p></div>'+
+    '<button type="button" class="btn btn-secondary" data-action="trace-open">'+icon("image")+' Open image tracer</button></section>')
   };
   case "C32":return{intro:"Immediately before the figure or calculation, give your reader a mathematical reason to look at it.",
-   html:actualRecord()+graphEntryPanel()+
+   html:actualRecord()+graphEntryPanel()+traceEntryPanel()+
     entryField("title","A short title for this step","e.g. Inspect a scatter graph")+
     criteriaField(entryField("purpose","Mathematical purpose BEFORE it","What question should this graph/calculation help answer?",{type:"textarea",rows:3}),"completing:C32:purpose")+
     entryField("technique","Mathematical technique being used","e.g. plot observed paired values")+
@@ -615,7 +630,7 @@ export function createCompletingViews(ctx){
     accuracySelector()+accuracyNote()
   };
   case "C33":return{intro:"Create the actual figure or short calculation in your IA document. Describe what you did here without copying an invented result.",
-   html:entryReviewAlert()+actualRecord()+graphEntryPanel()+
+   html:entryReviewAlert()+actualRecord()+graphEntryPanel()+traceEntryPanel()+
     entryChoice("status",[
      {value:"planned",title:"Still planned",icon:"clock"},
      {value:"completed",title:"I have actually produced the figure or calculation",icon:"check-circle"}])+
