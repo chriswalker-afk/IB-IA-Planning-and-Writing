@@ -6,6 +6,12 @@ export function renderPresentationCoach(state,type,draft,icon,e){
  const sparks=presentationSparks(state,type,draft);
  const diagnostics=presentationDiagnostics(state,type,draft);
  const matched=sparks.filter(x=>x.kind==="planned"||x.kind==="confirmed");
+ const prioritized=[...diagnostics].sort((a,b)=>(a.tone==="check"?0:1)-(b.tone==="check"?0:1));
+ const primaryChecks=prioritized.slice(0,2),otherChecks=prioritized.slice(2);
+ const checkItem=item=>
+   '<article class="ia-coach-point '+(item.tone==="check"?"ia-coach-important":"")+'">'+
+    '<span class="ia-coach-point-icon">'+icon(item.tone==="check"?"alert-triangle":"search")+'</span>'+
+    '<div><strong>'+e(item.title)+'</strong><p>'+e(item.detail)+'</p></div></article>';
  const recommended=suggestedDiagramMode(state,type,draft),current=type==="table"?draft?.mode:draft?.kind;
  const attr={graphValue:"data-graph-value",statValue:"data-stat-value",tableMode:"data-table-mode"};
  const recommendBlock=recommended?
@@ -24,10 +30,9 @@ export function renderPresentationCoach(state,type,draft,icon,e){
    '<p>Advice responds to your current values and earlier decisions. It does not decide which model fits or award an IB grade.</p></div></header>'+
   recommendBlock+
   '<div class="ia-coach-checks"><span class="ia-coach-kicker">CHECK THE MATHEMATICS</span>'+
-   (diagnostics.length?diagnostics.map(item=>
-    '<article class="ia-coach-point '+(item.tone==="check"?"ia-coach-important":"")+'">'+
-    '<span class="ia-coach-point-icon">'+icon(item.tone==="check"?"alert-triangle":"search")+'</span>'+
-    '<div><strong>'+e(item.title)+'</strong><p>'+e(item.detail)+'</p></div></article>').join(""):
+   (diagnostics.length?primaryChecks.map(checkItem).join("")+
+    (otherChecks.length?'<details class="ia-coach-more"><summary>'+otherChecks.length+
+     ' more mathematical checks '+icon("chevron-down")+'</summary>'+otherChecks.map(checkItem).join("")+'</details>':""):
     '<p>Choose and check a purposeful mathematical representation, then interpret the genuine output rather than assuming a pattern.</p>')+
   '</div>'+
   (matched.length?'<div class="ia-coach-sparks"><span class="ia-coach-kicker">'+icon("sparkles")+' SPARKS REUSED HERE</span>'+
