@@ -28,6 +28,7 @@ def position(page,x,y):
  }""",{"x":x,"y":y})
 
 def tap(page,x,y,touch=False):
+ page.locator('[data-voronoi-canvas]').scroll_into_view_if_needed()
  p=position(page,x,y)
  if touch:page.touchscreen.tap(p["x"],p["y"])
  else:page.mouse.click(p["x"],p["y"])
