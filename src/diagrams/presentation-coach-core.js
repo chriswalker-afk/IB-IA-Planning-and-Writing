@@ -84,6 +84,62 @@ export function contextualRepresentationAdvice(state,baseAdvice){
  return {data,ids,why,note:description, basedOn:baseAdvice.reason};
 }
 
+/**
+ * Specific, optional mode recommendation. Never silently switches a student's
+ * chosen mathematical method or infers a relationship from a dataset.
+ */
+export function suggestedDiagramMode(state,type,draft){
+ const route=state?.planning?.routeExplorer?.selectedRoute||"";
+ const profile=describeWorkingData(draft);
+ const hasData=!!profile,small=profile?.rows<=35;
+ const numeric=profile?.numerical?.length||0;
+ const groupValues=profile?.shape==="categories-and-numbers";
+ const rows=where(draft);
+ const counts=groupValues&&profile.categorical[0]===0&&profile.numerical.length>0&&
+  rows.every(row=>profile.numerical.every(i=>{
+   const value=finiteCell(row[i]);return value!==null&&value>=0&&Number.isSafeInteger(value);
+  }));
+ const choose=(mode,name,reason,action,key)=>({mode,name,reason,action,key,from:hasData?"current worksheet":"planned pathway"});
+ if(type==="graph"){
+  if(draft?.kind==="function"&&!hasData)return choose("function","Function graph",
+   "Use a mathematically derived expression and justify its domain; this is not observed data.","graph-type","graphValue");
+  if(hasData&&numeric<2)
+   return {mode:"stat",name:"Statistical Diagrams",reason:"A scatter/time graph needs genuinely paired numerical variables. A distribution or category display may fit these values better.",action:"stat-open",key:""};
+  if(["growth","cycles","trajectories"].includes(route)&&numeric>=2)
+   return choose("time","Time series","Only use a joined chronological plot if the x-variable is genuinely time and its order is meaningful.","graph-type","graphValue");
+  if(["optimisation","proof","iteration"].includes(route)&&!hasData)
+   return choose("function","Function graph","Use a meaningful function and restricted domain to explore your conjecture or optimisation; graphical examples are not proof.","graph-type","graphValue");
+  return choose("scatter","Scatter diagram","For paired numerical values, inspect genuine plotted pairs before deciding whether linear or nonlinear modelling is appropriate.","graph-type","graphValue");
+ }
+ if(type==="stat"){
+  if(counts&&profile.rows>=2&&profile.rows<=12)
+   return choose("bar","Comparative bar chart","The worksheet appears to contain discrete labels and whole-number, non-negative counts. Confirm that these are actual category frequencies.","stat-kind","statValue");
+  if(groupValues&&!counts)
+   return {mode:"table",name:"Table Studio or regrouping",reason:"These appear to be individual measurements beside categories, not already aggregated counts. Summarise by group before using a count bar chart.",action:"table-open",key:""};
+  if(numeric>=2&&profile.rows>=5&&["groups","variation"].includes(route))
+   return choose("box","Side-by-side box plots","Comparing centre, spread and outliers can be more informative than comparing means alone; state each group's n.","stat-kind","statValue");
+  if(numeric>=1&&profile.rows>=20)
+   return choose("histogram","Histogram","For many numerical measurements, inspect continuous distribution shape; choose class boundaries with a reason.","stat-kind","statValue");
+  if(numeric>=1&&small&&profile.rows>=2)
+   return choose("dot","Dot plot","A dot plot can show individual observations without grouping them into intervals; check whether rounding stacks points.","stat-kind","statValue");
+  if(["groups","variation"].includes(route))
+   return choose("box","Box plots","Once you have at least five numerical observations per selected group, compare medians and spread using consistent quartile rules.","stat-kind","statValue");
+  if(route==="categorical")
+   return choose("bar","Bar chart","Use a categorical bar chart only for discrete classes with actual whole-number frequencies, with a zero baseline.","stat-kind","statValue");
+  return choose("histogram","Histogram","Collect genuine numerical observations and check appropriate class width. A histogram is not meaningful for text-only categories.","stat-kind","statValue");
+ }
+ if(type==="table"){
+  if(profile?.rows>8&&numeric)
+   return choose("summary","Summary statistics","A long raw table would be hard to read in an IA. Use informative measures with each sample size n.","table-mode","tableMode");
+  if(["groups","variation"].includes(route)&&numeric)
+   return choose("summary","Summary statistics","Use a few comparable measures of centre and spread, with their units and sample sizes.","table-mode","tableMode");
+  if(route==="categorical"||profile?.shape==="categories")
+   return choose("frequency","Frequency table","State the frequency denominator and keep categories purposeful. Use observed counts, not invented probabilities.","table-mode","tableMode");
+  return choose("compact","Short results table","Keep at most eight purposeful rows and five columns; preserve measured precision.","table-mode","tableMode");
+ }
+ return null;
+}
+
 export function relevantAccuracySparks(state,draft){
  const cols=unique([
   ...(draft?.columns||[]),draft?.xLabel,draft?.yLabel,draft?.variable,
