@@ -26,7 +26,7 @@ def prepare(browser,width,height,mobile):
   "primarySamplingUnit":"One student"})
  s["planning"]["accuracyPlans"]=[{
   "id":"pa-primary-1","source":"primary","quantity":"Time","unit":"s",
-  "resolution":"Nearest 0.01 s","basis":"device","uncertainty":"to confirm"}]
+  "resolution":"Nearest 0.01 s","basis":"digital","uncertainty":"to confirm"}]
  s["completion"]["fields"]["firstPurpose"]="Inspect paired times and distances before attempting a model"
  context=browser.new_context(viewport={"width":width,"height":height},is_mobile=mobile,
   has_touch=mobile,accept_downloads=True)
@@ -36,9 +36,9 @@ def prepare(browser,width,height,mobile):
  page.on("pageerror",lambda err:errors.append(str(err)))
  page.add_init_script("if(!localStorage.getItem("+json.dumps(KEY)+"))localStorage.setItem("+
   json.dumps(KEY)+","+json.dumps(json.dumps(s))+");")
- page.goto(URL,wait_until="networkidle")
- page.evaluate("""() => Object.defineProperty(navigator, 'clipboard',
+ page.add_init_script("""Object.defineProperty(navigator, 'clipboard',
   {configurable:true,value:{writeText:async text=>{window.__copiedCaption=text;}}})""")
+ page.goto(URL,wait_until="networkidle")
  return context,page,errors
 
 def no_overflow(page):
