@@ -2560,6 +2560,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       save();
       const path=target.dataset.bind;
       if(path==="planning.fields.course"||path==="planning.fields.ideaSelected"||
+       path==="planning.fields.assessmentFramework"||
        ["planning.fields.primarySamplingMethod","planning.fields.primarySamplingFrame",
         "planning.fields.primaryAccuracyBasis","planning.fields.secondaryAccuracyBasis",
         "planning.fields.permissionNeed","planning.fields.practicalBlocker",

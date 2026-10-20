@@ -604,7 +604,7 @@ with sync_playwright() as pw:
    assert modal.is_visible()
    assert 'Page 5, coherent argument' in modal.inner_text()
    page.keyboard.press('Escape')
-   assert badge.is_focused()
+   assert page.evaluate("document.activeElement?.dataset?.criterionBadge==='checking:A'")
    badge.click()
    modal.locator('[data-criterion-badge-rubric="A"]').click()
    assert page.locator('#essentialsDialog [data-rubric-criterion="A"]').count()==1
@@ -700,7 +700,7 @@ with sync_playwright() as pw:
    assert page.locator('[data-criterion-badge]:visible').count()==0
    page.locator('[data-checking-revised-overview] [data-essentials-tab="rubric"]').click()
    assert page.locator('#essentialsDialog [data-revised-criterion]').count()==4
-   page.locator('#essentialsDialog [data-essentials-tab="submission"]').click()
+   page.locator('#essentialsDialog .ess-tabs [data-essentials-tab="submission"]').click()
    assert page.locator('#essentialsDialog [data-ess-review]').count()==0
    page.locator('[data-essentials-close]').click()
    assert stored(page)==before
