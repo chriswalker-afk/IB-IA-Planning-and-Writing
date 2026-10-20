@@ -102,7 +102,8 @@ export function saveAndLinkTable(state){
  const prior=studio.figures.find(f=>f.id===studio.activeId);
  let index=prior?.entryId?state.entries.findIndex(e=>e.id===prior.entryId):-1;
  const active=completeEntry(state);
- if(index<0&&active?.phase==="first"&&active.status==="planned"&&(!active.tableFigureId||active.tableFigureId===studio.activeId))
+ if(index<0&&["first","substantial"].includes(active?.phase)&&
+  (active.phase==="substantial"||!active.tableFigureId||active.tableFigureId===studio.activeId))
   index=state.completion.activeEntryIndex;
  if(index<0){
   const created=startFirstRepresentation(state);
@@ -122,6 +123,6 @@ export function saveAndLinkTable(state){
    quality.draft.mode==="frequency"?"Categorical frequency and percentage table":"Compact results table";
  entry.kind="other";
  state.completion.activeEntryIndex=index;state.ui.mathIndex=index;
- state.completion.fields.firstType="table";
+ if(entry.phase==="first")state.completion.fields.firstType="table";
  return {ok:true,record:saved.record,index,reviewNeeded};
 }

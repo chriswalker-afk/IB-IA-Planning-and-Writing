@@ -125,8 +125,8 @@ export function saveAndLinkVoronoi(state){
  const previous=studio.figures.find(f=>f.id===studio.activeId);
  let index=previous?.entryId?state.entries.findIndex(e=>e.id===previous.entryId):-1;
  const active=completeEntry(state);
- if(index<0&&active?.phase==="first"&&active.status==="planned"&&
-  (!active.voronoiFigureId||active.voronoiFigureId===studio.activeId))
+ if(index<0&&["first","substantial"].includes(active?.phase)&&
+  (active.phase==="substantial"||!active.voronoiFigureId||active.voronoiFigureId===studio.activeId))
   index=state.completion.activeEntryIndex;
  if(index<0){
   const created=startFirstRepresentation(state);
@@ -144,6 +144,6 @@ export function saveAndLinkVoronoi(state){
  if(!entry.technique.trim())entry.technique="Euclidean Voronoi regions and perpendicular bisectors";
  if(!entry.methodId?.trim())entry.methodId="voronoi";
  entry.kind="other";state.completion.activeEntryIndex=index;state.ui.mathIndex=index;
- state.completion.fields.firstType="diagram";
+ if(entry.phase==="first")state.completion.fields.firstType="diagram";
  return {ok:true,record:saved.record,index,reviewNeeded};
 }

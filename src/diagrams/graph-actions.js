@@ -75,7 +75,8 @@ export function saveAndLinkGraph(state){
  let index=-1;
  if(prior?.entryId)index=state.entries.findIndex(x=>x.id===prior.entryId);
  const active=completeEntry(state);
- if(index<0&&active?.phase==="first"&&active.status==="planned"&&(!active.graphFigureId||active.graphFigureId===studio.activeId))
+ if(index<0&&["first","substantial"].includes(active?.phase)&&
+  (active.phase==="substantial"||!active.graphFigureId||active.graphFigureId===studio.activeId))
   index=state.completion.activeEntryIndex;
  if(index<0){
   const fresh=startFirstRepresentation(state);
@@ -96,6 +97,6 @@ export function saveAndLinkGraph(state){
  entry.kind=saved.record.draft.kind==="scatter"?"scatter":
   saved.record.draft.kind==="function"?"model":"other";
  state.completion.activeEntryIndex=index;state.ui.mathIndex=index;
- state.completion.fields.firstType=entry.kind==="scatter"?"scatter":"other";
+ if(entry.phase==="first")state.completion.fields.firstType=entry.kind==="scatter"?"scatter":"other";
  return {ok:true,record:saved.record,index,reviewNeeded};
 }
