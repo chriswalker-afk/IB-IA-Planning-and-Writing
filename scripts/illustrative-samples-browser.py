@@ -62,6 +62,10 @@ def check(kind,p):
  set_preview_node(p,"C20")
  assert "actual" in p.locator("#main").inner_text().lower()
  set_preview_node(p,"C60")
+ assert p.locator('[data-conclusion-workspace]').count()==1
+ assert p.locator('[data-conclusion-part="next"]').count()==1
+ assert p.locator('[data-conclusion-legacy]').count()==1
+ p.locator('[data-conclusion-legacy]>summary').click()
  assert p.locator('[data-bind="scratch.conclusion"]').is_visible()
  assert "FICTIONAL" in p.locator('[data-bind="scratch.conclusion"]').input_value()
  set_preview_node(p,"C80")
