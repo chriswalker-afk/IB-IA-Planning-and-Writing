@@ -25,7 +25,7 @@ test('four-part layout is consistently present through all three writing section
  for(const [group,nodes] of Object.entries(STUDIO_WRITING_GROUPS)){
   for(const node of nodes){
    const html=stage(s,node);
-   const sections=['advice','sparks','task','examples'];
+   const sections=node==='C60'?['advice','task','examples']:['advice','sparks','task','examples'];
    const order=sections.map(k=>html.indexOf('data-writing-stage-part="'+k+'"'));
    assert(order.every(x=>x>=0),node+' missing one part');
    assert(order.every((x,i)=>i===0||x>order[i-1]),node+' not logically ordered');
@@ -47,7 +47,7 @@ test('IA writing reminder keeps its heading and explanation together for all 31 
   const html=stage(state,node);
   assert.equal((html.match(/class="studio-stage-writing-location" role="note"/g)||[]).length,1,node);
   assert(html.includes('<div class="studio-stage-writing-location-copy"><strong>Write in your actual IA document</strong><p>'),node);
-  assert(html.includes('nothing is inserted into your IA automatically.'),node);
+  assert(node==='C60'?html.includes('No text is inserted into your IA automatically.'):html.includes('nothing is inserted into your IA automatically.'),node);
   assert(!html.includes('<p class="studio-stage-writing-location">'),node);
  }
  const css=readFileSync(new URL('../data/chapter-onboarding.css',import.meta.url),'utf8');
@@ -62,7 +62,10 @@ test('main stage pages offer four high-value tips; substeps keep optional advice
   const html=stage(s,node);
   assert.equal((html.match(node==='C20'?/data-first-maths-tip="/g:/data-studio-tip="/g)||[]).length,4,node);
   assert(html.includes('studio-stage-advice-cards'),node);
-  assert(!html.includes('studio-stage-more-advice'),node);
+  if(node==='C60'){
+   assert(html.includes('studio-stage-more-advice'),"Conclusion advice is available without crowding the writing workspace");
+   assert(html.includes('How to write an effective conclusion'));
+  }else assert(!html.includes('studio-stage-more-advice'),node);
  }
  for(const node of ['C21S','C24','C32','C34B','C61','C64']){
   const html=stage(s,node);
@@ -94,8 +97,9 @@ test('Mathematical exploration guidance connects results and methods; conclusion
  assert(math.includes('no quota')||math.includes('no quota'.toUpperCase())||math.includes('no quota of graphs'));
  assert(math.includes('data-example-topic="calculation"'));
  const conclusion=stage(s,'C60');
- assert(conclusion.includes('actual mathematical results'));
- assert(conclusion.includes('no new')||conclusion.includes('No new')||conclusion.includes('new mathematics'));
+ assert(conclusion.includes('real results'));
+ assert(conclusion.includes('Answer · support · qualify'));
+ assert(conclusion.includes('How to write an effective conclusion'));
  assert(conclusion.includes('data-example-topic="conclusion"'));
  assert(conclusion.includes('prediction'));
 });
@@ -110,7 +114,7 @@ test('sparks contain only saved grounded ideas; no invented actual result is pro
   s.completion.current='C60';
  const untouched=JSON.stringify(s);
  html=stage(s,'C60');
- assert(html.includes('Findings may challenge your hope'));
+ assert(!html.includes('data-writing-stage-part="sparks"'),"Conclusion uses its single workspace for saved context instead of another large panel");
  assert.equal(JSON.stringify(s),untouched);
 });
 test('extra mathematical help remains available but not forced into the main flow',()=>{
@@ -123,7 +127,7 @@ test('extra mathematical help remains available but not forced into the main flo
 });
 test('user-supplied saved sparks render as escaped text rather than executable HTML',()=>{
  const s=make();s.planning.fields.aim='<img src=x onerror=alert(1)>';
- const html=stage(s,'C60');
+ const html=stage(s,'C20');
  assert(html.includes('&lt;img'));
  assert(!html.includes('<img'));
 });
