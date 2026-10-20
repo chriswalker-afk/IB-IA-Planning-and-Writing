@@ -99,3 +99,11 @@
 @media(prefers-reduced-motion:reduce){
  .conclusion-evidence-item,.conclusion-workspace-actions>.btn{transition:none!important}
 }
+
+/* Conclusion exit: prominent downloads without interrupting the three writing steps. */
+.conclusion-downloads{border:1px solid #d2e4de;border-radius:18px;padding:18px;margin:24px 0 14px;background:#f5faf8}
+.conclusion-downloads h3{margin:0 0 7px;font-size:1.08rem;color:#173940}
+.conclusion-downloads p{font-size:.9rem;line-height:1.55;margin:0 0 14px;color:#536c70}
+.conclusion-download-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.conclusion-download-actions .btn{justify-content:center;white-space:normal;min-height:46px;text-align:center}
+@media(max-width:720px){.conclusion-downloads{padding:14px}.conclusion-download-actions{grid-template-columns:1fr}}
