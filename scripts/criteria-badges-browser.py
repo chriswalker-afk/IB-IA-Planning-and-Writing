@@ -133,6 +133,16 @@ with sync_playwright() as pw:
    for title in ['Why this matters here','What a strong response looks like','Avoid this']:
     assert title in dialog.inner_text()
    assert 'not evidence, a score or a predicted mark' in dialog.inner_text()
+   extras=dialog.locator('[data-criterion-opportunities]')
+   assert extras.count()==(1 if letter in ('C','D','E') else 0),case
+   if extras.count():
+    assert extras.get_attribute('data-criterion-opportunities')==letter
+    assert extras.get_attribute('open') is None,case+' must start collapsed'
+    assert extras.locator('summary').count()==1
+    assert 2<=extras.locator('li').count()<=3
+    assert extras.locator('input,textarea,select').count()==0
+    if letter=='E':assert extras.locator('.criterion-opportunities-level').count()==1
+
    if node in ('C34','C35','C35B','C35P','C40','C50','C40T','C40L','C61','C62','C63','C64','C70','C80D','C90F'):
     assert 'Using your work' in dialog.inner_text()
    if node=='C35B':
@@ -362,6 +372,78 @@ with sync_playwright() as pw:
   result.append({'case':'later-stage-unverified-predecessor','status':'passed'})
  except Exception as err:
   result.append({'case':'later-stage-unverified-predecessor','status':'FAILED','reason':str(err)})
+  traceback.print_exc()
+ ctx.close()
+
+ # Optional C/D/E evidence alternatives are method- and level-aware, not new
+ # assessment boxes. Opening them must remain keyboard-accessible and read-only.
+ for node,key,method,course,profile,phrase in [
+  ('C40','completing:C40:resultE','proof','AA HL','proof','Build a rigorous argument'),
+  ('C50','completing:C50:interpretD','optimisation','AA SL','optimisation','Test sensitivity to constraints'),
+  ('C30','completing:C30:nextC','proof','AA SL','proof','Create and test a conjecture'),
+  ('C60','completing:C60:meaningAndLimits','','AA SL','model','Read the residuals')
+ ]:
+  for width,height in [(1440,960),(360,740)]:
+   sample=state_for('completing',node)
+   sample['planning']['fields']['course']=course
+   if method:
+    sample['entries'][-1]['methodId']=method
+    sample['entries'][-1]['technique']='A mathematical method selected for this investigation'
+   ctx=browser.new_context(viewport={'width':width,'height':height})
+   page=ctx.new_page()
+   page.add_init_script('localStorage.setItem('+json.dumps(KEY)+','+json.dumps(json.dumps(sample))+');')
+   label='other-criterion-routes-'+node+'-'+str(width)
+   try:
+    page.goto(URL,wait_until='networkidle')
+    before=stored(page)
+    page.locator('[data-criterion-badge="'+key+'"]').click()
+    dialog=page.locator('#criterionBadgeDialog')
+    disclosure=dialog.locator('[data-criterion-opportunities]')
+    assert disclosure.count()==1,label
+    assert disclosure.get_attribute('data-opportunity-profile')==profile,label
+    assert disclosure.get_attribute('open') is None
+    disclosure.locator('summary').focus()
+    page.keyboard.press('Enter')
+    assert disclosure.get_attribute('open') is not None,label
+    assert phrase in disclosure.inner_text(),label
+    assert disclosure.locator('.criterion-opportunities-reminder').count()==1,label
+    if key.endswith('resultE'):
+     assert disclosure.get_attribute('data-opportunity-course')=='HL'
+     assert 'beyond the syllabus is not required' in disclosure.inner_text()
+    else:
+     assert disclosure.locator('.criterion-opportunities-level').count()==0
+    assert page.evaluate('document.documentElement.scrollWidth<=innerWidth+1'),label
+    assert stored(page)==before
+    page.keyboard.press('Escape')
+    assert not dialog.is_visible()
+    assert stored(page)==before
+    result.append({'case':label,'status':'passed'})
+   except Exception as err:
+    result.append({'case':label,'status':'FAILED','reason':str(err)})
+    traceback.print_exc()
+    page.screenshot(path=str(OUT/(label+'-failure.png')),full_page=True)
+   ctx.close()
+ # If a stage is merely planned, the alternatives must never be presented as
+ # verified outcomes. The saved planned result is never copied into suggestions.
+ sample=state_for('completing','C40')
+ sample['entries'][-1]['status']='planned'
+ sample['entries'][-1]['result']='A deliberately unverified coefficient'
+ ctx=browser.new_context(viewport={'width':390,'height':844})
+ page=ctx.new_page()
+ page.add_init_script('localStorage.setItem('+json.dumps(KEY)+','+json.dumps(json.dumps(sample))+');')
+ try:
+  page.goto(URL,wait_until='networkidle')
+  before=stored(page)
+  page.locator('[data-criterion-badge="completing:C40:interpretD"]').click()
+  box=page.locator('[data-criterion-opportunities]')
+  assert box.get_attribute('data-opportunity-status')=='possible'
+  box.locator('summary').click()
+  assert 'not evidence of completed mathematics' in box.inner_text()
+  assert 'A deliberately unverified coefficient' not in box.inner_text()
+  assert stored(page)==before
+  result.append({'case':'other-criterion-routes-planned-guard','status':'passed'})
+ except Exception as err:
+  result.append({'case':'other-criterion-routes-planned-guard','status':'FAILED','reason':str(err)})
   traceback.print_exc()
  ctx.close()
  # Checking process requirements must not masquerade as scored criteria.

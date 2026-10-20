@@ -77,3 +77,23 @@
  .criterion-marked-writing-box>.field-group>.field-label{min-height:40px;padding-right:94px}
  .criterion-marked-writing-box textarea.field{padding-left:12px}
 }
+
+/* Pass 3: compact optional mathematical routes; native disclosure stays closed by default. */
+.criterion-popin-alternatives{margin:11px 0 15px;border:1px solid #d7e6dd;border-radius:12px;background:#fcfefd;overflow:hidden}
+.criterion-popin-alternatives>summary{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 13px;color:#215748;font-size:13px;font-weight:750;line-height:1.4;cursor:pointer;list-style:none}
+.criterion-popin-alternatives>summary::-webkit-details-marker{display:none}
+.criterion-popin-alternatives>summary:hover{background:#eef5ef}
+.criterion-popin-alternatives>summary:focus-visible{outline:3px solid #078578;outline-offset:-3px;border-radius:10px}
+.criterion-opportunities-chevron{font-size:18px;line-height:1;color:#477766;transition:transform .15s}
+.criterion-popin-alternatives[open] .criterion-opportunities-chevron{transform:rotate(180deg)}
+.criterion-opportunities-content{padding:0 13px 13px;border-top:1px solid #e2ede6;overflow-wrap:anywhere}
+.criterion-opportunities-preface{font-size:12px;line-height:1.6;color:#527068;margin:11px 0}
+.criterion-opportunities-content ul{list-style:none;padding:0;margin:0}
+.criterion-opportunities-content li{margin:0;padding:11px 0;border-top:1px solid #e8efe9}
+.criterion-opportunities-content li:first-child{border-top:0}
+.criterion-opportunities-content li strong{display:block;font-size:12px;color:#215447;line-height:1.5}
+.criterion-opportunities-content li p{margin:4px 0 0;font-size:12px;color:#415f5a;line-height:1.65}
+.criterion-opportunities-level{font-size:12px;line-height:1.6;color:#2f5b53;background:#f2f8f5;border-left:3px solid #729d83;margin:10px 0;padding:10px 11px}
+.criterion-opportunities-level strong{font-weight:750}
+.criterion-opportunities-reminder{font-size:11px;line-height:1.6;color:#58736d;margin:12px 0 1px}
+@media(prefers-reduced-motion:reduce){.criterion-opportunities-chevron{transition:none}}

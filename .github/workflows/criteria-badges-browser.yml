@@ -7,6 +7,8 @@ on:
       - 'src/essentials/criteria-badges.js'
       - 'src/essentials/criteria-badge-guidance.js'
       - 'src/essentials/later-maths-criterion-guidance.js'
+      - 'src/essentials/criterion-opportunities.js'
+      - 'tests/criterion-opportunities.test.js'
       - 'src/essentials/later-maths-criterion-spots.js'
       - 'src/essentials/views.js'
       - 'src/ui/planning-views.js'

@@ -5,6 +5,7 @@ import {guidanceContext} from '../completing/guidance-context.js';
 import {firstUnfamiliarUse,methodFamilies} from '../completing/method-identity.js';
 import {linkedAccuracy} from '../completing/evidence-links.js';
 import {escapeHtml} from '../ui/primitives.js';
+import {criterionAlternativeOpportunities} from './criterion-opportunities.js';
 import {LATER_MATHS_SPOTS,LATER_MATHS_SPOT_IDS} from './later-maths-criterion-spots.js';
 
 /** Selective, read-only opportunities. A badge never represents a score or checklist point. */
@@ -329,6 +330,25 @@ export function criterionPageHeading(title,route,node){
   '<h1 class="task-heading">'+name+'</h1>';
 }
 const block=(name,text)=>'<section class="criterion-popin-part"><h3>'+escapeHtml(name)+'</h3><p>'+escapeHtml(text)+'</p></section>';
+/** Other legitimate routes are optional inside the existing pop-in; they do not add a badge. */
+const alternativesBlock=alternative=>{
+ if(!alternative||!alternative.items.length)return '';
+ return '<details class="criterion-popin-alternatives" data-criterion-opportunities="'+alternative.criterion+
+  '" data-opportunity-profile="'+escapeHtml(alternative.profile)+
+  '" data-opportunity-status="'+escapeHtml(alternative.status)+
+  '" data-opportunity-course="'+escapeHtml(alternative.level)+'">'+
+  '<summary>Other ways to demonstrate Criterion '+alternative.criterion+
+   '<span class="criterion-opportunities-chevron" aria-hidden="true">⌄</span></summary>'+
+  '<div class="criterion-opportunities-content">'+
+  '<p class="criterion-opportunities-preface">Choose only an alternative that genuinely serves your mathematical question.</p>'+
+  '<ul>'+alternative.items.map(x=>'<li><strong>'+escapeHtml(x.title)+'</strong>'+
+   '<p>'+escapeHtml(x.how)+'</p></li>').join('')+'</ul>'+
+  (alternative.levelNote?'<p class="criterion-opportunities-level"><strong>'+
+   (alternative.level==='unknown'?'Course level to confirm':alternative.level+' Criterion E emphasis')+
+   '</strong> '+escapeHtml(alternative.levelNote)+'</p>':'')+
+  '<p class="criterion-opportunities-reminder">'+escapeHtml(alternative.reminder)+'</p>'+
+  '</div></details>';
+};
 
 /** Native modal gives inert background, Escape behaviour and keyboard focus containment. */
 export function createCriterionBadgeController({getState,openRubric=()=>{},openReview=()=>{}}){
@@ -358,6 +378,7 @@ export function createCriterionBadgeController({getState,openRubric=()=>{},openR
   const why=planned?'An interpretation can support Reflection only when it is based on actual mathematics. A proposed calculation or prediction is not a result.':p.why;
   const strong=planned?'First complete and check a genuine graph, calculation or argument. Then explain what that specific result means for your aim; do not invent findings.':p.strong;
   const level=p.criterion==='E'?courseLevel(state):'';
+  const alternative=criterionAlternativeOpportunities(state,key,p);
   dialog.innerHTML='<div class="criterion-popin-header"><div class="criterion-popin-heading">'+
    '<span class="criterion-popin-letter'+(multi?' criterion-popin-letter-multi':'')+'" aria-hidden="true">'+(multi?'A–E':p.criterion)+'</span><div>'+
    '<p class="criterion-popin-eyebrow">RELEVANT HERE · '+escapeHtml(p.stage)+'</p>'+
@@ -369,6 +390,7 @@ export function createCriterionBadgeController({getState,openRubric=()=>{},openR
    block('Avoid this',p.avoid)+
    (p.details.length?'<section class="criterion-popin-context" aria-label="Your investigation context"><h3>Using your work</h3>'+
     p.details.map(x=>'<p><strong>'+escapeHtml(x.label)+'</strong> '+escapeHtml(x.text)+'</p>').join('')+'</section>':'')+
+   alternativesBlock(alternative)+
    (multi?'<section class="criterion-popin-all" aria-label="Where to look for each criterion"><h3>What to look for in your actual IA</h3>'+
     p.reviewRows.map(x=>'<div class="criterion-popin-all-row"><span class="criterion-popin-all-letter">'+x.id+'</span><div><strong>'+escapeHtml(x.title)+'</strong>'+
      '<p>'+escapeHtml(x.focus)+'</p>'+(x.location?'<p class="criterion-popin-evidence">Your recorded location (recheck it): '+escapeHtml(x.location)+'</p>':'')+'</div></div>').join('')+'</section>':'')+
