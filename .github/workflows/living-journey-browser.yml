@@ -1,0 +1,63 @@
+name: Mathematical Journey browser acceptance
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/ui/math-constellation.js'
+      - 'src/ui/living-journey.js'
+      - 'src/ui/journey-views.js'
+      - 'data/math-journey-v2.css'
+      - 'data/living-journey.css'
+      - 'index.html'
+      - 'tests/living-journey.test.js'
+      - 'scripts/living-journey-browser.py'
+      - '.github/workflows/living-journey-browser.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'src/ui/math-constellation.js'
+      - 'src/ui/living-journey.js'
+      - 'src/ui/journey-views.js'
+      - 'data/math-journey-v2.css'
+      - 'data/living-journey.css'
+      - 'index.html'
+      - 'tests/living-journey.test.js'
+      - 'scripts/living-journey-browser.py'
+      - '.github/workflows/living-journey-browser.yml'
+permissions:
+  contents: read
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Unit tests and build
+        run: |
+          npm install --no-audit --no-fund
+          npm test
+          npm run build
+      - name: Install Playwright Chromium
+        run: |
+          pip install playwright==1.57.0
+          python -m playwright install chromium
+      - name: Verify mathematical journey on desktop and phone
+        run: |
+          mkdir -p qa-output
+          python -m http.server 8765 --directory dist > qa-output/journey-server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID"' EXIT
+          python scripts/living-journey-browser.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mathematical-journey-browser-results
+          path: qa-output
+          retention-days: 7

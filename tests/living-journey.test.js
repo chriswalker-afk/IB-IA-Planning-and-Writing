@@ -155,7 +155,7 @@ test('stars link directly to mathematical records, with distinct review and plan
  s.entries=[{id:'one',title:'Graph',status:'completed',result:'A real observation'},
  {id:'two',title:'Possible extension',status:'planned',result:''}];
  const html=mathConstellation(s);
- assert.equal((html.match(/class="constellation-star-hit"/g)||[]).length,2);
+ assert.equal((html.match(/class="constellation-star-hit\b/g)||[]).length,2);
  assert(html.includes('aria-label="Open Graph: Actual result"'));
  assert(html.includes('aria-label="Open Possible extension: Planned"'));
  assert(html.includes('data-action="completion-edit-entry"'));
@@ -466,4 +466,78 @@ test('the optional trail explanation reflects sampling, precision, writing, tool
  for(const term of ['sampling','precision','sparks','introduction','diagrams and tables','mathematical stages','draft feedback'])
   assert(html.includes(term),term);
  assert(html.includes('A saved figure is not proof'));
+});
+
+
+test('mathematical journey names the actual methods and connects student-owned findings',()=>{
+ const s=createProjectState();
+ s.planning.fields.firstAction='Plot a scatter diagram';
+ s.entries=[
+  {id:'scatter',phase:'first',title:'First purposeful representation',kind:'scatter',
+   status:'completed',result:'Actual recorded paired points',localTakeaway:'The plot looks approximately straight.'},
+  {id:'pmcc',phase:'substantial',methodId:'pmcc',title:'Does Pearson correlation answer the aim?',
+   fromEntryId:'scatter',bridge:'The scatter looks linear, so I want to measure linear association.',
+   status:'completed',result:'r = 0.83',localTakeaway:'Strong positive linear association.'},
+  {id:'reg',phase:'substantial',methodId:'linear-regression',title:'Can a line make predictions?',
+   fromEntryId:'pmcc',bridge:'Pearson r alone does not give a predictive rule.',
+   status:'planned',result:''}
+ ];
+ const before=JSON.stringify(s),html=mathConstellation(s);
+ assert(html.includes('Plot a scatter diagram'));
+ assert(html.includes('Calculate Pearson&#39;s r (PMCC)'));
+ assert(html.includes('Fit a linear regression model'));
+ assert(html.includes('Strong positive linear association.'));
+ assert(html.includes('Pearson r alone does not give a predictive rule.'));
+ assert.equal((html.match(/class="constellation-link/g)||[]).length,2);
+ assert.equal((html.match(/class="math-journey-step-card"/g)||[]).length,3);
+ assert(html.includes('data-index="2"'));
+ assert.equal(JSON.stringify(s),before,'a visual progress widget must never change student data');
+});
+test('mathematical journey does not invent a method or treat a proposal as a result',()=>{
+ const s=createProjectState();
+ s.entries=[
+  {id:'one',phase:'first',title:'First mathematical step',status:'completed',
+   result:'A genuine result was obtained.'},
+  {id:'two',phase:'substantial',title:'Mathematical stage 2',status:'planned',
+   fromEntryId:'one',result:''}
+ ];
+ const html=mathConstellation(s);
+ assert(html.includes('Choose the mathematics for this stage'));
+ assert(html.includes('Awaiting a genuinely completed mathematical result'));
+ assert(html.includes('1 actual result'));
+ assert(html.includes('1 planned'));
+ assert(!html.includes('Calculate Pearson'));
+ assert(html.includes('data-math-linked-from="one"'));
+});
+test('a question naming a technique is shown as a provisional suggestion',()=>{
+ const s=createProjectState();
+ s.entries=[{id:'first',phase:'substantial',title:'Would calculating PMCC add useful evidence?',
+  status:'planned',result:''}];
+ const html=mathConstellation(s);
+ assert(html.includes('Calculate Pearson&#39;s r (PMCC)'));
+ assert(html.includes('Suggested by your question'));
+ assert(!html.includes('What I found'));
+});
+test('journey keeps 8 recent visible stages and makes older entries accessible',()=>{
+ const s=createProjectState();
+ s.entries=Array.from({length:12},(_,i)=>({id:'math-'+i,phase:i?'substantial':'first',
+  title:'Derive relation '+i,methodId:i%2?'proof':'algebra',status:'completed',
+  result:'Valid mathematical observation '+i,fromEntryId:i?'math-'+(i-1):''}));
+ const html=mathConstellation(s),mini=mathConstellation(s,{compact:true});
+ assert(html.includes('Show 4 earlier mathematical records'));
+ assert.equal((html.match(/class="math-journey-step-card"/g)||[]).length,12);
+ assert.equal((html.match(/class="constellation-star-hit /g)||[]).length,8);
+ assert.equal((mini.match(/class="constellation-star-hit /g)||[]).length,4);
+ assert(mini.includes('Open My Path to see the full mathematical journey'));
+});
+test('constellation redesign is height-bounded and mobile-friendly',()=>{
+ const css=readFileSync(new URL('../data/math-journey-v2.css',import.meta.url),'utf8');
+ assert(css.includes('aspect-ratio:auto'));
+ assert(css.includes('height:102px'));
+ assert(css.includes('@media(max-width:760px)'));
+ assert(css.includes('@media(prefers-reduced-motion:reduce)'));
+ const s=createProjectState();
+ s.entries=[{id:'m',phase:'first',status:'completed',result:'A genuine result'}];
+ assert(journeyMap(s).includes('math-journey-step-card'));
+ assert(!journeyMap(s).includes('journey-record-heading'),'do not repeat a second generic record list beneath the journey');
 });
