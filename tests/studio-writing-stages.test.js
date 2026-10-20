@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createProjectState} from '../src/core/project-state.js';
+import {readFileSync} from 'node:fs';
 import {escapeHtml,icon} from '../src/ui/primitives.js';
 import {isStudioWritingNode,renderStudioWritingStage,STUDIO_WRITING_GROUPS,STUDIO_WRITING_NODES} from '../src/completing/studio-writing-stages.js';
 import {renderSparkShelf} from '../src/ui/insight-threads.js';
@@ -39,6 +40,21 @@ test('four-part layout is consistently present through all three writing section
  }
  assert.equal(JSON.stringify(s),before,'read-only writing views must not change student planning or results');
  assert(!isStudioWritingNode('C10'));assert(!isStudioWritingNode('C80'));
+});
+test('IA writing reminder keeps its heading and explanation together for all 31 writing stages',()=>{
+ const state=make(),before=JSON.stringify(state);
+ for(const node of STUDIO_WRITING_NODES){
+  const html=stage(state,node);
+  assert.equal((html.match(/class="studio-stage-writing-location" role="note"/g)||[]).length,1,node);
+  assert(html.includes('<div class="studio-stage-writing-location-copy"><strong>Write in your actual IA document</strong><p>'),node);
+  assert(html.includes('nothing is inserted into your IA automatically.'),node);
+  assert(!html.includes('<p class="studio-stage-writing-location">'),node);
+ }
+ const css=readFileSync(new URL('../data/chapter-onboarding.css',import.meta.url),'utf8');
+ assert(css.includes('grid-template-columns:19px minmax(0,1fr)'),"reminder icon and copy must use distinct grid columns");
+ assert(css.includes('.studio-stage-writing-location-copy{min-width:0'),"copy should shrink safely at phone widths");
+ assert(css.includes('.studio-stage-writing-location-copy p'),"paragraph should be rendered as one block");
+ assert.equal(JSON.stringify(state),before,"layout must not change saved student work");
 });
 test('main stage pages offer four high-value tips; substeps keep optional advice collapsed',()=>{
  const s=make();
