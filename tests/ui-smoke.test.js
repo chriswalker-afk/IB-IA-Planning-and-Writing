@@ -954,3 +954,41 @@ test("all direct requests for the conclusion pause at the advisory warning first
  h.action("conclusion-confirm");
  assert.equal(h.saved.completion.current,"C60");
 });
+
+test("Discovery Trail opens the correct later mathematical page rather than reverting to stage 2",()=>{
+ const state=createProjectState();state.route="path";state.completion.current="C04";
+ state.entries=[{id:"first",phase:"first",status:"completed",result:"Actual first observation"},
+  {id:"second",phase:"substantial",status:"completed",fromEntryId:"first",result:"Actual second finding"},
+  {id:"third",phase:"substantial",status:"planned",fromEntryId:"second",result:""}];
+ state.completion.activeEntryIndex=2;
+ const h=createHarness(state);
+ assert(h.html.includes('data-target="C50"'));
+ assert(h.html.includes('data-action="completion-edit-entry" data-index="2"'));
+ h.action("journey-open",{target:"C50"});
+ assert.equal(h.saved.completion.current,"C50");
+ assert.equal(h.saved.completion.activeEntryIndex,2);
+ assert(h.html.includes('data-math-stage-page="3"'));
+ h.nav("path");
+ assert(h.html.includes("3 mathematical stages · 2 actual results"));
+ h.action("completion-edit-entry",{index:"1"});
+ assert.equal(h.saved.completion.activeEntryIndex,1);
+ assert.equal(h.saved.completion.current,"C40");
+ assert(h.html.includes('data-math-stage-page="2"'));
+});
+test("using the Discovery Trail to enter the conclusion checks readiness first",()=>{
+ const state=createProjectState();state.route="path";state.completion.current="C04";
+ const h=createHarness(state);
+ h.action("journey-open",{target:"C60"});
+ assert.equal(h.saved.route,"completing");
+ assert.equal(h.saved.completion.current,"C04");
+ assert.equal(h.saved.completion.conclusionWarningOpen,true);
+ assert(h.html.includes('data-conclusion-gate'));
+ assert(h.html.includes('data-action="conclusion-cancel"'));
+ h.action("conclusion-cancel");
+ assert(!h.html.includes('data-conclusion-gate'));
+ h.nav("path");
+ h.action("journey-open",{target:"C60"});
+ h.action("conclusion-confirm");
+ assert.equal(h.saved.completion.current,"C60");
+ assert.equal(h.saved.completion.conclusionWarningOpen,false);
+});
