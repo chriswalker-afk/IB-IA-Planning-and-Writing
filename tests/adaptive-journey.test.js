@@ -245,3 +245,52 @@ test("selecting a result description after a dependent stage already exists requ
  assert.deepEqual(flagged,[1]);
  assert.equal(child.reviewNeeded,"yes");
 });
+
+test("adding a stage requires a confirmed finding, a question and independently authored reason",()=>{
+ const state=make("relationships"),prior=state.entries[0];
+ state.completion.fields.nextQuestion="Could a non-linear model better explain the actual pattern?";
+ state.completion.fields.nextReason="The points form a clear curve that a line misses.";
+ assert.equal(addMathematicalStage(state).ok,false,"planned investigative route is not an observed result");
+ prior.journeyOutcome="relationships:curve";
+ assert.equal(addMathematicalStage(state).ok,true,"confirmed outcome with student reasoning permits continuation");
+ assert.equal(state.entries[1].bridge,"The points form a clear curve that a line misses.");
+});
+test("a suggested question does not replace the requirement for student reasoning",()=>{
+ const state=make("fitted-models"),prior=state.entries[0];
+ prior.journeyOutcome="fitted-models:not-quadratic";
+ state.completion.fields.nextQuestion=adaptiveNextDirections(state,prior).directions[0].question;
+ assert.equal(addMathematicalStage(state).ok,false);
+ assert.match(addMathematicalStage(state).error,/own mathematical reason/i);
+ state.completion.fields.nextReason="The measured curve levels off and a quadratic is a poor explanation for that behaviour.";
+ assert.equal(addMathematicalStage(state).ok,true);
+});
+test("an unfamiliar second-stage method uses neutral findings, not the original Planning pattern",()=>{
+ const state=make("relationships");
+ const entry={id:"new-argument",phase:"substantial",fromEntryId:state.entries[0].id,methodId:"other",
+  status:"completed",result:"A new mathematical derivation gives a restricted result",journeyOutcome:""};
+ state.entries.push(entry);
+ assert.equal(outcomeRouteForEntry(state,entry).id,"open-exploration");
+ assert(journeyOutcomeOptions(state,entry).some(x=>x.value==="open-exploration:limitation"));
+ assert(!journeyOutcomeOptions(state,entry).some(x=>x.value==="relationships:linear"));
+ entry.methodId="follow-journey";
+ assert.equal(outcomeRouteForEntry(state,entry).id,"relationships");
+});
+test("earlier completed stages cannot silently create children beyond the latest stage",()=>{
+ const state=make("relationships"),prior=state.entries[0];
+ prior.journeyOutcome="relationships:curve";
+ state.completion.fields.nextQuestion="Which curve is mathematically justified?";
+ state.completion.fields.nextReason="The scatter is visibly non-linear.";
+ assert(addMathematicalStage(state).ok);
+ state.entries[1].status="completed";
+ state.entries[1].result="A candidate model was evaluated";
+ state.entries[1].methodId="other";
+ state.entries[1].journeyOutcome="open-exploration:meaningful-result";
+ state.entries[1].nextQuestion="What does the model assume?";
+ state.entries[1].nextWhy="The assumptions affect the interpretation.";
+ state.completion.current="C30";
+ state.completion.activeEntryIndex=0;
+ const resumed=addMathematicalStage(state);
+ assert.equal(resumed.ok,false);
+ assert.match(resumed.error,/latest mathematical stage/i);
+ assert.equal(state.entries.length,2);
+});
