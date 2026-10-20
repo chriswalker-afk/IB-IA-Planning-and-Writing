@@ -91,7 +91,7 @@ export function groupStatus(s,group){
   const milestones=checkingMilestones(s),all=milestones.map(x=>x.status),
    stageStatuses=group.stages.map(id=>stageStatus(s,id));
   if(all.includes('needs-review')||stageStatuses.includes('needs-review'))return 'needs-review';
-  if(all.every(x=>x==='complete')&&stageStatus(s,'C90')==='complete')return 'complete';
+  if(all.every(x=>x==='complete'))return 'complete'; // The new checklist itself is the progress source.
   return all.some(x=>x!=='not-started')||stageStatuses.some(x=>x!=='not-started')?'working':'not-started';
  }
  const all=group.stages.map(id=>stageStatus(s,id));
