@@ -109,6 +109,10 @@ export function createCompletingViews(ctx){
   return true;
  };
  const allButtons=(current,primary=[])=>{
+  // Branch choices live at the end of the four-part maths writing page.
+  if(["C30","C40","C50"].includes(current))return '<div class="completion-footer">'+
+   '<button type="button" class="btn btn-quiet btn-sm" data-action="completion-open" data-node="C04">'+
+   icon("layers")+' Review all my stages</button></div>';
   const rows=routesAt(current).filter(relevantRoute);
   const used=new Set(primary);
   const display=rows.filter(r=>used.has(r.condition));
@@ -118,6 +122,38 @@ export function createCompletingViews(ctx){
      display.map((r,i)=>action(null,r,i===0)).join("")+
    '</div>'+(remaining.length?'<details class="completion-options"><summary>Other useful routes ('+remaining.length+')</summary>'+
     '<div class="completion-route-grid">'+remaining.map(r=>action(null,r)).join("")+'</div></details>':"")+'</div>';
+ };
+
+ const stageBranchActions=()=>{
+  const s=getState(),active=completeEntry(s),confirmed=active?.status==="completed"&&filled(active.result);
+  return '<nav class="math-stage-branch" data-math-stage-branch aria-label="Choose your next mathematical stage">'+
+   '<div class="math-stage-branch-heading"><strong>Where does your mathematical investigation go next?</strong>'+
+   '<p>Another stage is useful when a genuine finding leads to a worthwhile mathematical question. You can also bring your work together in a conclusion.</p></div>'+
+   '<div class="math-stage-branch-buttons">'+
+    '<button type="button" class="btn btn-primary math-stage-branch-button" data-action="stage-add">'+
+      '<span>'+icon("plus-circle")+' Add a new mathematical stage</span>'+icon("arrow-right")+'</button>'+
+    '<button type="button" class="btn btn-primary math-stage-branch-button" data-action="stage-conclude">'+
+      '<span>'+icon("flag")+' Continue to Conclusion</span>'+icon("arrow-right")+'</button>'+
+   '</div>'+
+   (!confirmed?'<p class="math-stage-branch-note">'+icon("info")+
+    ' To connect another mathematical stage, record and confirm the genuine result of this stage in Section 2 first. You can still consider the conclusion whenever you wish.</p>':"")+
+   '</nav>';
+ };
+ const conclusionReadiness=state=>{
+  const count=state.entries.filter(x=>x?.status==="completed"&&filled(x.result)).length;
+  const mathsStages=state.entries.filter(x=>["first","substantial"].includes(x.phase)).length;
+  return '<section class="math-conclusion-gate" data-conclusion-gate role="alertdialog" aria-labelledby="math-conclusion-gate-title" tabindex="-1">'+
+   '<div class="math-conclusion-gate-top"><span>'+icon("book-open")+'</span><div>'+
+   '<span class="math-conclusion-gate-eyebrow">BEFORE YOU CONCLUDE</span>'+
+   '<h2 id="math-conclusion-gate-title">Do you have enough mathematics to answer your aim?</h2></div></div>'+
+   '<p>IB Mathematics exploration guidance suggests approximately <strong>12–20 pages</strong> (commonly double-spaced). This is guidance, <strong>not a compulsory page count or grading threshold</strong>. Follow your teacher\'s current requirements.</p>'+
+   '<p>Check that your IA contains a well-developed mathematical investigation, actual calculations, diagrams or proofs where useful, interpretation of findings, and appropriate reflection on limitations. Do not add unnecessary mathematics merely to reach a length.</p>'+
+   '<p class="math-conclusion-gate-evidence">So far in Pathfinder: <strong>'+count+' confirmed result'+(count===1?"":"s")+'</strong> across <strong>'+mathsStages+' mathematical stage'+(mathsStages===1?"":"s")+'</strong>. This is only a reminder; mathematics written directly in your IA may not be recorded here.</p>'+
+   '<div class="math-conclusion-gate-buttons">'+
+   '<button type="button" class="btn btn-primary" data-action="conclusion-confirm">'+
+    'I have enough material — continue to Conclusion '+icon("arrow-right")+'</button>'+
+   '<button type="button" class="btn btn-secondary" data-action="conclusion-cancel">Keep exploring for now</button></div>'+
+  '</section>';
  };
  const bridgeFromPrior=()=>{
   const prior=sourceResultForNext(getState());
@@ -684,7 +720,7 @@ export function createCompletingViews(ctx){
    return{intro:"Show your first mathematics as a connected mathematical story: introduce each output before displaying it, present it selectively, interpret it against your aim, and justify whatever follows.",
     html:'<div class="show-first-sequence" data-show-first-sequence>'+
       '<p class="show-first-sequence-lead">Four parts of your <strong>actual IA writing</strong>. The boxes below save planning and reflection notes; they do not insert text, tables or calculations into your IA.</p>'+
-      first+second+third+fourth+'</div>'};
+      first+second+third+fourth+stageBranchActions()+'</div>'};
   }
   case "C31":{
    const toolOpen=Boolean(s.graphStudio?.open||s.statStudio?.open||s.tableStudio?.open||s.imageTracer?.open||s.voronoiStudio?.open);
@@ -828,47 +864,125 @@ export function createCompletingViews(ctx){
     info("Association is not causation","Even a strong coefficient does not show that one variable caused another. Avoid forcing a straight-line regression on a curved pattern.")+
     guides.bivariateHelp(n,{reduced:isAdviceReduced(s)})
   };
+
   case "C40":case "C50":{
-   const active=completeEntry(s);
-   const entry=active&&active.phase!=="first"?active:null;
-   return{intro:n==="C40"?"Your first substantial technique should have a reason tied to a previous real finding.":"Further mathematics should follow the investigation's own mathematical questions, not a quota.",
-    html:(entry?entryReviewAlert()+bridgeToActive():info("Return to the first exploration","If you have only a first representation, interpret it and choose a meaningful next question before starting a substantial mathematical section."))+
-     (entry?'<div class="completion-active-step">'+
-       entryField("title","Mathematical question this section addresses","Meaningful and focussed")+
-       criteriaField(entryField("purpose","Why this technique belongs here, BEFORE the work","Link to the previous result and aim",{type:"textarea",rows:3}),"completing:"+n+":title")+
-       entryField("technique","Mathematical technique actually intended or used","e.g. differentiation, regression, algebraic argument")+
-       entryField("methodId","Identify the method for relevant help (optional)","",{type:"select",options:METHOD_OPTIONS})+
-       preflight(entry)+
-       entryChoice("status",[
-         {value:"planned",title:"Only planned",icon:"clock"},
-         {value:"completed",title:"Actual mathematics completed",icon:"check-circle"}])+
-       entryField("result","What did you ACTUALLY establish?","A genuine value, equation, model, property or finding",{type:"textarea",rows:4})+
-    coachBlock(entry)+
-       entryField("resultRef","Where is the full mathematics in my IA?","Equation number, figure, section or page")+
-       accuracySelector()+
-       entryChoice("knowledge",[
-         {value:"syllabus",title:"Verified within my course — use it without a textbook explanation",icon:"check-circle"},
-         {value:"mixed",title:"A familiar technique with one new/out-of-course idea",icon:"book"},
-         {value:"outside",title:"Verified beyond my syllabus — explain the new mathematics",icon:"book"},
-         {value:"unsure",title:"I'm not yet sure whether it is within my course",icon:"lightbulb"}])+
-       (["outside","mixed"].includes(entry.knowledge)?
-        entryField("unfamiliarComponent","Which precise mathematical concept is unfamiliar?","Identify only the new part")+
-        entryField("knowledgeNotes","What do I genuinely understand about the unfamiliar mathematics?","State definitions, conditions and why it works here",{type:"textarea",rows:3})+
-        entryField("understandingExample","One relevant step or check that demonstrates understanding (optional)","A real small derivation, worked step or checked case",{type:"textarea",rows:3})+
-        entryField("researchSource","Source I actually learned this from (if applicable)","Book, link or chapter used"):
-        entry.knowledge==="unsure"?info("Course check first","Check your precise IB course guide or ask your teacher. Independent research alone does not make a taught technique beyond syllabus."):
-        info("Syllabus method","Use it correctly and interpret what it shows. You do not need to teach a standard technique."))+
-       '<details class="guidance-insight"><summary>Did the actual result change my mathematical approach? (optional)</summary>'+
-        entryField("methodChangeReason","Why I changed technique after a genuine result","Which previous limitation or observation motivated the change?",{type:"textarea",rows:2})+
-       '</details>'+
-       entryField("limitations","Important limitation of THIS actual method (optional)","Only if it changes interpretation",{type:"textarea",rows:2})+
-       (entry.mathsInsight?smallSummary("Mathematical insight I recorded earlier",entry.mathsInsight):"")+'</div>':
-       info("Start with actual exploration","Select the first purposeful representation or a real earlier calculation, then justify the mathematical step that follows.",true))+
-     accuracyNote()+miniList()+
-     (entry?.status==="completed"&&filled(entry.result)?
-       sourceAction(n==="C40"?"Actual later mathematical result warrants reinterpretation":"Reflect on a new mathematical result as it happens",
-        "Interpret my actual result",true):"")
-   };
+   const state=s,entry=completeEntry(state),substantial=entry?.phase==="substantial"?entry:null;
+   const idx=state.completion.activeEntryIndex;
+   const stageNumber=state.entries.slice(0,idx+1).filter(x=>x?.phase==="substantial").length+1;
+   if(!substantial)return{intro:"Your next mathematical stage must follow a genuine previous result.",
+    html:info("Begin from a real finding","Return to your first exploration and record what you genuinely calculated, established or discovered before adding another mathematical stage.",true)+
+     '<button type="button" class="btn btn-secondary" data-action="completion-open" data-node="C30">'+icon("arrow-left")+' Return to first mathematics</button>'};
+   const prior=substantial.fromEntryId?state.entries.find(x=>x.id===substantial.fromEntryId):null;
+   const real=substantial.status==="completed"&&filled(substantial.result);
+   const priorFinding=prior?(prior.localTakeaway||prior.interpretation||prior.observationText||prior.result):substantial.previousTakeaway;
+   const card=(id,number,title,description,content)=>'<section class="show-first-part" data-show-first-part="'+id+'">'+
+    '<div class="show-first-part-heading"><span class="show-first-part-number">'+number+'</span>'+
+    '<div><h3>'+e(title)+'</h3><p>'+e(description)+'</p></div></div>'+content+'</section>';
+   const pageNavigation='<nav class="math-stage-page-nav" aria-label="Your mathematical pages">'+
+    state.entries.map((step,i)=>({step,i})).filter(x=>["first","substantial"].includes(x.step.phase)).map(({step,i})=>{
+     const num=step.phase==="first"?"First mathematics":"Mathematical stage "+(state.entries.slice(0,i+1).filter(x=>x.phase==="substantial").length+1);
+     return '<button type="button" class="math-stage-page-link'+(i===idx?' selected':'')+
+      '" data-action="completion-edit-entry" data-index="'+i+'"'+(i===idx?' aria-current="page"':'')+'>'+
+      icon(step.status==="completed"&&filled(step.result)?"check-circle":"circle")+
+      '<span>'+e(num)+'</span></button>';
+    }).join("")+'</nav>';
+   const first=card("introduce","1","Connecting to the previous mathematics",
+    "Begin from what the previous section actually established. Explain the mathematical question that follows, and why this technique can advance your aim.",
+    entryReviewAlert()+
+    '<div class="completion-evidence-anchor">'+icon("route")+'<div>'+
+      '<strong>Result from the previous mathematical stage</strong>'+
+      '<p>'+e(priorFinding||"Your previous stage does not yet have a recorded finding.")+'</p>'+
+      (prior?'<span class="field-hint">'+e(prior.title||"Previous mathematics")+'</span>':"")+
+    '</div></div>'+
+    smallSummary("My investigation aim",currentAim())+
+    entryField("title","What mathematical question is this stage investigating?",
+     "A specific mathematical question arising from the previous result",{type:"textarea",rows:2})+
+    '<div class="show-first-writing-field">'+
+     criterionMarkedWritingBox(entryField("bridge","My linking sentence from the previous result",
+      "For example: The earlier result raises the question of ..., so I will now investigate ...",{type:"textarea",rows:3}),
+      ["completing:"+n+":title"])+'</div>'+
+    entryField("purpose","Why is the chosen approach appropriate here?",
+     "Link the technique to the previous finding and your overall aim",{type:"textarea",rows:3})+
+    '<details class="math-stage-optional-method"><summary>'+icon("book-open")+
+      ' Review mathematical technique, syllabus understanding and alternatives (optional) '+icon("chevron-right")+'</summary>'+
+      entryField("technique","Mathematical technique or argument","e.g. quadratic modelling, integration or a proof")+
+      entryField("methodId","Find relevant guidance for my method (optional)","",{type:"select",options:METHOD_OPTIONS})+
+      preflight(substantial)+
+      entryChoice("knowledge",[
+        {value:"syllabus",title:"Within my IB course",icon:"check-circle"},
+        {value:"mixed",title:"Mostly familiar, with some new mathematics",icon:"book"},
+        {value:"outside",title:"Beyond my course; explanation needed",icon:"book"},
+        {value:"unsure",title:"Check my course or ask my teacher",icon:"lightbulb"}])+
+      (["mixed","outside"].includes(substantial.knowledge)?
+        entryField("unfamiliarComponent","Exactly which idea is new?","Only the unfamiliar part")+
+        entryField("knowledgeNotes","How does that unfamiliar mathematics work here?","Definitions and meaningful reasoning",{type:"textarea",rows:3})+
+        entryField("understandingExample","A relevant worked step or small demonstration (optional)","A check demonstrating understanding",{type:"textarea",rows:2})+
+        entryField("researchSource","Original resource consulted (if relevant)","Link or source"):"")+
+      entryField("methodChangeReason","Has a limitation of the earlier work led me to change method? (optional)",
+       "Explain an actual adjustment, not an imagined one",{type:"textarea",rows:2})+
+    '</details>');
+   const second=card("show","2","Showing your tables, diagrams and calculations",
+    "Present genuinely performed mathematics with legible notation, meaningful scales, units and precision as appropriate.",
+    '<details class="show-first-tool-picker" data-show-first-tools>'+
+     '<summary>'+icon("layers")+' <span><strong>Open diagram &amp; table tools</strong>'+
+      '<small>Graph plotter, statistics, formatted tables, coordinate tracing and Voronoi diagrams</small></span>'+
+      icon("chevron-right")+'</summary>'+
+      '<div class="show-first-tool-picker-body">'+
+        info("Use the tool for THIS mathematical question",
+         "The generator may suggest an option from your original investigative pathway. Use it only if it genuinely helps this stage.")+
+        renderRepresentationHub(state,icon,e)+
+      '</div></details>'+
+    renderFirstFigureGallery(state,icon,e,{
+     graph:graphEntryPanel,trace:traceEntryPanel,stat:statEntryPanel,
+     table:tableEntryPanel,voronoi:voronoiEntryPanel
+    },{scope:"active"})+
+    '<div class="show-first-inline-record" data-stage-inline-result>'+
+     '<div class="show-first-inline-record-heading"><span>'+icon("calculator")+'</span><div>'+
+      '<h4>My mathematical work</h4><p>Record your genuine output here, including work completed in your IA without a diagram generator.</p></div></div>'+
+     '<div class="show-first-inline-fields">'+
+      entryField("result","What did you actually produce or calculate?",
+       "A genuine equation, graph, calculated value, proof or observation",{type:"textarea",rows:3})+
+      entryField("resultRef","Where does it appear in my IA? (optional)","Figure, equation or page number")+
+      entryField("status","Has this mathematics actually been produced?","",{type:"select",options:[
+       ["planned","Not yet / still checking"],["completed","Yes — I have actually completed this work"]]})+
+     '</div>'+
+     '<p class="show-first-inline-honesty">'+icon("info")+
+      ' A saved draft is not automatically a mathematical conclusion. Confirm only work actually carried out.</p>'+
+     accuracySelector()+accuracyNote()+
+    '</div>');
+   const third=card("reflect","3","Interpreting your mathematical result",
+    "Explain what the result tells you about your investigation question and aim. Interpret, rather than merely describe, the calculations.",
+    (real?'<div class="show-first-result-anchor"><strong>'+icon("check-circle")+
+      ' Actual mathematics from Section 2</strong><p>'+e(substantial.result)+'</p></div>':
+     '<p class="show-first-draft-note">'+icon("info")+
+      ' Write conclusions from actual work only. Section 2 must be completed and confirmed before later stages treat this as a finding.</p>')+
+    coachBlock(substantial)+
+    '<div class="show-first-writing-field">'+
+     entryField("interpretation","What does this result mean for my aim?",
+      "What has the mathematics established, and what can I responsibly infer?",{type:"textarea",rows:5})+
+     entryField("localTakeaway","One mathematical takeaway from this stage",
+      "A concise, justified finding to connect to the next stage",{type:"textarea",rows:3})+
+     entryField("limitations","Important limitation, assumption or uncertainty (if relevant)",
+      "Only limitations that affect your result and its interpretation",{type:"textarea",rows:2})+
+    '</div>');
+   const fourth=card("next","4","Explaining what follows",
+    "Does this mathematical result create another worthwhile question, or can you now answer the aim?",
+    (real?smallSummary("Finding that could lead to the next step",
+       substantial.localTakeaway||substantial.interpretation||substantial.result):
+     '<p class="show-first-draft-note">'+icon("info")+
+       ' Your next stage should follow a real result, not a prediction or a planned calculation.</p>')+
+    '<div class="show-first-writing-field">'+
+      entryField("nextQuestion","What mathematical question remains unanswered? (optional)",
+       "A worthwhile question that follows from your finding",{type:"textarea",rows:3})+
+      entryField("nextWhy","My bridge to another stage, or explanation for concluding",
+       "Justify how another technique would help, or why you now have enough evidence",{type:"textarea",rows:4})+
+    '</div>');
+   return{intro:"This is mathematical stage "+stageNumber+". Its starting point is a result from the previous stage, not a second introduction to your IA.",
+    html:'<div class="show-first-sequence math-stage-sequence" data-math-stage-page="'+stageNumber+'">'+
+      pageNavigation+
+      '<p class="show-first-sequence-lead">A separate four-part mathematical page, saved as stage '+stageNumber+
+      '. Your earlier stages remain available above; none of these notes are inserted into your IA automatically.</p>'+
+      first+second+third+fourth+stageBranchActions()+'</div>'};
   }
   case "C40T":return{intro:"Technology can assist calculations, but your IA should show what mathematical meaning you have understood.",
    html:F("technologyTool","Which software, GDC, code or spreadsheet was actually used?","Name the tool")+
@@ -1026,7 +1140,13 @@ export function createCompletingViews(ctx){
  };
  function render(){
   const s=getState(),c=s.completion||{current:"C00",stages:{}},node=c.current;
-  const label=node==="C00"?"Set up: start writing your IA":node==="C20"?"Introducing your first mathematics":node==="C31"?"Diagram & table tools":(titleMap.get(node)||"IA Studio");
+  const activeMath=completeEntry(s);
+  const mathOrdinal=(node==="C40"||node==="C50")&&activeMath?.phase==="substantial"?
+   s.entries.slice(0,c.activeEntryIndex+1).filter(x=>x.phase==="substantial").length+1:0;
+  const label=mathOrdinal?"Mathematical stage "+mathOrdinal+
+   (activeMath.title&&activeMath.title!=="Mathematical stage "+mathOrdinal?" · "+activeMath.title:""):
+   node==="C00"?"Set up: start writing your IA":node==="C20"?"Introducing your first mathematics":
+   node==="C31"?"Diagram & table tools":(titleMap.get(node)||"IA Studio");
   const screen=startOptions(node),stage=completionStage(node,s);
   const progress=stage&&s.completion.stages[stage];
   const warning=completionFlags(s);
@@ -1055,6 +1175,7 @@ export function createCompletingViews(ctx){
       icon(isAdviceReduced(s)?"eye":"eye-off")+' '+(isAdviceReduced(s)?"Show full advice":"Reduce advice")+'</button>'+
     (node==="C04"?"":'<button class="btn btn-quiet btn-sm" data-action="completion-open" data-node="C04">'+icon("layers")+' My stages</button>')+'</div></div>'+
     topWarnings+
+    (c.conclusionWarningOpen&&node!=="C60"?conclusionReadiness(s):"")+
     (node!=="C00"&&node!=="C04"&&node!=="C10"&&!studioWriting&&!isStuckNode(node)?'<p class="studio-ia-writing-reminder">'+icon("pencil")+
       ' WRITE IN YOUR IA · Use these prompts to develop your own document; nothing is inserted automatically.</p>':'')+
     '<div class="task-shell'+(node==="C00"?' chapter-onboarding-shell':'')+'" data-source-node="'+e(node)+'">'+
