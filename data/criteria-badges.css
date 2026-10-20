@@ -143,3 +143,31 @@
  .ess-revised-grid{grid-template-columns:1fr}
  .assessment-cohort-notice{margin:10px 4px 17px;padding:13px}
 }
+
+/* Writer's Field Guide: purple book bubble beside the CURRENT IA writing box,
+ * sharing the field-level geometry of rubric bubbles without becoming a rubric.
+ * The sibling is intentionally outside .criterion-writing-bubbles so it stays
+ * usable when the newer assessment framework hides current-IA criterion badges. */
+.criterion-marked-field.has-writer-guide{position:relative;--writer-bubble-size:38px}
+.writer-guide-field-bubble{position:absolute;right:3px;top:2px;z-index:5;display:grid;place-items:center;width:var(--writer-bubble-size);height:var(--writer-bubble-size);border:2px solid #9b75cc;border-radius:50%;background:#eee4fa;color:#61418c;box-shadow:0 0 0 3px #fff;cursor:pointer;transition:background .15s,border-color .15s,transform .15s}
+.writer-guide-field-bubble>.icon,.writer-guide-field-bubble svg{width:18px;height:18px}
+.writer-guide-field-bubble:hover{background:#dfd0f3;border-color:#7350a4;transform:translateY(-1px)}
+.writer-guide-field-bubble:focus-visible{outline:3px solid #754aa9;outline-offset:4px}
+.criterion-marked-field.has-writer-guide>.criterion-badge{left:auto;right:49px;top:0}
+.criterion-marked-writing-box.has-writer-guide>.criterion-writing-bubbles{left:auto;right:49px;top:0;flex-direction:row;gap:6px}
+.criterion-marked-field.has-writer-guide>.field-group>.field-label{display:block;min-height:45px;padding-right:98px}
+.criterion-marked-writing-box.has-writer-guide>.field-group>.field-label{padding-right:149px}
+.criterion-marked-field.has-writer-guide textarea.field{padding-left:12px}
+.criterion-field-guide-only>.field-group>.field-label{padding-right:45px!important}
+.criterion-field-guide-only:not(:has(>.field-group)){padding-top:44px}
+#main[data-assessment-framework="revised2029"] .criterion-marked-field.has-writer-guide>.field-group>.field-label{padding-right:45px}
+@media(max-width:620px){
+ .criterion-marked-field.has-writer-guide{--writer-bubble-size:38px}
+ .criterion-marked-field.has-writer-guide>.criterion-badge{right:49px;top:0}
+ .criterion-marked-writing-box.has-writer-guide>.criterion-writing-bubbles{left:auto;right:49px;top:0;flex-direction:row;gap:5px}
+ .criterion-marked-field.has-writer-guide>.field-group>.field-label{padding-right:102px;min-height:45px}
+ .criterion-marked-writing-box.has-writer-guide>.field-group>.field-label{padding-right:150px}
+ .criterion-field-guide-only>.field-group>.field-label{padding-right:45px!important}
+}
+@media(prefers-reduced-motion:reduce){.writer-guide-field-bubble{transition:none}}
+@media print{.writer-guide-field-bubble{display:none!important}}
