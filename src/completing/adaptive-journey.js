@@ -146,6 +146,17 @@ export function needsJourneyLinkReview(state,child){
 function questionCard(id,question,why,check){
  return {id,question,why,check};
 }
+export function journeyCourseNote(state,route){
+ const course=state?.planning?.fields?.course||state?.project?.course||"";
+ if(!course)return "Check course suitability with your teacher; deeper reasoning is more valuable than adding techniques simply for complexity.";
+ if(route?.id==="categorical")
+  return "For "+course+": a categorical test is appropriate only with defensible categories, sampling and expected frequencies. Confirm the test is relevant to your course.";
+ if(route?.id==="finance")
+  return "For "+course+": a single financial formula is unlikely to be sufficient mathematical development. Focus on a genuine linked investigation and check syllabus suitability.";
+ if(route?.id==="relationships"||route?.id==="fitted-models")
+  return "For "+course+": explain why the particular correlation or model answers your aim, and check domain, assumptions and residuals. No advanced regression is automatically required.";
+ return "For "+course+": use mathematics you can justify and explain appropriately for your course; a more advanced method is not automatically a stronger investigation.";
+}
 export function adaptiveNextDirections(state,entry){
  const route=activeRoute(state);
  if(!actualMathematics(entry))return{status:"unverified",route,chosen:null,directions:[]};
@@ -158,6 +169,7 @@ export function adaptiveNextDirections(state,entry){
   "Investigate only if this would change the original question or the reliability of the result.",
   chosen.check);
  return{status:"ready",route,chosen,directions:[base,alternative],
+  courseNote:journeyCourseNote(state,route),
   stop:"If the mathematical evidence already answers your aim sufficiently, you can conclude instead of adding an unnecessary technique."};
 }
 export function stageLinkContext(state,entry){
