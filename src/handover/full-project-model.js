@@ -98,6 +98,13 @@ export function modelFromFullProject(state,{exportedAt=new Date().toISOString()}
   ],'Links to mathematical steps use reference IDs.'))),
   ...((c.accuracyDecisions||[]).map((x,i)=>section('Accuracy decision '+(i+1),named(x,[['id','Decision reference'],['quantity','Quantity'],['symbol','Symbol'],['unit','Units'],['resolution','Measurement resolution'],['policy','Reporting policy'],['reason','Justification'],['sourceId','Source reference']])))),
   ...((c.confirmedLimitations||[]).map((x,i)=>section('Confirmed limitation '+(i+1),named(x,[['id','Limitation reference'],['entryId','Linked mathematical record'],['explanation','What applies'],['consequence','Mathematical consequence'],['mitigation','Checking or mitigation'],['location','Where discussed in actual IA'],['at','Recorded date']]),'Confirmed as relevant by the student, not diagnosed automatically.'))),
+  section('IA Studio · student-selected conclusion evidence',(c.conclusionResultIds||[]).map((id,i)=>{
+   const entry=steps.find(x=>x.id===id);
+   return field('Selected result '+(i+1),
+    entry?((actual(entry)&&entry.reviewNeeded!=='yes'?'Confirmed':'Needs review or unconfirmed')+' · '+
+     (val(entry.title)||id)+' · '+(val(entry.localTakeaway)||val(entry.interpretation)||val(entry.result))):
+     'Previously selected record is unavailable: '+id);
+  }),"These are student-selected links to previous mathematical records, not new or verified conclusions."),
   section('IA Studio · conclusion and final communication',records(f,allFields.slice(allFields.indexOf('mainConclusion')))),
   section('Writing prompts · private notes',[
    ...Object.entries(state.cueNotes||{}).map(([k,v])=>field(human(k)+' · note',v)),
