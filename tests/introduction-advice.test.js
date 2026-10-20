@@ -55,7 +55,7 @@ test('introduction writing craft is coherent, accessible, contextual and collaps
  assert.equal(INTRODUCTION_TIPS.filter(t=>t.essential).length,4);
  const tips=new Set(INTRODUCTION_TIPS.map(t=>t.id));
  assert.equal(tips.size,6);
- const html=renderIntroductionWritingAdvice(icon,escapeHtml);
+ const html=renderIntroductionWritingAdvice(icon,escapeHtml,{state:make()});
  assert(html.includes('Before you write'));
  assert(html.includes('Start the journey; don&#39;t write an itinerary'));
  assert.equal((html.match(/data-intro-advice="/g)||[]).length,6);
@@ -65,7 +65,9 @@ test('introduction writing craft is coherent, accessible, contextual and collaps
  assert(html.includes('mathematics more than background detail')===false); // concise text, not an extra essay
  assert(!html.includes('data-example-id="EX34"'));
  assert(!html.includes('data-example-topic="introduction"'));
- assert(html.includes('Full Writer&#39;s Field Guide')||html.includes("Full Writer's Field Guide"));
+ assert(html.includes('Field Guide example'));
+ assert.equal((html.match(/data-action="writer-guide-open"/g)||[]).length,1);
+ assert(html.includes('data-guide-node="C10"'));
  assert(!html.includes('data-criterion-badge="completing:C10:aim"'));
  assert(!html.includes('data-criterion-badge="completing:C10:motivation"'));
  assert(!html.includes('Set up your IA document'));
@@ -73,11 +75,12 @@ test('introduction writing craft is coherent, accessible, contextual and collaps
  assert(!html.includes('Why this matters in the criteria'));
  assert(!html.includes('intro-criteria-mini'));
  for(const t of INTRODUCTION_TIPS)assert(t.body.length>90&&t.weak.length>15&&t.strong.length>25);
- const reduced=renderIntroductionWritingAdvice(icon,escapeHtml,{reduced:true});
+ const reduced=renderIntroductionWritingAdvice(icon,escapeHtml,{reduced:true,state:make()});
  assert(reduced.includes('State your precise mathematical aim'));
  assert(reduced.includes('non-mathematical specialist terms briefly'));
  assert(reduced.includes('prediction spark'));
  assert(!reduced.includes('data-intro-advice='));
+ assert(reduced.includes('data-guide-node="C10"'),'guide remains available in reduced advice mode');
 });
 test('criterion A/C comments are introduction-specific, and remain best-fit guidance',()=>{
  const a=CRITERION_SPOTS['completing:C10:aim'],c=CRITERION_SPOTS['completing:C10:motivation'];

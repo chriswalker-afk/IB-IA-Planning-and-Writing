@@ -65,6 +65,8 @@ test('main stage pages offer four high-value tips; substeps keep optional advice
   if(node==='C60'){
    assert(html.includes('studio-stage-more-advice'),"Conclusion advice is available without crowding the writing workspace");
    assert(html.includes('How to write an effective conclusion'));
+  }else if(node==='C50'){
+   assert(html.includes('studio-stage-more-advice'),'Later mathematical work should keep general tips available without repeating them openly');
   }else assert(!html.includes('studio-stage-more-advice'),node);
  }
  for(const node of ['C21S','C24','C32','C34B','C61','C64']){

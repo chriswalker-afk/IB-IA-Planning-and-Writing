@@ -1004,7 +1004,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         if(card){
           card.open=true;
           card.scrollIntoView?.({block:"start",behavior:"auto"});
-          card.querySelector("summary")?.focus?.({preventScroll:true});
+          card.querySelector?.("summary")?.focus?.({preventScroll:true});
         }
       }
       return;
