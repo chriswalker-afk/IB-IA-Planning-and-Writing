@@ -8,6 +8,8 @@
  * Guidance never invents data, guarantees a grade or requires a new technique.
  */
 import {INVESTIGATIVE_ROUTES,routeById} from "../planning/investigative-routes.js";
+import {methodFamilies} from "./method-identity.js";
+import {EXTENDED_SIGNALS,extendedFamily,extendedAdvice} from "./extended-routes.js";
 
 const has=x=>typeof x==="string"&&!!x.trim();
 export const actualMathematics=x=>x?.status==="completed"&&has(x.result);
@@ -99,9 +101,63 @@ const uncertainty=(route)=>extra("uncertain","I cannot yet tell what this result
 const outcomeKey=(route,id)=>route+":"+id;
 const activeRoute=state=>routeById(state?.planning?.routeExplorer?.selectedRoute||"");
 export const selectedInvestigativeRoute=activeRoute;
-export function journeyOutcomeOptions(state){
- const route=activeRoute(state);
+const SPECIALISED_TITLES=Object.freeze({
+ "finance-break-even":"Break-even and profitability",
+ "finance-compound":"Compound interest and investment growth",
+ "finance-loan":"Loan repayments and amortisation",
+ "finance-cashflow":"Financial cash-flow modelling",
+ "nonlinear-association":"Rank association and monotonicity",
+ "nonlinear-model":"Nonlinear models, fits and residuals",
+ "categorical-test":"Categorical tests and expected counts",
+ "expected-value":"Expected values and risk",
+ measurement:"Triangulation and measurement uncertainty",
+ voronoi:"Voronoi regions and access"
+});
+const ROUTE_BY_METHOD=Object.freeze({
+ pmcc:"relationships","linear-regression":"fitted-models",
+ "quadratic-fit":"fitted-models",exponential:"growth",sinusoidal:"cycles",
+ power:"fitted-models",optimisation:"optimisation",
+ "normal":"variation","two-sample-t":"groups",binomial:"chance",
+ probability:"chance","geometric-model":"images",
+ proof:"proof","numerical-integration":"images",
+ "rates-from-data":"growth"
+});
+/** On Stage 2+ the mathematical method actually used may differ from the
+ * overarching pathway originally chosen in Planning. Explicit method identity
+ * drives stage-local outcomes, never keywords guessed from the result text. */
+export function outcomeRouteForEntry(state,entry){
+ const initial=activeRoute(state);
+ if(entry?.phase!=="substantial"||!has(entry?.methodId)||entry.methodId==="other")return initial;
+ const methods=methodFamilies(entry,{allowPlanned:true}),extended=extendedFamily(methods);
+ if(extended&&EXTENDED_SIGNALS[extended])return{
+  id:extended,title:SPECIALISED_TITLES[extended]||"Current mathematical technique",
+  parentRoute:initial?.id||""
+ };
+ const route=ROUTE_BY_METHOD[entry.methodId];
+ return routeById(route)||initial;
+}
+export function journeyOutcomeOptions(state,entry){
+ const route=outcomeRouteForEntry(state,entry);
  if(!route)return [];
+ if(EXTENDED_SIGNALS[route.id]){
+  const methods=methodFamilies(entry,{allowPlanned:true});
+  const outcomes=EXTENDED_SIGNALS[route.id].map(option=>{
+   const advice=extendedAdvice(state,entry,{
+    family:route.id,methods,signal:option.value
+   });
+   return{
+    id:option.value,value:outcomeKey(route.id,option.value),title:option.title,
+    next:advice?.essential||option.desc,
+    check:advice?.detail||"Check the assumptions and conditions of this mathematical result.",
+    question:advice?.questions?.[0]||
+      "What does this mathematical result establish for my original question?",
+    alternative:advice?.questions?.[1]||
+      "Would a relevant sensitivity or assumption check change this result?"
+   };
+  });
+  return [...outcomes,uncertainty(route)].map(x=>({...x,
+   value:outcomeKey(route.id,x.id),title:x.title||x.signal}));
+ }
  const base=route.branches.map((b,i)=>({
   id:b.id,value:outcomeKey(route.id,b.id),title:b.signal,
   next:b.next,check:b.check,question:QUESTIONS[route.id]?.[i]||route.question,
@@ -115,9 +171,9 @@ export function journeyOutcomeOptions(state){
 }
 export function selectedJourneyOutcome(state,entry){
  if(!actualMathematics(entry))return null;
- const route=activeRoute(state),choice=entry?.journeyOutcome||"";
+ const route=outcomeRouteForEntry(state,entry),choice=entry?.journeyOutcome||"";
  if(!route||!choice.startsWith(route.id+":"))return null;
- return journeyOutcomeOptions(state).find(x=>x.value===choice)||null;
+ return journeyOutcomeOptions(state,entry).find(x=>x.value===choice)||null;
 }
 export function journeySelectionIsStale(state,entry){
  return actualMathematics(entry)&&has(entry?.journeyOutcome)&&!selectedJourneyOutcome(state,entry);
@@ -130,8 +186,8 @@ export function priorStageFor(state,entry){
  * allowing links on imported projects to be reviewed without deleting text. */
 export function journeySourceSignature(state,entry){
  if(!entry)return "";
- const route=activeRoute(state)?.id||"";
- const json=JSON.stringify([route,entry.id||"",entry.status||"",entry.result||"",entry.journeyOutcome||"",
+ const original=activeRoute(state)?.id||"",methodRoute=outcomeRouteForEntry(state,entry)?.id||"";
+ const json=JSON.stringify([original,methodRoute,entry.id||"",entry.status||"",entry.result||"",entry.journeyOutcome||"",
   entry.resultSignal||"",entry.observation||"",entry.localTakeaway||"",entry.interpretation||""]);
  let h=2166136261;
  for(let i=0;i<json.length;i++)h=Math.imul(h^json.charCodeAt(i),16777619);
@@ -151,18 +207,19 @@ export function journeyCourseNote(state,route){
  if(!course)return "Check course suitability with your teacher; deeper reasoning is more valuable than adding techniques simply for complexity.";
  if(route?.id==="categorical")
   return "For "+course+": a categorical test is appropriate only with defensible categories, sampling and expected frequencies. Confirm the test is relevant to your course.";
- if(route?.id==="finance")
+ if(route?.id?.startsWith("finance"))
   return "For "+course+": a single financial formula is unlikely to be sufficient mathematical development. Focus on a genuine linked investigation and check syllabus suitability.";
- if(route?.id==="relationships"||route?.id==="fitted-models")
+ if(["relationships","fitted-models","nonlinear-model","nonlinear-association"].includes(route?.id))
   return "For "+course+": explain why the particular correlation or model answers your aim, and check domain, assumptions and residuals. No advanced regression is automatically required.";
  return "For "+course+": use mathematics you can justify and explain appropriately for your course; a more advanced method is not automatically a stronger investigation.";
 }
 export function adaptiveNextDirections(state,entry){
- const route=activeRoute(state);
+ const route=outcomeRouteForEntry(state,entry);
  if(!actualMathematics(entry))return{status:"unverified",route,chosen:null,directions:[]};
  if(!route)return{status:"no-route",route:null,chosen:null,directions:[]};
  const chosen=selectedJourneyOutcome(state,entry);
  if(!chosen)return{status:journeySelectionIsStale(state,entry)?"stale":"choose",route,chosen:null,directions:[]};
+ if(entry.reviewNeeded==="yes")return{status:"review",route,chosen,directions:[]};
  const base=questionCard("follow",chosen.question,chosen.next,chosen.check);
  const alternative=questionCard("check",
   chosen.alternative||"Would testing a key assumption change this interpretation?",
