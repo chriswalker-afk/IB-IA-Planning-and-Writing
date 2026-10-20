@@ -1,0 +1,102 @@
+/* Mathematical Journey v2 — the techniques and findings are the content.
+   The constellation is deliberately compact: no large aspect-ratio spacer. */
+.math-constellation .math-constellation-top{align-items:center}
+.math-constellation .math-constellation-top h3{font-size:21px;line-height:1.22;letter-spacing:-.025em;margin:5px 0 0}
+.math-constellation .math-constellation-intro{max-width:75ch;margin-top:9px;font-size:12px;line-height:1.55}
+.math-constellation .math-constellation-count{font-size:11px;font-weight:800;padding:8px 12px;line-height:1.35;text-align:center}
+.math-journey-sky-card{margin:17px 0 18px;padding:11px 14px 5px;border:1px solid #dbe7df;border-radius:17px;background:linear-gradient(115deg,#f5fbf7,#eef7f2 52%,#f8fbf8)}
+.math-journey-sky-head{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:10px;color:var(--muted)}
+.math-journey-sky-head strong{display:inline-flex;align-items:center;gap:7px;font-size:10px;letter-spacing:.065em;color:var(--teal-dark)}
+.math-journey-sky-head .icon{height:16px;width:16px;color:#a68136}
+.math-constellation .constellation-sky-wrap{height:102px;width:100%;aspect-ratio:auto;position:relative;margin:1px 0 0;overflow:visible}
+.math-constellation .constellation-sky-wrap .math-constellation-svg{position:absolute;inset:0;width:100%;height:100%;max-height:none;margin:0;border-radius:0;background:none;pointer-events:none}
+.math-constellation .constellation-horizon{stroke:#bdcfbf;stroke-width:1.5;stroke-dasharray:3 8;vector-effect:non-scaling-stroke;opacity:.72}
+.math-constellation .constellation-link{stroke:#5b9f92;stroke-width:2.6;stroke-linecap:round;fill:none;vector-effect:non-scaling-stroke}
+.math-constellation .constellation-link.review{stroke:#c98b54;stroke-dasharray:5 5}
+.math-constellation .constellation-star-hit{display:grid;place-items:center;position:absolute;transform:translate(-50%,-50%);width:40px;height:40px;padding:0;background:#fff;color:#6d8980;border:2px solid #b7c7bd;border-radius:50%;box-shadow:0 2px 5px #25503c13;cursor:pointer;z-index:2}
+.math-constellation .constellation-star-hit.actual{background:#f1cf88;color:#694a19;border-color:#aa803a;box-shadow:0 0 0 6px #f4db9f5c,0 2px 7px #966f2635}
+.math-constellation .constellation-star-hit.review{background:#fff3df;color:#965b26;border-color:#cb8c54;box-shadow:0 0 0 5px #efd1b16b}
+.math-constellation .constellation-star-hit:hover{border-color:#08766e;box-shadow:0 0 0 5px #b1dbc6,0 2px 8px #17584125;transform:translate(-50%,-50%) scale(1.07)}
+.math-constellation .constellation-star-hit:focus-visible{outline:3px solid #a67827;outline-offset:5px}
+.math-constellation .constellation-star-number{font-size:12px;font-weight:850;line-height:1;font-variant-numeric:tabular-nums}
+.math-journey-story{display:grid;gap:0;min-width:0}
+.math-journey-story-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:12px}
+.math-journey-story-head strong{font-size:11px;letter-spacing:.08em;color:var(--teal-dark)}
+.math-journey-story-head span{font-size:11px;color:var(--muted)}
+.math-journey-step{min-width:0}
+.math-journey-step-card{display:grid;grid-template-columns:42px minmax(0,1fr) 84px;align-items:center;gap:13px;width:100%;padding:14px 17px 14px 14px;border:1px solid #d8e5dd;border-radius:15px;background:#fff;color:var(--ink);text-align:left;cursor:pointer;transition:border-color .16s,box-shadow .16s,background .16s}
+.math-journey-step-card:hover{border-color:#86bba3;background:#fbfefa;box-shadow:0 5px 16px #2b604015}
+.math-journey-step-card:focus-visible{outline:3px solid #b7863b;outline-offset:3px}
+.math-journey-step.actual .math-journey-step-card{border-left:4px solid #b79249;padding-left:11px}
+.math-journey-step.review .math-journey-step-card{border-left:4px solid #d39261;padding-left:11px;background:#fffdf9}
+.math-journey-step.planned .math-journey-step-card{border-left:4px solid #b5c9bd;padding-left:11px}
+.math-journey-step-number{display:grid;place-items:center;width:39px;height:39px;align-self:start;margin-top:2px;border-radius:13px;background:#f0f5f1;color:#789b8a}
+.math-journey-step.actual .math-journey-step-number{background:#fff1d2;color:#9e7432}
+.math-journey-step.review .math-journey-step-number{background:#fef0e3;color:#b67438}
+.math-journey-step-number .icon{width:19px;height:19px}
+.math-journey-step-content{display:block;min-width:0}
+.math-journey-step-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;line-height:1.5;margin-bottom:3px}
+.math-journey-stage-tag{font-size:10px;font-weight:800;color:var(--muted);letter-spacing:.055em}
+.math-journey-status{border-radius:999px;font-size:10px;font-weight:800;line-height:1.3;padding:3px 8px;background:#edf3ef;color:#597b67}
+.math-journey-step.actual .math-journey-status{background:#f7edda;color:#916a2c}
+.math-journey-step.review .math-journey-status{background:#fff0e3;color:#955d26}
+.math-journey-action{display:block;font-size:16px;line-height:1.35;letter-spacing:-.012em;color:var(--ink);overflow-wrap:anywhere}
+.math-journey-question,.math-journey-finding,.math-journey-next-question,.math-journey-source-note,.math-journey-not-yet,.math-journey-review-note{display:block;margin-top:7px;font-size:12px;line-height:1.45;overflow-wrap:anywhere;color:var(--muted)}
+.math-journey-question b,.math-journey-finding b,.math-journey-next-question b{display:inline-block;margin-right:6px;color:var(--teal-dark);font-size:10px;font-weight:850;letter-spacing:.02em;text-transform:uppercase}
+.math-journey-finding{background:#f1f8f3;border:1px solid #dcece0;border-radius:9px;color:#284e40;padding:8px 10px}
+.math-journey-step.review .math-journey-finding{background:#fff9ee;border-color:#ecd6ba}
+.math-journey-not-yet{font-style:italic}
+.math-journey-next-question{color:#34544b}
+.math-journey-source-note{display:flex;align-items:flex-start;gap:7px;color:#6b766f}
+.math-journey-source-note .icon{width:14px;height:14px;flex:none;margin-top:1px}
+.math-journey-review-note{color:#9b6329;font-weight:650}
+.math-journey-step-open{display:flex;align-items:center;justify-content:flex-end;gap:6px;font-size:10px;font-weight:750;color:var(--teal-dark);white-space:nowrap}
+.math-journey-step-open .icon{width:14px;height:14px}
+.math-journey-link{display:grid;grid-template-columns:42px minmax(0,1fr);gap:13px;align-items:start;margin:0 0 0 12px;padding:7px 0 9px;min-width:0}
+.math-journey-link-icon{display:grid;place-items:center;width:27px;height:27px;margin-left:4px;color:#789b8b}
+.math-journey-link-icon .icon{width:18px;height:18px}
+.math-journey-link>div{margin:0;padding:5px 9px;border-left:2px dashed #b5d2bf;min-width:0}
+.math-journey-link-label{display:block;color:#537b69;font-size:9px;letter-spacing:.07em;font-weight:850}
+.math-journey-link p{font-size:11px;line-height:1.45;color:#60726a;margin:3px 0 0;overflow-wrap:anywhere}
+.math-journey-link-note{color:#a26836;font-size:11px;margin:10px 0}
+.math-journey-earlier{border-radius:12px;border:1px solid var(--line);margin:0 0 10px;background:var(--surface-soft)}
+.math-journey-earlier>summary{display:flex;align-items:center;gap:9px;padding:11px 13px;color:var(--teal-dark);font-size:12px;font-weight:750;cursor:pointer;list-style:none}
+.math-journey-earlier>summary::-webkit-details-marker{display:none}
+.math-journey-earlier>summary .icon{height:15px;width:15px}
+.math-journey-earlier>summary .icon:last-child{margin-left:auto;transition:transform .16s}
+.math-journey-earlier[open]>summary .icon:last-child{transform:rotate(180deg)}
+.math-journey-earlier>summary:focus-visible{outline:3px solid #a98136;outline-offset:2px}
+.math-journey-earlier-content{padding:0 10px 10px}
+.math-constellation.is-compact .math-constellation-top h3{font-size:18px}
+.math-constellation.is-compact .math-journey-sky-card{margin:12px 0}
+.math-constellation.is-compact .constellation-sky-wrap{height:80px}
+.math-constellation.is-compact .math-journey-step-card{padding-top:11px;padding-bottom:11px}
+.math-journey-endnote{max-width:76ch}
+@media(max-width:760px){
+ .math-constellation .math-constellation-top{align-items:flex-start;flex-wrap:wrap}
+ .math-constellation .math-constellation-top h3{font-size:18px}
+ .math-constellation .math-constellation-count{padding:6px 10px;font-size:10px}
+ .math-journey-sky-card{padding:10px 10px 3px;margin-top:13px}
+ .math-journey-sky-head{align-items:flex-start}
+ .math-journey-sky-head span{max-width:38%;text-align:right;font-size:9px}
+ .math-constellation .constellation-sky-wrap{height:90px}
+ .math-constellation .constellation-star-hit{width:34px;height:34px}
+ .math-constellation .constellation-star-number{font-size:11px}
+ .math-journey-story-head{align-items:flex-start;flex-direction:column;gap:3px}
+ .math-journey-step-card{grid-template-columns:34px minmax(0,1fr) 17px;gap:10px;padding:11px 10px}
+ .math-journey-step.actual .math-journey-step-card,.math-journey-step.review .math-journey-step-card,.math-journey-step.planned .math-journey-step-card{padding-left:8px}
+ .math-journey-step-number{width:31px;height:31px;border-radius:10px}
+ .math-journey-step-number .icon{width:17px;height:17px}
+ .math-journey-action{font-size:14px}
+ .math-journey-question,.math-journey-finding,.math-journey-next-question{font-size:11px}
+ .math-journey-stage-tag,.math-journey-status{font-size:9px}
+ .math-journey-step-open span{display:none}
+ .math-journey-step-open .icon{width:15px;height:15px}
+ .math-journey-link{margin-left:6px;grid-template-columns:34px minmax(0,1fr);gap:10px}
+ .math-journey-link>div{padding:4px 7px}
+ .math-journey-link p{font-size:10px}
+}
+@media(prefers-reduced-motion:reduce){
+ .math-constellation .constellation-star-hit,.math-journey-step-card,.math-journey-earlier>summary .icon:last-child{transition:none!important}
+ .math-constellation .constellation-star-hit:hover{transform:translate(-50%,-50%)}
+}
