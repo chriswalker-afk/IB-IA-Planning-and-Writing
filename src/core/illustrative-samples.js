@@ -7,6 +7,7 @@ import {createProjectState} from "./project-state.js";
 import {ENTRY_BASE} from "../completing/entry-record.js";
 import {applyPlanningField} from "../planning/engine.js";
 import {applySuggestedTimeline,localToday} from "../planning/timeline.js";
+import {enrichCurrentIllustrativeSample} from "./sample-current-workflow.js";
 
 export const SAMPLE_CHOICES=Object.freeze([
  {id:"linear",title:"A nearly straight pattern",description:"Scatter plot → Pearson's r → line of best fit and residuals."},
@@ -621,5 +622,5 @@ export function createIllustrativeSample(kind,{today}={}){
  reviewExample(sample,kind,first.id,second.id,third.id);
  sample.teacher.concerns=[p.teacherQuestion];sample.teacher.pendingApproval=false;
  sample.teacher.checkpoints=[];
- return sample;
+ return enrichCurrentIllustrativeSample(sample,kind,{lineSummary,exponentialSummary});
 }
