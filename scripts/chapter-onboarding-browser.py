@@ -68,26 +68,28 @@ def first_time(browser,width):
   assert page.locator('.living-ribbon-part.writing').count()==3
   assert page.locator('.living-ribbon-part.planning').count()==1
   assert page.locator('.living-ribbon .journey-mode-tag').count()==0
-  # Check the main Discovery Trail: two zones and four stages, with
+  # Check the main Discovery Trail: three zones and five stages, with
   # colour explaining the task type independently of progress status.
   page.locator('[data-nav="path"]:visible').first.click()
   trail=page.locator('.living-trail:not(.is-compact)').first
   assert trail.is_visible()
   assert trail.locator('.living-trail-zone-title.plan').count()==1
   assert trail.locator('.living-trail-zone-title.writing').count()==1
+  assert trail.locator('.living-trail-zone-title.checking').count()==1
   assert trail.locator('.living-trail-step.planning').count()==1
   assert trail.locator('.living-trail-step.writing').count()==3
+  assert trail.locator('.living-trail-step.checking').count()==1
   assert trail.locator('.journey-mode-tag').count()==0
-  assert trail.locator('.living-trail-step .chapter-journey-icon').count()==4
+  assert trail.locator('.living-trail-step .chapter-journey-icon').count()==5
   assert trail.locator('.living-trail-zone-underlay').count()==1
   cols=page.evaluate("getComputedStyle(document.querySelector('.living-trail-steps')).gridTemplateColumns")
-  assert len(cols.split())==(1 if width<541 else 4),(width,cols)
+  assert len(cols.split())==(1 if width<541 else 5),(width,cols)
   colors=page.evaluate("""() => {
     const panels=document.querySelectorAll('.living-trail-zone-underlay span');
     return [...panels].map(p=>getComputedStyle(p).backgroundColor);
   }""")
-  assert colors[0]!=colors[1],colors
-  # Marker geometry must align with the four stage cards. The first is
+  assert len(colors)==3 and len(set(colors))==3,colors
+  # Marker geometry must align with the five stage cards. The first is
   # INSIDE the mint panel, not merely labelled as Planning within purple.
   geometry=trail.evaluate("""root => {
     const rect=el=>{const r=el.getBoundingClientRect();return {
@@ -98,21 +100,23 @@ def first_time(browser,width):
     return {
       plan:rect(panel.querySelector('.plan')),
       writing:rect(panel.querySelector('.writing')),
+      checking:rect(panel.querySelector('.checking')),
       svg:rect(root.querySelector('.living-trail-svg')),
       markers:[...root.querySelectorAll('.living-trail-marker')].map(rect),
       cards:[...root.querySelectorAll('.living-trail-step')].map(rect),
       pathDisplay:getComputedStyle(root.querySelector('.living-trail-path')).display
     };
   }""")
-  assert len(geometry['cards'])==4
+  assert len(geometry['cards'])==5
   if width>540:
    assert geometry['pathDisplay']!='none',geometry
-   assert len(geometry['markers'])==4,geometry
+   assert len(geometry['markers'])==5,geometry
    first=geometry['markers'][0]
    assert geometry['plan']['left']+12<first['x']<geometry['plan']['right']-12,geometry
    assert first['x']<geometry['writing']['left'],geometry
-   for marker in geometry['markers'][1:]:
+   for marker in geometry['markers'][1:4]:
     assert geometry['writing']['left']+8<marker['x']<geometry['writing']['right']-8,geometry
+   assert geometry['checking']['left']+8<geometry['markers'][4]['x']<geometry['checking']['right']-8,geometry
    for marker,card in zip(geometry['markers'],geometry['cards']):
     assert abs(marker['x']-card['x'])<5,geometry
     assert 27<marker['width']<45 and 27<marker['height']<45,geometry
@@ -120,7 +124,15 @@ def first_time(browser,width):
   else:
    assert geometry['pathDisplay']=='none',geometry
   without_overflow(page)
-  page.screenshot(path=str(OUT/f"two-zone-discovery-trail-{width}.png"),full_page=True,animations="disabled")
+  page.screenshot(path=str(OUT/f"three-zone-discovery-trail-{width}.png"),full_page=True,animations="disabled")
+  # The fifth trail chapter opens the independent source-grounded A-E review.
+  trail.locator('.living-trail-step.checking').click()
+  assert page.locator('.checking-page').is_visible()
+  assert page.locator('.checking-criteria-legend .checking-criterion-bubble').count()==5
+  for letter in ('A','B','C','D','E'):
+   assert page.locator('.checking-criterion-bubble[data-criterion="'+letter+'"]').count()>=1
+  without_overflow(page)
+  page.locator('[data-nav="path"]:visible').first.click()
   # Use the actual visible Writing chapter, including on phones where
   # the sidebar's duplicate navigation links are deliberately hidden.
   page.locator('.living-trail-step.writing').first.click()
