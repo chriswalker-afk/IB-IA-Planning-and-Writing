@@ -106,14 +106,21 @@ with sync_playwright() as pw:
    assert shell.locator('.criteria-panel [data-action="criteria-toggle"]').count()==0
    assert shell.locator('.criteria-panel [data-action="essentials-open"]').count()==0 or (
     shell.locator('.criteria-panel [data-action="essentials-open"]').count()==1)
-   assert p.locator('.criteria-panel .support-actions').count()==1
+   # Older support panels are optional in the unified Writing Journey.
+   # If present, they must not duplicate actions.
+   assert p.locator('.criteria-panel .support-actions').count()<=1
    if node=='N01V':
     assert badge.locator('..').get_attribute('class')=='criterion-marked-field'
     # The saved-spark editor may mirror the answer elsewhere on the screen.
     # Ensure the marked response itself contains one editable textarea.
     assert badge.locator('..').locator('textarea[data-bind="planning.fields.beneficiary"]').count()==1
    elif spot.endswith(':title'):
-    assert badge.locator('..').get_attribute('class').startswith('criterion-title-row')
+    # Some formerly page-level badges now annotate a real writing field.
+    parent=badge.locator('..')
+    css=parent.get_attribute('class') or ''
+    assert css.startswith('criterion-title-row') or css.startswith('criterion-marked-field')
+    if css.startswith('criterion-marked-field'):
+     assert parent.locator('textarea').count()==1
    else:
     assert badge.locator('..').get_attribute('class')=='criterion-marked-field'
     assert badge.locator('..').locator('textarea').count()==1
@@ -305,7 +312,7 @@ with sync_playwright() as pw:
    traceback.print_exc()
   ctx.close()
  # A planned conclusion cannot borrow an unperformed result from this project.
- for node,key in [('C61','completing:C61:mainConclusion'),('C62','completing:C62:benefit')]:
+ for node,key in [('C61','completing:C61:mainConclusion'),('C60','completing:C60:meaningAndLimits')]:
   sample=state_for('completing',node)
   sample['entries'][0]['status']='planned'
   sample['entries'][0]['result']='Never performed result'
@@ -366,11 +373,14 @@ with sync_playwright() as pw:
   page.goto(URL,wait_until='networkidle')
   button=page.locator('[data-action="toggle-advice-mode"]')
   if button.get_attribute('aria-pressed')!='true':button.click()
-  assert page.locator('[data-criterion-badge]').count()==0
+  # Quiet mode suppresses optional coaching, not the read-only criterion
+  # markers attached to the actual next-question writing fields.
+  assert page.locator('[data-criterion-badge="completing:C35:nextQuestion"]').count()==1
+  assert page.locator('[data-criterion-badge="completing:C35:nextReason"]').count()==1
   assert page.locator('[data-bind="completion.fields.nextQuestion"]').count()==1
-  result.append({'case':'reduced-advice-no-extra-badges','status':'passed'})
+  result.append({'case':'reduced-advice-retains-contextual-criteria','status':'passed'})
  except Exception as e:
-  result.append({'case':'reduced-advice-no-extra-badges','status':'FAILED','reason':str(e)})
+  result.append({'case':'reduced-advice-retains-contextual-criteria','status':'FAILED','reason':str(e)})
   traceback.print_exc()
  ctx.close()
  browser.close()
