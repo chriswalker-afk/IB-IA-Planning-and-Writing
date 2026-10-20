@@ -2,10 +2,11 @@
 import {PLANNING_CATALOG} from "../planning/catalog.js";
 import {routeById} from '../planning/investigative-routes.js';
 import {samplingMethod,plannedAccuracyText} from '../planning/data-decisions.js';
-import {normalizePlanningEnvelope} from "./schema.js";
+import {normalizePlanningEnvelope,FIELD_LABELS} from "./schema.js";
+import {PLANNING_FIELD_DEFAULTS} from "../planning/engine.js";
 
 const trim=x=>String(x??"").trim();
-const row=(label,value,{required=false,link=false}={})=>({label,value:trim(value)||(required?"To confirm":""),link});
+const row=(label,value,{required=false,link=false}={})=>({label,value:trim(value),link});
 const section=(title,rows,description="")=>{
  const present=rows.filter(x=>x&&x.value);
  return present.length?{title,description,rows:present}:null;
@@ -34,13 +35,13 @@ export function modelFromEnvelope(envelope){
     row("Investigation approach",f.kind,{required:true}),
     row("Possible mathematical techniques",chosen.join("; ") + (f.otherMaths?(chosen.length?"; ":"")+f.otherMaths:"") + (f.otherCourseMaths?"; "+f.otherCourseMaths:"")),
     row("Provisional investigative route",route?.title),
-    row("Suggested first mathematical step (not completed)",route?.first[0]),
+    row("Suggested first mathematical step (not completed)",route&&payload.planning.routeExplorer?.firstStep?payload.planning.routeExplorer.firstStep:""),
     row("Mathematical suitability self-check",f.courseSuitability),
     row("Mathematics beyond / uncertain within syllabus",f.mathsOutside),
     row("Why this mathematics could help",f.suitabilityWhy||f.mathsRevisedWhy)
   ],"Provisional selections only. Selecting a technique does not imply that it has been used or understood."),
   section("03 · Prediction and mathematical purpose",[
-    row("Contextual prompt I considered",predictionPrompt),
+    row("Contextual prompt I considered",f.predictionId?predictionPrompt:""),
     row("My tentative prediction or conjecture (optional)",f.prediction|| (f.predictionId==="X02"?"Exploring first":"")),
     row("Why I expect it",f.predictionWhy),
     row("What it could mean IF TRUE",f.predictionImplication),
@@ -91,7 +92,7 @@ export function modelFromEnvelope(envelope){
     row("Why I suspect it",f.theoreticalWhy)
   ],"A suitable scope and level should be discussed with the teacher. No dataset is required by this route."),
   section("Practical readiness",[
-    row("Data readiness",data?"":"Not applicable — theoretical route"),
+    row("Data readiness",data?"":""),
     row("Evidence available now",data?f.dataAvailability:""),
     row("Earlier data readiness score (historical, if recorded)",data&&f.dataReadiness?f.dataReadiness+"/5":""),
     row("One way to improve data readiness",f.readinessImprovement),
@@ -105,7 +106,7 @@ export function modelFromEnvelope(envelope){
     row("External uncertainty",f.externalRisks),
     row("Minimum viable investigation",f.minimumVersion),
     row("Contingency / backup data source",f.backupMethod),
-    row("Permissions / privacy need",f.permissionNeed||"To confirm"),
+    row("Permissions / privacy need",f.permissionNeed),
     row("Essential access blocker",f.practicalBlocker),
     row("Permissions questions",f.permissionDetails),
     row("Rights to use source material",f.sourceRights)
@@ -147,6 +148,39 @@ export function modelFromEnvelope(envelope){
     row("Safe next action while awaiting advice",f.teacherSafeAction)
   ],"Teacher advice is recommended where relevant. A document export is not confirmation of approval.")
  ].filter(Boolean);
+ // Field parity: render every populated student-owned Planning field once, even
+ // when a newer interface has moved it outside the hand-authored report layout.
+ // Inactive primary/secondary branches are not printed as current decisions.
+ const usedLabels=new Set(main.flatMap(s=>s.rows.map(r=>r.label)));
+ const explicit=new Set([
+  "planIdentifier","provisionalTitle","aim","motivation","beneficiary","beneficiaryType","intendedUse",
+  "course","kind","otherMaths","otherCourseMaths","courseSuitability","mathsOutside","suitabilityWhy","mathsRevisedWhy",
+  "predictionId","prediction","predictionWhy","predictionImplication","predictionExploration","predictionPrior",
+  "primaryWhat","primaryPopulation","primaryWhen","primaryWhere","primaryHow","primaryEquipment","primarySamplingMethod",
+  "primarySamplingUnit","primarySamplingFrame","primarySamplingFrameDetails","primaryRepeatable","primarySampling",
+  "primaryStatus","secondaryPublisher","secondaryUrl","secondaryVariables","secondaryScope","secondarySamplingOrigin",
+  "secondaryVerified","secondaryStatus","dataSource","sourceFirstDate","sourceFullDate","dataAvailability",
+  "alternativeMethod","methodReason","methodLimitation","methodMitigation","theoreticalAim","theoreticalCase",
+  "theoreticalPrediction","theoreticalWhy","dataReadiness","readinessImprovement","practicalEase","easeImprovement",
+  "dependencies","unsecured","workloadHours","softwareReady","cleaningBurden","externalRisks","minimumVersion",
+  "backupMethod","permissionNeed","practicalBlocker","permissionDetails","sourceRights","figureType",
+  "figureOther","figurePurpose","firstAction","firstAccuracy","timelineWeeks","timelineEarly","timelineStart",
+  "milestoneSchoolDraft","milestoneSchoolFinal","milestonePlan","milestoneData","milestoneFirstVisual",
+  "milestoneVisualReview","milestoneFirstMath","milestoneFurtherMath","milestoneDraft","milestoneReview",
+  "milestoneAdjustment","changeTrigger","changeAdaptation","fallbackEvidence","otherIdea1","otherIdea2",
+  "teacherNeed","teacherQuestion","universalTeacherQuestion","teacherExtra","teacherSchedule","teacherSafeAction"
+ ]);
+ const primaryOnly=k=>k.startsWith("primary"),secondaryOnly=k=>k.startsWith("secondary");
+ const fallback=Object.keys(PLANNING_FIELD_DEFAULTS).filter(key=>{
+  if(explicit.has(key)||!trim(f[key]))return false;
+  if(primaryOnly(key)&&!prim||secondaryOnly(key)&&!sec)return false;
+  if(["primaryQuantityName","primaryQuantityUnit"].includes(key)&&
+    (payload.planning.primaryQuantities||[]).length)return false;
+  if(/Accuracy/.test(key)&&accuracy.length)return false;
+  return true;
+ }).map(key=>row(FIELD_LABELS[key]||key,f[key]));
+ if(fallback.length)main.push(section("Additional planning decisions and notes",fallback,
+  "Other responses saved by the student while developing this plan."));
  const flagsOut=[...flags];
  if(payload.teacher.pendingReview&&!flagsOut.length){
   flagsOut.push({id:"pending-teacher",title:"Teacher discussion may still be outstanding",
