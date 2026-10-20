@@ -564,7 +564,7 @@ export function createCompletingViews(ctx){
      '<h2 id="intro-writing-task-heading">Write your introduction</h2>'+
      '<p>In your actual IA document, write a few focused paragraphs that introduce your aim, your motivation and, if useful, a tentative prediction. You do not need to list every technique you might use.</p></div></div>'+
     criterionMarkedWritingBox(notes,["completing:C10:aim","completing:C10:motivation"])+
-    '<p class="intro-writing-task-footnote">Your notes here are private to Pathfinder. The <strong>A</strong> and <strong>C</strong> bubbles explain how presentation and personal engagement relate to the writing; they are not marks or an assessment of your draft.</p></section>';
+    '<p class="intro-writing-task-footnote">Your notes here are private to Pathfinder. The green <strong>A</strong> and <strong>C</strong> bubbles explain assessment opportunities, while the purple book opens a relevant writing example. None of these bubbles marks or grades your draft.</p></section>';
    return{intro:"",
     html:renderWritingStageFlow({
      advice:renderIntroductionWritingAdvice(icon,e,{reduced:isAdviceReduced(s),state:s}),
