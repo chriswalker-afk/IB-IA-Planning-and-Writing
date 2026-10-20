@@ -1,5 +1,6 @@
 """Full fictional sample audit: presentation, navigation, cross-stage content and safe preview."""
 import json,os,subprocess,traceback,zipfile
+from pypdf import PdfReader
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 
@@ -50,6 +51,22 @@ def check(kind,p):
  assert sample["teacher"]["feedbackStatus"]=="not-requested"
  assert sample["planning"]["fields"]["milestoneSchoolFinal"]==""
  assert sample["project"]["documentUrl"]==""
+ assert p.locator('.sample-preview-banner [data-action="export-sample-ia-pdf"]').count()==1
+ assert p.locator('.sample-preview-metrics').count()==1
+ if p.viewport_size["width"]==1440:
+  with p.expect_download(timeout=65000) as ia_download:
+   p.locator('.sample-preview-banner [data-action="export-sample-ia-pdf"]').click()
+  sample_pdf=OUT/("ia-reading-"+kind+".pdf")
+  ia_download.value.save_as(str(sample_pdf))
+  pdf=PdfReader(str(sample_pdf))
+  count=len(pdf.pages)
+  assert 12<=count<=20,(kind,"IA-style PDF should be 12–20 pages, not the longer working record",count)
+  image_count=sum(len(page.images) for page in pdf.pages)
+  assert image_count>=3,(kind,"generated figures missing from the PDF",image_count)
+  words=' '.join(page.extract_text() or '' for page in pdf.pages)
+  assert "FICTIONAL" in words.upper()
+  assert "Mathematical" in words or "MATHEMATICAL" in words
+  assert own(p)==before
  if kind=="theory":
   assert sample["completion"]["fields"]["dataStatus"]=="theoretical"
   assert sample["completion"]["sourceRecords"]==[]
