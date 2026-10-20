@@ -1723,38 +1723,36 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         const prior=state.entries[index],active=completeEntry(state);
         if(index<0||!prior||active?.id!==prior.id||
           !["C30","C40","C50"].includes(state.completion.current)){
-          toast("Please return to the mathematical result that this suggestion belongs to.");break;
+          toast("Return to the result this mathematical question belongs to.");break;
         }
         const advice=adaptiveNextDirections(state,prior);
-        if(advice.status!=="ready"){
-          toast("Confirm what your actual result shows before choosing a mathematical direction.");break;
-        }
-        const chosen=advice.directions.find(x=>x.id===el.dataset.direction);
-        if(!chosen){toast("That mathematical suggestion is no longer available.");break;}
+        const chosen=advice.status==="ready"&&advice.directions.find(x=>x.id===el.dataset.direction);
+        if(!chosen){toast("Confirm your genuine finding before selecting a question.");break;}
         const oldQuestion=prior.phase==="first"?state.completion.fields.nextQuestion:prior.nextQuestion;
         if(oldQuestion&&oldQuestion!==chosen.question&&!window.confirm(
-          "Replace your existing next mathematical question? Your results and written work will be preserved."))break;
+          "Replace your current mathematical question? Your own justification will remain unchanged."))break;
         const oldDirection=prior.journeyDirection||"";
         if(prior.phase==="first"){
           setCompletionField(state,"nextQuestion",chosen.question);
-          setCompletionField(state,"nextReason",chosen.why);
-          prior.nextQuestion=chosen.question;prior.nextWhy=chosen.why;
         }else{
-          prior.nextQuestion=chosen.question;prior.nextWhy=chosen.why;
+          prior.nextQuestion=chosen.question;
+          flagDependentMathematics(state,index,"nextQuestion",oldQuestion,chosen.question);
         }
+        // Recommendations suggest a QUESTION, not ready-made student reasoning.
+        // The student must write their own justification in Section 4.
         prior.journeyDirection=chosen.id;
         flagDependentMathematics(state,index,"journeyDirection",oldDirection,chosen.id);
         save();render();
         document.querySelector('[data-bind="'+(prior.phase==="first"?
-          "completion.fields.nextQuestion":"entries."+index+".nextQuestion")+'"]')?.
+          "completion.fields.nextReason":"entries."+index+".nextWhy")+'"]')?.
           scrollIntoView?.({block:"center",behavior:"smooth"});
-        toast("Possible next question saved","Edit the question and justify it using the actual result. No additional mathematical stage was created.");
+        toast("Mathematical possibility selected","Now write why this follows from your specific result, in your own words.");
         break;
       }
       case "stage-add":{
         const created=addMathematicalStage(state);
         if(!created.ok){
-          toast("Finish this mathematical stage first",created.error);
+          toast("Before adding another stage",created.error);
           document.querySelector?.('[data-show-first-part="show"]')?.scrollIntoView?.({block:"center",behavior:"smooth"});
           break;
         }
