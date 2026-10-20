@@ -13,6 +13,8 @@ on:
       - 'data/checking.css'
       - 'tests/assessment-cohorts.test.js'
       - 'tests/checking-page.test.js'
+      - 'tests/ui-smoke.test.js'
+      - 'src/handover/schema.js'
       - 'src/essentials/criteria-badge-guidance.js'
       - 'src/essentials/later-maths-criterion-guidance.js'
       - 'src/essentials/criterion-opportunities.js'
