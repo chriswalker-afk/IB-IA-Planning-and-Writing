@@ -79,10 +79,79 @@ function chooseTip(state,node){
  }
  return byId.get(id)||null;
 }
-export function writingGuideRecommendation(state,node,requestedTip=""){
+/** Deliberately selective: a writing box gets one writing-craft bubble only
+ * when the student can use a specific existing Field Guide example there.
+ * Multiple criteria may be shown on the same field; one guide icon is enough.
+ * This is CURRENT-IA writing advice, not a criterion or a mark predictor.
+ */
+const box=(tip,label,cue)=>Object.freeze({tip,label,cue});
+const FIELD_FOCUS={
+ "completing:C10:aim":box("voice","Introduction and motivation","Explain your genuine reason for exploring this question, and make your own mathematical decisions visible without fabricating a personal story."),
+ "completing:C20:methodIntroduction":box("thinking","Introducing your mathematical method","Name the first mathematical idea and why it helps answer your aim; avoid a tutorial of familiar course techniques."),
+ "completing:C20:methodEvaluation":box("boundaries","Evaluating your opening method","Identify a mathematical assumption or restriction and a reasonable alternative. Before doing the work, describe limitations as possibilities, not discoveries."),
+ "completing:C20:firstPurpose":box("purpose","First mathematical question","Make the purpose of your opening representation or calculation explicit before you present it."),
+ "completing:C21S:samplingRationale":box("sources","Sampling and evidence","Explain which population and comparison your actual data can support; planning a sample is not evidence that it was collected."),
+ "completing:C21S:responseBias":box("boundaries","Sample limitations","Explain how a particular selection or response issue could affect an inference, rather than listing generic human errors."),
+ "completing:C21M:modelAssumptions":box("lab","Mathematical model assumptions","Explain which simplifications are mathematical and why they might matter for your aim."),
+ "completing:C21M:modelDomain":box("boundaries","Model domain","State the conditions and input range in which your model can reasonably be used."),
+ "completing:C21T:theoreticalObject":box("thinking","Theoretical starting point","Define the object, conjecture or structure precisely. A few examples do not automatically establish a general claim."),
+ "completing:C22:methodReason":box("purpose","Why this method?","Explain the question the chosen method answers; difficulty alone does not make it appropriate."),
+ "completing:C23:limitationConsequence":box("boundaries","Consequences of a limitation","Explain how the limitation changes the mathematical interpretation or strength of the conclusion."),
+ "completing:C24:accuracyReason":box("sources","Defensible precision","Justify approximation or precision from the measurements, inputs or sensitivity of the mathematics."),
+ "completing:C25:variableDefinitions":box("audience","Definitions and mathematical notation","Define significant variables and units, but do not reteach routine syllabus mathematics."),
+ "completing:C26:dataAimLink":box("why-now","Linking back to your aim","Explain once why this mathematical starting point advances your aim; avoid repeating your introduction."),
+ "completing:C30:introduceA":box("purpose","Introducing the first figure or calculation","Prepare your reader for what this particular mathematical work will reveal, not just the method you planned."),
+ "completing:C30:result":box("graphs","Showing your first genuine mathematics","Present a clear, labelled representation or sufficient working for a reader to check your mathematical claim."),
+ "completing:C30:reflectD":box("react","Interpreting the first finding","React to what your real result shows about the aim; only compare it with an earlier prediction if one was recorded."),
+ "completing:C30:nextD":box("why-now","Explaining what follows","Connect the next mathematical question to a verified finding, or explain why it is sensible to conclude now."),
+ "completing:C31:firstPurpose":box("graphs","Purposeful diagram or table","Every figure or table should answer a specific question, with readable scales, titles, labels and units where appropriate."),
+ "completing:C32:purpose":box("purpose","Before the first mathematical output","Give the reader a mathematical reason to look at the calculation or figure."),
+ "completing:C33:title":box("audience","Showing enough mathematical working","Include definitions, significant working and clear presentation without repeating routine calculations."),
+ "completing:C34:observation":box("react","Describing the observed result","Distinguish what is mathematically established from what you merely expected."),
+ "completing:C34A:accuracyForResult":box("boundaries","Accuracy and reliability","Explain how significant uncertainty could change the mathematical result or interpretation."),
+ "completing:C34B:title":box("react","Interpreting your mathematical result","Explain the result's meaning in relation to your aim, not just a value or diagram description."),
+ "completing:C34U:surpriseCheck":box("imperfect","Checking an unexpected finding","Let a genuine surprise prompt a mathematical check, never a manufactured setback."),
+ "completing:C35:nextQuestion":box("why-now","The next mathematical question","Make the question follow from the actual result, without adding an unnecessary stage just for complexity."),
+ "completing:C35:nextReason":box("thinking","Justifying a next technique","Explain what further mathematical insight the proposed technique can reasonably provide."),
+ "completing:C35H:nextReason":box("why-now","Choosing a worthwhile next step","Select a new approach only if a real finding has raised a question it can address."),
+ "completing:C35B:scatterPattern":box("react","Reading the scatter pattern","Describe the actual shape before deciding whether a linear measure or model is justified."),
+ "completing:C35P:title":box("react","Interpreting correlation","Describe the observed direction and strength of linear association, avoiding causal claims."),
+ "completing:C40T:technologyInterpretation":box("audience","Explaining technology-supported mathematics","Communicate meaningful input, output and mathematical reasoning rather than describing clicks or pasting a screenshot."),
+ "completing:C40D:courseWhy":box("purpose","Why the chosen method fits","Justify why the mathematics answers your question, not its relative sophistication."),
+ "completing:C40L:researchedUnderstanding":box("audience","Explaining unfamiliar mathematics","Explain independently learned reasoning enough for a reader to follow, while keeping familiar procedures concise."),
+ "completing:C61:mainConclusion":box("story","Your strongest mathematical answer","Answer the original aim using the key results you genuinely established."),
+ "completing:C62:benefit":box("react","Meaning of your answer","Explain what the answer means for the original question without exceeding what the mathematics shows."),
+ "completing:C63:extension":box("why-now","Potential next steps","Suggest a worthwhile mathematical follow-up only if your findings leave a meaningful question open."),
+ "completing:C64:title":box("edit","Keeping the conclusion concise","Keep the central mathematical answer and its essential qualifications; cut repeated calculations and generic future work."),
+ "completing:C60:meaningAndLimits":box("boundaries","Meaning and limits of the conclusion","State what the mathematics can and cannot establish, including only limitations that materially change your answer.")
+};
+for(const stage of ["C40","C50"]){
+ const key=suffix=>"completing:"+stage+":"+suffix;
+ FIELD_FOCUS[key("bridgeA")]=box("why-now","Connecting mathematical stages","Explain what the previous confirmed result raises and why a new mathematical question is justified.");
+ FIELD_FOCUS[key("resultB")]=box("audience","Presenting this mathematical stage","Present genuine calculations, proof or diagrams clearly enough to verify the mathematical reasoning.");
+ FIELD_FOCUS[key("interpretD")]=box("react","Interpreting this stage","Explain what this result establishes for your aim and where its mathematical limitations lie.");
+ FIELD_FOCUS[key("nextD")]=box("why-now","Deciding what follows","Choose the next mathematical step because of a genuine result, or conclude if your aim has been answered.");
+}
+export const FIELD_GUIDE_FIELD_SPOTS=Object.freeze(FIELD_FOCUS);
+export function writerGuideFieldBubble(state,node,keys,icon,e){
+ const choices=Array.isArray(keys)?keys:[keys];
+ const key=choices.find(k=>Object.hasOwn(FIELD_GUIDE_FIELD_SPOTS,k));
+ if(!key||!state||!icon||!e)return "";
+ const focus=FIELD_GUIDE_FIELD_SPOTS[key];
+ let tipId=focus.tip;
+ if(key==="completing:C30:result"){
+  const format=state?.completion?.fields?.firstType||"";
+  if(["calculation","theory"].includes(format)||state?.planning?.fields?.kind==="theoretical")tipId="audience";
+ }
+ if(!byId.has(tipId))return "";
+ return '<button type="button" class="writer-guide-field-bubble" data-action="writer-guide-open" data-guide-tip="'+e(tipId)+
+  '" data-guide-spot="'+e(key)+'" aria-label="Writer’s Field Guide: '+e(focus.label)+'. Open a writing example." title="Writer’s Field Guide · '+e(focus.label)+'">'+icon("book")+'</button>';
+}
+export function writingGuideRecommendation(state,node,requestedTip="",spotKey=""){
  if(!node||!CUES[node])return null;
  const tip=(requestedTip&&byId.get(requestedTip))||chooseTip(state,node);
  if(!tip)return null;
+ const focus=Object.hasOwn(FIELD_GUIDE_FIELD_SPOTS,spotKey)?FIELD_GUIDE_FIELD_SPOTS[spotKey]:null;
  const entry=state?.entries?.[state?.completion?.activeEntryIndex];
  let note="",question="";
  if(SOURCE_NODES.has(node)){
@@ -117,7 +186,7 @@ export function writingGuideRecommendation(state,node,requestedTip=""){
    if(latest.localTakeaway||latest.interpretation)question="A saved finding to consider: "+limited(latest.localTakeaway||latest.interpretation,155);
   }
  }
- return {tip,node,stage:titleOf(state,node),cue:CUES[node],note,question};
+ return {tip,node,stage:focus?.label||titleOf(state,node),cue:focus?.cue||CUES[node],note,question,spotKey:focus?spotKey:""};
 }
 /** ONE compact contextual entrance per writing stage; the global header is the universal entrance. */
 export function renderWriterGuideAccess(state,node,icon,e){
