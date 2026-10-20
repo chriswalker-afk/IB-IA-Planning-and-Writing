@@ -32,8 +32,11 @@ export function toggleConclusionResult(state,id){
  const old=selectedResultIds(state).filter(key=>entries.some(x=>x?.id===key)),current=old.includes(id);
  if(!current&&(!validResult(entry)||review(entry)))
   return{ok:false,error:"This result needs to be completed or reviewed before you use it as conclusion evidence."};
- if(!current&&old.filter(key=>entries.some(x=>x?.id===key&&validResult(x)&&!review(x))).length>=3)return{ok:false,error:"Choose up to three decisive results. You can change your selection at any time."};
- state.completion.conclusionResultIds=current?old.filter(x=>x!==id):[...old,id];
+ // Stale selections remain visible for review until the student selects fresh
+ // evidence; they must not fill the three-result quota or displace new choices.
+ const confirmed=old.filter(key=>entries.some(x=>x?.id===key&&validResult(x)&&!review(x)));
+ if(!current&&confirmed.length>=3)return{ok:false,error:"Choose up to three decisive results. You can change your selection at any time."};
+ state.completion.conclusionResultIds=current?old.filter(x=>x!==id):[...confirmed,id];
  if(state.completion.stages.C60==="complete")state.completion.stages.C60="needs-review";
  return{ok:true,selected:!current};
 }
