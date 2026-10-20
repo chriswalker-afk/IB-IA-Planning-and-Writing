@@ -131,6 +131,14 @@ export async function createPdfPlanningReport(envelope,fullProjectModel=null){
  for(const group of model.sections){
   heading(group.title);
   if(group.description)write(group.description,{size:9,color:MUTED,lineHeight:12,after:12});
+  for(const figure of group.figures||[]){
+   if(!figure.pngBytes)continue;
+   const embedded=await doc.embedPng(figure.pngBytes);
+   const dim=embedded.scale(Math.min(PAPER_WIDTH/embedded.width,410/embedded.height));
+   requireSpace(dim.height+20);
+   page.drawImage(embedded,{x:MARGIN+(PAPER_WIDTH-dim.width)/2,y:y-dim.height,width:dim.width,height:dim.height});
+   y-=dim.height+19;
+  }
   for(const row of group.rows){
    requireSpace(40);
    write(row.label.toUpperCase(),{font:bold,size:8,color:TEAL,lineHeight:11,after:2});
