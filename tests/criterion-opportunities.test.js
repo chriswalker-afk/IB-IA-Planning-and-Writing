@@ -94,7 +94,7 @@ test('suggestions remain possible until the relevant record is completed and rev
  s.entries[1].result='Real result';
  s.completion.activeEntryIndex=0;
  const first=opt(s,'completing:C40:resultE');
- assert.equal(first.profile,'proof','without an identified method, the deliberate planning pathway is the best available lead');
+ assert.equal(first.profile,'model','when no method is identified, the matching modelling pathway is the relevant starting point');
  assert(!JSON.stringify(first).includes('Residuals show an unexpected pattern'));
 });
 test('Criterion E advice distinguishes SL, HL and unknown courses without demanding beyond-syllabus maths',()=>{
