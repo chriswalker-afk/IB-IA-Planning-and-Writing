@@ -50,11 +50,11 @@ with sync_playwright() as pw:
  run('examples-library-filter-readonly',fixture(),browse)
  def all_cards(p):
   open_example(p)
-  for i in range(1,31):
+  for i in range(1,56):
    id=f'EX{i:02d}';p.locator('[data-example-library]').click();p.locator('[data-example-select="'+id+'"]').click();card(p,id);assert p.locator('.ex-less').inner_text();assert p.locator('.ex-more').inner_text();overflow(p)
    if id in ['EX10','EX12','EX13']:p.screenshot(path=str(OUT/(id+'-desktop.png')))
   close(p)
- run('examples-all-30-rendered',fixture(),all_cards)
+ run('examples-all-55-rendered',fixture(),all_cards)
  def next_step(p):
   before=saved(p);open_example(p);card(p,'EX16');assert p.locator('#ex-variant').input_value()=='turning';p.locator('#ex-variant').select_option('stop');assert 'make the investigation longer' in p.locator('.ex-more').inner_text();close(p);assert saved(p)==before
  s=fixture('statistics','C35');s['completion'].update(activeEntryIndex=1,scatterDetailForEntryId='earlier');s['completion']['fields']['scatterDetail']='turning'

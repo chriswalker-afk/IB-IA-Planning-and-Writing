@@ -42,3 +42,6 @@
 .ex-introduction-feature>div p:last-child{margin-bottom:0}
 @media(max-width:600px){.ex-introduction-features{padding:12px}.ex-introduction-feature>summary{min-height:40px}}
 @media(prefers-reduced-motion:reduce){.ex-introduction-feature>summary>span:last-child{transition:none}}
+
+/* Expanded original mathematical comparison figures. */
+.ex-expanded-svg{max-width:100%;height:auto}.ex-expanded-svg .ex-viz-line,.ex-expanded-svg .ex-viz-frame{stroke:currentColor;stroke-width:1.5;fill:none;opacity:.65}.ex-expanded-svg .ex-viz-point{fill:#147c79;stroke:#fff;stroke-width:1.5}.ex-expanded-svg .ex-viz-curve{fill:none;stroke:#147c79;stroke-width:2.5;stroke-dasharray:6 3}.ex-expanded-svg .ex-viz-boundary{stroke:#b26b26;stroke-width:3;stroke-dasharray:7 4}.ex-expanded-svg .ex-viz-junction{fill:#b26b26}.ex-expanded-svg text{fill:currentColor;font-size:15px}.ex-expanded-svg .ex-viz-title{font-size:17px;font-weight:700}

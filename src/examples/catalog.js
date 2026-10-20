@@ -1,3 +1,4 @@
+import {EXPANDED_EXAMPLES} from "./expanded-catalog.js";
 /** Original fictional teaching excerpts. Not IB-approved model answers or student findings. */
 export const EXAMPLES = [
   {
@@ -8,21 +9,21 @@ export const EXAMPLES = [
     "why": "A genuine motivation leads directly to a specific mathematical aim. The reader knows the question without being given a fixed list of methods or unperformed calculations. An initial expectation is explicitly tentative. The opening observation is appropriate only if it is genuinely the student's experience; invented backstories are not improvements.",
     "question": "Can a reader say what mathematical question you are answering, and what evidence could answer it?",
     "introFeatures": [
-        {
-            "label": "The motivation",
-            "quote": "When I make tea while studying",
-            "why": "An authentic observation explains why this specific question matters to the investigator. Do not borrow the fictional backstory."
-        },
-        {
-            "label": "The mathematical aim",
-            "quote": "My aim is to investigate how the temperature of one cup of tea changes over time",
-            "why": "The reader knows what quantity is changing and what mathematical question the investigation hopes to answer."
-        },
-        {
-            "label": "An open journey",
-            "quote": "I suspect that the cooling slows over time",
-            "why": "This is a tentative expectation, not a conclusion or a promise to carry out particular calculations."
-        }
+      {
+        "label": "The motivation",
+        "quote": "When I make tea while studying",
+        "why": "An authentic observation explains why this specific question matters to the investigator. Do not borrow the fictional backstory."
+      },
+      {
+        "label": "The mathematical aim",
+        "quote": "My aim is to investigate how the temperature of one cup of tea changes over time",
+        "why": "The reader knows what quantity is changing and what mathematical question the investigation hopes to answer."
+      },
+      {
+        "label": "An open journey",
+        "quote": "I suspect that the cooling slows over time",
+        "why": "This is a tentative expectation, not a conclusion or a promise to carry out particular calculations."
+      }
     ],
     "category": "introduction",
     "kind": "modelling",
@@ -40,21 +41,21 @@ export const EXAMPLES = [
     "why": "The improved introduction identifies the mathematical quantities, offers a genuine reason for the question and avoids promising a specific sequence of calculations. It states a legitimate limitation of an observational investigation without claiming to know the eventual relationship.",
     "question": "Are you investigating an association, a difference, a prediction or a causal claim?",
     "introFeatures": [
-        {
-            "label": "The motivation",
-            "quote": "I was curious whether those differences are reflected in their mathematics test results",
-            "why": "A genuine question motivates exploring a possible relationship, not proving a preconceived explanation."
-        },
-        {
-            "label": "The mathematical aim",
-            "quote": "whether weekly music-practice time and mathematics test percentage appear associated",
-            "why": "Both variables and the kind of relationship sought are made explicit."
-        },
-        {
-            "label": "An honest starting point",
-            "quote": "any relationship I find would not show",
-            "why": "The student avoids causal overclaiming before any observations have been analysed."
-        }
+      {
+        "label": "The motivation",
+        "quote": "I was curious whether those differences are reflected in their mathematics test results",
+        "why": "A genuine question motivates exploring a possible relationship, not proving a preconceived explanation."
+      },
+      {
+        "label": "The mathematical aim",
+        "quote": "whether weekly music-practice time and mathematics test percentage appear associated",
+        "why": "Both variables and the kind of relationship sought are made explicit."
+      },
+      {
+        "label": "An honest starting point",
+        "quote": "any relationship I find would not show",
+        "why": "The student avoids causal overclaiming before any observations have been analysed."
+      }
     ],
     "category": "introduction",
     "kind": "statistics",
@@ -72,21 +73,21 @@ export const EXAMPLES = [
     "why": "An authentic mathematical observation provides the motivation, and a precise conjecture becomes the aim. No invented practical beneficiary or detailed methods itinerary is necessary. This elementary statement alone would not constitute a sufficiently substantial IA.",
     "question": "What exactly is your conjecture, and what would count as a proof or counterexample?",
     "introFeatures": [
-        {
-            "label": "The mathematical curiosity",
-            "quote": "I noticed that the difference between each integer's cube and the integer itself seemed divisible by six",
-            "why": "Curiosity can be purely mathematical. A practical benefit or personal life story is not compulsory."
-        },
-        {
-            "label": "The precise aim",
-            "quote": "determine whether this holds for every integer",
-            "why": "The reader knows the claim that needs to be established or disproved."
-        },
-        {
-            "label": "Not a finished result",
-            "quote": "they do not yet settle the question",
-            "why": "The writer distinguishes a pattern in tested cases from a proof."
-        }
+      {
+        "label": "The mathematical curiosity",
+        "quote": "I noticed that the difference between each integer's cube and the integer itself seemed divisible by six",
+        "why": "Curiosity can be purely mathematical. A practical benefit or personal life story is not compulsory."
+      },
+      {
+        "label": "The precise aim",
+        "quote": "determine whether this holds for every integer",
+        "why": "The reader knows the claim that needs to be established or disproved."
+      },
+      {
+        "label": "Not a finished result",
+        "quote": "they do not yet settle the question",
+        "why": "The writer distinguishes a pattern in tested cases from a proof."
+      }
     ],
     "category": "introduction",
     "kind": "theoretical",
@@ -379,7 +380,7 @@ export const EXAMPLES = [
     "id": "EX19",
     "title": "Explaining unfamiliar mathematics versus applying familiar mathematics",
     "weak": "I used RMSE because a website said it was good. It gave the exponential model a lower number. I also included two pages explaining how to solve a linear equation, even though that was familiar course mathematics.",
-    "strong": "**When RMSE is unfamiliar to this student:** I used the root mean square of the residuals to compare the models [cite the source actually consulted]. For each observation, the residual is the recorded temperature minus the model's temperature. Squaring prevents positive and negative residuals cancelling; averaging puts the comparison on a per-observation basis, and the square root returns the units to °C. For example, at 10 minutes the residual is 51.4 - 50.88965, approximately 0.510 °C. A smaller RMSE means a closer fit under this criterion, not proof that the model is valid.\n\n**When the technique is already familiar course mathematics:** State the relevant quantities and what is being calculated, show the application at an appropriate level, and interpret it. Omit a textbook-style introduction to the technique.\n\n**An authentic mathematical learning insight:** The residual pattern helped me distinguish a model that is numerically close from one that captures the shape of the relationship.",
+    "strong": "**When RMSE is unfamiliar to this student:** I used the root mean square error RMSE = √(Σ(observed − predicted)² / n) to compare fitted models [cite the source actually consulted]. For each observation, the residual is the recorded temperature minus the model's temperature. Squaring prevents positive and negative residuals cancelling; averaging puts the comparison on a per-observation basis, and the square root returns the units to °C. For example, at 10 minutes the residual is 51.4 - 50.88965, approximately 0.510 °C. A smaller RMSE means a closer fit under this criterion, not proof that the model is valid.\n\n**When the technique is already familiar course mathematics:** State the relevant quantities and what is being calculated, show the application at an appropriate level, and interpret it. Omit a textbook-style introduction to the technique.\n\n**An authentic mathematical learning insight:** The residual pattern helped me distinguish a model that is numerically close from one that captures the shape of the relationship.",
     "why": "The explanation is conditional on the student's course and familiarity, not on a hard-coded assumption that RMSE is outside every syllabus. Even a familiar method still needs defined variables, justified choices and interpreted results. A genuine new mathematical insight is different from a procedural tutorial.",
     "question": "What mathematical idea did you actually need to learn, and where does your work demonstrate that understanding?",
     "category": "mathematics",
@@ -446,8 +447,8 @@ export const EXAMPLES = [
     "id": "EX22",
     "title": "Conclusion: answer the aim using the results already established",
     "weak": "In conclusion, mathematics was useful and I proved that the exponential model is accurate. My hypothesis was right. There were some errors, but the experiment was a success.",
-    "strong": "For the single 250 ml cup in this investigation, the exponential model described the recorded temperatures over 0 to 20 minutes more closely than the linear model: their in-sample RMSE values were approximately 0.259 °C and 2.90 °C respectively. The exponential model estimated that the temperature reached the chosen 50 °C reference after about 10 minutes, using the reporting convention established earlier. This supports my prediction about the slowing rate of cooling in this trial. It is not a measured crossing time, an independent validation result or a recommendation for other cups and conditions. The single-trial design limits what I can say about repeatability.",
-    "why": "The conclusion answers the stated question, selects the most relevant evidence and keeps the claim within its limits. Every calculation and qualification used here has already been introduced; the conclusion is not the place to unveil an unperformed test.",
+    "strong": "For the one fictional cooling trial, an exponential model fitted the recorded temperatures over 0–20 minutes better than a straight line: the in-sample RMSE values were approximately 0.259 °C and 2.90 °C respectively. The fitted exponential estimated reaching 50 °C after about 10 minutes. This answers the original question for the observed trial, not for every cup or set of conditions. A possible next mathematical question is how much the fitted threshold time would vary between repeated trials; that has not been investigated here.",
+    "why": "The conclusion answers the aim using only previously established results, limits its scope without repeating every earlier criticism, and offers a specific optional mathematical extension rather than a generic call for more data. That extension is not a completed result.",
     "question": "Can each claim in your conclusion be traced to an actual result or limitation already discussed?",
     "category": "conclusion",
     "kind": "modelling",
@@ -474,8 +475,8 @@ export const EXAMPLES = [
     "id": "EX24",
     "title": "Coherence and attribution: make the route through the mathematics traceable",
     "weak": "As shown above, the answer is different. I then did another calculation. The equation came from the internet. All of the long software outputs are included in the appendix.",
-    "strong": "Figure 1 suggested a slowing rate of cooling. The residuals of the first model confirmed that a constant rate missed the pattern, so the next section compared an exponential model fitted to the same readings. Table 2 summarises that comparison and supports the model used for the final estimate. The model form and any unfamiliar method are credited where they first enter the work [cite the sources actually used]; the fitted parameter values come from this investigation's data. Essential reasoning stays in the main text, while a lengthy raw output belongs in an appendix only when it is useful for checking the work.",
-    "why": "The improved version connects representation, finding, next question, method and conclusion. It distinguishes an external idea from the student's own fit and does not hide essential reasoning in an appendix. The bracketed citation instruction is deliberately a placeholder: no fictional source is being presented as real.",
+    "strong": "Figure 1 suggested a slowing rate of cooling. Residuals of the first fit revealed a systematic pattern, so I compared a more appropriate model and then used Table 2 to justify my final estimate. In an actual IA, a model definition adapted from an external source needs an in-text citation at first use and a matching reference-list entry containing the real author or organisation, title, publication date and retrievable location. The fitted coefficients belong to my calculation and must not be attributed to that source. **Illustrative citation format only:** (Author, Year) — this is not a genuine source to copy.",
+    "why": "The passage traces result, next question and conclusion, and distinguishes borrowed ideas from the student's own fitted parameters. Citation structure is demonstrated without inventing a real publication; the actual investigation must include verifiable sources, not the teaching placeholder.",
     "question": "Can the reader follow why each section exists and identify where external ideas or data entered?",
     "category": "review",
     "kind": "all",
@@ -494,8 +495,8 @@ export const EXAMPLES = [
       "conclusion"
     ],
     "weak": "The correlation was weak, so music has no effect on anyone’s mathematics results.",
-    "strong": "In this fictional sample of 20 students, the calculated Pearson coefficient of 0.12 provides little evidence of a linear association between weekly music-practice time and the test percentage. This does not rule out every form of relationship or establish a causal effect. The convenience sample restricts generalisation. My analysis therefore does not support the broader recommendation I initially hoped to make.",
-    "why": "This is a separate fictional statistical scenario, not the cooling dataset. The conclusion distinguishes a small linear coefficient, causation and the sample’s scope; these qualifications must already have been discussed.",
+    "strong": "For this separate fictional convenience sample of 20 students, Pearson's r was 0.12. The recorded pairs therefore show little linear association between weekly music-practice time and test percentage. This does not establish causation or rule out every non-linear relationship, and the convenience sample cannot justify a claim about all students. The evidence does not support my hoped-for recommendation. If the existing scatter revealed a meaningful curved pattern, testing that structure could be a worthwhile next question; otherwise a limited conclusion is appropriate.",
+    "why": "The conclusion separates the observed linear association from causation and population inference. A possible next mathematical question is conditional on genuine evidence rather than a required extra calculation; no unperformed curve fit is reported.",
     "question": "Does the scope of your statistical conclusion match the design and actual results?",
     "visual": ""
   },
@@ -536,9 +537,9 @@ export const EXAMPLES = [
     "topics": [
       "graph"
     ],
-    "weak": "A smooth curve passes through counts for 1, 2, 3 and 4 tiles; it is used to claim a prediction for 2.5 tiles.",
-    "strong": "The four calculated cases are plotted as separate points. The horizontal axis is the number of tiles, n, so its mathematical domain is positive integers. A smooth extension may help visualise a formula, but it is not an additional case of this discrete problem.",
-    "why": "A graph should not silently enlarge the mathematical domain. The fictional points are (1,1), (2,4), (3,9) and (4,16).",
+    "weak": "A smooth curve passes through calculated square-array tile counts for side lengths 1, 2, 3 and 4; I then claim the model also represents an arrangement with 2.5 tiles along each side.",
+    "strong": "I investigate square arrays with n tiles along each side, where n is a positive integer and the total is n². The four cases (1,1), (2,4), (3,9) and (4,16) are plotted as separate points, with the horizontal axis labelled 'Tiles per side, n'. The algebraic expression extends to other real inputs, but a non-integer number of complete tiles along a side is not another arrangement in this discrete investigation.",
+    "why": "The mathematical object and its domain are defined before choosing a graph. A continuous formula can describe a function beyond the discrete problem without making those extra inputs valid physical cases.",
     "question": "Which plotted inputs are actually meaningful for your investigation?",
     "visual": "discrete"
   },
@@ -562,7 +563,11 @@ export const EXAMPLES = [
     "title": "Provisional IA titles: a question you can actually investigate",
     "category": "methods",
     "kind": "all",
-    "topics": ["title", "aim", "engagement"],
+    "topics": [
+      "title",
+      "aim",
+      "engagement"
+    ],
     "weak": "**Too broad:** 'Mathematics in basketball'.\n\n**Assumes a conclusion:** 'Why practising music improves maths grades'.\n\n**Just names a technique:** 'Using correlation and regression'.",
     "strong": "**Modelling:** 'How well does a quadratic model describe the path of a basketball shot recorded on video?'\n\n**Statistics:** 'Is weekly music-practice time associated with mathematics test marks in a sample of students?'\n\n**Mathematical curiosity:** 'How does the number of ways to tile a 2 by n rectangle with dominoes change as n increases?'",
     "why": "A useful working title identifies an investigable relationship, property or problem. It need not promise a result, name impressive techniques, or announce that the topic is a personal passion. It can change when genuine calculations lead somewhere interesting. These are fictional prompts, not guaranteed suitable IA topics or titles to copy.",
@@ -606,11 +611,12 @@ export const EXAMPLES = [
       "motivation"
     ],
     "weak": "I really love number patterns and want to use algebra to get an interesting answer, which will show my passion for mathematics.",
-    "strong": "A few worked cases suggest that a stated numerical claim may hold. I want to understand exactly what makes the claim true, or find a counterexample if it fails. The purpose is to distinguish a pattern suggested by examples from a justified general conclusion, so I would return to that question whenever choosing which cases or arguments to test.",
-    "why": "Mathematical curiosity can be a genuine motivation, but it needs a precise question rather than a promise of an interesting result or unsupported enthusiasm. The particular claim still needs a suitable scope and mathematical depth; this excerpt is not an automatically suitable IA topic.",
+    "strong": "Looking at arrangements of dominoes on a 2 by n rectangle, I began to wonder how the number of tilings depends on the positive integer n. My aim is to investigate whether the counts satisfy a recurrence and, if they do, explain mathematically why that relationship holds. Small cases may suggest a rule, but I will not treat them as a proof.",
+    "why": "The curiosity is connected to a precise count and an answerable recurrence question, not an invented personal benefit. It remains a provisional mathematical question: a few observed cases cannot prove a rule, and a suitable IA would need sufficient further mathematical development.",
     "question": "What mathematical uncertainty do you genuinely want to resolve, and how would you know whether your argument answered it?",
     "visual": ""
-  }
+  },
+  ...EXPANDED_EXAMPLES
 ];
 export const NUMERICAL_EXAMPLE = {
   "time_min": [

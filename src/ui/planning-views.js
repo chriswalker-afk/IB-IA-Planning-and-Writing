@@ -550,6 +550,8 @@ export function createPlanningViews(ctx){
    '<div class="task-shell'+(welcome?' chapter-onboarding-shell':'')+(kickoff&&!welcome?' planning-kickoff':'')+(titleStep?' planning-title-step':'')+(n==="N07"?' planning-finish':'')+'" data-source-node="'+e(n)+'"'+(welcome?' data-planning-intro="true"':'')+'>'+
    criterionPageHeading(screen.title,"planning",n)+'<p class="task-intro">'+e(screen.intro)+'</p>'+
    (welcome?'':renderSparkShelf(state,n,{surface:'planning'}))+screen.html+
+   (!welcome&&["N01","N01V","N02M","N03P","N03P2","N03S","N03J","N04S","N04R","N04M","N05","N05V"].includes(n)?
+    '<div class="planning-context-examples" aria-label="Examples for this planning decision">'+examplePrompt(state)+'</div>':'')+
    (welcome||kickoff||titleStep?'':insightCapture(state,n))+(welcome||kickoff||titleStep?'':essentialsNudge(state))+
    (welcome||kickoff||titleStep||ideaMapStep?'':'<div class="example-row">'+helpButton("plan-"+n,n==="N01V"?"Why does this matter?":"Help me think")+helpBox("plan-"+n,screen.help)+'</div>')+
    (welcome?'<div class="task-footer chapter-onboarding-footer">'+

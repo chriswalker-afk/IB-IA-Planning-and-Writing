@@ -1,6 +1,7 @@
 import {EXAMPLES,NUMERICAL_EXAMPLE,exampleById} from './catalog.js';
 import {CATEGORIES,TOPICS,exampleContext,selectExamples,defaultVariant,filterExamples} from './context.js';
 import {visualFor} from './visuals.js';
+import {expandedVisualFor} from './expanded-visuals.js';
 import {exampleCriteria} from '../essentials/example-criteria.js';
 export const e=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const strongText=t=>e(t).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
@@ -34,7 +35,7 @@ export function renderCard(card,{context={},variant='',inline=false}={}){
  if(!card)return '<p>Choose another example from the library.</p>';
  const v=card.variants?.find(v=>v.id===variant),prefix=(inline?'inline-':'modal-')+card.id;
  const side=(good)=>{
-  const text=prose(good?(v?.strong||card.strong):card.weak),visual=visualFor(card,good,prefix+(good?'-good':'-weak'));
+  const text=prose(good?(v?.strong||card.strong):card.weak),figureId=prefix+(good?'-good':'-weak'),visual=visualFor(card,good,figureId)||expandedVisualFor(card,good,figureId);
   const content=good&&card.id==='EX13'?text.replace('</p>','</p>'+visual):visual+text;
   return '<section class="ex-version '+(good?'ex-more':'ex-less')+'" aria-label="'+(good?'More effective':'Less effective')+'"><h4>'+(good?'More effective':'Less effective')+'</h4>'+content+'</section>';
  };

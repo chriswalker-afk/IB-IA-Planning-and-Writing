@@ -4,8 +4,8 @@ import {EXAMPLES,NUMERICAL_EXAMPLE as D,exampleById} from '../src/examples/catal
 import {exampleContext,selectExamples,defaultVariant,filterExamples} from '../src/examples/context.js';
 import {examplePrompt,exampleInline,prose,renderCard,library} from '../src/examples/views.js';
 const state=(kind='modelling',node='C10')=>({route:'completing',project:{kind},planning:{current:'N01',fields:{kind,aim:'My real aim',course:'AA SL'}},scratch:{introduction:'My original work'},completion:{current:node,activeEntryIndex:0,nextFromEntryId:'first',fields:{},support:{},guidanceUi:{},accuracyDecisions:[],stages:{}},entries:[{id:'first',phase:'first',kind:'scatter',methodId:'',knowledge:'unsure',status:'completed',result:'Actual graph',observation:'curved',title:'Earlier real work'},{id:'later',phase:'substantial',status:'completed',kind:'model',methodId:'linear-regression',result:'Actual later result',observation:'linear',title:'Different later work'}]});
-test('34 substantive original cards have stable unique IDs, explanations and transfer questions',()=>{
- assert.equal(EXAMPLES.length,34);assert.equal(new Set(EXAMPLES.map(x=>x.id)).size,34);
+test('55 substantive original cards have stable unique IDs, explanations and transfer questions',()=>{
+ assert.equal(EXAMPLES.length,55);assert.equal(new Set(EXAMPLES.map(x=>x.id)).size,34);
  for(const c of EXAMPLES){assert(c.weak.length>40,c.id);assert(c.strong.length>100,c.id);assert(c.why.length>40,c.id);assert(c.question.endsWith('?'),c.id);assert(!JSON.stringify(c).includes('drive.google.com'));}
 });
 test('introduction and conclusion select statistical, modelling and theoretical variants',()=>{
@@ -112,4 +112,30 @@ test('introduction examples show specific motivations and mathematical aims with
  assert(specialist.strong.includes('My aim')||specialist.strong.includes('I want to investigate'));
  assert(renderCard(specialist).includes('Necessary vocabulary'));
  assert(selectExamples(state('modelling','C10')).some(x=>x.id==='EX34'));
+});
+
+test('all 16 investigative routes can select context-specific comparisons',async()=>{
+ const {INVESTIGATIVE_ROUTES}=await import('../src/planning/investigative-routes.js');
+ for(const route of INVESTIGATIVE_ROUTES){
+  const s=state(route.kinds[0],'C33');s.planning.routeExplorer={selectedRoute:route.id};s.planning.fields.kind=route.kinds[0];s.project.kind=route.kinds[0];
+  const candidates=selectExamples(s);
+  assert(candidates.length>0,route.id);
+  assert(candidates[0].id.startsWith('EX'),route.id);
+ }
+});
+test('first mathematics offers distinct matched comparisons for connection, choice and evaluation',()=>{
+ for(const [topic,id] of [['first-link','EX48'],['first-method','EX49'],['first-evaluation','EX50']]){
+  const selected=selectExamples(state('modelling','C20'),{topic});
+  assert(selected.some(x=>x.id===id),topic);
+ }
+});
+test('revised conclusion examples contain genuine results, optional next questions, and no assumed cup volume',()=>{
+ assert(!exampleById('EX22').strong.includes('250 ml'));
+ for(const id of ['EX22','EX25','EX23'])assert(exampleById(id).strong.includes('question')||exampleById(id).strong.includes('investigat'),id);
+});
+test('expanded visual comparisons render accessible figures and tables',()=>{
+ for(const id of ['EX36','EX37','EX38','EX39','EX40','EX41']){
+  const html=renderCard(exampleById(id));assert(html.includes('ex-version ex-less'),id);assert(html.includes('ex-version ex-more'),id);
+  assert(html.includes('<table')||html.includes('role="img"'),id);
+ }
 });

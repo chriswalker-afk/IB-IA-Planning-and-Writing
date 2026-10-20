@@ -245,15 +245,17 @@ export function firstMathsExampleTopic(state){
  if(family==="reasoning")return "proof";
  if(ctx.kind==="statistics")return "graph";
  if(ctx.kind==="modelling")return "model";
- return "method";
+ return "first-method";
 }
 export function renderFirstMathsExamples(state,icon,e,help=""){
- const topic=firstMathsExampleTopic(state);
+ const topic="first-method";
  return '<details class="studio-stage-examples first-maths-examples" data-writing-examples>'+
   '<summary>'+icon("book")+'<span><strong>See how a first mathematical step can be introduced (optional)</strong>'+
   '<small>Compare fictional writing that connects a mathematical question to its first genuine step.</small></span>'+
   icon("chevron-right")+'</summary>'+
-  '<div class="studio-stage-example-actions">'+exampleButton("Compare a relevant example",{topic})+
+  '<div class="studio-stage-example-actions">'+exampleButton("1 · Connect the aim",{topic:"first-link"})+
+    exampleButton("2a · Justify the maths",{topic})+
+    exampleButton("2b · Evaluate alternatives",{topic:"first-evaluation"})+
     exampleButton("Browse all examples",{browse:true})+'</div>'+
   '<p class="studio-stage-example-note">These examples are fictional; use them to learn how to introduce mathematics, not as text to submit.</p>'+
   (help?'<details class="studio-stage-more-help"><summary>'+icon("circle-help")+

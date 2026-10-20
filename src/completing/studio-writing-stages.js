@@ -53,14 +53,16 @@ function renderSparks(state,node,icon,e){
   (shelf||'<p class="studio-stage-empty-sparks">No saved sparks yet. You can still work from real mathematics; review Planning if you need to clarify an earlier decision.</p>')+
  '</section>';
 }
-function renderOptionalExamples(node,icon,e,help=''){
- const kind=groupOf(node),topic=CONFIG.topic[node];
+function renderOptionalExamples(state,node,icon,e,help=''){
+ const kind=groupOf(node),topic=node==="C62"?"conclusion-meaning":node==="C63"?"conclusion-next":node==="C32"?"first-link":node==="C35B"?"graph":CONFIG.topic[node];
+ const representation=state.completion?.fields?.firstType||state.planning?.fields?.figureType;
+ const actualTopic=["C30","C31","C33"].includes(node)?({table:"table",diagram:"diagram",distribution:"distribution",calculation:"calculation",theory:"proof"}[representation]||topic):topic;
  const subject=kind==='data'?"source and method writing":kind==='maths'?"mathematical reasoning and interpretation":"conclusions and reflections";
  return '<details class="studio-stage-examples" data-writing-examples>'+
   '<summary>'+icon("book")+'<span><strong>Compare examples (optional)</strong>'+
   '<small>Learn from fictional '+e(subject)+' without copying the wording.</small></span>'+
   icon("chevron-right")+'</summary>'+
-  '<div class="studio-stage-example-actions">'+exampleButton("Compare examples for this step",{topic})+
+  '<div class="studio-stage-example-actions">'+exampleButton("Compare examples for this step",{topic:actualTopic})+
   exampleButton("Browse all examples",{browse:true})+'</div>'+
   '<p class="studio-stage-example-note">Examples illustrate writing, not your findings. Present only your real decisions and mathematical results.</p>'+
   (help?'<details class="studio-stage-more-help"><summary>'+icon("circle-help")+
@@ -94,6 +96,6 @@ export function renderStudioWritingStage(state,node,{icon,e,taskHtml="",taskIntr
   advice:first?renderFirstMathsAdvice(state,icon,e,{reduced}):showFirst?renderShowingMathsAdvice(state,icon,e,{reduced}):renderAdvice(node,icon,e,reduced),
   sparks:node==="C60"?"":first?renderFirstMathsSparks(state,icon,e):showFirst?renderShowingMathsSparks(state,icon,e):renderSparks(state,node,icon,e),
   task,
-  examples:first?renderFirstMathsExamples(state,icon,e,help):renderOptionalExamples(node,icon,e,help)
+  examples:first?renderFirstMathsExamples(state,icon,e,help):renderOptionalExamples(state,node,icon,e,help)
  });
 }
