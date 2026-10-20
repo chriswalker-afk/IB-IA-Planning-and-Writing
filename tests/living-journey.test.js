@@ -438,3 +438,24 @@ test('chapter summaries describe all four current writing tasks and escape stude
  assert(html.includes('&lt;img'));
  assert(!html.includes('12–20 pages'),'Discovery Trail does not claim to measure actual IA length');
 });
+
+test('several first-stage generated figures remain one writing stage, without inventing completed results',()=>{
+ const s=createProjectState(),group=JOURNEY_GROUPS[2];
+ s.route='path';s.completion.current='C04';s.completion.activeEntryIndex=0;
+ s.entries=[
+  {id:'graph-a',phase:'first',status:'completed',result:'Real scatter result',graphFigureId:'graph1'},
+  {id:'graph-b',phase:'first',status:'planned',result:'',graphFigureId:'graph2'}
+ ];
+ let summary=mathematicalPages(s),stats=chapterStats(s,group);
+ assert.equal(summary.length,1);
+ assert.equal(stats.total,1);
+ assert.equal(stats.ready,0);
+ assert(discoveryTrail(s).includes('1 mathematical stage · 1 actual result'));
+ assert(discoveryTrail(s).includes('1 in progress'));
+ assert.equal(groupTarget(s,group),'C30');
+ s.entries[1].result='A second actual graph';s.entries[1].status='completed';
+ stats=chapterStats(s,group);
+ assert.equal(stats.ready,1);
+ assert(discoveryTrail(s).includes('1 mathematical stage · 2 actual results'));
+ assert.equal(discoveryMathStages(s).match(/living-trail-math-page /g).length,1);
+});
