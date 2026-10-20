@@ -237,13 +237,14 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     if(status)status.textContent=d.kind==="function"?"Function (not collected observations)":graphData(d).points.length+" paired observations plotted";
     refreshPresentation("graph");
   }
-  function navigateGraph(){
+  function navigateGraph(figureId=""){
     if(state.completion.current!=="C31")setCompletionNode(state,"C31",{reason:"graph-editor"});
     state.graphStudio.open=true;
     state.imageTracer.open=false;state.statStudio.open=false;state.tableStudio.open=false;state.voronoiStudio.open=false;
     const entry=completeEntry(state);
-    if(entry?.graphFigureId&&state.graphStudio.figures.some(x=>x.id===entry.graphFigureId))
-      loadSavedGraph(state.graphStudio,entry.graphFigureId);
+    const id=figureId||entry?.graphFigureId;
+    if(id&&state.graphStudio.figures.some(x=>x.id===id))
+      loadSavedGraph(state.graphStudio,id);
     save();render();
     document.querySelector?.("[data-graph-studio]")?.scrollIntoView?.({block:"start",behavior:"auto"});
   }
@@ -262,13 +263,14 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     if(output)output.innerHTML=traceOutputHtml(tracer,icon,e);
     refreshPresentation("trace");
   }
-  function navigateTrace(){
+  function navigateTrace(figureId=""){
     if(state.completion.current!=="C31")setCompletionNode(state,"C31",{reason:"trace-editor"});
     state.graphStudio.open=false;
     state.imageTracer.open=true;state.statStudio.open=false;state.tableStudio.open=false;state.voronoiStudio.open=false;
     const entry=completeEntry(state);
-    if(entry?.imageTraceId&&state.imageTracer.figures.some(x=>x.id===entry.imageTraceId))
-      restoreSavedTrace(state.imageTracer,entry.imageTraceId);
+    const id=figureId||entry?.imageTraceId;
+    if(id&&state.imageTracer.figures.some(x=>x.id===id))
+      restoreSavedTrace(state.imageTracer,id);
     save();render();
     document.querySelector?.("[data-image-tracer]")?.scrollIntoView?.({block:"start",behavior:"auto"});
   }
@@ -285,12 +287,13 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     if(output)output.innerHTML=statOutputHtml(state.statStudio,icon,e);
     refreshPresentation("stat");
   }
-  function navigateStat(){
+  function navigateStat(figureId=""){
     if(state.completion.current!=="C31")setCompletionNode(state,"C31",{reason:"stat-editor"});
     state.graphStudio.open=false;state.imageTracer.open=false;state.statStudio.open=true;state.tableStudio.open=false;state.voronoiStudio.open=false;
     const entry=completeEntry(state);
-    if(entry?.statFigureId&&state.statStudio.figures.some(f=>f.id===entry.statFigureId))
-      loadStat(state.statStudio,entry.statFigureId);
+    const id=figureId||entry?.statFigureId;
+    if(id&&state.statStudio.figures.some(x=>x.id===id))
+      loadStat(state.statStudio,id);
     save();render();
     document.querySelector?.("[data-stat-studio]")?.scrollIntoView?.({block:"start",behavior:"auto"});
   }
@@ -306,13 +309,14 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     if(output)output.innerHTML=tableOutputHtml(state.tableStudio,icon);
     refreshPresentation("table");
   }
-  function navigateTable(){
+  function navigateTable(figureId=""){
     if(state.completion.current!=="C31")setCompletionNode(state,"C31",{reason:"table-editor"});
     state.graphStudio.open=false;state.imageTracer.open=false;state.statStudio.open=false;
     state.tableStudio.open=true;state.voronoiStudio.open=false;
     const entry=completeEntry(state);
-    if(entry?.tableFigureId&&state.tableStudio.figures.some(x=>x.id===entry.tableFigureId))
-      loadTable(state.tableStudio,entry.tableFigureId);
+    const id=figureId||entry?.tableFigureId;
+    if(id&&state.tableStudio.figures.some(x=>x.id===id))
+      loadTable(state.tableStudio,id);
     save();render();
     document.querySelector?.("[data-table-studio]")?.scrollIntoView?.({block:"start",behavior:"auto"});
   }
@@ -340,13 +344,14 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       row.classList.toggle("selected",current.draft.sites[i]?.id===current.selectedSiteId);
     });
   }
-  function navigateVoronoi(){
+  function navigateVoronoi(figureId=""){
     if(state.completion.current!=="C31")setCompletionNode(state,"C31",{reason:"voronoi-editor"});
     state.graphStudio.open=false;state.imageTracer.open=false;state.statStudio.open=false;state.tableStudio.open=false;
     state.voronoiStudio.open=true;
     const entry=completeEntry(state);
-    if(entry?.voronoiFigureId&&state.voronoiStudio.figures.some(x=>x.id===entry.voronoiFigureId))
-      loadVoronoi(state.voronoiStudio,entry.voronoiFigureId);
+    const id=figureId||entry?.voronoiFigureId;
+    if(id&&state.voronoiStudio.figures.some(x=>x.id===id))
+      loadVoronoi(state.voronoiStudio,id);
     save();render();
     document.querySelector?.("[data-voronoi-studio]")?.scrollIntoView?.({block:"start",behavior:"auto"});
   }
@@ -534,6 +539,17 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   }
   function returnToShowingFirstMaths(reason){
     // Generators remain editable, but they are not an extra writing stage.
+    // Using an intentionally hidden figure again should make its preview visible.
+    const studioForReason={"linked-graph":["graph","graphStudio"],
+      "linked-table":["table","tableStudio"],"linked-statistics":["stat","statStudio"],
+      "linked-trace":["trace","imageTracer"],"linked-voronoi":["voronoi","voronoiStudio"]};
+    const selected=studioForReason[reason];
+    if(selected){
+      const id=state[selected[1]]?.activeId;
+      const key=selected[0]+":"+id;
+      if(id&&Array.isArray(state.completion.hiddenFirstFigures))
+        state.completion.hiddenFirstFigures=state.completion.hiddenFirstFigures.filter(x=>x!==key);
+    }
     state.graphStudio.open=false;state.imageTracer.open=false;state.statStudio.open=false;
     state.tableStudio.open=false;state.voronoiStudio.open=false;
     setCompletionNode(state,"C30",{reason});
@@ -1614,10 +1630,37 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
           .catch(error=>toast("Graph export unavailable",error.message||"Try downloading the PNG instead."));
         break;
       }
-      case "completion-first-record":{
-        const result=startFirstRepresentation(state);
-        if(!result.ok){toast(result.error);break;}
-        handleCompletionResult(setCompletionNode(state,"C33",{reason:"first-maths-record"}));break;
+      case "first-figure-select":{
+        const index=state.entries.findIndex(x=>x.id===el.dataset.entryId&&x.phase==="first");
+        if(index<0)break;
+        state.completion.activeEntryIndex=index;state.ui.mathIndex=index;
+        setCompletionNode(state,"C30",{reason:"figure-result-selected"});
+        save();render();
+        document.querySelector?.('[data-first-inline-result]')?.scrollIntoView?.({block:"center",behavior:"auto"});
+        break;
+      }
+      case "first-figure-edit":{
+        const kind=el.dataset.figureKind,id=el.dataset.figureId;
+        const studios={graph:"graphStudio",stat:"statStudio",table:"tableStudio",trace:"imageTracer",voronoi:"voronoiStudio"};
+        if(!studios[kind]||!state[studios[kind]]?.figures.some(x=>x.id===id))break;
+        if(kind==="graph")navigateGraph(id);
+        if(kind==="stat")navigateStat(id);
+        if(kind==="table")navigateTable(id);
+        if(kind==="trace")navigateTrace(id);
+        if(kind==="voronoi")navigateVoronoi(id);
+        break;
+      }
+      case "first-figure-hide":case "first-figure-restore":{
+        const key=el.dataset.figureKey||"";
+        const match=/^(graph|stat|table|trace|voronoi):([a-z0-9-]+)$/i.exec(key);
+        const studios={graph:"graphStudio",stat:"statStudio",table:"tableStudio",trace:"imageTracer",voronoi:"voronoiStudio"};
+        if(!match||!state[studios[match[1]]]?.figures.some(f=>f.id===match[2]))break;
+        const visible=new Set(state.completion.hiddenFirstFigures||[]);
+        if(action==="first-figure-hide")visible.add(key);
+        else visible.delete(key);
+        state.completion.hiddenFirstFigures=[...visible].slice(-80);
+        const top=window.scrollY;save();render();window.scrollTo({top,behavior:"auto"});
+        break;
       }
       case "completion-route":handleCompletionResult(moveCompletionRoute(state,el.dataset.condition));break;
       case "completion-open":handleCompletionResult(setCompletionNode(state,el.dataset.node,{reason:"student-revisit"}));break;
@@ -2228,10 +2271,15 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         "completion.fields.scatterDetail","completion.fields.scatterAimRelevance",
         "entries."+state.completion.activeEntryIndex+".methodId",
         "entries."+state.completion.activeEntryIndex+".accuracyRef"].includes(path)||
+       (state.completion.current==="C30"&&(
+         ["completion.fields.firstWorkStatus","completion.fields.firstWorkResult",
+          "completion.fields.firstWorkTitle","completion.fields.firstWorkLocation"].includes(path)||
+         /^entries\.\d+\.(status|result|title|resultRef)$/.test(path)))||
        /^entries\.\d+\.resultSignal$/.test(path)||
        (/^entries\.\d+\.result$/.test(path)&&["C40","C50"].includes(state.completion.current)&&
         state.entries[Number(path.split(".")[1])]?.status==="completed")){
-       render();
+       const at=window.scrollY;render();
+       if(state.completion.current==="C30")window.scrollTo({top:at,behavior:"auto"});
        if(/^entries\.\d+\.resultSignal$/.test(path)||path==="completion.fields.firstMathsBridgePlacement"){
          const input=document.querySelector('[data-bind="'+path+'"]');
          if(input)input.focus({preventScroll:true});

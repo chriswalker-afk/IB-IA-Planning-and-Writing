@@ -325,3 +325,51 @@ test("general next-step help never introduces Pearson regression for unconfirmed
  ideas=completionSuggestions(s).map(x=>x.join(" ")).join(" ");
  assert(/Pearson/.test(ideas));
 });
+ 
+test("inline first-output data stays draft until explicitly confirmed and remains one canonical result",()=>{
+ const s=state();place(s,"C30");
+ setCompletionField(s,"firstWorkTitle","Quadratic case");
+ setCompletionField(s,"firstWorkResult","Maximum y = 3.4 m");
+ setCompletionField(s,"firstWorkLocation","Figure 2");
+ assert.equal(s.entries.length,1);
+ assert.equal(s.entries[0].title,"Quadratic case");
+ assert.equal(s.entries[0].result,"Maximum y = 3.4 m");
+ assert.equal(s.entries[0].resultRef,"Figure 2");
+ assert.equal(latestRealResult(s),null);
+ setCompletionField(s,"firstWorkStatus","completed");
+ assert.equal(s.entries.length,1);
+ assert.equal(latestRealResult(s).result,"Maximum y = 3.4 m");
+ setCompletionField(s,"firstWorkResult","Maximum y = 3.2 m");
+ assert.equal(s.entries[0].result,"Maximum y = 3.2 m");
+ const restored=normalizeProjectState(s);
+ assert.equal(restored.entries[0].result,"Maximum y = 3.2 m");
+ assert.equal(restored.entries[0].status,"completed");
+});
+test("revisiting first mathematics retains the first entry, not a later calculation",()=>{
+ const s=state();s.entries=[
+  {id:"first",phase:"first",status:"completed",result:"Actual scatter"},
+  {id:"second",phase:"substantial",status:"planned",result:""}
+ ];
+ s.completion.activeEntryIndex=1;place(s,"C30");
+ assert.equal(s.completion.activeEntryIndex,0);
+});
+
+test("a second generated first-stage figure never inherits a previously verified result",()=>{
+ const s=state();place(s,"C30");
+ setCompletionField(s,"firstWorkTitle","First graph");
+ setCompletionField(s,"firstWorkResult","Verified first numerical result");
+ setCompletionField(s,"firstWorkLocation","Figure 1");
+ setCompletionField(s,"firstWorkStatus","completed");
+ s.entries[0].interpretation="The first graph is curved";
+ s.completion.fields.firstInterpretation="The first graph is curved";
+ assert.equal(s.entries[0].status,"completed");
+ const created=startFirstRepresentation(s);
+ assert(created.ok);
+ assert.equal(s.entries.length,2);
+ assert.equal(s.entries[1].status,"planned");
+ assert.equal(s.entries[1].result,"");
+ assert.equal(s.entries[1].resultRef,"");
+ assert.equal(s.entries[1].interpretation,"");
+ assert.notEqual(s.entries[1].title,"First graph");
+ assert.equal(latestRealResult(s).result,"Verified first numerical result");
+});
