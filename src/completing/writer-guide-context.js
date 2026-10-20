@@ -123,7 +123,12 @@ const FIELD_FOCUS={
  "completing:C62:benefit":box("react","Meaning of your answer","Explain what the answer means for the original question without exceeding what the mathematics shows."),
  "completing:C63:extension":box("why-now","Potential next steps","Suggest a worthwhile mathematical follow-up only if your findings leave a meaningful question open."),
  "completing:C64:title":box("edit","Keeping the conclusion concise","Keep the central mathematical answer and its essential qualifications; cut repeated calculations and generic future work."),
- "completing:C60:meaningAndLimits":box("boundaries","Meaning and limits of the conclusion","State what the mathematics can and cannot establish, including only limitations that materially change your answer.")
+ "completing:C60:meaningAndLimits":box("boundaries","Meaning and limits of the conclusion","State what the mathematics can and cannot establish, including only limitations that materially change your answer."),
+ "completing:C70:presentationIssue":box("graphs","Presentation and readability","Repair titles, figure labels, notation and mathematical flow where they originally appear in the IA."),
+ "completing:C70N:notationIssue":box("audience","Clear mathematical notation","Make symbols, equalities, units and approximations consistent without adding a tutorial."),
+ "completing:C80:feedbackAction":box("edit","Your next drafting action","Choose a specific revision that improves the real mathematics or communication, within your school's feedback rules."),
+ "completing:C80D:feedbackAction":box("edit","Turning feedback into revision","Explain what you will improve in the actual IA and how you will check that the revision works."),
+ "completing:C90:finalRequirements":box("edit","Final writing check","Review concise mathematical communication, authentic reasoning and necessary attribution before submission.")
 };
 for(const stage of ["C40","C50"]){
  const key=suffix=>"completing:"+stage+":"+suffix;
