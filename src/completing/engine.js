@@ -5,6 +5,7 @@ import {createStuckState,normalizeStuckState,captureStuckOrigin,isStuckNode} fro
  * only student actions execute transitions. Predictions/plans are never results.
  */
 import {methodFamilies} from "./method-identity.js";
+import {journeySourceSignature,selectedInvestigativeRoute} from "./adaptive-journey.js";
 import {beforeSourceChange,linkedAccuracy,flagInputDependents,normalizeSources} from "./evidence-links.js";
 import {createReviewState,normalizeReviewState} from "./review.js";
 import {C_NODES,C_ROUTES} from "./catalog.js";
@@ -398,7 +399,11 @@ export function addMathematicalStage(state){
   technique:"",kind:"",status:"planned",knowledge:"unsure",knowledgeNotes:"",
   result:"",resultRef:"",observation:"",observationText:"",
   interpretation:"",localTakeaway:"",limitations:"",
-  nextQuestion:"",nextWhy:"",accuracyRef:"",createdAt:new Date().toISOString()
+  nextQuestion:"",nextWhy:"",accuracyRef:"",
+  journeyRouteId:selectedInvestigativeRoute(state)?.id||"",
+  journeySourceOutcome:prior.journeyOutcome||"",
+  journeySourceSignature:journeySourceSignature(state,prior),
+  createdAt:new Date().toISOString()
  };
  entries.push(entry);
  c.activeEntryIndex=entries.length-1;state.ui.mathIndex=c.activeEntryIndex;
@@ -506,7 +511,7 @@ export function moveCompletionRoute(state,condition){
 export function flagDependentMathematics(state,index,key,before,after){
  const parent=state.entries[index];
  if(!parent||before===after||
-  !["result","status","interpretation","localTakeaway","observation","observationText","resultSignal","purpose","technique","methodId"].includes(key))
+  !["result","status","interpretation","localTakeaway","observation","observationText","resultSignal","journeyOutcome","journeyDirection","purpose","technique","methodId"].includes(key))
   return [];
  // Preserve the initial input workflow: don't nag while a first result is being typed.
  const substantive=key==="status"||String(before??"").trim().length>0;
@@ -545,14 +550,20 @@ export function flagDependentMathematics(state,index,key,before,after){
 export function acknowledgeMathReview(state,index){
  const record=state.entries[index];
  if(!record||record.reviewNeeded!=="yes")return false;
+ // Never acknowledge a link to an unverified or missing previous result.
+ const parent=record.fromEntryId?state.entries.find(x=>x.id===record.fromEntryId):null;
+ if(record.fromEntryId&&!genuinelyDone(parent))return false;
  record.reviewNeeded="";
  record.reviewReason="";
  record.reviewCheckedAt=new Date().toISOString();
  // Rebase only the *recorded original takeaway*, not student-written justifications.
  if(record.fromEntryId){
   const parent=state.entries.find(x=>x.id===record.fromEntryId);
-  if(genuinelyDone(parent))
+  if(genuinelyDone(parent)){
    record.previousTakeaway=parent.localTakeaway||parent.interpretation||parent.observationText||parent.result;
+   record.journeySourceOutcome=parent.journeyOutcome||"";
+   record.journeySourceSignature=journeySourceSignature(state,parent);
+  }
  }
  return true;
 }
