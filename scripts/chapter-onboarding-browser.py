@@ -446,7 +446,7 @@ def writing_sections(browser,width):
     assert main.locator('[data-criterion-badge="completing:C61:mainConclusion"]').count()==1
     assert main.locator('[data-criterion-badge="completing:C61:uncertainty"]').count()==0
     assert "important limits" in main.locator('[data-conclusion-part="meaning"]').inner_text()
-    assert main.locator('[data-criterion-badge="completing:C62:benefit"]').count()==1
+    assert main.locator('[data-criterion-badge="completing:C60:meaningAndLimits"]').count()==1
     assert main.locator('[data-criterion-badge="completing:C63:extension"]').count()==1
     assert [x.get_attribute('data-conclusion-part') for x in main.locator('[data-conclusion-part]').all()]==['answer','meaning','next']
     assert main.locator('[data-action="conclusion-result-toggle"]').count()==1
@@ -663,9 +663,10 @@ def adaptive_mathematical_journey(browser,width):
   assert page.locator('[data-math-stage-page="2"]').count()==1
   assert page.locator('[data-journey-stage-link]').count()==1
   assert "alternative function structure" in page.locator('[data-show-first-part="introduce"]').inner_text()
-  page.locator('[data-math-stage-page="2"] .writer-guide-context-badge').click()
+  assert page.locator('[data-writing-stage-part="advice"] .writer-guide-context-badge').count()==1
+  page.locator('[data-writing-stage-part="advice"] .writer-guide-context-badge').click()
   assert page.locator('.writer-guide-drawer [data-guide-card="why-now"][open]').count()==1
-  assert "The points increase then begin to level off" in page.locator('.writer-guide-drawer .writer-guide-stage-focus').inner_text()
+  assert "The shape does not resemble a simple parabola" in page.locator('.writer-guide-drawer .writer-guide-stage-focus').inner_text()
   page.locator('.writer-guide-drawer .drawer-header [data-action="close-drawer"]').click()
   data=stored(page)
   assert data["entries"][1]["journeySourceOutcome"]=="fitted-models:not-quadratic"
