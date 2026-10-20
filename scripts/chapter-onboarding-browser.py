@@ -556,12 +556,75 @@ def growing_discovery_trail(browser,width):
  finally:
   ctx.close()
 
+
+def adaptive_mathematical_journey(browser,width):
+ s=copy.deepcopy(BASE)
+ s["route"]="completing"
+ s["completion"]["current"]="C30"
+ s["completion"]["activeEntryIndex"]=0
+ s["planning"]["fields"]["course"]="AI SL"
+ s["planning"]["fields"]["aim"]="Which model describes this relationship?"
+ s["planning"]["routeExplorer"]["selectedRoute"]="fitted-models"
+ s["entries"]=[{
+  "id":"real-scatter","phase":"first","title":"My first observed scatter",
+  "status":"completed","result":"The points increase then begin to level off",
+  "localTakeaway":"The shape does not resemble a simple parabola"
+ }]
+ ctx,page=open_fixture(browser,s,width)
+ try:
+  assert page.locator('[data-journey-outcome-picker]').count()==1
+  assert page.locator('[data-journey-next-state="choose"]').count()==1
+  assert page.locator('[data-action="journey-use-direction"]').count()==0
+  page.locator('[data-bind="entries.0.journeyOutcome"]').select_option("fitted-models:not-quadratic")
+  assert page.locator('[data-journey-next-state="ready"]').count()==1
+  assert "alternative function structure" in page.locator('[data-journey-next-panel], [data-journey-next-state="ready"]').first.inner_text()
+  page.locator('[data-action="journey-use-direction"][data-direction="follow"]').click()
+  before=stored(page)
+  assert "alternative function structure" in before["completion"]["fields"]["nextQuestion"]
+  assert before["entries"][0]["result"]=="The points increase then begin to level off"
+  page.locator('[data-action="stage-add"]').click()
+  assert page.locator('[data-math-stage-page="2"]').count()==1
+  assert page.locator('[data-journey-stage-link]').count()==1
+  assert "alternative function structure" in page.locator('[data-show-first-part="introduce"]').inner_text()
+  data=stored(page)
+  assert data["entries"][1]["journeySourceOutcome"]=="fitted-models:not-quadratic"
+  assert data["entries"][1]["journeySourceSignature"]
+  assert data["entries"][1]["result"]==""
+  page.screenshot(path=str(OUT/f"adaptive-math-stage2-{width}.png"),full_page=True,animations="disabled")
+  page.locator('[data-bind="entries.1.result"]').fill("The revised model gives a systematic residual pattern")
+  page.locator('[data-bind="entries.1.status"]').select_option("completed")
+  page.locator('[data-bind="entries.1.journeyOutcome"]').select_option("fitted-models:systematic")
+  assert "patterned residuals" in page.locator('[data-journey-next-state="ready"]').inner_text()
+  page.locator('[data-action="journey-use-direction"][data-direction="follow"]').click()
+  page.locator('[data-action="stage-add"]').click()
+  assert page.locator('[data-math-stage-page="3"]').count()==1
+  assert "systematic residual" in page.locator('[data-show-first-part="introduce"]').inner_text()
+  pages=stored(page)["entries"]
+  assert len(pages)==3
+  assert pages[2]["journeySourceOutcome"]=="fitted-models:systematic"
+  assert pages[2]["result"]==""
+  page.screenshot(path=str(OUT/f"adaptive-math-stage3-{width}.png"),full_page=True,animations="disabled")
+  page.locator('[data-action="completion-edit-entry"][data-index="0"]').first.click()
+  assert page.locator('[data-source-node="C30"]').count()==1
+  page.locator('[data-bind="entries.0.journeyOutcome"]').select_option("fitted-models:quadratic-plausible")
+  updated=stored(page)["entries"]
+  assert updated[1]["reviewNeeded"]=="yes"
+  assert updated[2]["reviewNeeded"]=="yes"
+  assert updated[1]["result"]=="The revised model gives a systematic residual pattern"
+  page.locator('[data-action="completion-edit-entry"][data-index="1"]').first.click()
+  assert page.locator('[data-journey-stage-link][data-link-state="review"]').count()==1
+  assert "existing writing has been preserved" in page.locator('[data-journey-stage-link]').inner_text()
+  without_overflow(page)
+  page.screenshot(path=str(OUT/f"adaptive-math-review-{width}.png"),full_page=True,animations="disabled")
+ finally:
+  ctx.close()
+
 def main():
  results=[]
  with sync_playwright() as p:
   browser=p.chromium.launch(headless=True)
   for width in (1360,390):
-   for scenario,fn in (("new",first_time),("completed",completed_plan),("writing-stages",writing_sections),("maths-model-start",modelling_math_start),("repeatable-mathematics",repeatable_mathematics),("growing-discovery-trail",growing_discovery_trail)):
+   for scenario,fn in (("new",first_time),("completed",completed_plan),("writing-stages",writing_sections),("maths-model-start",modelling_math_start),("repeatable-mathematics",repeatable_mathematics),("growing-discovery-trail",growing_discovery_trail),("adaptive-mathematical-journey",adaptive_mathematical_journey)):
     try:
      fn(browser,width)
      results.append({"scenario":scenario,"width":width,"status":"passed"})
