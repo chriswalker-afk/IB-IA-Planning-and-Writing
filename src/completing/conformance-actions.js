@@ -16,7 +16,9 @@ export function conformanceAction(state,action,data={}){
  if(action==='conformance-feedback-add')return addFeedbackAction(state);
  if(action==='conformance-feedback-progress')return progressFeedback(state,Number(data.index),data.status);
  if(action==='conformance-review-return'){
-  const node=r.returnTo||'C04';r.returnTo='';r.repairKey='';return setCompletionNode(state,node);
+  const node=r.returnTo||'C04';r.returnTo='';r.repairKey='';
+  if(node==='checking'){state.route='checking';return{ok:true,message:'Returned to your saved checklist.'};}
+  return setCompletionNode(state,node);
  }
  if(action==='conformance-review-repair'||action==='conformance-feedback-repair'){
   let node,entryId,key;
@@ -33,9 +35,10 @@ export function conformanceAction(state,action,data={}){
   let index=state.entries.findIndex(e=>e.id===entryId);
   if(mathematical&&index<0)index=state.entries.findLastIndex(e=>e.status==='completed'&&e.result?.trim());
   if(mathematical&&index<0)node='C30';
-  r.returnTo=c.current;r.repairKey=key;
+  r.returnTo=state.route==='checking'?'checking':c.current;r.repairKey=key;
   const result=setCompletionNode(state,node);
   if(!result.ok){r.returnTo='';return result;}
+  state.route='completing';
   if(mathematical&&index>=0){c.activeEntryIndex=index;state.ui.mathIndex=index;c.nextFromEntryId=state.entries[index].id;}
   return result;
  }
