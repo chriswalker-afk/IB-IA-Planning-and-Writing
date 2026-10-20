@@ -3,6 +3,7 @@ import {createPlanningEnvelope} from './schema.js';
 import {modelFromEnvelope} from './report-model.js';
 import {C_FIELD_DEFAULTS,C_MAJOR_STAGES} from '../completing/engine.js';
 import {REVIEW_CHECKS} from '../completing/review.js';
+import {collectProjectFigures,figureForEntry,sectionForSavedDataset} from './figure-report.js';
 
 const val=x=>typeof x==='string'?x.trim():x===undefined||x===null?'':String(x);
 const human=s=>String(s).replace(/([a-z0-9])([A-Z])/g,'$1 $2').replace(/^./,x=>x.toUpperCase());
@@ -60,6 +61,13 @@ function studentReviewSections(review){
 export function modelFromFullProject(state,{exportedAt=new Date().toISOString()}={}){
  const plan=modelFromEnvelope(createPlanningEnvelope(state,{exportedAt}));
  const c=state.completion||{},steps=Array.isArray(state.entries)?state.entries:[],f=c.fields||{};
+ const figures=collectProjectFigures(state),assigned=new Set();
+ const entryFigureSections=steps.flatMap((entry,i)=>{
+  const linked=figures.filter(fig=>figureForEntry(fig,entry));
+  linked.forEach(fig=>assigned.add(fig.id));
+  return linked.map(fig=>({title:'Figure for mathematical step '+(i+1)+' · '+fig.title,description:fig.status,rows:fig.rows,figures:[fig]}));
+ });
+ const unlinkedFigureSections=figures.filter(fig=>!assigned.has(fig.id)).map(fig=>({title:'Other saved figure · '+fig.title,description:fig.status+'; not linked to a mathematical stage.',rows:fig.rows,figures:[fig]}));
  const modelSections=[
   section('Project at a glance',[
    field('Current investigation aim',state.project?.aim||state.planning?.fields?.aim||plan.aim),
@@ -90,8 +98,12 @@ export function modelFromFullProject(state,{exportedAt=new Date().toISOString()}
    field('Follows from record',x.fromEntryId),
    ...named(x,entryLabels),
    field('Linked source IDs',(x.sourceRefs||[]).join('; ')),
-   field('Linked accuracy IDs',(x.accuracyRefs||[]).join('; '))
+   field('Linked accuracy IDs',(x.accuracyRefs||[]).join('; ')),
+   ...[['journeyOutcome','Observed mathematical outcome'],['journeyDirection','Chosen next mathematical direction'],['journeySourceOutcome','Result informing this direction'],['journeyRouteId','Investigative route']].map(([key,label])=>field(label,x[key]))
   ],actual(x)?'Student-reported output; Pathfinder does not verify mathematical correctness.':'An intention has not been converted into a result.')),
+  ...entryFigureSections,
+  ...unlinkedFigureSections,
+  ...(state.dataShelf||[]).map(sectionForSavedDataset),
   ...((c.sourceRecords||[]).map((x,i)=>section('Actual source / method record '+(i+1),[
    field('Source reference',x.id),field('Legacy record requiring checking',x.legacy?'Yes':''),
    ...Object.entries(x.fields||{}).map(([k,v])=>field(human(k),v))
@@ -123,7 +135,7 @@ export function modelFromFullProject(state,{exportedAt=new Date().toISOString()}
    (Array.isArray(items)?items:[]).map((x,i)=>field(human(k)+' '+(i+1),toString(x))))),
   section('Historical decisions',(state.changeLog||[]).map((x,i)=>field('Change '+(i+1),toString(x))),'May no longer reflect current choices.')
  ].filter(Boolean);
- if(!steps.length)modelSections.push(section('Mathematical journey',[field('No actual mathematics recorded','This project has no mathematical-step records.')])); 
+ // Empty or unused mathematical branches are deliberately not printed. 
  return {...plan,
   title:'My IB Mathematics IA · Full Working Record',
   strapline:'IA PATHFINDER · COMPLETE PROJECT WORKING RECORD',
