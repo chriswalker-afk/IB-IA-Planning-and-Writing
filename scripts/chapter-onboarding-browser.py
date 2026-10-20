@@ -128,7 +128,7 @@ def first_time(browser,width):
   # The fifth trail chapter opens the independent source-grounded A-E review.
   trail.locator('.living-trail-step.checking').click()
   assert page.locator('.checking-page').is_visible()
-  assert page.locator('.checking-criteria-legend .checking-criterion-bubble').count()==5
+  assert page.locator('.checking-criteria-legend [data-criterion-badge]').count()==5
   for letter in ('A','B','C','D','E'):
    assert page.locator('.checking-criterion-bubble[data-criterion="'+letter+'"]').count()>=1
   without_overflow(page)
@@ -336,7 +336,7 @@ def writing_sections(browser,width):
    without_overflow(page)
    if node in ("C20","C40","C60"):
     main.locator('.studio-stage-examples>summary').click()
-    main.locator('.studio-stage-example-actions [data-example-topic]').click()
+    main.locator('.studio-stage-example-actions [data-example-topic]').first.click()
     assert page.locator('#exampleDialog[open]').count()==1,node
     page.locator('#exampleDialog [data-example-close]').click()
     assert main.locator('.studio-stage-writing-task [data-criterion-badge]').count()>=1,node
