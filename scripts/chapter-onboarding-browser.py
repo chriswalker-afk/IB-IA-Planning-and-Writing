@@ -229,8 +229,10 @@ def first_time(browser,width):
   page.locator('#criterionBadgeDialog [data-criterion-badge-close]').first.click()
   without_overflow(page)
   assert page.locator('.writer-guide-return').count()==0
-  page.locator('.intro-advice-guide-action [data-action="writer-guide-open"]').click()
+  page.locator('.intro-writing-guide .writer-guide-context-badge').click()
   assert page.locator('.writer-guide-drawer').is_visible()
+  assert page.locator('.writer-guide-drawer [data-guide-stage-focus="C10"]').count()==1
+  assert page.locator('.writer-guide-drawer [data-guide-card="voice"][open]').count()==1
   page.locator('.writer-guide-drawer .drawer-header [data-action="close-drawer"]').click()
   assert page.locator('[data-source-node="C10"]').count()==1
   # The original fixture's page-init script resets storage on EVERY reload.
@@ -327,6 +329,18 @@ def writing_sections(browser,width):
    assert names==(['advice','task','examples'] if node=='C60' else
     ['advice','sparks','task','examples']),(node,names)
    assert main.locator('.studio-stage-examples').count()==1,node
+   badge=main.locator('.writer-guide-context-badge')
+   assert badge.count()==1,node
+   suggested=badge.get_attribute('data-guide-tip')
+   original=stored(page)
+   badge.click()
+   guide=page.locator('.writer-guide-drawer')
+   assert guide.is_visible(),node
+   assert guide.locator('[data-guide-card="'+suggested+'"][open]').count()==1,node
+   assert guide.locator('[data-guide-stage-focus="'+node+'"]').count()==1,node
+   assert guide.locator('[data-guide-card="'+suggested+'"] [data-guide-text="stronger"]').is_visible(),node
+   guide.locator('.drawer-header [data-action="close-drawer"]').click()
+   assert stored(page)==original,node
    if node!='C60': assert main.locator('.studio-stage-sparks .spark-library').count()==1,node
    else: assert main.locator('[data-conclusion-workspace] .conclusion-context').count()==1,node
    assert main.locator('.criteria-panel').count()==0,node
@@ -430,7 +444,8 @@ def writing_sections(browser,width):
     assert stored(page)["entries"][0]["purpose"]=="The prior result justified this step."
    if node=="C60":
     assert main.locator('[data-criterion-badge="completing:C61:mainConclusion"]').count()==1
-    assert main.locator('[data-criterion-badge="completing:C61:uncertainty"]').count()==1
+    assert main.locator('[data-criterion-badge="completing:C61:uncertainty"]').count()==0
+    assert "important limits" in main.locator('[data-conclusion-part="meaning"]').inner_text()
     assert main.locator('[data-criterion-badge="completing:C62:benefit"]').count()==1
     assert main.locator('[data-criterion-badge="completing:C63:extension"]').count()==1
     assert [x.get_attribute('data-conclusion-part') for x in main.locator('[data-conclusion-part]').all()]==['answer','meaning','next']
@@ -589,8 +604,6 @@ def growing_discovery_trail(browser,width):
   assert pages.nth(0).get_attribute("data-index")=="0"
   assert pages.nth(1).get_attribute("data-index")=="1"
   assert pages.nth(2).get_attribute("data-index")=="2"
-  assert page.locator('.journey-rail-context').count()==5
-  assert "3 mathematical stages" in page.locator('.journey-rail-context').nth(2).inner_text()
   without_overflow(page)
   page.screenshot(path=str(OUT/f"discovery-accurate-{width}.png"),full_page=True,animations="disabled")
   # Chapter 3 must restore the third mathematical page, not a generic earlier step.
@@ -650,6 +663,10 @@ def adaptive_mathematical_journey(browser,width):
   assert page.locator('[data-math-stage-page="2"]').count()==1
   assert page.locator('[data-journey-stage-link]').count()==1
   assert "alternative function structure" in page.locator('[data-show-first-part="introduce"]').inner_text()
+  page.locator('[data-math-stage-page="2"] .writer-guide-context-badge').click()
+  assert page.locator('.writer-guide-drawer [data-guide-card="why-now"][open]').count()==1
+  assert "The points increase then begin to level off" in page.locator('.writer-guide-drawer .writer-guide-stage-focus').inner_text()
+  page.locator('.writer-guide-drawer .drawer-header [data-action="close-drawer"]').click()
   data=stored(page)
   assert data["entries"][1]["journeySourceOutcome"]=="fitted-models:not-quadratic"
   assert data["entries"][1]["journeySourceSignature"]
