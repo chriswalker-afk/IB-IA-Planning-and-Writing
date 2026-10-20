@@ -474,6 +474,8 @@ test("Phase 5 optional limitations never auto-record source possibilities as rea
  h.action("guidance-limit-record");
  assert.equal(h.saved.completion.confirmedLimitations.length,1);
  h.action("completion-open",{node:"C60"});
+ assert(h.html.includes('data-conclusion-gate'),"a conclusion warning must appear before the synthesis");
+ h.action("conclusion-confirm");
  assert(h.html.includes("Limitations you previously identified"));
 });
 
