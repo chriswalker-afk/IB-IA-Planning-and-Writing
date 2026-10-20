@@ -229,7 +229,8 @@ def first_time(browser,width):
   page.locator('#criterionBadgeDialog [data-criterion-badge-close]').first.click()
   without_overflow(page)
   assert page.locator('.writer-guide-return').count()==0
-  page.locator('.intro-writing-guide .writer-guide-context-badge').click()
+  assert page.locator('.intro-writing-task .writer-guide-field-bubble').count()==1
+  page.locator('.intro-writing-task .writer-guide-field-bubble').click()
   assert page.locator('.writer-guide-drawer').is_visible()
   assert page.locator('.writer-guide-drawer [data-guide-stage-focus="C10"]').count()==1
   assert page.locator('.writer-guide-drawer [data-guide-card="voice"][open]').count()==1
@@ -329,16 +330,32 @@ def writing_sections(browser,width):
    assert names==(['advice','task','examples'] if node=='C60' else
     ['advice','sparks','task','examples']),(node,names)
    assert main.locator('.studio-stage-examples').count()==1,node
-   badge=main.locator('.writer-guide-context-badge')
-   assert badge.count()==1,node
-   suggested=badge.get_attribute('data-guide-tip')
+   badge=main.locator('.studio-stage-writing-task .writer-guide-field-bubble:visible')
+   assert badge.count()>=1,(node,'Missing field-level book bubble')
+   # A purple Guide bubble must be part of a field's help rail, not a stage-wide button.
+   assert main.locator('.studio-stage-advice .writer-guide-context-badge').count()==0,node
+   for field in main.locator('.criterion-marked-field.has-writer-guide').all():
+    # Existing criteria and new Guide buttons must not obscure one another on either screen size.
+    assert field.locator('.writer-guide-field-bubble').count()==1,node
+    overlaps=field.evaluate("""root=>{
+     const purple=root.querySelector('.writer-guide-field-bubble').getBoundingClientRect();
+     return [...root.querySelectorAll('[data-criterion-badge]')].filter(x=>getComputedStyle(x).display!=='none').some(el=>{
+      const a=el.getBoundingClientRect();
+      return a.left<purple.right-2&&a.right>purple.left+2&&a.top<purple.bottom-2&&a.bottom>purple.top+2;
+     });
+    }""")
+    assert not overlaps,(node,'Guide and assessment bubbles overlap')
+   selected=badge.first
+   suggested=selected.get_attribute('data-guide-tip')
+   spot=selected.get_attribute('data-guide-spot')
    original=stored(page)
-   badge.click()
+   selected.click()
    guide=page.locator('.writer-guide-drawer')
    assert guide.is_visible(),node
    assert guide.locator('[data-guide-card="'+suggested+'"][open]').count()==1,node
    assert guide.locator('[data-guide-stage-focus="'+node+'"]').count()==1,node
    assert guide.locator('[data-guide-card="'+suggested+'"] [data-guide-text="stronger"]').is_visible(),node
+   assert guide.locator('.writer-guide-stage-focus').is_visible(),(node,spot)
    guide.locator('.drawer-header [data-action="close-drawer"]').click()
    assert stored(page)==original,node
    if node!='C60': assert main.locator('.studio-stage-sparks .spark-library').count()==1,node
@@ -663,8 +680,7 @@ def adaptive_mathematical_journey(browser,width):
   assert page.locator('[data-math-stage-page="2"]').count()==1
   assert page.locator('[data-journey-stage-link]').count()==1
   assert "alternative function structure" in page.locator('[data-show-first-part="introduce"]').inner_text()
-  assert page.locator('[data-writing-stage-part="advice"] .writer-guide-context-badge').count()==1
-  page.locator('[data-writing-stage-part="advice"] .writer-guide-context-badge').click()
+  page.locator('[data-math-stage-page="2"] .writer-guide-field-bubble[data-guide-spot="completing:C40:bridgeA"]').click()
   assert page.locator('.writer-guide-drawer [data-guide-card="why-now"][open]').count()==1
   assert "The shape does not resemble a simple parabola" in page.locator('.writer-guide-drawer .writer-guide-stage-focus').inner_text()
   page.locator('.writer-guide-drawer .drawer-header [data-action="close-drawer"]').click()
