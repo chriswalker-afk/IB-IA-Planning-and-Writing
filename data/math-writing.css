@@ -1,0 +1,38 @@
+/* Mixed paragraph / mathematical-expression authoring.
+ * All controls are optional additions to existing plain-text fields. */
+.math-writing-tools{display:grid;gap:9px;margin-top:8px;min-width:0}
+.math-open-tool{display:inline-flex;align-items:center;justify-self:start;align-items:center;gap:7px;padding:8px 12px;background:#f0f8f6;border:1px solid #b8d6cf;border-radius:10px;color:#176659;font:inherit;font-size:12px;font-weight:750;cursor:pointer}
+.math-open-tool:hover,.math-open-tool[aria-expanded="true"]{background:#dbf0e8;border-color:#79ae9f}
+.math-open-symbol{font-family:Georgia,serif;font-size:18px;font-weight:700;line-height:1}
+.math-tool-description{font-size:11px;color:#6a7f83;line-height:1.5}
+.math-writing-preview{padding:13px 15px;border:1px solid #d3e8e4;border-radius:12px;background:#f9fcfb;min-width:0}
+.math-writing-preview[hidden]{display:none!important}
+.math-writing-preview-title{display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:space-between;margin-bottom:11px;font-size:10px;color:#36746d}
+.math-writing-preview-title span{color:#79908d}
+.math-writing-preview-content{font-size:14px;line-height:1.75;white-space:pre-wrap;overflow-wrap:anywhere;color:#274147;min-width:0}
+.math-preview-equation{display:inline-flex;vertical-align:middle;align-items:center;max-width:100%;min-width:0;border:none;background:transparent;border-radius:6px;padding:2px 3px;color:inherit;cursor:pointer;overflow-x:auto}
+.math-preview-equation:hover,.math-preview-equation:focus-visible{background:#e1f0f9;outline:2px solid #b5d9e8}
+.math-preview-equation.is-display{display:flex;width:max-content;max-width:100%;margin:12px auto;justify-content:center}
+.math-preview-equation svg{max-width:100%;height:auto!important;overflow:visible}
+.math-preview-invalid{color:#9b4b36;background:#fff0e9;border:1px dotted #d9a58c;border-radius:5px;padding:2px}
+.math-preview-placeholder{font-size:12px;color:#71898c}
+.math-composer{padding:16px 17px;background:#fff;border:1px solid #a9d2ca;box-shadow:0 8px 28px rgba(30,77,73,.075);border-radius:16px;min-width:0;display:grid;gap:10px}
+.math-composer-header{display:flex;flex-wrap:wrap;justify-content:space-between;gap:5px;align-items:center}
+.math-composer-header strong{color:#20544f;font-size:14px}
+.math-composer-header span{font-size:11px;color:#6a8181}
+.math-template-grid{display:flex;flex-wrap:wrap;gap:6px}
+.math-template-grid button{border:1px solid #d4e3e1;border-radius:8px;padding:7px 10px;background:#f6faf8;color:#326763;font-weight:650;font-size:11px;cursor:pointer}
+.math-template-grid button:hover{background:#e7f4ee}
+.math-composer-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:9px}
+.math-composer-row label{font-size:11px;font-weight:750;color:#48656a}
+.math-composer-row select{max-width:100%;padding:7px 9px;border:1px solid #cbded9;border-radius:9px;background:#fff;color:#244750;font-size:11px}
+.math-expression-input{width:100%;min-height:75px!important;max-width:100%;font-family:ui-monospace,Consolas,Monaco,monospace;font-size:13px!important;line-height:1.6}
+.math-composer-hint{font-size:11px;line-height:1.55;color:#658181;margin:0}
+.math-composer-hint code{font-family:ui-monospace,monospace;padding:1px 3px;background:#f0f5f3;border-radius:3px;color:#1a6555}
+.math-expression-preview{min-height:52px;padding:15px;background:#f7fafb;border:1px solid #deeaed;border-radius:11px;display:flex;align-items:center;justify-content:center;overflow-x:auto;color:#183c47}
+.math-expression-preview svg{max-width:100%;height:auto!important}
+.math-expression-error{margin:0;padding:8px 10px;background:#fff2eb;color:#9b4738;border-radius:8px;font-size:11px}
+.math-composer-actions{display:flex;gap:9px;flex-wrap:wrap}
+.math-composer-actions .btn{font-size:11px;min-height:36px}
+@media(max-width:560px){.math-composer{padding:12px}.math-writing-preview{padding:12px}.math-writing-preview-content{font-size:13px}.math-tool-description{font-size:10px}}
+@media(prefers-reduced-motion:reduce){.math-open-tool{transition:none}}
