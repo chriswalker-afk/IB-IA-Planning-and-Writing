@@ -14,7 +14,7 @@ export const FIRST_FIGURE_TYPES=Object.freeze([
  {kind:"voronoi",studio:"voronoiStudio",entryKey:"voronoiFigureId",title:"Voronoi construction",icon:"map"}
 ]);
 
-export function firstSavedFigures(state){
+export function firstSavedFigures(state,{scope="first"}={}){
  const entries=Array.isArray(state?.entries)?state.entries:[];
  const result=[];
  for(const type of FIRST_FIGURE_TYPES){
@@ -23,8 +23,12 @@ export function firstSavedFigures(state){
    if(!figure?.id||!figure.draft)continue;
    const entryIndex=entries.findIndex(x=>x?.id===figure.entryId);
    const linked=entryIndex>=0?entries[entryIndex]:null;
-   // The first exploration must not mix in figures from a later mathematical section.
-   if(linked&&linked.phase!=="first")continue;
+   const active=entries[state.completion?.activeEntryIndex];
+   // New mathematical stages show only diagrams linked to this stage; earlier
+   // or unrelated figures stay on their own pages.
+   if(scope==="active"){
+    if(!active||!linked||linked.id!==active.id)continue;
+   }else if(linked&&linked.phase!=="first")continue;
    result.push({...type,figure,entryIndex,linked,kindKey:type.kind+":"+figure.id});
   }
  }
@@ -45,17 +49,17 @@ function preview(item){
 
 /** Display the active linked output and every other saved figure without
  * treating a saved plot as a completed IA result. */
-export function renderFirstFigureGallery(state,icon,e,panels={}){
- const entries=firstSavedFigures(state),active=state.entries?.[state.completion?.activeEntryIndex];
+export function renderFirstFigureGallery(state,icon,e,panels={},options={}){
+ const entries=firstSavedFigures(state,options),active=state.entries?.[state.completion?.activeEntryIndex];
  const hidden=new Set(state.completion?.hiddenFirstFigures||[]);
- const picked=entries.find(x=>!hidden.has(x.kindKey)&&active?.phase==="first"&&
+ const picked=entries.find(x=>!hidden.has(x.kindKey)&&active&&
   active[x.entryKey]===x.figure.id);
  const others=entries.filter(x=>x!==picked&&!hidden.has(x.kindKey));
  const hiddenItems=entries.filter(x=>hidden.has(x.kindKey));
- if(!entries.length)return '<p class="show-first-no-figure">No diagrams have been saved yet. You can also show a calculation or a theoretical example without using a diagram generator.</p>';
+ if(!entries.length)return '<p class="show-first-no-figure">No diagrams are linked to this mathematical stage yet. A calculation or a theoretical example can also be shown without a diagram.</p>';
  const hide=(x)=>'<button class="btn btn-quiet btn-sm" type="button" data-action="first-figure-hide" data-figure-key="'+e(x.kindKey)+'">'+icon("eye-off")+' Hide preview</button>';
  const figureCard=(x)=>{
-  const label=x.linked?"Linked to first exploration":"Saved tool draft";
+  const label=x.linked?"Linked to mathematical stage":"Saved tool draft";
   return '<article class="show-first-figure-extra" data-first-figure-key="'+e(x.kindKey)+'">'+
    '<div class="show-first-figure-extra-head"><span>'+icon(x.icon)+' <strong>'+e(x.figure.draft.title||x.title)+'</strong></span>'+
    '<small>'+e(label)+'</small></div>'+
@@ -78,7 +82,7 @@ export function renderFirstFigureGallery(state,icon,e,panels={}){
   '<details class="show-first-hidden-figures"><summary>'+hiddenItems.length+' hidden preview'+(hiddenItems.length===1?"":"s")+' · Restore</summary>'+
   hiddenItems.map(x=>'<button type="button" class="btn btn-quiet btn-sm" data-action="first-figure-restore" data-figure-key="'+e(x.kindKey)+'">'+
    icon("eye")+' Show '+e(x.figure.draft.title||x.title)+'</button>').join("")+'</details>':"";
- return '<section class="show-first-figure-gallery" data-first-figure-gallery aria-label="Saved figures for your first exploration">'+
+ return '<section class="show-first-figure-gallery" data-first-figure-gallery aria-label="Saved figures for this mathematical exploration">'+
   '<div class="show-first-gallery-heading"><div><strong>'+icon("layers")+' My saved diagrams and tables</strong>'+
   '<p>These are real saved figures, not automatic proof of a result. Insert the relevant ones in your IA, then explain what the mathematics actually establishes.</p></div>'+
   '<span>'+entries.length+' saved</span></div>'+
