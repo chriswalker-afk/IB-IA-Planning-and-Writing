@@ -22,22 +22,32 @@ export function planningMilestones(s){
 const isActual=e=>e?.status==='completed'&&has(e.result);
 /** One entry per mathematical writing page. Never count a saved diagram alone as a result. */
 export function mathematicalPages(s){
- const entries=Array.isArray(s?.entries)?s.entries:[];
- let further=0;
- return entries.flatMap((entry,index)=>{
-  if(!entry||!['first','substantial'].includes(entry.phase))return [];
-  if(entry.phase==='substantial')further++;
-  return [{entry,index,stage:entry.phase==='first'?1:further+1,
-   label:entry.phase==='first'?'First mathematics':'Mathematical stage '+(further+1),
-   status:entry.reviewNeeded==='yes'?'needs-review':isActual(entry)?'complete':'working'}];
- });
+ const entries=Array.isArray(s?.entries)?s.entries:[],
+  firsts=entries.map((entry,index)=>({entry,index})).filter(x=>x.entry?.phase==='first'),
+  later=entries.map((entry,index)=>({entry,index})).filter(x=>x.entry?.phase==='substantial');
+ const pages=[];
+ // Several saved first representations still belong to the SAME first
+ // four-part writing page, so they must not become fictitious extra stages.
+ if(firsts.length){
+  const current=firsts.find(x=>x.index===s.completion?.activeEntryIndex)||firsts.at(-1);
+  pages.push({entry:current.entry,index:current.index,
+   recordIndices:firsts.map(x=>x.index),stage:1,label:'First mathematics',
+   status:firsts.some(x=>x.entry.reviewNeeded==='yes')?'needs-review':
+    firsts.every(x=>isActual(x.entry))?'complete':'working'});
+ }
+ later.forEach(({entry,index},i=>pages.push({
+  entry,index,recordIndices:[index],stage:i+2,label:'Mathematical stage '+(i+2),
+  status:entry.reviewNeeded==='yes'?'needs-review':isActual(entry)?'complete':'working'
+ }));
+ return pages;
 }
 export function mathematicalChapterSummary(s){
  const pages=mathematicalPages(s),
   ready=pages.filter(p=>p.status==='complete').length,
-  review=pages.filter(p=>p.status==='needs-review').length;
- return {pages,ready,review,pending:pages.length-ready-review,
-  actualResults:pages.filter(p=>isActual(p.entry)).length};
+  review=pages.filter(p=>p.status==='needs-review').length,
+  actualResults=(Array.isArray(s?.entries)?s.entries:[])
+   .filter(x=>x&&['first','substantial'].includes(x.phase)&&isActual(x)).length;
+ return {pages,ready,review,pending:pages.length-ready-review,actualResults};
 }
 export function chapterProgressCopy(s,group){
  if(group.id==='plan'){
@@ -95,7 +105,7 @@ export function groupTarget(s,g){
   if(['C30','C40','C50'].includes(s.completion?.current)&&s.route==='completing')
    return s.completion.current;
   const pages=mathematicalPages(s);
-  const active=pages.find(p=>p.index===s.completion?.activeEntryIndex);
+  const active=pages.find(p=>p.recordIndices.includes(s.completion?.activeEntryIndex));
   const latest=active||pages.at(-1);
   return latest?.entry.phase==='substantial'?(latest.stage>2?'C50':'C40'):'C30';
  }
