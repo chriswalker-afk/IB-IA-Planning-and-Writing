@@ -1088,3 +1088,21 @@
 }
 @media(max-width:345px){.route-completing .topbar .brand-label{display:none}}
 @media print{.writer-guide-header-button,.writer-guide-overview-card{display:none!important}}
+
+/* Pass 2: one slim Field Guide entry in each writing stage, not a repeated callout. */
+.writer-guide-context-badge{display:inline-flex;align-items:center;gap:7px;width:max-content;max-width:100%;min-height:36px;margin:11px 0 15px;padding:5px 11px 5px 6px;border-radius:11px;border:1px solid #dacbea;background:#f7f2fc;color:#66478e;font-size:11px;font-weight:800;line-height:1.35;cursor:pointer;white-space:normal}
+.writer-guide-context-badge-icon{display:grid;place-items:center;flex:none;width:25px;height:25px;border-radius:8px;background:#e7dcf4;color:#61418a}
+.writer-guide-context-badge .icon{width:14px;height:14px}
+.writer-guide-context-badge:hover,.writer-guide-context-badge:focus-visible{border-color:#ad91d1;background:#eee4f9}
+.writer-guide-context-badge:focus-visible{outline:2px solid #72529b;outline-offset:2px}
+.intro-writing-guide-compact .writer-guide-context-badge{display:flex;margin-top:12px}
+.writer-guide-stage-focus{display:grid;gap:6px;background:#f6f1fc;border:1px solid #e2d5f2;border-radius:12px;padding:13px 15px;margin:5px 0 14px;color:#3d3855}
+.writer-guide-stage-focus>span{font-size:9px;font-weight:850;letter-spacing:.1em;color:#75509f}
+.writer-guide-stage-focus>strong{font-size:13px;line-height:1.4;color:#493571}
+.writer-guide-stage-focus p{font-size:12px;line-height:1.6;margin:0;color:#4a5060}
+.writer-guide-stage-focus .writer-guide-stage-note{border-top:1px solid #e4dbee;padding-top:7px;margin-top:4px}
+.writer-guide-stage-focus .writer-guide-stage-question{color:#513b72;font-weight:650}
+.writer-guide-stage-focus small{font-size:10px;line-height:1.55;color:#71677d}
+.writer-guide-tip-current{font-size:9px;font-weight:850;letter-spacing:.015em;color:#654b87;background:#eee5f9;border:1px solid #dfd2eb;border-radius:6px;padding:3px 6px;width:max-content}
+@media(max-width:480px){.writer-guide-context-badge{min-height:38px}.writer-guide-stage-focus{padding:12px}}
+@media print{.writer-guide-context-badge{display:none!important}}

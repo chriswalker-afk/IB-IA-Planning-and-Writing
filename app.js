@@ -71,6 +71,7 @@ import {renderRepresentationHub,renderRepresentationSwitcher,representationFocus
 import {renderPresentationCoach,renderFigureHandover} from "./src/diagrams/presentation-coach-view.js";
 import {figureCaption} from "./src/diagrams/presentation-coach-core.js";
 import {renderWriterFieldGuide,renderWriterGuideWelcome,shouldShowWriterGuideWelcome} from "./src/completing/writer-field-guide.js";
+import {writingGuideRecommendation} from "./src/completing/writer-guide-context.js";
 import {C_MAJOR_STAGES,setCompletionNode,moveCompletionRoute,completionBack,markCompletionStage,setCompletionField,startFirstRepresentation,addMathematicalStage,routesAt,addAccuracyDecision,completionSuggestions,sectionForNode,targetForSection,completionStage,completeEntry,latestRealResult,sourceResultForNext,flagDependentMathematics,acknowledgeMathReview} from "./src/completing/engine.js";
 import {adaptiveNextDirections,flagJourneyRouteDependents} from "./src/completing/adaptive-journey.js";
 
@@ -752,7 +753,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     save();closeDrawer(false);render({top:true});
     toast("Illustrative investigation opened. Your own project is safe.");
   }
-  function openDrawer(panel) {
+  function openDrawer(panel,guide=null) {
     if(layer.hidden){
       const active=document.activeElement;
       if(active?.matches?.('button,input,textarea,select,summary,a'))drawerReturn=captureReturn(active);
@@ -794,7 +795,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     }else if(panel==="resources"){
       body=resourceDrawer(state,resourceSession);
     }else if(panel==="writer-guide"){
-      body=renderWriterFieldGuide(icon,e);
+      body=renderWriterFieldGuide(icon,e,guide);
     }else if(panel==="writer-guide-intro"){
       body=renderWriterGuideWelcome(icon,e);
     }else if(panel==="help"){
@@ -993,11 +994,18 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     if(action==="go-checking")return nav("checking");
     if(action==="go-studio")return nav("completing"); // Resume the saved C-stage; "Studio overview" remains a separate action.
     if(action==="writer-guide-open"){
-      lastFocus=el;openDrawer("writer-guide");
+      if(layer.hidden)lastFocus=el;
       const tip=String(el.dataset.guideTip||"").replace(/[^a-z0-9-]/g,"");
-      if(tip){
-        const card=layer.querySelector('[data-guide-card="'+tip+'"]');
-        if(card){card.open=true;card.scrollIntoView?.({block:"start",behavior:"auto"});}
+      const node=state.route==="completing"?state.completion.current:"";
+      const guide=writingGuideRecommendation(state,node,tip);
+      openDrawer("writer-guide",guide);
+      if(guide){
+        const card=layer.querySelector('[data-guide-card="'+guide.tip.id+'"]');
+        if(card){
+          card.open=true;
+          card.scrollIntoView?.({block:"start",behavior:"auto"});
+          card.querySelector("summary")?.focus?.({preventScroll:true});
+        }
       }
       return;
     }
