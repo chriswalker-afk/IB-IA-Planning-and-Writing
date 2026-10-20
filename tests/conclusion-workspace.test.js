@@ -118,12 +118,16 @@ test("Old conclusion C61-C64 links and loaded stages now lead to C60 without del
 });
 test("Sidebar and both Discovery Trail layouts show Conclusion and potential next steps in chapter 4",()=>{
  const s=make(),g=JOURNEY_GROUPS.find(x=>x.id==="finish"),before=JSON.stringify(s);
- assert.deepEqual(g.stages,["C60","C70","C80","C90"],"Keep honest communication and review milestones");
+ assert.deepEqual(g.stages,["C60"],"Conclusion remains a separate writing task");
+ const check=JOURNEY_GROUPS.find(x=>x.id==="check");
+ assert.deepEqual(check.stages,["C70","C80","C90"],"Existing writing communication and review records remain available");
  const phrase="Conclusion &amp; next steps";
  for(const html of [discoveryTrail(s),discoveryTrail(s,{compact:true}),chapterRibbon(s),journeyRail(s)])
   assert(html.includes(phrase),phrase);
- assert(chapterProgressCopy(s,g).includes("feedback"));
- assert.equal(chapterStats(s,g).total,4);
+ assert(chapterProgressCopy(s,g).includes("Conclusion"));
+ assert(chapterProgressCopy(s,check).includes("feedback"));
+ assert.equal(chapterStats(s,g).total,1);
+ assert.equal(chapterStats(s,check).total,3);
  assert.equal(JSON.stringify(s),before);
 });
 test("Untrusted student text is escaped in the consolidated conclusion",()=>{
