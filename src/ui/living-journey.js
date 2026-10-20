@@ -3,33 +3,40 @@
  */
 import {escapeHtml as e,icon} from './primitives.js';
 import {insightTrailLines,insightTrailControls,CHAPTER_TRAIL_POINTS} from './insight-network.js';
-import {JOURNEY_GROUPS,groupStatus,stageStatus,currentGroup,groupTarget,STATUS_LABELS,chapterRole} from './journey.js';
+import {JOURNEY_GROUPS,groupStatus,stageStatus,currentGroup,groupTarget,STATUS_LABELS,chapterRole,planningMilestones,mathematicalPages,mathematicalChapterSummary,chapterProgressCopy} from './journey.js';
 import {PROGRESS_GROUPS,planningStage} from '../planning/engine.js';
 
-export function planningAnchors(s){
- const p=s?.planning?.fields||{};
- const yes=v=>typeof v==='string'&&!!v.trim();
- return [
-  {name:'Working title',recorded:yes(p.provisionalTitle),detail:'A provisional IA title has been saved, not finalised'},
-  {name:'My question',recorded:yes(p.aim||s.project?.aim),detail:'An investigation aim is recorded'},
-  {name:'Starting material',recorded:yes(p.kind==='theoretical'?(p.theoreticalCase||p.theoreticalObject):(p.dataSource||p.primaryWhat||p.secondaryUrl)),detail:'A proposed evidence or theoretical starting route is recorded'},
-  {name:'Mathematical direction',recorded:yes(p.course)&&yes(p.kind),detail:'A course and investigation approach have been chosen; this is not completed mathematics'},
-  {name:'Review my plan',recorded:s?.planning?.completed===true,detail:'The provisional planning review is marked ready'}
- ];
-}
+export function planningAnchors(s){return planningMilestones(s);}
+
 export function chapterStats(s,g){
  if(g.id==='plan'){
   const a=planningAnchors(s);
   return {ready:a.filter(x=>x.recorded).length,total:a.length,labels:a.map(x=>x.name),statuses:a.map(x=>x.recorded?'recorded':'empty')};
  }
+ if(g.id==='explore'){
+  const pages=mathematicalPages(s);
+  if(!pages.length)return{ready:0,total:1,labels:['First mathematics'],statuses:[
+   stageStatus(s,'C30')==='needs-review'?'needs-review':stageStatus(s,'C30')==='not-started'?'not-started':'working'
+  ]};
+  return {ready:pages.filter(p=>p.status==='complete').length,total:pages.length,
+   labels:pages.map(p=>p.label),statuses:pages.map(p=>p.status)};
+ }
  const stages=g.stages||[];
+ const names={C10:'Introduction',C20:'Introduce first mathematics',C60:'Conclusion',
+  C70:'Communication',C80:'Teacher feedback',C90:'Final checks'};
  return {ready:stages.filter(x=>stageStatus(s,x)==='complete').length,total:stages.length,
-  labels:stages.map(x=>x),statuses:stages.map(x=>stageStatus(s,x))};
+  labels:stages.map(x=>names[x]||x),statuses:stages.map(x=>stageStatus(s,x))};
 }
 export function chapterMini(s,g){
- const st=chapterStats(s,g);
- return '<span class="journey-mini" aria-hidden="true">'+st.statuses.map(x=>
-  '<span class="journey-mini-cell '+e(x)+'"></span>').join('')+'</span>';
+ const st=chapterStats(s,g),indexes=st.statuses.map((_,i)=>i),
+  bounded=indexes.length>6?[0,...indexes.slice(-5)]:indexes,
+  hidden=st.total-bounded.length;
+ return '<span class="journey-mini" aria-hidden="true">'+bounded.map(i=>
+  '<span class="journey-mini-cell '+e(st.statuses[i])+
+   '" title="'+e(st.labels[i])+': '+e(st.statuses[i]==='recorded'?'Saved':
+     st.statuses[i]==='empty'?'Not yet saved':STATUS_LABELS[st.statuses[i]]||'Not started')+'"></span>').join('')+
+  (hidden?'<span class="journey-mini-overflow" title="'+hidden+' earlier mathematical stages">+'+hidden+'</span>':'')+
+  '</span>';
 }
 export function chapterRibbon(s){
  const active=currentGroup(s);
@@ -42,7 +49,7 @@ export function chapterRibbon(s){
    ' aria-label="'+e('Chapter '+(i+1)+': '+g.name+'. '+chapterRole(g)+'. '+label+'.')+'">'+
    '<span class="living-ribbon-number">'+(status==='complete'?icon('check'):i+1)+'</span>'+
    '<span class="living-ribbon-label">'+e(g.name)+'</span>'+
-   chapterJourneyIcon(g)+chapterMini(s,g)+'<span class="visually-hidden">'+e(label)+'</span></button>';
+   chapterJourneyIcon(g)+chapterMini(s,g)+'<span class="visually-hidden">'+e(label)+'. '+e(chapterProgressCopy(s,g))+'</span></button>';
  }).join('')+'</nav>';
 }
 export function planningProgress(s,{compact=false}={}){
@@ -165,12 +172,44 @@ const curves=coordinates.slice(0,-1).map((p,i)=>{
  const q=coordinates[i+1],middle=(p.x+q.x)/2;
  return 'M'+p.x+' '+p.y+' C'+middle+' '+p.y+' '+middle+' '+q.y+' '+q.x+' '+q.y;
 });
+/** A mathematical-stage loop nested inside the four-chapter map, not a
+ * fixed number of techniques or a claim that a diagram proves a result. */
+export function discoveryMathStages(s){
+ const {pages,actualResults,pending,review}=mathematicalChapterSummary(s);
+ if(!pages.length)return '';
+ const shown=pages.length>6?[pages[0],...pages.slice(-5)]:pages;
+ const rest=pages.length>6?pages.slice(1,-5):[];
+ const card=p=>{
+  const description=p.status==='complete'?'Actual result recorded':
+   p.status==='needs-review'?'Connection needs checking':'Planned or still being worked on';
+  return '<button type="button" class="living-trail-math-page '+e(p.status)+
+   '" data-action="completion-edit-entry" data-index="'+p.index+
+   '" title="'+e(p.entry.title||p.label)+'" aria-label="Open '+e(p.label)+': '+description+'">'+
+   icon(p.status==='complete'?'check-circle':p.status==='needs-review'?'alert-circle':'circle')+
+   '<span>'+e(p.label)+'</span></button>';
+ };
+ return '<section class="living-trail-math-loop" aria-label="Mathematical stages recorded in this investigation">'+
+  '<div class="living-trail-math-loop-heading"><span>'+icon('refresh')+
+   ' MATHEMATICS CAN LOOP</span><small>'+pages.length+' '+(pages.length===1?'stage':'stages')+
+   ' · '+actualResults+' actual '+(actualResults===1?'result':'results')+
+   (pending?' · '+pending+' in progress':'')+(review?' · '+review+' to review':'')+'</small></div>'+
+  '<div class="living-trail-math-pages">'+
+   (shown.length?card(shown[0]):'')+
+   (rest.length?'<details class="living-trail-math-more"><summary>+'+rest.length+
+    ' earlier '+(rest.length===1?'stage':'stages')+' '+icon('chevron-right')+'</summary>'+
+    '<div class="living-trail-math-more-pages">'+rest.map(card).join('')+'</div></details>':'')+
+   shown.slice(1).map(card).join('')+
+  '</div>'+
+  '<p class="living-trail-math-footnote">Each page connects to an earlier finding. These markers reflect saved working records, not an IA grade or a required number of calculations.</p>'+
+ '</section>';
+}
 export function discoveryTrail(s,{compact=false}={}){
  const now=currentGroup(s);
  const stages=JOURNEY_GROUPS.map(g=>({g,status:groupStatus(s,g)}));
  return '<section class="living-trail '+(compact?'is-compact':'')+'" aria-label="Discovery Trail">'+
   '<div class="living-trail-top"><div><span class="section-eyebrow">'+icon('route')+
-  ' DISCOVERY TRAIL</span><h3>Follow your mathematical journey</h3></div></div>'+
+  ' DISCOVERY TRAIL</span><h3>Follow your mathematical journey</h3>'+
+  '<p class="living-trail-purpose">Four chapters, with as many meaningful mathematical stages as your investigation needs.</p></div></div>'+
   '<div class="living-trail-route" role="group" aria-label="Chapter 1 is planning. Chapters 2, 3 and 4 are where you write your IA.">'+
    '<div class="living-trail-zone-underlay" aria-hidden="true"><span class="plan"></span><span class="writing"></span></div>'+
    '<div class="living-trail-zone-headings">'+
@@ -194,12 +233,23 @@ export function discoveryTrail(s,{compact=false}={}){
    '<div class="living-trail-steps">'+stages.map(({g,status},i)=>
     '<button type="button" class="living-trail-step '+e(status)+(now.id===g.id?' current':'')+
     ' '+e(g.mode)+'" data-action="journey-open" data-target="'+e(groupTarget(s,g))+
-    '" aria-label="'+e('Chapter '+(i+1)+': '+g.name+'. '+(g.mode==='planning'?'Plan your exploration.':'Write in your IA.')+' '+STATUS_LABELS[status]+'.')+'">'+
+    '" aria-label="'+e('Chapter '+(i+1)+': '+g.name+'. '+(g.mode==='planning'?'Plan your exploration.':'Write in your IA.')+' '+STATUS_LABELS[status]+'. '+chapterProgressCopy(s,g))+'.">'+
     chapterJourneyIcon(g)+'<span class="living-trail-step-order" aria-hidden="true">'+(status==='complete'?icon('check'):i+1)+'</span>'+
     '<strong>'+e(g.name)+'</strong><small>'+e(STATUS_LABELS[status])+'</small>'+
+    '<span class="living-trail-step-detail">'+e(chapterProgressCopy(s,g))+'</span>'+
     chapterMini(s,g)+'</button>').join('')+'</div>'+
   '</div>'+
-  insightTrailControls(s)+'<p class="living-trail-note">Follow the mint Planning chapter into the purple writing chapters. Each stage remains revisitable; “Ready for now” is a checkpoint, not an IA grade.</p></section>';
+  discoveryMathStages(s)+
+  '<details class="living-trail-chapter-guide" data-trail-chapter-guide>'+
+   '<summary>'+icon('book')+' What do the four chapters include? '+icon('chevron-right')+'</summary>'+
+   '<div class="living-trail-chapter-guide-grid">'+
+    '<div><strong>1 · Planning</strong><p>Develop a worthwhile aim, explore mathematical pathways, choose primary, secondary or theoretical starting material, and plan sampling, permissions, sources and precision where relevant. Save useful ideas as sparks.</p></div>'+
+    '<div><strong>2 · Start writing</strong><p>Write your introduction, connect it to the investigation aim, and justify the first mathematics and evidence you intend to use. Writing belongs in your own IA.</p></div>'+
+    '<div><strong>3 · Explore &amp; explain</strong><p>Show real calculations or well-presented diagrams and tables, interpret results, reflect on meaningful limitations, and add further linked mathematical stages when they help answer the aim.</p></div>'+
+    '<div><strong>4 · Conclude &amp; review</strong><p>Check whether you have sufficient mathematical substance, then synthesise a supported conclusion, improve notation and presentation, seek appropriate draft feedback, and complete final checks.</p></div>'+
+   '</div><p class="living-trail-chapter-guide-note">Sparks, worked examples, diagram generators and criteria help you along the way; they are not compulsory extra stages or automatic marks. A saved figure is not proof that the mathematics has been completed.</p>'+
+  '</details>'+
+  insightTrailControls(s)+'<p class="living-trail-note">Mint is for planning; purple is for work written in your IA. A recorded plan is not completed mathematics. All chapters and mathematical stages stay revisitable.</p></section>';
 }
 const real=e=>e?.status==='completed'&&typeof e.result==='string'&&!!e.result.trim();
 export function mathConstellation(s,{compact=false}={}){

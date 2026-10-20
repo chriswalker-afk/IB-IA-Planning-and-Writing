@@ -492,12 +492,76 @@ def repeatable_mathematics(browser,width):
  finally:
   ctx.close()
 
+
+def growing_discovery_trail(browser,width):
+ s=copy.deepcopy(BASE)
+ s["route"]="path";s["completion"]["current"]="C04"
+ s["completion"]["activeEntryIndex"]=2
+ s["planning"]["fields"].update({"aim":"Can a curve describe these data?",
+  "kind":"statistics","course":"AI SL","dataSource":"primary"})
+ s["entries"]=[
+  {"id":"first","phase":"first","status":"completed",
+   "title":"Initial scatter","result":"The observed values have curvature",
+   "localTakeaway":"A straight line is inadequate"},
+  {"id":"second","phase":"substantial","status":"completed",
+   "title":"Quadratic model","fromEntryId":"first",
+   "result":"The quadratic has smaller residuals","localTakeaway":"Quadratic fits better"},
+  {"id":"third","phase":"substantial","status":"planned",
+   "title":"Further optimisation","fromEntryId":"second","result":""}
+ ]
+ ctx,page=open_fixture(browser,s,width)
+ try:
+  trail=page.locator('.living-trail:not(.is-compact)').first
+  assert trail.count()==1
+  assert trail.locator('.living-trail-step').count()==4
+  assert trail.locator('.living-trail-math-loop').count()==1
+  assert "3 mathematical stages" in trail.inner_text()
+  assert trail.locator('[data-trail-chapter-guide]').count()==1
+  trail.locator('[data-trail-chapter-guide] summary').click()
+  assert "sampling" in trail.locator('[data-trail-chapter-guide]').inner_text()
+  assert "diagram generators" in trail.locator('[data-trail-chapter-guide]').inner_text()
+  assert "2 actual results" in trail.inner_text()
+  assert "1 in progress" in trail.inner_text()
+  pages=trail.locator('.living-trail-math-page')
+  assert pages.count()==3
+  assert pages.nth(0).get_attribute("data-index")=="0"
+  assert pages.nth(1).get_attribute("data-index")=="1"
+  assert pages.nth(2).get_attribute("data-index")=="2"
+  assert page.locator('.journey-rail-context').count()==4
+  assert "3 mathematical stages" in page.locator('.journey-rail-context').nth(2).inner_text()
+  without_overflow(page)
+  page.screenshot(path=str(OUT/f"discovery-accurate-{width}.png"),full_page=True,animations="disabled")
+  # Chapter 3 must restore the third mathematical page, not a generic earlier step.
+  trail.locator('.living-trail-step[data-target="C50"]').click()
+  assert page.locator('[data-source-node="C50"]').count()==1
+  assert page.locator('[data-math-stage-page="3"]').count()==1
+  assert stored(page)["completion"]["activeEntryIndex"]==2
+  # Every mathematical chip is a revisitable student writing page.
+  page.locator('[data-nav="path"]:visible').first.click()
+  page.locator('.living-trail:not(.is-compact) .living-trail-math-page[data-index="1"]').click()
+  assert page.locator('[data-source-node="C40"]').count()==1
+  assert stored(page)["completion"]["activeEntryIndex"]==1
+  assert page.locator('[data-math-stage-page="2"]').count()==1
+  page.locator('[data-nav="path"]:visible').first.click()
+  page.locator('.living-trail:not(.is-compact) .living-trail-step[data-target="C60"]').click()
+  assert page.locator('[data-conclusion-gate]').count()==1
+  assert page.locator('[data-source-node="C40"]').count()==1
+  page.locator('[data-action="conclusion-cancel"]').click()
+  assert page.locator('[data-conclusion-gate]').count()==0
+  page.locator('[data-nav="path"]:visible').first.click()
+  page.locator('.living-trail:not(.is-compact) .living-trail-step[data-target="C60"]').click()
+  page.locator('[data-action="conclusion-confirm"]').click()
+  assert page.locator('[data-source-node="C60"]').count()==1
+  without_overflow(page)
+ finally:
+  ctx.close()
+
 def main():
  results=[]
  with sync_playwright() as p:
   browser=p.chromium.launch(headless=True)
   for width in (1360,390):
-   for scenario,fn in (("new",first_time),("completed",completed_plan),("writing-stages",writing_sections),("maths-model-start",modelling_math_start),("repeatable-mathematics",repeatable_mathematics)):
+   for scenario,fn in (("new",first_time),("completed",completed_plan),("writing-stages",writing_sections),("maths-model-start",modelling_math_start),("repeatable-mathematics",repeatable_mathematics),("growing-discovery-trail",growing_discovery_trail)):
     try:
      fn(browser,width)
      results.append({"scenario":scenario,"width":width,"status":"passed"})

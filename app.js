@@ -1045,10 +1045,21 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         }
         break;
       }
-      case "journey-open":
-        if(el.dataset.target==="plan")nav("planning");
-        else handleCompletionResult(setCompletionNode(state,el.dataset.target,{reason:"journey-navigation"}));
+      case "journey-open":{
+        const target=el.dataset.target;
+        if(target==="plan"){
+          state.completion.conclusionWarningOpen=false;nav("planning");
+        }else if(target==="C60"&&state.completion.current!=="C60"){
+          // The Discovery Trail is also a direct path to the conclusion,
+          // so it must honour the same readiness check as the end-page CTA.
+          state.route="completing";state.ui.lastWorkRoute="completing";
+          requestConclusionReview();
+        }else{
+          state.completion.conclusionWarningOpen=false;
+          handleCompletionResult(setCompletionNode(state,target,{reason:"journey-navigation"}));
+        }
         break;
+      }
       case "journey-toggle-all":{
         const nodes=[...main.querySelectorAll(".journey-chapter")],open=!nodes.every(x=>x.open);
         nodes.forEach(x=>x.open=open);el.setAttribute("aria-expanded",String(open));el.textContent=open?"Collapse full path":"Show full path";break;

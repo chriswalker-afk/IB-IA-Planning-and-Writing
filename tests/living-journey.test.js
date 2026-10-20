@@ -2,9 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createProjectState,normalizeProjectState} from '../src/core/project-state.js';
-import {planningAnchors,chapterStats,chapterRibbon,discoveryTrail,planningProgress,planningLearningTrail,mathConstellation} from '../src/ui/living-journey.js';
+import {planningAnchors,chapterStats,chapterRibbon,discoveryTrail,discoveryMathStages,planningProgress,planningLearningTrail,mathConstellation} from '../src/ui/living-journey.js';
 import {insightItems,insightForCurrent,insightCapture,insightEcho,insightToolkit,insightThreadMap,featuredSparkItems} from '../src/ui/insight-threads.js';
-import {JOURNEY_GROUPS} from '../src/ui/journey.js';
+import {JOURNEY_GROUPS,groupStatus,groupTarget,mathematicalPages,chapterProgressCopy} from '../src/ui/journey.js';
 import {insightConnections,insightTrailLines,insightTrailControls,CHAPTER_TRAIL_POINTS,threadGeometry} from '../src/ui/insight-network.js';
 import {journeyMap,journeyRail,groupedDashboard} from '../src/ui/journey-views.js';
 
@@ -343,4 +343,127 @@ test('two-zone styles use distinct mint/lavender colours and a single-column mob
  assert(css.includes('grid-template-columns:1fr'));
  assert(css.includes('@media(prefers-reduced-motion:reduce)'));
  assert(css.includes(':focus-visible'));
+});
+
+test('a brand-new Discovery Trail shows no mandatory extra mathematical stage',()=>{
+ const s=createProjectState(),g=JOURNEY_GROUPS[2],stats=chapterStats(s,g),html=discoveryTrail(s);
+ assert.equal(stats.total,1,"one starting placeholder, not a compulsory second technique");
+ assert.equal(stats.ready,0);
+ assert.equal(stats.statuses[0],'not-started');
+ assert.equal(groupStatus(s,g),'not-started');
+ assert(html.includes('First mathematics, then further stages if useful'));
+ assert(!html.includes('data-trail-math-stages'));
+ assert.equal(discoveryMathStages(s),'');
+});
+test('three mathematical pages are real repeatable trail links with two verified results',()=>{
+ const s=createProjectState();
+ s.entries=[
+  {id:'first',phase:'first',title:'Initial graph',status:'completed',result:'A measured curve'},
+  {id:'second',phase:'substantial',fromEntryId:'first',title:'Quadratic model',status:'completed',result:'Lower residuals'},
+  {id:'third',phase:'substantial',fromEntryId:'second',title:'Find the optimum',status:'planned',result:''}
+ ];
+ s.completion.activeEntryIndex=2;s.completion.current='C50';s.route='completing';
+ const pages=mathematicalPages(s),group=JOURNEY_GROUPS[2],stats=chapterStats(s,group);
+ assert.equal(pages.length,3);assert.deepEqual(pages.map(x=>x.stage),[1,2,3]);
+ assert.deepEqual(stats.statuses,['complete','complete','working']);
+ assert.equal(stats.total,3);assert.equal(stats.ready,2);
+ const summary='3 mathematical stages · 2 actual results';
+ const trail=discoveryTrail(s),strip=discoveryMathStages(s);
+ assert(trail.includes(summary));
+ for(const [i,label] of ['First mathematics','Mathematical stage 2','Mathematical stage 3'].entries()){
+  assert(strip.includes(label));
+  assert(strip.includes('data-index="'+i+'"'));
+ }
+ assert(strip.includes('2 actual results · 1 in progress'));
+ assert(strip.includes('data-action="completion-edit-entry"'));
+ assert(chapterRibbon(s).includes('Follow')===false,"Ribbon stays compact");
+ assert(journeyRail(s).includes(summary),'Sidebar has the same dynamic summary');
+ assert.equal(groupTarget(s,group),'C50','Current third stage remains active');
+ s.route='path';s.completion.current='C04';
+ assert.equal(groupTarget(s,group),'C50','Returning from the trail restores current stage');
+});
+test('the discovery progress never treats saved figures or draft text as actual mathematical results',()=>{
+ const s=createProjectState(),g=JOURNEY_GROUPS[2];
+ s.completion.stages.C30='complete';s.completion.stages.C40='complete';
+ assert.notEqual(groupStatus(s,g),'complete','Manual stage flags alone cannot invent mathematics');
+ s.entries=[{id:'first',phase:'first',status:'planned',result:'A draft diagram note',
+  graphFigureId:'graph1'}];
+ assert.equal(chapterStats(s,g).ready,0);
+ assert.notEqual(groupStatus(s,g),'complete');
+ assert(discoveryTrail(s).includes('0 actual results'));
+ s.entries[0].status='completed';s.entries[0].result='Actual calculations verified';
+ assert.equal(groupStatus(s,g),'complete','Explicitly ready plus verified results is a checkpoint');
+ s.entries.push({id:'second',phase:'substantial',fromEntryId:'first',status:'planned',result:''});
+ assert.equal(groupStatus(s,g),'working','An unfinished added stage reopens the mathematical work');
+});
+test('dependency review is visible in the trail and persists through a saved project',()=>{
+ const s=createProjectState(),g=JOURNEY_GROUPS[2];
+ s.entries=[{id:'first',phase:'first',status:'completed',result:'An observed graph'},
+  {id:'second',phase:'substantial',status:'completed',result:'Calculated result',
+   fromEntryId:'first',reviewNeeded:'yes'}];
+ assert.equal(groupStatus(s,g),'needs-review');
+ assert.deepEqual(chapterStats(s,g).statuses,['complete','needs-review']);
+ assert(discoveryMathStages(s).includes('Connection needs checking'));
+ const restored=normalizeProjectState(s);
+ assert.equal(groupStatus(restored,g),'needs-review');
+ assert(discoveryTrail(restored).includes('1 to review'));
+});
+test('very long explorations use a bounded mini progress and expandable page navigation',()=>{
+ const s=createProjectState(),g=JOURNEY_GROUPS[2];
+ s.entries=[{id:'first',phase:'first',status:'completed',result:'A result'}];
+ for(let n=2;n<=24;n++)s.entries.push({id:'stage-'+n,phase:'substantial',fromEntryId:n===2?'first':'stage-'+(n-1),
+  status:n<=20?'completed':'planned',result:n<=20?'Actual step '+n:''});
+ const mini=chapterMiniFor(g,s);
+ assert.equal((mini.match(/journey-mini-cell /g)||[]).length,6,'cap displayed markers');
+ assert(mini.includes('+18'),'count hidden earlier stages');
+ const strip=discoveryMathStages(s);
+ assert(strip.includes('Mathematical stage 24'));
+ assert(strip.includes('Mathematical stage 2'),'earlier stages remain inside disclosure');
+ assert(strip.includes('data-action="completion-edit-entry"'));
+ assert.equal(chapterStats(s,g).total,24);
+});
+function chapterMiniFor(g,s){
+ const html=journeyRail(s),start=html.indexOf('journey-mini',html.indexOf('journey-rail-name'));
+ // Isolate only the Explore stage mini, not all sidebar mini bars.
+ const explore=html.indexOf('Explore &amp; explain');
+ return html.slice(explore,html.indexOf('</button>',explore));
+}
+test('chapter summaries describe all four current writing tasks and escape student text',()=>{
+ const s=createProjectState();s.entries=[{id:'first',phase:'first',title:'<img onerror=alert(1)>',
+  status:'completed',result:'Real finding'}];
+ assert(chapterProgressCopy(s,JOURNEY_GROUPS[1]).includes('Introduction'));
+ assert(chapterProgressCopy(s,JOURNEY_GROUPS[3]).includes('feedback'));
+ const html=discoveryTrail(s);
+ assert(!html.includes('<img onerror=alert(1)>'));
+ assert(html.includes('&lt;img'));
+ assert(!html.includes('12–20 pages'),'Discovery Trail does not claim to measure actual IA length');
+});
+
+test('several first-stage generated figures remain one writing stage, without inventing completed results',()=>{
+ const s=createProjectState(),group=JOURNEY_GROUPS[2];
+ s.route='path';s.completion.current='C04';s.completion.activeEntryIndex=0;
+ s.entries=[
+  {id:'graph-a',phase:'first',status:'completed',result:'Real scatter result',graphFigureId:'graph1'},
+  {id:'graph-b',phase:'first',status:'planned',result:'',graphFigureId:'graph2'}
+ ];
+ let summary=mathematicalPages(s),stats=chapterStats(s,group);
+ assert.equal(summary.length,1);
+ assert.equal(stats.total,1);
+ assert.equal(stats.ready,0);
+ assert(discoveryTrail(s).includes('1 mathematical stage · 1 actual result'));
+ assert(discoveryTrail(s).includes('1 in progress'));
+ assert.equal(groupTarget(s,group),'C30');
+ s.entries[1].result='A second actual graph';s.entries[1].status='completed';
+ stats=chapterStats(s,group);
+ assert.equal(stats.ready,1);
+ assert(discoveryTrail(s).includes('1 mathematical stage · 2 actual results'));
+ assert.equal(discoveryMathStages(s).match(/living-trail-math-page /g).length,1);
+});
+
+test('the optional trail explanation reflects sampling, precision, writing, tools and conclusion review',()=>{
+ const html=discoveryTrail(createProjectState());
+ assert(html.includes('data-trail-chapter-guide'));
+ for(const term of ['sampling','precision','sparks','introduction','diagrams and tables','mathematical stages','draft feedback'])
+  assert(html.includes(term),term);
+ assert(html.includes('A saved figure is not proof'));
 });
