@@ -4,6 +4,8 @@ import {
 } from "pdf-lib";
 import {REPORT_ATTACHMENT,REPORT_MAX_BYTES,normalizePlanningEnvelope} from "../schema.js";
 import {modelFromEnvelope} from "../report-model.js";
+import {hasMixedMath,mixedMathTokens} from "../../math/mixed-math.js";
+import {mathPng} from "../../math/math-image.js";
 
 const PAGE=[612,792], MARGIN=52, PAPER_WIDTH=PAGE[0]-MARGIN*2;
 const INK=rgb(.105,.188,.231), TEAL=rgb(.09,.47,.41), MUTED=rgb(.41,.48,.50),
@@ -107,6 +109,73 @@ export async function createPdfPlanningReport(envelope,fullProjectModel=null){
   }
   y-=after;
  };
+
+ // Typeset TeX inside ordinary paragraphs without losing the surrounding
+ // words or turning a complete sentence into one enormous formula image.
+ const writeMixed=async(value,opts={})=>{
+  if(!hasMixedMath(value))return write(value,opts);
+  const font=opts.font||regular,size=opts.size||10,color=opts.color||INK;
+  const left=opts.x??MARGIN,maxWidth=opts.maxWidth||PAPER_WIDTH;
+  const lineHeight=opts.lineHeight||14;
+  let x=left,items=[],ascent=size*.87,descent=size*.24;
+  const flush=(blank=false)=>{
+   if(!items.length&&!blank)return;
+   const before=Math.max(0,ascent-size*.86),after=Math.max(0,descent-size*.25);
+   requireSpace(lineHeight+before+after+4);
+   y-=before;
+   for(const part of items){
+    if(part.type==="text")page.drawText(part.text,{x:part.x,y,size,font,color});
+    else page.drawImage(part.image,{x:part.x,y:y-part.depth,width:part.width,height:part.height});
+   }
+   y-=lineHeight+after;
+   x=left;items=[];ascent=size*.87;descent=size*.24;
+  };
+  const putText=word=>{
+   if(!word)return;
+   let text=pdfText(word,font),width=font.widthOfTextAtSize(text,size);
+   if(!text)return;
+   if(x===left&&/^\s+$/.test(text))return;
+   if(width>maxWidth){
+    for(const char of text)putText(char);
+    return;
+   }
+   if(x+width>left+maxWidth&&x>left){
+    flush();
+    text=text.trimStart();width=font.widthOfTextAtSize(text,size);
+    if(!text)return;
+   }
+   items.push({type:"text",text,x});x+=width;
+  };
+  for(const token of mixedMathTokens(value)){
+   if(token.type==="text"){
+    for(const part of token.value.split(/(\n|[ \t]+)/g)){
+     if(part==="\n"){flush(true);continue;}
+     putText(part);
+    }
+    continue;
+   }
+   const m=await mathPng(token.value,{display:token.display});
+   const embedded=await doc.embedPng(m.bytes);
+   const ex=size*.54;
+   let width=m.widthEx*ex,height=m.heightEx*ex,depth=m.depthEx*ex;
+   const limit=token.display?Math.min(maxWidth,480):maxWidth;
+   const shrink=Math.min(1,limit/width,token.display?200/height:2);
+   width*=shrink;height*=shrink;depth*=shrink;
+   if(token.display){
+    flush();
+    requireSpace(height+20);
+    page.drawImage(embedded,{x:left+(maxWidth-width)/2,y:y-height,width,height});
+    y-=height+15;continue;
+   }
+   if(x+width>left+maxWidth&&x>left)flush();
+   items.push({type:"math",image:embedded,x,width,height,depth});
+   x+=width;
+   ascent=Math.max(ascent,height-depth);descent=Math.max(descent,depth);
+  }
+  flush();
+  y-=opts.after||0;
+ };
+
  const heading=(label)=>{
   requireSpace(57);
   y-=12;
@@ -118,7 +187,7 @@ export async function createPdfPlanningReport(envelope,fullProjectModel=null){
  y-=24;
  write(model.strapline,{font:bold,color:TEAL,size:10,after:15});
  write(model.title,{font:bold,size:25,lineHeight:30,after:8});
- write(model.aim,{size:14,color:INK,lineHeight:19,after:18});
+ await writeMixed(model.aim,{size:14,color:INK,lineHeight:19,after:18});
  requireSpace(42);
  page.drawRectangle({x:MARGIN,y:y-24,width:PAPER_WIDTH,height:31,color:model.flags.length?GOLD:LIGHT});
  write(model.status,{x:MARGIN+10,maxWidth:PAPER_WIDTH-20,size:9,font:bold,color:INK,lineHeight:12,after:17});
@@ -131,7 +200,7 @@ export async function createPdfPlanningReport(envelope,fullProjectModel=null){
   for(const flag of model.flags){
    requireSpace(47);
    write(flag.title,{font:bold,size:10,after:2});
-   write(flag.note,{size:9,color:MUTED,lineHeight:12,after:9});
+   await writeMixed(flag.note,{size:9,color:MUTED,lineHeight:12,after:9});
   }
  }
  for(const group of model.sections){
@@ -153,7 +222,7 @@ export async function createPdfPlanningReport(envelope,fullProjectModel=null){
    requireSpace(40);
    write(row.label.toUpperCase(),{font:bold,size:iaReading?9:8,color:TEAL,lineHeight:11,after:iaReading?8:2});
    const startPage=page;
-   write(row.value,{font:regular,size:iaReading?12:10,
+   await writeMixed(row.value,{font:regular,size:iaReading?12:10,
     x:iaReading?MARGIN+12:MARGIN,maxWidth:iaReading?PAPER_WIDTH-24:PAPER_WIDTH,
     lineHeight:iaReading?25:14,after:iaReading?21:12});
    if(iaReading&&rowIndex===0)await drawFigures();
