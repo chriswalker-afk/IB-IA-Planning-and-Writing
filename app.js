@@ -78,6 +78,7 @@ import { createProjectViews } from "./src/ui/project-views.js";
 import { createProjectState as newState, normalizeProjectState as normalise, persistProjectState, STORAGE_KEY as KEY } from "./src/core/project-state.js";
 import { readRecordValue, updateRecordValue } from "./src/core/record-access.js";
 import { icon, escapeHtml, cleanUrl, button } from "./src/ui/primitives.js";
+import {supportsMathInField,mathFieldTools} from "./src/math/editor-shell.js";
 import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
 /* IA Pathfinder — Phase 4 Completing workflow. Student-authored results only. */
 (() => {
@@ -131,10 +132,104 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       : type === "select"
       ? '<select class="field" id="' + fieldId + '" data-bind="' + e(path) + '">' + (opts.options || []).map(op => '<option value="' + e(op[0]) + '"' + (value === op[0] ? " selected" : "") + '>' + e(op[1]) + '</option>').join("") + '</select>'
       : '<input class="field" type="' + e(type) + '" id="' + fieldId + '" data-bind="' + e(path) + '" placeholder="' + e(placeholder) + '" value="' + e(value) + '">';
-    return '<div class="field-group"><label class="field-label" for="' + fieldId + '">' + e(label) + '</label>' + input + hint + '</div>';
+    return '<div class="field-group"><label class="field-label" for="' + fieldId + '">' + e(label) + '</label>' + input + hint +
+      (supportsMathInField(path,type,opts)?mathFieldTools(path):"")+ '</div>';
   };
   const stuckViews=createStuckViews({getState:()=>state,e,icon,field});
   const handoverViews=createHandoverViews({getState:()=>state,icon,e,button,field});
+
+  // MathJax is split out of the initial page load. Existing writing stays
+  // plain text; the optional editor operates on the exact caret selection.
+  let mathEditorPromise=null;
+  const getMathEditor=()=>mathEditorPromise||(mathEditorPromise=import("./src/math/editor.js"));
+  function refreshMathPreviews(scope){
+    const roots=scope?.querySelectorAll?.(".math-writing-tools")||[];
+    const toRender=[...roots].filter(root=>{
+      const textarea=root.closest(".field-group")?.querySelector('textarea[data-bind]');
+      return textarea&&/\\[\[(]/.test(textarea.value);
+    });
+    if(!toRender.length)return;
+    void getMathEditor().then(mod=>{
+      for(const root of toRender){
+        const textarea=root.closest(".field-group")?.querySelector('textarea[data-bind]');
+        if(textarea&&root.isConnected!==false)mod.refreshMathWritingPreview(root,textarea);
+      }
+    }).catch(error=>console.warn("Equation preview unavailable",error));
+  }
+  async function mathAction(el){
+    const root=el.closest(".math-writing-tools");
+    if(!root)return;
+    const textarea=root.closest(".field-group")?.querySelector('textarea[data-bind]');
+    if(!textarea)return;
+    const mod=await getMathEditor();
+    if(root.isConnected===false)return;
+    const slot=root.querySelector("[data-math-composer-slot]");
+    const toggle=root.querySelector('[data-action="math-open"]');
+    const action=el.dataset.action;
+    const close=()=>{
+      slot.innerHTML="";toggle?.setAttribute("aria-expanded","false");
+      textarea.focus({preventScroll:true});
+    };
+    if(action==="math-close"){close();return;}
+    if(action==="math-open"||action==="math-edit-existing"){
+      if(action==="math-open"&&slot.querySelector("[data-math-composer]")){close();return;}
+      // Never create two competing equation forms on the page.
+      for(const other of document.querySelectorAll("[data-math-composer-slot]")){
+        if(other!==slot){other.innerHTML="";other.closest(".math-writing-tools")?.
+         querySelector('[data-action="math-open"]')?.setAttribute("aria-expanded","false");}
+      }
+      const start=textarea.selectionStart??textarea.value.length,end=textarea.selectionEnd??start;
+      slot.innerHTML=mod.mathComposer();
+      const composer=slot.querySelector("[data-math-composer]");
+      composer.dataset.replaceStart=String(start);composer.dataset.replaceEnd=String(end);
+      if(action==="math-edit-existing"){
+        const at=Number(el.dataset.mathStart),endAt=Number(el.dataset.mathEnd);
+        const token=(await import("./src/math/mixed-math.js")).mixedMathTokens(textarea.value)
+         .find(t=>t.type==="math"&&t.start===at&&t.end===endAt);
+        if(!token){close();return;}
+        composer.dataset.replaceStart=String(at);composer.dataset.replaceEnd=String(endAt);
+        composer.querySelector("[data-math-expression]").value=token.value;
+        composer.querySelector("[data-math-display]").value=token.display?"display":"inline";
+      }
+      toggle?.setAttribute("aria-expanded","true");
+      mod.refreshMathExpressionPreview(composer);
+      composer.querySelector("[data-math-expression]")?.focus({preventScroll:false});
+      return;
+    }
+    const composer=slot.querySelector("[data-math-composer]");
+    if(!composer)return;
+    const input=composer.querySelector("[data-math-expression]");
+    if(action==="math-template"){
+      const id=el.dataset.mathTemplate,templates=(await import("./src/math/mixed-math.js")).EQUATION_TEMPLATES;
+      const example=templates.find(t=>t.id===id);
+      if(!example)return;
+      const start=input.selectionStart??0,end=input.selectionEnd??start;
+      if(input.value.trim())input.setRangeText(example.tex,start,end,"end");
+      else input.value=example.tex;
+      input.focus();mod.refreshMathExpressionPreview(composer);return;
+    }
+    if(action==="math-insert"){
+      try{
+        const {insertMixedEquation}=await import("./src/math/mixed-math.js");
+        const result=insertMixedEquation(textarea.value,input.value,{
+          start:Number(composer.dataset.replaceStart),end:Number(composer.dataset.replaceEnd),
+          display:composer.querySelector("[data-math-display]").value==="display"
+        });
+        textarea.value=result.value;
+        textarea.setSelectionRange?.(result.cursor,result.cursor);
+        updateBoundField(textarea.dataset.bind,result.value);
+        save();
+        mod.refreshMathWritingPreview(root,textarea);
+        close();
+        toast("Equation inserted in your answer","Your text and the typeset equation will be retained in the project export.");
+      }catch(error){
+        const problem=composer.querySelector("[data-math-error]");
+        if(problem){problem.textContent=error.message||"Check the equation.";problem.hidden=false;}
+        input.focus();
+      }
+    }
+  }
+
   const getPath = path => readRecordValue(state,path);
   const putPath = (path,value) => updateRecordValue(state,path,value);
   function refreshSavedSpark(path){
@@ -603,6 +698,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     const map={home:viewHome,planning:viewPlanning,completing:viewCompleting,checking:viewChecking,path:viewPath,report:viewReport};
     document.body.classList.toggle("representation-focus-active",representationFocusActive(state));
     main.innerHTML=previewBanner()+stuckViews.returnBanner()+map[state.route]();
+    refreshMathPreviews(main);
     detachIdeaMapGraph=attachIdeaMapGraph(main);
     if(preview.active)setSaveStatus("Sample preview only");
     filterMathOptions();
@@ -907,6 +1003,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   }
   function clickAction(el) {
     const action=el.dataset.action||"";
+    if(action.startsWith("math-")){void mathAction(el).catch(err=>toast("Maths editor error: "+err.message));return;}
     if(handleNativeDataAction(state,action,el,{save,render,toast,
       confirm:message=>window.confirm(message),openTool:openNativeTool}))return;
     if(action==="presentation-copy-caption"){
@@ -2195,6 +2292,10 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   });
   document.addEventListener("input",evt=>{
     const target=evt.target;
+    if(target.dataset.mathExpression!==undefined||target.dataset.mathDisplay!==undefined){
+      void getMathEditor().then(mod=>mod.refreshMathExpressionPreview(target.closest("[data-math-composer]")));
+      return;
+    }
     if(target.dataset.nativeHeading!==undefined||target.dataset.nativeCell!==undefined){
       const type=target.dataset.nativeType,studio=nativeStudio(state,type);
       if(!studio||type!==activeNativeType(state))return;
@@ -2265,6 +2366,11 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       state.planning.mathSearch=target.value.slice(0,90);filterMathOptions();return;
     }
     if(target.dataset.bind){
+      const mathRoot=target.closest?.(".field-group")?.querySelector?.(".math-writing-tools");
+      if(mathRoot&&target.tagName==="TEXTAREA"){
+        void getMathEditor().then(mod=>mod.refreshMathWritingPreview(mathRoot,target))
+          .catch(error=>console.warn("Equation preview unavailable",error));
+      }
       updateBoundField(target.dataset.bind,target.value);
       save();refreshSavedSpark(target.dataset.bind);
       // Keep the optional prediction spark visibly updated while typing.
