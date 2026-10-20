@@ -5,7 +5,7 @@ export const JOURNEY_GROUPS=Object.freeze([
  {id:'plan',name:'Planning',icon:'compass',mode:'planning',role:'PLAN ONLY',description:'Aim, mathematical pathways, data or theory, sampling and accuracy',stages:['plan']},
  {id:'setup',name:'Start writing',icon:'pencil',mode:'writing',role:'WRITE IN IA',description:'Introduction, evidence choices and first mathematical method',stages:['C10','C20']},
  {id:'explore',name:'Explore & explain',icon:'chart',mode:'writing',role:'WRITE IN IA',description:'Linked mathematical stages, diagrams, calculations and interpretation',stages:['C30','C40']},
- {id:'finish',name:'Conclude & review',icon:'flag',mode:'writing',role:'WRITE IN IA',description:'Conclusion, communication, draft feedback and final checks',stages:['C60','C70','C80','C90']}
+ {id:'finish',name:'Conclude & review',icon:'flag',mode:'writing',role:'WRITE IN IA',description:'Supported conclusion and potential next questions, communication, feedback and final checks',stages:['C60','C70','C80','C90']}
 ]);
 export const chapterRole=g=>g.mode==='planning'?'PLAN ONLY':'WRITE IN IA';
 const has=v=>typeof v==='string'&&!!v.trim();
@@ -62,7 +62,7 @@ export function chapterProgressCopy(s,group){
    ' · '+actualResults+' actual '+(actualResults===1?'result':'results')+
    (review?' · '+review+' to review':'');
  }
- return 'Conclusion · communication · feedback · final checks';
+ return 'Conclusion & next steps · communication · feedback · final checks';
 }
 export function stageStatus(s,id){
  if(id!=='plan')return Object.hasOwn(STATUS_LABELS,s.completion?.stages?.[id])?s.completion.stages[id]:'not-started';
