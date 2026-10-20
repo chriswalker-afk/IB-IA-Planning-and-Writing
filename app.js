@@ -1,5 +1,6 @@
 import {createSamplePreview} from "./src/core/sample-preview.js";
 import {createIllustrativeSample,SAMPLE_CHOICES} from "./src/core/illustrative-samples.js";
+import {sampleIAWritingWords} from "./src/core/sample-current-workflow.js";
 import {captureReturn,restoreReturn} from "./src/ui/return-context.js";
 import {STATUS_LABELS,resumeRoute,rememberCheckpoint} from "./src/ui/journey.js";
 import {journeyRail} from "./src/ui/journey-views.js";
@@ -447,7 +448,9 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     clearTimeout(toastHandle);toastHandle=setTimeout(()=>el.classList.remove("show"),detail?6500:3500);
   }
   function previewBanner(){
-    return preview.active?'<aside class="sample-preview-banner" aria-label="Sample preview"><div><strong>'+icon("sparkles")+' Fully worked fictional sample</strong><p>Three linked mathematical steps, Planning and review notes. Invented teaching material only; your investigation is unchanged.</p></div><div class="button-row">'+button("See the sample journey","sample-journey","btn-secondary btn-sm")+button("Return to my investigation","leave-preview","btn-primary")+button("Another sample","open-demos","btn-quiet btn-sm")+'</div></aside>':"";
+    const figureCount=(state.graphStudio?.figures?.length||0)+(state.tableStudio?.figures?.length||0);
+    const wordCount=sampleIAWritingWords(state);
+    return preview.active?'<aside class="sample-preview-banner" aria-label="Sample preview"><div><strong>'+icon("sparkles")+' Fully worked fictional sample</strong><p>Three linked mathematical stages with editable Pathfinder graphs/tables, a developed IA-style mathematical narrative, Planning and A–E checking notes. Fictional teaching material only; your own investigation is unchanged.</p><p class="sample-preview-metrics">'+wordCount.toLocaleString()+' IA-facing words · '+figureCount+' editable saved figures · not a finished submission</p></div><div class="button-row">'+button("See the sample journey","sample-journey","btn-secondary btn-sm")+button("Return to my investigation","leave-preview","btn-primary")+button("Another sample","open-demos","btn-quiet btn-sm")+'</div></aside>':"";
   }
   function leavePreview(){
     if(!preview.active)return;
@@ -708,10 +711,10 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       body=handoverViews.confirmation();
     }else if(panel==="demos"){
       const choices=SAMPLE_CHOICES;
-      body='<section><p>Browse fully worked fictional investigations: a Planning record, mathematical steps with checked calculations, a justified next step, interpretation, limitations and draft self-review notes. <strong>These are invented teaching examples, not real IA submissions or evidence of a real dataset.</strong></p>'+
+      body='<section><p>Browse five substantial fictional investigations with a current Planning route, three connected mathematical stages, actual editable graph/table-generator figures, worked calculations, interpretation, a concise conclusion and A–E checking prompts. <strong>These are invented teaching examples, not real IA submissions or evidence of a real dataset.</strong></p>'+
         '<div class="panel-list">'+choices.map(({id:key,title:label,description:desc})=>
         '<button type="button" class="panel-link" data-action="load-demo" data-demo="'+key+'"><span><strong>'+e(label)+'</strong><br><span class="text-muted" style="font-weight:400">'+e(desc)+'</span></span>'+icon("arrow-right")+'</button>').join("")+'</div></section>'+
-        note("Each sample stays in a separate preview. It includes no real participants, published dataset, teacher approval or IB mark. Return to your own investigation unchanged, or choose another scenario.");
+        note("Each sample stays in a separate preview. Its length and mathematical figures illustrate an IA-scale journey; it is not a real student IA, contains no genuine empirical measurements, teacher approval or IB mark. Return to your own investigation unchanged, or choose another scenario.");
     }else if(panel==="stuck"){
       body=stuckViews.render();
     }
