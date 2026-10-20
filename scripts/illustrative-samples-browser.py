@@ -38,9 +38,15 @@ def check(kind,p):
  assert all(x["status"]=="completed" for x in sample["entries"])
  assert all(x["result"] and x["interpretation"] and x["nextQuestion"] for x in sample["entries"])
  assert sample["planning"]["fields"]["aim"]
- assert sample["completion"]["fields"]["conclusionEvidence"]
- assert sample["scratch"]["conclusion"].startswith("FICTIONAL CONCLUSION") or sample["scratch"]["conclusion"].startswith("FICTIONAL CONCLUSION NOTES")
+ assert sample["completion"]["fields"]["mainConclusion"]
+ assert sample["scratch"]["conclusion"]=="", "old conclusion scratch must not appear as current work"
+ assert sample["completion"]["fields"]["conclusionBenefit"]
+ assert sample["completion"]["fields"]["conclusionExtension"]
  assert sample["completion"]["review"]["records"]["draft-D06"]["note"]
+ assert sample["completion"]["review"]["records"]["final-D16"]["status"]=="unchecked"
+ assert sum(len(sample[part]["figures"]) for part in ("graphStudio","tableStudio"))==3
+ assert all(any(e.get(key)==f["id"] for e in sample["entries"] for key in ("graphFigureId","tableFigureId"))
+   for part in ("graphStudio","tableStudio") for f in sample[part]["figures"])
  assert sample["teacher"]["feedbackStatus"]=="not-requested"
  assert sample["planning"]["fields"]["milestoneSchoolFinal"]==""
  assert sample["project"]["documentUrl"]==""
@@ -64,10 +70,16 @@ def check(kind,p):
  set_preview_node(p,"C60")
  assert p.locator('[data-conclusion-workspace]').count()==1
  assert p.locator('[data-conclusion-part="next"]').count()==1
- assert p.locator('[data-conclusion-legacy]').count()==1
- p.locator('[data-conclusion-legacy]>summary').click()
- assert p.locator('[data-bind="scratch.conclusion"]').is_visible()
- assert "FICTIONAL" in p.locator('[data-bind="scratch.conclusion"]').input_value()
+ assert p.locator('[data-conclusion-legacy]').count()==0
+ assert p.locator('[data-bind="completion.fields.mainConclusion"]').count()==1
+ assert p.locator('[data-bind="completion.fields.conclusionBenefit"]').count()==1
+ assert p.locator('[data-bind="completion.fields.conclusionExtension"]').count()==1
+ assert "FICTIONAL" in p.locator('[data-bind="completion.fields.mainConclusion"]').input_value()
+ p.locator('[data-action="go-checking"]').click()
+ assert p.locator('.checking-page').is_visible()
+ assert p.locator('[data-criterion="A"].checking-criterion-bubble').count()>=1
+ assert p.locator('.checking-progress').is_visible()
+ assert own(p)==before
  set_preview_node(p,"C80")
  assert p.locator(".sample-preview-banner").is_visible()
  assert "sample" in p.locator("#main").inner_text().lower()
@@ -87,7 +99,8 @@ def check(kind,p):
    assert saved["demo"]==kind
    assert len(saved["entries"])==3
    assert saved["entries"][2]["result"]==sample["entries"][2]["result"]
-   assert saved["scratch"]["conclusion"]==sample["scratch"]["conclusion"]
+   assert saved["completion"]["fields"]["mainConclusion"]==sample["completion"]["fields"]["mainConclusion"]
+   assert len(saved["graphStudio"]["figures"])+len(saved["tableStudio"]["figures"])==3
   p.keyboard.press("Escape")
  assert own(p)==before
  # When opening another scenario, the tab-local preview changes but own data must not.
