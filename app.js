@@ -1404,7 +1404,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         const result=saveAndLinkVoronoi(state);
         if(!result.ok){toast(result.error);break;}
         returnToShowingFirstMaths("linked-voronoi");
-        toast("Voronoi construction linked to first mathematics",result.reviewNeeded?
+        toast("Voronoi construction linked to this mathematical stage",result.reviewNeeded?
          "Recheck interpretations after the changed site locations or assumptions.":
          "Introduce the figure in your own IA and justify the distance model. Constructing cells does not prove optimal placement.");
         break;
@@ -1455,7 +1455,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         const result=saveAndLinkTable(state);
         if(!result.ok){toast(result.error);break;}
         returnToShowingFirstMaths("linked-table");
-        toast("Formatted table linked to first mathematics",result.reviewNeeded?
+        toast("Formatted table linked to this mathematical stage",result.reviewNeeded?
          "Your previous result needs reviewing against the changed table.":
          "Introduce the table in your actual IA before displaying it. Creating it has not marked the mathematics as complete.");
         break;
@@ -1594,7 +1594,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         const result=saveAndLinkTrace(state);
         if(!result.ok){toast(result.error);break;}
         returnToShowingFirstMaths("linked-trace");
-        toast("Tracing linked to first mathematics",result.reviewNeeded?
+        toast("Tracing linked to this mathematical stage",result.reviewNeeded?
          "The tracing changed; recheck any interpretation of the previous measurements.":
          "Introduce the figure in your own IA and explain the calibration. Creating it has not completed the mathematics.");
         break;
