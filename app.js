@@ -69,6 +69,7 @@ import {renderPresentationCoach,renderFigureHandover} from "./src/diagrams/prese
 import {figureCaption} from "./src/diagrams/presentation-coach-core.js";
 import {renderWriterFieldGuide} from "./src/completing/writer-field-guide.js";
 import {C_MAJOR_STAGES,setCompletionNode,moveCompletionRoute,completionBack,markCompletionStage,setCompletionField,startFirstRepresentation,addMathematicalStage,routesAt,addAccuracyDecision,completionSuggestions,sectionForNode,targetForSection,completionStage,completeEntry,latestRealResult,sourceResultForNext,flagDependentMathematics,acknowledgeMathReview} from "./src/completing/engine.js";
+import {adaptiveNextDirections,flagJourneyRouteDependents} from "./src/completing/adaptive-journey.js";
 
 import { createProjectViews } from "./src/ui/project-views.js";
 import { createProjectState as newState, normalizeProjectState as normalise, persistProjectState, STORAGE_KEY as KEY } from "./src/core/project-state.js";
@@ -1162,8 +1163,11 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       case "math-remove-route":{
         const removing=action==="math-remove-route";
         const id=removing?"":el.dataset.routeId;
+        const earlierRoute=state.planning.routeExplorer.selectedRoute||"";
         if(!chooseMathRoute(state,id)){toast("That investigative route could not be saved.");break;}
+        const flagged=flagJourneyRouteDependents(state,earlierRoute);
         save();render();
+        if(flagged)toast("Mathematical connections to review",flagged+" later mathematical stage(s) may rely on advice from your earlier investigative journey. Existing work is preserved.");
         const detail=document.getElementById("journey-detail");
         if(detail)detail.scrollIntoView({block:"nearest",behavior:"auto"});
         toast(removing?"Your route spark was removed; selected mathematics is unchanged.":
@@ -1712,6 +1716,39 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         else visible.delete(key);
         state.completion.hiddenFirstFigures=[...visible].slice(-80);
         const top=window.scrollY;save();render();window.scrollTo({top,behavior:"auto"});
+        break;
+      }
+      case "journey-use-direction":{
+        const index=state.entries.findIndex(x=>x?.id===el.dataset.entryId);
+        const prior=state.entries[index],active=completeEntry(state);
+        if(index<0||!prior||active?.id!==prior.id||
+          !["C30","C40","C50"].includes(state.completion.current)){
+          toast("Please return to the mathematical result that this suggestion belongs to.");break;
+        }
+        const advice=adaptiveNextDirections(state,prior);
+        if(advice.status!=="ready"){
+          toast("Confirm what your actual result shows before choosing a mathematical direction.");break;
+        }
+        const chosen=advice.directions.find(x=>x.id===el.dataset.direction);
+        if(!chosen){toast("That mathematical suggestion is no longer available.");break;}
+        const oldQuestion=prior.phase==="first"?state.completion.fields.nextQuestion:prior.nextQuestion;
+        if(oldQuestion&&oldQuestion!==chosen.question&&!window.confirm(
+          "Replace your existing next mathematical question? Your results and written work will be preserved."))break;
+        const oldDirection=prior.journeyDirection||"";
+        if(prior.phase==="first"){
+          setCompletionField(state,"nextQuestion",chosen.question);
+          setCompletionField(state,"nextReason",chosen.why);
+          prior.nextQuestion=chosen.question;prior.nextWhy=chosen.why;
+        }else{
+          prior.nextQuestion=chosen.question;prior.nextWhy=chosen.why;
+        }
+        prior.journeyDirection=chosen.id;
+        flagDependentMathematics(state,index,"journeyDirection",oldDirection,chosen.id);
+        save();render();
+        document.querySelector('[data-bind="'+(prior.phase==="first"?
+          "completion.fields.nextQuestion":"entries."+index+".nextQuestion")+'"]')?.
+          scrollIntoView?.({block:"center",behavior:"smooth"});
+        toast("Possible next question saved","Edit the question and justify it using the actual result. No additional mathematical stage was created.");
         break;
       }
       case "stage-add":{
@@ -2354,7 +2391,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
          (state.completion.current==="C30"&&
            ["completion.fields.firstWorkStatus","completion.fields.firstWorkResult",
             "completion.fields.firstWorkTitle","completion.fields.firstWorkLocation"].includes(path))||
-         /^entries\.\d+\.(status|result|title|resultRef)$/.test(path)))||
+         /^entries\.\d+\.(status|result|title|resultRef|journeyOutcome)$/.test(path)))||
        /^entries\.\d+\.resultSignal$/.test(path)||
        (/^entries\.\d+\.result$/.test(path)&&["C40","C50"].includes(state.completion.current)&&
         state.entries[Number(path.split(".")[1])]?.status==="completed")){
