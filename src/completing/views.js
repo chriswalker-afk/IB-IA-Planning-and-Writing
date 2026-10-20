@@ -17,6 +17,7 @@ import {renderTableSvg} from "../diagrams/table-studio-render.js";
 import {renderVoronoiStudio} from "../diagrams/voronoi-view.js";
 import {renderVoronoiSvg} from "../diagrams/voronoi-render.js";
 import {renderRepresentationHub,renderRepresentationSwitcher} from "../diagrams/representation-hub.js";
+import {renderFirstFigureGallery} from "./first-figure-gallery.js";
 import {renderFigureHandover} from "../diagrams/presentation-coach-view.js";
 import {insightCapture,insightEcho,renderSparkShelf} from '../ui/insight-threads.js';
 import {STATUS_LABELS,currentGroup,JOURNEY_GROUPS} from "../ui/journey.js";
@@ -619,24 +620,46 @@ export function createCompletingViews(ctx){
       '<small>Pathway-aware suggestions, graph plotter, statistics, formatted tables, tracing and Voronoi diagrams</small></span>'+
       icon("chevron-right")+'</summary>'+
       '<div class="show-first-tool-picker-body">'+renderRepresentationHub(s,icon,e)+'</div></details>'+
-    graphEntryPanel()+traceEntryPanel()+statEntryPanel()+tableEntryPanel()+voronoiEntryPanel()+
+    renderFirstFigureGallery(s,icon,e,{
+      graph:graphEntryPanel,trace:traceEntryPanel,stat:statEntryPanel,
+      table:tableEntryPanel,voronoi:voronoiEntryPanel
+    })+
     '<p class="show-first-table-rule"><strong>Never include long raw-data tables, including in appendices.</strong> Keep the full dataset in your working files. Use an informative graph, selected rows or a compact summary table if they make the mathematics clearer.</p>'+
-    (entry?
-     entryReviewAlert()+
-     (genuine?smallSummary("Mathematics recorded so far",entry.result):
-      info("Work still to record","Present your actual diagram, table or calculation in your IA, then record a truthful result here."))+
-     (entry.resultRef?smallSummary("Location in your actual IA",entry.resultRef):"")+
-     accuracyNote()+to("C33","Record or check my mathematical result"):
-     '<p class="show-first-not-ready">Once you have genuine mathematics, record a short result here. No diagram is required if a calculation or theoretical case is more useful.</p>'+
-     '<button type="button" class="btn btn-primary" data-action="completion-first-record">'+
-       icon("calculator")+' Record or check my mathematical result '+icon("arrow-right")+'</button>'));
+    entryReviewAlert()+
+    '<div class="show-first-inline-record" data-first-inline-result>'+
+      '<div class="show-first-inline-record-heading"><span>'+icon("calculator")+'</span><div><h4>My mathematical work</h4>'+
+      '<p>Describe the mathematical output here, whether it is a saved figure, calculation or theoretical case. This is not a second IA paragraph.</p></div></div>'+
+      '<div class="show-first-inline-fields">'+
+      (entry?
+       entryField("title","Title or name of this step","e.g. Comparing the group distributions"):
+       F("firstWorkTitle","Title or name of this step","e.g. Comparing the group distributions"))+
+      (entry?
+       entryField("result","What did you actually produce or calculate?","e.g. A scatter diagram of 32 paired observations, or a maximum of 3.4 m",{type:"textarea",rows:3}):
+       F("firstWorkResult","What did you actually produce or calculate?","e.g. A scatter diagram of 32 paired observations, or a maximum of 3.4 m",{type:"textarea",rows:3}))+
+      (entry?
+       entryField("resultRef","Where does it appear in my IA? (optional)","e.g. Figure 1, Equation 2 or page 4"):
+       F("firstWorkLocation","Where does it appear in my IA? (optional)","e.g. Figure 1, Equation 2 or page 4"))+
+      (entry?
+       entryField("status","Has this mathematical work been produced?","",{type:"select",options:[
+        ["planned","Not yet / still checking"],["completed","Yes — I have actually produced this mathematics"]]}):
+       F("firstWorkStatus","Has this mathematical work been produced?","",{type:"select",options:[
+        ["planned","Not yet / still checking"],["completed","Yes — I have actually produced this mathematics"]]}))+
+      '</div>'+
+      '<p class="show-first-inline-honesty">'+icon("info")+
+       ' Saved figures and planned calculations are not automatically treated as established findings. Only a genuinely produced result can guide later recommendations.</p>'+
+      accuracyNote()+
+    '</div>');
    const third=cards("reflect","3","Reflecting on the result, aim and prediction",
     "After showing your real mathematics, explain what the result means for your aim and how it compares with your original prediction, if you made one.",
     context("reflect")+smallSummary("My current aim",currentAim())+
     (plannedPrediction()?smallSummary("My original tentative prediction",plannedPrediction()):
      info("No prediction required","If you did not make a prediction, explain what the actual result establishes about your aim instead."))+
-    (!genuine?'<p class="show-first-draft-note">'+icon("info")+
-     ' <strong>Write from evidence.</strong> This space is ready for you, but wait for an actual result before claiming what the mathematics shows. A prediction is not a finding.</p>':"")+
+    (genuine?
+      '<div class="show-first-result-anchor" data-show-first-result-anchor><strong>'+icon("check-circle")+
+      ' Your actual mathematical work from Section 2</strong><p>'+e(entry.result)+'</p>'+
+      (entry.resultRef?'<small>In your IA: '+e(entry.resultRef)+'</small>':"")+'</div>':
+      '<p class="show-first-draft-note">'+icon("info")+
+       ' <strong>Interpret real results.</strong> You can prepare your explanation, but Section 2 must contain a genuine mathematical output confirmed as produced before it becomes evidence for later guidance. A prediction or saved draft is not a finding.</p>')+
     '<div class="show-first-writing-field" data-show-first-writing-box="reflect">'+
     criterionMarkedWritingBox(
       (entry?entryField("interpretation","My reflection on what this result means",

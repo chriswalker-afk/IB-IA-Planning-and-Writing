@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {createProjectState} from "../src/core/project-state.js";
 import {createCompletingViews} from "../src/completing/views.js";
-import {C_NODE_IDS,setCompletionNode,startFirstRepresentation} from "../src/completing/engine.js";
+import {C_NODE_IDS,setCompletionNode,startFirstRepresentation,setCompletionField} from "../src/completing/engine.js";
 const e=v=>String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");
 function fixture(){
  const state=createProjectState(),ctx={
@@ -161,7 +161,10 @@ test("first-mathematics writing screen includes all generators and records maths
   assert.ok(html.includes('data-action="'+action+'"'),action);
  }
  assert.match(html,/FROM YOUR PLANNING/);
- assert.match(html,/data-action="completion-first-record"/);
+ assert.match(html,/data-first-inline-result/);
+ assert.match(html,/data-path="completion.fields.firstWorkResult"/);
+ assert.match(html,/data-path="completion.fields.firstWorkStatus"/);
+ assert(!html.includes('data-action="completion-first-record"'));
  assert(!html.includes('data-condition="Begin purposeful initial exploration"'));
  setCompletionNode(state,"C31");
  const legacy=view.viewCompleting();
@@ -187,4 +190,38 @@ test("first-mathematics next-question writing is reused rather than requested tw
  assert.match(next,/Your earlier justification for the next step/);
  assert(!next.includes('data-path="completion.fields.nextQuestion"'));
  assert(!next.includes('data-path="completion.fields.nextReason"'));
+});
+
+test("saved diagrams of all five generator types appear in the first-section gallery",()=>{
+ const {state,view}=fixture();setCompletionNode(state,"C30");
+ const kinds=[["graphStudio","figure-abc"],["statStudio","stat-abc"],
+  ["tableStudio","table-abc"],["imageTracer","trace-abc"],
+  ["voronoiStudio","voronoi-abc"]];
+ for(const [key,id] of kinds)state[key].figures.push({
+  id,entryId:"",savedAt:"2026-10-20T00:00:00Z",draft:state[key].draft
+ });
+ const html=view.viewCompleting();
+ assert.match(html,/data-first-figure-gallery/);
+ assert.match(html,/5 saved/);
+ for(const [,id] of kinds)assert.ok(html.includes(id),id);
+ assert.match(html,/data-action="first-figure-edit"/);
+ assert.match(html,/data-action="first-figure-hide"/);
+});
+
+test("Section 2 and 3 reuse one verified result, and never assume a saved figure is evidence",()=>{
+ const {state,view}=fixture();setCompletionNode(state,"C30");
+ setCompletionField(state,"firstWorkResult","I calculated a maximum of 3.4 m.");
+ assert.equal(state.entries.length,1);
+ assert.equal(state.entries[0].status,"planned");
+ let html=view.viewCompleting();
+ assert.ok(!html.includes("data-show-first-result-anchor"));
+ assert.match(html,/data-path="entries.0.result"/);
+ setCompletionField(state,"firstWorkStatus","completed");
+ assert.equal(state.entries.length,1);
+ assert.equal(state.entries[0].status,"completed");
+ html=view.viewCompleting();
+ assert.match(html,/data-show-first-result-anchor/);
+ assert.match(html,/I calculated a maximum of 3.4 m/);
+ assert.match(html,/data-path="entries.0.interpretation"/);
+ assert.ok(!html.includes('data-action="completion-first-record"'));
 });

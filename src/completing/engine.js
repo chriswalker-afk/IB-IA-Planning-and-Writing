@@ -39,6 +39,7 @@ export const C_FIELD_DEFAULTS=Object.freeze({
  variableDefinitions:"",specialistTerms:"",sourceReferences:"",
  dataAimLink:"",dataStatusSummary:"",
  firstType:"",firstPurpose:"",firstOutputIntroduction:"",firstDefinitions:"",firstPresentation:"",
+ firstWorkTitle:"",firstWorkResult:"",firstWorkLocation:"",firstWorkStatus:"planned",
  firstResultSummary:"",firstObservedFeature:"",firstInterpretation:"",
  accuracyForResult:"",aimLinkedResult:"",predictionComparison:"",
  benefitFinding:"",surpriseReason:"",surpriseCheck:"",
@@ -63,6 +64,7 @@ export function createCompletionState(){
  return {
   support:createStuckState(),current:"C00",history:[],visited:[],transitions:[],fields:{...C_FIELD_DEFAULTS},
   stages:Object.fromEntries(C_MAJOR_STAGES.map(x=>[x.id,"not-started"])),
+  hiddenFirstFigures:[],
   activeEntryIndex:-1,nextFromEntryId:"",pairedDataForEntryId:"",pmccSignalForEntryId:"",scatterPatternForEntryId:"",scatterDetailForEntryId:"",returnTo:"",latestMeaningfulNode:"",
   guidanceUi:{writeKey:"",coveredKey:"",exampleKey:"",selectedKey:"",quietNode:"",quietId:"",quietScope:"",quietSignature:"",expanded:false,mathsExpanded:false,limitsExpanded:false,accuracyChanged:false,limitPage:0,limitDraftVisible:false,
    limitNoneKey:"",locationDraft:"",noteDraft:""},
@@ -90,6 +92,7 @@ export function normalizeCompletionState(data,project={}){
  return {...base,support:normalizeStuckState(v.support),current:validNode(v.current)?v.current:(project.aim?"C04":"C00"),
   history:ids(v.history),visited:ids(v.visited),transitions,
   fields,stages:states,accuracyDecisions:accuracy,
+  hiddenFirstFigures:Array.isArray(v.hiddenFirstFigures)?v.hiddenFirstFigures.filter(x=>typeof x==="string"&&/^(graph|stat|table|trace|voronoi):[a-z0-9-]+$/i.test(x)).slice(-80):[],
   sourceRecords:normalizeSources(v.sourceRecords),activeSourceId:str(v.activeSourceId).slice(0,160),
   writingOrigin:{node:validNode(v.writingOrigin?.node)?v.writingOrigin.node:"",entryId:str(v.writingOrigin?.entryId).slice(0,160),nextFromEntryId:str(v.writingOrigin?.nextFromEntryId).slice(0,160)},
   review:normalizeReviewState(v.review),
@@ -209,6 +212,26 @@ export function setCompletionField(state,key,value){
  const c=state.completion,previous=c.fields[key];
  beforeSourceChange(state,key,previous,str(value).slice(0,20000));
  c.fields[key]=str(value).slice(0,20000);
+ // Inline Section 2 inputs become the same canonical mathematical record used
+ // by the later result-led guidance. Typing a draft never asserts completion.
+ const inlineMap={firstWorkTitle:"title",firstWorkResult:"result",firstWorkLocation:"resultRef",firstWorkStatus:"status"};
+ if(hasOwn(inlineMap,key)){
+  let index=c.activeEntryIndex;
+  if(state.entries[index]?.phase!=="first")index=state.entries.findLastIndex(x=>x.phase==="first");
+  if(index<0&&str(value).trim()){
+   const started=startFirstRepresentation(state);
+   if(started.ok)index=state.completion.activeEntryIndex;
+  }
+  if(index>=0){
+   c.activeEntryIndex=index;
+   const entry=state.entries[index],property=inlineMap[key];
+   const next=property==="status"?(value==="completed"?"completed":"planned"):c.fields[key];
+   if(entry[property]!==next){
+    const previousValue=entry[property];entry[property]=next;
+    flagDependentMathematics(state,index,property,previousValue,next);
+   }
+  }
+ }
  if(key==="pairedDataType"||key==="scatterAimRelevance")c.pairedDataForEntryId=scatterForNext(state)?.id||"";
  if(key==="pmccSignal"){
   const prior=sourceResultForNext(state);
@@ -288,6 +311,10 @@ export function setCompletionNode(state,id,{history=true,reason="revisit"}={}){
  if(c.current!==id&&history)c.history.push(c.current);
  c.history=c.history.slice(-350);
  c.current=id;
+ if(id==="C30"&&state.entries[c.activeEntryIndex]?.phase!=="first"){
+  const firstIndex=state.entries.findLastIndex(x=>x.phase==="first");
+  if(firstIndex>=0)c.activeEntryIndex=firstIndex;
+ }
  if(previous!==id&&c.guidanceUi&&!helperHop){
   c.guidanceUi.quietNode="";
   c.guidanceUi.quietId="";c.guidanceUi.quietScope="";c.guidanceUi.quietSignature="";
@@ -320,10 +347,10 @@ export function startFirstRepresentation(state){
  const f=state.completion.fields;
  const id="math-"+(Date.now().toString(36))+"-"+(state.entries.length+1);
  state.entries.push({
-  id,phase:"first",title:f.firstType||state.planning.fields.figureOther||"First purposeful representation",
+  id,phase:"first",title:f.firstWorkTitle||f.firstType||state.planning.fields.figureOther||"First purposeful representation",
   purpose:f.firstOutputIntroduction||f.firstPurpose||state.planning.fields.figurePurpose||"",
-  technique:"",kind:"",status:"planned",knowledge:"unsure",knowledgeNotes:"",
-  result:"",resultRef:"",observation:"",observationText:"",interpretation:f.firstInterpretation||"",limitations:"",
+  technique:"",kind:"",status:f.firstWorkStatus==="completed"?"completed":"planned",knowledge:"unsure",knowledgeNotes:"",
+  result:f.firstWorkResult||"",resultRef:f.firstWorkLocation||"",observation:"",observationText:"",interpretation:f.firstInterpretation||"",limitations:"",
   localTakeaway:f.firstResultSummary||"",nextQuestion:"",nextWhy:"",bridge:"",accuracyRef:"",
   createdAt:new Date().toISOString()
  });
