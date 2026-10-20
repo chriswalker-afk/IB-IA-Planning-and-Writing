@@ -1,13 +1,15 @@
 import {C_MAJOR_STAGES,completionStage} from '../completing/engine.js';
 import {C_NODES} from '../completing/catalog.js';
+import {reviewChecksFor} from '../completing/review.js';
 export const STATUS_LABELS=Object.freeze({'not-started':'Not started',working:'Working on it',complete:'Ready for now','needs-review':'Needs review'});
 export const JOURNEY_GROUPS=Object.freeze([
  {id:'plan',name:'Planning',icon:'compass',mode:'planning',role:'PLAN ONLY',description:'Aim, mathematical pathways, data or theory, sampling and accuracy',stages:['plan']},
  {id:'setup',name:'Start writing',icon:'pencil',mode:'writing',role:'WRITE IN IA',description:'Introduction, evidence choices and first mathematical method',stages:['C10','C20']},
  {id:'explore',name:'Explore & explain',icon:'chart',mode:'writing',role:'WRITE IN IA',description:'Linked mathematical stages, diagrams, calculations and interpretation',stages:['C30','C40']},
- {id:'finish',name:'Conclude & review',icon:'flag',mode:'writing',role:'WRITE IN IA',description:'Supported conclusion and potential next questions, communication, feedback and final checks',stages:['C60','C70','C80','C90']}
+ {id:'finish',name:'Conclude & next steps',icon:'flag',mode:'writing',role:'WRITE IN IA',description:'Answer your mathematical aim, reflect on meaningful limitations and consider worthwhile next steps',stages:['C60']},
+ {id:'check',name:'Check your IA',icon:'clipboard',mode:'checking',role:'CHECK YOUR IA',description:'Review the real document against Criteria A–E, track feedback and check final readiness',stages:['C70','C80','C90']}
 ]);
-export const chapterRole=g=>g.mode==='planning'?'PLAN ONLY':'WRITE IN IA';
+export const chapterRole=g=>g.mode==='planning'?'PLAN ONLY':g.mode==='checking'?'CHECK YOUR IA':'WRITE IN IA';
 const has=v=>typeof v==='string'&&!!v.trim();
 export function planningMilestones(s){
  const p=s?.planning?.fields||{};
@@ -62,7 +64,22 @@ export function chapterProgressCopy(s,group){
    ' · '+actualResults+' actual '+(actualResults===1?'result':'results')+
    (review?' · '+review+' to review':'');
  }
- return 'Conclusion & next steps · communication · feedback · final checks';
+ if(group.id==='finish')return 'Conclusion · interpretation · potential next steps';
+ const states=checkingMilestones(s);
+ const n=states.reduce((acc,x)=>acc+x.done,0);
+ return n?n+' student checks resolved · draft · feedback · final':'A–E checklist · draft · feedback · final';
+}
+export function checkingMilestones(s){
+ const labels={draft:'Teacher draft',feedback:'Feedback & revisions',final:'Final check'};
+ return ['draft','feedback','final'].map(mode=>{
+  const rows=reviewChecksFor(s,mode),states=rows.map(x=>s.completion?.review?.records?.[mode+'-'+x.id]?.status||'unchecked');
+  const done=states.filter(x=>x==='checked'||x==='not-applicable').length;
+  const problems=states.filter(x=>x==='needs-work').length;
+  const started=states.some(x=>x!=='unchecked')||
+   (mode==='feedback'&&(s.completion?.review?.feedbackItems||[]).length>0);
+  return {mode,name:labels[mode],done,total:rows.length,
+   status:problems?'needs-review':done===rows.length&&done>0?'complete':started?'working':'not-started'};
+ });
 }
 export function stageStatus(s,id){
  if(id!=='plan')return Object.hasOwn(STATUS_LABELS,s.completion?.stages?.[id])?s.completion.stages[id]:'not-started';
@@ -70,6 +87,13 @@ export function stageStatus(s,id){
  return s.planning?.visited?.length||Object.values(s.planning?.fields||{}).some(has)||has(s.project?.aim)?'working':'not-started';
 }
 export function groupStatus(s,group){
+ if(group.id==='check'){
+  const milestones=checkingMilestones(s),all=milestones.map(x=>x.status),
+   stageStatuses=group.stages.map(id=>stageStatus(s,id));
+  if(all.includes('needs-review')||stageStatuses.includes('needs-review'))return 'needs-review';
+  if(all.every(x=>x==='complete')&&stageStatus(s,'C90')==='complete')return 'complete';
+  return all.some(x=>x!=='not-started')||stageStatuses.some(x=>x!=='not-started')?'working':'not-started';
+ }
  const all=group.stages.map(id=>stageStatus(s,id));
  if(group.id==='explore'){
   const {pages,review}=mathematicalChapterSummary(s);
@@ -86,12 +110,13 @@ export function groupStatus(s,group){
  return all.includes('needs-review')?'needs-review':all.every(x=>x==='complete')?'complete':all.some(x=>x!=='not-started')?'working':'not-started';
 }
 export function resumeRoute(s){
- if(['planning','completing'].includes(s.ui?.lastWorkRoute))return s.ui.lastWorkRoute;
+ if(['planning','completing','checking'].includes(s.ui?.lastWorkRoute))return s.ui.lastWorkRoute;
  return s.completion?.visited?.length||s.entries?.length||Object.values(s.scratch||{}).some(has)?'completing':'planning';
 }
 export function currentGroup(s){
- const route=['planning','completing'].includes(s.route)?s.route:resumeRoute(s);
+ const route=['planning','completing','checking'].includes(s.route)?s.route:resumeRoute(s);
  if(route==='planning')return JOURNEY_GROUPS[0];
+ if(route==='checking')return JOURNEY_GROUPS.find(g=>g.id==='check');
  const realStage=n=>C_NODES.some(x=>x.id===n)?completionStage(n,s):null;
  const recent=[...(s.completion.history||[])].reverse().find(n=>realStage(n));
  const stage=realStage(s.completion.current)||realStage(s.ui?.lastStudioNode)||realStage(recent);
@@ -99,6 +124,7 @@ export function currentGroup(s){
 }
 export function groupTarget(s,g){
  if(g.id==='plan')return 'plan';
+ if(g.id==='check')return 'checking';
  if(g.id==='explore'){
   // C50 is the repeatable later-page view; a generic C40 target loses its
   // place in the investigation after students have added Stage 3 or beyond.
@@ -119,6 +145,7 @@ export function groupTarget(s,g){
   (g.stages.includes(stage)?stage:g.stages.find(id=>stageStatus(s,id)!=='complete')||g.stages[0]);
 }
 export function resumeLabel(s){
+ if(resumeRoute(s)==='checking')return 'Continue checking my IA';
  if(resumeRoute(s)==='planning')return 'Continue my planning';
  if(s.completion?.current==='C00')return 'Start writing in IA Studio';
  const name=s.completion.current==='C20'?'Introducing your first mathematics':C_NODES.find(n=>n.id===s.completion.current)?.label||'my IA Studio';
