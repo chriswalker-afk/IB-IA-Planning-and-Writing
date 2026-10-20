@@ -59,6 +59,7 @@ import {renderPresentationCoach,renderFigureHandover} from "../src/diagrams/pres
 import {figureCaption} from "../src/diagrams/presentation-coach-core.js";
 import {displayVoronoiBounds,coordinateFromCanvas,canvasPosition,voronoiFrame,recordVoronoiHistory,applyVoronoiFrame,undoVoronoi,redoVoronoi,freezeVoronoiWindow,fitVoronoiSites,setVoronoiTool,selectVoronoiSite,moveVoronoiSite,proposeVoronoiComparison,showVoronoiComparison,finishVoronoiComparison,selectNearestBisector} from "../src/diagrams/voronoi-interactions.js";
 import {renderWriterFieldGuide} from "../src/completing/writer-field-guide.js";
+import {adaptiveNextDirections,flagJourneyRouteDependents} from "../src/completing/adaptive-journey.js";
 import {setCompletionNode,moveCompletionRoute,completionBack,markCompletionStage,setCompletionField,addMathematicalStage,routesAt,addAccuracyDecision,completionSuggestions,sectionForNode,targetForSection,completeEntry,latestRealResult,flagDependentMathematics,acknowledgeMathReview} from "../src/completing/engine.js";
 import {createProjectViews} from "../src/ui/project-views.js";
 import {createHandoverViews} from "../src/ui/handover-views.js";
@@ -123,6 +124,7 @@ function createHarness(savedValue){
     displayVoronoiBounds,coordinateFromCanvas,canvasPosition,voronoiFrame,recordVoronoiHistory,applyVoronoiFrame,undoVoronoi,redoVoronoi,freezeVoronoiWindow,fitVoronoiSites,setVoronoiTool,selectVoronoiSite,moveVoronoiSite,proposeVoronoiComparison,showVoronoiComparison,finishVoronoiComparison,selectNearestBisector,
     setCompletionNode,moveCompletionRoute,completionBack,markCompletionStage,setCompletionField,addMathematicalStage,routesAt,addAccuracyDecision,completionSuggestions,sectionForNode,targetForSection,completeEntry,latestRealResult,flagDependentMathematics,acknowledgeMathReview,
     createHandoverViews,createPlanningEnvelope,getFieldDiff,mergePlanningEnvelope,modelFromEnvelope,suggestedFilename,
+    adaptiveNextDirections,flagJourneyRouteDependents,
     actOnWritingCue,eligibleWritingCues,selectLimitation,recordLimitation,limitationContextKey,relevantLimitations,relevantBivariateOptions,resultFamily,routeNextQuestions,sourceResultForNext,
     planningMove,planAutoAdvance,planningBack,planningEdit,applyPlanningField,toggleMath,selectedMaths,exploreMathRoute,chooseMathRoute,syncPlanningToProject,setPlanCurrent,planningFlags
   };
@@ -991,4 +993,77 @@ test("using the Discovery Trail to enter the conclusion checks readiness first",
  h.action("conclusion-confirm");
  assert.equal(h.saved.completion.current,"C60");
  assert.equal(h.saved.completion.conclusionWarningOpen,false);
+});
+
+test("evidence-led recommendations on multiple stages only write editable suggestions, not invented results",()=>{
+ const s=createProjectState();s.route="completing";s.completion.current="C30";
+ s.planning.routeExplorer.selectedRoute="fitted-models";
+ s.entries=[{id:"first",phase:"first",title:"Initial actual observations",status:"completed",
+  result:"The curve increases and levels off",journeyOutcome:"fitted-models:not-quadratic",
+  localTakeaway:"A quadratic is not a justified default"}];
+ s.completion.activeEntryIndex=0;
+ const h=createHarness(s);
+ assert(h.html.includes('data-journey-next-state="ready"'));
+ assert(h.html.includes('data-action="journey-use-direction"'));
+ h.action("journey-use-direction",{entryId:"first",direction:"follow"});
+ assert.match(h.saved.completion.fields.nextQuestion,/alternative function structure/);
+ assert.equal(h.saved.completion.fields.nextReason,"","Pathfinder must not author the student justification");
+ h.write("completion.fields.nextReason","The shape levels off, so a function with an upper limit may answer my aim.");
+ assert.equal(h.saved.entries[0].journeyDirection,"follow");
+ assert.equal(h.saved.entries[0].result,"The curve increases and levels off");
+ h.action("stage-add");
+ assert.equal(h.saved.completion.current,"C40");
+ assert.equal(h.saved.entries[1].status,"planned");
+ assert.equal(h.saved.entries[1].result,"");
+ assert.match(h.saved.entries[1].title,/alternative function structure/);
+ assert(h.html.includes('data-journey-stage-link'));
+ assert(h.html.includes("The curve increases and levels off"));
+ h.write("entries.1.result","A saturating model gives more appropriate behaviour");
+ h.choose("entries.1.status","completed");
+ h.choose("entries.1.journeyOutcome","fitted-models:fits");
+ assert(h.html.includes('data-journey-next-state="ready"'));
+ h.action("journey-use-direction",{entryId:h.saved.entries[1].id,direction:"check"});
+ assert(h.saved.entries[1].nextQuestion);
+ assert(!h.saved.entries[1].nextWhy);
+ h.write("entries.1.nextWhy","Checking the model assumptions helps me decide whether the observed fit is meaningful.");
+ h.action("stage-add");
+ assert.equal(h.saved.completion.current,"C50");
+ assert.equal(h.saved.entries[2].status,"planned");
+ assert.equal(h.saved.entries[2].result,"");
+ assert(h.saved.entries[2].journeySourceSignature);
+});
+test("later-stage mathematical guidance is marked for review after an earlier outcome changes",()=>{
+ const s=createProjectState();s.route="completing";s.completion.current="C30";
+ s.planning.routeExplorer.selectedRoute="relationships";
+ s.entries=[
+  {id:"first",phase:"first",title:"Scatter diagram",status:"completed",
+   result:"The points form a curve",journeyOutcome:"relationships:quadratic-looking",
+   localTakeaway:"Possible parabolic curvature"},
+  {id:"second",phase:"substantial",fromEntryId:"first",title:"Quadratic comparison",
+   status:"planned",result:"",bridge:"The first graph looked parabolic"}
+ ];
+ s.completion.activeEntryIndex=0;
+ const h=createHarness(s);
+ h.choose("entries.0.journeyOutcome","relationships:not-quadratic");
+ assert.equal(h.saved.entries[1].reviewNeeded,"yes");
+ h.action("completion-edit-entry",{index:"1"});
+ assert.equal(h.saved.completion.current,"C40");
+ assert(h.html.includes('data-link-state="review"'));
+ assert(h.html.includes("Your existing writing has been preserved"));
+ assert.equal(h.saved.entries[1].bridge,"The first graph looked parabolic");
+});
+test("choosing another investigative route triggers review instead of replacing prior work",()=>{
+ const s=createProjectState();s.route="planning";s.planning.current="N02M";
+ s.planning.routeExplorer.selectedRoute="relationships";
+ s.entries=[
+  {id:"first",phase:"first",status:"completed",result:"Observed change",
+    journeyOutcome:"relationships:linear"},
+  {id:"second",phase:"substantial",fromEntryId:"first",status:"planned",
+    result:"",journeySourceSignature:"previous-context",bridge:"Existing mathematical argument"}
+ ];
+ const h=createHarness(s);
+ h.action("math-select-route",{routeId:"fitted-models"});
+ assert.equal(h.saved.planning.routeExplorer.selectedRoute,"fitted-models");
+ assert.equal(h.saved.entries[1].reviewNeeded,"yes");
+ assert.equal(h.saved.entries[1].bridge,"Existing mathematical argument");
 });

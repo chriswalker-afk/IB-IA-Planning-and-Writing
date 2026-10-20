@@ -129,7 +129,8 @@ test("guided mode displays selected next-question options; reduced mode keeps es
  assert(html.includes('data-action="toggle-advice-mode"'));
  assert(html.includes('aria-pressed="false"'));
  assert(html.includes("Explain the gradient"));
- assert(html.includes('data-choice-path="entries.1.resultSignal"'));
+ assert(html.includes('data-path="entries.1.journeyOutcome"'));
+ assert(!html.includes('data-choice-path="entries.1.resultSignal"'),"The four-part page has one primary outcome selector; legacy signal advice stays descriptive");
  assert(html.includes("route-coach-detail"));
  html=render(s,"C35");
  assert(html.includes('data-action="route-coach-next"'));
@@ -139,7 +140,7 @@ test("guided mode displays selected next-question options; reduced mode keeps es
  html=render(s,"C40");
  assert(html.includes('aria-pressed="true"'));
  assert(html.includes("Explain the gradient"));
- assert(html.includes('data-path="entries.1.resultSignal"'));
+ assert(html.includes('data-path="entries.1.journeyOutcome"'));
  assert(!html.includes("route-coach-detail"));
  assert(!html.includes("guidance-optional"));
  assert(!html.includes("criteria-writing-tools"));

@@ -288,3 +288,91 @@ test("later-stage figure galleries display only diagrams linked to that stage",(
  assert(html.includes('data-first-figure-key="graph:figure-two"'));
  assert(!html.includes('data-first-figure-key="graph:figure-one"'));
 });
+
+test("first mathematics asks about a genuine route-specific outcome, not a planned fit",()=>{
+ const {state,view}=fixture();
+ state.route="completing";state.planning.routeExplorer.selectedRoute="fitted-models";
+ state.entries=[{id:"first-result",phase:"first",status:"completed",
+  title:"My actual scatter diagram",result:"Observed curved points",localTakeaway:"Not clearly a parabola",
+  journeyOutcome:"fitted-models:not-quadratic"}];
+ state.completion.activeEntryIndex=0;setCompletionNode(state,"C30");
+ const html=view.viewCompleting();
+ assert(html.includes('data-journey-outcome-picker'));
+ assert(html.includes('data-path="entries.0.journeyOutcome"'));
+ assert(html.includes('data-journey-next-state="ready"'));
+ assert(html.includes('data-action="journey-use-direction"'));
+ assert(html.includes("The shape does not look quadratic"));
+ assert(html.includes("What alternative function structure"));
+ assert(html.includes("more advanced")||html.includes("automatically"),"course-sensitive caution appears");
+});
+test("later mathematics explicitly responds to previous chosen finding rather than recycled planning advice",()=>{
+ const {state,view}=fixture();
+ state.route="completing";state.planning.routeExplorer.selectedRoute="fitted-models";
+ state.entries=[
+  {id:"parent",phase:"first",title:"Initial scatter",status:"completed",
+   result:"Points do not follow a parabola",journeyOutcome:"fitted-models:not-quadratic",
+   localTakeaway:"The relation increases then levels off",journeyDirection:"follow"},
+  {id:"child",phase:"substantial",title:"Investigate a new model",status:"planned",
+   fromEntryId:"parent",bridge:"An appropriate alternative is needed",result:""}
+ ];
+ state.completion.activeEntryIndex=1;setCompletionNode(state,"C40");
+ const html=view.viewCompleting();
+ assert(html.includes('data-journey-stage-link'));
+ assert(html.includes("Points do not follow a parabola")||html.includes("increases then levels off"));
+ assert(html.includes("alternative function structure"));
+ assert(html.includes('data-journey-outcome-waiting'));
+ assert(!html.includes('data-journey-next-state="ready"'),"new stage has not made a new finding yet");
+});
+test("later stage gains its own new result options and suggestions, then can lead to stage three",()=>{
+ const {state,view}=fixture();
+ state.route="completing";state.planning.routeExplorer.selectedRoute="growth";
+ state.entries=[
+  {id:"initial",phase:"first",title:"First differences",status:"completed",
+   result:"Differences are not constant",journeyOutcome:"growth:different"},
+  {id:"growth-model",phase:"substantial",title:"Investigate growth",status:"completed",
+   fromEntryId:"initial",result:"Observed ratios are more stable than differences",
+   journeyOutcome:"growth:multiplicative",localTakeaway:"Ratios suggest multiplicative change"}
+ ];
+ state.completion.activeEntryIndex=1;setCompletionNode(state,"C40");
+ const html=view.viewCompleting();
+ assert(html.includes('data-journey-outcome-picker'));
+ assert(html.includes('data-path="entries.1.journeyOutcome"'));
+ assert(html.includes('data-journey-next-state="ready"'));
+ assert(html.includes("Do ratios support proportional growth"));
+ assert(html.includes('data-action="stage-add"'));
+});
+
+test("later-stage outcomes switch from the original journey to a confirmed method's result family",()=>{
+ const {state,view}=fixture();
+ state.route="completing";state.planning.routeExplorer.selectedRoute="relationships";
+ state.entries=[
+  {id:"scatter",phase:"first",status:"completed",title:"First observation",
+   result:"Observed curvature",journeyOutcome:"relationships:curve"},
+  {id:"fit",phase:"substantial",status:"completed",fromEntryId:"scatter",
+   methodId:"quadratic-fit",title:"Quadratic fit",result:"Residual trend",
+   journeyOutcome:"nonlinear-model:residual-structure"}
+ ];
+ state.completion.activeEntryIndex=1;setCompletionNode(state,"C40");
+ const html=view.viewCompleting();
+ assert(html.includes("Nonlinear models, fits and residuals"));
+ assert(html.includes('data-path="entries.1.journeyOutcome"'));
+ assert(html.includes("Residuals reveal a systematic pattern"));
+ assert(html.includes('data-journey-next-state="ready"'));
+ assert(html.includes("residual"));
+});
+
+test("returning to the first maths after creating later stages retains direct links to every page",()=>{
+ const {state,view}=fixture();state.route="completing";
+ state.entries=[
+  {id:"first",phase:"first",status:"completed",result:"Observed pattern"},
+  {id:"second",phase:"substantial",fromEntryId:"first",status:"completed",result:"Evaluated a model"},
+  {id:"third",phase:"substantial",fromEntryId:"second",status:"planned",result:""}
+ ];
+ state.completion.activeEntryIndex=0;setCompletionNode(state,"C30");
+ const html=view.viewCompleting();
+ for(let index=0;index<3;index++)
+  assert(html.includes('data-action="completion-edit-entry" data-index="'+index+'"'));
+ assert(html.includes("Mathematical stage 2"));
+ assert(html.includes("Mathematical stage 3"));
+ assert(html.includes('aria-current="page"'));
+});
