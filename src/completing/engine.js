@@ -235,6 +235,21 @@ export function setCompletionField(state,key,value){
    }
   }
  }
+ // The first four-part page writes its next question in shared Completing
+ // fields. Mirror it onto the canonical first entry so provenance and later
+ // review can detect edits made AFTER a new stage has already been created.
+ if(c.current==="C30"&&(key==="nextQuestion"||key==="nextReason")){
+  const index=state.entries[c.activeEntryIndex]?.phase==="first"?
+    c.activeEntryIndex:state.entries.findLastIndex(x=>x?.phase==="first");
+  if(index>=0){
+   const parent=state.entries[index],property=key==="nextQuestion"?"nextQuestion":"nextWhy";
+   const earlier=parent[property]||"",now=c.fields[key];
+   if(earlier!==now){
+    parent[property]=now;
+    flagDependentMathematics(state,index,property,earlier,now);
+   }
+  }
+ }
  if(key==="pairedDataType"||key==="scatterAimRelevance")c.pairedDataForEntryId=scatterForNext(state)?.id||"";
  if(key==="pmccSignal"){
   const prior=sourceResultForNext(state);
@@ -511,10 +526,12 @@ export function moveCompletionRoute(state,condition){
 export function flagDependentMathematics(state,index,key,before,after){
  const parent=state.entries[index];
  if(!parent||before===after||
-  !["result","status","interpretation","localTakeaway","observation","observationText","resultSignal","journeyOutcome","journeyDirection","purpose","technique","methodId"].includes(key))
+  !["result","status","interpretation","localTakeaway","observation","observationText","resultSignal","journeyOutcome","journeyDirection","nextQuestion","nextWhy","purpose","technique","methodId"].includes(key))
   return [];
  // Preserve the initial input workflow: don't nag while a first result is being typed.
- const substantive=key==="status"||String(before??"").trim().length>0;
+ const hasDependents=parent.id&&state.entries.slice(index+1).some(x=>x?.fromEntryId===parent.id);
+ const substantive=key==="status"||String(before??"").trim().length>0||
+  (hasDependents&&["journeyOutcome","journeyDirection","nextQuestion","nextWhy"].includes(key));
  if(!substantive)return[];
  if(["result","status","technique","methodId","observation"].includes(key)&&
   (parent.interpretation||parent.localTakeaway)){
