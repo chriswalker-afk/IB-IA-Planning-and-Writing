@@ -240,6 +240,15 @@ export function discoveryTrail(s,{compact=false}={}){
     chapterMini(s,g)+'</button>').join('')+'</div>'+
   '</div>'+
   discoveryMathStages(s)+
+  '<details class="living-trail-chapter-guide" data-trail-chapter-guide>'+
+   '<summary>'+icon('book')+' What do the four chapters include? '+icon('chevron-right')+'</summary>'+
+   '<div class="living-trail-chapter-guide-grid">'+
+    '<div><strong>1 · Planning</strong><p>Develop a worthwhile aim, explore mathematical pathways, choose primary, secondary or theoretical starting material, and plan sampling, permissions, sources and precision where relevant. Save useful ideas as sparks.</p></div>'+
+    '<div><strong>2 · Start writing</strong><p>Write your introduction, connect it to the investigation aim, and justify the first mathematics and evidence you intend to use. Writing belongs in your own IA.</p></div>'+
+    '<div><strong>3 · Explore &amp; explain</strong><p>Show real calculations or well-presented diagrams and tables, interpret results, reflect on meaningful limitations, and add further linked mathematical stages when they help answer the aim.</p></div>'+
+    '<div><strong>4 · Conclude &amp; review</strong><p>Check whether you have sufficient mathematical substance, then synthesise a supported conclusion, improve notation and presentation, seek appropriate draft feedback, and complete final checks.</p></div>'+
+   '</div><p class="living-trail-chapter-guide-note">Sparks, worked examples, diagram generators and criteria help you along the way; they are not compulsory extra stages or automatic marks. A saved figure is not proof that the mathematics has been completed.</p>'+
+  '</details>'+
   insightTrailControls(s)+'<p class="living-trail-note">Mint is for planning; purple is for work written in your IA. A recorded plan is not completed mathematics. All chapters and mathematical stages stay revisitable.</p></section>';
 }
 const real=e=>e?.status==='completed'&&typeof e.result==='string'&&!!e.result.trim();
