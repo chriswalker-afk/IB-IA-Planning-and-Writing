@@ -5,6 +5,9 @@ on:
     branches: [main]
     paths:
       - 'src/essentials/criteria-badges.js'
+      - 'src/essentials/criteria-badge-guidance.js'
+      - 'src/essentials/later-maths-criterion-guidance.js'
+      - 'src/essentials/later-maths-criterion-spots.js'
       - 'src/essentials/views.js'
       - 'src/ui/planning-views.js'
       - 'src/completing/views.js'
