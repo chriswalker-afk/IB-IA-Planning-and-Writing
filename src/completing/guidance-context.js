@@ -31,6 +31,7 @@ export const METHOD_OPTIONS=Object.freeze([
  ["power","Power law or transformed model"],
  ["proof","Theoretical proof / counterexample"],
  ["algebra","Algebraic derivation / domains"],
+ ["follow-journey","Continue the investigative journey with another mathematical method"],
  ["other","Other mathematical technique"]
 ]);
 export const COURSE_OPTIONS=Object.freeze([
