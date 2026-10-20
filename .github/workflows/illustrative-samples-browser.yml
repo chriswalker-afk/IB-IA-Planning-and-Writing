@@ -1,0 +1,61 @@
+name: Illustrative sample quality browser acceptance
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'app.js'
+      - 'src/core/illustrative-samples.js'
+      - 'src/core/sample-current-workflow.js'
+      - 'src/core/sample-ia-document.js'
+      - 'src/handover/formats/pdf.js'
+      - 'src/handover/figure-report.js'
+      - 'scripts/illustrative-samples-browser.py'
+      - '.github/workflows/illustrative-samples-browser.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'app.js'
+      - 'src/core/illustrative-samples.js'
+      - 'src/core/sample-current-workflow.js'
+      - 'src/core/sample-ia-document.js'
+      - 'src/handover/formats/pdf.js'
+      - 'src/handover/figure-report.js'
+      - 'scripts/illustrative-samples-browser.py'
+      - '.github/workflows/illustrative-samples-browser.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  sample-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test and build
+        run: |
+          npm install --no-audit --no-fund
+          npm test
+          npm run build
+      - name: Install browser and PDF reader
+        run: |
+          pip install playwright==1.57.0 pypdf==5.9.0
+          python -m playwright install --with-deps chromium
+      - name: Check all five safe samples, IA-scale PDFs, and figures
+        run: |
+          mkdir -p qa-output
+          python -m http.server 8765 --directory dist > qa-output/illustrative-server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID"' EXIT
+          python scripts/illustrative-samples-browser.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: illustrative-samples-browser-results
+          path: qa-output
+          retention-days: 7
