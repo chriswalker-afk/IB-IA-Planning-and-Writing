@@ -996,8 +996,9 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     if(action==="writer-guide-open"){
       if(layer.hidden)lastFocus=el;
       const tip=String(el.dataset.guideTip||"").replace(/[^a-z0-9-]/g,"");
+      const spot=String(el.dataset.guideSpot||"").replace(/[^A-Za-z0-9:-]/g,"");
       const node=state.route==="completing"?state.completion.current:"";
-      const guide=writingGuideRecommendation(state,node,tip);
+      const guide=writingGuideRecommendation(state,node,tip,spot);
       openDrawer("writer-guide",guide);
       if(guide){
         const card=layer.querySelector('[data-guide-card="'+guide.tip.id+'"]');
