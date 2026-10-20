@@ -98,13 +98,28 @@ test("reopened mathematical sections refer to their actual preceding finding, ne
  state.completion.activeEntryIndex=1;
  setCompletionNode(state,"C40");
  const html=view.viewCompleting();
- assert(html.includes("Earlier finding this section was based on"));
+ assert(html.includes("Earlier confirmed mathematical finding"));
  assert(html.includes("The pattern is curved"));
- const priorContext=html.slice(html.indexOf("Earlier finding this section was based on"),
+ const priorContext=html.slice(html.indexOf("Earlier confirmed mathematical finding"),
   html.indexOf('data-show-first-part="show"'));
  assert(!priorContext.includes("Model y=2x squared"),"stage 2 must link to stage 1, not itself");
  // Showing its own real result in Section 3 is now intentional, not a circular bridge.
  assert(html.includes("Model y=2x squared"));
+});
+test("an unverified predecessor remains a note and never masquerades as a finding",()=>{
+ const {state,view}=fixture();
+ state.entries=[
+  {id:"first",phase:"first",status:"planned",title:"Unverified scatter",
+   result:"An unconfirmed pattern",localTakeaway:"The graph appears linear"},
+  {id:"second",phase:"substantial",fromEntryId:"first",status:"planned",
+   title:"Try a regression",result:""}
+ ];
+ state.completion.activeEntryIndex=1;setCompletionNode(state,"C40");
+ const before=JSON.stringify(state),html=view.viewCompleting();
+ assert(html.includes("Earlier mathematical context to verify"));
+ assert(html.includes("This is a note, not a currently confirmed result"));
+ assert(!html.includes("Earlier confirmed mathematical finding"));
+ assert.equal(JSON.stringify(state),before);
 });
 test("dependency review appears only for maths that needs its logical connection checked",()=>{
  const {state,view}=fixture();
