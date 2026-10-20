@@ -516,6 +516,10 @@ def growing_discovery_trail(browser,width):
   assert trail.locator('.living-trail-step').count()==4
   assert trail.locator('.living-trail-math-loop').count()==1
   assert "3 mathematical stages" in trail.inner_text()
+  assert trail.locator('[data-trail-chapter-guide]').count()==1
+  trail.locator('[data-trail-chapter-guide] summary').click()
+  assert "sampling" in trail.locator('[data-trail-chapter-guide]').inner_text()
+  assert "diagram generators" in trail.locator('[data-trail-chapter-guide]').inner_text()
   assert "2 actual results" in trail.inner_text()
   assert "1 in progress" in trail.inner_text()
   pages=trail.locator('.living-trail-math-page')
