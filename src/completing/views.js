@@ -256,19 +256,20 @@ export function createCompletingViews(ctx){
    '</nav>';
  };
  const conclusionReadiness=state=>{
-  const count=state.entries.filter(x=>x?.status==="completed"&&filled(x.result)).length;
-  const mathsStages=state.entries.filter(x=>["first","substantial"].includes(x.phase)).length;
+  const actual=(state.entries||[]).filter(x=>x?.status==="completed"&&filled(x.result)&&x.reviewNeeded!=="yes");
+  const flagged=(state.entries||[]).filter(x=>x?.reviewNeeded==="yes").length;
   return '<section class="math-conclusion-gate" data-conclusion-gate role="alertdialog" aria-labelledby="math-conclusion-gate-title" tabindex="-1">'+
    '<div class="math-conclusion-gate-top"><span>'+icon("book")+'</span><div>'+
    '<span class="math-conclusion-gate-eyebrow">BEFORE YOU CONCLUDE</span>'+
-   '<h2 id="math-conclusion-gate-title">Do you have enough mathematics to answer your aim?</h2></div></div>'+
-   '<p>IB Mathematics exploration guidance suggests approximately <strong>12–20 pages</strong> (commonly double-spaced). This is guidance, <strong>not a compulsory page count or grading threshold</strong>. Follow your teacher\'s current requirements.</p>'+
-   '<p>Check that your IA contains a well-developed mathematical investigation, actual calculations, diagrams or proofs where useful, interpretation of findings, and appropriate reflection on limitations. Do not add unnecessary mathematics merely to reach a length.</p>'+
-   '<p class="math-conclusion-gate-evidence">So far in Pathfinder: <strong>'+count+' confirmed result'+(count===1?"":"s")+'</strong> across <strong>'+mathsStages+' mathematical stage'+(mathsStages===1?"":"s")+'</strong>. This is only a reminder; mathematics written directly in your IA may not be recorded here.</p>'+
+   '<h2 id="math-conclusion-gate-title">Ready to bring your mathematics together?</h2></div></div>'+
+   '<p>Use genuine results to answer your aim. A qualified or inconclusive answer is valid, and there is no required number of calculations or stages.</p>'+
+   '<p class="math-conclusion-gate-evidence">Pathfinder shows <strong>'+actual.length+' confirmed result'+(actual.length===1?"":"s")+'</strong>'+
+    (flagged?' and <strong>'+flagged+' item'+(flagged===1?"":"s")+' needing review</strong>':'')+
+    '. Your actual IA document may contain additional mathematics not recorded here.</p>'+
    '<div class="math-conclusion-gate-buttons">'+
    '<button type="button" class="btn btn-primary" data-action="conclusion-confirm">'+
-    'I have enough material — continue to Conclusion '+icon("arrow-right")+'</button>'+
-   '<button type="button" class="btn btn-secondary" data-action="conclusion-cancel">Keep exploring for now</button></div>'+
+    'Open my conclusion '+icon("arrow-right")+'</button>'+
+   '<button type="button" class="btn btn-secondary" data-action="conclusion-cancel">Keep exploring</button></div>'+
   '</section>';
  };
  const bridgeFromPrior=()=>{
