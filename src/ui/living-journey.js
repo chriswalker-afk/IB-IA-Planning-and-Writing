@@ -5,6 +5,7 @@ import {escapeHtml as e,icon} from './primitives.js';
 import {insightTrailLines,insightTrailControls,CHAPTER_TRAIL_POINTS} from './insight-network.js';
 import {JOURNEY_GROUPS,groupStatus,stageStatus,currentGroup,groupTarget,STATUS_LABELS,chapterRole,planningMilestones,mathematicalPages,mathematicalChapterSummary,chapterProgressCopy} from './journey.js';
 import {PROGRESS_GROUPS,planningStage} from '../planning/engine.js';
+import {mathActionTitle} from './math-constellation.js';
 
 export function planningAnchors(s){return planningMilestones(s);}
 
@@ -182,11 +183,12 @@ export function discoveryMathStages(s){
  const card=p=>{
   const description=p.status==='complete'?'Actual result recorded':
    p.status==='needs-review'?'Connection needs checking':'Planned or still being worked on';
+  const action=mathActionTitle(s,p.entry);
   return '<button type="button" class="living-trail-math-page '+e(p.status)+
    '" data-action="completion-edit-entry" data-index="'+p.index+
-   '" title="'+e(p.entry.title||p.label)+'" aria-label="Open '+e(p.label)+': '+description+'">'+
+   '" title="'+e(action)+'" aria-label="Open '+e(p.label)+': '+e(action)+'. '+description+'">'+
    icon(p.status==='complete'?'check-circle':p.status==='needs-review'?'alert-circle':'circle')+
-   '<span>'+e(p.label)+'</span></button>';
+   '<span>'+e(p.label)+' · '+e(action)+'</span></button>';
  };
  return '<section class="living-trail-math-loop" aria-label="Mathematical stages recorded in this investigation">'+
   '<div class="living-trail-math-loop-heading"><span>'+icon('refresh')+
@@ -251,55 +253,5 @@ export function discoveryTrail(s,{compact=false}={}){
   '</details>'+
   insightTrailControls(s)+'<p class="living-trail-note">Mint is for planning; purple is for work written in your IA. A recorded plan is not completed mathematics. All chapters and mathematical stages stay revisitable.</p></section>';
 }
-const real=e=>e?.status==='completed'&&typeof e.result==='string'&&!!e.result.trim();
-export function mathConstellation(s,{compact=false}={}){
- const entries=Array.isArray(s.entries)?s.entries:[],
-  shown=entries.slice(-12),start=entries.length-shown.length,
-  positions=shown.map((_,i)=>({x:shown.length===1?178:23+i*310/(shown.length-1),y:77+Math.sin(i*2.21)*31})),
-  localIndex=new Map(shown.map((x,i)=>[x.id,i]));
- const lines=shown.map((x,i)=>{
-  const parent=localIndex.get(x.fromEntryId);
-  if(parent===undefined||parent===i)return'';
-  const p=positions[parent],q=positions[i],mid=(p.x+q.x)/2;
-  return '<path d="M'+p.x+' '+p.y+' C'+mid+' '+p.y+' '+mid+' '+q.y+' '+q.x+' '+q.y+
-   '" class="constellation-link'+(x.reviewNeeded==='yes'?' review':'')+'"/>';
- }).join('');
- const actual=entries.filter(real).length,pending=entries.length-actual;
- return '<section class="math-constellation '+(compact?'is-compact':'')+'" aria-label="Mathematical constellation">'+
-  '<div class="math-constellation-top"><div><span class="section-eyebrow">'+icon('chart')+
-  ' GROWING CONSTELLATION</span><h3>Your mathematical discoveries</h3></div>'+
-  '<span class="math-constellation-count">'+actual+' actual result'+(actual===1?'':'s')+'</span></div>'+
-  '<p class="math-constellation-intro">Every genuine result adds a star. Lines appear only where you explicitly connect one mathematical step to another.</p>'+
-  (shown.length?
-   '<div class="constellation-sky-wrap"><svg viewBox="0 0 356 155" class="math-constellation-svg" aria-hidden="true" focusable="false">'+
-   '<path d="M18 126 Q168 14 338 125" class="constellation-horizon"/>'+
-   '<circle cx="76" cy="18" r="2" class="constellation-sky"/><circle cx="301" cy="146" r="2.5" class="constellation-sky"/>'+
-   lines+shown.map((x,i)=>{
-    const p=positions[i],status=x.reviewNeeded==='yes'?'review':real(x)?'actual':'planned';
-    return '<g class="constellation-point '+status+'">'+
-     (status==='actual'?'<circle class="constellation-halo" cx="'+p.x+'" cy="'+p.y+'" r="13"/>':'')+
-     '<circle class="constellation-core" cx="'+p.x+'" cy="'+p.y+'" r="'+(status==='actual'?8:6)+'"/>'+
-     (status==='actual'?'<path class="constellation-sparkle" d="M'+p.x+' '+(p.y-16)+' v-6 M'+(p.x-16)+' '+p.y+' h-6"/>':'')+
-     '</g>';
-   }).join('')+'</svg>'+
-   shown.map((x,i)=>{
-    const p=positions[i],n=start+i;
-    const status=x.reviewNeeded==='yes'?'Needs review':real(x)?'Actual result':'Planned';
-    return '<button type="button" class="constellation-star-hit" data-action="completion-edit-entry" data-index="'+n+
-     '" style="left:'+(p.x/356*100).toFixed(2)+'%;top:'+(p.y/155*100).toFixed(2)+'%"'+
-     ' aria-label="Open '+e(x.title||'mathematical step '+(n+1))+': '+status+'" title="'+e(x.title||'Mathematical step '+(n+1))+'"></button>';
-   }).join('')+'</div>'+
-   '<div class="constellation-interact"><span>Explore a star</span><span>Choose a mathematical record below to revisit it.</span></div><div class="constellation-key"><span><i class="star-key actual"></i> Actual result</span>'+
-   '<span><i class="star-key planned"></i> Planned</span><span><i class="star-key review"></i> Needs review</span></div>'+
-   '<div class="constellation-records">'+shown.slice(-6).map(x=>{
-    const i=entries.indexOf(x),status=x.reviewNeeded==='yes'?'Needs review':real(x)?'Actual result':'Planned';
-    return '<button type="button" class="constellation-record" data-action="completion-edit-entry" data-index="'+i+'">'+
-     '<span class="constellation-record-dot '+(real(x)?'actual':'planned')+'"></span><span>'+
-     e(x.title||'Mathematical step '+(i+1))+'</span><small>'+status+'</small>'+icon('chevron-right')+'</button>';
-   }).join('')+'</div>'+
-   (start>0?'<p class="math-constellation-small">Showing your most recent 12 steps; '+start+' earlier record'+(start===1?'':'s')+' remain in your mathematical path.</p>':'')+
-   (pending?'<p class="math-constellation-small">'+pending+' planned step'+(pending===1?' is':'s are')+' still waiting for an actual result.</p>':''):
-   '<div class="math-constellation-empty">'+icon('sparkles')+
-    '<span>Start with a question worth exploring. Your discoveries will appear here as your mathematics develops.</span></div>')+
-   '<p class="math-constellation-small">There is no required number of results. A clear, well-justified investigation matters more than the number of stars.</p></section>';
-}
+// One presentation model is shared by Home and My Path.
+export {mathConstellation} from './math-constellation.js';
