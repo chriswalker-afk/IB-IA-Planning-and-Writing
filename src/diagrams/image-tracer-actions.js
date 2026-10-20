@@ -71,7 +71,8 @@ export function saveAndLinkTrace(state){
  let index=-1;
  if(prior?.entryId)index=state.entries.findIndex(x=>x.id===prior.entryId);
  const active=completeEntry(state);
- if(index<0&&active?.phase==="first"&&active.status==="planned"&&(!active.imageTraceId||active.imageTraceId===tracer.activeId))
+ if(index<0&&["first","substantial"].includes(active?.phase)&&
+  (active.phase==="substantial"||!active.imageTraceId||active.imageTraceId===tracer.activeId))
   index=state.completion.activeEntryIndex;
  if(index<0){
   const next=startFirstRepresentation(state);
@@ -89,6 +90,6 @@ export function saveAndLinkTrace(state){
  if(!entry.technique.trim())entry.technique="Coordinate tracing and scale calibration";
  entry.kind="other";
  state.completion.activeEntryIndex=index;state.ui.mathIndex=index;
- state.completion.fields.firstType="diagram";
+ if(entry.phase==="first")state.completion.fields.firstType="diagram";
  return {ok:true,record:saved.record,index,reviewNeeded};
 }

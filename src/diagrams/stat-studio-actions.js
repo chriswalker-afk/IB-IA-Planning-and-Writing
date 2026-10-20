@@ -106,7 +106,8 @@ export function saveAndLinkStat(state){
  const previous=studio.figures.find(f=>f.id===studio.activeId);
  let index=previous?.entryId?state.entries.findIndex(x=>x.id===previous.entryId):-1;
  const active=completeEntry(state);
- if(index<0&&active?.phase==="first"&&active.status==="planned"&&(!active.statFigureId||active.statFigureId===studio.activeId))
+ if(index<0&&["first","substantial"].includes(active?.phase)&&
+  (active.phase==="substantial"||!active.statFigureId||active.statFigureId===studio.activeId))
   index=state.completion.activeEntryIndex;
  if(index<0){
   const first=startFirstRepresentation(state);
@@ -126,6 +127,6 @@ export function saveAndLinkStat(state){
  }[saved.record.draft.kind];
  entry.kind="other";
  state.completion.activeEntryIndex=index;state.ui.mathIndex=index;
- state.completion.fields.firstType="distribution";
+ if(entry.phase==="first")state.completion.fields.firstType="distribution";
  return {ok:true,record:saved.record,index,reviewNeeded};
 }

@@ -68,7 +68,7 @@ import {renderRepresentationHub,renderRepresentationSwitcher,representationFocus
 import {renderPresentationCoach,renderFigureHandover} from "./src/diagrams/presentation-coach-view.js";
 import {figureCaption} from "./src/diagrams/presentation-coach-core.js";
 import {renderWriterFieldGuide} from "./src/completing/writer-field-guide.js";
-import {C_MAJOR_STAGES,setCompletionNode,moveCompletionRoute,completionBack,markCompletionStage,setCompletionField,startFirstRepresentation,addAccuracyDecision,completionSuggestions,sectionForNode,targetForSection,completionStage,completeEntry,latestRealResult,sourceResultForNext,flagDependentMathematics,acknowledgeMathReview} from "./src/completing/engine.js";
+import {C_MAJOR_STAGES,setCompletionNode,moveCompletionRoute,completionBack,markCompletionStage,setCompletionField,startFirstRepresentation,addMathematicalStage,routesAt,addAccuracyDecision,completionSuggestions,sectionForNode,targetForSection,completionStage,completeEntry,latestRealResult,sourceResultForNext,flagDependentMathematics,acknowledgeMathReview} from "./src/completing/engine.js";
 
 import { createProjectViews } from "./src/ui/project-views.js";
 import { createProjectState as newState, normalizeProjectState as normalise, persistProjectState, STORAGE_KEY as KEY } from "./src/core/project-state.js";
@@ -198,6 +198,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   }
   function openNativeTool(type){
     if(!nativeStudio(state,type))return;
+    rememberMathEditorOrigin();
     if(state.completion.current!=="C31")setCompletionNode(state,"C31",{reason:"dataset-transfer"});
     state.route="completing";
     state.graphStudio.open=type==="graph";state.statStudio.open=type==="stat";state.tableStudio.open=type==="table";
@@ -237,11 +238,23 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     if(status)status.textContent=d.kind==="function"?"Function (not collected observations)":graphData(d).points.length+" paired observations plotted";
     refreshPresentation("graph");
   }
+
+  function rememberMathEditorOrigin(){
+    if(["C30","C40","C50"].includes(state.completion.current))
+      state.completion.editorReturnNode=state.completion.current;
+  }
+  function avoidEditingUnrelatedStageFigure(studio,entry,fresh){
+    if(entry?.phase!=="substantial")return;
+    const saved=studio.figures.find(x=>x.id===studio.activeId);
+    if(saved&&saved.entryId!==entry.id)fresh(studio);
+  }
   function navigateGraph(figureId=""){
+    rememberMathEditorOrigin();
     if(state.completion.current!=="C31")setCompletionNode(state,"C31",{reason:"graph-editor"});
     state.graphStudio.open=true;
     state.imageTracer.open=false;state.statStudio.open=false;state.tableStudio.open=false;state.voronoiStudio.open=false;
     const entry=completeEntry(state);
+    if(!figureId)avoidEditingUnrelatedStageFigure(state.graphStudio,entry,freshGraph);
     const id=figureId||entry?.graphFigureId;
     if(id&&state.graphStudio.figures.some(x=>x.id===id))
       loadSavedGraph(state.graphStudio,id);
@@ -264,10 +277,12 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     refreshPresentation("trace");
   }
   function navigateTrace(figureId=""){
+    rememberMathEditorOrigin();
     if(state.completion.current!=="C31")setCompletionNode(state,"C31",{reason:"trace-editor"});
     state.graphStudio.open=false;
     state.imageTracer.open=true;state.statStudio.open=false;state.tableStudio.open=false;state.voronoiStudio.open=false;
     const entry=completeEntry(state);
+    if(!figureId)avoidEditingUnrelatedStageFigure(state.imageTracer,entry,startNewTrace);
     const id=figureId||entry?.imageTraceId;
     if(id&&state.imageTracer.figures.some(x=>x.id===id))
       restoreSavedTrace(state.imageTracer,id);
@@ -288,9 +303,11 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     refreshPresentation("stat");
   }
   function navigateStat(figureId=""){
+    rememberMathEditorOrigin();
     if(state.completion.current!=="C31")setCompletionNode(state,"C31",{reason:"stat-editor"});
     state.graphStudio.open=false;state.imageTracer.open=false;state.statStudio.open=true;state.tableStudio.open=false;state.voronoiStudio.open=false;
     const entry=completeEntry(state);
+    if(!figureId)avoidEditingUnrelatedStageFigure(state.statStudio,entry,freshStat);
     const id=figureId||entry?.statFigureId;
     if(id&&state.statStudio.figures.some(x=>x.id===id))
       loadStat(state.statStudio,id);
@@ -310,10 +327,12 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     refreshPresentation("table");
   }
   function navigateTable(figureId=""){
+    rememberMathEditorOrigin();
     if(state.completion.current!=="C31")setCompletionNode(state,"C31",{reason:"table-editor"});
     state.graphStudio.open=false;state.imageTracer.open=false;state.statStudio.open=false;
     state.tableStudio.open=true;state.voronoiStudio.open=false;
     const entry=completeEntry(state);
+    if(!figureId)avoidEditingUnrelatedStageFigure(state.tableStudio,entry,freshTable);
     const id=figureId||entry?.tableFigureId;
     if(id&&state.tableStudio.figures.some(x=>x.id===id))
       loadTable(state.tableStudio,id);
@@ -345,10 +364,12 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     });
   }
   function navigateVoronoi(figureId=""){
+    rememberMathEditorOrigin();
     if(state.completion.current!=="C31")setCompletionNode(state,"C31",{reason:"voronoi-editor"});
     state.graphStudio.open=false;state.imageTracer.open=false;state.statStudio.open=false;state.tableStudio.open=false;
     state.voronoiStudio.open=true;
     const entry=completeEntry(state);
+    if(!figureId)avoidEditingUnrelatedStageFigure(state.voronoiStudio,entry,beginVoronoi);
     const id=figureId||entry?.voronoiFigureId;
     if(id&&state.voronoiStudio.figures.some(x=>x.id===id))
       loadVoronoi(state.voronoiStudio,id);
@@ -537,6 +558,14 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     if(result.targetRoute==="planning"){nav("planning");return;}
     nav("completing");
   }
+  function requestConclusionReview(){
+    if(state.completion.current==="C60"){nav("completing");return;}
+    state.completion.conclusionWarningOpen=true;
+    save();render();
+    const warning=document.querySelector?.("[data-conclusion-gate]");
+    warning?.scrollIntoView?.({block:"start",behavior:"smooth"});
+    warning?.focus?.({preventScroll:true});
+  }
   function returnToShowingFirstMaths(reason){
     // Generators remain editable, but they are not an extra writing stage.
     // Using an intentionally hidden figure again should make its preview visible.
@@ -552,7 +581,12 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     }
     state.graphStudio.open=false;state.imageTracer.open=false;state.statStudio.open=false;
     state.tableStudio.open=false;state.voronoiStudio.open=false;
-    setCompletionNode(state,"C30",{reason});
+    const entry=completeEntry(state),mathStage=entry?.phase==="substantial";
+    const stageNumber=mathStage?state.entries.slice(0,state.completion.activeEntryIndex+1)
+      .filter(x=>x.phase==="substantial").length:0;
+    const page=mathStage?(stageNumber>1?"C50":"C40"):"C30";
+    state.completion.editorReturnNode="";
+    setCompletionNode(state,page,{reason});
     save();render();
     document.querySelector?.('[data-show-first-part="show"]')?.scrollIntoView?.({block:"start",behavior:"auto"});
   }
@@ -576,6 +610,9 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     drawerReturn=null;
     if(route==="completing"&&opts.section) {
       const target=targetForSection(opts.section);
+      if(target==="C60"&&state.completion.current!=="C60"){
+        requestConclusionReview();return;
+      }
       setCompletionNode(state,target,{reason:"stage-navigation"});
     }
     state.ui.helpKey="";state.ui.openCue="";
@@ -590,7 +627,9 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   function editMath(index) {
     if(!state.entries[index])return;
     state.ui.mathIndex=index;state.completion.activeEntryIndex=index;state.ui.mathPhase="work";
-    setCompletionNode(state,state.entries[index].phase==="first"?"C33":"C40");
+    const entry=state.entries[index];
+    const mathStages=state.entries.slice(0,index+1).filter(x=>x.phase==="substantial").length;
+    setCompletionNode(state,entry.phase==="first"?"C30":mathStages>1?"C50":"C40");
     nav("completing");
   }
   function demo(kind) {
@@ -1365,7 +1404,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         const result=saveAndLinkVoronoi(state);
         if(!result.ok){toast(result.error);break;}
         returnToShowingFirstMaths("linked-voronoi");
-        toast("Voronoi construction linked to first mathematics",result.reviewNeeded?
+        toast("Voronoi construction linked to this mathematical stage",result.reviewNeeded?
          "Recheck interpretations after the changed site locations or assumptions.":
          "Introduce the figure in your own IA and justify the distance model. Constructing cells does not prove optimal placement.");
         break;
@@ -1416,7 +1455,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         const result=saveAndLinkTable(state);
         if(!result.ok){toast(result.error);break;}
         returnToShowingFirstMaths("linked-table");
-        toast("Formatted table linked to first mathematics",result.reviewNeeded?
+        toast("Formatted table linked to this mathematical stage",result.reviewNeeded?
          "Your previous result needs reviewing against the changed table.":
          "Introduce the table in your actual IA before displaying it. Creating it has not marked the mathematics as complete.");
         break;
@@ -1475,7 +1514,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         const record=saveAndLinkStat(state);
         if(!record.ok){toast(record.error);break;}
         returnToShowingFirstMaths("linked-statistics");
-        toast("Statistical diagram linked to your first mathematics",record.reviewNeeded?
+        toast("Statistical diagram linked to your mathematics",record.reviewNeeded?
          "Your earlier numerical interpretation now needs checking.":
          "Next, introduce this figure in your actual IA, then explain only the results genuinely supported by the data.");
         break;
@@ -1555,7 +1594,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         const result=saveAndLinkTrace(state);
         if(!result.ok){toast(result.error);break;}
         returnToShowingFirstMaths("linked-trace");
-        toast("Tracing linked to first mathematics",result.reviewNeeded?
+        toast("Tracing linked to this mathematical stage",result.reviewNeeded?
          "The tracing changed; recheck any interpretation of the previous measurements.":
          "Introduce the figure in your own IA and explain the calibration. Creating it has not completed the mathematics.");
         break;
@@ -1613,7 +1652,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         const result=saveAndLinkGraph(state);
         if(!result.ok){toast(result.error);break;}
         returnToShowingFirstMaths("linked-graph");
-        toast("Graph linked to your first maths",result.reviewNeeded?
+        toast("Graph linked to your maths",result.reviewNeeded?
          "You changed the underlying mathematics: review your previous interpretation.":
          "Next, write your introductory sentence and put the saved figure in your own IA document. No result has been marked as completed.");
         break;
@@ -1631,10 +1670,12 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         break;
       }
       case "first-figure-select":{
-        const index=state.entries.findIndex(x=>x.id===el.dataset.entryId&&x.phase==="first");
+        const index=state.entries.findIndex(x=>x.id===el.dataset.entryId&&["first","substantial"].includes(x.phase));
         if(index<0)break;
         state.completion.activeEntryIndex=index;state.ui.mathIndex=index;
-        setCompletionNode(state,"C30",{reason:"figure-result-selected"});
+        const stageCount=state.entries.slice(0,index+1).filter(x=>x.phase==="substantial").length;
+        setCompletionNode(state,state.entries[index].phase==="first"?"C30":stageCount>1?"C50":"C40",
+          {reason:"figure-result-selected"});
         save();render();
         document.querySelector?.('[data-first-inline-result]')?.scrollIntoView?.({block:"center",behavior:"auto"});
         break;
@@ -1662,8 +1703,35 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         const top=window.scrollY;save();render();window.scrollTo({top,behavior:"auto"});
         break;
       }
-      case "completion-route":handleCompletionResult(moveCompletionRoute(state,el.dataset.condition));break;
-      case "completion-open":handleCompletionResult(setCompletionNode(state,el.dataset.node,{reason:"student-revisit"}));break;
+      case "stage-add":{
+        const created=addMathematicalStage(state);
+        if(!created.ok){
+          toast("Finish this mathematical stage first",created.error);
+          document.querySelector?.('[data-show-first-part="show"]')?.scrollIntoView?.({block:"center",behavior:"smooth"});
+          break;
+        }
+        const position=state.entries.slice(0,state.completion.activeEntryIndex+1).filter(x=>x.phase==="substantial").length;
+        state.completion.conclusionWarningOpen=false;
+        setCompletionNode(state,position>1?"C50":"C40",{reason:created.existing?"resume-maths-stage":"new-maths-stage"});
+        nav("completing",{top:true});break;
+      }
+      case "stage-conclude":requestConclusionReview();break;
+      case "conclusion-cancel":{
+        state.completion.conclusionWarningOpen=false;save();render();break;
+      }
+      case "conclusion-confirm":{
+        state.completion.conclusionWarningOpen=false;
+        handleCompletionResult(setCompletionNode(state,"C60",{reason:"confirmed-ready-for-conclusion"}));break;
+      }
+      case "completion-route":{
+        const route=routesAt(state.completion.current).find(x=>x.condition===el.dataset.condition);
+        if(route?.to==="C60"&&state.completion.current!=="C60"){requestConclusionReview();break;}
+        handleCompletionResult(moveCompletionRoute(state,el.dataset.condition));break;
+      }
+      case "completion-open":{
+        if(el.dataset.node==="C60"&&state.completion.current!=="C60"){requestConclusionReview();break;}
+        handleCompletionResult(setCompletionNode(state,el.dataset.node,{reason:"student-revisit"}));break;
+      }
       case "completion-back":handleCompletionResult(completionBack(state));break;
       case "completion-mark":{
         const id=el.dataset.stage,status=el.dataset.status,previous=state.completion.stages[id];
@@ -2271,15 +2339,16 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         "completion.fields.scatterDetail","completion.fields.scatterAimRelevance",
         "entries."+state.completion.activeEntryIndex+".methodId",
         "entries."+state.completion.activeEntryIndex+".accuracyRef"].includes(path)||
-       (state.completion.current==="C30"&&(
-         ["completion.fields.firstWorkStatus","completion.fields.firstWorkResult",
-          "completion.fields.firstWorkTitle","completion.fields.firstWorkLocation"].includes(path)||
+       (["C30","C40","C50"].includes(state.completion.current)&&(
+         (state.completion.current==="C30"&&
+           ["completion.fields.firstWorkStatus","completion.fields.firstWorkResult",
+            "completion.fields.firstWorkTitle","completion.fields.firstWorkLocation"].includes(path))||
          /^entries\.\d+\.(status|result|title|resultRef)$/.test(path)))||
        /^entries\.\d+\.resultSignal$/.test(path)||
        (/^entries\.\d+\.result$/.test(path)&&["C40","C50"].includes(state.completion.current)&&
         state.entries[Number(path.split(".")[1])]?.status==="completed")){
        const at=window.scrollY;render();
-       if(state.completion.current==="C30")window.scrollTo({top:at,behavior:"auto"});
+       if(["C30","C40","C50"].includes(state.completion.current))window.scrollTo({top:at,behavior:"auto"});
        if(/^entries\.\d+\.resultSignal$/.test(path)||path==="completion.fields.firstMathsBridgePlacement"){
          const input=document.querySelector('[data-bind="'+path+'"]');
          if(input)input.focus({preventScroll:true});

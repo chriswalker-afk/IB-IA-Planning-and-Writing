@@ -65,11 +65,15 @@ function renderOptionalExamples(node,icon,e,help=''){
 export function renderStudioWritingStage(state,node,{icon,e,taskHtml="",taskIntro="",reduced=false,help=""}={}){
  if(!isStudioWritingNode(node))return taskHtml;
  const kind=groupOf(node),group=CONFIG.tips[kind],first=node==="C20",showFirst=node==="C30";
- const stageName=first?"Introducing your mathematics":showFirst?"Showing your mathematics":group.name;
+ const laterMaths=["C40","C50"].includes(node)&&state.entries?.[state.completion?.activeEntryIndex]?.phase==="substantial";
+ const stageNumber=laterMaths?state.entries.slice(0,state.completion.activeEntryIndex+1).filter(x=>x.phase==="substantial").length+1:0;
+ const stageName=first?"Introducing your mathematics":showFirst?"Showing your mathematics":
+  laterMaths?"Mathematical stage "+stageNumber:group.name;
+ const taskTitle=laterMaths?"Mathematical stage "+stageNumber+": Explore, explain and interpret":CONFIG.titles[node];
  const task='<section class="studio-stage-writing-task'+(first?' first-maths-task':showFirst?' show-first-task':'')+'" aria-label="'+e(stageName)+' task">'+
   '<div class="studio-stage-writing-task-head"><span class="intro-writing-task-symbol">'+icon("pencil")+'</span>'+
   '<div><span class="intro-writing-task-eyebrow">YOUR '+e(stageName.toUpperCase())+' TASK</span>'+
-  '<h2>'+e(CONFIG.titles[node])+'</h2><p>'+e(taskIntro)+'</p></div></div>'+
+  '<h2>'+e(taskTitle)+'</h2><p>'+e(taskIntro)+'</p></div></div>'+
   '<p class="studio-stage-writing-location">'+icon("pencil")+
   ' Write appropriate explanation, mathematics or a conclusion in your <strong>actual IA document</strong> as the work becomes real. Pathfinder saves notes and decisions only; nothing is inserted into your IA automatically.</p>'+
   taskHtml+'</section>';

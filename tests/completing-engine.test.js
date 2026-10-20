@@ -5,7 +5,7 @@ import {C_NODES,C_ROUTES,C_PROMPTS} from "../src/completing/catalog.js";
 import {
  C_NODE_IDS,C_MAJOR_STAGES,C_STAGE_STATUS,completionStage,createCompletionState,normalizeCompletionState,
  setCompletionNode,moveCompletionRoute,completionBack,markCompletionStage,setCompletionField,
- startFirstRepresentation,startNextMathematics,addAccuracyDecision,actualPmccExists,actualScatterExists,
+ startFirstRepresentation,startNextMathematics,addMathematicalStage,addAccuracyDecision,actualPmccExists,actualScatterExists,
  latestRealResult,sourceResultForNext,observedFeatureForNext,scatterForNext,canViewPmccFollowup,canViewScatterFollowup,
  flagDependentMathematics,acknowledgeMathReview,completionSuggestions,routesAt,completionFlags
 } from "../src/completing/engine.js";
@@ -372,4 +372,66 @@ test("a second generated first-stage figure never inherits a previously verified
  assert.equal(s.entries[1].interpretation,"");
  assert.notEqual(s.entries[1].title,"First graph");
  assert.equal(latestRealResult(s).result,"Verified first numerical result");
+});
+
+test("repeatable stages link actual prior results without inventing mathematical evidence",()=>{
+ const s=state();place(s,"C30");
+ assert.equal(addMathematicalStage(s).ok,false);
+ setCompletionField(s,"firstWorkResult","Observed a curved relation");
+ assert.equal(addMathematicalStage(s).ok,false);
+ setCompletionField(s,"firstWorkStatus","completed");
+ s.entries[0].title="Initial observed graph";
+ s.entries[0].localTakeaway="The linear model misses the curvature";
+ s.completion.fields.nextQuestion="Would a quadratic model improve this fit?";
+ s.completion.fields.nextReason="The curvature suggests comparing a quadratic";
+ const second=addMathematicalStage(s);
+ assert(second.ok);assert.equal(second.stage,2);
+ assert.equal(s.entries.length,2);
+ assert.equal(s.entries[1].fromEntryId,s.entries[0].id);
+ assert.equal(s.entries[1].previousTakeaway,"The linear model misses the curvature");
+ assert.equal(s.entries[1].title,"Would a quadratic model improve this fit?");
+ assert.equal(s.entries[1].bridge,"The curvature suggests comparing a quadratic");
+ assert.equal(s.entries[1].result,"");
+ assert.equal(s.entries[1].status,"planned");
+ assert.equal(latestRealResult(s).id,s.entries[0].id);
+ place(s,"C40");
+ assert.equal(addMathematicalStage(s).ok,false,"must not skip an unfinished stage");
+ s.entries[1].result="Quadratic has smaller residuals";
+ s.entries[1].status="completed";
+ s.entries[1].localTakeaway="The quadratic fits better";
+ s.entries[1].nextQuestion="Can the quadratic model be optimised?";
+ s.entries[1].nextWhy="The vertex identifies a model extremum";
+ const third=addMathematicalStage(s);
+ assert(third.ok);assert.equal(third.stage,3);
+ assert.equal(s.entries[2].fromEntryId,s.entries[1].id);
+ assert.equal(s.entries[2].title,"Can the quadratic model be optimised?");
+ assert.equal(s.entries[2].bridge,"The vertex identifies a model extremum");
+ assert.equal(s.entries[2].status,"planned");
+ assert.equal(s.entries[2].result,"");
+ place(s,"C50");
+ const reloaded=normalizeProjectState(s);
+ assert.equal(reloaded.entries.length,3);
+ assert.equal(reloaded.entries[2].fromEntryId,s.entries[1].id);
+ assert.equal(reloaded.completion.activeEntryIndex,2);
+});
+test("revisiting an unfinished stage from the first exploration does not duplicate pages",()=>{
+ const s=state();place(s,"C30");
+ setCompletionField(s,"firstWorkResult","Actual observation");
+ setCompletionField(s,"firstWorkStatus","completed");
+ assert(addMathematicalStage(s).ok);
+ place(s,"C30");
+ const resumed=addMathematicalStage(s);
+ assert(resumed.ok&&resumed.existing);
+ assert.equal(s.entries.length,2);
+ assert.equal(s.completion.activeEntryIndex,1);
+});
+test("conclusion warning and generator return context survive saving and loading",()=>{
+ const s=state();
+ s.completion.conclusionWarningOpen=true;
+ s.completion.editorReturnNode="C50";
+ const saved=normalizeProjectState(s);
+ assert(saved.completion.conclusionWarningOpen);
+ assert.equal(saved.completion.editorReturnNode,"C50");
+ const bad=normalizeProjectState({...s,completion:{...s.completion,editorReturnNode:"unknown"}});
+ assert.equal(bad.completion.editorReturnNode,"");
 });

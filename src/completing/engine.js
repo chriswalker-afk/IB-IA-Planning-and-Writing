@@ -64,7 +64,7 @@ export function createCompletionState(){
  return {
   support:createStuckState(),current:"C00",history:[],visited:[],transitions:[],fields:{...C_FIELD_DEFAULTS},
   stages:Object.fromEntries(C_MAJOR_STAGES.map(x=>[x.id,"not-started"])),
-  hiddenFirstFigures:[],
+  hiddenFirstFigures:[],conclusionWarningOpen:false,editorReturnNode:"",
   activeEntryIndex:-1,nextFromEntryId:"",pairedDataForEntryId:"",pmccSignalForEntryId:"",scatterPatternForEntryId:"",scatterDetailForEntryId:"",returnTo:"",latestMeaningfulNode:"",
   guidanceUi:{writeKey:"",coveredKey:"",exampleKey:"",selectedKey:"",quietNode:"",quietId:"",quietScope:"",quietSignature:"",expanded:false,mathsExpanded:false,limitsExpanded:false,accuracyChanged:false,limitPage:0,limitDraftVisible:false,
    limitNoneKey:"",locationDraft:"",noteDraft:""},
@@ -92,6 +92,8 @@ export function normalizeCompletionState(data,project={}){
  return {...base,support:normalizeStuckState(v.support),current:validNode(v.current)?v.current:(project.aim?"C04":"C00"),
   history:ids(v.history),visited:ids(v.visited),transitions,
   fields,stages:states,accuracyDecisions:accuracy,
+  conclusionWarningOpen:v.conclusionWarningOpen===true,
+  editorReturnNode:["C30","C40","C50"].includes(v.editorReturnNode)?v.editorReturnNode:"",
   hiddenFirstFigures:Array.isArray(v.hiddenFirstFigures)?v.hiddenFirstFigures.filter(x=>typeof x==="string"&&/^(graph|stat|table|trace|voronoi):[a-z0-9-]+$/i.test(x)).slice(-80):[],
   sourceRecords:normalizeSources(v.sourceRecords),activeSourceId:str(v.activeSourceId).slice(0,160),
   writingOrigin:{node:validNode(v.writingOrigin?.node)?v.writingOrigin.node:"",entryId:str(v.writingOrigin?.entryId).slice(0,160),nextFromEntryId:str(v.writingOrigin?.nextFromEntryId).slice(0,160)},
@@ -331,9 +333,12 @@ export function setCompletionNode(state,id,{history=true,reason="revisit"}={}){
  if(stage&&c.stages[stage]==="not-started")c.stages[stage]="working";
  state.ui.studioSection=sectionForNode(id);
  if(id==="C40"||id==="C50"){
-  if(c.activeEntryIndex<0&&state.entries.length){
-   c.activeEntryIndex=Math.min(state.ui.mathIndex,state.entries.length-1);
+  if(state.entries[c.activeEntryIndex]?.phase!=="substantial"){
+   const last=state.entries.findLastIndex(x=>x?.phase==="substantial");
+   if(last>=0)c.activeEntryIndex=last;
   }
+  if(c.activeEntryIndex<0&&state.entries.length)
+   c.activeEntryIndex=Math.min(state.ui.mathIndex,state.entries.length-1);
  }
  return {ok:true,id,reason};
 }
@@ -361,6 +366,46 @@ export function startFirstRepresentation(state){
  state.ui.mathIndex=state.entries.length-1;
  return{ok:true,index:state.entries.length-1};
 }
+
+/**
+ * Create a new page in Explore & Explain linked to the last actual result.
+ * Each page is one substantial entry: plans and figures do not count as results.
+ * Repeat visits cannot silently create a duplicate draft page.
+ */
+export function addMathematicalStage(state){
+ const c=state.completion,entries=state.entries||[],prior=entries.at(-1);
+ if(prior?.phase==="substantial"&&!genuinelyDone(prior)){
+  if(c.current==="C30"){
+   c.activeEntryIndex=entries.length-1;state.ui.mathIndex=c.activeEntryIndex;
+   return{ok:true,existing:true,index:c.activeEntryIndex};
+  }
+  return{ok:false,error:"Your current mathematical stage is still in progress. Record and confirm its actual result in Section 2 before adding another stage."};
+ }
+ if(!genuinelyDone(prior))
+  return{ok:false,error:"Before adding a mathematical stage, record and confirm a genuine result in Section 2. A planned calculation or saved diagram alone is not yet a mathematical finding."};
+ if(entries.length>=MAX_ENTRIES)
+  return{ok:false,error:"You have reached the safety limit of 120 mathematical records. Download a backup before adding further mathematics."};
+ const ordinal=entries.filter(x=>x.phase==="substantial").length+2;
+ // These are the student's own previous-stage ideas, not generated justifications.
+ const nextQuestion=prior.phase==="first"?str(c.fields.nextQuestion):str(prior.nextQuestion);
+ const nextReason=prior.phase==="first"?str(c.fields.nextReason):str(prior.nextWhy);
+ const id="math-"+Date.now().toString(36)+"-"+(entries.length+1);
+ const entry={
+  id,phase:"substantial",fromEntryId:prior.id,
+  title:nextQuestion.trim()||"Mathematical stage "+ordinal,
+  purpose:nextReason.trim(),bridge:nextReason.trim(),
+  previousTakeaway:prior.localTakeaway||prior.interpretation||prior.observationText||prior.result,
+  technique:"",kind:"",status:"planned",knowledge:"unsure",knowledgeNotes:"",
+  result:"",resultRef:"",observation:"",observationText:"",
+  interpretation:"",localTakeaway:"",limitations:"",
+  nextQuestion:"",nextWhy:"",accuracyRef:"",createdAt:new Date().toISOString()
+ };
+ entries.push(entry);
+ c.activeEntryIndex=entries.length-1;state.ui.mathIndex=c.activeEntryIndex;
+ c.nextFromEntryId=prior.id;
+ return{ok:true,index:c.activeEntryIndex,stage:ordinal};
+}
+
 export function startNextMathematics(state,first=false){
  const c=state.completion,prior=sourceResultForNext(state);
  if(!prior)return{ok:false,error:"Record at least one real mathematical result before adding mathematics that follows from it."};

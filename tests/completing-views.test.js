@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {createProjectState} from "../src/core/project-state.js";
 import {createCompletingViews} from "../src/completing/views.js";
-import {C_NODE_IDS,setCompletionNode,startFirstRepresentation,setCompletionField} from "../src/completing/engine.js";
+import {C_NODE_IDS,setCompletionNode,startFirstRepresentation,setCompletionField,addMathematicalStage} from "../src/completing/engine.js";
 const e=v=>String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");
 function fixture(){
  const state=createProjectState(),ctx={
@@ -98,7 +98,11 @@ test("reopened mathematical sections refer to their actual preceding finding, ne
  const html=view.viewCompleting();
  assert(html.includes("Earlier finding this section was based on"));
  assert(html.includes("The pattern is curved"));
- assert(!html.includes("<p>Model y=2x squared</p>"));
+ const priorContext=html.slice(html.indexOf("Earlier finding this section was based on"),
+  html.indexOf('data-show-first-part="show"'));
+ assert(!priorContext.includes("Model y=2x squared"),"stage 2 must link to stage 1, not itself");
+ // Showing its own real result in Section 3 is now intentional, not a circular bridge.
+ assert(html.includes("Model y=2x squared"));
 });
 test("dependency review appears only for maths that needs its logical connection checked",()=>{
  const {state,view}=fixture();
@@ -224,4 +228,63 @@ test("Section 2 and 3 reuse one verified result, and never assume a saved figure
  assert.match(html,/I calculated a maximum of 3.4 m/);
  assert.match(html,/data-path="entries.0.interpretation"/);
  assert.ok(!html.includes('data-action="completion-first-record"'));
+});
+
+test("first mathematical page ends with two clear progression choices",()=>{
+ const {state,view}=fixture();state.route="completing";setCompletionNode(state,"C30");
+ const html=view.viewCompleting(),next=html.indexOf('data-show-first-part="next"');
+ assert(next>=0);
+ assert(html.indexOf('data-action="stage-add"',next)>next);
+ assert(html.indexOf('data-action="stage-conclude"',next)>next);
+ assert(!html.includes('data-condition="Continue / choose another stage"'));
+});
+test("subsequent mathematical stages have four parts and link directly to a prior result",()=>{
+ const {state,view}=fixture();state.route="completing";
+ state.entries=[{id:"first",phase:"first",status:"completed",title:"Initial scatter",
+  result:"Measured data follow a curve",localTakeaway:"Linear regression misses the curve"}];
+ state.completion.activeEntryIndex=0;
+ assert(addMathematicalStage(state).ok);
+ setCompletionNode(state,"C40");
+ let html=view.viewCompleting();
+ assert(html.includes('data-math-stage-page="2"'));
+ assert(html.includes("Linear regression misses the curve"));
+ for(const section of ["introduce","show","reflect","next"])
+  assert(html.includes('data-show-first-part="'+section+'"'),section);
+ for(const field of ["bridge","purpose","result","interpretation","nextQuestion","nextWhy"])
+  assert(html.includes('data-path="entries.1.'+field+'"'),field);
+ assert(html.includes('data-action="stage-add"'));
+ assert(html.includes('data-action="stage-conclude"'));
+ state.entries[1].status="completed";
+ state.entries[1].result="Quadratic model gives smaller residuals";
+ state.entries[1].localTakeaway="Quadratic is a better fit";
+ assert(addMathematicalStage(state).ok);
+ setCompletionNode(state,"C50");
+ html=view.viewCompleting();
+ assert(html.includes('data-math-stage-page="3"'));
+ assert(html.includes("Quadratic is a better fit"));
+ assert(html.includes('data-path="entries.2.bridge"'));
+});
+test("conclusion warning is non-mandatory guidance with an explicit decision",()=>{
+ const {state,view}=fixture();state.route="completing";setCompletionNode(state,"C30");
+ state.completion.conclusionWarningOpen=true;
+ const html=view.viewCompleting();
+ assert(html.includes('data-conclusion-gate'));
+ assert(html.includes("12–20 pages"));
+ assert(html.includes("not a compulsory page count"));
+ assert(html.includes('data-action="conclusion-confirm"'));
+ assert(html.includes('data-action="conclusion-cancel"'));
+ assert(html.indexOf('data-conclusion-gate')<html.indexOf('data-source-node="C30"'));
+});
+test("later-stage figure galleries display only diagrams linked to that stage",()=>{
+ const {state,view}=fixture();state.route="completing";
+ state.entries=[{id:"first",phase:"first",status:"completed",title:"First output",result:"Observed graph",graphFigureId:"figure-one"},
+  {id:"second",phase:"substantial",status:"planned",title:"Follow-on mathematics",fromEntryId:"first",graphFigureId:"figure-two"}];
+ state.graphStudio.figures=[
+  {id:"figure-one",entryId:"first",savedAt:"2026-10-20T01:00:00Z",draft:state.graphStudio.draft},
+  {id:"figure-two",entryId:"second",savedAt:"2026-10-20T02:00:00Z",draft:state.graphStudio.draft}
+ ];
+ state.completion.activeEntryIndex=1;setCompletionNode(state,"C40");
+ const html=view.viewCompleting();
+ assert(html.includes('data-first-figure-key="graph:figure-two"'));
+ assert(!html.includes('data-first-figure-key="graph:figure-one"'));
 });
