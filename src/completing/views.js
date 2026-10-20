@@ -183,7 +183,7 @@ export function createCompletingViews(ctx){
      '</button></div>').join("")+'</div>'+
    '<p class="journey-next-endpoint">'+icon("flag")+' '+e(ctx.stop)+'</p>'+
    '<p class="journey-next-course">'+icon("book")+' '+e(ctx.courseNote)+'</p>'+
-   '<p class="journey-next-note">These are possibilities, not performed mathematics. Selecting one copies an editable question and reason into Section 4; no stage is created automatically.</p>'+
+   '<p class="journey-next-note">These are possibilities, not performed mathematics. Selecting one copies an editable question only. Explain the mathematical reason in your own words; no stage is created automatically.</p>'+
   '</section>';
  };
  const journeyPredecessorAdvice=(state,entry)=>{
@@ -398,9 +398,11 @@ export function createCompletingViews(ctx){
     '</section>';
  };
  const coachBlock=(entry,{allowChoices=true,showDepth=true}={})=>{
-  const state=getState(),advice=routeAdvice(state,entry),index=state.entries.findIndex(x=>x.id===entry?.id);
+  const state=getState(),selected=selectedJourneyOutcome(state,entry),legacy=routeAdvice(state,entry),
+   advice=selected?{heading:"Your confirmed mathematical finding",essential:selected.next,detail:selected.check}:legacy,
+   index=state.entries.findIndex(x=>x.id===entry?.id);
   if(!advice)return "";
-  const reduced=isAdviceReduced(state),options=index>=0&&allowChoices?resultSignalOptions(entry):[];
+  const reduced=isAdviceReduced(state),hasAdaptive=!!outcomeRouteForEntry(state,entry),options=index>=0&&allowChoices&&!hasAdaptive?resultSignalOptions(entry):[];
   const choiceHtml=options.length?
    '<div class="route-coach-choices"><p class="field-label">What does this actual result suggest?</p>'+
    (reduced?field("entries."+index+".resultSignal","My interpretation so far","",{type:"select",
