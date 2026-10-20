@@ -2,7 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createProjectState,normalizeProjectState} from '../src/core/project-state.js';
-import {planningAnchors,chapterStats,chapterRibbon,discoveryTrail,discoveryMathStages,planningProgress,planningLearningTrail,mathConstellation} from '../src/ui/living-journey.js';
+import {planningAnchors,chapterStats,chapterRibbon,discoveryTrail,discoveryMathStages,planningProgress,planningLearningTrail,discoveryChapters,DISCOVERY_ZONES,mathConstellation} from '../src/ui/living-journey.js';
+import {PLANNING_SCREEN_TITLES,planningScreenTitle} from '../src/planning/screen-labels.js';
+import {PROGRESS_GROUPS} from '../src/planning/engine.js';
 import {insightItems,insightForCurrent,insightCapture,insightEcho,insightToolkit,insightThreadMap,featuredSparkItems} from '../src/ui/insight-threads.js';
 import {JOURNEY_GROUPS,groupStatus,groupTarget,mathematicalPages,chapterProgressCopy} from '../src/ui/journey.js';
 import {insightConnections,insightTrailLines,insightTrailControls,CHAPTER_TRAIL_POINTS,threadGeometry} from '../src/ui/insight-network.js';
@@ -179,39 +181,66 @@ test('interaction styles support focus, phone layouts and reduced motion',()=>{
  assert(css.includes('@media(prefers-reduced-motion:reduce)'));
 });
 
-test('Planning trail has all chapters, a live planning step and honest provisional anchors',()=>{
+test('Planning Discovery Trail reports saved anchors and actual current task, never screen completions',()=>{
  const s=createProjectState();s.route='planning';
  const fresh=planningLearningTrail(s);
  assert(fresh.includes('planning-learning-trail'));
  assert(fresh.includes('planning-trail-desktop'));
  assert(fresh.includes('planning-trail-compact'));
  assert(fresh.includes('Phase 1 of 4'));
- assert(fresh.includes('0 of 5 decisions saved'));
- assert(fresh.includes('aria-label="Your learning trail"'));
+ assert(fresh.includes('0 of 5 planning anchors saved'));
+ assert(fresh.includes('aria-label="Discovery Trail"'));
+ assert(fresh.includes('planning-trail-overview-node'));
+ assert(fresh.includes('planning-trail-map-detail'));
  for(const g of JOURNEY_GROUPS)assert(fresh.includes(g.name.replace('&','&amp;')));
  assert(fresh.includes('data-action="journey-open"'));
+ assert(!fresh.includes('Every screen counts'));
+ assert(!fresh.includes('screens completed'));
  s.planning.current='N01P';
  s.planning.completedNodes=['N00','N01'];
  s.planning.fields.aim='How does this pattern change?';
  s.planning.fields.course='AI SL';s.planning.fields.kind='statistics';
  const later=planningLearningTrail(s);
  assert(later.includes('Phase 3 of 4'));
- assert(later.includes('2 of 5 decisions saved'));
+ assert(later.includes('2 of 5 planning anchors saved'));
  assert(later.includes('Prepare to explore'));
- assert(later.includes('2 completed'));
- assert(later.includes('Chose a starting route'));
- assert(later.includes('Worked on the title and question'));
+ assert(later.includes('What do you predict might happen?'));
+ assert(!later.includes('2 completed'));
+ assert(!later.includes('Chose a starting route'));
  s.planning.visited=['N00','N01','N01P'];s.planning.completedNodes=[];
- assert(planningLearningTrail(s).includes('0 completed'));
+ assert(planningLearningTrail(s).includes('2 of 5 planning anchors saved'));
+ s.planning.current='N01V';
+ assert(planningLearningTrail(s).includes('Have a clear motivation.'));
  assert(!later.includes('100%'));
+});
+test('Planning task headings and Trail labels share a complete source for active stages',()=>{
+ const s=createProjectState();s.route='planning';
+ const all=PROGRESS_GROUPS.flatMap(g=>g.nodes);
+ for(const node of all){
+  assert(PLANNING_SCREEN_TITLES[node],node+' needs a student-facing title');
+  assert.notEqual(planningScreenTitle(node,s),'Review this planning question.',node);
+ }
+ assert.equal(planningScreenTitle('N01V',s),'Have a clear motivation.');
+ s.ideaExplorer.active=true;
+ assert.equal(planningScreenTitle('N00B',s),'Shape a possible idea.');
+ assert.equal(planningScreenTitle('N00C',s),'Evaluate your own idea.');
+ const chapters=discoveryChapters(s),zones=DISCOVERY_ZONES;
+ assert.equal(chapters.length,5);assert.deepEqual(zones.map(z=>z.mode),['planning','writing','checking']);
+ for(const {g,status,target,progress} of chapters){
+  assert.equal(typeof target,'string');
+  assert.equal(status,groupStatus(s,g));
+  assert.equal(progress,chapterProgressCopy(s,g));
+ }
 });
 test('Planning trail includes responsive column and compact disclosure styles',()=>{
  const css=readFileSync(new URL('../data/living-journey.css',import.meta.url),'utf8');
  assert(css.includes('grid-template-areas:"task trail"'));
  assert(css.includes('.planning-learning-trail{position:sticky'));
  assert(css.includes('.planning-trail-help-toggle'));
- assert(css.includes('.planning-trail-screen-progress'));
+ assert(css.includes('.planning-trail-overview-node'));
+ assert(css.includes('.planning-trail-anchor-track'));
  assert(css.includes('planning-trail-support.is-open'));
+ assert(css.includes('.planning-trail-map-detail'));
  const html=planningLearningTrail(createProjectState(),{support:'<button type="button">Support</button>'});
  assert(html.includes('planning-trail-support-body'));
  assert(html.includes('Support'));
@@ -276,6 +305,23 @@ test('Discovery Trail has mint planning, purple writing, then blue Checking in f
    assert(html.includes(label),label);
  }
  assert.equal(JSON.stringify(s),JSON.stringify(JSON.parse(before)));
+});
+test('compact illustrated Trail retains actual maths links and offers the full map',()=>{
+ const s=createProjectState();s.route='completing';s.completion.current='C40';
+ s.entries=[{id:'first',phase:'first',status:'completed',result:'Real result'}];
+ const full=discoveryTrail(s),compact=discoveryTrail(s,{compact:true}),ribbon=chapterRibbon(s);
+ assert(full.includes('data-trail-chapter-guide'));
+ assert(!compact.includes('data-trail-chapter-guide'));
+ assert(compact.includes('data-nav="path"'));
+ assert(compact.includes('Full trail'));
+ assert(compact.includes('living-trail-math-page'));
+ assert.equal((compact.match(/class="living-trail-step /g)||[]).length,5);
+ for(const chapter of discoveryChapters(s)){
+  assert(full.includes('data-target="'+chapter.target+'"'));
+  assert(compact.includes('data-target="'+chapter.target+'"'));
+  assert(ribbon.includes('data-target="'+chapter.target+'"'));
+ }
+ assert(!compact.includes('Follow your Insight Threads'));
 });
 test('Discovery Trail path starts inside Planning and every visible milestone centres over its own chapter card',()=>{
  const s=createProjectState();
