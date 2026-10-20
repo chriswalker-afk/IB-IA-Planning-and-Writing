@@ -130,7 +130,7 @@ def first_time(browser,width):
   assert page.locator('.checking-page').is_visible()
   assert page.locator('.checking-criteria-legend [data-criterion-badge]').count()==5
   for letter in ('A','B','C','D','E'):
-   assert page.locator('.checking-criterion-bubble[data-criterion="'+letter+'"]').count()>=1
+   assert page.locator('[data-criterion-badge="checking:'+letter+'"]').count()>=1
   without_overflow(page)
   page.locator('[data-nav="path"]:visible').first.click()
   # Use the actual visible Writing chapter, including on phones where
@@ -365,7 +365,7 @@ def writing_sections(browser,width):
     without_overflow(page)
     main.locator('[data-first-maths-other-guides]>summary').click()
     assert main.locator('[data-criterion-badge="completing:C20:firstBridge"]').count()==1
-    assert main.locator('[data-criterion-badge="completing:C20:firstChoice"]').count()==1
+    assert main.locator('[data-criterion-badge="completing:C20:firstChoice"]').count()==0
     assert main.locator('[data-criterion-badge="completing:C20:firstPurpose"]').count()==1
     assert [p.get_attribute("data-first-maths-writing-part") for p in main.locator('[data-first-maths-writing-part]').all()]==["connection","method","evaluation"]
     assert main.locator('[data-journey-writing-part="method"][data-journey-writing-id="relationships"]').count()==1
