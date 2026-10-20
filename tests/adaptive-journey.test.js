@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {createProjectState,normalizeProjectState} from "../src/core/project-state.js";
 import {INVESTIGATIVE_ROUTES} from "../src/planning/investigative-routes.js";
-import {addMathematicalStage,flagDependentMathematics,acknowledgeMathReview} from "../src/completing/engine.js";
+import {addMathematicalStage,flagDependentMathematics,acknowledgeMathReview,setCompletionField} from "../src/completing/engine.js";
 import {actualMathematics,journeyOutcomeOptions,selectedJourneyOutcome,
  adaptiveNextDirections,selectedInvestigativeRoute,journeySelectionIsStale,
  journeySourceSignature,stageLinkContext,flagJourneyRouteDependents,journeyCourseNote,outcomeRouteForEntry
@@ -209,4 +209,31 @@ test("later-stage finance, Voronoi and chi-squared work use specific confirmed-m
   assert(result.directions[0].question.length>15,method);
   assert(result.courseNote.includes("AI SL"),method);
  }
+});
+
+test("revising a first-page next question or reason flags already-created mathematics without destroying it",()=>{
+ const s=make("relationships"),first=s.entries[0];
+ first.journeyOutcome="relationships:curve";
+ setCompletionField(s,"nextQuestion","Which curved model would be reasonable?");
+ setCompletionField(s,"nextReason","The observed shape is not straight.");
+ assert(addMathematicalStage(s).ok);
+ const child=s.entries[1];child.bridge="My original reason for continuing";
+ assert.equal(child.journeySourceSignature,journeySourceSignature(s,first));
+ s.completion.current="C30";s.completion.activeEntryIndex=0;
+ setCompletionField(s,"nextQuestion","Would a different function family be justified?");
+ assert.equal(first.nextQuestion,"Would a different function family be justified?");
+ assert.equal(child.reviewNeeded,"yes");
+ assert.equal(child.bridge,"My original reason for continuing");
+ assert(stageLinkContext(s,child).needsReview);
+});
+test("selecting a result description after a dependent stage already exists requires review",()=>{
+ const s=make("models"),first=s.entries[0];
+ s.planning.routeExplorer.selectedRoute="fitted-models";
+ s.completion.fields.nextQuestion="What could I investigate next?";
+ assert(addMathematicalStage(s).ok);
+ const child=s.entries[1];const earlier=first.journeyOutcome||"";
+ first.journeyOutcome="fitted-models:not-quadratic";
+ const flagged=flagDependentMathematics(s,0,"journeyOutcome",earlier,first.journeyOutcome);
+ assert.deepEqual(flagged,[1]);
+ assert.equal(child.reviewNeeded,"yes");
 });
