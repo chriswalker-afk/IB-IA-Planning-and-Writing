@@ -579,6 +579,8 @@ def adaptive_mathematical_journey(browser,width):
   assert page.locator('[data-journey-next-state="ready"]').count()==1
   assert "alternative function structure" in page.locator('[data-journey-next-panel], [data-journey-next-state="ready"]').first.inner_text()
   page.locator('[data-action="journey-use-direction"][data-direction="follow"]').click()
+  assert stored(page)["completion"]["fields"]["nextReason"]==""
+  page.locator('[data-bind="completion.fields.nextReason"]').fill("The observed curve levels off, so I should test a model that permits limiting behaviour.")
   before=stored(page)
   assert "alternative function structure" in before["completion"]["fields"]["nextQuestion"]
   assert before["entries"][0]["result"]=="The points increase then begin to level off"
@@ -601,6 +603,7 @@ def adaptive_mathematical_journey(browser,width):
   page.locator('[data-bind="entries.1.journeyOutcome"]').select_option("nonlinear-model:residual-structure")
   assert "patterned residuals" in page.locator('[data-journey-next-state="ready"]').inner_text()
   page.locator('[data-action="journey-use-direction"][data-direction="follow"]').click()
+  page.locator('[data-bind="entries.1.nextWhy"]').fill("The systematic residual pattern shows the current model misses a feature relevant to my aim.")
   page.locator('[data-action="stage-add"]').click()
   assert page.locator('[data-math-stage-page="3"]').count()==1
   assert "systematic residual" in page.locator('[data-show-first-part="introduce"]').inner_text()
