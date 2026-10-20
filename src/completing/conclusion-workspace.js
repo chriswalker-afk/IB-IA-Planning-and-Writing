@@ -195,8 +195,8 @@ export function renderConclusionWorkspace({state,e,icon,field,F,criterionMarkedW
     icon("layers")+' My stages</button>'+
    '<button type="button" class="btn btn-secondary" data-action="completion-mark" data-stage="C60" data-status="complete">'+
     icon("check-circle")+' Mark conclusion ready for now</button>'+
-   '<button type="button" class="btn btn-primary" data-action="completion-open" data-node="C70">'+
-    'Continue to communication '+icon("arrow-right")+'</button>'+
+   '<button type="button" class="btn btn-primary" data-action="go-checking">'+
+    'Continue to Checking '+icon("arrow-right")+'</button>'+
   '</nav>'+
  '</div>';
 }
