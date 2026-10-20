@@ -170,7 +170,7 @@ const chapterJourneyIcon=g=>'<span class="chapter-journey-icon" aria-hidden="tru
 const coordinates=JOURNEY_GROUPS.map(g=>CHAPTER_TRAIL_POINTS[g.id]);
 const curves=coordinates.slice(0,-1).map((p,i)=>{
  const q=coordinates[i+1],middle=(p.x+q.x)/2;
- return 'M'+p.x+' '+p.y+' C'+middle+' '+p.y+' '+middle+' '+q.x+' '+q.y;
+ return 'M'+p.x+' '+p.y+' C'+middle+' '+p.y+' '+middle+' '+q.y+' '+q.x+' '+q.y;
 });
 /** A mathematical-stage loop nested inside the four-chapter map, not a
  * fixed number of techniques or a claim that a diagram proves a result. */
