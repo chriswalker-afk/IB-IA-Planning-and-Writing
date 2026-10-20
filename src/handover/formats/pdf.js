@@ -24,7 +24,12 @@ function pdfText(value,font){
    "\u2211":"sum","\u03a3":"sum","\u2264":"<=","\u2265":">=","\u2248":"~",
    "\u2208":" in ","\u22ef":"...","\u2080":"_0","\u2081":"_1","\u2082":"_2",
    "\u2083":"_3","\u2084":"_4","\u2085":"_5","\u2099":"_n",
-   "\u2096":"_k","\u2098":"_m","\u207f":"^n"};
+   "\u2096":"_k","\u2098":"_m","\u207f":"^n",
+   "\u00b2":"^2","\u00b3":"^3","\u2070":"^0","\u2071":"^i",
+   "\u2074":"^4","\u2075":"^5","\u2076":"^6","\u2077":"^7",
+   "\u2078":"^8","\u2079":"^9","\u207b":"-","\u2086":"_6",
+   "\u2087":"_7","\u2088":"_8","\u2089":"_9","\u0304":"",
+   "\u03a3":"sum","\u22c5":"*"};
    result+=maths[ch]||"?";
   }
  }
@@ -69,9 +74,10 @@ function addPdfLink(doc,page,x,y,width,height,url){
 }
 export async function createPdfPlanningReport(envelope,fullProjectModel=null){
  const payload=normalizePlanningEnvelope(envelope),model=fullProjectModel||modelFromEnvelope(payload);
+ const iaReading=model.isIllustrativeIA===true;
  const doc=await PDFDocument.create();
  doc.setTitle(model.title);doc.setAuthor("IA Pathfinder");
- doc.setSubject(fullProjectModel?"Full student-owned working record, with planning-only reimport attachment":"Provisional student planning record, with a versioned Pathfinder attachment");
+ doc.setSubject(iaReading?"Fictional IB IA-scale writing illustration with generated mathematical figures":fullProjectModel?"Full student-owned working record, with planning-only reimport attachment":"Provisional student planning record, with a versioned Pathfinder attachment");
  doc.setKeywords(["IA Pathfinder","planning","provisional","reimportable"]);
  doc.setLanguage("en");
  const regular=await doc.embedFont(StandardFonts.Helvetica),
@@ -82,7 +88,7 @@ export async function createPdfPlanningReport(envelope,fullProjectModel=null){
   page.drawRectangle({x:0,y:PAGE[1]-10,width:PAGE[0],height:10,color:TEAL});
   page.drawText("IA  /  PATHFINDER",{x:MARGIN,y:PAGE[1]-35,size:8,font:bold,color:TEAL,characterSpacing:1.2});
   page.drawLine({start:{x:MARGIN,y:42},end:{x:PAGE[0]-MARGIN,y:42},thickness:.8,color:STROKE});
-  page.drawText(fullProjectModel?"FULL PROJECT WORKING RECORD":"PROVISIONAL PLANNING RECORD",{x:MARGIN,y:28,size:8,font:regular,color:MUTED});
+  page.drawText(iaReading?"FICTIONAL IA-STYLE EXAMPLE · NOT FOR SUBMISSION":fullProjectModel?"FULL PROJECT WORKING RECORD":"PROVISIONAL PLANNING RECORD",{x:MARGIN,y:28,size:8,font:regular,color:MUTED});
   page.drawText(String(number),{x:PAGE[0]-MARGIN-10,y:28,size:8,font:regular,color:MUTED});
  };
  const requireSpace=points=>{if(y-points<62)newPage();};
@@ -131,7 +137,9 @@ export async function createPdfPlanningReport(envelope,fullProjectModel=null){
  for(const group of model.sections){
   heading(group.title);
   if(group.description)write(group.description,{size:9,color:MUTED,lineHeight:12,after:12});
-  for(const figure of group.figures||[]){
+  const figures=group.figures||[];
+  const drawFigures=async()=>{
+  for(const figure of figures){
    if(!figure.pngBytes)continue;
    const embedded=await doc.embedPng(figure.pngBytes);
    const dim=embedded.scale(Math.min(PAPER_WIDTH/embedded.width,410/embedded.height));
@@ -139,11 +147,16 @@ export async function createPdfPlanningReport(envelope,fullProjectModel=null){
    page.drawImage(embedded,{x:MARGIN+(PAPER_WIDTH-dim.width)/2,y:y-dim.height,width:dim.width,height:dim.height});
    y-=dim.height+19;
   }
-  for(const row of group.rows){
+  };
+  if(!iaReading)await drawFigures();
+  for(const [rowIndex,row] of group.rows.entries()){
    requireSpace(40);
-   write(row.label.toUpperCase(),{font:bold,size:8,color:TEAL,lineHeight:11,after:2});
+   write(row.label.toUpperCase(),{font:bold,size:iaReading?9:8,color:TEAL,lineHeight:11,after:iaReading?8:2});
    const startPage=page;
-   write(row.value,{font:regular,size:10,lineHeight:14,after:12});
+   write(row.value,{font:regular,size:iaReading?12:10,
+    x:iaReading?MARGIN+12:MARGIN,maxWidth:iaReading?PAPER_WIDTH-24:PAPER_WIDTH,
+    lineHeight:iaReading?25:14,after:iaReading?21:12});
+   if(iaReading&&rowIndex===0)await drawFigures();
    // Link annotations are only placed for plausible single-line HTTPS links.
    if(row.link&&/^https?:\/\/\S+$/i.test(row.value)&&startPage===page){
     // A link can span lines; add annotations on printed segments rather than creating
@@ -156,7 +169,7 @@ export async function createPdfPlanningReport(envelope,fullProjectModel=null){
    }
   }
  }
- heading(fullProjectModel?"About this full working record":"What this document is — and is not");
+ heading(iaReading?"Why this is only a teaching illustration":fullProjectModel?"About this full working record":"What this document is — and is not");
  write(model.footnote,{font:regular,size:9,color:MUTED,lineHeight:13});
  const json=JSON.stringify(payload);
  if(new TextEncoder().encode(json).length>REPORT_MAX_BYTES)throw new Error("Planning snapshot exceeds export size limit.");
