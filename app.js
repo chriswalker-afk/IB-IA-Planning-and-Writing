@@ -539,6 +539,17 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   }
   function returnToShowingFirstMaths(reason){
     // Generators remain editable, but they are not an extra writing stage.
+    // Using an intentionally hidden figure again should make its preview visible.
+    const studioForReason={"linked-graph":["graph","graphStudio"],
+      "linked-table":["table","tableStudio"],"linked-statistics":["stat","statStudio"],
+      "linked-trace":["trace","imageTracer"],"linked-voronoi":["voronoi","voronoiStudio"]};
+    const selected=studioForReason[reason];
+    if(selected){
+      const id=state[selected[1]]?.activeId;
+      const key=selected[0]+":"+id;
+      if(id&&Array.isArray(state.completion.hiddenFirstFigures))
+        state.completion.hiddenFirstFigures=state.completion.hiddenFirstFigures.filter(x=>x!==key);
+    }
     state.graphStudio.open=false;state.imageTracer.open=false;state.statStudio.open=false;
     state.tableStudio.open=false;state.voronoiStudio.open=false;
     setCompletionNode(state,"C30",{reason});
