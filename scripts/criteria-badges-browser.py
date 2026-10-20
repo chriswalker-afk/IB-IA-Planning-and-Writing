@@ -337,6 +337,33 @@ with sync_playwright() as pw:
   result.append({'case':'later-stage-planned-honesty','status':'FAILED','reason':str(err)})
   traceback.print_exc()
  ctx.close()
+
+ # An earlier unverified value may be displayed as a labelled note, but
+ # must not become a confirmed predecessor in either the page or A pop-in.
+ sample=state_for('completing','C40')
+ sample['entries'][0]['status']='planned'
+ sample['entries'][0]['result']='A merely suggested scatter shape'
+ sample['entries'][0]['localTakeaway']='Unverified earlier observation'
+ sample['entries'][1]['fromEntryId']='first'
+ ctx=browser.new_context(viewport={'width':390,'height':844})
+ page=ctx.new_page()
+ page.add_init_script('localStorage.setItem('+json.dumps(KEY)+','+json.dumps(json.dumps(sample))+');')
+ try:
+  page.goto(URL,wait_until='networkidle')
+  assert 'Earlier mathematical context to verify' in page.locator('[data-show-first-part="introduce"]').inner_text()
+  assert 'This is a note, not a currently confirmed result' in page.locator('[data-show-first-part="introduce"]').inner_text()
+  before=stored(page)
+  page.locator('[data-criterion-badge="completing:C40:bridgeA"]').click()
+  text=page.locator('#criterionBadgeDialog').inner_text()
+  assert 'earlier result is not currently confirmed' in text
+  assert 'Unverified earlier observation' not in text
+  page.keyboard.press('Escape')
+  assert stored(page)==before
+  result.append({'case':'later-stage-unverified-predecessor','status':'passed'})
+ except Exception as err:
+  result.append({'case':'later-stage-unverified-predecessor','status':'FAILED','reason':str(err)})
+  traceback.print_exc()
+ ctx.close()
  # Checking process requirements must not masquerade as scored criteria.
  for mode,ids in [('draft',['D09','D10','D12']),('final',['D15','D18'])]:
   sample=state_for('completing','C70')
