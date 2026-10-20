@@ -198,7 +198,7 @@ export function discoveryMathStages(s){
    '<span>'+e(p.label)+'</span></button>';
  };
  return '<section class="living-trail-math-loop" aria-label="Mathematical stages recorded in this investigation">'+
-  '<div class="living-trail-math-loop-heading"><span>'+icon('refresh-cw')+
+  '<div class="living-trail-math-loop-heading"><span>'+icon('refresh')+
    ' MATHEMATICS CAN LOOP</span><small>'+pages.length+' '+(pages.length===1?'stage':'stages')+
    ' · '+actualResults+' actual '+(actualResults===1?'result':'results')+
    (pending?' · '+pending+' in progress':'')+(review?' · '+review+' to review':'')+'</small></div>'+
