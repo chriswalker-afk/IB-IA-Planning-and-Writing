@@ -156,3 +156,20 @@ test("saving a changed linked graph flags existing completed mathematics, withou
  assert.equal(s.entries[0].result,"The data suggest an increasing trend.");
  assert.equal(s.completion.stages.C30,"needs-review");
 });
+
+test("graph generated during a later stage stays linked to that stage, not first mathematics",()=>{
+ const project=createProjectState();
+ project.entries=[
+  {id:"math-first",phase:"first",status:"completed",result:"A real finding from stage 1"},
+  {id:"math-second",phase:"substantial",status:"planned",fromEntryId:"math-first",result:""}
+ ];
+ project.completion.activeEntryIndex=1;
+ project.graphStudio=validData();
+ const linked=saveAndLinkGraph(project);
+ assert.equal(linked.ok,true,linked.error||"Figure should pass its established checks");
+ assert.equal(project.entries.length,2,"No additional first-stage record was created");
+ assert.equal(project.graphStudio.figures.at(-1).entryId,"math-second");
+ assert.equal(project.entries[1].graphFigureId,linked.record.id);
+ assert.equal(project.entries[1].status,"planned","Saving a figure is not performing all the mathematical work");
+ assert.equal(project.entries[0].result,"A real finding from stage 1");
+});

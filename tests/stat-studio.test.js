@@ -258,3 +258,20 @@ test("a box plot cannot suppress actual observations by hiding Tukey outliers",(
  s.draft.outlierRule="minmax";
  assert.equal(statAnalysis(s.draft).ready,true);
 });
+
+test("statistic generated during a later stage stays linked to that stage, not first mathematics",()=>{
+ const project=createProjectState();
+ project.entries=[
+  {id:"math-first",phase:"first",status:"completed",result:"A real finding from stage 1"},
+  {id:"math-second",phase:"substantial",status:"planned",fromEntryId:"math-first",result:""}
+ ];
+ project.completion.activeEntryIndex=1;
+ project.statStudio=rawHistogram();
+ const linked=saveAndLinkStat(project);
+ assert.equal(linked.ok,true,linked.error||"Figure should pass its established checks");
+ assert.equal(project.entries.length,2,"No additional first-stage record was created");
+ assert.equal(project.statStudio.figures.at(-1).entryId,"math-second");
+ assert.equal(project.entries[1].statFigureId,linked.record.id);
+ assert.equal(project.entries[1].status,"planned","Saving a figure is not performing all the mathematical work");
+ assert.equal(project.entries[0].result,"A real finding from stage 1");
+});

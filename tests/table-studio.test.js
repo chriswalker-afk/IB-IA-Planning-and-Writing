@@ -213,3 +213,20 @@ test("the student interface exposes modes, numerical units, purpose, quality and
  const empty=renderTableStudio(createProjectState(),icon,escapeHtml);
  assert.ok(empty.includes('data-action="table-use" disabled'));
 });
+
+test("table generated during a later stage stays linked to that stage, not first mathematics",()=>{
+ const project=createProjectState();
+ project.entries=[
+  {id:"math-first",phase:"first",status:"completed",result:"A real finding from stage 1"},
+  {id:"math-second",phase:"substantial",status:"planned",fromEntryId:"math-first",result:""}
+ ];
+ project.completion.activeEntryIndex=1;
+ project.tableStudio=compact();
+ const linked=saveAndLinkTable(project);
+ assert.equal(linked.ok,true,linked.error||"Figure should pass its established checks");
+ assert.equal(project.entries.length,2,"No additional first-stage record was created");
+ assert.equal(project.tableStudio.figures.at(-1).entryId,"math-second");
+ assert.equal(project.entries[1].tableFigureId,linked.record.id);
+ assert.equal(project.entries[1].status,"planned","Saving a figure is not performing all the mathematical work");
+ assert.equal(project.entries[0].result,"A real finding from stage 1");
+});
