@@ -5,6 +5,8 @@ import {
 import JSZip from "jszip";
 import {REPORT_ATTACHMENT,REPORT_MAX_BYTES,normalizePlanningEnvelope} from "../schema.js";
 import {modelFromEnvelope} from "../report-model.js";
+import {mixedMathTokens,hasMixedMath} from "../../math/mixed-math.js";
+import {mathPng} from "../../math/math-image.js";
 
 const CUSTOM_XML_PATH="customXml/iaPathfinderPlan.xml";
 const CUSTOM_XML_NS="urn:ia-pathfinder:planning:1";
@@ -21,7 +23,49 @@ const headline=(text)=>para([run(text,{bold:true,size:25,color:TEAL})],{
   spacing:{before:320,after:100,line:360},keepNext:true,
   border:{bottom:{color:"DCE9E2",style:BorderStyle.SINGLE,size:6}}
 });
-const field=(label,value,link=false)=>{
+const mathRun=async(token,{size=21}={})=>{
+ const item=await mathPng(token.value,{display:token.display});
+ const base=size/2,pxPerEx=base*.79;
+ let width=item.widthEx*pxPerEx,height=item.heightEx*pxPerEx;
+ const ratio=Math.min(1,(token.display?450:460)/width,120/height);
+ width=Math.max(2,Math.round(width*ratio));
+ height=Math.max(2,Math.round(height*ratio));
+ return new ImageRun({data:item.bytes,type:"png",transformation:{width,height},
+  altText:{title:token.display?"Display equation":"Inline equation",
+   description:"Editable TeX source: "+token.value,
+   name:"Mathematics: "+token.value.slice(0,100)}});
+};
+async function mathParagraphs(value,options={}){
+ const size=options.size||21,bold=options.bold||false,color=options.color||NAVY;
+ const spacing=options.spacing||{after:145,line:330};
+ if(!hasMixedMath(value))return [para([run(value,{size,bold,color})],{spacing,
+  ...(options.keepNext?{keepNext:true}:{})})];
+ const paragraphs=[];let parts=[];
+ const flush=(force=false)=>{
+  if(parts.length||force)paragraphs.push(para(parts.length?parts:[run(" ",{size})],
+   {spacing,...(options.keepNext?{keepNext:true}:{})}));
+  parts=[];
+ };
+ for(const token of mixedMathTokens(value)){
+  if(token.type==="text"){
+   const lines=token.value.split("\n");
+   for(const [index,text] of lines.entries()){
+    if(index>0)flush(true);
+    if(text)parts.push(run(text,{size,bold,color}));
+   }
+  }else{
+   const image=await mathRun(token,{size});
+   if(token.display){
+    flush();
+    paragraphs.push(para([image],{alignment:AlignmentType.CENTER,
+     spacing:{before:110,after:190,line:450}}));
+   }else parts.push(image);
+  }
+ }
+ flush();
+ return paragraphs;
+}
+const field=async(label,value,link=false)=>{
  const components=[para([run(label.toUpperCase(),{bold:true,color:TEAL,size:17})],
   {spacing:{before:100,after:20},keepNext:true})];
  if(link){
@@ -35,7 +79,7 @@ const field=(label,value,link=false)=>{
    }
   }catch{}
  }
- components.push(para([run(value,{size:21})],{spacing:{after:145}}));
+ components.push(...await mathParagraphs(value,{size:21,spacing:{after:145,line:330}}));
  return components;
 };
 const bytesToBase64=bytes=>{
@@ -86,8 +130,10 @@ export async function createDocxPlanningReport(envelope,fullProjectModel=null){
  const payload=normalizePlanningEnvelope(envelope),model=fullProjectModel||modelFromEnvelope(payload);
  const paragraphs=[
    para([run("IA  /  PATHFINDER",{color:TEAL,bold:true,size:19})],{spacing:{after:210}}),
-   title(model.title),
-   para([run(model.aim,{size:27,color:NAVY})],{spacing:{after:230,line:420}}),
+   ...await (hasMixedMath(model.title)?
+    mathParagraphs(model.title,{size:43,bold:true,spacing:{before:100,after:140,line:480},keepNext:true}):
+    Promise.resolve([title(model.title)])),
+   ...await mathParagraphs(model.aim,{size:27,spacing:{after:230,line:420}}),
    para([run(model.status,{bold:true,color:model.flags.length?AMBER:TEAL,size:19})],{
     shading:{fill:model.flags.length?"FBF1E4":LIGHT},
     indent:{left:185,right:185},spacing:{before:120,after:190}
@@ -101,7 +147,7 @@ export async function createDocxPlanningReport(envelope,fullProjectModel=null){
  if(model.flags.length){
   paragraphs.push(headline("Teacher discussion / outstanding questions"));
   for(const flag of model.flags){
-   paragraphs.push(...field(flag.title,flag.note));
+   paragraphs.push(...await field(flag.title,flag.note));
   }
  }
  for(const sec of model.sections){
@@ -113,7 +159,7 @@ export async function createDocxPlanningReport(envelope,fullProjectModel=null){
    const width=450,height=Math.max(70,Math.round(width*figure.pixelHeight/figure.pixelWidth));
    paragraphs.push(para([new ImageRun({data:figure.pngBytes,type:'png',transformation:{width,height},altText:{title:figure.title,description:figure.title,name:figure.title}})],{spacing:{after:175}}));
   }
-  for(const item of sec.rows)paragraphs.push(...field(item.label,item.value,item.link));
+  for(const item of sec.rows)paragraphs.push(...await field(item.label,item.value,item.link));
  }
  paragraphs.push(headline(fullProjectModel?"About this full working record":"About this planning document"));
  paragraphs.push(para([run(model.footnote,{size:18,color:MUTED})],{spacing:{after:150}}));
