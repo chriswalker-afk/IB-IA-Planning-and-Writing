@@ -37,7 +37,7 @@ import {createConformanceViews} from "./conformance-views.js";
 import {C_NODES,C_PROMPTS} from "./catalog.js";
 import {createGuidanceViews} from "./guidance-views.js";
 import {routeAdvice,resultSignalOptions,routeNextQuestions,isAdviceReduced} from "./route-coach.js";
-import {actualMathematics,selectedInvestigativeRoute,journeyOutcomeOptions,selectedJourneyOutcome,journeySelectionIsStale,adaptiveNextDirections,stageLinkContext} from "./adaptive-journey.js";
+import {actualMathematics,selectedInvestigativeRoute,outcomeRouteForEntry,journeyOutcomeOptions,selectedJourneyOutcome,journeySelectionIsStale,adaptiveNextDirections,stageLinkContext} from "./adaptive-journey.js";
 import {extendedPlanningCheck} from "./extended-routes.js";
 import {METHOD_OPTIONS,COURSE_OPTIONS} from "./guidance-context.js";
 import {
@@ -128,13 +128,13 @@ export function createCompletingViews(ctx){
   * method. Its route-prefixed value is saved with the actual maths record. */
  const journeyOutcomePicker=entry=>{
   if(!entry)return "";
-  const state=getState(),route=selectedInvestigativeRoute(state);
+  const state=getState(),route=outcomeRouteForEntry(state,entry);
   if(!route)return '<div class="journey-outcome-intro">'+icon("compass")+
    '<p><strong>Want result-specific mathematical advice?</strong> You can choose an investigative journey in Planning. Your mathematics and writing are still yours to decide; selecting a route is optional.</p></div>';
   if(!actualMathematics(entry))
    return '<div class="journey-outcome-intro" data-journey-outcome-waiting>'+
     icon("lightbulb")+'<p><strong>After producing your mathematics:</strong> confirm your real result in Section 2. Then choose what it actually shows; your planned '+e(route.title)+' route does not determine the finding.</p></div>';
-  const opts=journeyOutcomeOptions(state),selected=selectedJourneyOutcome(state,entry);
+  const opts=journeyOutcomeOptions(state,entry),selected=selectedJourneyOutcome(state,entry);
   return '<section class="journey-outcome-picker" data-journey-outcome-picker>'+
    '<div class="journey-outcome-heading">'+icon("compass")+'<div>'+
     '<small>MY INVESTIGATIVE JOURNEY · '+e(route.title)+'</small>'+
@@ -148,7 +148,7 @@ export function createCompletingViews(ctx){
     ' Your earlier interpretation belongs to a different investigative route or is no longer available. Select an outcome supported by your current work before using linked advice.</p>':"")+
    (selected?'<div class="journey-outcome-meaning"><strong>Mathematical consequence</strong>'+
      '<p>'+e(selected.next)+'</p><p><strong>Before claiming this:</strong> '+e(selected.check)+'</p></div>':"")+
-   '<p class="journey-outcome-honesty">An observed shape is not a proof that any model fits. You may choose an uncertain result, reject these possibilities, or conclude responsibly.</p>'+
+   '<p class="journey-outcome-honesty">A mathematical outcome must be supported by your actual work. An observed shape is not proof that a model fits. You may choose an uncertain result or conclude responsibly.</p>'+
   '</section>';
  };
  const journeyNextDirections=entry=>{
@@ -158,7 +158,9 @@ export function createCompletingViews(ctx){
    return '<aside class="journey-next-panel journey-next-empty" data-journey-next-state="'+e(ctx.status)+'">'+
     '<strong>'+icon("lightbulb")+' Let your actual result determine what follows</strong>'+
     '<p>'+e(ctx.status==="stale"?
-       "The investigative route or earlier interpretation has changed. Return to Section 3 and reconsider what this result really shows before using a recommendation.":
+       "The investigative route or mathematical technique has changed. Return to Section 3 and reconsider what this result really shows before using a recommendation.":
+       ctx.status==="review"?
+       "An earlier result or interpretation needs review before you use it as the basis for new mathematics. Recheck the mathematical connection first.":
        "Select the mathematical meaning of your confirmed result in Section 3. We will then offer relevant next questions and a mathematical reason for each.")+
     '</p></aside>';
   }
@@ -187,7 +189,7 @@ export function createCompletingViews(ctx){
  const journeyPredecessorAdvice=(state,entry)=>{
   const link=stageLinkContext(state,entry),prior=link.prior;
   if(!prior)return "";
-  const route=selectedInvestigativeRoute(state),ctx=link.advice;
+  const ctx=link.advice,route=ctx?.route||selectedInvestigativeRoute(state);
   const choice=ctx?.directions.find(x=>x.id===prior.journeyDirection)||ctx?.directions[0];
   const warning=link.needsReview||ctx?.status==="stale"||!actualMathematics(prior);
   return '<section class="journey-stage-link" data-journey-stage-link data-link-state="'+
