@@ -20,7 +20,7 @@ export function conclusionResults(state){
  return (state?.entries||[]).map((entry,index)=>({
   entry,index,valid:validResult(entry),review:review(entry),
   selected:selected.has(entry?.id)
- })).filter(x=>x.valid||x.review&&x.selected);
+ })).filter(x=>x.valid||x.review);
 }
 /** Toggling evidence is a pointer to student-verified work, never an inferred
  * conclusion or a generated claim. Stale/flagged entries cannot be selected. */
