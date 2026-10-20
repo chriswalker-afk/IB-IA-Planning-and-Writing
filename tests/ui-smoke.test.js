@@ -850,7 +850,7 @@ test("showing first mathematics always provides three writing areas with the cor
  assert(blocks.every(x=>x.start>=0),JSON.stringify(blocks));
  assert(blocks.every((x,i)=>i===0||x.start>blocks[i-1].start),"writing parts should appear in order");
  const showPart=h.html.slice(blocks[1].start,blocks[2].start);
- assert(!showPart.includes("<textarea"),"section two should not have a writing textarea");
+ assert(showPart.includes('data-bind="completion.fields.firstWorkResult"'),"Section 2 records output briefly, without an extra page");
  for(const key of ["firstOutputIntroduction","firstInterpretation","nextQuestion","nextReason"])
   assert(h.html.includes('data-bind="completion.fields.'+key+'"'),key);
  for(const key of ["introduceA","introduceB","reflectD","reflectE","nextC","nextD"])
@@ -889,7 +889,7 @@ test("first mathematical writing drafts transfer to the real entry when it is cr
  assert(h.html.includes('data-criterion-badge="completing:C30:reflectD"'));
  assert(h.html.includes('data-bind="completion.fields.nextReason"'));
  const start=h.html.indexOf('data-show-first-part="show"'),end=h.html.indexOf('data-show-first-part="reflect"');
- assert(!h.html.slice(start,end).includes("<textarea"),"section two has no writing box even with a record");
+ assert(h.html.slice(start,end).includes('data-bind="entries.0.result"'),"Section 2 edits the same canonical result");
  h.write("entries.0.interpretation","The actual result changes my initial expectation.");
  h.write("entries.0.result","The plotted data are curved.");
  h.choose("entries.0.status","completed");
