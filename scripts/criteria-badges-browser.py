@@ -182,6 +182,82 @@ with sync_playwright() as pw:
   ctx.close()
  for size in [(1440,960),(360,740)]:
   for name,route,node,letter,spot in CASES:run_case(name,route,node,letter,spot,*size)
+
+ # Redesigned C20 and C60 screens: exactly one criterion bubble on each focused writing task.
+ for width,height in [(1440,960),(360,740)]:
+  for node,part,spot,letter in [
+   ('C20','[data-first-maths-writing-part="connection"]','completing:C20:firstBridge','A'),
+   ('C60','[data-conclusion-part="meaning"]','completing:C60:meaningAndLimits','D')
+  ]:
+   sample=state_for('completing',node)
+   ctx=browser.new_context(viewport={'width':width,'height':height})
+   page=ctx.new_page()
+   page.add_init_script('localStorage.setItem('+json.dumps(KEY)+','+json.dumps(json.dumps(sample))+');')
+   label='redesigned-'+node+'-'+str(width)
+   try:
+    page.goto(URL,wait_until='networkidle')
+    target=page.locator(part)
+    assert target.count()==1,label
+    assert target.locator('[data-criterion-badge]').count()==1,label+' has only one bubble on this box'
+    marker=target.locator('[data-criterion-badge="'+spot+'"]')
+    assert marker.count()==1,label
+    if node=='C20':
+     assert page.locator('[data-criterion-badge="completing:C20:firstChoice"]').count()==0
+    else:
+     assert page.locator('[data-criterion-badge="completing:C62:benefit"]').count()==0
+     assert page.locator('[data-criterion-badge="completing:C61:uncertainty"]').count()==0
+    before=stored(page)
+    marker.click()
+    dialog=page.locator('#criterionBadgeDialog')
+    assert dialog.is_visible()
+    assert 'Criterion '+letter in dialog.locator('h2').inner_text()
+    if node=='C60':
+     assert 'The model approximates the observed trend' in dialog.inner_text()
+    page.keyboard.press('Escape')
+    assert not dialog.is_visible()
+    assert stored(page)==before
+    result.append({'case':label,'status':'passed'})
+   except Exception as err:
+    result.append({'case':label,'status':'FAILED','reason':str(err)})
+    traceback.print_exc()
+    page.screenshot(path=str(OUT/(label+'-failure.png')),full_page=True)
+   ctx.close()
+ # Later-stage E guidance belongs beside method suitability rather than the linking sentence.
+ for node in ['C40','C50']:
+  sample=state_for('completing',node)
+  ctx=browser.new_context(viewport={'width':390,'height':844})
+  page=ctx.new_page()
+  page.add_init_script('localStorage.setItem('+json.dumps(KEY)+','+json.dumps(json.dumps(sample))+');')
+  try:
+   page.goto(URL,wait_until='networkidle')
+   badge=page.locator('[data-criterion-badge="completing:'+node+':title"]')
+   assert badge.count()==1
+   assert 'Why is the chosen approach appropriate here?' in badge.locator('..').inner_text()
+   result.append({'case':'method-suitability-'+node,'status':'passed'})
+  except Exception as err:
+   result.append({'case':'method-suitability-'+node,'status':'FAILED','reason':str(err)})
+   traceback.print_exc()
+  ctx.close()
+ # Checking process requirements must not masquerade as scored criteria.
+ for mode,ids in [('draft',['D09','D10','D12']),('final',['D15','D18'])]:
+  sample=state_for('completing','C70')
+  sample['route']='checking'
+  sample['ui']['checkingMode']=mode
+  ctx=browser.new_context(viewport={'width':390,'height':844})
+  page=ctx.new_page()
+  page.add_init_script('localStorage.setItem('+json.dumps(KEY)+','+json.dumps(json.dumps(sample))+');')
+  try:
+   page.goto(URL,wait_until='networkidle')
+   for check_id in ids:
+    card=page.locator('[data-checking-item="'+check_id+'"]')
+    assert card.count()==1,check_id
+    assert card.locator('.checking-process-tag').count()==1,check_id
+    assert card.locator('[data-action="checking-rubric"]').count()==0,check_id
+   result.append({'case':'checking-process-'+mode,'status':'passed'})
+  except Exception as err:
+   result.append({'case':'checking-process-'+mode,'status':'FAILED','reason':str(err)})
+   traceback.print_exc()
+  ctx.close()
  # A planned result must not be mistaken for an actual reflection.
  planned=state_for('completing','C34B')
  planned['entries'][0]['status']='planned'
