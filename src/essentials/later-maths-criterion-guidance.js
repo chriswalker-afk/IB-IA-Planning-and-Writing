@@ -69,7 +69,7 @@ export function laterMathsBadgeGuidance(state,ctx,key,base){
  const out={...base,real:ok,details:[]};
  const add=(label,value)=>{const text=snippet(value);if(text&&out.details.length<3)out.details.push({label,text});};
  add("Your investigation aim",ctx.aim);
- add("Your active mathematical question",entry?.title);
+ add("Your stage question and chosen method",[entry?.title,entry?.technique].filter(nonempty).join(" · "));
  if(entry?.reviewNeeded==="yes")
   out.reminder="This mathematical stage is flagged for review after an earlier change. Recheck the underlying result in your IA before relying on it.";
  if(slot==="bridgeA"){
