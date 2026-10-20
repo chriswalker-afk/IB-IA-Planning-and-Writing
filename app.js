@@ -994,6 +994,26 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       }else render();
       if(support.message)toast(support.message);return;
     }
+    // A status is a record of a real document check, not a one-click claim.
+    // Reveal the existing evidence fields before asking the student to retry.
+    if(action==="conformance-review-status"&&el.closest?.(".checking-page")){
+      const {mode,id,status}=el.dataset;
+      const rec=state.completion?.review?.records?.[mode+"-"+id]||{};
+      const missing=status==="checked"&&!String(rec.location||rec.note||"").trim()||
+       status==="not-applicable"&&!String(rec.note||"").trim();
+      if(missing){
+       const details=el.closest(".checking-item")?.querySelector(".checking-item-details");
+       if(details){
+        details.open=true;
+        const path="completion.review.records."+mode+"-"+id+"."+
+         (status==="not-applicable"?"note":"location");
+        details.querySelector('[data-bind="'+path+'"]')?.focus({preventScroll:false});
+       }
+       toast(status==="not-applicable"?"Explain why this check does not apply.":
+         "First note the page, figure, equation or evidence you actually checked.");
+       return;
+      }
+    }
     const conformance=conformanceAction(state,action,el.dataset);
     if(conformance){
       if(!conformance.ok){toast(conformance.error);return;}
