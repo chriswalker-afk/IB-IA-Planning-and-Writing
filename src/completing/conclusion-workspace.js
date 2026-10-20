@@ -29,10 +29,10 @@ export function toggleConclusionResult(state,id){
  const entries=Array.isArray(state?.entries)?state.entries:[];
  const entry=entries.find(x=>x?.id===id);
  if(!entry)return{ok:false,error:"The mathematical record is no longer available."};
- const old=selectedResultIds(state),current=old.includes(id);
+ const old=selectedResultIds(state).filter(key=>entries.some(x=>x?.id===key)),current=old.includes(id);
  if(!current&&(!validResult(entry)||review(entry)))
   return{ok:false,error:"This result needs to be completed or reviewed before you use it as conclusion evidence."};
- if(!current&&old.length>=3)return{ok:false,error:"Choose up to three decisive results. You can change your selection at any time."};
+ if(!current&&old.filter(key=>entries.some(x=>x?.id===key&&validResult(x)&&!review(x))).length>=3)return{ok:false,error:"Choose up to three decisive results. You can change your selection at any time."};
  state.completion.conclusionResultIds=current?old.filter(x=>x!==id):[...old,id];
  if(state.completion.stages.C60==="complete")state.completion.stages.C60="needs-review";
  return{ok:true,selected:!current};
@@ -130,9 +130,10 @@ function potentialQuestions(state,e,icon){
    '<p>Choose only one that genuinely adds value, explain why, or leave the extension out.</p></details>';
 }
 export function renderConclusionWorkspace({state,e,icon,field,F,criterionMarkedWritingBox,
- criteriaField,currentAim,plannedPrediction,currentBenefit}){
+ criteriaField,currentAim,plannedPrediction,currentBenefit,savedLimitations=()=>""}){
  const p=state.planning?.fields||{},f=state.completion?.fields||{};
  const aim=currentAim(),previous=previousWriting(state,field,F,e);
+ const limits=savedLimitations(),shelf=renderSparkShelf(state,"C60",{surface:"studio",hideHeading:true});
  const other=[["Original prediction (not evidence)",plannedPrediction()],
   ["Original purpose or intended use",currentBenefit()||p.intendedUse],
   ["Original expectation or conjecture",p.predictionWhy]].filter(([,v])=>has(v));
@@ -140,11 +141,11 @@ export function renderConclusionWorkspace({state,e,icon,field,F,criterionMarkedW
   '<span>'+icon("target")+' YOUR MATHEMATICAL AIM</span>'+
   '<strong>'+e(aim||"Your aim has not been recorded yet. You can return to Planning to clarify it.")+'</strong></div>'+
   evidencePicker(state,e,icon)+
-  (other.length||state.completion?.confirmedLimitations?.length?
+  (other.length||limits||shelf?
    '<details class="conclusion-original-context"><summary>'+icon("layers")+
    ' Original expectations, purpose and saved sparks '+icon("chevron-right")+'</summary><div>'+
     other.map(([title,v])=>'<p><strong>'+e(title)+'</strong> '+e(short(v,500))+'</p>').join("")+
-    (renderSparkShelf(state,"C60",{surface:"studio",hideHeading:true})||"")+
+    limits+(shelf||"")+
    '</div></details>':"")+'</div>';
  return '<div class="conclusion-workspace" data-conclusion-workspace>'+
   '<p class="conclusion-workspace-lead">Three ideas: <strong>answer</strong> your aim, explain its <strong>meaning and limits</strong>, then consider <strong>potential next steps</strong>. Write only what your mathematics supports.</p>'+
