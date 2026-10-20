@@ -181,6 +181,15 @@ export function renderConclusionWorkspace({state,e,icon,field,F,criterionMarkedW
    potentialQuestions(state,e,icon)+
   '</section>'+
   previous+
+  '<section class="conclusion-downloads" aria-label="Download your project">'+
+   '<h3>Keep a copy of your investigation</h3>'+
+   '<p>Download your actual saved work, figures and planning. The full report is a working record, not your finished IA.</p>'+
+   '<div class="conclusion-download-actions">'+
+    '<button type="button" class="btn btn-primary" data-action="export-full-pdf">'+icon("download")+' Download full project PDF</button>'+
+    '<button type="button" class="btn btn-secondary" data-action="export-full-docx">'+icon("download")+' Editable full project Word</button>'+
+    '<button type="button" class="btn btn-secondary" data-action="export-plan-pdf">'+icon("download")+' Planning PDF</button>'+
+    '<button type="button" class="btn btn-quiet" data-action="open-files">'+icon("archive")+' All downloads and backup</button>'+
+   '</div></section>'+
   '<nav class="conclusion-workspace-actions" aria-label="Continue from your conclusion">'+
    '<button type="button" class="btn btn-secondary" data-action="completion-open" data-node="C04">'+
     icon("layers")+' My stages</button>'+
