@@ -87,7 +87,7 @@ export function modelFromFullProject(state,{exportedAt=new Date().toISOString()}
    field('Idea '+(i+1)+' · Trial status',x.trialStatus),
    ...Object.entries(x.checks||{}).map(([k,v])=>field('Idea '+(i+1)+' · '+human(k),v))
   ]),'Possibilities, not real mathematical results.'),
-  section('IA Studio · student-set progress',C_MAJOR_STAGES.map(s=>field(s.name,status(c.stages?.[s.id]))),'Completion labels are student decisions, not assessments.'),
+  section('IA Studio · student-set progress',C_MAJOR_STAGES.filter(s=>c.stages?.[s.id]&&c.stages[s.id]!=='not-started').map(s=>field(s.name,status(c.stages?.[s.id]))),'Completion labels are student decisions, not assessments.'),
   section('IA Studio · private writing notes',named(state.scratch,[['introduction','Introduction notes'],['dataNotes','Data and methods notes'],['conclusion','Conclusion notes'],['finalReview','Final review notes']]),'Notes are private to Pathfinder and have not been inserted into the actual IA.'),
   section('IA Studio · sources and mathematical context',records(f,allFields.slice(0,allFields.indexOf('firstType')))),
   section('IA Studio · mathematics and interpretation prompts',records(f,allFields.slice(allFields.indexOf('firstType'),allFields.indexOf('mainConclusion')))),
@@ -126,7 +126,7 @@ export function modelFromFullProject(state,{exportedAt=new Date().toISOString()}
    v&&typeof v==='object'?Object.entries(v).map(([a,b])=>field(human(k)+' · '+human(a),toString(b))):[field(human(k),v)])),
   ...studentReviewSections(c.review),
   section('Teacher conversation and check-ins',[
-   field('Student-recorded feedback status',state.teacher?.feedbackStatus),
+   field('Student-recorded feedback status',state.teacher?.feedbackStatus==='not-requested'?'':state.teacher?.feedbackStatus),
    field('Discussion flagged',state.teacher?.pendingApproval?'Yes — ask teacher':''),
    ...(state.teacher?.concerns||[]).map((v,i)=>field('Concern '+(i+1),v)),
    ...(state.teacher?.checkpoints||[]).map((v,i)=>field('Check-in '+(i+1),toString(v)))
