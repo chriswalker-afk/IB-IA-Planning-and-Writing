@@ -7,7 +7,7 @@ import {journeyMap,groupedDashboard,journeyRail} from '../src/ui/journey-views.j
 import {createSamplePreview,PREVIEW_KEY} from '../src/core/sample-preview.js';
 const storage=()=>{const map=new Map();return {map,getItem:k=>map.get(k)??null,setItem:(k,v)=>map.set(k,v),removeItem:k=>map.delete(k)};};
 const sample=()=>({...createProjectState(),demo:'curved',route:'completing'});
-test('four shared chapters describe the same stages in rail, map and dashboard',()=>{
+test('five shared chapters describe the same stages in rail, map and dashboard',()=>{
  const s=createProjectState(),html=journeyRail(s)+journeyMap(s)+groupedDashboard(s);
  for(const g of JOURNEY_GROUPS)assert(html.includes(g.name.replace('&','&amp;')));
  assert.equal(JOURNEY_GROUPS.flatMap(g=>g.stages).length,9);
@@ -31,11 +31,11 @@ test('home resumes Studio even when only introduction notes exist',()=>{
  s.ui.lastWorkRoute='planning';assert.equal(resumeRoute(s),'planning');
 });
 test('overview retains the chapter of the earlier working stage',()=>{
- const s=createProjectState();s.route='completing';s.completion.current='C04';s.ui.lastStudioNode='C90';assert.equal(currentGroup(s).id,'finish');
+ const s=createProjectState();s.route='completing';s.completion.current='C04';s.ui.lastStudioNode='C90';assert.equal(currentGroup(s).id,'check');
 });
 test('maps collapse inactive chapters without locking or removing their routes',()=>{
  const s=createProjectState();s.route='completing';s.completion.current='C40';s.planning.completed=true;
- const before=JSON.stringify(s),html=journeyMap(s);assert(html.includes('data-journey-group="explore" open'));assert(html.includes('data-journey-group="plan"><summary>'));assert(html.includes('data-node="C90"'));assert.equal(JSON.stringify(s),before);
+ const before=JSON.stringify(s),html=journeyMap(s);assert(html.includes('data-journey-group="explore" open'));assert(html.includes('data-journey-group="plan"><summary>'));assert(html.includes('data-action="go-checking"'));assert.equal(JSON.stringify(s),before);
 });
 test('checkpoints survive normalization and full JSON backups',()=>{
  const s=createProjectState();rememberCheckpoint(s,'Introduction marked ready for now','Your notes are saved.','C10');
