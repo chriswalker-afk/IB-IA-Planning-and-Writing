@@ -210,7 +210,7 @@ export function mathConstellation(state,{compact=false}={}){
    '<p class="math-constellation-intro">'+intro+'</p>';
  if(!entries.length)return heading+
   '<div class="math-constellation-empty">'+icon("sparkles")+
-  '<span>Begin with your first meaningful mathematical question. Your techniques and genuine findings will appear here.</span></div>'+
+  '<span>Start with a question worth exploring. Your mathematical techniques and genuine findings will appear here.</span></div>'+
   '<p class="math-constellation-small">There is no required number of results or stages.</p></section>';
  const visual='<div class="math-journey-sky-card"><div class="math-journey-sky-head">'+
   '<strong>'+icon("sparkles")+' YOUR GROWING CONSTELLATION</strong>'+
