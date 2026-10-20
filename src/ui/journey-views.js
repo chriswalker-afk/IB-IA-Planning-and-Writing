@@ -17,7 +17,8 @@ export function journeyRail(s){
    chapterMini(s,g)+'</span></button>';
  });
  return '<div class="journey-rail-zone planning"><span class="journey-rail-zone-label">'+icon('compass')+' Plan</span>'+buttons[0]+'</div>'+
-  '<div class="journey-rail-zone writing"><span class="journey-rail-zone-label">'+icon('pencil')+' Write your IA</span>'+buttons.slice(1).join('')+'</div>';
+  '<div class="journey-rail-zone writing"><span class="journey-rail-zone-label">'+icon('pencil')+' Write your IA</span>'+buttons.slice(1,-1).join('')+'</div>'+
+  '<div class="journey-rail-zone checking"><span class="journey-rail-zone-label">'+icon('clipboard')+' Checking</span>'+buttons.at(-1)+'</div>';
 }
 export function checkpointCard(s){
  const last=latestCheckpoint(s);if(!last)return '';
@@ -28,9 +29,9 @@ export function stageCard(s,stage){
  return '<button type="button" class="completion-stage-card stage-'+status+'" data-action="completion-open" data-node="'+stage.id+'"><span class="feature-icon">'+icon(status==='complete'?'check':stage.icon)+'</span><span class="completion-stage-body"><strong>'+e(stage.name)+'</strong><small>'+e(STATUS_LABELS[status])+'</small></span>'+icon('chevron-right')+'</button>';
 }
 export function groupedDashboard(s){
- return '<div class="studio-focus-summary"><span class="section-eyebrow">'+icon('sparkles')+' ONE USEFUL STEP</span><p>Choose the stage that helps your investigation now. You can return to any earlier decision.</p></div>'+discoveryTrail(s,{compact:true})+'<div class="dashboard-plan"><span>'+icon('compass')+' 1. Planning <span class="status-tag">'+e(STATUS_LABELS[stageStatus(s,'plan')])+'</span></span>'+button('Revisit planning','go-planning','btn-quiet btn-sm')+'</div>'+JOURNEY_GROUPS.slice(1).map((g,i)=>'<section class="journey-stage-group journey-writing-stage">'+(i===0?'<p class="journey-writing-phase">'+icon('pencil')+' WRITE YOUR IA</p>':'')+
+ return '<div class="studio-focus-summary"><span class="section-eyebrow">'+icon('sparkles')+' ONE USEFUL STEP</span><p>Choose the stage that helps your investigation now. You can return to any earlier decision.</p></div>'+discoveryTrail(s,{compact:true})+'<div class="dashboard-plan"><span>'+icon('compass')+' 1. Planning <span class="status-tag">'+e(STATUS_LABELS[stageStatus(s,'plan')])+'</span></span>'+button('Revisit planning','go-planning','btn-quiet btn-sm')+'</div>'+JOURNEY_GROUPS.slice(1).map((g,i)=>'<section class="journey-stage-group journey-writing-stage '+(g.id==='check'?'journey-checking-stage':'')+'">'+(i===0?'<p class="journey-writing-phase">'+icon('pencil')+' WRITE YOUR IA</p>':g.id==='check'?'<p class="journey-writing-phase">'+icon('clipboard')+' CHECKING</p>':'')+
  '<h3>'+icon(g.icon)+' '+(i+2)+'. '+e(g.name)+' '+chapterMini(s,g)+'</h3>'+
- '<p class="journey-stage-description">'+e(g.description)+'</p><div class="completion-stage-grid">'+g.stages.map(id=>stageCard(s,C_MAJOR_STAGES.find(x=>x.id===id))).join('')+'</div></section>').join('');
+ '<p class="journey-stage-description">'+e(g.description)+'</p>'+(g.id==='check'?'<div class="button-row">'+button('Open A–E checking checklist','go-checking','btn-primary','','arrow-right')+'</div>':'<div class="completion-stage-grid">'+g.stages.map(id=>stageCard(s,C_MAJOR_STAGES.find(x=>x.id===id))).join('')+'</div>')+'</section>').join('');
 }
 const planningRows=s=>{
  const f=s.planning.fields,complete=new Set(s.planning.completedNodes);
@@ -49,13 +50,13 @@ function mathRecords(s){
 export function journeyMap(s){
  const current=currentGroup(s);
  return '<div class="journey-focus"><div><span class="section-eyebrow">CURRENT FOCUS</span><h2>'+e(current.name)+'</h2><p>'+e(s.project.aim||s.planning.fields.aim||'One thoughtful step at a time.')+'</p></div>'+button(resumeLabel(s),'resume-work','btn-primary','','arrow-right')+'</div>'+checkpointCard(s)+discoveryTrail(s)+
- '<div class="journey-map-tools"><p>Plan in Chapter 1, then write your IA in Chapters 2–4. Revisit any part.</p><button type="button" class="btn btn-quiet btn-sm" data-action="journey-toggle-all" aria-expanded="false">Show full path</button></div><div class="journey-chapters">'+
+ '<div class="journey-map-tools"><p>Plan in Chapter 1, write your IA in Chapters 2–4, then check it in Chapter 5. Revisit any part.</p><button type="button" class="btn btn-quiet btn-sm" data-action="journey-toggle-all" aria-expanded="false">Show full path</button></div><div class="journey-chapters">'+
  JOURNEY_GROUPS.map((g,i)=>{const status=groupStatus(s,g);
-  return '<details class="journey-chapter journey-chapter-'+e(g.mode)+'" data-journey-group="'+g.id+'"'+(g.id===current.id?' open':'')+'><summary><span class="chapter-marker '+status+'">'+icon(status==='complete'?'check':g.icon)+'</span><span>'+(i===0?'<span class="journey-chapter-act">'+icon('compass')+' PLAN</span>':i===1?'<span class="journey-chapter-act writing">'+icon('pencil')+' WRITE YOUR IA</span>':'')+'<strong>'+(i+1)+'. '+e(g.name)+'</strong>'+
+  return '<details class="journey-chapter journey-chapter-'+e(g.mode)+'" data-journey-group="'+g.id+'"'+(g.id===current.id?' open':'')+'><summary><span class="chapter-marker '+status+'">'+icon(status==='complete'?'check':g.icon)+'</span><span>'+(i===0?'<span class="journey-chapter-act">'+icon('compass')+' PLAN</span>':i===1?'<span class="journey-chapter-act writing">'+icon('pencil')+' WRITE YOUR IA</span>':g.id==='check'?'<span class="journey-chapter-act checking">'+icon('clipboard')+' CHECKING</span>':'')+'<strong>'+(i+1)+'. '+e(g.name)+'</strong>'+
  '<small>'+e(g.description)+' · '+e(STATUS_LABELS[status])+'</small>'+
  '<span class="journey-chapter-progress-detail">'+e(chapterProgressCopy(s,g))+'</span>'+
  chapterMini(s,g)+'</span>'+icon('chevron-right')+'</summary><div class="chapter-body">'+
-   (g.id==='plan'?planningRows(s):'<div class="completion-stage-grid">'+g.stages.map(id=>stageCard(s,C_MAJOR_STAGES.find(x=>x.id===id))).join('')+'</div>')+
+   (g.id==='plan'?planningRows(s):g.id==='check'?'<div class="button-row">'+button('Open my checking checklist','go-checking','btn-primary','','check-circle')+'</div>':'<div class="completion-stage-grid">'+g.stages.map(id=>stageCard(s,C_MAJOR_STAGES.find(x=>x.id===id))).join('')+'</div>')+
    (g.id==='explore'?mathConstellation(s)+'<div class="button-row">'+button(s.entries.length?'Decide what mathematics follows':'Start first exploration',s.entries.length?'completion-next-from-map':'completion-first-from-map','btn-light','','arrow-right')+'</div>':'')+'</div></details>';
  }).join('')+'</div>'+insightToolkit(s)+insightThreadMap(s)+'<p class="small-callout">Ready for now is your own checkpoint, not an IA grade. A recorded decision is not a completed calculation. All stages stay available.</p>';
 }
