@@ -86,6 +86,8 @@ test('2029 Checking hides incompatible A-E scoring checks without losing documen
  assert(!html.includes('data-criterion-badge="checking:A"'));
  assert(!html.includes('data-checking-item="D02"'));
  assert(!html.includes('data-checking-item="D06"'));
+ assert(!html.includes('data-checking-item="D16"'));
+ assert(!html.includes('Can I point to genuine evidence for all five criteria?'));
  assert(html.includes('data-checking-item="D09"'));
  assert(html.includes('DOCUMENT CHECK'));
  assert(!html.includes('Read your IA through five lenses'));

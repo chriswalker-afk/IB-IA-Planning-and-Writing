@@ -20,11 +20,15 @@ export function createCheckingViews(ctx){
  const action=(name,text,attributes='')=>'<button type="button" class="btn btn-secondary btn-sm" data-action="'+name+'" '+attributes+'>'+text+'</button>';
  const listItem=(s,check,mode)=>{
   const details=CHECKING_DETAILS[check.id]||{criteria:[],focus:check.question,lookFor:[],source:''};
+  const revised=isRevisedAssessment(s);
+  const tips=revised&&check.id==='D10'?
+    ['Check the current school formatting and cover instructions','Inspect equations, figures, captions and pagination at reading size','Do not assume earlier-cohort length guidance is a verified 2029 requirement']:
+    details.lookFor;
   const key=mode+'-'+check.id,record=s.completion.review.records[key]||{},current=stateStatus(s,mode,check.id);
   const stem='completion.review.records.'+key+'.',attrs='data-mode="'+mode+'" data-id="'+check.id+'"';
   const options=s.entries.map(x=>[x.id,x.title||'Mathematical stage']).filter(x=>x[0]);
   return '<article class="checking-item '+current+'" data-checking-item="'+e(check.id)+'">'+
-   '<div class="checking-item-top">'+badges(details.criteria,isRevisedAssessment(s))+
+   '<div class="checking-item-top">'+badges(details.criteria,revised)+
     '<span class="checking-item-status '+current+'">'+e(statusText[current]||'Not checked')+'</span></div>'+
    '<h4>'+e(details.focus)+'</h4>'+
    '<p class="checking-item-question">'+e(check.question)+'</p>'+
@@ -38,9 +42,9 @@ export function createCheckingViews(ctx){
     '<summary>'+icon('lightbulb')+' What should I look for?'+
       (record.location||record.note?'<span class="checking-has-evidence">'+icon('check')+' Evidence noted</span>':'')+icon('chevron-right')+'</summary>'+
     '<div class="checking-item-inner">'+
-      (details.lookFor.length?'<ul class="checking-look-for">'+details.lookFor.map(v=>'<li>'+e(v)+'</li>').join('')+'</ul>':'')+
-      '<p class="checking-source-note">'+e(details.source)+'</p>'+
-      (details.processNote?'<p class="checking-process-explanation"><strong>Important process requirement:</strong> '+e(details.processNote)+'</p>':'')+
+      (tips.length?'<ul class="checking-look-for">'+tips.map(v=>'<li>'+e(v)+'</li>').join('')+'</ul>':'')+
+      '<p class="checking-source-note">'+e(revised?'Earlier-cohort checking guidance: confirm current IB and school expectations.':details.source)+'</p>'+
+      (details.processNote?'<p class="checking-process-explanation"><strong>Important process requirement:</strong> '+e(revised?'This is an essential document, integrity or submission check, not an additional score under the 2029 assessment criteria.':details.processNote)+'</p>':'')+
       '<p class="checking-evidence-reminder">To mark a check as done, record where you checked in your actual IA or what you verified. For “Not relevant”, explain why. Your Word/PDF is not inspected automatically.</p>'+
       field(stem+'location','Where in my actual IA?','Page, section, figure or equation')+
       field(stem+'note','My evidence, or why this is not relevant','What I actually checked',{type:'textarea',rows:2})+
@@ -112,7 +116,7 @@ export function createCheckingViews(ctx){
  function viewChecking(){
   const s=getState(),mode=['draft','feedback','final'].includes(s.ui?.checkingMode)?s.ui.checkingMode:'draft';
   const revised=isRevisedAssessment(s);
-  const checks=reviewChecksFor(s,mode).filter(x=>!revised||!['D02','D03','D04','D05','D06'].includes(x.id));
+  const checks=reviewChecksFor(s,mode).filter(x=>!revised||!['D02','D03','D04','D05','D06','D16'].includes(x.id));
   const counts=reviewCounts(s,mode,checks);
   const stages=[['C70','Review notation and presentation'],['C80','Teacher draft & feedback records'],['C90','Final communication and submission notes']];
   return '<div class="page wide checking-page">'+tabletNav()+chapterRibbon(s)+

@@ -696,6 +696,7 @@ with sync_playwright() as pw:
    before=stored(page)
    assert page.locator('[data-checking-revised-overview]').count()==1
    assert page.locator('[data-checking-item="D02"]').count()==0
+   assert page.locator('[data-checking-item="D16"]').count()==0
    assert page.locator('[data-checking-item="D09"]').count()==1
    assert page.locator('[data-criterion-badge]:visible').count()==0
    page.locator('[data-checking-revised-overview] [data-essentials-tab="rubric"]').click()
