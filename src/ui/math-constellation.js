@@ -140,7 +140,7 @@ function pathCard(state,entries,entry,index,byId){
  const parentAction=parent?mathActionTitle(state,parent):"";
  const isOther=!!entry?.fromEntryId&&!parent;
  const lead=parent?'<div class="math-journey-link" data-math-linked-from="'+e(parent.id)+'">'+
-   '<span class="math-journey-link-icon">'+icon("corner-down-right")+'</span>'+
+   '<span class="math-journey-link-icon">'+icon("route")+'</span>'+
    '<div><span class="math-journey-link-label">WHY THIS STAGE FOLLOWS</span>'+
    (note?'<p>'+e(excerpt(note,250))+'</p>':
     '<p>Linked to '+e(parentAction)+'. Explain why this result made the next method worthwhile.</p>')+
@@ -218,7 +218,7 @@ export function mathConstellation(state,{compact=false}={}){
   '<div class="constellation-sky-wrap"><svg class="math-constellation-svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false">'+
   '<path class="constellation-horizon" d="M6 49 H94"/>'+links+'</svg>'+markers+'</div></div>';
  const early=entries.slice(0,start),older=early.length&&!compact?
-  '<details class="math-journey-earlier"><summary>'+icon("history")+' Show '+early.length+
+  '<details class="math-journey-earlier"><summary>'+icon("clock")+' Show '+early.length+
    ' earlier mathematical record'+(early.length===1?"":"s")+' '+icon("chevron-down")+'</summary>'+
    '<div class="math-journey-earlier-content">'+early.map((entry,i)=>pathCard(state,entries,entry,i,allById)).join("")+'</div></details>':"";
  const cards='<div class="math-journey-story" aria-label="Your mathematical techniques and findings">'+
