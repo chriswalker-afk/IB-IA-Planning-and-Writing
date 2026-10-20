@@ -779,7 +779,7 @@ export function createCompletingViews(ctx){
       graph:graphEntryPanel,trace:traceEntryPanel,stat:statEntryPanel,
       table:tableEntryPanel,voronoi:voronoiEntryPanel
     })+
-    '<p class="show-first-table-rule"><strong>Keep your mathematical argument focused.</strong> Avoid long raw-data tables in the main discussion. Where genuinely useful, place large datasets or supporting material in an appendix (following your school's rules), while keeping essential figures, selected data and reasoning beside the mathematics that uses them.</p>'+
+    '<p class="show-first-table-rule"><strong>Keep your mathematical argument focused.</strong> Avoid long raw-data tables in the main discussion. Where genuinely useful, place large datasets or supporting material in an appendix (following the applicable school rules), while keeping essential figures, selected data and reasoning beside the mathematics that uses them.</p>'+
     entryReviewAlert()+
     '<div class="show-first-inline-record" data-first-inline-result>'+
       '<div class="show-first-inline-record-heading"><span>'+icon("calculator")+'</span><div><h4>My mathematical work</h4>'+
