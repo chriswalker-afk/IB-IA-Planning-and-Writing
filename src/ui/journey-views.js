@@ -56,6 +56,6 @@ export function journeyMap(s){
  '<span class="journey-chapter-progress-detail">'+e(chapterProgressCopy(s,g))+'</span>'+
  chapterMini(s,g)+'</span>'+icon('chevron-right')+'</summary><div class="chapter-body">'+
    (g.id==='plan'?planningRows(s):'<div class="completion-stage-grid">'+g.stages.map(id=>stageCard(s,C_MAJOR_STAGES.find(x=>x.id===id))).join('')+'</div>')+
-   (g.id==='explore'?mathConstellation(s)+mathRecords(s)+'<div class="button-row">'+button(s.entries.length?'Decide what mathematics follows':'Start first exploration',s.entries.length?'completion-next-from-map':'completion-first-from-map','btn-light','','arrow-right')+'</div>':'')+'</div></details>';
+   (g.id==='explore'?mathConstellation(s)+'<div class="button-row">'+button(s.entries.length?'Decide what mathematics follows':'Start first exploration',s.entries.length?'completion-next-from-map':'completion-first-from-map','btn-light','','arrow-right')+'</div>':'')+'</div></details>';
  }).join('')+'</div>'+insightToolkit(s)+insightThreadMap(s)+'<p class="small-callout">Ready for now is your own checkpoint, not an IA grade. A recorded decision is not a completed calculation. All stages stay available.</p>';
 }
