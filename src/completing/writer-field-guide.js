@@ -194,11 +194,14 @@ export const FIELD_GUIDE_CONTEXT=Object.freeze({
   "C20": "sources",
   "C21S": "boundaries",
   "C21M": "boundaries",
+  "C21T": "purpose",
   "C22": "purpose",
   "C23": "sources",
   "C24": "sources",
   "C25": "audience",
   "C26": "why-now",
+  "C30": "thinking",
+  "C31": "graphs",
   "C32": "audience",
   "C33": "graphs",
   "C34": "react",
@@ -210,12 +213,15 @@ export const FIELD_GUIDE_CONTEXT=Object.freeze({
   "C35B": "react",
   "C35P": "react",
   "C40": "thinking",
+  "C40T": "sources",
+  "C40D": "purpose",
   "C40L": "audience",
   "C50": "thinking",
   "C60": "story",
   "C61": "react",
   "C62": "story",
   "C63": "why-now",
+  "C64": "edit",
   "C70": "edit",
   "C70N": "edit",
   "C80": "edit",
@@ -281,23 +287,31 @@ export function renderContextualGuide(icon,e,node){
   '<span>'+e(tip.title)+'</span></span>'+
   '<button type="button" data-action="writer-guide-open" data-guide-tip="'+e(tip.id)+'">See an example '+icon("arrow-right")+'</button></aside>';
 }
-function example(t,e){
+function example(t,e,contextual=false){
  return '<div class="writer-guide-example" data-guide-example="'+e(t.id)+'">'+
    '<div class="writer-guide-example-top"><strong>'+e("Same maths. Better communication.")+'</strong>'+
    '<div class="writer-guide-example-switch" role="group" aria-label="Compare writing styles">'+
-    '<button type="button" data-action="writer-guide-example" data-guide-view="ordinary" aria-pressed="true">Just reporting</button>'+
-    '<button type="button" data-action="writer-guide-example" data-guide-view="stronger" aria-pressed="false">Stronger writing</button></div></div>'+
-   '<p class="writer-guide-example-text" data-guide-text="ordinary">'+e(t.ordinary)+'</p>'+
-   '<p class="writer-guide-example-text" data-guide-text="stronger" hidden>'+e(t.stronger)+'</p>'+
-   '<div class="writer-guide-example-why" hidden><strong>Why this works</strong><span>'+e(t.why)+'</span></div></div>';
+    '<button type="button" data-action="writer-guide-example" data-guide-view="ordinary" aria-pressed="'+(!contextual)+'">Just reporting</button>'+
+    '<button type="button" data-action="writer-guide-example" data-guide-view="stronger" aria-pressed="'+contextual+'">Stronger writing</button></div></div>'+
+   '<p class="writer-guide-example-text" data-guide-text="ordinary"'+(contextual?' hidden':'')+'>'+e(t.ordinary)+'</p>'+
+   '<p class="writer-guide-example-text" data-guide-text="stronger"'+(contextual?'':' hidden')+'>'+e(t.stronger)+'</p>'+
+   '<div class="writer-guide-example-why"'+(contextual?'':' hidden')+'><strong>Why this works</strong><span>'+e(t.why)+'</span></div></div>';
 }
-function tipCard(t,i,icon,e){
- return '<details class="writer-guide-tip writer-family-'+e(t.family)+'" id="writer-guide-'+e(t.id)+'" data-guide-card="'+e(t.id)+'" data-guide-family="'+e(t.family)+'"'+(i===0?' open':'')+'>'+
+function tipCard(t,i,icon,e,guide=null){
+ const relevant=!!guide&&guide.tip?.id===t.id;
+ const focus=relevant?'<aside class="writer-guide-stage-focus" role="note" data-guide-stage-focus="'+e(guide.node)+'">'+
+  '<span>FOR YOUR CURRENT WRITING STEP</span><strong>'+e(guide.stage)+'</strong>'+
+  '<p>'+e(guide.cue)+'</p>'+
+  (guide.note?'<p class="writer-guide-stage-note">'+e(guide.note)+'</p>':'')+
+  (guide.question?'<p class="writer-guide-stage-question">'+e(guide.question)+'</p>':'')+
+  '<small>Use this as advice to think with, not text to copy into your IA.</small></aside>':'';
+ return '<details class="writer-guide-tip writer-family-'+e(t.family)+'" id="writer-guide-'+e(t.id)+'" data-guide-card="'+e(t.id)+'" data-guide-family="'+e(t.family)+'"'+((guide?relevant:i===0)?' open':'')+'>'+
   '<summary><span class="writer-guide-tip-icon">'+icon(t.icon)+'</span>'+
    '<span class="writer-guide-tip-summary"><span class="writer-guide-tip-meta">'+(t.essential?'ESSENTIAL '+String(i+1).padStart(2,"0"):'EXTRA '+String(i-5).padStart(2,"0"))+' · '+e(FAMILIES[t.family].name)+'</span>'+
+    (relevant?'<span class="writer-guide-tip-current">Suggested for this step</span>':'')+
     '<strong>'+e(t.title)+'</strong><small>'+e(t.hook)+'</small></span>'+
    '<span class="writer-guide-tip-expand">'+icon("chevron-right")+'</span></summary>'+
-  '<div class="writer-guide-tip-body"><p>'+e(t.explanation)+'</p>'+example(t,e)+
+  '<div class="writer-guide-tip-body"><p>'+e(t.explanation)+'</p>'+focus+example(t,e,relevant)+
    (t.challengeQuestion?'<details class="writer-guide-challenge"><summary>'+icon("lightbulb")+' Quick thought challenge: '+e(t.challengeQuestion)+'</summary><p>'+e(t.challengeAnswer)+'</p></details>':"")+
    '<p class="writer-guide-when"><strong>Remember this:</strong> '+e(t.moment)+'</p></div></details>';
 }
@@ -309,7 +323,7 @@ function storyStrip(icon,e){
  '<div class="writer-guide-story-panels">'+STORIES.map((s,i)=>'<p data-story-panel="'+i+'"'+(i===0?'':' hidden')+'><strong>'+e(s.heading)+'</strong> '+e(s.text)+'</p>').join("")+'</div>'+
  '<p class="writer-guide-story-footnote">It\'s a helpful pattern, not a compulsory five-step template. A thoughtful conclusion can be a perfectly good next step.</p></section>';
 }
-export function renderWriterFieldGuide(icon,e){
+export function renderWriterFieldGuide(icon,e,guide=null){
  const essential=FIELD_GUIDE_TIPS.filter(x=>x.essential),additional=FIELD_GUIDE_TIPS.filter(x=>!x.essential);
  return '<div class="writer-guide-main">'+
   '<div class="writer-guide-hero"><span class="writer-guide-eyebrow">'+icon("sparkles")+' BEFORE YOU WRITE</span>'+
@@ -328,11 +342,11 @@ export function renderWriterFieldGuide(icon,e){
   '<section class="writer-guide-tip-section" aria-labelledby="writer-guide-essentials-heading">'+
   '<div class="writer-guide-section-heading"><span class="writer-guide-section-symbol">'+icon("lightbulb")+'</span>'+
   '<div><h3 id="writer-guide-essentials-heading">The six essentials</h3><p>Start here — the biggest differences between simply reporting and genuinely exploring.</p></div></div>'+
-  '<div class="writer-guide-tip-list">'+essential.map((t,i)=>tipCard(t,i,icon,e)).join("")+'</div></section>'+
+  '<div class="writer-guide-tip-list">'+essential.map((t,i)=>tipCard(t,i,icon,e,guide)).join("")+'</div></section>'+
   '<section class="writer-guide-tip-section writer-guide-extra" aria-labelledby="writer-guide-extra-heading">'+
   '<div class="writer-guide-section-heading"><span class="writer-guide-section-symbol">'+icon("compass")+'</span>'+
   '<div><h3 id="writer-guide-extra-heading">Eight more ideas when you need them</h3><p>Extra craft for methods, mathematical limitations, results and editing.</p></div></div>'+
-  '<div class="writer-guide-tip-list">'+additional.map((t,i)=>tipCard(t,i+6,icon,e)).join("")+'</div></section>'+
+  '<div class="writer-guide-tip-list">'+additional.map((t,i)=>tipCard(t,i+6,icon,e,guide)).join("")+'</div></section>'+
   '<div class="writer-guide-finish"><div><strong>You\'re ready to write something real.</strong>'+
   '<p>You do not need to memorise these tips. Pathfinder will bring relevant ideas back during your mathematical journey, and you can reopen this guide anytime.</p></div>'+
   '<button type="button" class="btn btn-primary" data-action="close-drawer">Back to my IA '+icon("arrow-right")+'</button></div>'+

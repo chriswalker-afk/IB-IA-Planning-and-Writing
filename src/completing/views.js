@@ -1,5 +1,6 @@
 import {chapterRibbon} from '../ui/living-journey.js';
-import {renderFieldGuideTeaser,renderContextualGuide} from './writer-field-guide.js';
+import {renderFieldGuideTeaser} from './writer-field-guide.js';
+import {renderWriterGuideAccess} from './writer-guide-context.js';
 import {renderIntroductionSparkPrompt,renderIntroductionWritingAdvice,renderIntroductionOptionalExamples} from './intro-writing-advice.js';
 import {renderWritingStageFlow} from './stage-writing-flow.js';
 import {renderConclusionWorkspace} from './conclusion-workspace.js';
@@ -558,7 +559,7 @@ export function createCompletingViews(ctx){
     '<p class="intro-writing-task-footnote">Your notes here are private to Pathfinder. The <strong>A</strong> and <strong>C</strong> bubbles explain how presentation and personal engagement relate to the writing; they are not marks or an assessment of your draft.</p></section>';
    return{intro:"",
     html:renderWritingStageFlow({
-     advice:renderIntroductionWritingAdvice(icon,e,{reduced:isAdviceReduced(s)}),
+     advice:renderIntroductionWritingAdvice(icon,e,{reduced:isAdviceReduced(s),state:s}),
      sparks:renderIntroductionSparkPrompt(s,icon,e)+renderSparkShelf(s,"C10",{surface:"studio",libraryOnly:true}),
      task,
      examples:renderIntroductionOptionalExamples(icon)
@@ -1319,9 +1320,9 @@ export function createCompletingViews(ctx){
     (node==="C10"||studioWriting?"":'<p class="task-intro">'+e(screen.intro)+'</p>')+
     (node==="C10"||studioWriting?"":insightEcho(s,node))+extra.returnToReview()+
     (studioWriting||isStuckNode(node)||["C00","C04","C10","C10E"].includes(node)||isAdviceReduced(s)?"":criteriaPanel(s))+
+    (!studioWriting&&node!=="C10"?renderWriterGuideAccess(s,node,icon,e):"")+
     stagedHtml+
     (node==="C00"||node==="C10"||studioWriting?"":insightCapture(s,node))+
-    (node==="C00"||node==="C04"||node==="C10"||studioWriting||isStuckNode(node)||isAdviceReduced(s)?"":renderContextualGuide(icon,e,node))+
     (node==="C00"||node==="C10"||studioWriting||isAdviceReduced(s)?"":essentialsNudge(s))+
     (node==="C00"||node==="C10"||studioWriting||isStuckNode(node)||node==="C10E"||isAdviceReduced(s)?"":guides.writingMoment(node,{embedded:node!=="C96"}))+
     (node==="C00"||node==="C10"||studioWriting||isStuckNode(node)||isAdviceReduced(s)?"":guides.mathsHelp(node)+guides.limitsHelp(node)+
