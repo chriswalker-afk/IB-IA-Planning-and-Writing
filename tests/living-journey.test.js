@@ -287,8 +287,8 @@ test('Discovery Trail path starts inside Planning and every visible milestone ce
  assert(CHAPTER_TRAIL_POINTS.plan.x<250);
  for(const g of JOURNEY_GROUPS.slice(1))assert(CHAPTER_TRAIL_POINTS[g.id].x>250);
  const positions=[
-  ['plan',12.5,118,'planning'],['setup',37.5,58,'writing'],
-  ['explore',62.5,112,'writing'],['finish',87.5,58,'writing']
+  ['plan',10,118,'planning'],['setup',30,58,'writing'],
+  ['explore',50,112,'writing'],['finish',70,58,'writing'],['check',90,118,'checking']
  ];
  for(const [id,left,top,mode] of positions){
   const n=JOURNEY_GROUPS.findIndex(g=>g.id===id);
