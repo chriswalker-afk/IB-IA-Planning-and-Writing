@@ -86,45 +86,29 @@ export function planningProgress(s,{compact=false}={}){
   '<span>'+e(x.name)+'</span></span>').join('')+
   '</div><p>These are provisional decisions, not a score or completed IA mathematics.</p></section>';
 }
-/** A responsive companion to the five-chapter Discovery Trail for Planning screens.
- * Chapter readiness and saved planning anchors are derived from existing state;
- * moving through a route alone never implies that its decisions are complete.
+/** The compact illustrated Planning companion uses the same five chapters as
+ * the full trail. Saved anchors are the ONLY progress count: traversing, visiting
+ * and revisiting Planning screens does not imply decisions were completed.
  */
 export function planningLearningTrail(s,{support=''}={}){
  const anchors=planningAnchors(s),recorded=anchors.filter(x=>x.recorded).length;
- const activeStage=planningStage(s?.planning?.current||'N00');
+ const activeNode=s?.planning?.current||'N00';
+ const activeStage=planningStage(activeNode);
  const stageIndex=Math.max(0,PROGRESS_GROUPS.findIndex(x=>x.id===activeStage));
  const stage=PROGRESS_GROUPS[stageIndex];
- const screenLabels={
-  N00:'Chose a starting route',N00B:'Explored possible ideas',N00C:'Compared possible ideas',
-  N01:'Worked on the title and question',N01V:'Considered my motivation',N02M:'Explored course and mathematics',
-  N02:'Chose an investigation direction',N02U:'Explored mathematical routes',N02T:'Prepared a teacher conversation',
-  N03:'Chose a starting-material route',N03B:'Planned two evidence routes',
-  N03P:'Planned collection and accuracy',N03P2:'Considered sampling and readiness',N03S:'Planned secondary evidence',N03D:'Checked availability, permissions and access',
-  N04:'Reviewed mathematical suitability',N04S:'Considered possible mathematics',
-  N01P:'Considered an early prediction',N06:'Reviewed a provisional plan'
- };
- const activeNode=s?.planning?.current||'N00';
- const currentLabels={
-  N00:'Choose a starting point',N00B:'Find a promising idea',N00C:'Compare your ideas',
-  N01:'Give your idea a working title',N01V:'Have a clear motivation',N02M:'Choose possible mathematics',
-  N02:'Choose an investigation type',N02U:'Explore types',N02T:'Prepare a teacher discussion',
-  N03:'Choose starting material',N03P:'What and how will I collect?',N03P2:'How will I sample?',N03D:'Can I get started?',N04:'Consider the maths',N01P:'An early expectation (optional)',
-  N06:'Review your provisional plan'
- };
- const screensDone=[...new Set(s?.planning?.completedNodes||[])].filter(id=>PROGRESS_GROUPS.some(g=>g.nodes.includes(id)));
- const stepsCompleted=screensDone.length;
- const screenProgress='<div class="planning-trail-screen-progress" aria-label="'+stepsCompleted+
-  ' Planning screen'+(stepsCompleted===1?'':'s')+' completed">'+
-  '<div class="planning-trail-screen-head"><strong>Every screen counts</strong><span>'+stepsCompleted+
-  ' completed</span></div>'+
-  '<div class="planning-trail-footsteps" aria-hidden="true">'+
-  screensDone.slice(-6).map(() => '<span class="finished">'+icon('check')+'</span>').join('')+
-  '<span class="active">'+icon('compass')+'</span></div>'+
-  '<div class="planning-trail-recent">'+screensDone.slice(-2).map(id=>
-   '<span class="finished">'+icon('check')+' '+e(screenLabels[id]||'Continued through Planning')+'</span>').join('')+
-  '<span class="active">'+icon('arrow-right')+' Now: '+e(currentLabels[activeNode]||PROGRESS_GROUPS.find(g=>g.nodes.includes(activeNode))?.label||'Continue Planning')+'</span></div></div>';
- const chapters=JOURNEY_GROUPS.map(g=>({g,status:groupStatus(s,g)}));
+ const currentTitle=planningScreenTitle(activeNode,s);
+ const chapters=discoveryChapters(s);
+ const overview='<nav class="planning-trail-overview" aria-label="Discovery Trail chapters">'+
+  '<div class="planning-trail-overview-path" aria-hidden="true"></div>'+
+  chapters.map(({g,number,status,current,target,progress})=>
+   '<button type="button" class="planning-trail-overview-node '+e(g.mode)+' '+e(status)+(current?' current':'')+
+   '" data-action="journey-open" data-target="'+e(target)+'"'+
+   (current?' aria-current="step"':'')+
+   ' aria-label="'+e('Chapter '+number+': '+g.name+'. '+chapterRole(g)+'. '+STATUS_LABELS[status]+'. '+progress)+'"'+
+   ' title="'+e('Chapter '+number+': '+g.name)+'">'+
+   (status==='complete'?icon('check'):number)+'</button>').join('')+
+  '</nav><div class="planning-trail-overview-zones" aria-hidden="true">'+
+   DISCOVERY_ZONES.map(z=>'<span class="'+e(z.mode)+'">'+icon(z.icon)+' '+e(z.label)+'</span>').join('')+'</div>';
  const pathSegments=[
   'M29 37 C53 53 5 94 29 111',
   'M29 111 C53 133 5 165 29 185',
@@ -134,54 +118,59 @@ export function planningLearningTrail(s,{support=''}={}){
  const chapterButtons='<div class="planning-trail-chapters">'+
   '<div class="planning-trail-zone-underlay" aria-hidden="true"><span class="plan"></span><span class="writing"></span><span class="checking"></span></div>'+
   '<svg viewBox="0 0 64 375" preserveAspectRatio="none" class="planning-trail-roadmap" aria-hidden="true" focusable="false">'+
-  pathSegments.map((d,i)=>'<path d="'+d+'" class="living-trail-road '+(i===0?'plan-to-writing':i===chapters.length-2?'writing-to-checking':'writing')+'"/>'+
-   (chapters[i].status==='complete'?'<path d="'+d+'" class="living-trail-done"/>':'')).join('')+
+   pathSegments.map((d,i)=>'<path d="'+d+'" class="living-trail-road '+(i===0?'plan-to-writing':i===chapters.length-2?'writing-to-checking':'writing')+'"/>'+
+    (chapters[i].status==='complete'?'<path d="'+d+'" class="living-trail-done"/>':'')).join('')+
   '</svg>'+
-  chapters.map(({g,status},i)=>{
-   const current=g.id==='plan',label=current&&status==='not-started'?'Getting started':STATUS_LABELS[status];
-   const phase=i===0?'<span class="planning-trail-phase-label plan">'+icon('compass')+' Plan</span>':
-    i===1?'<span class="planning-trail-phase-label writing">'+icon('pencil')+' Write your IA</span>':
-    i===4?'<span class="planning-trail-phase-label checking">'+icon('clipboard')+' Checking</span>':'';
+  chapters.map(({g,number,status,current,target})=>{
+   const label=current&&status==='not-started'?'Getting started':STATUS_LABELS[status];
+   const phase=number===1?'<span class="planning-trail-phase-label plan">'+icon('compass')+' Plan</span>':
+    number===2?'<span class="planning-trail-phase-label writing">'+icon('pencil')+' Write your IA</span>':
+    number===5?'<span class="planning-trail-phase-label checking">'+icon('clipboard')+' Checking</span>':'';
    return '<button type="button" class="planning-trail-chapter '+e(status)+(current?' current':'')+
-    ' '+e(g.mode)+'" data-action="journey-open" data-target="'+e(groupTarget(s,g))+'"'+
-    (current?' aria-current="step"':'')+' aria-label="'+e('Chapter '+(i+1)+': '+g.name+', '+chapterRole(g)+', '+label)+'">'+
-    '<span class="planning-trail-point">'+(status==='complete'?icon('check'):i+1)+'</span>'+
+    ' '+e(g.mode)+'" data-action="journey-open" data-target="'+e(target)+'"'+
+    (current?' aria-current="step"':'')+' aria-label="'+e('Chapter '+number+': '+g.name+', '+chapterRole(g)+', '+label)+'">'+
+    '<span class="planning-trail-point">'+(status==='complete'?icon('check'):number)+'</span>'+
     '<span class="planning-trail-chapter-copy">'+phase+
     '<span class="planning-trail-chapter-name">'+chapterJourneyIcon(g)+'<strong>'+e(g.name)+'</strong></span>'+
     '<small>'+e(label)+'</small>'+chapterMini(s,g)+'</span></button>';
   }).join('')+'</div>';
  const stageTrack='<div class="planning-trail-stage-track" role="img" aria-label="'+
-  e('Planning route, step '+(stageIndex+1)+' of '+PROGRESS_GROUPS.length+': '+stage.label)+'">'+
-  PROGRESS_GROUPS.map((g,i)=>'<span class="'+(i<stageIndex?'earlier':i===stageIndex?'now':'later')+
-   '" title="'+e(g.label)+'"></span>').join('')+'</div>';
+  e('Planning route, phase '+(stageIndex+1)+' of '+PROGRESS_GROUPS.length+': '+stage.label)+'">'+
+   PROGRESS_GROUPS.map((g,i)=>'<span class="'+(i<stageIndex?'earlier':i===stageIndex?'now':'later')+
+    '" title="'+e(g.label)+'"></span>').join('')+'</div>';
  const milestones='<div class="planning-trail-within">'+
-  '<div class="planning-trail-within-head"><strong>Within Planning</strong>'+
+  '<div class="planning-trail-within-head"><strong>Right now in Planning</strong>'+
   '<span>Phase '+(stageIndex+1)+' of '+PROGRESS_GROUPS.length+'</span></div>'+
-  '<p class="planning-trail-stage-name">'+e(stage.label)+'</p>'+stageTrack+screenProgress+
+  '<strong class="planning-trail-current-title">'+e(currentTitle)+'</strong>'+
+  '<p class="planning-trail-stage-name">'+e(stage.label)+'</p>'+stageTrack+
   '<div class="planning-trail-saved">'+icon('sparkles')+' <strong>'+recorded+' of '+anchors.length+
-  ' decisions saved</strong></div>'+
-  '<details class="planning-trail-checkpoints"><summary>See planning checkpoints '+icon('chevron-right')+'</summary>'+
-  '<ol>'+anchors.map(x=>'<li class="'+(x.recorded?'recorded':'waiting')+'">'+
-   '<span>'+icon(x.recorded?'check':'circle')+'</span><span>'+e(x.name)+'</span></li>').join('')+
+   ' planning anchors saved</strong></div>'+
+  '<div class="planning-trail-anchor-track" role="img" aria-label="'+recorded+' of '+anchors.length+' provisional planning anchors saved">'+
+   anchors.map(item=>'<span class="'+(item.recorded?'recorded':'waiting')+'" title="'+e(item.name)+': '+(item.recorded?'saved':'not yet saved')+'"></span>').join('')+'</div>'+
+  '<details class="planning-trail-checkpoints"><summary>See my planning anchors '+icon('chevron-right')+'</summary>'+
+  '<ol>'+anchors.map(item=>'<li class="'+(item.recorded?'recorded':'waiting')+'">'+
+   icon(item.recorded?'check-circle':'circle')+'<span>'+e(item.name)+'</span></li>').join('')+
   '</ol></details>'+
-  '<p class="planning-trail-honesty">These are provisional decisions, not IA marks or completed mathematics.</p></div>';
+  '<p class="planning-trail-honesty">Planning is provisional: these are saved choices, not IA marks or mathematical results.</p></div>';
  const full='<div class="planning-trail-card"><div class="planning-trail-heading">'+
   '<span class="section-eyebrow">'+icon('route')+' DISCOVERY TRAIL</span>'+
-  '<h2>Your mathematical journey</h2><p>Plan in Chapter 1. Build your actual IA in Chapters 2–4, then check it in Chapter 5.</p></div>'+
-  chapterButtons+milestones+'</div>';
- return '<aside class="planning-learning-trail" aria-label="Your learning trail">'+
+  '<h2>Your mathematical journey</h2><p>Plan first. Write your IA. Check your document.</p></div>'+
+  overview+milestones+
+  '<details class="planning-trail-map-detail"><summary>'+icon('map')+' Explore all five chapters '+icon('chevron-right')+'</summary>'+
+  chapterButtons+'</details></div>';
+ return '<aside class="planning-learning-trail" aria-label="Discovery Trail">'+
   '<div class="planning-trail-desktop">'+full+'</div>'+
   '<details class="planning-trail-compact"><summary>'+
   '<span class="planning-trail-compact-text">'+
-  '<strong>'+icon('route')+' Your learning trail</strong>'+
-  '<small>Planning · '+e(stage.label)+' (phase '+(stageIndex+1)+' of '+PROGRESS_GROUPS.length+')</small>'+
-  '</span><span class="planning-trail-compact-end">'+stageTrack+
-  '<small>'+stepsCompleted+' screens · '+recorded+'/'+anchors.length+' decisions</small></span>'+icon('chevron-right')+
+  '<strong>'+icon('route')+' Discovery Trail</strong>'+
+  '<small>Chapter 1 · '+e(currentTitle)+'</small></span>'+
+  '<span class="planning-trail-compact-end">'+stageTrack+
+  '<small>'+recorded+' of '+anchors.length+' anchors saved</small></span>'+icon('chevron-right')+
   '</summary><div class="planning-trail-compact-body">'+full+'</div></details>'+
   (support?'<section class="planning-trail-support" aria-label="Help and examples for this screen">'+
-    '<button class="planning-trail-help-toggle" type="button" data-action="planning-help-toggle" aria-expanded="false" aria-controls="planning-trail-support-body">'+
-    icon('lightbulb')+' Help & examples '+icon('chevron-right')+'</button>'+
-    '<div class="planning-trail-support-body" id="planning-trail-support-body">'+support+'</div></section>':'')+
+   '<button class="planning-trail-help-toggle" type="button" data-action="planning-help-toggle" aria-expanded="false" aria-controls="planning-trail-support-body">'+
+   icon('lightbulb')+' Help & examples '+icon('chevron-right')+'</button>'+
+   '<div class="planning-trail-support-body" id="planning-trail-support-body">'+support+'</div></section>':'')+
   '</aside>';
 }
 
