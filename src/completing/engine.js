@@ -5,7 +5,7 @@ import {createStuckState,normalizeStuckState,captureStuckOrigin,isStuckNode} fro
  * only student actions execute transitions. Predictions/plans are never results.
  */
 import {methodFamilies} from "./method-identity.js";
-import {journeySourceSignature,selectedInvestigativeRoute} from "./adaptive-journey.js";
+import {journeySourceSignature,selectedInvestigativeRoute,adaptiveNextDirections} from "./adaptive-journey.js";
 import {beforeSourceChange,linkedAccuracy,flagInputDependents,normalizeSources} from "./evidence-links.js";
 import {createReviewState,normalizeReviewState} from "./review.js";
 import {C_NODES,C_ROUTES} from "./catalog.js";
@@ -390,21 +390,27 @@ export function startFirstRepresentation(state){
  */
 export function addMathematicalStage(state){
  const c=state.completion,entries=state.entries||[],prior=entries.at(-1);
- if(prior?.phase==="substantial"&&!genuinelyDone(prior)){
-  if(c.current==="C30"){
-   c.activeEntryIndex=entries.length-1;state.ui.mathIndex=c.activeEntryIndex;
-   return{ok:true,existing:true,index:c.activeEntryIndex};
-  }
-  return{ok:false,error:"Your current mathematical stage is still in progress. Record and confirm its actual result in Section 2 before adding another stage."};
- }
+ const current=entries[c.activeEntryIndex];
+ if(current&&prior&&current.id!==prior.id&&prior.phase==="substantial")
+  return{ok:false,error:"You are reviewing an earlier stage. Open the latest mathematical stage before continuing the journey.",latestIndex:entries.length-1};
+ if(prior?.phase==="substantial"&&!genuinelyDone(prior))
+  return{ok:false,error:"Your latest stage is unfinished. Return to it and confirm the mathematical result first.",latestIndex:entries.length-1};
  if(!genuinelyDone(prior))
-  return{ok:false,error:"Before adding a mathematical stage, record and confirm a genuine result in Section 2. A planned calculation or saved diagram alone is not yet a mathematical finding."};
+  return{ok:false,error:"Record and confirm genuine mathematical work in Section 2 before adding a stage."};
  if(entries.length>=MAX_ENTRIES)
-  return{ok:false,error:"You have reached the safety limit of 120 mathematical records. Download a backup before adding further mathematics."};
+  return{ok:false,error:"This project has reached the limit of 120 mathematical records. Export a backup first."};
  const ordinal=entries.filter(x=>x.phase==="substantial").length+2;
- // These are the student's own previous-stage ideas, not generated justifications.
  const nextQuestion=prior.phase==="first"?str(c.fields.nextQuestion):str(prior.nextQuestion);
  const nextReason=prior.phase==="first"?str(c.fields.nextReason):str(prior.nextWhy);
+ const adaptive=!!(selectedInvestigativeRoute(state)||str(prior.journeyOutcome)||str(prior.methodId));
+ if(adaptive){
+  if(prior.reviewNeeded==="yes")
+   return{ok:false,error:"Review the earlier mathematical interpretation before extending this journey."};
+  if(adaptiveNextDirections(state,prior).status!=="ready")
+   return{ok:false,error:"In Section 3 choose what your confirmed result actually shows. An uncertain result is valid."};
+  if(!nextQuestion||!nextReason)
+   return{ok:false,error:"Write your next mathematical question AND your OWN mathematical reason in Section 4 before adding a stage."};
+ }
  const id="math-"+Date.now().toString(36)+"-"+(entries.length+1);
  const entry={
   id,phase:"substantial",fromEntryId:prior.id,
@@ -570,6 +576,7 @@ export function acknowledgeMathReview(state,index){
  // Never acknowledge a link to an unverified or missing previous result.
  const parent=record.fromEntryId?state.entries.find(x=>x.id===record.fromEntryId):null;
  if(record.fromEntryId&&!genuinelyDone(parent))return false;
+ if(parent&&adaptiveNextDirections(state,parent).route&&adaptiveNextDirections(state,parent).status!=="ready")return false;
  record.reviewNeeded="";
  record.reviewReason="";
  record.reviewCheckedAt=new Date().toISOString();
