@@ -579,11 +579,14 @@ test("Writer's Field Guide replaces the old tile, opens without changing student
  assert.deepEqual(h.saved,original);
  h.action("close-drawer");
  h.action("setup-start-writing");
- assert(h.html.includes("Field Guide example"));
+ assert(h.html.includes('class="writer-guide-field-bubble"'));
+ assert(h.html.includes('data-guide-spot="completing:C10:aim"'));
+ assert(!h.html.includes('class="writer-guide-context-badge"'));
  assert(h.html.includes('data-action="writer-guide-open"'));
- h.action("writer-guide-open",{guideTip:"voice"});
+ h.action("writer-guide-open",{guideTip:"voice",guideSpot:"completing:C10:aim"});
  assert(h.drawer.includes("You&#39;re allowed to say &#39;I&#39;!"));
  assert(h.drawer.includes('data-guide-stage-focus="C10"'));
+ assert(h.drawer.includes("Introduction and motivation"));
  assert.equal(h.saved.scratch.introduction,"My original opening");
  assert.equal(h.saved.planning.fields.aim,"Is larger pizza better value?");
 });
@@ -1105,4 +1108,18 @@ test("choosing another investigative route triggers review instead of replacing 
  assert.equal(h.saved.planning.routeExplorer.selectedRoute,"fitted-models");
  assert.equal(h.saved.entries[1].reviewNeeded,"yes");
  assert.equal(h.saved.entries[1].bridge,"Existing mathematical argument");
+});
+
+test("Writer Guide bubbles, not duplicate stage links, accompany key IA writing boxes",()=>{
+ const counts={C10:1,C20:2,C30:4,C40:4,C50:4,C60:3};
+ for(const [node,min] of Object.entries(counts)){
+  const s=createProjectState();s.route="completing";s.completion.current=node;
+  s.entries=[{id:"math-box",phase:["C40","C50"].includes(node)?"substantial":"first",kind:"model",title:"An actual stage",status:"planned",result:""}];
+  s.completion.activeEntryIndex=0;
+  const h=createHarness(s);
+  const bubbleCount=(h.html.match(/class="writer-guide-field-bubble"/g)||[]).length;
+  assert(bubbleCount>=min,node+": only "+bubbleCount+" field-level guide buttons");
+  assert(!h.html.includes('class="writer-guide-context-badge"'),node+": duplicate stage link");
+  assert(h.html.includes('data-criterion-badge='),node+": existing marking criteria should remain");
+ }
 });

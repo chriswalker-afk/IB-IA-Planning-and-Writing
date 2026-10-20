@@ -5,7 +5,8 @@ import {icon,escapeHtml} from "../src/ui/primitives.js";
 import {createProjectState} from "../src/core/project-state.js";
 import {STUDIO_WRITING_NODES} from "../src/completing/studio-writing-stages.js";
 import {journeyOutcomeOptions} from "../src/completing/adaptive-journey.js";
-import {writingGuideRecommendation,renderWriterGuideAccess} from "../src/completing/writer-guide-context.js";
+import {writingGuideRecommendation,renderWriterGuideAccess,writerGuideFieldBubble,FIELD_GUIDE_FIELD_SPOTS} from "../src/completing/writer-guide-context.js";
+import {criterionMarkedField,criterionMarkedWritingBox} from "../src/essentials/criteria-badges.js";
 import {
  FIELD_GUIDE_TIPS,FIELD_GUIDE_CONTEXT,contextualGuideTip,
  renderFieldGuideTeaser,renderWriterFieldGuide,renderContextualGuide,
@@ -144,4 +145,47 @@ test("Further mathematics uses selected, verified previous outcomes without inve
  prior.status="planned";guide=writingGuideRecommendation(s,"C40");
  assert(!guide.question.includes("selected follow-up"));
  assert(!guide.note.includes("curved shape"));
+});
+
+test("Writing-box book bubbles are embedded beside existing criterion bubbles, never duplicated",()=>{
+ const state=createProjectState();state.route="completing";
+ for(const [node,spots] of Object.entries({
+  C10:["completing:C10:aim"],
+  C20:["completing:C20:methodIntroduction","completing:C20:methodEvaluation"],
+  C30:["completing:C30:introduceA","completing:C30:result","completing:C30:reflectD","completing:C30:nextD"],
+  C40:["completing:C40:bridgeA","completing:C40:resultB","completing:C40:interpretD","completing:C40:nextD"],
+  C50:["completing:C50:bridgeA","completing:C50:resultB","completing:C50:interpretD","completing:C50:nextD"],
+  C60:["completing:C61:mainConclusion","completing:C60:meaningAndLimits","completing:C63:extension"]
+ })){
+  state.completion.current=node;
+  for(const spot of spots){
+   assert(Object.hasOwn(FIELD_GUIDE_FIELD_SPOTS,spot),spot);
+   const bubble=writerGuideFieldBubble(state,node,spot,icon,escapeHtml);
+   assert.match(bubble,/class="writer-guide-field-bubble"/,spot);
+   assert(bubble.includes('data-guide-spot="'+spot+'"'));
+   assert(!bubble.includes("Criterion "),spot);
+   const focus=FIELD_GUIDE_FIELD_SPOTS[spot];
+   const rec=writingGuideRecommendation(state,node,focus.tip,spot);
+   assert.equal(rec.stage,focus.label,spot);
+   assert.equal(rec.cue,focus.cue,spot);
+  }
+ }
+ const bubble=writerGuideFieldBubble(state,"C60","completing:C60:meaningAndLimits",icon,escapeHtml);
+ const marked=criterionMarkedWritingBox('<div class="field-group"><label class="field-label">Limits</label></div>',["completing:C60:meaningAndLimits"],bubble);
+ assert.equal((marked.match(/data-criterion-badge=/g)||[]).length,1);
+ assert.equal((marked.match(/writer-guide-field-bubble/g)||[]).length,1);
+ assert(marked.includes('has-writer-guide'));
+ assert(!marked.includes('data-guide-node="C60"'),'Stage-level duplicate should not be necessary');
+ const single=criterionMarkedField('<div class="field-group">Mathematics</div>',"completing:C23:limitationConsequence",
+  writerGuideFieldBubble(state,"C23","completing:C23:limitationConsequence",icon,escapeHtml));
+ assert.equal((single.match(/writer-guide-field-bubble/g)||[]).length,1);
+ assert.equal((single.match(/data-criterion-badge=/g)||[]).length,1);
+ assert.equal(writerGuideFieldBubble(state,"C20","completing:C20:notAnExistingSpot",icon,escapeHtml),"");
+});
+test("The mathematics displayed by a field bubble depends on its real context, not a presumed graph",()=>{
+ const s=createProjectState();s.route="completing";s.completion.current="C30";
+ s.planning.fields.kind="theoretical";
+ assert.match(writerGuideFieldBubble(s,"C30","completing:C30:result",icon,escapeHtml),/data-guide-tip="audience"/);
+ s.planning.fields.kind="statistics";s.completion.fields.firstType="scatter";
+ assert.match(writerGuideFieldBubble(s,"C30","completing:C30:result",icon,escapeHtml),/data-guide-tip="graphs"/);
 });

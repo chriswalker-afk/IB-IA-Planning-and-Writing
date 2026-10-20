@@ -65,9 +65,7 @@ test('introduction writing craft is coherent, accessible, contextual and collaps
  assert(html.includes('mathematics more than background detail')===false); // concise text, not an extra essay
  assert(!html.includes('data-example-id="EX34"'));
  assert(!html.includes('data-example-topic="introduction"'));
- assert(html.includes('Field Guide example'));
- assert.equal((html.match(/data-action="writer-guide-open"/g)||[]).length,1);
- assert(html.includes('data-guide-node="C10"'));
+ assert(!html.includes('data-action="writer-guide-open"'),'General intro advice should not duplicate help next to the actual writing box');
  assert(!html.includes('data-criterion-badge="completing:C10:aim"'));
  assert(!html.includes('data-criterion-badge="completing:C10:motivation"'));
  assert(!html.includes('Set up your IA document'));
@@ -80,7 +78,7 @@ test('introduction writing craft is coherent, accessible, contextual and collaps
  assert(reduced.includes('non-mathematical specialist terms briefly'));
  assert(reduced.includes('prediction spark'));
  assert(!reduced.includes('data-intro-advice='));
- assert(reduced.includes('data-guide-node="C10"'),'guide remains available in reduced advice mode');
+ assert(!reduced.includes('data-action="writer-guide-open"'),'The field-level icon is rendered beside the actual writing box, even in reduced advice mode');
 });
 test('criterion A/C comments are introduction-specific, and remain best-fit guidance',()=>{
  const a=CRITERION_SPOTS['completing:C10:aim'],c=CRITERION_SPOTS['completing:C10:motivation'];
