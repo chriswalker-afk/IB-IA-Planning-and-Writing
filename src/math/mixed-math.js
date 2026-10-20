@@ -11,6 +11,8 @@ import {TeX} from "mathjax-full/js/input/tex.js";
 import {SVG} from "mathjax-full/js/output/svg.js";
 import {liteAdaptor} from "mathjax-full/js/adaptors/liteAdaptor.js";
 import {RegisterHTMLHandler} from "mathjax-full/js/handlers/html.js";
+import "mathjax-full/js/input/tex/ams/AmsConfiguration.js";
+import "mathjax-full/js/input/tex/newcommand/NewcommandConfiguration.js";
 
 const adaptor=liteAdaptor();
 RegisterHTMLHandler(adaptor);
