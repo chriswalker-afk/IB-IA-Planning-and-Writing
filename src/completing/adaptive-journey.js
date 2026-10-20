@@ -99,7 +99,34 @@ const uncertainty=(route)=>extra("uncertain","I cannot yet tell what this result
  "What can I defensibly conclude from the evidence available so far?",
  "Would checking source quality or an assumption change the interpretation?");
 const outcomeKey=(route,id)=>route+":"+id;
-const activeRoute=state=>routeById(state?.planning?.routeExplorer?.selectedRoute||"");
+/** Editorial fallback for an explicitly selected course technique when students
+ * did not also select a named investigative journey. No result is inferred:
+ * this only chooses which possible findings the student may assess. */
+const MATH_ROUTE_BY_ID=Object.freeze({
+ AI01:"iteration",AI02:"growth",AI03:"finance",AI04:"fitted-models",AI05:"fitted-models",
+ AI06:"growth",AI07:"fitted-models",AI08:"cycles",AI09:"fitted-models",
+ AI10:"triangulation",AI11:"images",AI12:"voronoi",AI13:"variation",
+ AI14:"relationships",AI15:"fitted-models",AI16:"relationships",
+ AI17:"chance",AI18:"variation",AI19:"chance",AI20:"categorical",
+ AI21:"categorical",AI22:"groups",AI23:"growth",AI24:"optimisation",
+ AI25:"images",AI26:"images",
+ AA01:"iteration",AA02:"growth",AA03:"growth",AA04:"proof",
+ AA05:"proof",AA06:"fitted-models",AA07:"growth",AA08:"cycles",
+ AA09:"fitted-models",AA10:"fitted-models",AA11:"triangulation",
+ AA12:"triangulation",AA13:"cycles",AA14:"variation",AA15:"relationships",
+ AA16:"fitted-models",AA17:"chance",AA18:"variation",AA19:"chance",
+ AA20:"growth",AA21:"growth",AA22:"optimisation",AA23:"images",
+ AA24:"images",AA25:"trajectories"
+});
+const activeRoute=state=>{
+ const explicit=routeById(state?.planning?.routeExplorer?.selectedRoute||"");
+ if(explicit)return explicit;
+ for(const chosen of state?.planning?.mathSelected||[]){
+  const match=routeById(MATH_ROUTE_BY_ID[chosen]);
+  if(match)return {...match,fromSelectedMathematics:true};
+ }
+ return null;
+};
 export const selectedInvestigativeRoute=activeRoute;
 const METHOD_FOLLOWUP_QUESTIONS=Object.freeze({
  "nonlinear-model:residual-structure":"What mathematical structure do the patterned residuals reveal, and which alternative model could address it?",
