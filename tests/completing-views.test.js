@@ -31,7 +31,7 @@ test("Completing dashboard presents mature stages without automatic grades or ma
  const {state,view}=fixture();
  setCompletionNode(state,"C04");
  const html=view.viewCompleting();
- for(const title of ["Introduction","Introduce first maths","First exploration","Mathematics","Conclusion","Communication","Teacher draft","Final checks"])
+ for(const title of ["Introduction","Introduce first maths","First exploration","Mathematics","Conclusion","Open A–E checking checklist"])
   assert(html.includes(e(title)),title);
  assert(!html.includes("Step 3 of 10"));
  assert(html.includes("Not started"));
