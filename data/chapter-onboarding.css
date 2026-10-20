@@ -1006,3 +1006,14 @@
 .journey-stage-link-reminder{color:#596e68;font-size:12px;line-height:1.7;margin:0}
 @media(max-width:720px){.journey-next-options{grid-template-columns:1fr}.journey-next-option{padding:13px}}
 @media(max-width:480px){.journey-outcome-picker,.journey-next-panel,.journey-stage-link{padding:13px;gap:9px}.journey-outcome-heading,.journey-next-header,.journey-stage-link-head{gap:8px}.journey-outcome-heading strong,.journey-stage-link-head strong{font-size:15px}.journey-next-header h4{font-size:16px}.journey-next-option .btn{width:100%;justify-content:center}}
+
+/* Keep the stage-specific method discoverable: otherwise the advice would
+   silently stay on the original Planning journey for subsequent mathematics. */
+.journey-stage-method{display:grid;gap:7px;padding:13px 15px;margin:13px 0;border:1px solid #d6e8df;background:#f4faf6;border-radius:13px}
+.journey-stage-method>strong{display:flex;align-items:center;gap:7px;font-size:13px;color:#28695c}
+.journey-stage-method>strong .icon{width:18px;height:18px;flex:none}
+.journey-stage-method>p{font-size:11px;line-height:1.65;color:#5a7269;margin:0}
+.journey-stage-method .field{margin:0}
+.journey-stage-method select{max-width:100%}
+.journey-next-course{display:flex;align-items:flex-start;gap:8px;font-size:11px;line-height:1.65;margin:0;color:#596976}
+.journey-next-course .icon{width:16px;height:16px;flex:none;margin-top:1px}
