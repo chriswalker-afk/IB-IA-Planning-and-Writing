@@ -21,7 +21,7 @@ test("all 52 source-linked Completing stages render without throwing or exposing
  for(const id of C_NODE_IDS){
   setCompletionNode(state,id);
   const html=view.viewCompleting();
-  assert(html.includes('data-source-node="'+id+'"'),id);
+  assert(html.includes('data-source-node="'+(["C61","C62","C63","C64"].includes(id)?"C60":id)+'"'),id);
   assert(html.includes('class="task-heading"'),id);
   assert(html.includes("task-shell"),id);
   assert(!html.includes("[object Object]"),id);
@@ -76,8 +76,10 @@ test("real curved scatter produces optional nonlinear questions without assertin
 test("conclusion and source-fit tips never state a grade, teacher approval or unobserved causal claim",()=>{
  const {state,view}=fixture();setCompletionNode(state,"C62");
  let html=view.viewCompleting();
- assert(html.includes("could reasonably"));
- assert(html.includes("What could reasonably be recommended"));
+ assert.equal(state.completion.current,"C60");
+ assert(html.includes("What does that answer mean"));
+ assert(html.includes("Potential next steps"));
+ assert(html.includes("conclusionExtension"));
  assert(!html.includes("Guaranteed"));
  setCompletionNode(state,"C03");html=view.viewCompleting();
  assert(html.includes("consent"));
@@ -269,8 +271,8 @@ test("conclusion warning is non-mandatory guidance with an explicit decision",()
  state.completion.conclusionWarningOpen=true;
  const html=view.viewCompleting();
  assert(html.includes('data-conclusion-gate'));
- assert(html.includes("12–20 pages"));
- assert(html.includes("not a compulsory page count"));
+ assert(html.includes("no required number of calculations or stages"));
+ assert(!html.includes("12–20 pages"));
  assert(html.includes('data-action="conclusion-confirm"'));
  assert(html.includes('data-action="conclusion-cancel"'));
  assert(html.indexOf('data-conclusion-gate')<html.indexOf('data-source-node="C30"'));
