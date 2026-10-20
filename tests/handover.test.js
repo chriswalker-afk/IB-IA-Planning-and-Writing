@@ -72,7 +72,7 @@ test("theoretical planning report never invents primary/secondary datasets",()=>
  assert(model.sections.some(x=>x.title.includes("Theoretical")));
  assert(!model.sections.some(x=>x.title.includes("Primary data")));
  assert(!model.sections.some(x=>x.title.includes("Secondary data")));
- assert(model.sections.flatMap(x=>x.rows).some(r=>r.label.includes("Data readiness")&&r.value.includes("Not applicable")));
+ assert(!model.sections.flatMap(x=>x.rows).some(r=>r.label==="Data readiness"),"Do not print irrelevant placeholders");
 });
 test("DOCX export round-trips its private versioned planning part and is editable Word XML",async()=>{
  const envelope=createPlanningEnvelope(example(),{exportedAt:"2026-10-14T09:12:00.000Z"});
