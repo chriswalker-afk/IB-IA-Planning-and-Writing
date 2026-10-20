@@ -9,6 +9,7 @@ import threading
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from playwright.sync_api import sync_playwright
+from pypdf import PdfReader
 
 OUT = Path('qa-output/reports')
 OUT.mkdir(parents=True, exist_ok=True)
@@ -18,7 +19,7 @@ LIVE = 'https://chriswalker-afk.github.io' + PREFIX
 parser = argparse.ArgumentParser()
 parser.add_argument('--live', action='store_true', help='Require successful downloads on the published site')
 args = parser.parse_args()
-fixture = json.loads(subprocess.check_output(['node', '--input-type=module', '-e', '''
+fixture = json.loads(subprocess.check_output(['node', '--input-type=module', '-e', r'''
 import {createProjectState} from './src/core/project-state.js';
 import {applyPlanningField} from './src/planning/engine.js';
 const state=createProjectState();
@@ -27,12 +28,14 @@ for(const [key,value] of Object.entries({
  motivation:'This is a browser test, not a student investigation.',
  beneficiary:'My mathematical curiosity',course:'AA SL',kind:'theoretical',
  theoreticalCase:'Compare circles with radii 1, 2 and 3.',
- prediction:'A = pi r squared; test alpha, theta and the inequality r >= 0.',
+ prediction:String.raw`The relation is \(A=\pi r^{2}\), with \(r\geq 0\).`,
  firstAction:'Compare numerical cases before deriving a relationship.',
  firstAccuracy:'Keep exact values containing pi until the final numerical estimate.'
 }))applyPlanningField(state,key,value);
 state.scratch.introduction='Original introduction notes must remain unchanged.';
-state.entries=[{id:'qa-real-work',status:'completed',result:'Existing work must not be overwritten.',interpretation:'My own explanation'}];
+state.scratch.dataNotes=String.raw`First I use \(A=\pi r^{2}\) inside a normal sentence, then analyse it.`;
+state.completion.fields.mainConclusion=String.raw`When \(r=2\), the area is \(A=4\pi\).`;
+state.entries=[{id:'qa-real-work',status:'completed',result:'Existing work must not be overwritten.',interpretation:String.raw`My own explanation uses \(r^{2}\) for the relationship.`}];
 console.log(JSON.stringify(state));
 '''], text=True))
 
@@ -92,6 +95,11 @@ with sync_playwright() as p:
                         raw = target.read_bytes()
                         assert len(raw) > 2000 and raw.startswith(b'%PDF-' if fmt == 'pdf' else b'PK')
                         assert before == project_content(page.evaluate('localStorage.getItem(' + json.dumps(KEY) + ')'))
+                        if scenario != 'empty' and fmt == 'pdf':
+                            pdf = PdfReader(str(target))
+                            assert sum(len(p.images) for p in pdf.pages) >= 2, 'Full PDF equations were not typeset as images'
+                            readable = ' '.join(p.extract_text() or '' for p in pdf.pages)
+                            assert 'First I use' in readable and 'then analyse it' in readable, 'Mixed prose disappeared around the equation'
                         if fmt in ['docx', 'zip']:
                             import io, zipfile
                             with zipfile.ZipFile(target) as archive:
@@ -109,8 +117,12 @@ with sync_playwright() as p:
                                 else:
                                     xml = archive.read('word/document.xml').decode()
                                 if scenario != 'empty':
+                                    with (zipfile.ZipFile(io.BytesIO(archive.read(word_name))) if fmt == 'zip' else zipfile.ZipFile(target)) as word_check:
+                                        assert len([n for n in word_check.namelist() if n.startswith('word/media/')])>=2, 'Word equations not embedded'
+                                if scenario != 'empty':
                                     assert 'Original introduction notes must remain unchanged.' in xml
                                     assert 'Existing work must not be overwritten.' in xml
+                                    assert 'First I use' in xml and 'then analyse it' in xml, 'Word lost the prose next to inline math'
                         item.update(download=download.suggested_filename, bytes=len(raw), state_preserved=True)
                     except Exception as err:
                         item.update(error=str(err), toast=page.locator('#toast').inner_text())
@@ -131,6 +143,13 @@ with sync_playwright() as p:
                         assert len(raw) > 2000, 'Empty report'
                         after = project_content(page.evaluate('localStorage.getItem(' + json.dumps(KEY) + ')'))
                         assert before == after, 'Export changed student content'
+                        if scenario != 'empty' and fmt == 'pdf':
+                            pdf=PdfReader(str(target))
+                            assert sum(len(p.images) for p in pdf.pages) >= 1, 'Planning PDF did not render its equation'
+                        if scenario != 'empty' and fmt == 'docx':
+                            import zipfile
+                            with zipfile.ZipFile(target) as word:
+                                assert any(name.startswith('word/media/') for name in word.namelist()), 'Planning Word equation missing'
                         restored = json.loads(subprocess.check_output(['node', '--input-type=module', '-e', '''
 import {readFile} from 'node:fs/promises';
 const [fmt,file]=process.argv.slice(1);
@@ -139,6 +158,8 @@ const read=fmt==='pdf'?mod.importEmbeddedPdfReport:mod.importEmbeddedDocxReport;
 console.log(JSON.stringify(await read(await readFile(file))));
 ''', fmt, str(target)], text=True))
                         assert restored['planning']['fields']['aim'] == before['planning']['fields']['aim']
+                        if scenario != 'empty':
+                            assert restored['planning']['fields']['prediction'] == before['planning']['fields']['prediction'], 'Raw editable TeX was not preserved in planning attachment'
                         assert 'Existing work must not be overwritten' not in json.dumps(restored), 'Report must remain planning-only'
                         item.update(download=download.suggested_filename, bytes=len(raw), state_preserved=True, reimport_verified=True)
                     except Exception as err:
