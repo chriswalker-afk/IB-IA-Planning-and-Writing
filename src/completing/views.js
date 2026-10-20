@@ -180,6 +180,7 @@ export function createCompletingViews(ctx){
       (entry.journeyDirection===option.id?" Selected as my question":" Use this question")+
      '</button></div>').join("")+'</div>'+
    '<p class="journey-next-endpoint">'+icon("flag")+' '+e(ctx.stop)+'</p>'+
+   '<p class="journey-next-course">'+icon("book")+' '+e(ctx.courseNote)+'</p>'+
    '<p class="journey-next-note">These are possibilities, not performed mathematics. Selecting one copies an editable question and reason into Section 4; no stage is created automatically.</p>'+
   '</section>';
  };
