@@ -2,9 +2,9 @@ import {C_MAJOR_STAGES,completionStage} from '../completing/engine.js';
 import {C_NODES} from '../completing/catalog.js';
 export const STATUS_LABELS=Object.freeze({'not-started':'Not started',working:'Working on it',complete:'Ready for now','needs-review':'Needs review'});
 export const JOURNEY_GROUPS=Object.freeze([
- {id:'plan',name:'Planning',icon:'compass',mode:'planning',role:'PLAN ONLY',description:'Shape your question and possible approach',stages:['plan']},
- {id:'setup',name:'Start writing',icon:'pencil',mode:'writing',role:'WRITE IN IA',description:'Introduction and the first mathematical step',stages:['C10','C20']},
- {id:'explore',name:'Explore & explain',icon:'chart',mode:'writing',role:'WRITE IN IA',description:'First mathematics, linked mathematical stages, diagrams and interpretation',stages:['C30','C40']},
+ {id:'plan',name:'Planning',icon:'compass',mode:'planning',role:'PLAN ONLY',description:'Aim, mathematical pathways, data or theory, sampling and accuracy',stages:['plan']},
+ {id:'setup',name:'Start writing',icon:'pencil',mode:'writing',role:'WRITE IN IA',description:'Introduction, evidence choices and first mathematical method',stages:['C10','C20']},
+ {id:'explore',name:'Explore & explain',icon:'chart',mode:'writing',role:'WRITE IN IA',description:'Linked mathematical stages, diagrams, calculations and interpretation',stages:['C30','C40']},
  {id:'finish',name:'Conclude & review',icon:'flag',mode:'writing',role:'WRITE IN IA',description:'Conclusion, communication, draft feedback and final checks',stages:['C60','C70','C80','C90']}
 ]);
 export const chapterRole=g=>g.mode==='planning'?'PLAN ONLY':'WRITE IN IA';
