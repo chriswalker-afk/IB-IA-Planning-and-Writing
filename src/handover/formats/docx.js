@@ -1,6 +1,6 @@
 import {
  Document,Packer,Paragraph,TextRun,HeadingLevel,AlignmentType,
- Footer,ExternalHyperlink,BorderStyle
+ Footer,ExternalHyperlink,BorderStyle,ImageRun
 } from "docx";
 import JSZip from "jszip";
 import {REPORT_ATTACHMENT,REPORT_MAX_BYTES,normalizePlanningEnvelope} from "../schema.js";
@@ -108,6 +108,11 @@ export async function createDocxPlanningReport(envelope,fullProjectModel=null){
   paragraphs.push(headline(sec.title));
   if(sec.description)paragraphs.push(para([run(sec.description,{italics:true,color:MUTED,size:18})],{
    spacing:{after:210,line:280}}));
+  for(const figure of sec.figures||[]){
+   if(!figure.pngBytes)continue;
+   const width=450,height=Math.max(70,Math.round(width*figure.pixelHeight/figure.pixelWidth));
+   paragraphs.push(para([new ImageRun({data:figure.pngBytes,type:'png',transformation:{width,height},altText:{title:figure.title,description:figure.title,name:figure.title}})],{spacing:{after:175}}));
+  }
   for(const item of sec.rows)paragraphs.push(...field(item.label,item.value,item.link));
  }
  paragraphs.push(headline(fullProjectModel?"About this full working record":"About this planning document"));
