@@ -16,8 +16,8 @@ fixture=json.loads(subprocess.check_output(['node','--input-type=module','-e',r'
 import {createProjectState} from './src/core/project-state.js';
 const s=createProjectState();
 s.route='planning';
-s.planning.current='N01';
-s.planning.visited=['N00','N01'];
+s.planning.current='N01V';
+s.planning.visited=['N00','N01','N01V'];
 s.planning.fields.ideaStatus='yes';
 s.planning.fields.aim='The observed model is  for these fictional cases.';
 s.planning.fields.course='AA SL';
