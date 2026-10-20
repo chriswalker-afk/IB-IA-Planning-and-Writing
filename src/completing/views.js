@@ -110,9 +110,7 @@ export function createCompletingViews(ctx){
  };
  const allButtons=(current,primary=[])=>{
   // Branch choices live at the end of the four-part maths writing page.
-  if(["C30","C40","C50"].includes(current))return '<div class="completion-footer">'+
-   '<button type="button" class="btn btn-quiet btn-sm" data-action="completion-open" data-node="C04">'+
-   icon("layers")+' Review all my stages</button></div>';
+  if(["C30","C40","C50"].includes(current))return "";
   const rows=routesAt(current).filter(relevantRoute);
   const used=new Set(primary);
   const display=rows.filter(r=>used.has(r.condition));
@@ -720,7 +718,7 @@ export function createCompletingViews(ctx){
    return{intro:"Show your first mathematics as a connected mathematical story: introduce each output before displaying it, present it selectively, interpret it against your aim, and justify whatever follows.",
     html:'<div class="show-first-sequence" data-show-first-sequence>'+
       '<p class="show-first-sequence-lead">Four parts of your <strong>actual IA writing</strong>. The boxes below save planning and reflection notes; they do not insert text, tables or calculations into your IA.</p>'+
-      first+second+third+fourth+stageBranchActions()+'</div>'};
+      first+second+third+fourth+'</div>'};
   }
   case "C31":{
    const returnNode=["C30","C40","C50"].includes(s.completion.editorReturnNode)?
@@ -984,7 +982,7 @@ export function createCompletingViews(ctx){
       pageNavigation+
       '<p class="show-first-sequence-lead">A separate four-part mathematical page, saved as stage '+stageNumber+
       '. Your earlier stages remain available above; none of these notes are inserted into your IA automatically.</p>'+
-      first+second+third+fourth+stageBranchActions()+'</div>'};
+      first+second+third+fourth+'</div>'};
   }
   case "C40T":return{intro:"Technology can assist calculations, but your IA should show what mathematical meaning you have understood.",
    html:F("technologyTool","Which software, GDC, code or spreadsheet was actually used?","Name the tool")+
@@ -1192,7 +1190,8 @@ export function createCompletingViews(ctx){
     (node==="C00"||node==="C10"||studioWriting||isStuckNode(node)||node==="C10E"||isAdviceReduced(s)?"":guides.writingMoment(node,{embedded:node!=="C96"}))+
     (node==="C00"||node==="C10"||studioWriting||isStuckNode(node)||isAdviceReduced(s)?"":guides.mathsHelp(node)+guides.limitsHelp(node)+
     (["C00","C04"].includes(node)?"":contextualPrompt(node)+resourcePrompt(s)))+statusControls+
-    (node==="C00"?"":allButtons(node,primaryByNode[node]||[]))+'</div>'+
+    (node==="C00"?"":allButtons(node,primaryByNode[node]||[]))+
+    (["C30","C40","C50"].includes(node)?stageBranchActions():"")+'</div>'+
     (studioWriting?"":'<p class="small-callout">Only actual mathematics supports a mathematical conclusion. Your planning, predictions and teacher questions remain separate from real findings. No compulsory number of calculations or IA grade.</p>')+
     (studioWriting||["C00","C04"].includes(node)?"":miniList())+'</div>';
  }
