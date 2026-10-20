@@ -1,6 +1,7 @@
 import {createSamplePreview} from '../src/core/sample-preview.js';
 import {createIllustrativeSample,SAMPLE_CHOICES} from '../src/core/illustrative-samples.js';
 import {sampleIAWritingWords} from '../src/core/sample-current-workflow.js';
+import {supportsMathInField,mathFieldTools} from '../src/math/editor-shell.js';
 import {STATUS_LABELS,resumeRoute,rememberCheckpoint} from '../src/ui/journey.js';
 import {journeyRail} from '../src/ui/journey-views.js';
 import {C_MAJOR_STAGES,completionStage} from '../src/completing/engine.js';
@@ -97,7 +98,7 @@ function createHarness(savedValue){
   const window={scrollTo(){},confirm:()=>true,alert(){},print(){}};
   const script=read("../app.js").replace(/^import\s+.*;\s*$/gm,"");
   // The real browser suite exercises the independent native-dialog controller.
-  const globals={createSamplePreview,createIllustrativeSample,SAMPLE_CHOICES,sampleIAWritingWords,STATUS_LABELS,resumeRoute,rememberCheckpoint,journeyRail,C_MAJOR_STAGES,completionStage,structuredClone,captureReturn:()=>({scroll:0,attributes:[]}),restoreReturn:()=>{},createEssentialsController:()=>({open(){}}),createCriterionBadgeController:()=>({}),editCriterionReview:()=>false,createExampleController:()=>({}),ideaAction,ideaInput,ideaDifficultyInput,chooseTopic,
+  const globals={createSamplePreview,createIllustrativeSample,SAMPLE_CHOICES,sampleIAWritingWords,supportsMathInField,mathFieldTools,STATUS_LABELS,resumeRoute,rememberCheckpoint,journeyRail,C_MAJOR_STAGES,completionStage,structuredClone,captureReturn:()=>({scroll:0,attributes:[]}),restoreReturn:()=>{},createEssentialsController:()=>({open(){}}),createCriterionBadgeController:()=>({}),editCriterionReview:()=>false,createExampleController:()=>({}),ideaAction,ideaInput,ideaDifficultyInput,chooseTopic,
      attachIdeaMapGraph:()=>()=>{},insightCapture,planningLearningTrail,resourceDrawer,resourceList,resourceAction,resourceFilter,resourcePreference,newResourceSession,PRACTICE_PAIRS,createStuckViews,captureStuckOrigin,isStuckNode,stuckAction,stuckContext,
     conformanceAction,reviewEditChanged,document,window,localStorage:storage,console,clearTimeout(){},setTimeout(){return 1;},
     createProjectState,normalizeProjectState,persistProjectState,
