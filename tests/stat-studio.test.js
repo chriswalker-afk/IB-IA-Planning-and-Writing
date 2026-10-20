@@ -262,8 +262,9 @@ test("a box plot cannot suppress actual observations by hiding Tukey outliers",(
 test("statistic generated during a later stage stays linked to that stage, not first mathematics",()=>{
  const project=createProjectState();
  project.entries=[
-  {id:"math-first",phase:"first",status:"completed",result:"A real finding from stage 1"},
-  {id:"math-second",phase:"substantial",status:"planned",fromEntryId:"math-first",result:""}
+  {id:"math-first",phase:"first",status:"completed",title:"First exploration",technique:"",result:"A real finding from stage 1"},
+  {id:"math-second",phase:"substantial",status:"planned",fromEntryId:"math-first",
+   title:"Mathematical stage 2",technique:"",kind:"",methodId:"",result:""}
  ];
  project.completion.activeEntryIndex=1;
  project.statStudio=rawHistogram();

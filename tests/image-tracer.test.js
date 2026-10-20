@@ -203,8 +203,9 @@ test("at maximum photo capacity, saving another tracing never deletes earlier st
 test("trace generated during a later stage stays linked to that stage, not first mathematics",()=>{
  const project=createProjectState();
  project.entries=[
-  {id:"math-first",phase:"first",status:"completed",result:"A real finding from stage 1"},
-  {id:"math-second",phase:"substantial",status:"planned",fromEntryId:"math-first",result:""}
+  {id:"math-first",phase:"first",status:"completed",title:"First exploration",technique:"",result:"A real finding from stage 1"},
+  {id:"math-second",phase:"substantial",status:"planned",fromEntryId:"math-first",
+   title:"Mathematical stage 2",technique:"",kind:"",methodId:"",result:""}
  ];
  project.completion.activeEntryIndex=1;
  project.imageTracer=prepared();
