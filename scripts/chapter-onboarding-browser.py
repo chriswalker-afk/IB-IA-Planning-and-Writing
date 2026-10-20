@@ -591,9 +591,14 @@ def adaptive_mathematical_journey(browser,width):
   assert data["entries"][1]["journeySourceSignature"]
   assert data["entries"][1]["result"]==""
   page.screenshot(path=str(OUT/f"adaptive-math-stage2-{width}.png"),full_page=True,animations="disabled")
+  # The journey began with looking at a scatter graph. Once a genuine
+  # exponential fit is used, outcomes must become fit-and-residual questions.
+  page.locator('details.math-stage-optional-method summary').click()
+  page.locator('[data-bind="entries.1.methodId"]').select_option("exponential")
   page.locator('[data-bind="entries.1.result"]').fill("The revised model gives a systematic residual pattern")
   page.locator('[data-bind="entries.1.status"]').select_option("completed")
-  page.locator('[data-bind="entries.1.journeyOutcome"]').select_option("fitted-models:systematic")
+  assert "Nonlinear models, fits and residuals" in page.locator('[data-journey-outcome-picker]').inner_text()
+  page.locator('[data-bind="entries.1.journeyOutcome"]').select_option("nonlinear-model:residual-structure")
   assert "patterned residuals" in page.locator('[data-journey-next-state="ready"]').inner_text()
   page.locator('[data-action="journey-use-direction"][data-direction="follow"]').click()
   page.locator('[data-action="stage-add"]').click()
@@ -601,7 +606,7 @@ def adaptive_mathematical_journey(browser,width):
   assert "systematic residual" in page.locator('[data-show-first-part="introduce"]').inner_text()
   pages=stored(page)["entries"]
   assert len(pages)==3
-  assert pages[2]["journeySourceOutcome"]=="fitted-models:systematic"
+  assert pages[2]["journeySourceOutcome"]=="nonlinear-model:residual-structure"
   assert pages[2]["result"]==""
   page.screenshot(path=str(OUT/f"adaptive-math-stage3-{width}.png"),full_page=True,animations="disabled")
   page.locator('[data-action="completion-edit-entry"][data-index="0"]').first.click()
