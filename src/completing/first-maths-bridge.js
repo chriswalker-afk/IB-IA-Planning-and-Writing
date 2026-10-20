@@ -255,6 +255,7 @@ export function renderFirstMathsExamples(state,icon,e,help=""){
   icon("chevron-right")+'</summary>'+
   '<div class="studio-stage-example-actions">'+exampleButton("1 · Connect the aim",{topic:"first-link"})+
     exampleButton("2a · Justify the maths",{topic})+
+    exampleButton("See route-specific first diagrams",{topic:firstMathsExampleTopic(state)})+
     exampleButton("2b · Evaluate alternatives",{topic:"first-evaluation"})+
     exampleButton("Browse all examples",{browse:true})+'</div>'+
   '<p class="studio-stage-example-note">These examples are fictional; use them to learn how to introduce mathematics, not as text to submit.</p>'+

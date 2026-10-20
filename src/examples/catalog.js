@@ -611,7 +611,7 @@ export const EXAMPLES = [
       "motivation"
     ],
     "weak": "I really love number patterns and want to use algebra to get an interesting answer, which will show my passion for mathematics.",
-    "strong": "Looking at arrangements of dominoes on a 2 by n rectangle, I began to wonder how the number of tilings depends on the positive integer n. My aim is to investigate whether the counts satisfy a recurrence and, if they do, explain mathematically why that relationship holds. Small cases may suggest a rule, but I will not treat them as a proof.",
+    "strong": "Looking at arrangements of dominoes on a 2 by n rectangle, I began to wonder how the number of tilings depends on the positive integer n. I want to investigate whether the counts satisfy a recurrence and, if they do, explain mathematically why that relationship holds. Small cases may suggest a rule, but I will not treat them as a proof.",
     "why": "The curiosity is connected to a precise count and an answerable recurrence question, not an invented personal benefit. It remains a provisional mathematical question: a few observed cases cannot prove a rule, and a suitable IA would need sufficient further mathematical development.",
     "question": "What mathematical uncertainty do you genuinely want to resolve, and how would you know whether your argument answered it?",
     "visual": ""
