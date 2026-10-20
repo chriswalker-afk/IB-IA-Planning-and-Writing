@@ -88,7 +88,7 @@ function evidencePicker(state,e,icon){
   flagged+'</section>';
  return '<section class="conclusion-evidence" data-conclusion-evidence aria-label="Choose mathematical evidence">'+
   '<div class="conclusion-evidence-head"><strong>'+icon("check-circle")+' Your mathematical findings</strong>'+
-   '<span>'+eligible.length+' verified record'+(eligible.length===1?"":"s")+' · '+eligible.filter(x=>x.selected).length+
+   '<span>'+eligible.length+' student-confirmed result'+(eligible.length===1?"":"s")+' · '+eligible.filter(x=>x.selected).length+
     ' selected</span></div>'+
   '<p>Choose up to three findings that best support your answer. These are references to real mathematics, not automatically written IA prose.</p>'+
   '<div class="conclusion-evidence-list">'+first.map(row).join("")+'</div>'+
