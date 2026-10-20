@@ -100,10 +100,13 @@ test("editing a predecessor interpretation flags every later mathematical stage 
  const s=make("optimisation"),parent=s.entries[0];
  parent.journeyOutcome="optimisation:stationary";
  s.completion.fields.nextQuestion="Check the feasible boundary";
+ s.completion.fields.nextReason="A stationary candidate must be compared with feasible endpoints.";
  assert(addMathematicalStage(s).ok);
  const second=s.entries[1];second.status="completed";second.result="Feasible endpoint calculations";
  second.localTakeaway="Best value is on the boundary";second.journeyOutcome="optimisation:boundary";
  second.nextQuestion="Would a practical constraint change the choice?";
+ second.nextWhy="The endpoint depends on feasible constraints and measurement assumptions.";
+ s.completion.activeEntryIndex=1;
  assert(addMathematicalStage(s).ok);
  const third=s.entries[2];
  third.bridge="The mathematical connection I wrote";
@@ -127,6 +130,8 @@ test("editing a predecessor interpretation flags every later mathematical stage 
 test("revising investigative route invalidates route-dependent subsequent pages, not the actual findings",()=>{
  const s=make("relationships"),first=s.entries[0];
  first.journeyOutcome="relationships:curve";
+ s.completion.fields.nextQuestion="Which curve best describes the observations?";
+ s.completion.fields.nextReason="The real scatter is curved, so a justified model could answer the aim.";
  assert(addMathematicalStage(s).ok);
  const before=s.entries[1].previousTakeaway;
  const changed=flagJourneyRouteDependents(s,"relationships");
@@ -141,6 +146,8 @@ test("revising investigative route invalidates route-dependent subsequent pages,
 });
 test("evidence-dependent context never silently accepts an unverified or newly changed parent",()=>{
  const s=make("proof");s.entries[0].journeyOutcome="proof:pattern";
+ s.completion.fields.nextQuestion="Can this pattern be proved?";
+ s.completion.fields.nextReason="Examples suggest a pattern but do not establish a universal proof.";
  assert(addMathematicalStage(s).ok);
  const second=s.entries[1],parent=s.entries[0];
  parent.result="Revised statement";
@@ -180,8 +187,8 @@ test("stage-local model-fitness options replace scatter-shape options after fitt
  const before=journeySourceSignature(s,fit);
  fit.methodId="exponential";
  assert.equal(outcomeRouteForEntry(s,fit).id,"nonlinear-model");
- assert.equal(journeySourceSignature(s,fit),before,
-  "changing between similar model techniques preserves a route-based signature when the result is unchanged");
+ assert.notEqual(journeySourceSignature(s,fit),before,
+  "changing method identity must flag dependents even within a model family");
  fit.methodId="pmcc";
  assert.equal(outcomeRouteForEntry(s,fit).id,"relationships");
  assert(journeySelectionIsStale(s,fit));
@@ -230,7 +237,8 @@ test("selecting a result description after a dependent stage already exists requ
  const s=make("models"),first=s.entries[0];
  s.planning.routeExplorer.selectedRoute="fitted-models";
  s.completion.fields.nextQuestion="What could I investigate next?";
- assert(addMathematicalStage(s).ok);
+ // Previously saved projects may contain a later page without a recorded outcome.
+ s.entries.push({id:"legacy-child",phase:"substantial",fromEntryId:first.id,status:"planned",result:"",bridge:"Existing reasoning"});
  const child=s.entries[1];const earlier=first.journeyOutcome||"";
  first.journeyOutcome="fitted-models:not-quadratic";
  const flagged=flagDependentMathematics(s,0,"journeyOutcome",earlier,first.journeyOutcome);
