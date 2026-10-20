@@ -69,6 +69,13 @@ export const JOURNEY_OUTCOME_EXTRAS=Object.freeze({
  ],
  iteration:[
   extra("sensitive-start","Different starting values give different iterative behaviour","Compare orbits under justified starting values and look for fixed points, cycles or sensitive dependence.","Numerical stability is not proof of convergence for all starting values.","What makes the iteration behave differently for different initial values?","Can fixed-point reasoning or a counterexample explain the observations?")
+ ],
+ "open-exploration":[
+  extra("meaningful-result","The mathematics gives a useful answer","Interpret the result against the aim, and check whether further mathematics could change that conclusion.","State the domain, assumptions, accuracy and limitations of the claim.","Does my result answer the question within its stated conditions?","Would one justified validity check change the conclusion?"),
+  extra("unexpected-result","The result contradicts the expected pattern","Investigate the precise step, assumption or mathematical feature producing the unexpected result. A negative result can be worthwhile.","Do not change authentic data or assumptions to obtain a preferred answer.","Which mathematical feature explains the unexpected result?","Would an independently checked case clarify what happened?"),
+  extra("limitation","A mathematical assumption or restriction affects the answer","Identify which assumption controls the conclusion and test a justified alternative or restricted domain.","A result valid under stated assumptions need not hold outside them.","How would changing one important assumption affect the conclusion?","Can I justify the applicable domain without a new technique?"),
+  extra("contradiction","Two approaches give incompatible answers","Check definitions, numerical precision, approximations and algebra before deciding which approach is defensible.","Methods based on different assumptions need not agree.","Which step or assumption accounts for the disagreement?","Would an independent calculation locate the discrepancy?"),
+  extra("needs-more-evidence","The mathematics does not yet settle the question","Identify the unresolved mathematical question before choosing another method or more examples.","Greater complexity cannot compensate for an unclear aim or unreliable evidence.","What remains mathematically unanswered?","Could an honest qualified conclusion be sufficient?")
  ]
 });
 
@@ -118,6 +125,7 @@ const MATH_ROUTE_BY_ID=Object.freeze({
  AA20:"growth",AA21:"growth",AA22:"optimisation",AA23:"images",
  AA24:"images",AA25:"trajectories"
 });
+const OPEN_EXPLORATION=Object.freeze({id:"open-exploration",title:"Mathematical reasoning and further exploration",branches:[]});
 const activeRoute=state=>{
  const explicit=routeById(state?.planning?.routeExplorer?.selectedRoute||"");
  if(explicit)return explicit;
@@ -168,14 +176,21 @@ const ROUTE_BY_METHOD=Object.freeze({
  * drives stage-local outcomes, never keywords guessed from the result text. */
 export function outcomeRouteForEntry(state,entry){
  const initial=activeRoute(state);
- if(entry?.phase!=="substantial"||!has(entry?.methodId)||entry.methodId==="other")return initial;
+ if(entry?.phase!=="substantial")return initial;
+ // A new mathematical stage is not automatically a repetition of Planning.
+ if(entry.methodId==="follow-journey")return initial||OPEN_EXPLORATION;
  const methods=methodFamilies(entry,{allowPlanned:true}),extended=extendedFamily(methods);
  if(extended&&EXTENDED_SIGNALS[extended])return{
   id:extended,title:SPECIALISED_TITLES[extended]||"Current mathematical technique",
   parentRoute:initial?.id||""
  };
  const route=ROUTE_BY_METHOD[entry.methodId];
- return routeById(route)||initial;
+ if(routeById(route))return routeById(route);
+ // Older saved findings with an optional method selector remain valid.
+ if(!has(entry.methodId)&&initial&&has(entry.journeyOutcome)&&
+    entry.journeyOutcome.startsWith(initial.id+":"))return initial;
+ // Unknown or "Other" work must not revert to the original scatter/model route.
+ return OPEN_EXPLORATION;
 }
 export function journeyOutcomeOptions(state,entry){
  const route=outcomeRouteForEntry(state,entry);
@@ -200,7 +215,7 @@ export function journeyOutcomeOptions(state,entry){
   return [...outcomes,uncertainty(route)].map(x=>({...x,
    value:outcomeKey(route.id,x.id),title:x.title||x.signal}));
  }
- const base=route.branches.map((b,i)=>({
+ const base=(route.branches||[]).map((b,i)=>({
   id:b.id,value:outcomeKey(route.id,b.id),title:b.signal,
   next:b.next,check:b.check,question:QUESTIONS[route.id]?.[i]||route.question,
   alternative:"Would checking a key assumption materially change this finding?"
@@ -230,7 +245,8 @@ export function journeySourceSignature(state,entry){
  if(!entry)return "";
  const original=activeRoute(state)?.id||"",methodRoute=outcomeRouteForEntry(state,entry)?.id||"";
  const json=JSON.stringify([original,methodRoute,entry.id||"",entry.status||"",entry.result||"",entry.journeyOutcome||"",
-  entry.resultSignal||"",entry.observation||"",entry.localTakeaway||"",entry.interpretation||"",
+  entry.methodId||"",entry.technique||"",entry.kind||"",entry.purpose||"",
+   entry.resultSignal||"",entry.observation||"",entry.localTakeaway||"",entry.interpretation||"",
   entry.nextQuestion||"",entry.nextWhy||"",entry.journeyDirection||""]);
  let h=2166136261;
  for(let i=0;i<json.length;i++)h=Math.imul(h^json.charCodeAt(i),16777619);
@@ -239,8 +255,10 @@ export function journeySourceSignature(state,entry){
 export function needsJourneyLinkReview(state,child){
  const parent=priorStageFor(state,child);
  if(!child||!parent)return false;
- return child.reviewNeeded==="yes"||
-  (has(child.journeySourceSignature)&&child.journeySourceSignature!==journeySourceSignature(state,parent));
+ const advice=adaptiveNextDirections(state,parent);
+  return child.reviewNeeded==="yes"||
+   (advice.route&&advice.status!=="ready")||
+   (has(child.journeySourceSignature)&&child.journeySourceSignature!==journeySourceSignature(state,parent));
 }
 function questionCard(id,question,why,check){
  return {id,question,why,check};
