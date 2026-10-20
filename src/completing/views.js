@@ -143,7 +143,7 @@ export function createCompletingViews(ctx){
   const count=state.entries.filter(x=>x?.status==="completed"&&filled(x.result)).length;
   const mathsStages=state.entries.filter(x=>["first","substantial"].includes(x.phase)).length;
   return '<section class="math-conclusion-gate" data-conclusion-gate role="alertdialog" aria-labelledby="math-conclusion-gate-title" tabindex="-1">'+
-   '<div class="math-conclusion-gate-top"><span>'+icon("book-open")+'</span><div>'+
+   '<div class="math-conclusion-gate-top"><span>'+icon("book")+'</span><div>'+
    '<span class="math-conclusion-gate-eyebrow">BEFORE YOU CONCLUDE</span>'+
    '<h2 id="math-conclusion-gate-title">Do you have enough mathematics to answer your aim?</h2></div></div>'+
    '<p>IB Mathematics exploration guidance suggests approximately <strong>12–20 pages</strong> (commonly double-spaced). This is guidance, <strong>not a compulsory page count or grading threshold</strong>. Follow your teacher\'s current requirements.</p>'+
@@ -870,7 +870,7 @@ export function createCompletingViews(ctx){
    const idx=state.completion.activeEntryIndex;
    const stageNumber=state.entries.slice(0,idx+1).filter(x=>x?.phase==="substantial").length+1;
    if(!substantial)return{intro:"Your next mathematical stage must follow a genuine previous result.",
-    html:info("Begin from a real finding","Return to your first exploration and record what you genuinely calculated, established or discovered before adding another mathematical stage.",true)+
+    html:info("Return to the first exploration","Return to your first exploration and record what you genuinely calculated, established or discovered before adding another mathematical stage.",true)+
      '<button type="button" class="btn btn-secondary" data-action="completion-open" data-node="C30">'+icon("arrow-left")+' Return to first mathematics</button>'};
    const prior=substantial.fromEntryId?state.entries.find(x=>x.id===substantial.fromEntryId):null;
    const real=substantial.status==="completed"&&filled(substantial.result);
@@ -890,7 +890,7 @@ export function createCompletingViews(ctx){
     "Begin from what the previous section actually established. Explain the mathematical question that follows, and why this technique can advance your aim.",
     entryReviewAlert()+
     '<div class="completion-evidence-anchor">'+icon("route")+'<div>'+
-      '<strong>Result from the previous mathematical stage</strong>'+
+      '<strong>Earlier finding this section was based on</strong>'+
       '<p>'+e(priorFinding||"Your previous stage does not yet have a recorded finding.")+'</p>'+
       (prior?'<span class="field-hint">'+e(prior.title||"Previous mathematics")+'</span>':"")+
     '</div></div>'+
@@ -903,7 +903,7 @@ export function createCompletingViews(ctx){
       ["completing:"+n+":title"])+'</div>'+
     entryField("purpose","Why is the chosen approach appropriate here?",
      "Link the technique to the previous finding and your overall aim",{type:"textarea",rows:3})+
-    '<details class="math-stage-optional-method"><summary>'+icon("book-open")+
+    '<details class="math-stage-optional-method"><summary>'+icon("book")+
       ' Review mathematical technique, syllabus understanding and alternatives (optional) '+icon("chevron-right")+'</summary>'+
       entryField("technique","Mathematical technique or argument","e.g. quadratic modelling, integration or a proof")+
       entryField("methodId","Find relevant guidance for my method (optional)","",{type:"select",options:METHOD_OPTIONS})+
