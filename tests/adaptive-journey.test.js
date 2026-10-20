@@ -5,7 +5,7 @@ import {INVESTIGATIVE_ROUTES} from "../src/planning/investigative-routes.js";
 import {addMathematicalStage,flagDependentMathematics,acknowledgeMathReview} from "../src/completing/engine.js";
 import {actualMathematics,journeyOutcomeOptions,selectedJourneyOutcome,
  adaptiveNextDirections,selectedInvestigativeRoute,journeySelectionIsStale,
- journeySourceSignature,stageLinkContext,flagJourneyRouteDependents,journeyCourseNote
+ journeySourceSignature,stageLinkContext,flagJourneyRouteDependents,journeyCourseNote,outcomeRouteForEntry
 } from "../src/completing/adaptive-journey.js";
 
 const make=(route="fitted-models")=>{
@@ -159,4 +159,54 @@ test("course notes are explicitly conditional without inventing course prerequis
  assert.match(journeyCourseNote(s,selectedInvestigativeRoute(s)),/AA HL/);
  s.planning.routeExplorer.selectedRoute="finance";
  assert.match(journeyCourseNote(s,selectedInvestigativeRoute(s)),/mathematical development/);
+});
+
+test("stage-local model-fitness options replace scatter-shape options after fitting a quadratic",()=>{
+ const s=make("relationships");
+ s.entries[0].journeyOutcome="relationships:curve";
+ s.entries.push({id:"fit",phase:"substantial",fromEntryId:"genuine-first",methodId:"quadratic-fit",
+  status:"completed",result:"Residuals show a systematic pattern",journeyOutcome:""});
+ const fit=s.entries[1];
+ assert.equal(outcomeRouteForEntry(s,s.entries[0]).id,"relationships");
+ assert.equal(outcomeRouteForEntry(s,fit).id,"nonlinear-model");
+ const options=journeyOutcomeOptions(s,fit);
+ assert(options.some(x=>x.value==="nonlinear-model:residual-structure"));
+ assert(!options.some(x=>x.value==="relationships:quadratic-looking"));
+ fit.journeyOutcome="nonlinear-model:residual-structure";
+ const result=adaptiveNextDirections(s,fit);
+ assert.equal(result.status,"ready");
+ assert.match(result.directions[0].question,/residual/i);
+ assert.match(result.directions[0].why,/model|residual|predict/i);
+ const before=journeySourceSignature(s,fit);
+ fit.methodId="exponential";
+ assert.equal(outcomeRouteForEntry(s,fit).id,"nonlinear-model");
+ assert.equal(journeySourceSignature(s,fit),before,
+  "changing between similar model techniques preserves a route-based signature when the result is unchanged");
+ fit.methodId="pmcc";
+ assert.equal(outcomeRouteForEntry(s,fit).id,"relationships");
+ assert(journeySelectionIsStale(s,fit));
+ assert.notEqual(journeySourceSignature(s,fit),before);
+});
+test("later-stage finance, Voronoi and chi-squared work use specific confirmed-method outcomes",()=>{
+ for(const [method,expected,sig] of [
+  ["finance-compound","finance-compound","rate-sensitive"],
+  ["finance-loan","finance-loan","repayment-unaffordable"],
+  ["voronoi","voronoi","distance-issue"],
+  ["chi-independence","categorical-test","expected-too-small"],
+  ["expected-value","expected-value","large-variation"],
+  ["triangulation","measurement","angle-sensitive"]
+ ]){
+  const s=make("finance");
+  const e={id:"method",phase:"substantial",fromEntryId:"genuine-first",status:"completed",
+   result:"Actual calculation",methodId:method,journeyOutcome:""};
+  s.entries.push(e);
+  const route=outcomeRouteForEntry(s,e);
+  assert.equal(route.id,expected,method);
+  assert(journeyOutcomeOptions(s,e).some(x=>x.value===expected+":"+sig),method);
+  e.journeyOutcome=expected+":"+sig;
+  const result=adaptiveNextDirections(s,e);
+  assert.equal(result.status,"ready",method);
+  assert(result.directions[0].question.length>15,method);
+  assert(result.courseNote.includes("AI SL"),method);
+ }
 });
