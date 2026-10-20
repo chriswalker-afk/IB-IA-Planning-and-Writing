@@ -345,13 +345,16 @@ export function startFirstRepresentation(state){
  if(state.entries.length>=MAX_ENTRIES)return{ok:false,error:"This project has reached its safety limit of 120 mathematical records. Download a backup before continuing."};
  if(state.completion.activeEntryIndex>=0&&state.entries[state.completion.activeEntryIndex]?.phase==="first"&&state.entries[state.completion.activeEntryIndex]?.status==="planned")return{ok:true,existing:true};
  const f=state.completion.fields;
+ // The first inline draft can seed a record; a later, separate figure MUST NOT
+ // inherit earlier verified results, status, interpretation or IA location.
+ const firstDraft=!state.entries.some(x=>x?.phase==="first");
  const id="math-"+(Date.now().toString(36))+"-"+(state.entries.length+1);
  state.entries.push({
-  id,phase:"first",title:f.firstWorkTitle||f.firstType||state.planning.fields.figureOther||"First purposeful representation",
-  purpose:f.firstOutputIntroduction||f.firstPurpose||state.planning.fields.figurePurpose||"",
-  technique:"",kind:"",status:f.firstWorkStatus==="completed"?"completed":"planned",knowledge:"unsure",knowledgeNotes:"",
-  result:f.firstWorkResult||"",resultRef:f.firstWorkLocation||"",observation:"",observationText:"",interpretation:f.firstInterpretation||"",limitations:"",
-  localTakeaway:f.firstResultSummary||"",nextQuestion:"",nextWhy:"",bridge:"",accuracyRef:"",
+  id,phase:"first",title:firstDraft?(f.firstWorkTitle||f.firstType||state.planning.fields.figureOther||"First purposeful representation"):"First purposeful representation",
+  purpose:firstDraft?(f.firstOutputIntroduction||f.firstPurpose||state.planning.fields.figurePurpose||""):(f.firstPurpose||""),
+  technique:"",kind:"",status:firstDraft&&f.firstWorkStatus==="completed"?"completed":"planned",knowledge:"unsure",knowledgeNotes:"",
+  result:firstDraft?(f.firstWorkResult||""):"",resultRef:firstDraft?(f.firstWorkLocation||""):"",observation:"",observationText:"",interpretation:firstDraft?(f.firstInterpretation||""):"",limitations:"",
+  localTakeaway:firstDraft?(f.firstResultSummary||""):"",nextQuestion:"",nextWhy:"",bridge:"",accuracyRef:"",
   createdAt:new Date().toISOString()
  });
  state.completion.activeEntryIndex=state.entries.length-1;
