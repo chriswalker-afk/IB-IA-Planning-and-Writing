@@ -587,7 +587,7 @@ test("contextual rubric bubbles are attached to real writing fields in the three
  state.entries=[{id:'math-sub',phase:'substantial',status:'planned',kind:'model',title:'Investigate a model',result:'',purpose:''}];
  state.completion.activeEntryIndex=0;
  const expects={
-  C20:['completing:C20:source','completing:C20:method','completing:C20:firstBridge','completing:C20:firstChoice','completing:C20:firstPurpose',
+  C20:['completing:C20:source','completing:C20:method','completing:C20:firstBridge','completing:C20:firstPurpose',
    'completing:C20:methodIntroduction','completing:C20:methodJustification',
    'completing:C20:methodEvaluation','completing:C20:methodSuitability'],
   C21S:['completing:C21S:samplingRationale','completing:C21S:responseBias'],
@@ -613,7 +613,7 @@ test("contextual rubric bubbles are attached to real writing fields in the three
   C40T:['completing:C40T:title'],
   C40D:['completing:C40D:courseWhy'],
   C40L:['completing:C40L:title'],
-  C60:['completing:C61:mainConclusion','completing:C61:uncertainty','completing:C62:benefit','completing:C63:extension']
+  C60:['completing:C61:mainConclusion','completing:C60:meaningAndLimits','completing:C63:extension']
  };
  for(const [node,keys] of Object.entries(expects)){
   state.completion.current=node;
