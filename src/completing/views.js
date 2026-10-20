@@ -1098,7 +1098,7 @@ export function createCompletingViews(ctx){
       entryField("nextWhy","My bridge to another stage, or explanation for concluding",
        "Justify how another technique would help, or why you now have enough evidence",{type:"textarea",rows:4})+
     '</div>');
-   return{intro:"This is mathematical stage "+stageNumber+". Its starting point is a result from the previous stage, not a second introduction to your IA.",
+   return{intro:"Build on the actual finding from the previous stage. Explain why this mathematics follows, show the work, and interpret what it establishes for your aim—without starting your IA introduction again.",
     html:'<div class="show-first-sequence math-stage-sequence" data-math-stage-page="'+stageNumber+'">'+
       pageNavigation+
       '<p class="show-first-sequence-lead">A separate four-part mathematical page, saved as stage '+stageNumber+

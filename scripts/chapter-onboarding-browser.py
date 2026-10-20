@@ -298,6 +298,24 @@ def writing_sections(browser,width):
    assert main.locator('.studio-stage-sparks .spark-library').count()==1,node
    assert main.locator('.criteria-panel').count()==0,node
    assert "actual IA document" in main.locator('.studio-stage-writing-task').inner_text(),node
+   reminder=main.locator('.studio-stage-writing-location')
+   assert reminder.count()==1,node
+   assert reminder.locator('.studio-stage-writing-location-copy > strong').inner_text()=="Write in your actual IA document",node
+   assert "nothing is inserted into your IA automatically" in reminder.locator('.studio-stage-writing-location-copy > p').inner_text(),node
+   # Regression: a raw text node, <strong> and more raw text used to become
+   # three flex items, breaking the sentence into tiny desktop columns.
+   geometry=reminder.evaluate("""root=>{
+    const rect=selector=>{const box=root.querySelector(selector).getBoundingClientRect();
+      return {left:box.left,width:box.width,top:box.top};};
+    return {display:getComputedStyle(root).display,
+      title:rect('.studio-stage-writing-location-copy > strong'),
+      paragraph:rect('.studio-stage-writing-location-copy > p')};
+   }""")
+   assert geometry['display']=="grid",(node,width,geometry)
+   assert abs(geometry['title']['left']-geometry['paragraph']['left'])<=1,(node,width,geometry)
+   assert geometry['paragraph']['width']>=180,(node,width,geometry)
+   if node in ("C40","C50"):
+    assert "Build on the actual finding from the previous stage" in main.locator('.studio-stage-writing-task-head').inner_text(),node
    if node in ("C20","C30","C40","C50","C60"):
     assert main.locator('.studio-stage-tip').count()==4,node
    else: assert main.locator('.studio-stage-more-advice').count()==1,node

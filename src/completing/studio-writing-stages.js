@@ -74,8 +74,12 @@ export function renderStudioWritingStage(state,node,{icon,e,taskHtml="",taskIntr
   '<div class="studio-stage-writing-task-head"><span class="intro-writing-task-symbol">'+icon("pencil")+'</span>'+
   '<div><span class="intro-writing-task-eyebrow">YOUR '+e(stageName.toUpperCase())+' TASK</span>'+
   '<h2>'+e(taskTitle)+'</h2><p>'+e(taskIntro)+'</p></div></div>'+
-  '<p class="studio-stage-writing-location">'+icon("pencil")+
-  ' Write appropriate explanation, mathematics or a conclusion in your <strong>actual IA document</strong> as the work becomes real. Pathfinder saves notes and decisions only; nothing is inserted into your IA automatically.</p>'+
+  '<div class="studio-stage-writing-location" role="note" aria-label="Where to write your IA">'+
+   icon("pencil")+
+   '<div class="studio-stage-writing-location-copy">'+
+    '<strong>Write in your actual IA document</strong>'+
+    '<p>Put the relevant mathematical work, explanations and conclusions there as you go. Pathfinder saves your notes and decisions only; nothing is inserted into your IA automatically.</p>'+
+   '</div></div>'+
   taskHtml+'</section>';
  return renderWritingStageFlow({
   advice:first?renderFirstMathsAdvice(state,icon,e,{reduced}):showFirst?renderShowingMathsAdvice(state,icon,e,{reduced}):renderAdvice(node,icon,e,reduced),

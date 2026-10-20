@@ -523,8 +523,21 @@
 .studio-stage-writing-task-head{margin-bottom:12px}
 .studio-stage-writing-task-head>.intro-writing-task-symbol{width:40px;height:40px}
 .studio-stage-writing-task-head h2{font-size:18px}
-.studio-stage-writing-task .studio-stage-writing-location{display:flex;align-items:flex-start;gap:8px;border:1px solid #ebe3f3;background:#f9f7fc;color:#625878;border-radius:10px;padding:11px 12px;margin:0 0 16px;font-size:11px;line-height:1.55}
-.studio-stage-writing-location>.icon{flex:none;width:16px;height:16px;color:#695292}
+/* Keep the complete sentence in one copy column. Raw text and <strong>
+   used to become separate flex items and were squeezed into three columns. */
+.studio-stage-writing-task .studio-stage-writing-location{
+ display:grid;grid-template-columns:19px minmax(0,1fr);align-items:start;column-gap:11px;
+ border:1px solid #e2d7f0;background:#f9f7fc;color:#625878;
+ border-radius:11px;padding:12px 14px;margin:0 0 16px;min-width:0
+}
+.studio-stage-writing-location>.icon{width:19px;height:19px;margin-top:1px;color:#695292;flex:none}
+.studio-stage-writing-location-copy{min-width:0;max-width:78ch}
+.studio-stage-writing-task .studio-stage-writing-location-copy strong{
+ display:block;font-size:12.5px;line-height:1.4;color:#594078;font-weight:800;margin:0 0 4px
+}
+.studio-stage-writing-task .studio-stage-writing-location-copy p{
+ display:block;margin:0;font-size:12px;line-height:1.58;color:#625878;overflow-wrap:break-word
+}
 .studio-stage-writing-task .criterion-marked-writing-box{margin:0 0 14px 13px}
 .studio-stage-writing-task .criterion-marked-field>.criterion-badge{z-index:2}
 .studio-stage-writing-task .field-group>.field-label{font-size:12px}
