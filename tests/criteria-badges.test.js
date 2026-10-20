@@ -12,7 +12,7 @@ import {createProjectState} from '../src/core/project-state.js';
 
 test('three passes retain selective and specific criteria without new administrative badges',()=>{
  const keys=Object.keys(CRITERION_SPOTS);
- assert.equal(keys.length,67); // Pass 2 adds six focused contextual opportunities per later mathematical stage.
+ assert.equal(keys.length,72); // Pass 4 adds five Checking contextual pop-ins; older bubble positions are unchanged.
  for(const [key,criterion] of [
   ['planning:N01V:benefit','C'],['planning:N02M:title','E'],
   ['completing:C10:aim','A'],['completing:C10:motivation','C'],
@@ -47,7 +47,8 @@ test('three passes retain selective and specific criteria without new administra
   ['completing:C61:mainConclusion','A'],['completing:C61:uncertainty','D'],
   ['completing:C62:benefit','D'],['completing:C63:extension','D'],
   ['completing:C64:title','A'],['completing:C70:title','A'],
-  ['completing:C80D:title','A'],['completing:C90F:title','A']
+  ['completing:C80D:title','A'],['completing:C90F:title','A'],
+  ['checking:A','A'],['checking:B','B'],['checking:C','C'],['checking:D','D'],['checking:E','E']
  ])assert.equal(CRITERION_SPOTS[key].criterion,criterion);
  assert.equal(criterionSpotFor('planning','N02M'),'planning:N02M:title');
  assert.equal(criterionSpotFor('completing','C34B'),'completing:C34B:title');

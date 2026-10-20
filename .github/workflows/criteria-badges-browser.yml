@@ -5,6 +5,14 @@ on:
     branches: [main]
     paths:
       - 'src/essentials/criteria-badges.js'
+      - 'src/essentials/assessment-cohorts.js'
+      - 'src/essentials/checking-criterion-spots.js'
+      - 'src/checking/views.js'
+      - 'src/planning/engine.js'
+      - 'app.js'
+      - 'data/checking.css'
+      - 'tests/assessment-cohorts.test.js'
+      - 'tests/checking-page.test.js'
       - 'src/essentials/criteria-badge-guidance.js'
       - 'src/essentials/later-maths-criterion-guidance.js'
       - 'src/essentials/criterion-opportunities.js'

@@ -42,7 +42,7 @@ export const PLANNING_FIELD_DEFAULTS = Object.freeze({
  workloadHours:"",cleaningBurden:"",externalRisks:"",minimumVersion:"",backupMethod:"",
  pilotReady:"",costIssue:"",sourceRights:"",dataSufficiency:"",negativeResultViable:"",presentationManageable:"",
  practicalEase:"",easeImprovement:"",mathsOutside:"",otherMaths:"",mathsWhy:"",
- course:"",predictionId:"",prediction:"",predictionPrior:"",predictionWhy:"",predictionImplication:"",
+ course:"",assessmentFramework:"legacy",predictionId:"",prediction:"",predictionPrior:"",predictionWhy:"",predictionImplication:"",
  predictionExploration:"",courseSuitability:"",suitabilityWhy:"",mathsRevisedWhy:"",
  figureType:"",figureOther:"",figurePurpose:"",firstAction:"",firstAccuracy:"",
  changeTrigger:"",changeAdaptation:"",fallbackEvidence:"",
@@ -181,7 +181,7 @@ export function applyPlanningField(state,key,value){
  if(!Object.hasOwn(PLANNING_FIELD_DEFAULTS,key))return false;
  const f=state.planning.fields;
  const before=f[key];
- f[key]=String(value??"");
+ f[key]=key==="assessmentFramework"?(value==="revised2029"?"revised2029":"legacy"):String(value??"");
  if(before!==f[key]&&state.completion?.stages){
   const groups=key==='provisionalTitle'?["C10","C60"]:
    /^(aim|motivation|beneficiaryType|beneficiary|intendedUse|prediction|predictionWhy|predictionImplication)$/.test(key)?

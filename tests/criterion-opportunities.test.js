@@ -27,7 +27,7 @@ function opt(s,key){
  return criterionAlternativeOpportunities(s,key,CRITERION_SPOTS[key]);
 }
 test('Pass 3 adds no new criterion badges or stored fields',()=>{
- assert.equal(Object.keys(CRITERION_SPOTS).length,67);
+ assert.equal(Object.keys(CRITERION_SPOTS).length,72);
  const s=project(),before=JSON.stringify(s);
  for(const key of ['completing:C40:nextC','completing:C40:interpretD','completing:C40:resultE',
   'completing:C50:nextC','completing:C50:interpretD','completing:C50:resultE']){

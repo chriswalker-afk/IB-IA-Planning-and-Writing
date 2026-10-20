@@ -37,9 +37,9 @@
 .checking-item.checked{border-color:#b8d7cb;background:#fafffc}
 .checking-item-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .checking-criterion-bubbles{display:inline-flex;flex-wrap:wrap;align-items:center;gap:5px}
-.checking-criterion-bubble{display:grid;place-items:center;flex:none;width:31px;height:31px;border-radius:50%;border:2px solid #659b75;background:#e5f1e4;color:#255340;font-size:13px;font-weight:800;line-height:1;cursor:pointer}
-.checking-criterion-bubble:hover{background:#d5e8d5;border-color:#177967}
-.checking-criterion-bubble:focus-visible{outline:3px solid #a0cfbc;outline-offset:3px}
+.checking-criterion-bubbles .criterion-badge{box-shadow:none}
+.checking-criterion-bubbles .criterion-badge:hover{background:#d1e9d2}
+.checking-criterion-bubbles .criterion-badge:focus-visible{outline:3px solid #078578;outline-offset:3px}
 .checking-process-tag{display:inline-flex;align-items:center;gap:5px;font-size:9px;font-weight:800;letter-spacing:.06em;color:#677b83}
 .checking-process-tag .icon{width:13px;height:13px}
 .checking-item-status{font-size:10px;font-weight:750;color:#597477;white-space:nowrap}
@@ -112,3 +112,33 @@
 .checking-bubble-key{margin:-13px 0 21px;color:#536d72;font-size:12px;line-height:1.55;max-width:90ch}
 .checking-process-explanation{margin:10px 0;padding:10px 12px;border:1px solid #dce9e3;border-radius:10px;background:#f7faf9;color:#45676d;font-size:12px;line-height:1.6}
 .checking-process-explanation strong{color:#294e55}
+
+/* Pass 4: the same criterion buttons and interaction are used in all chapters. */
+.checking-criteria-legend>div{gap:10px;padding:12px}
+.checking-criteria-legend strong{font-size:12px;line-height:1.4}
+.checking-criteria-legend small{font-size:11px}
+.checking-section-head p,.checking-intro p{font-size:14px}
+.checking-item h4{font-size:15px}
+.checking-item-question{font-size:13px;line-height:1.6}
+.checking-look-for{font-size:13px;line-height:1.6}
+.checking-source-note,.checking-evidence-reminder{font-size:12px}
+.checking-item-details>summary{font-size:13px;line-height:1.5;min-height:38px}
+.checking-status-action{font-size:12px;min-height:40px}
+.checking-item-inner .field-label{font-size:13px}
+.checking-item-inner .field{font-size:14px}
+.checking-process-tag{font-size:11px}
+.checking-revised-overview{border:1px solid #c9e3d6;border-radius:16px;background:#f4faf7;padding:20px;margin:18px 0}
+.checking-revised-overview h3{font-size:18px;margin:0 0 6px}
+.checking-revised-overview>p{font-size:13px;line-height:1.6}
+.checking-revised-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:14px 0}
+.checking-revised-grid article{background:#fff;padding:13px;border:1px solid #d8e7dc;border-radius:11px;min-width:0}
+.checking-revised-grid strong{font-size:13px;display:block}
+.checking-revised-grid small{display:block;font-size:12px;margin:4px 0;color:#617a71}
+.checking-revised-grid p{font-size:12px;line-height:1.6}
+@media(max-width:690px){
+ .checking-revised-grid{grid-template-columns:1fr}
+ .checking-mode-tab strong{font-size:13px}
+ .checking-status-action{font-size:12px;min-height:42px}
+ .checking-item-inner .field{font-size:16px}
+ .checking-intro h2{font-size:18px}
+}

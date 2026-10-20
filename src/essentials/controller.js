@@ -15,7 +15,7 @@ export function createEssentialsController({getState,onEdit=()=>false,onChangedC
  }
  function render(focus=true){
   const host=dialog.querySelector('#ess-body');
-  host.innerHTML=(session.tab==='rubric'?rubricView(getState(),session):session.tab==='submission'?submissionView(getState(),session):formatView())+essentialsSourceNote();
+  host.innerHTML=(session.tab==='rubric'?rubricView(getState(),session):session.tab==='submission'?submissionView(getState(),session):formatView(getState()))+essentialsSourceNote(getState());
   dialog.querySelectorAll('[data-essentials-tab]').forEach(b=>b.setAttribute('aria-current',b.dataset.essentialsTab===session.tab?'page':'false'));
   host.scrollTop=0;if(focus)host.querySelector('.ess-heading')?.focus({preventScroll:true});
  }

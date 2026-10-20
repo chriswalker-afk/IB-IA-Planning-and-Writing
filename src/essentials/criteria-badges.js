@@ -7,10 +7,13 @@ import {linkedAccuracy} from '../completing/evidence-links.js';
 import {escapeHtml} from '../ui/primitives.js';
 import {criterionAlternativeOpportunities} from './criterion-opportunities.js';
 import {LATER_MATHS_SPOTS,LATER_MATHS_SPOT_IDS} from './later-maths-criterion-spots.js';
+import {CHECKING_CRITERION_SPOTS} from './checking-criterion-spots.js';
+import {isRevisedAssessment} from './assessment-cohorts.js';
 
 /** Selective, read-only opportunities. A badge never represents a score or checklist point. */
 export const CRITERION_SPOTS=Object.freeze({
  ...LATER_MATHS_SPOTS,
+ ...CHECKING_CRITERION_SPOTS,
  'planning:N01V:benefit':Object.freeze({
   criterion:'C',location:'Who might benefit, and how could the answer help?',stage:'Planning · motivation',
   why:'Your genuine purpose can influence which mathematical questions you pursue and which decisions you make. A personal story by itself is not evidence of engagement.',
@@ -370,6 +373,7 @@ export function createCriterionBadgeController({getState,openRubric=()=>{},openR
  }
  function open(key,trigger=document.activeElement){
   if(!Object.hasOwn(CRITERION_SPOTS,key))return;
+  if(isRevisedAssessment(getState())){openRubric('A',trigger);return;}
   ensure();if(dialog.open)dialog.close();
   current=key;origin=trigger;
   const state=getState(),p=contextualBadgeGuidance(state,key,CRITERION_SPOTS[key]),c=CRITERIA[p.criterion];

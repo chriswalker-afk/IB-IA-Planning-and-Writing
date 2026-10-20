@@ -34,9 +34,10 @@ test('new Checking phase is a separate navigable chapter, not an extra mathemati
 test('new review page renders A-E bubbles with the correct maxima and detailed sourced guidance',()=>{
  const s=createProjectState(),html=render(s);
  assert.equal(html.match(/data-action="checking-mode"/g).length,3);
- assert(html.includes('data-action="checking-rubric"'));
+ assert(html.includes('data-criterion-badge="checking:A"'));
+ assert(!html.includes('data-action="checking-rubric"'));
  for(const [id,meta] of Object.entries(CHECKING_CRITERIA)){
-  assert(html.includes('data-criterion="'+id+'"'),id);
+  assert(html.includes('data-criterion-badge="checking:'+id+'"'),id);
   assert(html.includes(meta.name),meta.name);
   assert(html.includes('Up to '+meta.max+' marks'));
   assert.deepEqual(CHECKING_DETAILS['D0'+(id.charCodeAt(0)-65+2)].criteria,[id]);
@@ -113,7 +114,7 @@ test('review source guidance covers all shared D01-D21 records with explicit cri
  assert.deepEqual(CHECKING_DETAILS.D07.criteria,['A','B']);
  const css=readFileSync(new URL('../data/checking.css',import.meta.url),'utf8');
  assert(css.includes('@media(max-width:690px)'));
- assert(css.includes('.checking-criterion-bubble:focus-visible'));
+ assert(css.includes('.checking-criterion-bubbles .criterion-badge:focus-visible'));
 });
 
 test('administrative, attribution and teacher-feedback tasks are process requirements, not phantom A–E marks',()=>{
@@ -135,7 +136,7 @@ test('administrative, attribution and teacher-feedback tasks are process require
    assert(end>start,id+' complete card should be present');
    const card=html.slice(start,end);
    assert(card.includes('checking-process-tag'),id);
-   assert(!card.includes('checking-criterion-bubble'),id+' is process, not rubric evidence');
+   assert(!card.includes('data-criterion-badge'),id+' is process, not rubric evidence');
    assert(card.includes(CHECKING_DETAILS[id].processNote),id);
   }
  }

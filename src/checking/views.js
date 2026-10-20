@@ -1,21 +1,21 @@
 /** One dedicated, student-driven Checking page.
  * All edits use the existing completion.review records and conformance actions.
- * A–E bubbles open the real rubric; no automatic document inspection or grading.
+ * Criterion bubbles open shared contextual advice then the full rubric; no automatic grading.
  */
 import {reviewChecksFor} from '../completing/review.js';
 import {CHECKING_CRITERIA,CHECKING_DETAILS,CHECKING_MODES,reviewCounts} from './checklist.js';
 import {chapterRibbon} from '../ui/living-journey.js';
+import {criterionBadge} from '../essentials/criteria-badges.js';
+import {isRevisedAssessment,REVISED_2029_CRITERIA} from '../essentials/assessment-cohorts.js';
 const statusText={'unchecked':'Not checked','needs-work':'Needs work','checked':'Checked in my IA','not-applicable':'Not relevant here'};
 const scoreKeys=['A','B','C','D','E'];
 const stateStatus=(s,mode,id)=>s.completion?.review?.records?.[mode+'-'+id]?.status||'unchecked';
 export function createCheckingViews(ctx){
  const {getState,e,icon,field,button,sheetTitle,tabletNav}=ctx;
- const badge=(letter)=>{
-  const meta=CHECKING_CRITERIA[letter];
-  return '<button type="button" class="checking-criterion-bubble" data-action="checking-rubric" data-criterion="'+letter+
-   '" title="Read Criterion '+letter+': '+e(meta.name)+'" aria-label="Read Criterion '+letter+': '+e(meta.name)+' rubric">'+letter+'</button>';
- };
- const badges=letters=>letters.length?'<span class="checking-criterion-bubbles" role="group" aria-label="Relevant IB criteria">'+letters.map(badge).join('')+'</span>':
+ const badge=letter=>criterionBadge('checking:'+letter);
+ const badges=(letters,revised)=>revised?
+  '<span class="checking-process-tag" aria-label="Document check, not an assessed 2029 criterion">'+icon('clipboard')+' DOCUMENT CHECK</span>':
+  letters.length?'<span class="checking-criterion-bubbles" role="group" aria-label="Relevant current IB assessment criteria">'+letters.map(badge).join('')+'</span>':
   '<span class="checking-process-tag" aria-label="Process requirement, not an additional criterion mark">'+icon('clipboard')+' PROCESS</span>';
  const action=(name,text,attributes='')=>'<button type="button" class="btn btn-secondary btn-sm" data-action="'+name+'" '+attributes+'>'+text+'</button>';
  const listItem=(s,check,mode)=>{
@@ -24,7 +24,7 @@ export function createCheckingViews(ctx){
   const stem='completion.review.records.'+key+'.',attrs='data-mode="'+mode+'" data-id="'+check.id+'"';
   const options=s.entries.map(x=>[x.id,x.title||'Mathematical stage']).filter(x=>x[0]);
   return '<article class="checking-item '+current+'" data-checking-item="'+e(check.id)+'">'+
-   '<div class="checking-item-top">'+badges(details.criteria)+
+   '<div class="checking-item-top">'+badges(details.criteria,isRevisedAssessment(s))+
     '<span class="checking-item-status '+current+'">'+e(statusText[current]||'Not checked')+'</span></div>'+
    '<h4>'+e(details.focus)+'</h4>'+
    '<p class="checking-item-question">'+e(check.question)+'</p>'+
@@ -85,6 +85,19 @@ export function createCheckingViews(ctx){
  const criteria=(s,checks,mode)=>{
   const individual=checks.filter(c=>['D02','D03','D04','D05','D06'].includes(c.id)),
    others=checks.filter(c=>!individual.includes(c));
+  if(isRevisedAssessment(s)){
+    const overview='<section class="checking-revised-overview" data-checking-revised-overview>'+
+     '<h3>Updated IA criteria · first assessment 2029 onwards</h3>'+
+     '<p>The IB has published these four criteria and their strands. These are not full mark-band descriptors. Your former A–E review records are preserved, not translated into 2029 marks.</p>'+
+     '<div class="checking-revised-grid">'+REVISED_2029_CRITERIA.map(x=>
+       '<article><strong>'+x.id+' · '+e(x.name)+'</strong><small>'+x.max+' marks</small>'+
+       '<p>'+e(x.strands.join(' · '))+'</p></article>').join('')+'</div>'+
+     '<button type="button" class="btn btn-secondary btn-sm" data-action="essentials-open" data-essentials-tab="rubric">Read the official-criteria overview</button>'+
+     '</section>';
+    return overview+'<section class="checking-document-section"><div class="checking-section-head"><div>'+
+     '<h3>Review the actual IA document</h3><p>These document and integrity checks are not extra criterion marks. Match your mathematical inquiry to the updated rubric with your teacher.</p></div></div>'+
+     '<div class="checking-doc-grid">'+checks.map(check=>listItem(s,check,mode)).join('')+'</div></section>';
+  }
   const badgeIntro='<div class="checking-criteria-legend">'+scoreKeys.map(letter=>{
    const m=CHECKING_CRITERIA[letter];
    return '<div>'+badge(letter)+'<span><strong>'+e(m.name)+'</strong><small>Up to '+m.max+' marks</small></span></div>';
@@ -98,10 +111,14 @@ export function createCheckingViews(ctx){
  };
  function viewChecking(){
   const s=getState(),mode=['draft','feedback','final'].includes(s.ui?.checkingMode)?s.ui.checkingMode:'draft';
-  const checks=reviewChecksFor(s,mode),counts=reviewCounts(s,mode,checks);
+  const revised=isRevisedAssessment(s);
+  const checks=reviewChecksFor(s,mode).filter(x=>!revised||!['D02','D03','D04','D05','D06'].includes(x.id));
+  const counts=reviewCounts(s,mode,checks);
   const stages=[['C70','Review notation and presentation'],['C80','Teacher draft & feedback records'],['C90','Final communication and submission notes']];
   return '<div class="page wide checking-page">'+tabletNav()+chapterRibbon(s)+
-   sheetTitle('CHECK YOUR IA','Checking','A final look at the mathematics and the writing in your own IA document. The A–E bubbles explain which IB criterion is relevant.')+
+   sheetTitle('CHECK YOUR IA','Checking',revised?
+      'Review your actual IA document using the published 2029 criteria overview. Older A–E bubbles and self-marks do not apply to this cohort.':
+      'A final look at the mathematics and the writing in your own IA document. Criterion bubbles explain which assessment expectation is relevant.')+
    '<section class="checking-intro"><div class="checking-intro-icon">'+icon('clipboard')+'</div><div><h2>Read it like someone else will.</h2>'+
    '<p>Use the actual Word document or final PDF, not your Pathfinder notes. Check what is really there, record where you found it, and return to repair anything that needs attention. Checking never submits or grades your work.</p>'+
    '</div></section>'+
@@ -114,7 +131,7 @@ export function createCheckingViews(ctx){
     '<span>'+counts.checked+' checked'+(counts.needsWork?' · '+counts.needsWork+' needing work':'')+'</span></div>'+
     '<div class="checking-progress-track" role="progressbar" aria-label="Student-recorded checks resolved (not an IB mark)" aria-valuenow="'+counts.done+
     '" aria-valuemin="0" aria-valuemax="'+Math.max(1,counts.total)+'"><span style="width:'+(counts.total?100*counts.done/counts.total:0)+'%"></span></div>'+
-    '<p>These counts record your own checks, not a predicted IA mark. You can revisit or revise them at any time.</p></div>'+
+    '<p>These counts record your own '+(revised?'document':'document and criterion')+' checks, not a predicted IA mark. You can revisit or revise them at any time.</p></div>'+
    evidenceInfo(s)+
    (mode==='feedback'?'<div class="checking-feedback-phase">'+criteria(s,checks,mode)+feedbackPanel(s)+'</div>':criteria(s,checks,mode))+
    '<section class="checking-next"><h3>Useful next actions</h3>'+

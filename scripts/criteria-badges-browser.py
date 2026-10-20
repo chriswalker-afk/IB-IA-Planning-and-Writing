@@ -584,6 +584,131 @@ with sync_playwright() as pw:
   result.append({'case':'reduced-advice-retains-contextual-criteria','status':'FAILED','reason':str(e)})
   traceback.print_exc()
  ctx.close()
+
+ # Pass 4: A real Checking criterion bubble uses the shared help-then-rubric flow.
+ for width,height in [(1440,960),(360,740)]:
+  sample=state_for('completing','C40');sample['route']='checking'
+  sample['completion']['review']['records']['draft-D02']['location']='Page 5, coherent argument'
+  ctx=browser.new_context(viewport={'width':width,'height':height})
+  page=ctx.new_page()
+  page.add_init_script('localStorage.setItem('+json.dumps(KEY)+','+json.dumps(json.dumps(sample))+');')
+  name='pass4-checking-bubble-'+str(width)
+  try:
+   page.goto(URL,wait_until='networkidle')
+   before=stored(page)
+   badge=page.locator('[data-checking-item="D02"] [data-criterion-badge="checking:A"]')
+   assert badge.count()==1
+   assert page.locator('[data-action="checking-rubric"]').count()==0
+   badge.focus();page.keyboard.press('Enter')
+   modal=page.locator('#criterionBadgeDialog')
+   assert modal.is_visible()
+   assert 'Page 5, coherent argument' in modal.inner_text()
+   page.keyboard.press('Escape')
+   assert badge.is_focused()
+   badge.click()
+   modal.locator('[data-criterion-badge-rubric="A"]').click()
+   assert page.locator('#essentialsDialog [data-rubric-criterion="A"]').count()==1
+   page.locator('[data-essentials-close]').click()
+   assert stored(page)==before
+   result.append({'case':name,'status':'passed'})
+  except Exception as err:
+   result.append({'case':name,'status':'FAILED','reason':str(err)});traceback.print_exc()
+  ctx.close()
+ # Pathway tests cover mathematical choice, completed later work, and final reflection.
+ for label,kind,route,method,profile in [
+  ('statistics','statistics','relationships','pmcc','relationships'),
+  ('modelling','modelling','fitted-models','quadratic-fit','model'),
+  ('proof','theoretical','proof','proof','proof')
+ ]:
+  for node,key in [('C20','completing:C20:firstPurpose'),('C40','completing:C40:resultE'),('C60','completing:C60:meaningAndLimits')]:
+   for width,height in [(1440,960),(360,740)]:
+    sample=state_for('completing',node)
+    sample['planning']['fields']['kind']=kind
+    sample['planning']['routeExplorer']['selectedRoute']=route
+    for entry in sample['entries']:
+     entry['methodId']=method
+     entry['technique']=label+' method'
+    ctx=browser.new_context(viewport={'width':width,'height':height})
+    page=ctx.new_page()
+    page.add_init_script('localStorage.setItem('+json.dumps(KEY)+','+json.dumps(json.dumps(sample))+');')
+    name='pass4-journey-'+label+'-'+node+'-'+str(width)
+    try:
+     page.goto(URL,wait_until='networkidle')
+     before=stored(page)
+     page.locator('[data-criterion-badge="'+key+'"]').click()
+     disclosure=page.locator('#criterionBadgeDialog [data-criterion-opportunities]')
+     assert disclosure.count()==1
+     assert disclosure.get_attribute('data-opportunity-profile')==profile,name
+     assert disclosure.get_attribute('open') is None
+     disclosure.locator('summary').click()
+     assert disclosure.locator('li').count()>=2
+     assert page.evaluate('document.documentElement.scrollWidth<=innerWidth+1')
+     assert stored(page)==before
+     page.keyboard.press('Escape')
+     assert not page.locator('#criterionBadgeDialog').is_visible()
+     result.append({'case':name,'status':'passed'})
+    except Exception as err:
+     result.append({'case':name,'status':'FAILED','reason':str(err)});traceback.print_exc()
+    ctx.close()
+ # Updated 2029 cohort: four published criteria, no legacy A-E marks.
+ for width,height in [(1440,960),(360,740)]:
+  sample=state_for('planning','N02M')
+  sample['planning']['fields']['assessmentFramework']='revised2029'
+  sample['planning']['fields']['course']='AA HL'
+  sample['completion']['review']['records']['draft-D02']['location']='Old A-E note saved'
+  ctx=browser.new_context(viewport={'width':width,'height':height})
+  page=ctx.new_page()
+  page.add_init_script('localStorage.setItem('+json.dumps(KEY)+','+json.dumps(json.dumps(sample))+');')
+  name='pass4-revised-planning-'+str(width)
+  try:
+   page.goto(URL,wait_until='networkidle')
+   assert page.locator('#main').get_attribute('data-assessment-framework')=='revised2029'
+   assert page.locator('[data-assessment-notice]').count()==1
+   assert page.locator('[data-criterion-badge]:visible').count()==0
+   before=stored(page)
+   page.locator('[data-assessment-notice] [data-essentials-tab="rubric"]').click()
+   modal=page.locator('#essentialsDialog')
+   assert modal.locator('[data-revised-criterion]').count()==4
+   assert modal.locator('[data-rubric-criterion="E"]').count()==0
+   modal.locator('[data-essentials-close]').click()
+   assert stored(page)==before
+   picker=page.locator('[data-bind="planning.fields.assessmentFramework"]')
+   assert picker.count()==1
+   picker.select_option('legacy')
+   assert page.locator('#main').get_attribute('data-assessment-framework')=='legacy'
+   assert 'Old A-E note saved' in stored(page)
+   assert page.evaluate('document.documentElement.scrollWidth<=innerWidth+1')
+   result.append({'case':name,'status':'passed'})
+  except Exception as err:
+   result.append({'case':name,'status':'FAILED','reason':str(err)});traceback.print_exc()
+  ctx.close()
+ for width,height in [(1440,960),(360,740)]:
+  sample=state_for('completing','C40')
+  sample['route']='checking'
+  sample['planning']['fields']['assessmentFramework']='revised2029'
+  sample['completion']['review']['records']['draft-D04']['note']='Older C evidence note'
+  ctx=browser.new_context(viewport={'width':width,'height':height})
+  page=ctx.new_page()
+  page.add_init_script('localStorage.setItem('+json.dumps(KEY)+','+json.dumps(json.dumps(sample))+');')
+  name='pass4-revised-checking-'+str(width)
+  try:
+   page.goto(URL,wait_until='networkidle')
+   before=stored(page)
+   assert page.locator('[data-checking-revised-overview]').count()==1
+   assert page.locator('[data-checking-item="D02"]').count()==0
+   assert page.locator('[data-checking-item="D09"]').count()==1
+   assert page.locator('[data-criterion-badge]:visible').count()==0
+   page.locator('[data-checking-revised-overview] [data-essentials-tab="rubric"]').click()
+   assert page.locator('#essentialsDialog [data-revised-criterion]').count()==4
+   page.locator('#essentialsDialog [data-essentials-tab="submission"]').click()
+   assert page.locator('#essentialsDialog [data-ess-review]').count()==0
+   page.locator('[data-essentials-close]').click()
+   assert stored(page)==before
+   assert 'Older C evidence note' in stored(page)
+   result.append({'case':name,'status':'passed'})
+  except Exception as err:
+   result.append({'case':name,'status':'FAILED','reason':str(err)});traceback.print_exc()
+  ctx.close()
  browser.close()
 (OUT/'criterion-badges-results.json').write_text(json.dumps(result,indent=2))
 print(json.dumps(result,indent=2))

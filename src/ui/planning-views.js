@@ -228,6 +228,11 @@ export function createPlanningViews(ctx){
       {value:"AA HL",title:"Mathematics AA HL · teacher review",icon:"book"},
       {value:"AI HL",title:"Mathematics AI HL · teacher review",icon:"book"},
       {value:"other",title:"Another course / unsure",icon:"lightbulb"}],{tight:true,label:"My IB Mathematics course"})+'</div>'+
+     '<div class="assessment-cohort-choice" data-assessment-choice>'+
+      select("assessmentFramework","Which IB Mathematics IA assessment cohort applies?",[
+       ["legacy","First assessment through 2028 · current A–E criteria"],
+       ["revised2029","First assessment from May 2029 · updated A–D criteria"]])+
+      '<p class="field-hint">Earlier Pathfinder projects stay on the existing A–E system unless you explicitly choose the revised 2029 criteria. Confirm your assessment cohort with your teacher. The revised option provides a published overview, not invented detailed descriptors or an A–E mark conversion.</p></div>'+
      (eligible?renderInvestigativeRoutes(state,{e,icon,catalogue:()=>mathChoices(state)})+
       '<p class="math-scope-honesty">'+icon('info')+' This catalogue is a planning reference, not formal syllabus verification. Your teacher should confirm mathematical depth and suitability.</p>':
       hasCourse?renderInvestigativeRoutes(state,{e,icon,catalogue:()=>mathChoices(state)})+

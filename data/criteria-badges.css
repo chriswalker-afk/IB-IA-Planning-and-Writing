@@ -97,3 +97,49 @@
 .criterion-opportunities-level strong{font-weight:750}
 .criterion-opportunities-reminder{font-size:11px;line-height:1.6;color:#58736d;margin:12px 0 1px}
 @media(prefers-reduced-motion:reduce){.criterion-opportunities-chevron{transition:none}}
+
+/* Pass 4: more readable, touch-friendly criterion help across Planning and Writing. */
+.criterion-badge{--badge-size:42px;font-size:16px}
+.criterion-popin{width:min(530px,calc(100vw - 28px));max-height:min(780px,calc(100dvh - 24px))}
+.criterion-popin-body{font-size:14px}
+.criterion-popin-location{font-size:14px}
+.criterion-popin-part h3{font-size:13px}
+.criterion-popin-part p{font-size:14px;line-height:1.65}
+.criterion-popin-context p{font-size:13px}
+.criterion-popin-context strong{font-size:12px}
+.criterion-popin-all-row strong{font-size:13px}
+.criterion-popin-all-row p{font-size:12px}
+.criterion-popin-note{font-size:13px}
+.criterion-opportunities-content li strong{font-size:13px}
+.criterion-opportunities-content li p{font-size:13px}
+.criterion-marked-writing-box>.criterion-writing-bubbles{gap:10px;left:-18px}
+.criterion-popin-close{width:44px;height:44px}
+.assessment-cohort-notice{margin:12px auto 21px;max-width:1050px;padding:15px 18px;border-radius:14px;border:1px solid #bad6d0;background:#f2faf7;color:#254c47}
+.assessment-cohort-notice strong{display:block;font-size:15px}
+.assessment-cohort-notice p{margin:7px 0 11px;font-size:13px;line-height:1.6}
+.assessment-cohort-notice .btn{min-height:42px}
+.assessment-cohort-source{display:block;margin-top:8px;font-size:12px;color:#52736c;line-height:1.5}
+.assessment-cohort-choice{margin:14px 0;padding:14px 16px;border:1px solid #d2e6dc;border-radius:13px;background:#f8fcfa}
+.assessment-cohort-choice .field-group{margin-bottom:7px}
+.ess-revised-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:15px 0}
+.ess-revised-criterion{padding:15px;border:1px solid #d8e8de;border-radius:12px;background:#fcfffd;min-width:0}
+.ess-revised-criterion h4{margin:0 0 8px;color:#225a4b;font-size:15px}
+.ess-revised-criterion h4 span{color:#617b71;font-size:12px}
+.ess-revised-criterion strong{font-size:12px}
+.ess-revised-criterion p,.ess-revised-criterion li{font-size:13px;line-height:1.55}
+.ess-revised-criterion ul{padding-left:18px;margin:7px 0 0}
+/* The legacy C/D/E guidance is genuinely inapplicable to the explicit 2029 cohort. */
+#main[data-assessment-framework="revised2029"] .criterion-badge,
+#main[data-assessment-framework="revised2029"] .criterion-writing-bubbles{display:none!important}
+#main[data-assessment-framework="revised2029"] .criterion-marked-field textarea.field{padding-left:12px}
+@media(max-width:620px){
+ .criterion-badge{--badge-size:44px}
+ .criterion-marked-field>.criterion-badge{right:2px;top:0}
+ .criterion-marked-field>.field-group>.field-label{padding-right:55px;min-height:45px}
+ .criterion-marked-writing-box>.criterion-writing-bubbles{top:0;left:auto;right:2px;gap:6px}
+ .criterion-marked-writing-box>.field-group>.field-label{padding-right:112px;min-height:45px}
+ .criterion-popin{width:calc(100vw - 12px);max-height:calc(100dvh - 12px)}
+ .criterion-popin-body{padding:15px}
+ .ess-revised-grid{grid-template-columns:1fr}
+ .assessment-cohort-notice{margin:10px 4px 17px;padding:13px}
+}

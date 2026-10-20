@@ -4,6 +4,7 @@ import {firstUnfamiliarUse,methodFamilies} from '../completing/method-identity.j
 import {linkedAccuracy} from '../completing/evidence-links.js';
 import {CRITERIA,REVIEW_IDS} from './catalog.js';
 import {laterMathsBadgeGuidance} from './later-maths-criterion-guidance.js';
+import {CHECKING_SPOT_IDS} from './checking-criterion-spots.js';
 
 const str=x=>typeof x==='string'?x.trim():'';
 const short=x=>str(x).replace(/\s+/g,' ').slice(0,160);
@@ -88,6 +89,16 @@ export function closingBadgeGuidance(state,key,base){
 export function contextualBadgeGuidance(state,key,base){
  const result={...base,details:[],real:false};
  const [route,node]=key.split(':');
+ if(route==='checking'){
+  const id=CHECKING_SPOT_IDS[node],mode=state.ui?.checkingMode==='final'?'final':state.ui?.checkingMode==='feedback'?'feedback':'draft';
+  const record=state.completion?.review?.records?.[mode+'-'+id]||{};
+  result.stage='Checking · '+(mode==='final'?'final':mode==='feedback'?'feedback':'draft')+' review';
+  result.real=false;
+  if(short(record.location))result.details.push({label:'Your recorded IA location (not automatically checked)',text:short(record.location)});
+  if(short(record.note))result.details.push({label:'Your recorded evidence (not automatically verified)',text:short(record.note)});
+  if(short(record.action))result.details.push({label:'A change you planned (not yet verified)',text:short(record.action)});
+  return result;
+ }
  if(route!=='completing')return result;
  if(closingNodes.has(node))return closingBadgeGuidance(state,key,base);
  const ctx=guidanceContext(state,node),entry=ctx.entry,c=ctx.c||{},f=ctx.f||{},real=ctx.real===true;
