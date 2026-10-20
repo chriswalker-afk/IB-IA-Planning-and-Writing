@@ -60,6 +60,7 @@ import {renderPresentationCoach,renderFigureHandover} from "../src/diagrams/pres
 import {figureCaption} from "../src/diagrams/presentation-coach-core.js";
 import {displayVoronoiBounds,coordinateFromCanvas,canvasPosition,voronoiFrame,recordVoronoiHistory,applyVoronoiFrame,undoVoronoi,redoVoronoi,freezeVoronoiWindow,fitVoronoiSites,setVoronoiTool,selectVoronoiSite,moveVoronoiSite,proposeVoronoiComparison,showVoronoiComparison,finishVoronoiComparison,selectNearestBisector} from "../src/diagrams/voronoi-interactions.js";
 import {renderWriterFieldGuide,renderWriterGuideWelcome,shouldShowWriterGuideWelcome} from "../src/completing/writer-field-guide.js";
+import {writingGuideRecommendation} from "../src/completing/writer-guide-context.js";
 import {adaptiveNextDirections,flagJourneyRouteDependents} from "../src/completing/adaptive-journey.js";
 import {setCompletionNode,moveCompletionRoute,completionBack,markCompletionStage,setCompletionField,addMathematicalStage,routesAt,addAccuracyDecision,completionSuggestions,sectionForNode,targetForSection,completeEntry,latestRealResult,flagDependentMathematics,acknowledgeMathReview} from "../src/completing/engine.js";
 import {createProjectViews} from "../src/ui/project-views.js";
@@ -105,7 +106,7 @@ function createHarness(savedValue){
     newState:createProjectState,normalise:normalizeProjectState,
     KEY:"ia-pathfinder-prototype-v1",
     readRecordValue,updateRecordValue,icon,escapeHtml,cleanUrl,button,
-    referenceNodeForPrototypeStep,createPlanningViews,createStudioViews,createCompletingViews,createCheckingViews,renderWriterFieldGuide,renderWriterGuideWelcome,shouldShowWriterGuideWelcome,createProjectViews,
+    referenceNodeForPrototypeStep,createPlanningViews,createStudioViews,createCompletingViews,createCheckingViews,renderWriterFieldGuide,renderWriterGuideWelcome,shouldShowWriterGuideWelcome,writingGuideRecommendation,createProjectViews,
     newGraphDraft,saveGraphFigure,renderGraphSvg,graphData,splitHeading,analyseGraph,renderGraphQuality,renderGraphActions,graphSourceChoices,
     updateGraphField,chooseGraphType,importGraphTable,loadSavedGraph,freshGraph,saveAndLinkGraph,saveGraphDraft,exportGraphFigure,
     imageTraceChecks,renderTraceOverlaySvg,renderCleanTraceSvg,traceCoordinates,traceCalibration,renderImageTracer,
@@ -578,10 +579,11 @@ test("Writer's Field Guide replaces the old tile, opens without changing student
  assert.deepEqual(h.saved,original);
  h.action("close-drawer");
  h.action("setup-start-writing");
- assert(h.html.includes("Full Writer&#39;s Field Guide")||h.html.includes("Full Writer's Field Guide"));
+ assert(h.html.includes("Field Guide example"));
  assert(h.html.includes('data-action="writer-guide-open"'));
  h.action("writer-guide-open",{guideTip:"voice"});
  assert(h.drawer.includes("You&#39;re allowed to say &#39;I&#39;!"));
+ assert(h.drawer.includes('data-guide-stage-focus="C10"'));
  assert.equal(h.saved.scratch.introduction,"My original opening");
  assert.equal(h.saved.planning.fields.aim,"Is larger pizza better value?");
 });
