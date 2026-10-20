@@ -341,3 +341,22 @@ test("later stage gains its own new result options and suggestions, then can lea
  assert(html.includes("Do ratios support proportional growth"));
  assert(html.includes('data-action="stage-add"'));
 });
+
+test("later-stage outcomes switch from the original journey to a confirmed method's result family",()=>{
+ const {state,view}=fixture();
+ state.route="completing";state.planning.routeExplorer.selectedRoute="relationships";
+ state.entries=[
+  {id:"scatter",phase:"first",status:"completed",title:"First observation",
+   result:"Observed curvature",journeyOutcome:"relationships:curve"},
+  {id:"fit",phase:"substantial",status:"completed",fromEntryId:"scatter",
+   methodId:"quadratic-fit",title:"Quadratic fit",result:"Residual trend",
+   journeyOutcome:"nonlinear-model:residual-structure"}
+ ];
+ state.completion.activeEntryIndex=1;setCompletionNode(state,"C40");
+ const html=view.viewCompleting();
+ assert(html.includes("Nonlinear models, fits and residuals"));
+ assert(html.includes('data-path="entries.1.journeyOutcome"'));
+ assert(html.includes("Residuals reveal a systematic pattern"));
+ assert(html.includes('data-journey-next-state="ready"'));
+ assert(html.includes("residual"));
+});
