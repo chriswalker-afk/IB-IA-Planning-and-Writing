@@ -459,3 +459,11 @@ test('several first-stage generated figures remain one writing stage, without in
  assert(discoveryTrail(s).includes('1 mathematical stage · 2 actual results'));
  assert.equal(discoveryMathStages(s).match(/living-trail-math-page /g).length,1);
 });
+
+test('the optional trail explanation reflects sampling, precision, writing, tools and conclusion review',()=>{
+ const html=discoveryTrail(createProjectState());
+ assert(html.includes('data-trail-chapter-guide'));
+ for(const term of ['sampling','precision','sparks','introduction','diagrams and tables','mathematical stages','draft feedback'])
+  assert(html.includes(term),term);
+ assert(html.includes('A saved figure is not proof'));
+});
