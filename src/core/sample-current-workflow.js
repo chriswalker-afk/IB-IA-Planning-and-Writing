@@ -150,6 +150,17 @@ function entryText(s,kind){
  // Course boundaries are not automatically inferred from method difficulty.
  if(theory){second.knowledge='mixed';second.researchSource=second.researchSource||'Student-created derivation within this fictional learning example.';}
 }
+/** A mathematically purposeful special-case and limiting-case test for the
+ * interval result: adds substance without inventing a fourth compulsory step. */
+function developProofBoundaries(s){
+ const final=s.entries[2];
+ final.interpretation=notes(final.interpretation,
+  'It is useful to check the new formula at the boundaries of its own domain. If m=1, the lower prefix sum T₀² is zero and the identity reduces to the original sum-of-cubes formula. If m=n, the interval contains one term only, so Tₙ²−Tₙ₋₁² must equal n³; this is exactly the consecutive-difference identity established in the proof. These two limiting cases confirm that the extension is logically consistent with what has already been shown. They also explain why the lower prefix index is m−1 rather than m: subtracting up to m would incorrectly remove the first term of the requested interval.',
+  'The difference of squared triangular numbers can be factored again as (Tₙ−Tₘ₋₁)(Tₙ+Tₘ₋₁). This form may help study questions about divisibility, factorisations and possible integer values of a cube sum. It is not necessary for the stated interval formula, so I would not add a long unrelated divisibility exercise simply to increase the page count. A genuine further investigation should start with a precise new conjecture or question and justify why that factorisation matters. The present result is already proved for the specified positive integer bounds, and the extension uses its structure without pretending a small table gives additional general validity.');
+ final.limitations=notes(final.limitations,
+  'At AA HL, proving a standard identity and listing applications may not be deep enough for a high-quality standalone exploration. A substantial student investigation would need an independently motivated question, a richer development or an original connected extension, and a teacher discussion of suitable course-level mathematics. These written examples model clear reasoning rather than promise they meet the assessment criteria.');
+}
+
 function arrangeCurrentJourney(s,kind){
  const x=subjects[kind],steps=s.entries;
  const picked=kind==='theory'?['pattern','proof','uncertain']:
@@ -435,6 +446,7 @@ export function enrichCurrentIllustrativeSample(s,kind,math){
  if(!subjects[kind])throw new Error('Unknown teaching-sample scenario: '+kind);
  updatePlanning(s,kind);
  entryText(s,kind);
+ if(kind==='theory')developProofBoundaries(s);
  arrangeCurrentJourney(s,kind);
  buildFigures(s,kind,math);
  currentWriting(s,kind);
