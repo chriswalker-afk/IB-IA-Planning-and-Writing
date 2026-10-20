@@ -301,28 +301,6 @@ function theoryEvidence(){
 function setPlan(s,values){
  for(const [key,value] of Object.entries(values))applyPlanningField(s,key,value);
 }
-function reviewExample(s,kind,firstId,secondId,thirdId){
- const isTheory=kind==="theory",topic=isTheory?"identity and proof":"fictional relationship and model";
- const draft={
-  D02:["Illustrative opening, data definition and conclusion","Check that the aim, notation and conclusion all discuss the same "+topic+".","Remove repetition while retaining important mathematics."],
-  D03:["Variable definitions and three linked mathematical records","Check equations, units and symbols are explained when they first appear.","Make all graph labels and rounding conventions consistent."],
-  D04:["Choice of conjecture/data, changing mathematical route, and reflection","Explain why I chose each technique and revised the route after a result.","Make the personal mathematical decisions clear without inventing a life story."],
-  D05:["Interpretation and limitation following each mathematical result","Link each result back to the aim and distinguish an assumption from evidence.","Discuss the strongest limitation where it affects the conclusion."],
-  D06:["Three illustrated mathematical records and an argument or model check","Check the validity, precision and domain of each calculation, not only the final formula.","Independently verify any additional mathematical steps and explain unfamiliar ideas."]
- };
- for(const mode of ["draft","final"]){
-  for(const [id,[location,note,action]] of Object.entries(draft)){
-   const r=s.completion.review.records[mode+"-"+id];
-   r.status="unchecked";
-   r.location=mode==="draft"?location:"Illustrative check still to be completed; not submitted";
-   r.note=mode==="draft"?note:"Future student self-review: "+note+" This sample has no finished IA document.";
-   r.action=action;
-   // No provisional marks or SL/HL provenance without a student judgement.
-  }
- }
- s.completion.review.feedbackItems=[];
- s.teacher.feedbackStatus="not-requested";
-}
 export function createIllustrativeSample(kind,{today}={}){
  if(!SAMPLE_CHOICES.some(x=>x.id===kind))throw new Error("Unknown sample illustration.");
  const isTheory=kind==="theory",sample=createProjectState();
@@ -478,24 +456,14 @@ export function createIllustrativeSample(kind,{today}={}){
   sourceReferences:theory?"No external results claimed; the derivation is displayed in the demonstration.":
    "These points are invented by Pathfinder for instruction; this is not an external dataset citation.",
   mainConclusion:third.localTakeaway,
-  conclusionEvidence:second.result+" "+third.result,
-  conclusionUncertainty:third.limitations,
   conclusionBenefit:theory?"A general algebraic identity and interval-sum extension were established.":
    "The illustration demonstrates how mathematical interpretation changes when data shape or unusual points matter.",
-  conclusionAdvice:theory?"Continue testing the extension or seek teacher advice about suitable scope.":
-   "Do not give real health or causal advice from invented, unverified observations.",
   conclusionExtension:third.nextQuestion,
-  conclusionFocus:"Answer the investigation aim using the worked results, then qualify what is not established.",
   notationIssue:theory?"Keep n, m and Tₙ consistent; state integer domains.":
    "Label x in hours and y in milliseconds; do not confuse r with a regression slope.",
   presentationIssue:"Integrate tables/graphs alongside mathematical explanation, not as unexplained appendices.",
   referencesIssue:theory?"Any independently researched method must be referenced if used in real IA work.":
    "Synthetic data cannot be cited as a real source; obtain and cite genuine data for a submitted IA.",
-  draftComplete:"Illustrative worked record only; no finished IA document exists.",
-  draftCriteria:"A–E can be reviewed when the student has an actual draft; do not infer a mark from sample text.",
-  finalCriteria:"Not checked: illustrative sample has not been submitted.",
-  finalProofread:"Not performed on a finished IA document.",
-  finalRequirements:"No school deadline or submission route is known for this fictional example.",
   nextStepSelected:"A mathematical next question is recorded after each completed step."
  });
  if(theory){
@@ -516,10 +484,6 @@ export function createIllustrativeSample(kind,{today}={}){
    researchedUnderstanding:"The differences Tₖ²−Tₖ₋₁² cancel when added over consecutive k.",
    mathsLearning:"A proof establishes a general result and yields a new formula by subtracting sums."
   });
-  sample.scratch.introduction="FICTIONAL IA INTRODUCTION NOTES: I noticed that 1³+2³=9 and 1³+2³+3³=36, both squares. My aim is to explain why sums of consecutive cubes equal squared triangular numbers, not merely list numerical coincidences. I will define n as a positive integer, explore small cases, prove a formula and look for an extension. The investigation is mathematical; it does not require invented real-world data.";
-  sample.scratch.dataNotes="MATHEMATICAL STARTING OBJECTS: Tₙ=n(n+1)/2, T₀=0. Domain: n∈positive integers. n=1,2,3,4 are examples used to FORM a conjecture. The proof must cover arbitrary n. No experimental dataset or source approval is implied.";
-  sample.scratch.conclusion="FICTIONAL CONCLUSION NOTES: Σ(k³,k=1…n)=Tₙ² follows because Tₖ²−Tₖ₋₁²=k³ and the terms telescope. Therefore Σ(k³,k=m…n)=Tₙ²−Tₘ₋₁². This establishes the conjecture for positive integer indices; the first four numerical examples alone did not establish it. A next question is whether a similar consecutive-difference approach works for fourth powers.";
-  sample.scratch.finalReview="FUTURE FINAL REVIEW (not completed): Verify every factorisation and the integer bounds; make the telescoping cancellation visible; ensure the proof is explained in the student's own words; check references for any subsequently researched method; confirm with the teacher that the mathematical development is suitable for the course.";
  }else{
   Object.assign(f,{
    actualSourceType:"secondary",
@@ -593,20 +557,9 @@ export function createIllustrativeSample(kind,{today}={}){
    mitigation:"Clearly label fictional data and only draw claims supported by calculations.",
    location:"Illustrative final analysis and conclusion",at:"Fictional example, not a student approval"
   }];
-  sample.scratch.introduction="FICTIONAL IA INTRODUCTION NOTES: This example investigates "+focus[kind]+
-   ". The question is what mathematical structure six constructed pairs display, not whether sleep genuinely changes reaction time. I will inspect a scatter plot first, then choose a calculation justified by that shape. Hypothesis: "+d.prediction+
-   " These are not real participant observations; a real IA would require appropriate provenance and permissions.";
-  sample.scratch.dataNotes="FICTIONAL SOURCE NOTES: "+pairText(d.y)+
-   ". x is hours of sleep; y is reaction time in ms, but these units are illustrative labels, not actual readings. No publisher, survey, sampling design, equipment or measurement precision exists. All six values are kept in every main analysis, including unusual observations.";
-  sample.scratch.conclusion="FICTIONAL CONCLUSION NOTES: "+d.conclusion+
-   " Evidence used: "+second.result+" "+third.result+
-   " Most important limitation: "+d.limitation+" Logical next question: "+d.extension;
-  sample.scratch.finalReview="PLANNED FINAL CHECK (not a completed submission): Make the figure and axes unambiguous; show the method and units for each calculation; explain why the next technique followed; avoid treating correlation as causation; discuss the influence of artificial data and assumptions; obtain properly cited genuine data for any real empirical IA.";
  }
  Object.assign(f,{
   dataStatusSummary:theory?f.dataStatusSummary:"The available six pairs are fabricated and cannot serve as a genuine secondary source.",
-  mainConclusion:third.localTakeaway,
-  conclusionUncertainty:third.limitations,
   nextQuestion:third.nextQuestion
  });
  sample.ideaExplorer.shortlist=[{
@@ -619,7 +572,6 @@ export function createIllustrativeSample(kind,{today}={}){
   checks:{}
  }];
  sample.ideaExplorer.nextId=2;
- reviewExample(sample,kind,first.id,second.id,third.id);
  sample.teacher.concerns=[p.teacherQuestion];sample.teacher.pendingApproval=false;
  sample.teacher.checkpoints=[];
  return enrichCurrentIllustrativeSample(sample,kind,{lineSummary,exponentialSummary});
