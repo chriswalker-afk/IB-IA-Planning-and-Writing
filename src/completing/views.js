@@ -803,9 +803,9 @@ export function createCompletingViews(ctx){
       (entry?
        entryField("title","Title or name of this step","e.g. Comparing the group distributions"):
        F("firstWorkTitle","Title or name of this step","e.g. Comparing the group distributions"))+
-      (entry?
+      writerGuideOnly((entry?
        entryField("result","What did you actually produce or calculate?","e.g. A scatter diagram of 32 paired observations, or a maximum of 3.4 m",{type:"textarea",rows:3}):
-       F("firstWorkResult","What did you actually produce or calculate?","e.g. A scatter diagram of 32 paired observations, or a maximum of 3.4 m",{type:"textarea",rows:3}))+
+       F("firstWorkResult","What did you actually produce or calculate?","e.g. A scatter diagram of 32 paired observations, or a maximum of 3.4 m",{type:"textarea",rows:3})),"completing:C30:result")+
       (entry?
        entryField("resultRef","Where does it appear in my IA? (optional)","e.g. Figure 1, Equation 2 or page 4"):
        F("firstWorkLocation","Where does it appear in my IA? (optional)","e.g. Figure 1, Equation 2 or page 4"))+
@@ -984,12 +984,12 @@ export function createCompletingViews(ctx){
   };
   case "C35B":return{intro:"Confirm what the actual scatter graph shows before deciding on correlation or fitting a model.",
    html:smallSummary("Last actual scatter result",scatterForNext(s)?.result)+
-    choice("scatterPattern",[
+    writerGuideOnly(choice("scatterPattern",[
      ["linear","Clearly or approximately straight"],
      ["curved","Clearly curved or nonlinear"],
      ["unclear","No clear association"],
      ["unexpected","An unusual point or cluster"],
-     ["unsure","Not sure — inspect the graph again"]])+
+     ["unsure","Not sure — inspect the graph again"]]),"completing:C35B:scatterPattern")+
     coachBlock(scatterForNext(s),{allowChoices:false})+
     info("Pearson's r has a specific purpose","It measures linear association between paired numerical variables. A small r does not establish that there is no relationship of any form.")+
     guides.bivariateHelp(n,{reduced:isAdviceReduced(s)})
