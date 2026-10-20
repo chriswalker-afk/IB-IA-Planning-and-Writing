@@ -101,7 +101,7 @@ export function modelFromFullProject(state,{exportedAt=new Date().toISOString()}
   section('IA Studio · student-selected conclusion evidence',(c.conclusionResultIds||[]).map((id,i)=>{
    const entry=steps.find(x=>x.id===id);
    return field('Selected result '+(i+1),
-    entry?((actual(entry)&&entry.reviewNeeded!=='yes'?'Confirmed':'Needs review or unconfirmed')+' · '+
+    entry?((actual(entry)&&entry.reviewNeeded!=='yes'?'Student-confirmed':'Needs review or unconfirmed')+' · '+
      (val(entry.title)||id)+' · '+(val(entry.localTakeaway)||val(entry.interpretation)||val(entry.result))):
      'Previously selected record is unavailable: '+id);
   }),"These are student-selected links to previous mathematical records, not new or verified conclusions."),
