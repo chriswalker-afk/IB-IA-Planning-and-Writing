@@ -1186,20 +1186,20 @@ export function createCompletingViews(ctx){
       smallSummary("Strongest finding",f.mainConclusion)
   };
   case "C70":return{intro:"Review clarity across the actual document, repairing explanations where they originally appear.",
-    html:F("presentationIssue","One issue with labels, graphs, flow or layout","What would make it easier for a mathematical reader?",{type:"textarea",rows:3})+
+    html:writerGuideOnly(F("presentationIssue","One issue with labels, graphs, flow or layout","What would make it easier for a mathematical reader?",{type:"textarea",rows:3}),"completing:C70:presentationIssue")+
       F("referencesIssue","Are data sources, technology and borrowed techniques referenced?","What needs checking?",{type:"textarea",rows:2})+
       '<p class="field-hint">Source attribution is an academic-integrity requirement, not an extra mark for Criterion A.</p>'+
       info("Write in the right place","A notation mistake in Figure 2 should be fixed at Figure 2, not explained in the conclusion.")
   };
   case "C70N":return{intro:"Check symbols, units, equations, graphs, exactness and justified approximations in the original locations.",
-   html:F("notationIssue","Notation or mathematical presentation to repair","Define new variables, distinguish = and ≈, label units",{type:"textarea",rows:4})+
+   html:writerGuideOnly(F("notationIssue","Notation or mathematical presentation to repair","Define new variables, distinguish = and ≈, label units",{type:"textarea",rows:4}),"completing:C70N:notationIssue")+
     accuracyNote()+F("referencesIssue","Citation or source issue to repair","Original data and technology acknowledged",{type:"textarea",rows:2})+
     '<p class="field-hint">Citation integrity matters, but it is not a Criterion B marking point.</p>'
   };
   case "C80":return{intro:"Keep the written draft process separate from final submission. Follow the feedback rules actually set by your school.",
    html:choice("draftComplete",[["not-yet","My full IA draft is not ready"],["ready","I have a complete working draft"],
     ["unsure","I need to check requirements"]])+
-    F("feedbackAction","One sensible next drafting or feedback action","Draft, seek permitted written comments, or revise",{type:"textarea",rows:2})+
+    writerGuideOnly(F("feedbackAction","One sensible next drafting or feedback action","Draft, seek permitted written comments, or revise",{type:"textarea",rows:2}),"completing:C80:feedbackAction")+
     info("Not automatic permission","The site does not deliver a draft to your teacher or assume another written feedback round is permitted.")+extra.feedback()
   };
   case "C80D":return{intro:"A meaningful teacher draft should be complete enough for feedback, with an initial self-review.",
@@ -1208,12 +1208,12 @@ export function createCompletingViews(ctx){
     choice("draftComplete",[["not-yet","Important sections still incomplete"],["ready","Complete draft for permitted teacher feedback"],
     ["unsure","Need to check"]])+
     F("writtenFeedback","What written feedback did I actually receive, if any?","Private revision notes; no invented teacher response",{type:"textarea",rows:4})+
-    F("feedbackAction","One specific correction and how I will verify it","Change the original passage or mathematics",{type:"textarea",rows:2})+extra.review("draft")+extra.feedback()
+    writerGuideOnly(F("feedbackAction","One specific correction and how I will verify it","Change the original passage or mathematics",{type:"textarea",rows:2}),"completing:C80D:feedbackAction")+extra.review("draft")+extra.feedback()
   };
   case "C90":return{intro:"This is a final self-check, not a predicted assessment mark.",
    html:actualList()+smallSummary("School final date from Planning",p.milestoneSchoolFinal)+
      field("scratch.finalReview","Existing revision notes (editable)","The details I was already checking",{type:"textarea",rows:3})+
-     F("finalRequirements","Which school requirements do I need to confirm?","Deadline, identifying details, citation style, length or spacing",{type:"textarea",rows:2})
+     writerGuideOnly(F("finalRequirements","Which school requirements do I need to confirm?","Deadline, identifying details, citation style, length or spacing",{type:"textarea",rows:2}),"completing:C90:finalRequirements")
   };
   case "C90F":return{intro:"Locate genuine evidence for criteria A–E and check the finished document's mathematical accuracy and readability.",
    html:field("scratch.finalReview","My earlier review notes (editable)","Revisit what still needs correcting",{type:"textarea",rows:3})+
