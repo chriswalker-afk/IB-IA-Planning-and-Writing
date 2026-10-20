@@ -353,3 +353,23 @@ test("revisiting first mathematics retains the first entry, not a later calculat
  s.completion.activeEntryIndex=1;place(s,"C30");
  assert.equal(s.completion.activeEntryIndex,0);
 });
+
+test("a second generated first-stage figure never inherits a previously verified result",()=>{
+ const s=state();place(s,"C30");
+ setCompletionField(s,"firstWorkTitle","First graph");
+ setCompletionField(s,"firstWorkResult","Verified first numerical result");
+ setCompletionField(s,"firstWorkLocation","Figure 1");
+ setCompletionField(s,"firstWorkStatus","completed");
+ s.entries[0].interpretation="The first graph is curved";
+ s.completion.fields.firstInterpretation="The first graph is curved";
+ assert.equal(s.entries[0].status,"completed");
+ const created=startFirstRepresentation(s);
+ assert(created.ok);
+ assert.equal(s.entries.length,2);
+ assert.equal(s.entries[1].status,"planned");
+ assert.equal(s.entries[1].result,"");
+ assert.equal(s.entries[1].resultRef,"");
+ assert.equal(s.entries[1].interpretation,"");
+ assert.notEqual(s.entries[1].title,"First graph");
+ assert.equal(latestRealResult(s).result,"Verified first numerical result");
+});
