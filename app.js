@@ -37,6 +37,7 @@ import {updatePrimaryQuantity,editPrimaryQuantity,removePrimaryQuantity,reusePri
 import {applySuggestedTimeline,localToday,validDate,timelineWeek} from "./src/planning/timeline.js";
 import { createStudioViews } from "./src/ui/studio-views.js";
 import {createCompletingViews} from "./src/completing/views.js";
+import {toggleConclusionResult} from "./src/completing/conclusion-workspace.js";
 import {newGraphDraft,saveGraphFigure,renderGraphSvg,graphData,splitHeading,analyseGraph} from "./src/diagrams/graph-core.js";
 import {renderGraphQuality,renderGraphActions,graphSourceChoices} from "./src/diagrams/graph-view.js";
 import {updateGraphField,chooseGraphType,importGraphTable,loadSavedGraph,freshGraph,saveAndLinkGraph,saveGraphDraft} from "./src/diagrams/graph-actions.js";
@@ -1760,6 +1761,11 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         state.completion.conclusionWarningOpen=false;
         setCompletionNode(state,position>1?"C50":"C40",{reason:created.existing?"resume-maths-stage":"new-maths-stage"});
         nav("completing",{top:true});break;
+      }
+      case "conclusion-result-toggle":{
+        const result=toggleConclusionResult(state,el.dataset.entryId);
+        if(!result.ok){toast("Choose a confirmed result",result.error);break;}
+        save();render();break;
       }
       case "stage-conclude":requestConclusionReview();break;
       case "conclusion-cancel":{

@@ -463,7 +463,7 @@ test('several first-stage generated figures remain one writing stage, without in
 test('the optional trail explanation reflects sampling, precision, writing, tools and conclusion review',()=>{
  const html=discoveryTrail(createProjectState());
  assert(html.includes('data-trail-chapter-guide'));
- for(const term of ['sampling','precision','sparks','introduction','diagrams and tables','mathematical stages','draft feedback'])
+ for(const term of ['sampling','precision','sparks','introduction','diagrams and tables','mathematical stages','feedback','potential next mathematical questions'])
   assert(html.includes(term),term);
  assert(html.includes('A saved figure is not proof'));
 });

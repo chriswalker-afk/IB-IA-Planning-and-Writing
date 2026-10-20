@@ -18,6 +18,9 @@ function sample(){
   {id:'planned2',phase:'substantial',status:'planned',title:'Possible residual check',purpose:'Review a model'}
  ];
  s.completion.fields.actualSource='Recorded fictional source';s.completion.fields.mainConclusion='Student mathematical synthesis';
+ s.completion.fields.conclusionBenefit='The result is limited to the measured range';
+ s.completion.fields.conclusionExtension='Would a more realistic curved model explain the evidence?';
+ s.completion.conclusionResultIds=['real1'];
  s.completion.sourceRecords=[{id:'src1',fields:{actualSource:'Student recorded source'}}];
  s.completion.accuracyDecisions=[{id:'acc1',quantity:'time',unit:'seconds',resolution:'0.1',reason:'instrument resolution'}];
  s.completion.confirmedLimitations=[{id:'L01',entryId:'real1',explanation:'Small dataset',consequence:'Poor extrapolation'}];
@@ -29,7 +32,9 @@ function sample(){
 const dump=model=>model.sections.flatMap(s=>s.rows.map(x=>x.label+': '+x.value)).join('\n');
 test('full record represents planning and all substantive Studio work without upgrading proposed maths into a result',()=>{
  const m=modelFromFullProject(sample()),text=dump(m);
- for(const phrase of ['A synthetic curve investigation','Student opening notes','A curved set of points','A straight line is unsuitable','Possible residual check','Planned only — not an actual result','Recorded fictional source','instrument resolution','Poor extrapolation','Reflection privately recorded','Evidence is found on page 5','Student concluding thought','Could a curve model it?'])assert(text.includes(phrase),'Missing '+phrase);
+ for(const phrase of ['A synthetic curve investigation','Student opening notes','A curved set of points','A straight line is unsuitable','Possible residual check','Planned only — not an actual result','Recorded fictional source','instrument resolution','Poor extrapolation','Reflection privately recorded','Evidence is found on page 5','Student concluding thought','Could a curve model it?',
+ 'Student mathematical synthesis','The result is limited to the measured range',
+ 'Would a more realistic curved model explain the evidence?','Student-confirmed · First scatter graph'])assert(text.includes(phrase),'Missing '+phrase);
  assert(m.title.includes('Full Working Record'));assert(m.footnote.includes('Planning-only'));
 });
 test('complete project ZIP contains PDF, Word, full restorable JSON and a human-readable guide',async()=>{
@@ -41,6 +46,8 @@ test('complete project ZIP contains PDF, Word, full restorable JSON and a human-
  assert(zip.file('ia-pathfinder-project.json'));assert(zip.file('README.txt'));
  const restored=normalizeProjectState(JSON.parse(await zip.file('ia-pathfinder-project.json').async('string')));
  assert.equal(restored.entries[0].result,'A curved set of points');
+ assert.deepEqual(restored.completion.conclusionResultIds,['real1']);
+ assert.equal(restored.completion.fields.conclusionExtension,'Would a more realistic curved model explain the evidence?');
  assert.equal(restored.cueNotes['a-context-key'],'Reflection privately recorded');
  assert.equal(restored.completion.review.records['draft-D02'].note,'Evidence is found on page 5');
  assert.equal(restored.ideaExplorer.shortlist[0].question,'Could a curve model it?');

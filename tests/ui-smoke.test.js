@@ -550,7 +550,7 @@ test("all three writing chapters use the same four-part scaffold and preserve na
  const groups={
   data:['C20','C21S','C21M','C21T','C22','C23','C24','C25','C26'],
   maths:['C30','C31','C32','C33','C34','C34A','C34B','C34U','C35','C35H','C35B','C35P','C40','C50','C40T','C40D','C40L'],
-  conclusion:['C60','C61','C62','C63','C64']
+  conclusion:['C60']
  };
  const state=createProjectState();state.route='completing';
  state.planning.fields.aim='How does my mathematical expression behave?';
@@ -564,8 +564,9 @@ test("all three writing chapters use the same four-part scaffold and preserve na
    const h=createHarness(state);
    assert(h.html.includes('data-source-node="'+node+'"'),node);
    assert(h.html.includes('data-stage-advice="'+group+'"'),node);
-   assert(h.html.includes(node==='C20'?'Your mathematical starting points':'Use your relevant sparks'),node);
-   const positions=['advice','sparks','task','examples'].map(k=>h.html.indexOf('data-writing-stage-part="'+k+'"'));
+   if(node!=='C60')assert(h.html.includes(node==='C20'?'Your mathematical starting points':'Use your relevant sparks'),node);
+   else assert(h.html.includes('data-conclusion-workspace'),node);
+   const positions=(node==='C60'?['advice','task','examples']:['advice','sparks','task','examples']).map(k=>h.html.indexOf('data-writing-stage-part="'+k+'"'));
    assert(positions.every(v=>v>0)&&positions.every((v,i)=>i===0||v>positions[i-1]),node);
    assert(h.html.includes('studio-stage-writing-location'),node);
    assert(h.html.includes('data-writing-examples'),node);
@@ -609,11 +610,7 @@ test("contextual rubric bubbles are attached to real writing fields in the three
   C40T:['completing:C40T:title'],
   C40D:['completing:C40D:courseWhy'],
   C40L:['completing:C40L:title'],
-  C60:['completing:C61:mainConclusion','completing:C61:uncertainty'],
-  C61:['completing:C61:mainConclusion','completing:C61:uncertainty'],
-  C62:['completing:C62:benefit'],
-  C63:['completing:C63:extension'],
-  C64:['completing:C64:title']
+  C60:['completing:C61:mainConclusion','completing:C61:uncertainty','completing:C62:benefit','completing:C63:extension']
  };
  for(const [node,keys] of Object.entries(expects)){
   state.completion.current=node;
@@ -933,7 +930,7 @@ test("students can create consecutive separate mathematical pages and reconsider
  assert(h.html.includes('data-math-stage-page="3"'));
  h.action("stage-conclude");
  assert.equal(h.saved.completion.current,"C50","no conclusion without confirmation");
- assert(h.html.includes("12–20 pages"));
+ assert(h.html.includes("no required number of calculations or stages"));
  h.action("conclusion-cancel");
  assert.equal(h.saved.completion.current,"C50");
  assert(!h.html.includes('data-conclusion-gate'));

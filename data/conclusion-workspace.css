@@ -1,0 +1,101 @@
+/* Conclusion: one purposeful writing workspace, not five separate pages.
+   The original aim, evidence, and limitations remain accessible but concise. */
+.conclusion-workspace{display:grid;gap:15px;min-width:0}
+.conclusion-workspace-lead{margin:0;color:#54716b;font-size:12px;line-height:1.6}
+.conclusion-context{border:1px solid #d7e6dd;border-radius:14px;background:#f8fcf9;padding:14px;display:grid;gap:13px;min-width:0}
+.conclusion-context-aim{display:grid;gap:5px;min-width:0}
+.conclusion-context-aim>span{display:flex;align-items:center;gap:7px;color:#2f7365;font-size:10px;letter-spacing:.06em;font-weight:800}
+.conclusion-context-aim>span .icon{width:16px;height:16px}
+.conclusion-context-aim>strong{color:#24483f;font-size:15px;line-height:1.48;overflow-wrap:anywhere}
+.conclusion-evidence{border-top:1px solid #d8e8dd;padding-top:12px;display:grid;gap:9px}
+.conclusion-evidence-head{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.conclusion-evidence-head>strong{display:flex;gap:7px;align-items:center;font-size:12px;color:#25594c}
+.conclusion-evidence-head>strong .icon{width:16px;height:16px}
+.conclusion-evidence-head>span{border-radius:99px;padding:5px 8px;background:#eaf5ee;font-size:10px;color:#4e7362;font-weight:740}
+.conclusion-evidence>p,.conclusion-evidence-empty{margin:0;font-size:11px;line-height:1.5;color:#5f7770}
+.conclusion-evidence-list{display:grid;gap:6px;min-width:0}
+.conclusion-evidence-item{border:1px solid #d4e1d8;background:#fff;border-radius:10px;padding:11px;display:flex;align-items:center;gap:10px;text-align:left;width:100%;min-width:0;cursor:pointer;color:#305449}
+.conclusion-evidence-item.is-selected{border-color:#80b69f;background:#eff8f1;box-shadow:inset 3px 0 #33846b}
+.conclusion-evidence-item:hover{border-color:#6ba48b;background:#f9fffa}
+.conclusion-evidence-item:focus-visible,.conclusion-workspace-actions>.btn:focus-visible{outline:3px solid #bf9a58;outline-offset:2px}
+.conclusion-evidence-check{display:grid;place-items:center;flex:none;width:25px;height:25px;background:#f1f6f2;border-radius:9px;color:#739587}
+.conclusion-evidence-item.is-selected .conclusion-evidence-check{background:#d8f0df;color:#166d52}
+.conclusion-evidence-check .icon{width:18px;height:18px}
+.conclusion-evidence-copy{display:grid;gap:4px;flex:1;min-width:0}
+.conclusion-evidence-copy strong{font-size:11px;line-height:1.36;overflow-wrap:anywhere;color:#214b42}
+.conclusion-evidence-copy span{font-size:11px;line-height:1.45;color:#5d726b;overflow-wrap:anywhere}
+.conclusion-evidence-choice{font-size:10px;font-weight:800;color:#377c67;white-space:nowrap}
+.conclusion-evidence-more{border:0;padding:0}
+.conclusion-evidence-more>summary,.conclusion-original-context>summary,.conclusion-next-help>summary,.conclusion-previous-notes>summary{
+ display:flex;align-items:center;gap:7px;list-style:none;cursor:pointer;font-size:11px;font-weight:760;color:#397665;line-height:1.5
+}
+.conclusion-evidence-more>summary::-webkit-details-marker,.conclusion-original-context>summary::-webkit-details-marker,
+.conclusion-next-help>summary::-webkit-details-marker,.conclusion-previous-notes>summary::-webkit-details-marker{display:none}
+.conclusion-evidence-more>summary .icon,.conclusion-original-context>summary .icon,.conclusion-next-help>summary .icon{width:14px;height:14px}
+.conclusion-evidence-more .conclusion-evidence-list{margin-top:8px}
+.conclusion-evidence-flagged{background:#fff9f1;border:1px solid #eed2b0;padding:11px;border-radius:10px;display:grid;gap:7px;color:#825728;font-size:11px}
+.conclusion-evidence-flagged>strong{display:flex;gap:7px;align-items:center}
+.conclusion-evidence-flagged>strong .icon{width:16px;height:16px}
+.conclusion-evidence-flagged>div{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.conclusion-evidence-flagged>div span{flex:1}
+.conclusion-evidence-flagged>div button{display:flex;align-items:center;gap:5px;font-size:10px;white-space:nowrap;border:1px solid #ddbb8e;padding:7px 9px;border-radius:8px;background:#fff;color:#8b602e;cursor:pointer}
+.conclusion-evidence-flagged button .icon{width:13px;height:13px}
+.conclusion-original-context{border-top:1px solid #d8e8dd;padding-top:11px}
+.conclusion-original-context>div{display:grid;gap:9px;padding-top:11px}
+.conclusion-original-context p{margin:0;color:#526b61;font-size:11px;line-height:1.55}
+.conclusion-original-context p strong{display:block;color:#276355;margin-bottom:2px}
+.conclusion-original-context .spark-shelf{margin:4px 0 0}
+.conclusion-writing-part{border:1px solid #ded5ed;border-radius:13px;padding:15px 16px 8px;background:#fff;min-width:0}
+.conclusion-writing-part:nth-of-type(3){background:#fbf9fe}
+.conclusion-part-title{display:flex;align-items:flex-start;gap:11px;margin-bottom:13px;min-width:0}
+.conclusion-part-number{display:grid;place-items:center;width:28px;height:28px;flex:none;border-radius:10px;background:#eee5fa;color:#624b87;font-size:13px;font-weight:850}
+.conclusion-part-title>div{min-width:0;flex:1}
+.conclusion-part-title h3{font-size:15px;line-height:1.4;color:#2d4049;letter-spacing:-.015em;margin:0}
+.conclusion-part-title p{margin:5px 0 0;color:#62737b;font-size:11.5px;line-height:1.58}
+.conclusion-part-optional{display:inline-block;margin:5px 0 0;color:#765c99;background:#f0e9f6;border-radius:99px;padding:3px 7px;font-size:9px;letter-spacing:.07em;font-weight:820}
+.conclusion-writing-part>.criterion-marked-field,.conclusion-writing-part>.field-group{margin-bottom:10px;min-width:0}
+.conclusion-writing-part .field{min-width:0;width:100%}
+.conclusion-writing-part .criterion-marked-writing-box{margin-left:0;margin-right:0}
+.conclusion-specific-tip{display:flex;align-items:flex-start;gap:6px;font-size:11px;line-height:1.55;background:#f1f8f3;border:1px solid #dbe9df;border-radius:9px;padding:9px 11px;color:#315f4d}
+.conclusion-specific-tip>.icon{width:16px;height:16px;flex:none;margin-top:1px}
+.conclusion-specific-tip strong{font-weight:800}
+.conclusion-potential{border-color:#dfd4ed;background:#fcfaff}
+.conclusion-next-help{border-top:1px solid #ede6f3;padding:10px 0 4px;margin-bottom:7px}
+.conclusion-next-help>summary{color:#6e5592}
+.conclusion-next-help>div{display:grid;gap:6px;margin:9px 0}
+.conclusion-next-help p{margin:7px 0;font-size:11px;line-height:1.5;color:#626e77}
+.conclusion-next-help>div p{background:#fff;border:1px solid #e8dff1;border-radius:9px;padding:9px 11px;color:#4a4563;margin:0}
+.conclusion-previous-notes{padding:12px 14px;border:1px solid #ded8e7;border-radius:12px;background:#faf9fc}
+.conclusion-previous-notes>summary{color:#685580;font-size:12px}
+.conclusion-previous-notes>summary span{margin-left:auto;font-weight:500;color:#7f738d;font-size:10px;text-align:right}
+.conclusion-previous-notes>div{padding-top:10px}
+.conclusion-previous-notes>div>p{color:#766987;font-size:11px;line-height:1.55}
+.conclusion-workspace-actions{display:flex;align-items:center;justify-content:flex-end;gap:9px;flex-wrap:wrap;margin:4px 0 1px}
+.conclusion-workspace-actions>.btn{font-size:11.5px;display:inline-flex;gap:7px;align-items:center;justify-content:center}
+.conclusion-workspace-actions>.btn .icon{width:16px;height:16px}
+/* The shared instructional card is retained but folded up so the writing
+   prompts and authentic results remain the focus of this screen. */
+.studio-stage-advice.conclusion-stage-advice{padding:11px 14px}
+.conclusion-stage-advice .studio-stage-advice-head{align-items:center}
+.conclusion-stage-advice .studio-stage-icon{height:33px;width:33px;border-radius:10px}
+.conclusion-stage-advice .studio-stage-icon .icon{height:18px;width:18px}
+.conclusion-stage-advice .studio-stage-advice-head h2{font-size:13px;margin:0}
+.conclusion-stage-advice .studio-stage-advice-head p{font-size:11px;line-height:1.5}
+.conclusion-stage-advice .studio-stage-more-advice{margin-top:9px}
+.conclusion-stage-advice .studio-stage-guide-link{margin-left:2px}
+.studio-stage-writing-task.conclusion-writing-task .studio-stage-writing-location{padding:8px 11px;margin-bottom:12px}
+.studio-stage-writing-task.conclusion-writing-task .studio-stage-writing-location-copy p{font-size:11px}
+.studio-stage-writing-task.conclusion-writing-task .studio-stage-writing-task-head{margin-bottom:10px}
+@media(max-width:720px){
+ .conclusion-context,.conclusion-writing-part{padding:12px}
+ .conclusion-part-title{gap:9px}
+ .conclusion-workspace-actions{display:grid;grid-template-columns:1fr;gap:8px}
+ .conclusion-workspace-actions>.btn{width:100%}
+ .conclusion-evidence-item{padding:9px;gap:7px}
+ .conclusion-evidence-choice{font-size:9px}
+ .conclusion-evidence-flagged>div{align-items:flex-start;flex-direction:column}
+ .conclusion-previous-notes>summary span{display:none}
+}
+@media(prefers-reduced-motion:reduce){
+ .conclusion-evidence-item,.conclusion-workspace-actions>.btn{transition:none!important}
+}

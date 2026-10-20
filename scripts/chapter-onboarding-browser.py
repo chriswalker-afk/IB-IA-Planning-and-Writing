@@ -264,7 +264,7 @@ def completed_plan(browser,width):
   ctx.close()
 
 def writing_sections(browser,width):
- nodes=("C20","C21S","C21T","C24","C30","C33","C34B","C40","C50","C60","C61","C64")
+ nodes=("C20","C21S","C21T","C24","C30","C33","C34B","C40","C50","C60")
  for node in nodes:
   state=copy.deepcopy(BASE)
   state["route"]="completing"
@@ -292,16 +292,18 @@ def writing_sections(browser,width):
    main=page.locator('[data-source-node="'+node+'"]')
    assert main.count()==1,node
    parts=main.locator('[data-writing-stage-part]')
-   assert [parts.nth(i).get_attribute('data-writing-stage-part') for i in range(4)]==[
-    'advice','sparks','task','examples'],node
+   names=[parts.nth(i).get_attribute('data-writing-stage-part') for i in range(parts.count())]
+   assert names==(['advice','task','examples'] if node=='C60' else
+    ['advice','sparks','task','examples']),(node,names)
    assert main.locator('.studio-stage-examples').count()==1,node
-   assert main.locator('.studio-stage-sparks .spark-library').count()==1,node
+   if node!='C60': assert main.locator('.studio-stage-sparks .spark-library').count()==1,node
+   else: assert main.locator('[data-conclusion-workspace] .conclusion-context').count()==1,node
    assert main.locator('.criteria-panel').count()==0,node
    assert "actual IA document" in main.locator('.studio-stage-writing-task').inner_text(),node
    reminder=main.locator('.studio-stage-writing-location')
    assert reminder.count()==1,node
    assert reminder.locator('.studio-stage-writing-location-copy > strong').inner_text()=="Write in your actual IA document",node
-   assert "nothing is inserted into your IA automatically" in reminder.locator('.studio-stage-writing-location-copy > p').inner_text(),node
+   assert "inserted into your ia automatically" in reminder.locator('.studio-stage-writing-location-copy > p').inner_text().lower(),node
    # Regression: a raw text node, <strong> and more raw text used to become
    # three flex items, breaking the sentence into tiny desktop columns.
    geometry=reminder.evaluate("""root=>{
@@ -398,8 +400,19 @@ def writing_sections(browser,width):
    if node=="C60":
     assert main.locator('[data-criterion-badge="completing:C61:mainConclusion"]').count()==1
     assert main.locator('[data-criterion-badge="completing:C61:uncertainty"]').count()==1
-    page.locator('[data-bind="scratch.conclusion"]').fill("My real result supports a limited answer.")
-    assert stored(page)["scratch"]["conclusion"]=="My real result supports a limited answer."
+    assert main.locator('[data-criterion-badge="completing:C62:benefit"]').count()==1
+    assert main.locator('[data-criterion-badge="completing:C63:extension"]').count()==1
+    assert [x.get_attribute('data-conclusion-part') for x in main.locator('[data-conclusion-part]').all()]==['answer','meaning','next']
+    assert main.locator('[data-action="conclusion-result-toggle"]').count()==1
+    page.locator('[data-action="conclusion-result-toggle"]').click()
+    assert stored(page)["completion"]["conclusionResultIds"]==["math-stage-test"]
+    page.locator('[data-bind="completion.fields.mainConclusion"]').fill("The actual result supports a limited answer.")
+    page.locator('[data-bind="completion.fields.conclusionBenefit"]').fill("The measured domain restricts generalisation.")
+    page.locator('[data-bind="completion.fields.conclusionExtension"]').fill("How would changing the domain affect the model?")
+    saved=stored(page)
+    assert saved["completion"]["fields"]["mainConclusion"]=="The actual result supports a limited answer."
+    assert saved["completion"]["fields"]["conclusionBenefit"]=="The measured domain restricts generalisation."
+    assert saved["completion"]["fields"]["conclusionExtension"]=="How would changing the domain affect the model?"
    if node=="C21T":
     assert main.locator('[data-bind="completion.fields.theoreticalObject"]').count()==1
     assert "no need to invent a dataset" in main.inner_text()
@@ -497,8 +510,8 @@ def repeatable_mathematics(browser,width):
   assert page.locator('[data-source-node="C50"]').count()==1
   warning=page.locator('[data-conclusion-gate]')
   assert warning.count()==1
-  assert "12–20 pages" in warning.inner_text()
-  assert "not a compulsory page count" in warning.inner_text()
+  assert "no required number of calculations or stages" in warning.inner_text()
+  assert "12–20 pages" not in warning.inner_text()
   page.screenshot(path=str(OUT/f"math-conclusion-warning-{width}.png"),full_page=True,animations="disabled")
   page.locator('[data-action="conclusion-cancel"]').click()
   assert page.locator('[data-conclusion-gate]').count()==0

@@ -190,7 +190,11 @@ export function createProjectViews(ctx){
        summary("Linked precision inputs",linkedAccuracy(state,st).map(x=>x.quantity).join("; "))+
        summary("Next question",st.nextQuestion)+'</div>').join(""):'<p class="text-muted">No mathematics recorded yet.</p>')+
       accuracySection+limitsSection+writingMoments+createConformanceViews(ctx).reviewReport()+
-      '<h2 style="margin-top:35px">My writing notes</h2>'+summary("Introduction",state.scratch.introduction)+summary("Data & methods",state.scratch.dataNotes)+summary("Conclusion",state.scratch.conclusion)+summary("Revisions",state.scratch.finalReview)+
+      '<h2 style="margin-top:35px">My writing notes</h2>'+summary("Introduction",state.scratch.introduction)+summary("Data & methods",state.scratch.dataNotes)+
+      summary("Conclusion · mathematical answer",state.completion.fields.mainConclusion)+
+      summary("Conclusion · meaning and important limits",state.completion.fields.conclusionBenefit)+
+      summary("Conclusion · potential next mathematical questions",state.completion.fields.conclusionExtension)+
+      summary("Earlier conclusion notes (preserved)",state.scratch.conclusion)+summary("Revisions",state.scratch.finalReview)+
       '<p class="text-xs text-muted">Student-entered Planning and mathematical notes. This working record is not a mark prediction, approval or formal IA submission.</p></div></div>';
   }
   function tabletNav() {
