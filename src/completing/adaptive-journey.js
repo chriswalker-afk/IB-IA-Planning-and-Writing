@@ -203,7 +203,8 @@ export function journeySourceSignature(state,entry){
  if(!entry)return "";
  const original=activeRoute(state)?.id||"",methodRoute=outcomeRouteForEntry(state,entry)?.id||"";
  const json=JSON.stringify([original,methodRoute,entry.id||"",entry.status||"",entry.result||"",entry.journeyOutcome||"",
-  entry.resultSignal||"",entry.observation||"",entry.localTakeaway||"",entry.interpretation||""]);
+  entry.resultSignal||"",entry.observation||"",entry.localTakeaway||"",entry.interpretation||"",
+  entry.nextQuestion||"",entry.nextWhy||"",entry.journeyDirection||""]);
  let h=2166136261;
  for(let i=0;i<json.length;i++)h=Math.imul(h^json.charCodeAt(i),16777619);
  return (h>>>0).toString(16).padStart(8,"0");
