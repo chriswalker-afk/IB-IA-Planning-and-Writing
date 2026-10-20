@@ -69,6 +69,29 @@ test('standalone readable PDF and DOCX keep existing planning-only import compat
 });
 test('empty project produces valid full exports without inventing mathematical evidence',async()=>{
  const s=createProjectState();
- assert(dump(modelFromFullProject(s)).includes('This project has no mathematical-step records.'));
+ assert(!modelFromFullProject(s).sections.some(x=>x.title==='Mathematical journey'),'Empty journeys must not be printed');
  for(const format of ['pdf','docx','zip'])assert((await createFullProjectExport(s,format)).bytes.length>1500);
+});
+
+test('saved figures appear in full reports once, linked to the correct mathematical stage',()=>{
+ const s=sample();
+ s.graphStudio.figures.push({id:'figure-test',entryId:'real1',savedAt:'2026-10-20',draft:{
+  title:'Actual plot',kind:'scatter',raw:'time,distance\\n1,2\\n2,5',matrix:[['1','2'],['2','5']],
+  columns:['time','distance'],xLabel:'Time',yLabel:'Distance',xIndex:0,yIndex:1
+ }});
+ s.entries[0].graphFigureId='figure-test';
+ const m=modelFromFullProject(s),figs=m.sections.flatMap(sec=>sec.figures||[]);
+ assert.equal(figs.length,1);assert.equal(figs[0].id,'figure-test');
+ assert(m.sections.some(sec=>sec.title.includes('Figure for mathematical step 1')));
+ assert(figs[0].svg.includes('<svg'));
+ assert(m.sections.some(sec=>sec.rows.some(row=>row.value.includes('time,distance'))));
+});
+test('unlinked saved figures and draft representations are labelled without inventing results',()=>{
+ const s=createProjectState();
+ s.voronoiStudio.draft.title='Incomplete Voronoi idea';
+ s.voronoiStudio.draft.sites=[{id:'one',name:'School',x:0,y:0,kind:'observed'}];
+ const m=modelFromFullProject(s);
+ assert(m.sections.some(sec=>sec.title.includes('Other saved figure')));
+ assert(m.sections.some(sec=>sec.description.includes('not linked')));
+ assert(!m.sections.some(sec=>sec.title==='Mathematical journey'));
 });
