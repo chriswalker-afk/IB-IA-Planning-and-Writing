@@ -360,3 +360,19 @@ test("later-stage outcomes switch from the original journey to a confirmed metho
  assert(html.includes('data-journey-next-state="ready"'));
  assert(html.includes("residual"));
 });
+
+test("returning to the first maths after creating later stages retains direct links to every page",()=>{
+ const {state,view}=fixture();state.route="completing";
+ state.entries=[
+  {id:"first",phase:"first",status:"completed",result:"Observed pattern"},
+  {id:"second",phase:"substantial",fromEntryId:"first",status:"completed",result:"Evaluated a model"},
+  {id:"third",phase:"substantial",fromEntryId:"second",status:"planned",result:""}
+ ];
+ state.completion.activeEntryIndex=0;setCompletionNode(state,"C30");
+ const html=view.viewCompleting();
+ for(let index=0;index<3;index++)
+  assert(html.includes('data-action="completion-edit-entry" data-index="'+index+'"'));
+ assert(html.includes("Mathematical stage 2"));
+ assert(html.includes("Mathematical stage 3"));
+ assert(html.includes('aria-current="page"'));
+});
