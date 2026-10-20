@@ -4,6 +4,7 @@ export const ENTRY_BASE=Object.freeze({
  id:"",phase:"legacy",fromEntryId:"",previousTakeaway:"",
  title:"",purpose:"",technique:"",methodId:"",knowledge:"unsure",knowledgeNotes:"",unfamiliarComponent:"",researchSource:"",understandingExample:"",mathsInsight:"",methodChangeReason:"",priorLearningOnly:"",
  kind:"",status:"planned",result:"",resultRef:"",observation:"",observationText:"",resultSignal:"",
+ journeyOutcome:"",journeyDirection:"",journeySourceOutcome:"",journeySourceSignature:"",journeyRouteId:"",
  interpretation:"",localTakeaway:"",limitations:"",nextQuestion:"",nextWhy:"",
  bridge:"",graphFigureId:"",imageTraceId:"",statFigureId:"",tableFigureId:"",voronoiFigureId:"",accuracyRef:"",accuracyRefs:Object.freeze([]),sourceRefs:Object.freeze([]),reviewNeeded:"",reviewReason:"",reviewCheckedAt:"",createdAt:""
 });
