@@ -211,6 +211,25 @@ export function createCompletingViews(ctx){
    '<p class="journey-stage-link-note">The proposed question is advice, not a calculation. Use your own work and words in the IA.</p>'+
   '</section>';
  };
+ const mathematicalPageLinks=(state,activeIndex)=>{
+  const entries=state.entries||[],firstIndices=entries.flatMap((x,i)=>x?.phase==="first"?[i]:[]);
+  const later=entries.flatMap((x,i)=>x?.phase==="substantial"?[i]:[]);
+  // Several initial diagrams still belong to ONE first mathematical page.
+  if(!later.length)return "";
+  const firstIndex=firstIndices.includes(activeIndex)?activeIndex:firstIndices.at(-1);
+  const indexes=[...(firstIndex===undefined?[]:[firstIndex]),...later];
+  return '<nav class="math-stage-page-nav" aria-label="Your mathematical pages">'+
+   indexes.map(index=>{
+    const entry=entries[index],number=entry.phase==="first"?"First mathematics":
+      "Mathematical stage "+(later.indexOf(index)+2);
+    const selected=index===activeIndex||entry.phase==="first"&&firstIndices.includes(activeIndex);
+    return '<button type="button" class="math-stage-page-link'+(selected?' selected':'')+
+      '" data-action="completion-edit-entry" data-index="'+index+'"'+
+      (selected?' aria-current="page"':'')+'>'+
+      icon(entry.status==="completed"&&filled(entry.result)?"check-circle":"circle")+
+      '<span>'+e(number)+'</span></button>';
+   }).join("")+'</nav>';
+ };
  const stageBranchActions=()=>{
   const s=getState(),active=completeEntry(s),confirmed=active?.status==="completed"&&filled(active.result);
   return '<nav class="math-stage-branch" data-math-stage-branch aria-label="Choose your next mathematical stage">'+
@@ -808,6 +827,7 @@ export function createCompletingViews(ctx){
     (genuine?to("C35","Decide whether another mathematical step is needed"):""));
    return{intro:"Show your first mathematics as a connected mathematical story: introduce each output before displaying it, present it selectively, interpret it against your aim, and justify whatever follows.",
     html:'<div class="show-first-sequence" data-show-first-sequence>'+
+      mathematicalPageLinks(s,s.completion.activeEntryIndex)+
       '<p class="show-first-sequence-lead">Four parts of your <strong>actual IA writing</strong>. The boxes below save planning and reflection notes; they do not insert text, tables or calculations into your IA.</p>'+
       first+second+third+fourth+'</div>'};
   }
@@ -969,14 +989,7 @@ export function createCompletingViews(ctx){
    const card=(id,number,title,description,content)=>'<section class="show-first-part" data-show-first-part="'+id+'">'+
     '<div class="show-first-part-heading"><span class="show-first-part-number">'+number+'</span>'+
     '<div><h3>'+e(title)+'</h3><p>'+e(description)+'</p></div></div>'+content+'</section>';
-   const pageNavigation='<nav class="math-stage-page-nav" aria-label="Your mathematical pages">'+
-    state.entries.map((step,i)=>({step,i})).filter(x=>["first","substantial"].includes(x.step.phase)).map(({step,i})=>{
-     const num=step.phase==="first"?"First mathematics":"Mathematical stage "+(state.entries.slice(0,i+1).filter(x=>x.phase==="substantial").length+1);
-     return '<button type="button" class="math-stage-page-link'+(i===idx?' selected':'')+
-      '" data-action="completion-edit-entry" data-index="'+i+'"'+(i===idx?' aria-current="page"':'')+'>'+
-      icon(step.status==="completed"&&filled(step.result)?"check-circle":"circle")+
-      '<span>'+e(num)+'</span></button>';
-    }).join("")+'</nav>';
+   const pageNavigation=mathematicalPageLinks(state,idx);
    const first=card("introduce","1","Connecting to the previous mathematics",
     "Begin from what the previous section actually established. Explain the mathematical question that follows, and why this technique can advance your aim.",
     entryReviewAlert()+
