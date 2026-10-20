@@ -35,7 +35,7 @@ export function mathematicalPages(s){
    status:firsts.some(x=>x.entry.reviewNeeded==='yes')?'needs-review':
     firsts.every(x=>isActual(x.entry))?'complete':'working'});
  }
- later.forEach(({entry,index},i=>pages.push({
+ later.forEach(({entry,index},i)=>pages.push({
   entry,index,recordIndices:[index],stage:i+2,label:'Mathematical stage '+(i+2),
   status:entry.reviewNeeded==='yes'?'needs-review':isActual(entry)?'complete':'working'
  }));
