@@ -74,5 +74,5 @@ test('experience stylesheet honours reduced motion and touch-sized support',()=>
 test('fresh Studio overview starts in Set up and rejects unknown last-stage metadata',()=>{
  const s=createProjectState();s.route='completing';s.completion.current='C04';assert.equal(currentGroup(s).id,'setup');
  s.ui.lastStudioNode='not-a-stage';assert.equal(currentGroup(s).id,'setup');
- s.completion.history=['C10','C90','C04'];assert.equal(currentGroup(s).id,'finish');
+ s.completion.history=['C10','C90','C04'];assert.equal(currentGroup(s).id,'check');
 });
