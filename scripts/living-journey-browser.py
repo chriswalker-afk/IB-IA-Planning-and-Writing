@@ -60,7 +60,8 @@ with sync_playwright() as pw:
   ctx.close()
  def journey(p,original):
   baseline=core(saved(p))
-  assert p.locator(".living-ribbon .living-ribbon-part").count()==4
+  assert p.locator(".living-ribbon .living-ribbon-part").count()==5
+  assert p.locator(".living-ribbon .living-ribbon-part.checking").count()==1
   # The current studio exposes two relevant expandable sparks plus the full
   # library, not the retired insight-echo-item strip.
   shelf=p.locator('[data-spark-shelf="studio"]')
