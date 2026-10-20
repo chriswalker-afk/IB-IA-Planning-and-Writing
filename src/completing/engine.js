@@ -39,7 +39,7 @@ export const C_FIELD_DEFAULTS=Object.freeze({
  variableDefinitions:"",specialistTerms:"",sourceReferences:"",
  dataAimLink:"",dataStatusSummary:"",
  firstType:"",firstPurpose:"",firstOutputIntroduction:"",firstDefinitions:"",firstPresentation:"",
- firstWorkTitle:"",firstWorkResult:"",firstWorkLocation:"",firstWorkStatus:"planned",
+ firstWorkTitle:"",firstWorkResult:"",firstWorkLocation:"",firstWorkStatus:"",
  firstResultSummary:"",firstObservedFeature:"",firstInterpretation:"",
  accuracyForResult:"",aimLinkedResult:"",predictionComparison:"",
  benefitFinding:"",surpriseReason:"",surpriseCheck:"",
