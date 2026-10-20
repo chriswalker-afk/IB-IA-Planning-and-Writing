@@ -156,7 +156,7 @@ export function planningLearningTrail(s,{support=''}={}){
   '<span class="section-eyebrow">'+icon('route')+' DISCOVERY TRAIL</span>'+
   '<h2>Your mathematical journey</h2><p>Plan first. Write your IA. Check your document.</p></div>'+
   overview+milestones+
-  '<details class="planning-trail-map-detail"><summary>'+icon('map')+' Explore all five chapters '+icon('chevron-right')+'</summary>'+
+  '<details class="planning-trail-map-detail"><summary>'+icon('route')+' Explore all five chapters '+icon('chevron-right')+'</summary>'+
   chapterButtons+'</details></div>';
  return '<aside class="planning-learning-trail" aria-label="Discovery Trail">'+
   '<div class="planning-trail-desktop">'+full+'</div>'+
