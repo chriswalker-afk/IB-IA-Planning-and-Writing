@@ -256,7 +256,7 @@ export function discoveryTrail(s,{compact=false}={}){
     '<button type="button" class="living-trail-step '+e(status)+(current?' current':'')+
     ' '+e(g.mode)+'" data-action="journey-open" data-target="'+e(target)+'"'+
     (current?' aria-current="step"':'')+
-    ' aria-label="'+e('Chapter '+number+': '+g.name+'. '+chapterRole(g)+'. '+STATUS_LABELS[status]+'. '+progress)+'">'+
+    ' aria-label="'+e('Chapter '+number+': '+g.name+'. '+(g.mode==='planning'?'Plan your exploration.':g.mode==='checking'?'Check the IA you wrote.':'Write in your IA.')+' '+STATUS_LABELS[status]+'. '+progress)+'">'+
     chapterJourneyIcon(g)+'<span class="living-trail-step-order" aria-hidden="true">'+(status==='complete'?icon('check'):number)+'</span>'+
     '<strong>'+e(g.name)+'</strong><small>'+e(STATUS_LABELS[status])+'</small>'+
     '<span class="living-trail-step-detail">'+e(progress)+'</span>'+
