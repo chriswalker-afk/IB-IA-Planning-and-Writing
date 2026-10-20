@@ -128,6 +128,51 @@ with sync_playwright() as pw:
   assert core(saved(p))==baseline,"Moving between chapters does not edit the student's mathematics"
  for w,h in [(390,844),(1440,1000)]:
   run("studio-overview-single-trail-"+str(w),overview,w,h)
+ # Pass 2: one orientation map, a true current task, and genuine saved anchors.
+ def planning_design(p,original):
+  baseline=core(saved(p))
+  p.locator('[data-nav="planning"]:visible').first.click()
+  assert p.locator('.planning-learning-trail').count()==1
+  assert p.locator('.living-trail').count()==0 and p.locator('.living-ribbon').count()==0
+  assert p.locator('.planning-trail-overview-node').count()==10,"Desktop and phone share the same five-chapter template"
+  if p.viewport_size["width"]>980:
+   wrap=p.locator('.planning-trail-desktop')
+   assert wrap.is_visible()
+  else:
+   disclosure=p.locator('.planning-trail-compact')
+   assert disclosure.is_visible()
+   assert 'anchors saved' in disclosure.locator('summary').first.inner_text()
+   disclosure.locator('summary').first.click()
+   wrap=disclosure.locator('.planning-trail-compact-body')
+  assert wrap.locator('.planning-trail-overview-node:visible').count()==5
+  assert 'Where are you starting?' in wrap.locator('.planning-trail-current-title').inner_text()
+  assert 'Right now in Planning' in wrap.inner_text()
+  assert 'planning anchors saved' in wrap.inner_text()
+  assert 'Every screen counts' not in wrap.inner_text()
+  assert 'screens completed' not in wrap.inner_text()
+  chapter_detail=wrap.locator('.planning-trail-map-detail')
+  assert not chapter_detail.get_attribute('open'),"Extra chapter descriptions start collapsed"
+  chapter_detail.locator('summary').click()
+  assert chapter_detail.locator('.planning-trail-chapter:visible').count()==5
+  p.screenshot(path=str(OUT/("planning-discovery-pass-2-"+str(p.viewport_size["width"])+".png")),full_page=True,animations="disabled")
+  wrap.locator('.planning-trail-overview-node.checking').click()
+  assert p.locator('.checking-page').is_visible()
+  assert core(saved(p))==baseline,"Trail navigation must preserve student work"
+  # The exact current question heading must match the Trail (both widths).
+  snapshot=saved(p)
+  snapshot["route"]="planning";snapshot["planning"]["current"]="N01V"
+  snapshot["ui"]["planningIntroSeen"]=True
+  p.evaluate("(args)=>localStorage.setItem(args.key,JSON.stringify(args.value))",{"key":KEY,"value":snapshot})
+  p.reload(wait_until="networkidle")
+  assert p.locator('[data-source-node="N01V"]').count()==1
+  assert "Have a clear motivation." in p.locator('[data-source-node="N01V"]').inner_text()
+  if p.viewport_size["width"]>980:
+   assert "Have a clear motivation." in p.locator('.planning-trail-desktop .planning-trail-current-title').inner_text()
+  else:
+   assert "Have a clear motivation." in p.locator('.planning-trail-compact > summary').inner_text()
+  assert core(saved(p))==baseline
+ for w,h in [(390,844),(1440,1000)]:
+  run("planning-discovery-pass-2-"+str(w),planning_design,w,h)
  def reduced(p,original):
   baseline=core(saved(p))
   assert p.locator(".living-ribbon").is_visible()
@@ -135,6 +180,9 @@ with sync_playwright() as pw:
   assert p.evaluate('getComputedStyle(document.querySelector(".living-ribbon-part")).transitionDuration') in ("0s","0.0s")
   p.locator('[data-nav="home"]:visible').first.click()
   assert p.locator(".living-trail").is_visible()
+  assert p.locator('.living-trail.is-compact .living-trail-step.current:visible').count()==1
+  assert p.locator('.living-trail.is-compact .living-trail-step:not(.current):visible').count()==0
+  assert p.locator('.living-trail-view-full').is_visible()
   assert "My Toolkit" in p.locator("#main").inner_text()
   assert core(saved(p))==baseline,(baseline,core(saved(p)))
  run("motion-preference",reduced,390,844,"reduce")

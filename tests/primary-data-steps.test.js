@@ -119,7 +119,10 @@ test('quantity and accuracy live together on screen one; sampling lives on scree
  assert(!h.includes('data-action="plan-save-accuracy"'));
  set(state,'primarySamplingMethod','convenience');set(state,'primaryStatus','unsure');
  assert(planAutoAdvance(state).ok);
- assert(planningLearningTrail(state).includes('Planned collection and accuracy'));
+ const trail=planningLearningTrail(state);
+ assert(trail.includes('What do you predict might happen?'));
+ assert(trail.includes('Right now in Planning'));
+ assert(!trail.includes('Every screen counts'));
 });
 test('saved accuracy sparks remain on the merged screen',()=>{
  const state=s();set(state,'primaryHow','Measure reaction times');

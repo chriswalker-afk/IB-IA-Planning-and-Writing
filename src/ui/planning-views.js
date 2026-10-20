@@ -1,4 +1,5 @@
 import {planningLearningTrail} from './living-journey.js';
+import {planningScreenTitle} from '../planning/screen-labels.js';
 import {earlyMathRecommendations} from '../planning/math-recommendations.js';
 import {renderInvestigativeRoutes} from './investigative-routes-view.js';
 
@@ -158,7 +159,7 @@ export function createPlanningViews(ctx){
         '<button class="onboarding-inline-action" type="button" data-action="example-open" data-example-browse="true">Compare examples '+icon("arrow-right")+'</button>'+
         '<button class="onboarding-inline-action" type="button" data-action="resource-browse">Tools & tutorials '+icon("arrow-right")+'</button></div></section>'+
      '<section class="chapter-onboarding-tile"><span class="chapter-onboarding-tile-icon">'+icon("download")+'</span>'+
-       '<h3>Make progress at your own pace</h3><p>Look at the <strong>Discovery Trail</strong> to see four chapters. Your work is saved on this device; save a project backup to move between devices. Planning ends with a report and a clear link into writing your IA.</p></section>'+
+       '<h3>Make progress at your own pace</h3><p>Look at the <strong>Discovery Trail</strong> to see all five chapters. Your work is saved on this device; save a project backup to move between devices. Planning ends with a report and a clear link into writing your IA.</p></section>'+
     '</div>'+
     '<p class="chapter-onboarding-reassurance">'+icon("check-circle")+' No grades or marks are predicted here. It is fine to revise your question later.</p>'+
    '</div>',"","Start planning");
@@ -553,7 +554,7 @@ export function createPlanningViews(ctx){
    '<span class="progress-counter">1. Planning · '+e(welcome?"How Pathfinder works":PROGRESS_GROUPS[stageI]?.label||"Review")+'</span>'+
    (welcome?'':'<button type="button" class="chapter-guide-reopen" data-action="planning-intro-open">'+icon("circle-help")+' How this works</button>')+'</div>'+
    '<div class="task-shell'+(welcome?' chapter-onboarding-shell':'')+(kickoff&&!welcome?' planning-kickoff':'')+(titleStep?' planning-title-step':'')+(n==="N07"?' planning-finish':'')+'" data-source-node="'+e(n)+'"'+(welcome?' data-planning-intro="true"':'')+'>'+
-   criterionPageHeading(screen.title,"planning",n)+'<p class="task-intro">'+e(screen.intro)+'</p>'+
+   criterionPageHeading(welcome?screen.title:planningScreenTitle(n,state),"planning",n)+'<p class="task-intro">'+e(screen.intro)+'</p>'+
    (welcome?'':renderSparkShelf(state,n,{surface:'planning'}))+screen.html+
    (!welcome&&["N01","N01V","N02M","N03P","N03P2","N03S","N03J","N04S","N04R","N04M","N05","N05V"].includes(n)?
     '<div class="planning-context-examples" aria-label="Examples for this planning decision">'+examplePrompt(state)+'</div>':'')+
