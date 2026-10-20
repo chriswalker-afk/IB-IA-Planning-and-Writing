@@ -599,3 +599,67 @@
 .living-trail-chapter-guide-note{margin:0;padding:0 14px 12px}
 @media(max-width:540px){.living-trail-chapter-guide-grid{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){.living-trail-chapter-guide>summary>.icon:last-child{transition:none}}
+
+/* Fifth chapter: the independent blue Checking act follows three purple writing
+ * chapters. Both path and cards use the same five-column grid at every width. */
+.living-ribbon{grid-template-columns:repeat(5,minmax(0,1fr))}
+.living-trail-steps{grid-template-columns:repeat(5,minmax(0,1fr))}
+.living-trail-zone-underlay{grid-template-columns:minmax(0,1fr) minmax(0,3fr) minmax(0,1fr)}
+.living-trail-zone-underlay>.checking{background:#eef6fa;border-color:#d0e4ec}
+.living-trail-zone-headings{grid-template-columns:repeat(5,minmax(0,1fr))}
+.living-trail-zone-title.writing{grid-column:2 / 5}
+.living-trail-zone-title.checking{grid-column:5;color:#365c72}
+.living-trail-zone-title.checking small{color:#667f8f}
+.living-trail-route .living-trail-road.writing-to-checking{stroke:#d9dfef}
+.living-trail-route .living-trail-step.checking.current{background:#dfeef7;border-color:#b4d0e1}
+.living-trail-route .living-trail-step.checking:hover{background:#e7f2fa}
+.living-trail-route .living-trail-step.checking strong{color:#294c64}
+.checking .chapter-journey-icon{background:#dcebf5;color:#376b85}
+.living-trail-route .living-trail-marker.checking.not-started .living-trail-circle{border-color:#9dbccf;color:#466c81}
+.living-ribbon-part.checking{background:#f3f9fd;border-color:#d5e6f1}
+.living-ribbon-part.checking.current{background:#dfedf7;border-color:#a9cbdc}
+.living-ribbon-part.checking:hover{background:#e9f4fc}
+.living-ribbon-part.checking .living-ribbon-number:not(:has(.icon)){color:#426981;border-color:#bed4e1}
+.planning-trail-chapters{grid-template-rows:repeat(5,74px)}
+.planning-trail-zone-underlay{grid-template-rows:74px minmax(0,1fr) 74px}
+.planning-trail-zone-underlay>.checking{margin-top:3px;background:#eef6fa;border:1px solid #d1e4ef;border-radius:13px}
+.planning-trail-phase-label.checking{color:#42728b}
+.planning-trail-chapter.checking.current{background:#e2f0f8;border-color:#a5c9df}
+.planning-trail-chapter.checking:hover{background:#eaf6fc}
+.planning-trail-chapter.checking .planning-trail-chapter-copy strong{color:#355e78}
+.planning-trail-card .planning-trail-chapters .living-trail-road.writing-to-checking{stroke:#d3e1ed}
+.side-milestones .journey-rail-zone.checking{background:#f0f7fb;border-color:#d6e5ef}
+.side-milestones .journey-rail-zone.checking .journey-rail-zone-label{color:#406e85}
+.side-milestones .journey-milestone.checking:hover{background:#e7f1fa}
+.side-milestones .journey-milestone.checking.active{background:#dcecf7}
+.side-milestones .journey-milestone.checking .journey-rail-name>.icon{color:#47788d}
+.side-milestones .journey-milestone.checking .dot{border-color:#b7cedb}
+.journey-chapter.journey-chapter-checking{border-color:#d6e5ef;background:#f5fafd}
+.journey-chapter.journey-chapter-checking summary:hover{background:#e8f2f9}
+.journey-chapter-act.checking{color:#426f86}
+.journey-chapter.journey-chapter-checking .chapter-marker:not(.complete):not(.needs-review){color:#507890;background:#e2f0f7}
+.journey-checking-stage{border-color:#d9e8f0;background:#f8fcff}
+.journey-checking-stage h3,.journey-checking-stage .journey-writing-phase{color:#406a81}
+@media(max-width:760px){
+ .living-trail-route .living-trail-steps .living-trail-step.checking{min-width:0}
+ .living-trail-route .living-trail-step-detail{font-size:9px}
+ .living-trail-zone-title.checking strong{font-size:10px}
+ .living-ribbon-part{padding-inline:3px}
+ .living-ribbon-label{font-size:9px}
+}
+@media(max-width:540px){
+ .living-trail-zone-headings{grid-template-columns:repeat(5,minmax(0,1fr));gap:3px}
+ .living-trail-zone-title.plan{grid-column:1}
+ .living-trail-zone-title.writing{grid-column:2 / 5}
+ .living-trail-zone-title.checking{grid-column:5}
+ .living-trail-zone-title.checking small{display:none}
+ .living-trail-route .living-trail-steps .living-trail-step.checking{background:#eff7fc;border-color:#d0e4f0}
+ .living-trail-route .living-trail-steps .living-trail-step.checking.current{background:#dfeef9;border-color:#a8cadf}
+ .living-trail-step.checking .living-trail-step-order{color:#426e83;border-color:#c1d8e6}
+ .living-trail-zone-title{padding:6px 2px}
+ .living-trail-zone-title strong{font-size:10px}
+}
+@media(max-width:480px){
+ .planning-trail-compact-body .planning-trail-chapters{grid-template-rows:repeat(5,63px)}
+ .planning-trail-compact-body .planning-trail-zone-underlay{grid-template-rows:63px minmax(0,1fr) 63px}
+}
