@@ -59,7 +59,7 @@ import {renderPresentationCoach,renderFigureHandover} from "../src/diagrams/pres
 import {figureCaption} from "../src/diagrams/presentation-coach-core.js";
 import {displayVoronoiBounds,coordinateFromCanvas,canvasPosition,voronoiFrame,recordVoronoiHistory,applyVoronoiFrame,undoVoronoi,redoVoronoi,freezeVoronoiWindow,fitVoronoiSites,setVoronoiTool,selectVoronoiSite,moveVoronoiSite,proposeVoronoiComparison,showVoronoiComparison,finishVoronoiComparison,selectNearestBisector} from "../src/diagrams/voronoi-interactions.js";
 import {renderWriterFieldGuide} from "../src/completing/writer-field-guide.js";
-import {setCompletionNode,moveCompletionRoute,completionBack,markCompletionStage,setCompletionField,addAccuracyDecision,completionSuggestions,sectionForNode,targetForSection,completeEntry,latestRealResult,flagDependentMathematics,acknowledgeMathReview} from "../src/completing/engine.js";
+import {setCompletionNode,moveCompletionRoute,completionBack,markCompletionStage,setCompletionField,addMathematicalStage,routesAt,addAccuracyDecision,completionSuggestions,sectionForNode,targetForSection,completeEntry,latestRealResult,flagDependentMathematics,acknowledgeMathReview} from "../src/completing/engine.js";
 import {createProjectViews} from "../src/ui/project-views.js";
 import {createHandoverViews} from "../src/ui/handover-views.js";
 import {actOnWritingCue} from "../src/completing/guidance-actions.js";
@@ -121,7 +121,7 @@ function createHarness(savedValue){
     beginVoronoi,loadVoronoi,saveVoronoiDraft,saveAndLinkVoronoi,exportVoronoi,
     renderRepresentationHub,renderRepresentationSwitcher,representationFocusActive,renderPresentationCoach,renderFigureHandover,figureCaption,
     displayVoronoiBounds,coordinateFromCanvas,canvasPosition,voronoiFrame,recordVoronoiHistory,applyVoronoiFrame,undoVoronoi,redoVoronoi,freezeVoronoiWindow,fitVoronoiSites,setVoronoiTool,selectVoronoiSite,moveVoronoiSite,proposeVoronoiComparison,showVoronoiComparison,finishVoronoiComparison,selectNearestBisector,
-    setCompletionNode,moveCompletionRoute,completionBack,markCompletionStage,setCompletionField,addAccuracyDecision,completionSuggestions,sectionForNode,targetForSection,completeEntry,latestRealResult,flagDependentMathematics,acknowledgeMathReview,
+    setCompletionNode,moveCompletionRoute,completionBack,markCompletionStage,setCompletionField,addMathematicalStage,routesAt,addAccuracyDecision,completionSuggestions,sectionForNode,targetForSection,completeEntry,latestRealResult,flagDependentMathematics,acknowledgeMathReview,
     createHandoverViews,createPlanningEnvelope,getFieldDiff,mergePlanningEnvelope,modelFromEnvelope,suggestedFilename,
     actOnWritingCue,eligibleWritingCues,selectLimitation,recordLimitation,limitationContextKey,relevantLimitations,relevantBivariateOptions,resultFamily,routeNextQuestions,sourceResultForNext,
     planningMove,planAutoAdvance,planningBack,planningEdit,applyPlanningField,toggleMath,selectedMaths,exploreMathRoute,chooseMathRoute,syncPlanningToProject,setPlanCurrent,planningFlags
@@ -896,4 +896,59 @@ test("first mathematical writing drafts transfer to the real entry when it is cr
  assert.equal(h.saved.entries[0].interpretation,"The actual result changes my initial expectation.");
  assert.equal(normalizeProjectState(h.saved).entries[0].interpretation,"The actual result changes my initial expectation.");
  assert.equal(normalizeProjectState(h.saved).completion.fields.firstOutputIntroduction,"Before Figure 1 I will show the observed paired quantities.");
+});
+
+test("students can create consecutive separate mathematical pages and reconsider a conclusion",()=>{
+ const s=createProjectState();s.route="completing";s.completion.current="C30";
+ s.entries=[{id:"first",phase:"first",status:"completed",title:"Original graph",
+  result:"The observed relationship bends",localTakeaway:"A straight line does not fit"}];
+ s.completion.activeEntryIndex=0;
+ const h=createHarness(s);
+ assert(h.html.includes('data-action="stage-add"'));
+ h.action("stage-add");
+ assert.equal(h.saved.completion.current,"C40");
+ assert.equal(h.saved.entries.length,2);
+ assert.equal(h.saved.entries[1].fromEntryId,"first");
+ assert(h.html.includes('data-math-stage-page="2"'));
+ assert(h.html.includes('data-show-first-part="introduce"'));
+ assert(h.html.includes('data-show-first-part="show"'));
+ assert(h.html.includes('data-show-first-part="reflect"'));
+ assert(h.html.includes('data-show-first-part="next"'));
+ h.write("entries.1.result","Quadratic model has better residuals");
+ h.choose("entries.1.status","completed");
+ h.write("entries.1.localTakeaway","Quadratic fits better than linear");
+ h.write("entries.1.nextQuestion","Can the turning point optimise my aim?");
+ h.write("entries.1.nextWhy","The vertex is a useful extremum");
+ h.action("stage-add");
+ assert.equal(h.saved.completion.current,"C50");
+ assert.equal(h.saved.entries.length,3);
+ assert.equal(h.saved.entries[2].fromEntryId,h.saved.entries[1].id);
+ assert.equal(h.saved.entries[2].title,"Can the turning point optimise my aim?");
+ assert.equal(h.saved.entries[2].status,"planned");
+ assert.equal(h.saved.entries[2].result,"");
+ assert(h.html.includes('data-math-stage-page="3"'));
+ h.action("stage-conclude");
+ assert.equal(h.saved.completion.current,"C50","no conclusion without confirmation");
+ assert(h.html.includes("12–20 pages"));
+ h.action("conclusion-cancel");
+ assert.equal(h.saved.completion.current,"C50");
+ assert(!h.html.includes('data-conclusion-gate'));
+ h.action("stage-conclude");
+ h.action("conclusion-confirm");
+ assert.equal(h.saved.completion.current,"C60");
+});
+test("all direct requests for the conclusion pause at the advisory warning first",()=>{
+ const s=createProjectState();s.route="completing";s.completion.current="C04";
+ const h=createHarness(s);
+ h.action("completion-open",{node:"C60"});
+ assert.equal(h.saved.completion.current,"C04");
+ assert(h.html.includes('data-conclusion-gate'));
+ h.action("conclusion-cancel");
+ assert(!h.html.includes('data-conclusion-gate'));
+ h.action("completion-open",{node:"C35"});
+ h.action("completion-route",{condition:"Enough relevant mathematics—bring findings together"});
+ assert.equal(h.saved.completion.current,"C35");
+ assert(h.html.includes('data-conclusion-gate'));
+ h.action("conclusion-confirm");
+ assert.equal(h.saved.completion.current,"C60");
 });
