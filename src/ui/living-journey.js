@@ -23,7 +23,7 @@ export function chapterStats(s,g){
    labels:pages.map(p=>p.label),statuses:pages.map(p=>p.status)};
  }
  const stages=g.stages||[];
- const names={C10:'Introduction',C20:'Introduce first mathematics',C60:'Conclusion',
+ const names={C10:'Introduction',C20:'Introduce first mathematics',C60:'Conclusion & next steps',
   C70:'Communication',C80:'Teacher feedback',C90:'Final checks'};
  return {ready:stages.filter(x=>stageStatus(s,x)==='complete').length,total:stages.length,
   labels:stages.map(x=>names[x]||x),statuses:stages.map(x=>stageStatus(s,x))};
@@ -248,7 +248,7 @@ export function discoveryTrail(s,{compact=false}={}){
     '<div><strong>1 · Planning</strong><p>Develop a worthwhile aim, explore mathematical pathways, choose primary, secondary or theoretical starting material, and plan sampling, permissions, sources and precision where relevant. Save useful ideas as sparks.</p></div>'+
     '<div><strong>2 · Start writing</strong><p>Write your introduction, connect it to the investigation aim, and justify the first mathematics and evidence you intend to use. Writing belongs in your own IA.</p></div>'+
     '<div><strong>3 · Explore &amp; explain</strong><p>Show real calculations or well-presented diagrams and tables, interpret results, reflect on meaningful limitations, and add further linked mathematical stages when they help answer the aim.</p></div>'+
-    '<div><strong>4 · Conclude &amp; review</strong><p>Check whether you have sufficient mathematical substance, then synthesise a supported conclusion, improve notation and presentation, seek appropriate draft feedback, and complete final checks.</p></div>'+
+    '<div><strong>4 · Conclude &amp; review</strong><p>Synthesise your real mathematics in one short Conclusion workspace: answer the aim, explain its significance and limits, and consider potential next mathematical questions. Then check communication, appropriate feedback and final readiness.</p></div>'+
    '</div><p class="living-trail-chapter-guide-note">Sparks, worked examples, diagram generators and criteria help you along the way; they are not compulsory extra stages or automatic marks. A saved figure is not proof that the mathematics has been completed.</p>'+
   '</details>'+
   insightTrailControls(s)+'<p class="living-trail-note">Mint is for planning; purple is for work written in your IA. A recorded plan is not completed mathematics. All chapters and mathematical stages stay revisitable.</p></section>';
