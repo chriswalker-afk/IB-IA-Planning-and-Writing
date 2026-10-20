@@ -155,7 +155,7 @@ test('stars link directly to mathematical records, with distinct review and plan
  s.entries=[{id:'one',title:'Graph',status:'completed',result:'A real observation'},
  {id:'two',title:'Possible extension',status:'planned',result:''}];
  const html=mathConstellation(s);
- assert.equal((html.match(/class="constellation-star-hit"/g)||[]).length,2);
+ assert.equal((html.match(/class="constellation-star-hit\b/g)||[]).length,2);
  assert(html.includes('aria-label="Open Graph: Actual result"'));
  assert(html.includes('aria-label="Open Possible extension: Planned"'));
  assert(html.includes('data-action="completion-edit-entry"'));
