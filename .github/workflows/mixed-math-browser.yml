@@ -1,0 +1,52 @@
+name: Mixed mathematics authoring browser acceptance
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'app.js'
+      - 'src/math/**'
+      - 'src/handover/formats/pdf.js'
+      - 'src/handover/formats/docx.js'
+      - 'data/math-writing.css'
+      - 'scripts/mixed-math-browser.py'
+      - '.github/workflows/mixed-math-browser.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'app.js'
+      - 'src/math/**'
+      - 'src/handover/formats/pdf.js'
+      - 'src/handover/formats/docx.js'
+      - 'scripts/mixed-math-browser.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  math-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Build and validate existing workflows
+        run: |
+          npm install --no-audit --no-fund
+          npm test
+          npm run build
+      - name: Install Chromium and PDF reader
+        run: |
+          pip install playwright==1.57.0 pypdf==5.9.0
+          python -m playwright install --with-deps chromium
+      - name: Exercise mixed prose and mathematical exports on desktop and phone
+        run: python scripts/mixed-math-browser.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mixed-math-browser-results
+          path: qa-output/mixed-math
+          retention-days: 7
