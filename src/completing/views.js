@@ -949,7 +949,7 @@ export function createCompletingViews(ctx){
       '<p class="field-hint">Already written for this result. Edit it on the main first-mathematics screen rather than repeating it here.</p>':
       criteriaField(entryField("interpretation","What does this actual result mean for my aim?","An honest local conclusion based on mathematics I have done",{type:"textarea",rows:4}),"completing:C34B:title"))+
     entryField("localTakeaway","One sentence: what has this section established?","What do I know now, and what remains unanswered?",{type:"textarea",rows:2})+
-    F("predictionComparison","How does the result compare with your starting prediction, conjecture or hope?","What did you actually find out? It need not confirm your early expectation.",{type:"textarea",rows:2})+
+    writerGuideOnly(F("predictionComparison","How does the result compare with your starting prediction, conjecture or hope?","What did you actually find out? It need not confirm your early expectation.",{type:"textarea",rows:2}),"completing:C34B:predictionComparison")+
     F("benefitFinding","What might this mean for the intended beneficiary?","Only if supported by evidence",{type:"textarea",rows:2})+
     '<details class="guidance-insight"><summary>Did this result teach me something new mathematically? (optional)</summary>'+
       entryField("mathsInsight","My genuine new mathematical insight","About the method, proof, connection or conditions—not a routine formula",{type:"textarea",rows:3})+
