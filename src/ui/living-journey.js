@@ -3,20 +3,11 @@
  */
 import {escapeHtml as e,icon} from './primitives.js';
 import {insightTrailLines,insightTrailControls,CHAPTER_TRAIL_POINTS} from './insight-network.js';
-import {JOURNEY_GROUPS,groupStatus,stageStatus,currentGroup,groupTarget,STATUS_LABELS,chapterRole,mathematicalPages,mathematicalChapterSummary,chapterProgressCopy} from './journey.js';
+import {JOURNEY_GROUPS,groupStatus,stageStatus,currentGroup,groupTarget,STATUS_LABELS,chapterRole,planningMilestones,mathematicalPages,mathematicalChapterSummary,chapterProgressCopy} from './journey.js';
 import {PROGRESS_GROUPS,planningStage} from '../planning/engine.js';
 
-export function planningAnchors(s){
- const p=s?.planning?.fields||{};
- const yes=v=>typeof v==='string'&&!!v.trim();
- return [
-  {name:'Working title',recorded:yes(p.provisionalTitle),detail:'A provisional IA title has been saved, not finalised'},
-  {name:'My question',recorded:yes(p.aim||s.project?.aim),detail:'An investigation aim is recorded'},
-  {name:'Starting material',recorded:yes(p.kind==='theoretical'?(p.theoreticalCase||p.theoreticalObject):(p.dataSource||p.primaryWhat||p.secondaryUrl)),detail:'A proposed evidence or theoretical starting route is recorded'},
-  {name:'Mathematical direction',recorded:yes(p.course)&&yes(p.kind),detail:'A course and investigation approach have been chosen; this is not completed mathematics'},
-  {name:'Review my plan',recorded:s?.planning?.completed===true,detail:'The provisional planning review is marked ready'}
- ];
-}
+export function planningAnchors(s){return planningMilestones(s);}
+
 export function chapterStats(s,g){
  if(g.id==='plan'){
   const a=planningAnchors(s);
