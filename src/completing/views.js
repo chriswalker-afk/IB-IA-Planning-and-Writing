@@ -2,6 +2,7 @@ import {chapterRibbon} from '../ui/living-journey.js';
 import {renderFieldGuideTeaser,renderContextualGuide} from './writer-field-guide.js';
 import {renderIntroductionSparkPrompt,renderIntroductionWritingAdvice,renderIntroductionOptionalExamples} from './intro-writing-advice.js';
 import {renderWritingStageFlow} from './stage-writing-flow.js';
+import {renderConclusionWorkspace} from './conclusion-workspace.js';
 import {isStudioWritingNode,renderStudioWritingStage} from './studio-writing-stages.js';
 import {firstMathsContext} from "./first-maths-bridge.js";
 import {renderJourneyWritingAdvice} from "./first-maths-writing-guidance.js";
@@ -111,7 +112,7 @@ export function createCompletingViews(ctx){
  };
  const allButtons=(current,primary=[])=>{
   // Branch choices live at the end of the four-part maths writing page.
-  if(["C30","C40","C50"].includes(current))return "";
+  if(["C30","C40","C50","C60"].includes(current))return "";
   const rows=routesAt(current).filter(relevantRoute);
   const used=new Set(primary);
   const display=rows.filter(r=>used.has(r.condition));
@@ -1136,13 +1137,9 @@ export function createCompletingViews(ctx){
     F("mathsLearning","What did learning this change about my investigation?","A genuine mathematical insight",{type:"textarea",rows:2})+
     info("Use regular course techniques directly","If your technique is on your course, there is usually no need to teach it to the reader.")
   };
-  case "C60":return{intro:"Synthesize the mathematics you actually completed and give the best-supported answer to your aim.",
-    html:actualList()+smallSummary("Current aim",currentAim())+
-    smallSummary("Starting prediction or hope (not evidence)",plannedPrediction())+
-    smallSummary("Original reason for that expectation",p.predictionWhy||s.project.predictionWhy)+
-    smallSummary("Intended beneficiary",currentBenefit())+
-    guides.conclusionLimitations()+
-    criterionMarkedWritingBox(field("scratch.conclusion","My own conclusion notes","State the best-supported answer and limits, in my own words",{type:"textarea",rows:6}),["completing:C61:mainConclusion","completing:C61:uncertainty"])
+  case "C60":return{intro:"Use genuine mathematics to answer your aim, explain its significance and consider a meaningful future mathematical question.",
+   html:renderConclusionWorkspace({state:s,e,icon,field,F,criteriaField,
+     criterionMarkedWritingBox,currentAim,plannedPrediction,currentBenefit})
   };
   case "C61":return{intro:"What essential answer have your actual results established? An uncertain or negative finding is still legitimate.",
    html:actualList()+guides.conclusionLimitations()+
@@ -1276,7 +1273,7 @@ export function createCompletingViews(ctx){
   const fieldBadgeInsteadOfTitle=["C33","C34B","C35P","C40","C50","C40T","C40L","C64"].includes(node);
   const topWarnings=warning.length&&["C00","C02","C03","C04","C20"].includes(node)?
     '<div class="completion-top-warnings">'+warning.slice(0,2).map(x=>info("Review needed",x,true)).join("")+'</div>':"";
-  const statusControls=stage&&C_MAJOR_STAGES.some(x=>x.id===stage)&&[stage,"C40","C50"].includes(node)?
+  const statusControls=stage&&node!=="C60"&&C_MAJOR_STAGES.some(x=>x.id===stage)&&[stage,"C40","C50"].includes(node)?
     '<div class="completion-status"><span class="field-label">My assessment of this stage (not automatically graded)</span>'+
     '<div class="completion-status-options">'+[
       ["working",STATUS_LABELS.working],["complete",STATUS_LABELS.complete],["needs-review",STATUS_LABELS["needs-review"]]].map(([key,text])=>
@@ -1288,7 +1285,7 @@ export function createCompletingViews(ctx){
    ].filter(Boolean).join(""):"";
   const stagedHtml=studioWriting?renderStudioWritingStage(s,node,{
     icon,e,taskIntro:screen.intro,reduced:isAdviceReduced(s),help:optionalStudioHelp,
-    taskHtml:screen.html+(screen.extra||"")+insightCapture(s,node)
+    taskHtml:screen.html+(screen.extra||"")+(node==="C60"?"":insightCapture(s,node))
    }):screen.html+(screen.extra||"");
   return '<div class="page narrow completing-page">'+tabletNav()+chapterRibbon(s)+
     '<div class="completion-topline"><span>'+icon("route")+' '+e(node==="C04"?"Your IA Studio":(JOURNEY_GROUPS.indexOf(currentGroup(s))+1)+'. '+currentGroup(s).name)+'</span>'+
