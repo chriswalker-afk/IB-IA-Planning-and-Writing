@@ -165,13 +165,14 @@ test("prominent mathematical development is present before formula and after act
   html=render(state,"C40");
   assert(!html.includes("route-preflight"),method);
   assert(html.includes("route-depth-check"),method);
-  assert(html.includes('data-choice="entries.0.resultSignal"'),method);
+  assert(html.includes('data-bind="entries.0.journeyOutcome"'),method);
+   assert(html.includes("route-depth-check"),method+" retains mathematical development");
   state.ui.adviceMode="reduced";
   html=render(state,"C40");
   assert(html.includes("route-coach-compact"),method);
   assert(html.includes("route-depth-check"),method);
   assert(!html.includes("route-coach-detail"),method);
-  assert(html.includes('data-bind="entries.0.resultSignal"'),method);
+  assert(html.includes('data-bind="entries.0.journeyOutcome"'),method);
   state.ui.adviceMode="guided";
   const e1=state.entries[0];e1.phase="first";
   state.completion.activeEntryIndex=0;
