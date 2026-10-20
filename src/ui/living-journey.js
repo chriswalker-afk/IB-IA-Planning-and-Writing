@@ -5,9 +5,24 @@ import {escapeHtml as e,icon} from './primitives.js';
 import {insightTrailLines,insightTrailControls,CHAPTER_TRAIL_POINTS} from './insight-network.js';
 import {JOURNEY_GROUPS,groupStatus,stageStatus,currentGroup,groupTarget,STATUS_LABELS,chapterRole,planningMilestones,mathematicalPages,mathematicalChapterSummary,chapterProgressCopy,checkingMilestones} from './journey.js';
 import {PROGRESS_GROUPS,planningStage} from '../planning/engine.js';
+import {planningScreenTitle} from '../planning/screen-labels.js';
 import {mathActionTitle} from './math-constellation.js';
 
 export function planningAnchors(s){return planningMilestones(s);}
+/** Shared chapter identity for the illustrated map, compact ribbon and Planning trail. */
+export const DISCOVERY_ZONES=Object.freeze([
+ {mode:'planning',label:'Plan',description:'Explore your idea',icon:'compass'},
+ {mode:'writing',label:'Write your IA',description:'Build your actual mathematical exploration',icon:'pencil'},
+ {mode:'checking',label:'Checking',description:'Read, revise and verify',icon:'clipboard'}
+]);
+/** All presentations obtain their wording, destinations and status from one model. */
+export function discoveryChapters(s){
+ const active=currentGroup(s);
+ return JOURNEY_GROUPS.map((g,i)=>({
+  g,number:i+1,status:groupStatus(s,g),current:active.id===g.id,
+  target:groupTarget(s,g),progress:chapterProgressCopy(s,g)
+ }));
+}
 
 export function chapterStats(s,g){
  if(g.id==='plan'){
@@ -44,18 +59,17 @@ export function chapterMini(s,g){
   '</span>';
 }
 export function chapterRibbon(s){
- const active=currentGroup(s);
- return '<nav class="living-ribbon" aria-label="Your five journey chapters">'+
- JOURNEY_GROUPS.map((g,i)=>{
-  const status=groupStatus(s,g),label=STATUS_LABELS[status];
-  return '<button type="button" data-action="journey-open" data-target="'+e(groupTarget(s,g))+
-   '" class="living-ribbon-part '+e(status)+' '+e(g.mode)+(active.id===g.id?' current':'')+'"'+
-   (active.id===g.id?' aria-current="step"':'')+
-   ' aria-label="'+e('Chapter '+(i+1)+': '+g.name+'. '+chapterRole(g)+'. '+label+'.')+'">'+
-   '<span class="living-ribbon-number">'+(status==='complete'?icon('check'):i+1)+'</span>'+
-   '<span class="living-ribbon-label">'+e(g.name)+'</span>'+
-   chapterJourneyIcon(g)+chapterMini(s,g)+'<span class="visually-hidden">'+e(label)+'. '+e(chapterProgressCopy(s,g))+'</span></button>';
- }).join('')+'</nav>';
+ return '<nav class="living-ribbon" aria-label="Discovery Trail: five chapters">'+
+  discoveryChapters(s).map(({g,number,status,current,target,progress})=>{
+   const label=STATUS_LABELS[status];
+   return '<button type="button" data-action="journey-open" data-target="'+e(target)+
+    '" class="living-ribbon-part '+e(status)+' '+e(g.mode)+(current?' current':'')+'"'+
+    (current?' aria-current="step"':'')+
+    ' aria-label="'+e('Chapter '+number+': '+g.name+'. '+chapterRole(g)+'. '+label+'. '+progress)+'">'+
+    '<span class="living-ribbon-number">'+(status==='complete'?icon('check'):number)+'</span>'+
+    '<span class="living-ribbon-label">'+e(g.name)+'</span>'+
+    chapterJourneyIcon(g)+chapterMini(s,g)+'</button>';
+  }).join('')+'</nav>';
 }
 export function planningProgress(s,{compact=false}={}){
  const a=planningAnchors(s),ready=a.filter(x=>x.recorded).length;
