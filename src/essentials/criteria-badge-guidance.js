@@ -12,7 +12,7 @@ const firstTypes={scatter:'a scatter graph',distribution:'a group or distributio
  unsure:'an undecided first representation'};
 const needsReal=new Set(['C33','C34','C34B','C35','C35B','C35P','C40','C50','C40T','C40L']);
 
-const closingNodes=new Set(['C61','C62','C63','C64','C70','C80D','C90F']);
+const closingNodes=new Set(['C60','C61','C62','C63','C64','C70','C80D','C90F']);
 const REVIEW_FOCUS=Object.freeze({
  A:'Follow the coherent thread from aim to relevant mathematics and a concise conclusion.',
  B:'Check real notation, symbols, equations, diagrams, units and suitable accuracy.',
@@ -29,7 +29,7 @@ export function closingBadgeGuidance(state,key,base){
  const result={...base,details:[],real:done.length>0,reviewRows:[],reviewMode:''};
  const add=(label,value)=>{if(short(value)&&result.details.length<3)result.details.push({label,text:short(value)});};
  add('Your recorded investigation aim',p.aim||state.project?.aim);
- if(node==='C61'||node==='C62'||node==='C63'||node==='C64'){
+ if(node==='C60'||node==='C61'||node==='C62'||node==='C63'||node==='C64'){
   if(latest){
    add('Last mathematical finding marked completed',latest.localTakeaway||latest.result);
    if(latest.reviewNeeded==='yes')result.reminder='An earlier result has an outstanding review flag after a change. Recheck it before relying on the conclusion.';
@@ -37,6 +37,12 @@ export function closingBadgeGuidance(state,key,base){
    result.why='A mathematical conclusion must be grounded in the actual IA. There are no mathematical results marked completed in this Pathfinder project yet.';
    result.strong='Check your actual IA document and record or revisit genuinely completed mathematics before stating what it establishes. An incomplete or inconclusive result must not be rewritten as success.';
    result.reminder='Pathfinder cannot verify calculations in an external IA document. No result is invented to fill this gap.';
+  }
+  if(node==='C60'){
+   if(result.real&&(p.intendedUse||p.beneficiary))
+    add('Original intended use (not evidence)',p.intendedUse||p.beneficiary);
+   if(result.real&&p.kind==='theoretical')
+    result.strong='Explain exactly what your proof or argument establishes, under which definitions and assumptions, and what remains unproved. Link this mathematical insight to your original aim without inventing a practical beneficiary or repeating earlier working.';
   }
   if(node==='C62'){
    if(p.beneficiary||p.intendedUse)add('Your original purpose (not evidence)',p.intendedUse||p.beneficiary);

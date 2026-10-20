@@ -1,21 +1,23 @@
 import test from 'node:test';
+import {readFileSync} from 'node:fs';
 import assert from 'node:assert/strict';
 import {
  CRITERION_SPOTS,criterionSpotFor,criterionPageHeading,criterionMarkedField,
- criterionBadge,isCriterionSpotPage,criterionFieldSpots
+ criterionBadge,criterionMarkedWritingBox,isCriterionSpotPage,criterionFieldSpots
 } from '../src/essentials/criteria-badges.js';
 import {CRITERIA} from '../src/essentials/catalog.js';
 import {contextualBadgeGuidance} from '../src/essentials/criteria-badge-guidance.js';
+import {renderConclusionWorkspace} from '../src/completing/conclusion-workspace.js';
 import {createProjectState} from '../src/core/project-state.js';
 
 test('three passes retain selective and specific criteria without new administrative badges',()=>{
  const keys=Object.keys(CRITERION_SPOTS);
- assert.equal(keys.length,55); // 49 established spots plus six contextual C30 writing bubbles.
+ assert.equal(keys.length,55); // The overlapping C20 choice was removed; one unified conclusion D was added.
  for(const [key,criterion] of [
   ['planning:N01V:benefit','C'],['planning:N02M:title','E'],
   ['completing:C10:aim','A'],['completing:C10:motivation','C'],
   ['completing:C20:source','A'],['completing:C20:method','C'],
-  ['completing:C20:firstBridge','A'],['completing:C20:firstChoice','C'],['completing:C20:firstPurpose','E'],
+  ['completing:C20:firstBridge','A'],['completing:C20:firstPurpose','E'],
   ['completing:C20:methodIntroduction','E'],['completing:C20:methodJustification','C'],
   ['completing:C20:methodEvaluation','D'],['completing:C20:methodSuitability','E'],
   ['completing:C21S:samplingRationale','C'],['completing:C21S:responseBias','D'],
@@ -36,6 +38,7 @@ test('three passes retain selective and specific criteria without new administra
   ['completing:C35B:title','E'],['completing:C35P:title','E'],
   ['completing:C40:title','E'],['completing:C50:title','E'],
   ['completing:C40T:title','E'],['completing:C40L:title','E'],
+  ['completing:C60:meaningAndLimits','D'],
   ['completing:C61:mainConclusion','A'],['completing:C61:uncertainty','D'],
   ['completing:C62:benefit','D'],['completing:C63:extension','D'],
   ['completing:C64:title','A'],['completing:C70:title','A'],
@@ -317,4 +320,47 @@ test('introduction A and C badges guide the writing rather than awarding marks',
  assert(a.details.some(x=>x.text.includes('mathematical aim')));
  assert(c.details.some(x=>x.text.includes('observed pattern')));
  assert.equal(JSON.stringify(s),before);
+});
+
+test('redesigned conclusion has one Criterion D bubble for meaning and limits, preserving separate legacy help',()=>{
+ const s=createProjectState(),before=JSON.stringify(s);
+ const html=renderConclusionWorkspace({
+  state:s,e:v=>String(v),icon:()=>'',field:()=>'',F:(name)=>'<textarea data-field="'+name+'"></textarea>',
+  criterionMarkedWritingBox,criteriaField:criterionMarkedField,
+  currentAim:()=>'What does the mathematics establish?',plannedPrediction:()=>'',currentBenefit:()=>''
+ });
+ const meaning=html.match(/<section class="conclusion-writing-part" data-conclusion-part="meaning">([\s\S]*?)<\/section>/)?.[1];
+ assert(meaning,'meaning-and-limits writing box exists');
+ assert.equal((meaning.match(/data-criterion-badge="/g)||[]).length,1);
+ assert(meaning.includes('data-criterion-badge="completing:C60:meaningAndLimits"'));
+ assert(!meaning.includes('data-criterion-badge="completing:C62:benefit"'));
+ assert(!meaning.includes('data-criterion-badge="completing:C61:uncertainty"'));
+ assert.equal(CRITERION_SPOTS['completing:C60:meaningAndLimits'].criterion,'D');
+ assert.equal(CRITERION_SPOTS['completing:C20:firstChoice'],undefined,'only the method-choice box should carry C');
+ assert.equal(JSON.stringify(s),before);
+});
+test('combined D advice uses only genuine completed mathematics and respects theoretical conclusions',()=>{
+ const key='completing:C60:meaningAndLimits',base=CRITERION_SPOTS[key];
+ const s=createProjectState();
+ s.planning.fields.kind='theoretical';
+ s.planning.fields.aim='What can be proved in this domain?';
+ const before=JSON.stringify(s),noResult=contextualBadgeGuidance(s,key,base);
+ assert.equal(noResult.real,false);
+ assert(noResult.strong.includes('genuinely completed mathematics'));
+ assert.equal(JSON.stringify(s),before);
+ s.entries=[{id:'proof-one',status:'completed',kind:'theory',result:'I proved this property for positive integers.',localTakeaway:'The result holds for positive integers.'}];
+ const confirmed=contextualBadgeGuidance(s,key,base);
+ assert.equal(confirmed.real,true);
+ assert(confirmed.strong.includes('proof or argument'));
+ assert(confirmed.strong.includes('without inventing a practical beneficiary'));
+ assert(confirmed.details.some(x=>x.text.includes('positive integers')));
+});
+test('E advice in later mathematical stages annotates technique suitability, not merely the bridge',()=>{
+ const src=readFileSync(new URL('../src/completing/views.js',import.meta.url),'utf8');
+ assert(src.includes('criteriaField(entryField("purpose","Why is the chosen approach appropriate here?"'));
+ assert(src.includes('"completing:"+n+":title"'));
+ const part=src.slice(src.indexOf('case "C40":case "C50":'),src.indexOf('case "C40T":'));
+ const bridge=part.slice(part.indexOf('entryField("bridge"'),part.indexOf('entryField("purpose"'));
+ assert(!bridge.includes('completing:"+n+":title'),'Criterion E must not be attached to the coherence-only bridge');
+ assert(part.includes('Keep your mathematical argument focused')===false,'first-stage appendix advice belongs to C30');
 });

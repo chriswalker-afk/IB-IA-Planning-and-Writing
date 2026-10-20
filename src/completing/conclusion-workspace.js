@@ -167,7 +167,7 @@ export function renderConclusionWorkspace({state,e,icon,field,F,criterionMarkedW
      '<p>Explain the significance for your original question or purpose. Include only the assumptions, uncertainty or domain restrictions that change the conclusion.</p></div></div>'+
    criterionMarkedWritingBox(F("conclusionBenefit","My interpretation and the important limits",
     "What can I responsibly conclude, and what does the mathematics NOT establish?",
-    {type:"textarea",rows:5}),["completing:C62:benefit","completing:C61:uncertainty"])+
+    {type:"textarea",rows:5}),["completing:C60:meaningAndLimits"])+
    '<p class="conclusion-specific-tip">'+icon("lightbulb")+
     ' <strong>Mathematical reminder:</strong> '+e(mathematicalTip(state))+'</p>'+
   '</section>'+

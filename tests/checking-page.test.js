@@ -115,3 +115,30 @@ test('review source guidance covers all shared D01-D21 records with explicit cri
  assert(css.includes('@media(max-width:690px)'));
  assert(css.includes('.checking-criterion-bubble:focus-visible'));
 });
+
+test('administrative, attribution and teacher-feedback tasks are process requirements, not phantom A–E marks',()=>{
+ const processIds=['D09','D10','D12','D15','D18'];
+ for(const id of processIds){
+  assert.deepEqual(CHECKING_DETAILS[id].criteria,[],id+' must not imply a direct assessed mark');
+  assert(CHECKING_DETAILS[id].processNote.length>45,id+' needs an explicit explanation');
+ }
+ const s=createProjectState();
+ for(const mode of ['draft','feedback','final']){
+  s.ui.checkingMode=mode;
+  const html=render(s);
+  assert(html.includes('PROCESS</span>'));
+  assert(html.includes('do not award additional criterion marks'));
+  for(const id of processIds){
+   const start=html.indexOf('data-checking-item="'+id+'"');
+   if(start<0)continue;
+   const end=html.indexOf('</article>',start);
+   assert(end>start,id+' complete card should be present');
+   const card=html.slice(start,end);
+   assert(card.includes('checking-process-tag'),id);
+   assert(!card.includes('checking-criterion-bubble'),id+' is process, not rubric evidence');
+   assert(card.includes(CHECKING_DETAILS[id].processNote),id);
+  }
+ }
+ for(const [id,letter] of Object.entries({D02:'A',D03:'B',D04:'C',D05:'D',D06:'E'}))
+  assert.deepEqual(CHECKING_DETAILS[id].criteria,[letter],id+' must still expose the actual rubric criterion');
+});

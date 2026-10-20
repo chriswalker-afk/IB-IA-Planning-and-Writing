@@ -571,7 +571,7 @@ export function createCompletingViews(ctx){
      "A sentence or two linking your chosen first mathematical question to the aim, not a list of future techniques.";
    const linkPrompt=criterionMarkedWritingBox(
     F("dataAimLink","How does this first mathematics connect to my aim?",linkHelp,{type:"textarea",rows:3}),
-    ["completing:C20:firstBridge","completing:C20:firstChoice"]);
+    ["completing:C20:firstBridge"]);
    const where=F("firstMathsBridgePlacement","Have I already explained why I am starting here?","",{
     type:"select",options:[
      ["","Choose when ready"],
@@ -779,7 +779,7 @@ export function createCompletingViews(ctx){
       graph:graphEntryPanel,trace:traceEntryPanel,stat:statEntryPanel,
       table:tableEntryPanel,voronoi:voronoiEntryPanel
     })+
-    '<p class="show-first-table-rule"><strong>Never include long raw-data tables, including in appendices.</strong> Keep the full dataset in your working files. Use an informative graph, selected rows or a compact summary table if they make the mathematics clearer.</p>'+
+    '<p class="show-first-table-rule"><strong>Keep your mathematical argument focused.</strong> Avoid long raw-data tables in the main discussion. Where genuinely useful, place large datasets or supporting material in an appendix (following your school's rules), while keeping essential figures, selected data and reasoning beside the mathematics that uses them.</p>'+
     entryReviewAlert()+
     '<div class="show-first-inline-record" data-first-inline-result>'+
       '<div class="show-first-inline-record-heading"><span>'+icon("calculator")+'</span><div><h4>My mathematical work</h4>'+
@@ -1016,11 +1016,10 @@ export function createCompletingViews(ctx){
     entryField("title","What mathematical question is this stage investigating?",
      "A specific mathematical question arising from the previous result",{type:"textarea",rows:2})+
     '<div class="show-first-writing-field">'+
-     criterionMarkedWritingBox(entryField("bridge","My linking sentence from the previous result",
-      "For example: The earlier result raises the question of ..., so I will now investigate ...",{type:"textarea",rows:3}),
-      ["completing:"+n+":title"])+'</div>'+
-    entryField("purpose","Why is the chosen approach appropriate here?",
-     "Link the technique to the previous finding and your overall aim",{type:"textarea",rows:3})+
+     entryField("bridge","My linking sentence from the previous result",
+      "For example: The earlier result raises the question of ..., so I will now investigate ...",{type:"textarea",rows:3})+'</div>'+
+    criteriaField(entryField("purpose","Why is the chosen approach appropriate here?",
+     "Link the technique to the previous finding and your overall aim",{type:"textarea",rows:3}),"completing:"+n+":title")+
     '<div class="journey-stage-method"><strong>'+icon("compass")+
      ' The mathematical approach for THIS stage</strong>'+
      '<p>Choose the method you are using or have actually used. This changes the possible outcomes you can select in Section 3; it does not claim that the calculation has been completed.</p>'+
@@ -1167,11 +1166,13 @@ export function createCompletingViews(ctx){
   case "C70":return{intro:"Review clarity across the actual document, repairing explanations where they originally appear.",
     html:F("presentationIssue","One issue with labels, graphs, flow or layout","What would make it easier for a mathematical reader?",{type:"textarea",rows:3})+
       F("referencesIssue","Are data sources, technology and borrowed techniques referenced?","What needs checking?",{type:"textarea",rows:2})+
+      '<p class="field-hint">Source attribution is an academic-integrity requirement, not an extra mark for Criterion A.</p>'+
       info("Write in the right place","A notation mistake in Figure 2 should be fixed at Figure 2, not explained in the conclusion.")
   };
   case "C70N":return{intro:"Check symbols, units, equations, graphs, exactness and justified approximations in the original locations.",
    html:F("notationIssue","Notation or mathematical presentation to repair","Define new variables, distinguish = and ≈, label units",{type:"textarea",rows:4})+
-    accuracyNote()+F("referencesIssue","Citation or source issue to repair","Original data and technology acknowledged",{type:"textarea",rows:2})
+    accuracyNote()+F("referencesIssue","Citation or source issue to repair","Original data and technology acknowledged",{type:"textarea",rows:2})+
+    '<p class="field-hint">Citation integrity matters, but it is not a Criterion B marking point.</p>'
   };
   case "C80":return{intro:"Keep the written draft process separate from final submission. Follow the feedback rules actually set by your school.",
    html:choice("draftComplete",[["not-yet","My full IA draft is not ready"],["ready","I have a complete working draft"],

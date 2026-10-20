@@ -107,3 +107,8 @@
 }
 @media(max-width:390px){.checking-criteria-legend{grid-template-columns:1fr 1fr}.checking-status-action{font-size:9px;padding:7px 8px}}
 @media(prefers-reduced-motion:reduce){.checking-mode-tab,.checking-progress-track>span,.checking-item-details>summary>.icon{transition:none!important}}
+
+/* Criterion markers and essential process checks serve different purposes. */
+.checking-bubble-key{margin:-13px 0 21px;color:#536d72;font-size:12px;line-height:1.55;max-width:90ch}
+.checking-process-explanation{margin:10px 0;padding:10px 12px;border:1px solid #dce9e3;border-radius:10px;background:#f7faf9;color:#45676d;font-size:12px;line-height:1.6}
+.checking-process-explanation strong{color:#294e55}

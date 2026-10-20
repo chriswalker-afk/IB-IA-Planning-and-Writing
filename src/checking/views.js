@@ -16,7 +16,7 @@ export function createCheckingViews(ctx){
    '" title="Read Criterion '+letter+': '+e(meta.name)+'" aria-label="Read Criterion '+letter+': '+e(meta.name)+' rubric">'+letter+'</button>';
  };
  const badges=letters=>letters.length?'<span class="checking-criterion-bubbles" role="group" aria-label="Relevant IB criteria">'+letters.map(badge).join('')+'</span>':
-  '<span class="checking-process-tag">'+icon('clipboard')+' PROCESS</span>';
+  '<span class="checking-process-tag" aria-label="Process requirement, not an additional criterion mark">'+icon('clipboard')+' PROCESS</span>';
  const action=(name,text,attributes='')=>'<button type="button" class="btn btn-secondary btn-sm" data-action="'+name+'" '+attributes+'>'+text+'</button>';
  const listItem=(s,check,mode)=>{
   const details=CHECKING_DETAILS[check.id]||{criteria:[],focus:check.question,lookFor:[],source:''};
@@ -40,6 +40,7 @@ export function createCheckingViews(ctx){
     '<div class="checking-item-inner">'+
       (details.lookFor.length?'<ul class="checking-look-for">'+details.lookFor.map(v=>'<li>'+e(v)+'</li>').join('')+'</ul>':'')+
       '<p class="checking-source-note">'+e(details.source)+'</p>'+
+      (details.processNote?'<p class="checking-process-explanation"><strong>Important process requirement:</strong> '+e(details.processNote)+'</p>':'')+
       '<p class="checking-evidence-reminder">To mark a check as done, record where you checked in your actual IA or what you verified. For “Not relevant”, explain why. Your Word/PDF is not inspected automatically.</p>'+
       field(stem+'location','Where in my actual IA?','Page, section, figure or equation')+
       field(stem+'note','My evidence, or why this is not relevant','What I actually checked',{type:'textarea',rows:2})+
@@ -87,7 +88,8 @@ export function createCheckingViews(ctx){
   const badgeIntro='<div class="checking-criteria-legend">'+scoreKeys.map(letter=>{
    const m=CHECKING_CRITERIA[letter];
    return '<div>'+badge(letter)+'<span><strong>'+e(m.name)+'</strong><small>Up to '+m.max+' marks</small></span></div>';
-  }).join('')+'</div>';
+  }).join('')+'</div>'+ 
+   '<p class="checking-bubble-key"><strong>A–E</strong> bubbles point to the assessed IB criteria. <strong>PROCESS</strong> identifies essential integrity, feedback or submission checks; these do not award additional criterion marks.</p>';
   return badgeIntro+
    (individual.length?'<section class="checking-criteria-sections"><div class="checking-section-head"><div><h3>Read your IA through five lenses</h3><p>These checks come from the IB criteria. Open each one for the specific things to look for.</p></div></div>'+
     '<div class="checking-criteria-grid">'+individual.map(check=>listItem(s,check,mode)).join('')+'</div></section>':'')+

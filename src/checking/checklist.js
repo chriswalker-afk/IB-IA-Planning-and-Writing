@@ -11,7 +11,7 @@ export const CHECKING_CRITERIA=Object.freeze({
  D:{name:'Reflection',max:3,short:'Mathematical interpretation and critical reflection throughout'},
  E:{name:'Use of mathematics',max:6,short:'Relevant, correct, course-appropriate mathematics with understanding'}
 });
-const row=(criteria,focus,lookFor=[],source='Both resources')=>({criteria,focus,lookFor,source});
+const row=(criteria,focus,lookFor=[],source='Both resources',processNote='')=>({criteria,focus,lookFor,source,processNote});
 export const CHECKING_DETAILS=Object.freeze({
  D01:row([],'Is my teacher draft a complete investigation, not a proposal?',[
   'Introduction with aim and personal purpose','The actual mathematics and relevant figures are included',
@@ -50,22 +50,22 @@ export const CHECKING_DETAILS=Object.freeze({
   'Ask a peer to explain the path from one stage to the next',
   'If available, ask a non-specialist whether the main narrative makes sense',
   'Identify the exact place the reader lost the thread and rewrite in your own words'],'JIS Guide, p. 40'),
- D09:row(['A'],'Are external sources identifiable and consistently cited?',[
+ D09:row([],'Are external sources identifiable and consistently cited?',[
   'Cite all external data, illustrations, quotations, outside mathematics and borrowed ideas',
   'Use a consistent in-text citation style and full source list',
-  'JIS 2025 guidance suggests MLA through Google Docs; confirm any updated school preference'],'IB IA Checklist, Criterion A; JIS Guide, pp. 4–6'),
- D10:row(['A'],'Have I checked the current school formatting requirements?',[
+  'JIS 2025 guidance suggests MLA through Google Docs; confirm any updated school preference'],'IB academic-integrity guidance; JIS Guide, pp. 4–6',"Credit and traceability are essential for academic integrity. References and bibliographies are not directly assessed for marks under A–E."),
+ D10:row([],'Have I checked the current school formatting requirements?',[
   'Title and page numbering are clear; typography and margins are readable',
   'JIS 2025 guide recommends approximately 12–20 pages and double line spacing',
-  'Treat this as guidance, not an automated IB pass/fail threshold; check current teacher instructions'],'IB IA Checklist, Criterion A; JIS Guide, pp. 2–3'),
+  'Treat this as guidance, not an automated IB pass/fail threshold; check current teacher instructions'],'IB format guidance; JIS Guide, pp. 2–3',"Page length, spacing and cover conventions are school or IB presentation instructions, not separate Criterion A marking points."),
  D11:row(['E'],'Does the draft contain real mathematical work?',[
   'Show actual equations, calculations, reasoning and/or purposeful figures',
   'Explain what each key result establishes before continuing',
   'Do not mistake a planned technique, predicted result or blank diagram for completed mathematics'],'JIS Guide, pp. 27–31, 40'),
- D12:row(['C','A'],'Is this clearly my own, appropriately credited exploration?',[
+ D12:row([],'Is this clearly my own, appropriately credited exploration?',[
   'The mathematical explanations and reflection are genuinely your own',
   'External calculations, sources and figures are acknowledged',
-  'Follow school policies for ethical data and permitted support'],'JIS Guide, pp. 3–4, 40'),
+  'Follow school policies for ethical data and permitted support'],'IB academic-integrity expectations; JIS Guide, pp. 3–4, 40',"Authenticity and correct attribution are obligations, not automatic evidence of Criterion C personal engagement. Engagement must be visible in the actual mathematics."),
  D13:row([],'Am I using the permitted teacher-written feedback opportunity correctly?',[
   'The JIS 2025 guide describes one teacher-written feedback opportunity',
   'Submit a complete draft when required; do not request another written correction round here',
@@ -73,10 +73,10 @@ export const CHECKING_DETAILS=Object.freeze({
  D14:row([],'Have I captured verbal advice as specific actions?',[
   'Write what the teacher actually suggested, not what you infer they approved',
   'Identify the page/equation/figure to change','Return later to check the revision works'],'JIS Guide, pp. 3, 37'),
- D15:row(['D','E'],'Have changes been implemented and checked in the final file?',[
+ D15:row([],'Have changes been implemented and checked in the final file?',[
   'Revise the actual explanation or mathematical working, not only Pathfinder notes',
   'Re-check numerical results, figures and their implications after changing data or methods',
-  'Do not call a revision verified merely because you received feedback'],'JIS Guide, pp. 37, 40; IB IA Checklist, Criteria D–E'),
+  'Do not call a revision verified merely because you received feedback'],'JIS Guide, pp. 37, 40; review against the actual Criteria D and E',"Recording or completing teacher-feedback revisions earns no separate D or E marks. Only the quality of the revised mathematical reasoning and reflection can strengthen the IA."),
  D16:row(['A','B','C','D','E'],'Can I point to genuine evidence for all five criteria?',[
   'A: coherent, concise mathematical narrative','B: correct and consistent mathematical communication',
   'C: independent student choices that shaped the mathematics',
@@ -86,9 +86,9 @@ export const CHECKING_DETAILS=Object.freeze({
   'Correct grammar, spelling, page numbers and unusual line breaks',
   'Check typeset notation, figure legibility, source links and captions at reading size',
   'Reopen the exact file intended for submission after making any changes'],'IB IA Checklist, Criteria A–B; JIS Guide, p. 40'),
- D18:row(['A'],'Have I checked the correct submission identity and cover instructions?',[
+ D18:row([],'Have I checked the correct submission identity and cover instructions?',[
   'Follow current school rules for title, candidate identification and file naming',
-  'Do not include private participant details or assume a universal cover template'],'JIS Guide, pp. 2–3; current school instructions'),
+  'Do not include private participant details or assume a universal cover template'],'JIS Guide, pp. 2–3; current school submission instructions',"Candidate identity, cover details and file naming are submission requirements; meeting them does not by itself demonstrate Criterion A."),
  D19:row(['A','B'],'Is data presented where a reader needs it?',[
   'Put essential figures, tables and commentary together in the main text',
   'If there are large datasets or repeated calculations, use an appendix where useful',
