@@ -16,8 +16,8 @@ fixture=json.loads(subprocess.check_output(['node','--input-type=module','-e',r'
 import {createProjectState} from './src/core/project-state.js';
 const s=createProjectState();
 s.route='planning';
-s.planning.current='N01V';
-s.planning.visited=['N00','N01','N01V'];
+s.planning.current='N01';
+s.planning.visited=['N00','N01'];
 s.planning.fields.ideaStatus='yes';
 s.planning.fields.aim='The observed model is  for these fictional cases.';
 s.planning.fields.course='AA SL';
@@ -43,7 +43,7 @@ try:
    page=context.new_page()
    errors=[]
    page.on('pageerror',lambda err: errors.append(str(err)))
-   page.goto('http://127.0.0.1:'+str(PORT)+'/IB-IA-Planning-and-Writing/',wait_until='networkidle',timeout=45000)
+   page.goto('http://127.0.0.1:'+str(PORT)+'/',wait_until='networkidle',timeout=45000)
    target=page.locator('textarea[data-bind="planning.fields.aim"]').first
    assert target.is_visible(), 'The Planning answer field must remain editable.'
    original=target.input_value()
