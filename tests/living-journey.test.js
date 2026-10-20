@@ -252,7 +252,7 @@ test('motivation is a separate student-owned spark echoed where findings need a 
 });
 
 
-test('Discovery Trail uses one mint planning zone connected to a purple writing zone, not four role labels',()=>{
+test('Discovery Trail has mint planning, purple writing, then blue Checking in five steps',()=>{
  const s=createProjectState();
  s.route='completing';s.completion.current='C10';
  const before=JSON.stringify(s);
@@ -262,15 +262,17 @@ test('Discovery Trail uses one mint planning zone connected to a purple writing 
   assert(html.includes('living-trail-zone-underlay'));
   assert(html.includes('living-trail-zone-title plan'));
   assert(html.includes('living-trail-zone-title writing'));
+   assert(html.includes('living-trail-zone-title checking'));
+   assert(html.includes('Check your IA'));
   assert(html.includes('Write your IA'));
   assert(html.includes('Plan'));
-  assert.equal((html.match(/class="living-trail-step /g)||[]).length,4);
+  assert.equal((html.match(/class="living-trail-step /g)||[]).length,5);
   assert.equal((html.match(/class="living-trail-step [^"]* writing"/g)||[]).length,3);
-  assert.equal((html.match(/class="chapter-journey-icon"/g)||[]).length,4);
+  assert.equal((html.match(/class="chapter-journey-icon"/g)||[]).length,5);
   assert(!html.includes('journey-mode-tag'));
   assert(!html.includes('PLAN ONLY')&&!html.includes('WRITE IN IA'));
   assert(html.includes('aria-label="Chapter 2: Start writing. Write in your IA.'));
-  for(const label of ['Planning','Start writing','Explore &amp; explain','Conclude &amp; review'])
+  for(const label of ['Planning','Start writing','Explore &amp; explain','Conclude &amp; next steps','Check your IA'])
    assert(html.includes(label),label);
  }
  assert.equal(JSON.stringify(s),JSON.stringify(JSON.parse(before)));
@@ -280,8 +282,8 @@ test('Discovery Trail path starts inside Planning and every visible milestone ce
  const trail=discoveryTrail(s);
  assert(trail.includes('viewBox="0 0 1000 155" preserveAspectRatio="none"'));
  assert(trail.includes('class="living-trail-path"'));
- assert.equal((trail.match(/class="living-trail-node living-trail-marker /g)||[]).length,4);
- assert.deepEqual(JOURNEY_GROUPS.map(g=>CHAPTER_TRAIL_POINTS[g.id].x),[125,375,625,875]);
+ assert.equal((trail.match(/class="living-trail-node living-trail-marker /g)||[]).length,5);
+ assert.deepEqual(JOURNEY_GROUPS.map(g=>CHAPTER_TRAIL_POINTS[g.id].x),[100,300,500,700,900]);
  assert(CHAPTER_TRAIL_POINTS.plan.x<250);
  for(const g of JOURNEY_GROUPS.slice(1))assert(CHAPTER_TRAIL_POINTS[g.id].x>250);
  const positions=[
@@ -293,8 +295,9 @@ test('Discovery Trail path starts inside Planning and every visible milestone ce
   assert(new RegExp('class="living-trail-node living-trail-marker (not-started|working|complete|needs-review) '+mode+'(?: is-current)?" style="left:'+left+'%;top:'+top+'px"').test(trail),id);
   assert(trail.includes('<span class="living-trail-circle">'+(n+1)+'</span>'),id);
  }
- assert(trail.includes('M125 118 C250 118 250 58 375 58'));
- assert.equal(threadGeometry({from:'plan',to:'explore'},0).startsWith('M125 118'),true);
+ assert(trail.includes('M100 118 C200 118 200 58 300 58'));
+  assert(trail.includes('writing-to-checking'));
+ assert.equal(threadGeometry({from:'plan',to:'explore'},0).startsWith('M100 118'),true);
  const css=readFileSync(new URL('../data/living-journey.css',import.meta.url),'utf8');
  assert(css.includes('.living-trail-route .living-trail-path .living-trail-svg'));
  assert(css.includes('vector-effect:non-scaling-stroke'));
@@ -311,7 +314,8 @@ test('chapter progress and writing identity remain independent after completing 
  assert(rail.includes('journey-rail-zone planning'));
  assert(rail.includes('journey-rail-zone writing'));
  assert(rail.includes('journey-rail-zone-label'));
- assert.equal((rail.match(/class="journey-milestone-text"/g)||[]).length,4);
+ assert.equal((rail.match(/class="journey-milestone-text"/g)||[]).length,5);
+  assert(rail.includes('journey-rail-zone checking'));
  assert.equal((rail.match(/journey-mode-tag/g)||[]).length,0);
  assert.equal((strip.match(/living-ribbon-part [^"]+ writing/g)||[]).length,3);
  s.completion.stages.C10='needs-review';
@@ -330,13 +334,16 @@ test('the compact Planning roadmap uses one writing-zone cue, not a badge on eac
  assert.equal((html.match(/planning-trail-phase-label plan/g)||[]).length,2); // desktop and compact copy
  assert.equal((html.match(/planning-trail-phase-label writing/g)||[]).length,2);
  assert(!html.includes('journey-mode-tag'));
- assert.equal((html.match(/planning-trail-chapter /g)||[]).length,8);
+ assert.equal((html.match(/planning-trail-chapter /g)||[]).length,10);
+  assert.equal((html.match(/planning-trail-phase-label checking/g)||[]).length,2);
  assert(html.includes('aria-label="Chapter 2: Start writing, WRITE IN IA, Not started"'));
 });
-test('two-zone styles use distinct mint/lavender colours and a single-column mobile journey',()=>{
+test('three-zone styles use distinct mint/lavender/blue colours and a single-column mobile journey',()=>{
  const css=readFileSync(new URL('../data/living-journey.css',import.meta.url),'utf8');
  assert(css.includes('.living-trail-zone-underlay>.plan'));
  assert(css.includes('.living-trail-zone-underlay>.writing'));
+  assert(css.includes('.living-trail-zone-underlay>.checking'));
+  assert(css.includes('.journey-rail-zone.checking'));
  assert(css.includes('.journey-rail-zone.writing'));
  assert(css.includes('.planning-trail-zone-underlay'));
  assert(css.includes('@media(max-width:540px)'));
@@ -432,7 +439,8 @@ test('chapter summaries describe all four current writing tasks and escape stude
  const s=createProjectState();s.entries=[{id:'first',phase:'first',title:'<img onerror=alert(1)>',
   status:'completed',result:'Real finding'}];
  assert(chapterProgressCopy(s,JOURNEY_GROUPS[1]).includes('Introduction'));
- assert(chapterProgressCopy(s,JOURNEY_GROUPS[3]).includes('feedback'));
+ assert(chapterProgressCopy(s,JOURNEY_GROUPS[3]).includes('Conclusion'));
+  assert(chapterProgressCopy(s,JOURNEY_GROUPS[4]).includes('feedback'));
  const html=discoveryTrail(s);
  assert(!html.includes('<img onerror=alert(1)>'));
  assert(html.includes('&lt;img'));
@@ -463,7 +471,7 @@ test('several first-stage generated figures remain one writing stage, without in
 test('the optional trail explanation reflects sampling, precision, writing, tools and conclusion review',()=>{
  const html=discoveryTrail(createProjectState());
  assert(html.includes('data-trail-chapter-guide'));
- for(const term of ['sampling','precision','sparks','introduction','diagrams and tables','mathematical stages','feedback','potential next mathematical questions'])
+ for(const term of ['sampling','precision','sparks','introduction','diagrams and tables','mathematical stages','feedback','potential mathematical questions'])
   assert(html.includes(term),term);
  assert(html.includes('A saved figure is not proof'));
 });
