@@ -101,6 +101,20 @@ const uncertainty=(route)=>extra("uncertain","I cannot yet tell what this result
 const outcomeKey=(route,id)=>route+":"+id;
 const activeRoute=state=>routeById(state?.planning?.routeExplorer?.selectedRoute||"");
 export const selectedInvestigativeRoute=activeRoute;
+const METHOD_FOLLOWUP_QUESTIONS=Object.freeze({
+ "nonlinear-model:residual-structure":"What mathematical structure do the patterned residuals reveal, and which alternative model could address it?",
+ "nonlinear-model:competing-models":"Which model's assumptions, parameters and residuals give the more defensible answer?",
+ "nonlinear-model:extrapolation-fails":"Which feature of the mathematical model makes extrapolation unreliable?",
+ "nonlinear-model:model-fit":"Do residuals and parameter meanings justify the model on the observed domain?",
+ "finance-compound:rate-sensitive":"How do plausible interest rates change the accumulated value and financial decision?",
+ "finance-loan:repayment-unaffordable":"Which realistic loan terms meet each payment constraint without hiding total interest?",
+ "finance-cashflow:cash-shortfall":"Which payment periods cause negative cash balances, and what adjustments might avoid them?",
+ "voronoi:distance-issue":"Which locations change their nearest facility when travel distance replaces Euclidean distance?",
+ "categorical-test:expected-too-small":"Which expected frequencies violate the conditions for a reliable categorical test?",
+ "expected-value:large-variation":"What is the probability of an unacceptable loss despite the calculated expectation?",
+ "measurement:angle-sensitive":"How much does the calculated distance change across the realistic angular uncertainty?",
+ "nonlinear-association:turning-pattern":"Where does the data change direction, and why might rank correlation conceal that behaviour?"
+});
 const SPECIALISED_TITLES=Object.freeze({
  "finance-break-even":"Break-even and profitability",
  "finance-compound":"Compound interest and investment growth",
@@ -149,7 +163,8 @@ export function journeyOutcomeOptions(state,entry){
     id:option.value,value:outcomeKey(route.id,option.value),title:option.title,
     next:advice?.essential||option.desc,
     check:advice?.detail||"Check the assumptions and conditions of this mathematical result.",
-    question:advice?.questions?.[0]||
+    question:METHOD_FOLLOWUP_QUESTIONS[route.id+":"+option.value]||
+      advice?.questions?.[0]||
       "What does this mathematical result establish for my original question?",
     alternative:advice?.questions?.[1]||
       "Would a relevant sensitivity or assumption check change this result?"
