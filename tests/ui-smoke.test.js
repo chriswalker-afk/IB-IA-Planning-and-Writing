@@ -62,6 +62,7 @@ import {renderWriterFieldGuide} from "../src/completing/writer-field-guide.js";
 import {adaptiveNextDirections,flagJourneyRouteDependents} from "../src/completing/adaptive-journey.js";
 import {setCompletionNode,moveCompletionRoute,completionBack,markCompletionStage,setCompletionField,addMathematicalStage,routesAt,addAccuracyDecision,completionSuggestions,sectionForNode,targetForSection,completeEntry,latestRealResult,flagDependentMathematics,acknowledgeMathReview} from "../src/completing/engine.js";
 import {createProjectViews} from "../src/ui/project-views.js";
+import {createCheckingViews} from "../src/checking/views.js";
 import {createHandoverViews} from "../src/ui/handover-views.js";
 import {actOnWritingCue} from "../src/completing/guidance-actions.js";
 import {eligibleWritingCues} from "../src/completing/writing-guidance.js";
@@ -102,7 +103,7 @@ function createHarness(savedValue){
     newState:createProjectState,normalise:normalizeProjectState,
     KEY:"ia-pathfinder-prototype-v1",
     readRecordValue,updateRecordValue,icon,escapeHtml,cleanUrl,button,
-    referenceNodeForPrototypeStep,createPlanningViews,createStudioViews,createCompletingViews,renderWriterFieldGuide,createProjectViews,
+    referenceNodeForPrototypeStep,createPlanningViews,createStudioViews,createCompletingViews,createCheckingViews,renderWriterFieldGuide,createProjectViews,
     newGraphDraft,saveGraphFigure,renderGraphSvg,graphData,splitHeading,analyseGraph,renderGraphQuality,renderGraphActions,graphSourceChoices,
     updateGraphField,chooseGraphType,importGraphTable,loadSavedGraph,freshGraph,saveAndLinkGraph,saveGraphDraft,exportGraphFigure,
     imageTraceChecks,renderTraceOverlaySvg,renderCleanTraceSvg,traceCoordinates,traceCalibration,renderImageTracer,
