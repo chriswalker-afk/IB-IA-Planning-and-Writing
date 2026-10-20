@@ -1007,7 +1007,8 @@ test("evidence-led recommendations on multiple stages only write editable sugges
  assert(h.html.includes('data-action="journey-use-direction"'));
  h.action("journey-use-direction",{entryId:"first",direction:"follow"});
  assert.match(h.saved.completion.fields.nextQuestion,/alternative function structure/);
- assert.match(h.saved.completion.fields.nextReason,/monotonic|function family|structure/);
+ assert.equal(h.saved.completion.fields.nextReason,"","Pathfinder must not author the student justification");
+ h.write("completion.fields.nextReason","The shape levels off, so a function with an upper limit may answer my aim.");
  assert.equal(h.saved.entries[0].journeyDirection,"follow");
  assert.equal(h.saved.entries[0].result,"The curve increases and levels off");
  h.action("stage-add");
@@ -1023,6 +1024,8 @@ test("evidence-led recommendations on multiple stages only write editable sugges
  assert(h.html.includes('data-journey-next-state="ready"'));
  h.action("journey-use-direction",{entryId:h.saved.entries[1].id,direction:"check"});
  assert(h.saved.entries[1].nextQuestion);
+ assert(!h.saved.entries[1].nextWhy);
+ h.write("entries.1.nextWhy","Checking the model assumptions helps me decide whether the observed fit is meaningful.");
  h.action("stage-add");
  assert.equal(h.saved.completion.current,"C50");
  assert.equal(h.saved.entries[2].status,"planned");
