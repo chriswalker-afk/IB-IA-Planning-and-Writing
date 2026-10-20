@@ -449,7 +449,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   }
   function previewBanner(){
     const figureCount=(state.graphStudio?.figures?.length||0)+(state.tableStudio?.figures?.length||0);
-    const wordCount=sampleIAWritingWords(state);
+    const wordCount=preview.active?sampleIAWritingWords(state):0;
     return preview.active?'<aside class="sample-preview-banner" aria-label="Sample preview"><div><strong>'+icon("sparkles")+' Fully worked fictional sample</strong><p>Three linked mathematical stages with editable Pathfinder graphs/tables, a developed IA-style mathematical narrative, Planning and A–E checking notes. Fictional teaching material only; your own investigation is unchanged.</p><p class="sample-preview-metrics">'+wordCount.toLocaleString()+' IA-facing words · '+figureCount+' editable saved figures · not a finished submission</p></div><div class="button-row">'+button("See the sample journey","sample-journey","btn-secondary btn-sm")+button("Read IA-style sample PDF","export-sample-ia-pdf","btn-secondary btn-sm")+button("Return to my investigation","leave-preview","btn-primary")+button("Another sample","open-demos","btn-quiet btn-sm")+'</div></aside>':"";
   }
   function leavePreview(){
