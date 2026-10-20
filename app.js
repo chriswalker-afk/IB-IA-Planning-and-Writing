@@ -1004,7 +1004,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   }
   function clickAction(el) {
     const action=el.dataset.action||"";
-    if(action.startsWith("math-")){void mathAction(el).catch(err=>toast("Maths editor error: "+err.message));return;}
+    if(["math-open","math-edit-existing","math-close","math-template","math-insert"].includes(action)){void mathAction(el).catch(err=>toast("Maths editor error: "+err.message));return;}
     if(handleNativeDataAction(state,action,el,{save,render,toast,
       confirm:message=>window.confirm(message),openTool:openNativeTool}))return;
     if(action==="presentation-copy-caption"){
