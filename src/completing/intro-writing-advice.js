@@ -1,5 +1,4 @@
 /* Stage-specific, reusable writing craft: all examples are fictional and never entered into student IA documents. */
-import {renderWriterGuideAccess} from "./writer-guide-context.js";
 export const INTRODUCTION_TIPS=Object.freeze([
   {
     "id": "aim",
@@ -142,7 +141,7 @@ function adviceCard(t,i,icon,e){
 export function renderIntroductionWritingAdvice(icon,e,{reduced=false,state=null}={}){
  if(reduced)return '<section class="intro-writing-guide intro-writing-guide-compact" aria-label="Essential introduction writing advice">'+
   '<strong>Write the opening, not the ending.</strong><p>State your precise mathematical aim, genuine motivation and, if helpful, what you predict or hope to discover and why. Define unfamiliar non-mathematical specialist terms briefly, avoid background essays and do not list every planned calculation. Write in your actual IA document, then update your prediction spark.</p>'+
-  renderWriterGuideAccess(state,"C10",icon,e)+'</section>';
+  '</section>';
  const main=INTRODUCTION_TIPS.filter(t=>t.essential),extra=INTRODUCTION_TIPS.filter(t=>!t.essential);
  return '<section class="intro-writing-guide" aria-labelledby="intro-guide-heading">'+
  '<div class="intro-writing-guide-head"><span class="intro-writing-guide-icon">'+icon("book")+'</span><div>'+
@@ -150,7 +149,6 @@ export function renderIntroductionWritingAdvice(icon,e,{reduced=false,state=null
   '<h2 id="intro-guide-heading">Before you write</h2>'+
   '<p>Keep your introduction short, personal and mathematically focused. Open a tip only if you need more guidance.</p>'+
  '</div></div>'+
- renderWriterGuideAccess(state,"C10",icon,e)+
  '<div class="intro-advice-cards">'+main.map((t,i)=>adviceCard(t,i,icon,e)).join("")+'</div>'+
  '<details class="intro-advice-extra-group"><summary>'+icon("sparkles")+
   '<span><strong>Two more ways to keep it sharp</strong><small>Concision and an honest prediction or hope</small></span>'+icon("chevron-right")+'</summary>'+

@@ -6,7 +6,6 @@ import {routeById} from "../planning/investigative-routes.js";
 import {renderSparkShelf} from "../ui/insight-threads.js";
 import {exampleButton} from "../examples/views.js";
 import {essentialsButton} from "../essentials/views.js";
-import {renderWriterGuideAccess} from "./writer-guide-context.js";
 import {techniqueStartingGuide,orderSelectedTechniqueGuides,sourceAdviceForTechnique} from "./technique-start-advice.js";
 
 const has=x=>typeof x==="string"&&!!x.trim();
@@ -96,7 +95,6 @@ export function renderFirstMathsAdvice(state,icon,e,{reduced=false}={}){
   '<div><span class="intro-writing-guide-eyebrow">BEFORE YOU WRITE · FIRST MATHEMATICS</span>'+
   '<h2>Aim first. Then one useful mathematical step.</h2>'+
   '<p>Make the mathematical story flow naturally from the Introduction without explaining your entire investigation in advance.</p></div></div>'+
-  renderWriterGuideAccess(state,"C20",icon,e)+
   (!reduced?'<div class="intro-advice-cards studio-stage-advice-cards">'+tips.map((t,i)=>tip(icon,e,t,i)).join("")+'</div>':'')+
  '</section>';
 }

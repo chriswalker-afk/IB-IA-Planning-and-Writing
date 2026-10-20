@@ -4,7 +4,6 @@
 import {firstMathsContext} from "./first-maths-bridge.js";
 import {writingGuidanceForFirstMaths} from "./first-maths-writing-guidance.js";
 import {renderSparkShelf} from "../ui/insight-threads.js";
-import {renderWriterGuideAccess} from "./writer-guide-context.js";
 
 export const JOURNEY_SHOWING_GUIDANCE = Object.freeze({
  relationships:{
@@ -152,7 +151,6 @@ export function renderShowingMathsAdvice(state,icon,e,{reduced=false}={}){
   '<span class="intro-writing-guide-eyebrow">BEFORE YOU WRITE · SHOWING FIRST MATHEMATICS</span>'+
   '<h2>Introduce it. Show it. Interpret it. Follow it.</h2>'+
   '<p>Your reader should always know why a figure or calculation is appearing before they see it, and what it means immediately afterwards.</p></div></div>'+
-  renderWriterGuideAccess(state,"C30",icon,e)+
   '<p class="show-first-no-tables">'+icon("info")+' <strong>Long tables are not IA content — not even in the appendix.</strong> Keep raw datasets in your working files and present only concise, useful summaries or graphs.</p>'+
   (!reduced?'<div class="intro-advice-cards studio-stage-advice-cards">'+cards+'</div>':"")+
   '</section>';
