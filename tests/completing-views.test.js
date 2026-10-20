@@ -98,7 +98,11 @@ test("reopened mathematical sections refer to their actual preceding finding, ne
  const html=view.viewCompleting();
  assert(html.includes("Earlier finding this section was based on"));
  assert(html.includes("The pattern is curved"));
- assert(!html.includes("<p>Model y=2x squared</p>"));
+ const priorContext=html.slice(html.indexOf("Earlier finding this section was based on"),
+  html.indexOf('data-show-first-part="show"'));
+ assert(!priorContext.includes("Model y=2x squared"),"stage 2 must link to stage 1, not itself");
+ // Showing its own real result in Section 3 is now intentional, not a circular bridge.
+ assert(html.includes("Model y=2x squared"));
 });
 test("dependency review appears only for maths that needs its logical connection checked",()=>{
  const {state,view}=fixture();
