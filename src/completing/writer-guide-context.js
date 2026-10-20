@@ -4,8 +4,7 @@
  * outcome-specific prompts. No student's words are inserted in an IA document.
  */
 import {FIELD_GUIDE_TIPS,FIELD_GUIDE_CONTEXT} from "./writer-field-guide.js";
-import {firstMathsContext} from "./first-maths-bridge.js";
-import {actualMathematics,selectedJourneyOutcome,stageLinkContext} from "./adaptive-journey.js";
+ import {actualMathematics,selectedInvestigativeRoute,selectedJourneyOutcome,stageLinkContext} from "./adaptive-journey.js";
 
 const byId=new Map(FIELD_GUIDE_TIPS.map(t=>[t.id,t]));
 const SOURCE_NODES=new Set(["C20","C21S","C21M","C21T","C22","C23","C24","C25","C26"]);
@@ -87,9 +86,11 @@ export function writingGuideRecommendation(state,node,requestedTip=""){
  const entry=state?.entries?.[state?.completion?.activeEntryIndex];
  let note="",question="";
  if(SOURCE_NODES.has(node)){
-  const context=firstMathsContext(state);
-  if(context.activeRoute)note="Your planned investigative route: "+limited(context.activeRoute.title,100)+". Treat this as a possible starting point, not a finding.";
-  else if(context.sourceKey==="theoretical")note="Your starting material is theoretical; there is no need to invent data or observations.";
+  const kind=state?.planning?.fields?.kind||state?.project?.kind||"";
+  const route=selectedInvestigativeRoute(state);
+  const compatible=route&&(!kind||kind==="unsure"||route.kinds?.includes(kind));
+  if(compatible)note="Your planned investigative route: "+limited(route.title,100)+". Treat this as a possible starting point, not a finding.";
+  else if(kind==="theoretical")note="Your starting material is theoretical; there is no need to invent data or observations.";
  }else if(LATER_NODES.has(node)&&entry?.phase==="substantial"){
   const link=stageLinkContext(state,entry);
   if(link.needsReview)note="An earlier mathematical result has changed. Check this connection before describing it as established.";
