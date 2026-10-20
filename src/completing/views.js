@@ -995,10 +995,14 @@ export function createCompletingViews(ctx){
       ["completing:"+n+":title"])+'</div>'+
     entryField("purpose","Why is the chosen approach appropriate here?",
      "Link the technique to the previous finding and your overall aim",{type:"textarea",rows:3})+
+    '<div class="journey-stage-method"><strong>'+icon("compass")+
+     ' The mathematical approach for THIS stage</strong>'+
+     '<p>Choose the method you are using or have actually used. This changes the possible outcomes you can select in Section 3; it does not claim that the calculation has been completed.</p>'+
+     entryField("methodId","Mathematical method","",{type:"select",options:METHOD_OPTIONS})+
+    '</div>'+
     '<details class="math-stage-optional-method"><summary>'+icon("book")+
       ' Review mathematical technique, syllabus understanding and alternatives (optional) '+icon("chevron-right")+'</summary>'+
       entryField("technique","Mathematical technique or argument","e.g. quadratic modelling, integration or a proof")+
-      entryField("methodId","Find relevant guidance for my method (optional)","",{type:"select",options:METHOD_OPTIONS})+
       preflight(substantial)+
       entryChoice("knowledge",[
         {value:"syllabus",title:"Within my IB course",icon:"check-circle"},
