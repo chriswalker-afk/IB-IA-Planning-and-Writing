@@ -9,6 +9,16 @@ export const JOURNEY_GROUPS=Object.freeze([
 ]);
 export const chapterRole=g=>g.mode==='planning'?'PLAN ONLY':'WRITE IN IA';
 const has=v=>typeof v==='string'&&!!v.trim();
+export function planningMilestones(s){
+ const p=s?.planning?.fields||{};
+ return [
+  {name:'Working title',recorded:has(p.provisionalTitle),detail:'A provisional IA title has been saved, not finalised'},
+  {name:'My question',recorded:has(p.aim||s.project?.aim),detail:'An investigation aim is recorded'},
+  {name:'Starting material',recorded:has(p.kind==='theoretical'?(p.theoreticalCase||p.theoreticalObject):(p.dataSource||p.primaryWhat||p.secondaryUrl)),detail:'A proposed evidence or theoretical starting route is recorded'},
+  {name:'Mathematical direction',recorded:has(p.course)&&has(p.kind),detail:'A course and investigation approach have been chosen; this is not completed mathematics'},
+  {name:'Review my plan',recorded:s?.planning?.completed===true,detail:'The provisional planning review is marked ready'}
+ ];
+}
 const isActual=e=>e?.status==='completed'&&has(e.result);
 /** One entry per mathematical writing page. Never count a saved diagram alone as a result. */
 export function mathematicalPages(s){
@@ -31,11 +41,8 @@ export function mathematicalChapterSummary(s){
 }
 export function chapterProgressCopy(s,group){
  if(group.id==='plan'){
-  const p=s?.planning?.fields||{};
-  const saved=[has(p.provisionalTitle),has(p.aim||s.project?.aim),
-   has(p.kind==='theoretical'?(p.theoreticalCase||p.theoreticalObject):(p.dataSource||p.primaryWhat||p.secondaryUrl)),
-   has(p.course)&&has(p.kind),s?.planning?.completed===true].filter(Boolean).length;
-  return saved+' of 5 planning anchors saved';
+  const milestones=planningMilestones(s),saved=milestones.filter(x=>x.recorded).length;
+  return saved+' of '+milestones.length+' planning anchors saved';
  }
  if(group.id==='setup')return 'Introduction · introduce first mathematics';
  if(group.id==='explore'){
