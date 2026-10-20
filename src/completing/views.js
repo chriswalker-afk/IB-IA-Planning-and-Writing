@@ -723,6 +723,8 @@ export function createCompletingViews(ctx){
       first+second+third+fourth+stageBranchActions()+'</div>'};
   }
   case "C31":{
+   const returnNode=["C30","C40","C50"].includes(s.completion.editorReturnNode)?
+    s.completion.editorReturnNode:"C30";
    const toolOpen=Boolean(s.graphStudio?.open||s.statStudio?.open||s.tableStudio?.open||s.imageTracer?.open||s.voronoiStudio?.open);
    const toolHtml=toolOpen?
      renderRepresentationSwitcher(s,icon,e)+
@@ -732,12 +734,12 @@ export function createCompletingViews(ctx){
        s.imageTracer?.open?renderImageTracer(s,icon,e):renderGraphStudio(s,icon,e)):
      renderRepresentationHub(s,icon,e);
    return{intro:toolOpen?
-     "Create or refine a representation here. Your writing and next mathematical decisions stay together on the four-part first-mathematics screen.":
-     "The representation tools now belong to Show your mathematics. Return there to introduce, show and interpret your first result in one place.",
+     "Create or refine a representation here. Your writing and mathematical decisions remain together on the four-part page for your current stage.":
+     "These optional tools support the Show your mathematics section of whichever mathematical stage you are working on.",
     html:toolOpen?toolHtml:
-      info("Your first-move decision is already part of the writing screen",
-       "These tools are optional. Use your earlier investigative route and write a new justification only if your actual method changes.")+
-      '<button type="button" class="btn btn-secondary" data-action="completion-open" data-node="C30">'+
+      info("Your diagram choices are part of the writing screen",
+       "These tools are optional. Choose a diagram only when it helps the mathematical question in your current stage.")+
+      '<button type="button" class="btn btn-secondary" data-action="completion-open" data-node="'+e(returnNode)+'">'+
         icon("arrow-left")+' Back to showing my mathematics</button>'+
       toolHtml+
       '<details class="representation-prelude"><summary>'+icon("pencil")+
