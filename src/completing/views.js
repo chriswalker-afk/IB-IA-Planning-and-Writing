@@ -1140,7 +1140,8 @@ export function createCompletingViews(ctx){
   };
   case "C60":return{intro:"Use genuine mathematics to answer your aim, explain its significance and consider a meaningful future mathematical question.",
    html:renderConclusionWorkspace({state:s,e,icon,field,F,criteriaField,
-     criterionMarkedWritingBox,currentAim,plannedPrediction,currentBenefit})
+     criterionMarkedWritingBox,currentAim,plannedPrediction,currentBenefit,
+     savedLimitations:guides.conclusionLimitations})
   };
   case "C61":return{intro:"What essential answer have your actual results established? An uncertain or negative finding is still legitimate.",
    html:actualList()+guides.conclusionLimitations()+
