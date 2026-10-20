@@ -110,6 +110,7 @@ const FIELD_FOCUS={
  "completing:C34:observation":box("react","Describing the observed result","Distinguish what is mathematically established from what you merely expected."),
  "completing:C34A:accuracyForResult":box("boundaries","Accuracy and reliability","Explain how significant uncertainty could change the mathematical result or interpretation."),
  "completing:C34B:title":box("react","Interpreting your mathematical result","Explain the result's meaning in relation to your aim, not just a value or diagram description."),
+ "completing:C34B:predictionComparison":box("prediction","Comparing with an original prediction","Compare what you actually found with your earlier expectation, without treating the prediction as evidence."),
  "completing:C34U:surpriseCheck":box("imperfect","Checking an unexpected finding","Let a genuine surprise prompt a mathematical check, never a manufactured setback."),
  "completing:C35:nextQuestion":box("why-now","The next mathematical question","Make the question follow from the actual result, without adding an unnecessary stage just for complexity."),
  "completing:C35:nextReason":box("thinking","Justifying a next technique","Explain what further mathematical insight the proposed technique can reasonably provide."),
