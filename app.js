@@ -24,6 +24,7 @@ import {reviewEditChanged} from "./src/completing/review.js";
 import {createPlanningEnvelope,getFieldDiff,mergePlanningEnvelope} from "./src/handover/schema.js";
 import {modelFromEnvelope,suggestedFilename} from "./src/handover/report-model.js";
 import {createHandoverViews} from "./src/ui/handover-views.js";
+import {createCheckingViews} from "./src/checking/views.js";
 import {actOnWritingCue} from "./src/completing/guidance-actions.js";
 import {eligibleWritingCues} from "./src/completing/writing-guidance.js";
 import {selectLimitation,recordLimitation,limitationContextKey,relevantLimitations} from "./src/completing/limitation-guidance.js";
@@ -513,6 +514,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   const {mathDefault,currentMath,suggestions}=createStudioViews(viewDependencies);
   const {viewCompleting}=createCompletingViews(viewDependencies);
   const {viewHome,viewPath,viewReport,tabletNav}=createProjectViews(viewDependencies);
+  const {viewChecking}=createCheckingViews(viewDependencies);
   function sideMilestones() {
     $("#sideMilestones").innerHTML=journeyRail(state);
     $("#pathCount").textContent=state.entries.length;
@@ -595,7 +597,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   let detachIdeaMapGraph=()=>{};
   function render(opts={}) {
     detachIdeaMapGraph();
-    const map={home:viewHome,planning:viewPlanning,completing:viewCompleting,path:viewPath,report:viewReport};
+    const map={home:viewHome,planning:viewPlanning,completing:viewCompleting,checking:viewChecking,path:viewPath,report:viewReport};
     document.body.classList.toggle("representation-focus-active",representationFocusActive(state));
     main.innerHTML=previewBanner()+stuckViews.returnBanner()+map[state.route]();
     detachIdeaMapGraph=attachIdeaMapGraph(main);
@@ -607,7 +609,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   }
   function nav(route,opts={}) {
     state.route=route;
-    if(["planning","completing"].includes(route))state.ui.lastWorkRoute=route;
+    if(["planning","completing","checking"].includes(route))state.ui.lastWorkRoute=route;
     if(route==="completing"&&completionStage(state.completion.current,state))state.ui.lastStudioNode=state.completion.current;
     drawerReturn=null;
     if(route==="completing"&&opts.section) {
@@ -858,6 +860,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     if(action==="resume-work")return nav(resumeRoute(state));
     if(action==="go-home")return nav("home");
     if(action==="go-planning")return nav("planning");
+    if(action==="go-checking")return nav("checking");
     if(action==="go-studio")return nav("completing"); // Resume the saved C-stage; "Studio overview" remains a separate action.
     if(action==="writer-guide-open"){
       lastFocus=el;openDrawer("writer-guide");
@@ -1004,6 +1007,28 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       return;
     }
     switch(action){
+      case "checking-mode":{
+        const mode=el.dataset.checkingMode;
+        if(!["draft","feedback","final"].includes(mode))break;
+        state.ui.checkingMode=mode;save();render();
+        document.querySelector('[data-action="checking-mode"][data-checking-mode="'+mode+'"]')?.focus({preventScroll:true});
+        break;
+      }
+      case "checking-rubric":{
+        const id=el.dataset.criterion;
+        if(!["A","B","C","D","E"].includes(id))break;
+        essentialsController.open({tab:"rubric",criterion:id},el);
+        break;
+      }
+      case "checking-conclusion":{
+        if(state.completion.current!=="C60"){state.route="completing";requestConclusionReview();}
+        else nav("completing");
+        break;
+      }
+      case "checking-studio":{
+        setCompletionNode(state,"C04",{reason:"checking-return-to-studio"});
+        nav("completing");break;
+      }
       case "leave-preview":leavePreview();break;
       case "sample-journey":nav("path");break;
       case "insight-focus":{
@@ -1051,6 +1076,8 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         const target=el.dataset.target;
         if(target==="plan"){
           state.completion.conclusionWarningOpen=false;nav("planning");
+        }else if(target==="checking"){
+          state.completion.conclusionWarningOpen=false;nav("checking");
         }else if(target==="C60"&&state.completion.current!=="C60"){
           // The Discovery Trail is also a direct path to the conclusion,
           // so it must honour the same readiness check as the end-page CTA.
@@ -2121,7 +2148,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     }
     const action=evt.target.closest("[data-action]");
     if(action){if(action.closest(".drawer")&&action.dataset.action!=="close-drawer"&&
-      ["resume-work","go-home","go-planning","go-path","go-report","go-studio","open-files","open-demos","open-stuck"].includes(action.dataset.action))closeDrawer(false);
+      ["resume-work","go-home","go-planning","go-path","go-report","go-studio","go-checking","open-files","open-demos","open-stuck"].includes(action.dataset.action))closeDrawer(false);
       clickAction(action);return;}
     if(evt.target===layer)dismissDrawer();
   });
