@@ -641,7 +641,7 @@ export function createCompletingViews(ctx){
        F("firstWorkLocation","Where does it appear in my IA? (optional)","e.g. Figure 1, Equation 2 or page 4"))+
       (entry?
        entryField("status","Has this mathematical work been produced?","",{type:"select",options:[
-        ["","Not yet / still checking"],["completed","Yes — I have actually produced this mathematics"]]}):
+        ["planned","Not yet / still checking"],["completed","Yes — I have actually produced this mathematics"]]}):
        F("firstWorkStatus","Has this mathematical work been produced?","",{type:"select",options:[
         ["","Not yet / still checking"],["completed","Yes — I have actually produced this mathematics"]]}))+
       '</div>'+
