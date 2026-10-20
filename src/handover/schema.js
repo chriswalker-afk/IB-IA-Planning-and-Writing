@@ -149,7 +149,7 @@ export function normalizePlanningEnvelope(value){
 export function createPartialEnvelope(partial,reason="Read-only labelled text"){
  const f={...PLANNING_FIELD_DEFAULTS};
  for(const key of fields)if(own(partial||{},key)&&typeof partial[key]==="string") f[key]=partial[key].slice(0,10000);
- if(!Object.values(f).some(x=>x.trim())) throw new Error("No labelled Pathfinder fields could be identified. Try the original export or enter the details manually.");
+ if(!Object.entries(f).some(([key,value])=>key!=="assessmentFramework"&&value.trim())) throw new Error("No labelled Pathfinder fields could be identified. Try the original export or enter the details manually.");
  return normalizePlanningEnvelope({
   kind:REPORT_KIND,schemaVersion:REPORT_SCHEMA,exportedAt:"",demo:false,
   planning:{fields:f,mathSelected:[],sourceBranches:{},completedNodes:[]},

@@ -72,6 +72,7 @@ import {selectLimitation,recordLimitation,limitationContextKey,relevantLimitatio
 import {relevantBivariateOptions} from "../src/completing/bivariate-guidance.js";
 import {resultFamily,routeNextQuestions} from "../src/completing/route-coach.js";
 import {sourceResultForNext} from "../src/completing/engine.js";
+import {assessmentFramework,assessmentBanner} from "../src/essentials/assessment-cohorts.js";
 
 import {createPlanningEnvelope,getFieldDiff,mergePlanningEnvelope} from "../src/handover/schema.js";
 import {modelFromEnvelope,suggestedFilename} from "../src/handover/report-model.js";
@@ -83,7 +84,7 @@ function createHarness(savedValue){
   const classList={add(){},remove(){},toggle(){}};
   const elements={};
   for(const id of ["#main","#drawerLayer","#saveStatus","#pathCount","#sideMilestones","#importFile","#reportImportFile","#graphCsvFile","#imageTraceFile","#statCsvFile","#tableCsvFile","#voronoiCsvFile","#voronoiMapFile","#toast"]){
-    elements[id]={innerHTML:"",textContent:"",hidden:id==="#drawerLayer",classList,focus(){},addEventListener(n,cb){events["file-"+n]=cb;}};
+    elements[id]={innerHTML:"",textContent:"",dataset:{},hidden:id==="#drawerLayer",classList,focus(){},addEventListener(n,cb){events["file-"+n]=cb;}};
   }
   elements["#drawerLayer"].querySelector=()=>({focus(){}});
   const document={
@@ -101,7 +102,7 @@ function createHarness(savedValue){
   const globals={createSamplePreview,createIllustrativeSample,SAMPLE_CHOICES,sampleIAWritingWords,supportsMathInField,mathFieldTools,STATUS_LABELS,resumeRoute,rememberCheckpoint,journeyRail,C_MAJOR_STAGES,completionStage,structuredClone,captureReturn:()=>({scroll:0,attributes:[]}),restoreReturn:()=>{},createEssentialsController:()=>({open(){}}),createCriterionBadgeController:()=>({}),editCriterionReview:()=>false,createExampleController:()=>({}),ideaAction,ideaInput,ideaDifficultyInput,chooseTopic,
      attachIdeaMapGraph:()=>()=>{},insightCapture,planningLearningTrail,resourceDrawer,resourceList,resourceAction,resourceFilter,resourcePreference,newResourceSession,PRACTICE_PAIRS,createStuckViews,captureStuckOrigin,isStuckNode,stuckAction,stuckContext,
     conformanceAction,reviewEditChanged,document,window,localStorage:storage,console,clearTimeout(){},setTimeout(){return 1;},
-    createProjectState,normalizeProjectState,persistProjectState,
+    createProjectState,normalizeProjectState,persistProjectState,assessmentFramework,assessmentBanner,
     newState:createProjectState,normalise:normalizeProjectState,
     KEY:"ia-pathfinder-prototype-v1",
     readRecordValue,updateRecordValue,icon,escapeHtml,cleanUrl,button,
