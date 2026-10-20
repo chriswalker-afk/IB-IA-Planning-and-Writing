@@ -1,6 +1,6 @@
 import {chapterRibbon} from '../ui/living-journey.js';
 import {renderFieldGuideTeaser} from './writer-field-guide.js';
-import {renderWriterGuideAccess} from './writer-guide-context.js';
+import {writerGuideFieldBubble} from './writer-guide-context.js';
 import {renderIntroductionSparkPrompt,renderIntroductionWritingAdvice,renderIntroductionOptionalExamples} from './intro-writing-advice.js';
 import {renderWritingStageFlow} from './stage-writing-flow.js';
 import {renderConclusionWorkspace} from './conclusion-workspace.js';
@@ -26,7 +26,7 @@ import {STATUS_LABELS,currentGroup,JOURNEY_GROUPS} from "../ui/journey.js";
 import {groupedDashboard} from "../ui/journey-views.js";
 import {examplePrompt,exampleInline} from "../examples/views.js";
 import {criteriaPanel,essentialsNudge} from "../essentials/views.js";
-import {criterionPageHeading,criterionMarkedField,criterionMarkedWritingBox} from "../essentials/criteria-badges.js";
+import {criterionPageHeading,criterionMarkedField,criterionMarkedWritingBox as baseCriterionMarkedWritingBox} from "../essentials/criteria-badges.js";
 import {resourcePrompt} from "../resources/views.js";
 import {createStuckViews} from '../help/stuck-views.js';
 import {isStuckNode} from '../help/stuck-state.js';
@@ -56,7 +56,15 @@ export function createCompletingViews(ctx){
   const state=getState(),i=state.completion.activeEntryIndex;
   return i>=0&&i<state.entries.length?field("entries."+i+"."+key,label,placeholder,opts):"";
  };
- const criteriaField=(html,key)=>isStudioWritingNode(getState().completion.current)?criterionMarkedField(html,key):isAdviceReduced(getState())?html:criterionMarkedField(html,key);
+ const guideBubble=key=>writerGuideFieldBubble(getState(),getState().completion.current,key,icon,e);
+ // Writing-craft guidance is separate from the current-IA criterion markings.
+ const criterionMarkedWritingBox=(html,keys=[])=>baseCriterionMarkedWritingBox(html,keys,guideBubble(keys));
+ const criteriaField=(html,key)=>{
+  const state=getState(),node=state.completion.current;
+  const showRubric=isStudioWritingNode(node)||!isAdviceReduced(state);
+  return criterionMarkedField(html,showRubric?key:"",guideBubble(key));
+ };
+ const writerGuideOnly=(html,key)=>criterionMarkedField(html,"",guideBubble(key));
  const entryChoice=(key,options)=>{
   const c=getState().completion,i=c.activeEntryIndex;
   return i>=0?choose("entries."+i+"."+key,options,{tight:true}):"";
@@ -1320,7 +1328,6 @@ export function createCompletingViews(ctx){
     (node==="C10"||studioWriting?"":'<p class="task-intro">'+e(screen.intro)+'</p>')+
     (node==="C10"||studioWriting?"":insightEcho(s,node))+extra.returnToReview()+
     (studioWriting||isStuckNode(node)||["C00","C04","C10","C10E"].includes(node)||isAdviceReduced(s)?"":criteriaPanel(s))+
-    (!studioWriting&&node!=="C10"?renderWriterGuideAccess(s,node,icon,e):"")+
     stagedHtml+
     (node==="C00"||node==="C10"||studioWriting?"":insightCapture(s,node))+
     (node==="C00"||node==="C10"||studioWriting||isAdviceReduced(s)?"":essentialsNudge(s))+
