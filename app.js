@@ -146,7 +146,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     const roots=scope?.querySelectorAll?.(".math-writing-tools")||[];
     const toRender=[...roots].filter(root=>{
       const textarea=root.closest(".field-group")?.querySelector('textarea[data-bind]');
-      return textarea&&/\\[\[(]/.test(textarea.value);
+      return textarea&&/\\(?:\(|\[)/.test(textarea.value);
     });
     if(!toRender.length)return;
     void getMathEditor().then(mod=>{
@@ -819,6 +819,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     document.querySelectorAll(".topbar,.app-grid,.mobile-nav").forEach(el=>el.inert=true);
     layer.innerHTML='<aside class="drawer'+(panel==="resources"?" resource-drawer":"")+(panel==="writer-guide"?" writer-guide-drawer":"")+'" role="dialog" aria-modal="true" aria-labelledby="drawerTitle" tabindex="-1"><div class="drawer-header"><h2 id="drawerTitle">'+titles[panel]+'</h2>'+
       '<button class="btn btn-secondary btn-sm" type="button" data-action="close-drawer">'+(panel==="resources"&&resourceSession.parent==="stuck"?"Back to I am stuck":"Return to my work")+' '+icon("x")+'</button></div>'+body+'</aside>';
+    refreshMathPreviews(layer);
     $(".drawer",layer).focus();
   }
   function closeDrawer(restore=true) {
