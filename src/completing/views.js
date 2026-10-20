@@ -37,6 +37,7 @@ import {createConformanceViews} from "./conformance-views.js";
 import {C_NODES,C_PROMPTS} from "./catalog.js";
 import {createGuidanceViews} from "./guidance-views.js";
 import {routeAdvice,resultSignalOptions,routeNextQuestions,isAdviceReduced} from "./route-coach.js";
+import {actualMathematics,selectedInvestigativeRoute,journeyOutcomeOptions,selectedJourneyOutcome,journeySelectionIsStale,adaptiveNextDirections,stageLinkContext} from "./adaptive-journey.js";
 import {extendedPlanningCheck} from "./extended-routes.js";
 import {METHOD_OPTIONS,COURSE_OPTIONS} from "./guidance-context.js";
 import {
@@ -122,6 +123,91 @@ export function createCompletingViews(ctx){
     '<div class="completion-route-grid">'+remaining.map(r=>action(null,r)).join("")+'</div></details>':"")+'</div>';
  };
 
+
+ /** An outcome is a student's own observation, not a prediction or a planned
+  * method. Its route-prefixed value is saved with the actual maths record. */
+ const journeyOutcomePicker=entry=>{
+  if(!entry)return "";
+  const state=getState(),route=selectedInvestigativeRoute(state);
+  if(!route)return '<div class="journey-outcome-intro">'+icon("compass")+
+   '<p><strong>Want result-specific mathematical advice?</strong> You can choose an investigative journey in Planning. Your mathematics and writing are still yours to decide; selecting a route is optional.</p></div>';
+  if(!actualMathematics(entry))
+   return '<div class="journey-outcome-intro" data-journey-outcome-waiting>'+
+    icon("lightbulb")+'<p><strong>After producing your mathematics:</strong> confirm your real result in Section 2. Then choose what it actually shows; your planned '+e(route.title)+' route does not determine the finding.</p></div>';
+  const opts=journeyOutcomeOptions(state),selected=selectedJourneyOutcome(state,entry);
+  return '<section class="journey-outcome-picker" data-journey-outcome-picker>'+
+   '<div class="journey-outcome-heading">'+icon("compass")+'<div>'+
+    '<small>MY INVESTIGATIVE JOURNEY · '+e(route.title)+'</small>'+
+    '<strong>What does your actual result suggest?</strong>'+
+    '<p>Choose what the evidence supports, not what you expected when Planning. This decision shapes advice for the next mathematical stage.</p>'+
+   '</div></div>'+
+   entryField("journeyOutcome","My interpretation of this genuine result","",{
+    type:"select",options:[["","Still considering — select a finding"],...opts.map(x=>[x.value,x.title])]
+   })+
+   (journeySelectionIsStale(state,entry)?'<p class="journey-outcome-warning">'+icon("alert-circle")+
+    ' Your earlier interpretation belongs to a different investigative route or is no longer available. Select an outcome supported by your current work before using linked advice.</p>':"")+
+   (selected?'<div class="journey-outcome-meaning"><strong>Mathematical consequence</strong>'+
+     '<p>'+e(selected.next)+'</p><p><strong>Before claiming this:</strong> '+e(selected.check)+'</p></div>':"")+
+   '<p class="journey-outcome-honesty">An observed shape is not a proof that any model fits. You may choose an uncertain result, reject these possibilities, or conclude responsibly.</p>'+
+  '</section>';
+ };
+ const journeyNextDirections=entry=>{
+  const state=getState(),ctx=adaptiveNextDirections(state,entry);
+  if(!ctx.route||!actualMathematics(entry))return "";
+  if(ctx.status!=="ready"){
+   return '<aside class="journey-next-panel journey-next-empty" data-journey-next-state="'+e(ctx.status)+'">'+
+    '<strong>'+icon("lightbulb")+' Let your actual result determine what follows</strong>'+
+    '<p>'+e(ctx.status==="stale"?
+       "The investigative route or earlier interpretation has changed. Return to Section 3 and reconsider what this result really shows before using a recommendation.":
+       "Select the mathematical meaning of your confirmed result in Section 3. We will then offer relevant next questions and a mathematical reason for each.")+
+    '</p></aside>';
+  }
+  return '<section class="journey-next-panel" data-journey-next-state="ready" aria-label="Result-led mathematical possibilities">'+
+   '<div class="journey-next-header">'+icon("sparkles")+'<div>'+
+    '<small>BASED ON WHAT YOU ACTUALLY FOUND</small>'+
+    '<h4>Where might this result lead?</h4>'+
+    '<p>'+e(ctx.chosen.title)+' — consider only a direction that would help answer your aim.</p>'+
+   '</div></div>'+
+   '<div class="journey-next-options">'+ctx.directions.map((option,i)=>
+    '<div class="journey-next-option" data-journey-direction="'+e(option.id)+'">'+
+     '<div><small>'+(i===0?"POSSIBLE NEXT QUESTION":"OPTIONAL VALIDITY CHECK")+'</small>'+
+      '<strong>'+e(option.question)+'</strong><p>'+e(option.why)+'</p>'+
+      (!isAdviceReduced(state)?'<p class="journey-next-check">'+icon("info")+' '+e(option.check)+'</p>':"")+
+     '</div>'+
+     '<button type="button" class="btn btn-secondary btn-sm" data-action="journey-use-direction"'+
+      ' data-entry-id="'+e(entry.id)+'" data-direction="'+e(option.id)+'">'+
+      icon(entry.journeyDirection===option.id?"check-circle":"arrow-right")+
+      (entry.journeyDirection===option.id?" Selected as my question":" Use this question")+
+     '</button></div>').join("")+'</div>'+
+   '<p class="journey-next-endpoint">'+icon("flag")+' '+e(ctx.stop)+'</p>'+
+   '<p class="journey-next-note">These are possibilities, not performed mathematics. Selecting one copies an editable question and reason into Section 4; no stage is created automatically.</p>'+
+  '</section>';
+ };
+ const journeyPredecessorAdvice=(state,entry)=>{
+  const link=stageLinkContext(state,entry),prior=link.prior;
+  if(!prior)return "";
+  const route=selectedInvestigativeRoute(state),ctx=link.advice;
+  const choice=ctx?.directions.find(x=>x.id===prior.journeyDirection)||ctx?.directions[0];
+  const warning=link.needsReview||ctx?.status==="stale"||!actualMathematics(prior);
+  return '<section class="journey-stage-link" data-journey-stage-link data-link-state="'+
+    (warning?"review":ctx?.status||"unknown")+'">'+
+   '<div class="journey-stage-link-head">'+icon(warning?"alert-circle":"route")+'<div>'+
+    '<small>YOUR PREVIOUS MATHEMATICAL FINDING</small>'+
+    '<strong>'+e(prior.title||"Earlier mathematical result")+'</strong>'+
+    (route?'<span>'+e(route.title)+'</span>':"")+
+   '</div></div>'+
+   (link.finding?'<blockquote>'+e(link.finding)+'</blockquote>':"")+
+   (warning?'<p class="journey-stage-link-warning"><strong>Review this connection.</strong> The prior result, route or interpretation has changed, or is no longer confirmed. Re-check the mathematical reasoning before accepting this stage as justified. Your existing writing has been preserved.</p>':"")+
+   (!warning&&ctx?.status==="ready"&&choice?
+    '<div class="journey-stage-link-advice"><strong>Mathematically sensible next question</strong>'+
+     '<p>'+e(choice.question)+'</p><p>'+e(choice.why)+'</p>'+
+     '<small>'+e(choice.check)+'</small></div>':
+    '<p class="journey-stage-link-reminder">Use the earlier genuine result to justify this choice. A technique planned before seeing the evidence is not by itself a reason to use it.</p>')+
+   (entry.journeySourceOutcome&&entry.journeySourceOutcome!==prior.journeyOutcome?
+    '<p class="journey-stage-link-warning">The earlier outcome selection was revised. Check whether your own bridge and method still make sense.</p>':"")+
+   '<p class="journey-stage-link-note">The proposed question is advice, not a calculation. Use your own work and words in the IA.</p>'+
+  '</section>';
+ };
  const stageBranchActions=()=>{
   const s=getState(),active=completeEntry(s),confirmed=active?.status==="completed"&&filled(active.result);
   return '<nav class="math-stage-branch" data-math-stage-branch aria-label="Choose your next mathematical stage">'+
@@ -694,6 +780,7 @@ export function createCompletingViews(ctx){
       (entry.resultRef?'<small>In your IA: '+e(entry.resultRef)+'</small>':"")+'</div>':
       '<p class="show-first-draft-note">'+icon("info")+
        ' <strong>Interpret real results.</strong> You can prepare your explanation, but Section 2 must contain a genuine mathematical output confirmed as produced before it becomes evidence for later guidance. A prediction or saved draft is not a finding.</p>')+
+    journeyOutcomePicker(entry)+
     '<div class="show-first-writing-field" data-show-first-writing-box="reflect">'+
     criterionMarkedWritingBox(
       (entry?entryField("interpretation","My reflection on what this result means",
@@ -708,6 +795,7 @@ export function createCompletingViews(ctx){
     (genuine?smallSummary("Finding to build on",entry.localTakeaway||entry.interpretation||entry.result):
      '<p class="show-first-draft-note">'+icon("info")+
      ' The next step must follow from <strong>real findings</strong>. You can leave these boxes blank until you have interpreted your result.</p>')+
+    journeyNextDirections(entry)+
     '<div class="show-first-writing-field" data-show-first-writing-box="next">'+
     criteriaField(F("nextQuestion","What mathematical question remains unanswered? (if any)",
      "Identify a meaningful question raised by the result, or note that you have enough evidence to conclude.",{type:"textarea",rows:3}),"completing:C30:nextC")+
@@ -894,6 +982,7 @@ export function createCompletingViews(ctx){
       '<p>'+e(priorFinding||"Your previous stage does not yet have a recorded finding.")+'</p>'+
       (prior?'<span class="field-hint">'+e(prior.title||"Previous mathematics")+'</span>':"")+
     '</div></div>'+
+    journeyPredecessorAdvice(state,substantial)+
     smallSummary("My investigation aim",currentAim())+
     entryField("title","What mathematical question is this stage investigating?",
      "A specific mathematical question arising from the previous result",{type:"textarea",rows:2})+
@@ -956,7 +1045,7 @@ export function createCompletingViews(ctx){
       ' Actual mathematics from Section 2</strong><p>'+e(substantial.result)+'</p></div>':
      '<p class="show-first-draft-note">'+icon("info")+
       ' Write conclusions from actual work only. Section 2 must be completed and confirmed before later stages treat this as a finding.</p>')+
-    coachBlock(substantial)+
+    coachBlock(substantial)+journeyOutcomePicker(substantial)+
     '<div class="show-first-writing-field">'+
      entryField("interpretation","What does this result mean for my aim?",
       "What has the mathematics established, and what can I responsibly infer?",{type:"textarea",rows:5})+
@@ -971,6 +1060,7 @@ export function createCompletingViews(ctx){
        substantial.localTakeaway||substantial.interpretation||substantial.result):
      '<p class="show-first-draft-note">'+icon("info")+
        ' Your next stage should follow a real result, not a prediction or a planned calculation.</p>')+
+    journeyNextDirections(substantial)+
     '<div class="show-first-writing-field">'+
       entryField("nextQuestion","What mathematical question remains unanswered? (optional)",
        "A worthwhile question that follows from your finding",{type:"textarea",rows:3})+
