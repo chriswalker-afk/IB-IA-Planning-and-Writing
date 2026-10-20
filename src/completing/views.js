@@ -1297,7 +1297,9 @@ export function createCompletingViews(ctx){
     icon,e,taskIntro:screen.intro,reduced:isAdviceReduced(s),help:optionalStudioHelp,
     taskHtml:screen.html+(screen.extra||"")+(node==="C60"?"":insightCapture(s,node))
    }):screen.html+(screen.extra||"");
-  return '<div class="page narrow completing-page">'+tabletNav()+chapterRibbon(s)+
+  // The Studio overview shows its own illustrated Discovery Trail.
+  // Focused IA-writing screens retain the small five-chapter ribbon.
+  return '<div class="page narrow completing-page">'+tabletNav()+(node==="C04"?"":chapterRibbon(s))+
     '<div class="completion-topline"><span>'+icon("route")+' '+e(node==="C04"?"Your IA Studio":(JOURNEY_GROUPS.indexOf(currentGroup(s))+1)+'. '+currentGroup(s).name)+'</span>'+
     '<div class="completion-top-actions"><button type="button" class="advice-mode-toggle" data-action="toggle-advice-mode" aria-pressed="'+isAdviceReduced(s)+'" aria-label="'+(isAdviceReduced(s)?"Show full advice":"Reduce optional advice")+'">'+
       icon(isAdviceReduced(s)?"eye":"eye-off")+' '+(isAdviceReduced(s)?"Show full advice":"Reduce advice")+'</button>'+

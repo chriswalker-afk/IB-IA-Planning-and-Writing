@@ -3,7 +3,6 @@ import {createIllustrativeSample,SAMPLE_CHOICES} from "./src/core/illustrative-s
 import {sampleIAWritingWords} from "./src/core/sample-current-workflow.js";
 import {captureReturn,restoreReturn} from "./src/ui/return-context.js";
 import {STATUS_LABELS,resumeRoute,rememberCheckpoint} from "./src/ui/journey.js";
-import {journeyRail} from "./src/ui/journey-views.js";
 import {insightCapture} from "./src/ui/insight-threads.js";
 import {planningLearningTrail} from "./src/ui/living-journey.js";
 import {createExampleController} from "./src/examples/controller.js";
@@ -614,12 +613,14 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   const {viewCompleting}=createCompletingViews(viewDependencies);
   const {viewHome,viewPath,viewReport,tabletNav}=createProjectViews(viewDependencies);
   const {viewChecking}=createCheckingViews(viewDependencies);
-  function sideMilestones() {
-    $("#sideMilestones").innerHTML=journeyRail(state);
-    $("#pathCount").textContent=state.entries.length;
+  // The permanent sidebar is navigation only. Chapter progress belongs in
+  // the single Discovery Trail displayed by the active workspace.
+  function refreshPathCount(){
+    const badge=$("#pathCount");
+    if(badge)badge.textContent=String(state.entries.length);
   }
   function refreshProgress(){
-    sideMilestones();
+    refreshPathCount();
     document.querySelectorAll('[data-action="completion-mark"]').forEach(b=>{
       const active=state.completion.stages[b.dataset.stage]===b.dataset.status;
       b.setAttribute('aria-pressed',String(active));b.classList.toggle('selected',active);
@@ -705,7 +706,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     if(preview.active)setSaveStatus("Sample preview only");
     filterMathOptions();
     document.querySelectorAll("[data-nav]").forEach(b=>b.classList.toggle("active",b.dataset.nav===state.route));
-    sideMilestones();
+    refreshPathCount();
     if(opts.top){window.scrollTo({top:0,behavior:"auto"});main.focus({preventScroll:true})}
   }
   function nav(route,opts={}) {

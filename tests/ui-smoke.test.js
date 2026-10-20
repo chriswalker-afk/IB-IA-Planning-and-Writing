@@ -3,7 +3,6 @@ import {createIllustrativeSample,SAMPLE_CHOICES} from '../src/core/illustrative-
 import {sampleIAWritingWords} from '../src/core/sample-current-workflow.js';
 import {supportsMathInField,mathFieldTools} from '../src/math/editor-shell.js';
 import {STATUS_LABELS,resumeRoute,rememberCheckpoint} from '../src/ui/journey.js';
-import {journeyRail} from '../src/ui/journey-views.js';
 import {C_MAJOR_STAGES,completionStage} from '../src/completing/engine.js';
 import {ideaAction,ideaInput,ideaDifficultyInput,chooseTopic} from '../src/ideas/engine.js';
 import {insightCapture} from '../src/ui/insight-threads.js';
@@ -83,7 +82,7 @@ function createHarness(savedValue){
   const store=new Map(savedValue?[["ia-pathfinder-prototype-v1",JSON.stringify(savedValue)]]:[]);
   const classList={add(){},remove(){},toggle(){}};
   const elements={};
-  for(const id of ["#main","#drawerLayer","#saveStatus","#pathCount","#sideMilestones","#importFile","#reportImportFile","#graphCsvFile","#imageTraceFile","#statCsvFile","#tableCsvFile","#voronoiCsvFile","#voronoiMapFile","#toast"]){
+  for(const id of ["#main","#drawerLayer","#saveStatus","#pathCount","#importFile","#reportImportFile","#graphCsvFile","#imageTraceFile","#statCsvFile","#tableCsvFile","#voronoiCsvFile","#voronoiMapFile","#toast"]){
     elements[id]={innerHTML:"",textContent:"",dataset:{},hidden:id==="#drawerLayer",classList,focus(){},addEventListener(n,cb){events["file-"+n]=cb;}};
   }
   elements["#drawerLayer"].querySelector=()=>({focus(){}});
@@ -99,7 +98,7 @@ function createHarness(savedValue){
   const window={scrollTo(){},confirm:()=>true,alert(){},print(){}};
   const script=read("../app.js").replace(/^import\s+.*;\s*$/gm,"");
   // The real browser suite exercises the independent native-dialog controller.
-  const globals={createSamplePreview,createIllustrativeSample,SAMPLE_CHOICES,sampleIAWritingWords,supportsMathInField,mathFieldTools,STATUS_LABELS,resumeRoute,rememberCheckpoint,journeyRail,C_MAJOR_STAGES,completionStage,structuredClone,captureReturn:()=>({scroll:0,attributes:[]}),restoreReturn:()=>{},createEssentialsController:()=>({open(){}}),createCriterionBadgeController:()=>({}),editCriterionReview:()=>false,createExampleController:()=>({}),ideaAction,ideaInput,ideaDifficultyInput,chooseTopic,
+  const globals={createSamplePreview,createIllustrativeSample,SAMPLE_CHOICES,sampleIAWritingWords,supportsMathInField,mathFieldTools,STATUS_LABELS,resumeRoute,rememberCheckpoint,C_MAJOR_STAGES,completionStage,structuredClone,captureReturn:()=>({scroll:0,attributes:[]}),restoreReturn:()=>{},createEssentialsController:()=>({open(){}}),createCriterionBadgeController:()=>({}),editCriterionReview:()=>false,createExampleController:()=>({}),ideaAction,ideaInput,ideaDifficultyInput,chooseTopic,
      attachIdeaMapGraph:()=>()=>{},insightCapture,planningLearningTrail,resourceDrawer,resourceList,resourceAction,resourceFilter,resourcePreference,newResourceSession,PRACTICE_PAIRS,createStuckViews,captureStuckOrigin,isStuckNode,stuckAction,stuckContext,
     conformanceAction,reviewEditChanged,document,window,localStorage:storage,console,clearTimeout(){},setTimeout(){return 1;},
     createProjectState,normalizeProjectState,persistProjectState,assessmentFramework,assessmentBanner,
@@ -149,6 +148,43 @@ function createHarness(savedValue){
     status:()=>elements["#saveStatus"].innerHTML
   };
 }
+test("Pass 1 shows one Discovery Trail per workspace and keeps the main sidebar navigation-only",()=>{
+  const shell=read("../index.html");
+  assert(shell.includes('data-nav="path"'),"The full journey remains accessible from main navigation");
+  assert(!shell.includes('id="sideMilestones"'),"Do not render the redundant permanent chapter list");
+  assert(!shell.includes('>YOUR JOURNEY</p>'),"Remove the empty duplicate section heading");
+  const state=createProjectState();
+  state.route="planning";
+  state.ui.planningIntroSeen=true;
+  state.planning.current="N01V";
+  state.planning.fields.aim="How might this relationship behave?";
+  state.project.aim=state.planning.fields.aim;
+  const h=createHarness(state);
+  const count=needle=>h.html.split(needle).length-1;
+  assert.equal(count('class="planning-learning-trail"'),1,"Planning has one contextual trail");
+  assert.equal(count('class="living-ribbon"'),0,"Planning does not add the writing ribbon");
+  assert.equal(count('class="living-trail '),0,"Planning does not add a second illustrated trail");
+
+  h.nav("completing");
+  assert.equal(count('class="living-ribbon"'),1,"Focused writing screens retain the ribbon");
+  assert.equal(count('class="living-trail '),0,"Focused writing screens do not repeat the full map");
+  h.action("completion-open",{node:"C04"});
+  assert.equal(count('class="living-ribbon"'),0,"Overview omits the ribbon above the illustrated trail");
+  assert.equal(count('class="living-trail is-compact"'),1,"Overview retains its illustrated Discovery Trail");
+  h.action("completion-open",{node:"C10"});
+  assert.equal(count('class="living-ribbon"'),1,"Returning to writing restores the ribbon");
+  assert.equal(count('class="living-trail '),0);
+
+  h.nav("checking");
+  assert.equal(count('class="living-ribbon"'),1,"Checking retains one compact trail");
+  assert.equal(count('class="living-trail '),0);
+  h.nav("path");
+  assert.equal(count('class="living-ribbon"'),0);
+  assert.equal(count('class="living-trail "'),1,"My Path keeps the full illustrated trail");
+  h.nav("home");
+  assert.equal(count('class="living-ribbon"'),0);
+  assert.equal(count('class="living-trail is-compact"'),1,"Home keeps one compact illustration");
+});
 test("module app boots to the existing homepage with a keyboard-friendly navigation",()=>{
  const h=createHarness();
  assert(h.html.includes("Big questions"));

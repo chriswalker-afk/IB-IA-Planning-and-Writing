@@ -60,8 +60,15 @@ with sync_playwright() as pw:
   ctx.close()
  def journey(p,original):
   baseline=core(saved(p))
+  assert p.locator("#sideMilestones").count()==0,"The permanent navigation must not repeat the full chapter trail"
+  assert p.locator(".living-trail").count()==0,"Focused writing screens show only a compact ribbon"
   assert p.locator(".living-ribbon .living-ribbon-part").count()==5
   assert p.locator(".living-ribbon .living-ribbon-part.checking").count()==1
+  p.locator('[data-action="completion-open"][data-node="C04"]').first.click()
+  assert p.locator(".living-ribbon").count()==0,"Studio overview must not repeat its illustrated trail"
+  assert p.locator(".living-trail").count()==1,"Studio overview needs one illustrated trail"
+  p.locator('.completion-stage-card[data-node="C40"]').first.click()
+  assert p.locator(".living-ribbon").count()==1 and p.locator(".living-trail").count()==0
   # The current studio exposes two relevant expandable sparks plus the full
   # library, not the retired insight-echo-item strip.
   shelf=p.locator('[data-spark-shelf="studio"]')
@@ -105,6 +112,8 @@ with sync_playwright() as pw:
   p.locator('.insight-toolkit-card[data-insight-type="planning"][data-node="N01"]').click()
   assert p.locator('[data-source-node="N01"]').count()==1
   assert p.locator(".planning-learning-trail").count()==1
+  assert p.locator(".living-ribbon").count()==0
+  assert p.locator(".living-trail").count()==0
   assert "How might distance change with time?" in p.locator("#main").inner_text()
   assert core(saved(p))==baseline,(baseline,core(saved(p)))
  for w,h in [(390,844),(1440,1000)]:
