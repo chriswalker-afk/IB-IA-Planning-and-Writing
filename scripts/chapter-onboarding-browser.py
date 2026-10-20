@@ -423,12 +423,81 @@ def modelling_math_start(browser,width):
  finally:
   ctx.close()
 
+
+def repeatable_mathematics(browser,width):
+ s=copy.deepcopy(BASE)
+ s["route"]="completing"
+ s["completion"]["current"]="C30"
+ s["planning"]["fields"]["aim"]="Which mathematical model describes the measured pattern?"
+ s["entries"]=[{"id":"real-first","phase":"first","title":"First observed scatter",
+    "status":"completed","result":"The plotted data curve rather than form a straight line",
+    "localTakeaway":"A linear model misses the curvature","interpretation":"A curved model may be more suitable"}]
+ s["completion"]["activeEntryIndex"]=0
+ s["completion"]["fields"]["nextQuestion"]="Could a quadratic model better represent the shape?"
+ s["completion"]["fields"]["nextReason"]="The first plot shows curvature."
+ ctx,page=open_fixture(browser,s,width)
+ try:
+  assert page.locator('[data-source-node="C30"]').count()==1
+  assert page.locator('[data-action="stage-add"]').count()==1
+  assert page.locator('[data-action="stage-conclude"]').count()==1
+  page.locator('[data-action="stage-add"]').click()
+  assert page.locator('[data-source-node="C40"]').count()==1
+  assert page.locator('[data-math-stage-page="2"]').count()==1
+  for part in ("introduce","show","reflect","next"):
+   assert page.locator('[data-show-first-part="'+part+'"]').count()==1,part
+  assert "A linear model misses the curvature" in page.locator('[data-show-first-part="introduce"]').inner_text()
+  data=stored(page)
+  assert len(data["entries"])==2
+  assert data["entries"][1]["fromEntryId"]=="real-first"
+  assert data["entries"][1]["title"]=="Could a quadratic model better represent the shape?"
+  assert data["entries"][1]["status"]=="planned"
+  assert page.locator('[data-action="stage-add"]').count()==1
+  assert page.locator('[data-action="stage-conclude"]').count()==1
+  without_overflow(page)
+  page.screenshot(path=str(OUT/f"math-stage-2-{width}.png"),full_page=True,animations="disabled")
+  page.locator('[data-action="stage-add"]').click()
+  assert len(stored(page)["entries"])==2,"An unconfirmed calculation must not generate a third stage"
+  page.locator('[data-bind="entries.1.result"]').fill("A quadratic model reduces the residuals")
+  page.locator('[data-bind="entries.1.status"]').select_option("completed")
+  page.locator('[data-bind="entries.1.localTakeaway"]').fill("The quadratic fit is better")
+  page.locator('[data-bind="entries.1.nextQuestion"]').fill("Can the model be optimised?")
+  page.locator('[data-bind="entries.1.nextWhy"]').fill("The turning point could answer the aim")
+  page.locator('[data-action="stage-add"]').click()
+  assert page.locator('[data-source-node="C50"]').count()==1
+  assert page.locator('[data-math-stage-page="3"]').count()==1
+  assert "The quadratic fit is better" in page.locator('[data-show-first-part="introduce"]').inner_text()
+  stage=stored(page)["entries"]
+  assert len(stage)==3
+  assert stage[2]["fromEntryId"]==stage[1]["id"]
+  assert stage[2]["title"]=="Can the model be optimised?"
+  assert stage[2]["status"]=="planned"
+  assert stage[2]["result"]==""
+  assert stage[1]["result"]=="A quadratic model reduces the residuals"
+  without_overflow(page)
+  page.screenshot(path=str(OUT/f"math-stage-3-{width}.png"),full_page=True,animations="disabled")
+  page.locator('[data-action="stage-conclude"]').click()
+  assert page.locator('[data-source-node="C50"]').count()==1
+  warning=page.locator('[data-conclusion-gate]')
+  assert warning.count()==1
+  assert "12–20 pages" in warning.inner_text()
+  assert "not a compulsory page count" in warning.inner_text()
+  page.screenshot(path=str(OUT/f"math-conclusion-warning-{width}.png"),full_page=True,animations="disabled")
+  page.locator('[data-action="conclusion-cancel"]').click()
+  assert page.locator('[data-conclusion-gate]').count()==0
+  assert page.locator('[data-source-node="C50"]').count()==1
+  page.locator('[data-action="stage-conclude"]').click()
+  page.locator('[data-action="conclusion-confirm"]').click()
+  assert page.locator('[data-source-node="C60"]').count()==1
+  without_overflow(page)
+ finally:
+  ctx.close()
+
 def main():
  results=[]
  with sync_playwright() as p:
   browser=p.chromium.launch(headless=True)
   for width in (1360,390):
-   for scenario,fn in (("new",first_time),("completed",completed_plan),("writing-stages",writing_sections),("maths-model-start",modelling_math_start)):
+   for scenario,fn in (("new",first_time),("completed",completed_plan),("writing-stages",writing_sections),("maths-model-start",modelling_math_start),("repeatable-mathematics",repeatable_mathematics)):
     try:
      fn(browser,width)
      results.append({"scenario":scenario,"width":width,"status":"passed"})
