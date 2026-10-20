@@ -95,7 +95,7 @@ with sync_playwright() as pw:
    assert shell.get_attribute('data-source-node')==node
    badge=shell.locator('[data-criterion-badge="'+spot+'"]')
    assert badge.count()==1
-   assert shell.locator('[data-criterion-badge]').count()==(2 if node in ('C35','C61') else 1)
+   assert shell.locator('[data-criterion-badge]').count()==(7 if node in ('C40','C50') else 2 if node in ('C35','C61') else 1)
    assert shell.locator('.criteria-panel [data-action="criteria-toggle"]').count()==0
    assert shell.locator('.criteria-panel [data-action="essentials-open"]').count()==0 or (
     shell.locator('.criteria-panel [data-action="essentials-open"]').count()==1)
@@ -273,6 +273,70 @@ with sync_playwright() as pw:
    result.append({'case':'method-suitability-'+node,'status':'FAILED','reason':str(err)})
    traceback.print_exc()
   ctx.close()
+
+ # Repeatable mathematical stages use the same four-part assessment map.
+ # Check both routes and phone layouts without requiring an extra stage.
+ for node in ['C40','C50']:
+  for width,height in [(1440,960),(360,740)]:
+   sample=state_for('completing',node)
+   ctx=browser.new_context(viewport={'width':width,'height':height})
+   page=ctx.new_page()
+   page.add_init_script('localStorage.setItem('+json.dumps(KEY)+','+json.dumps(json.dumps(sample))+');')
+   label='later-stage-criteria-'+node+'-'+str(width)
+   try:
+    page.goto(URL,wait_until='networkidle')
+    stage=page.locator('[data-math-stage-page]')
+    assert stage.count()==1
+    expected={
+     'introduce':['bridgeA','title'],
+     'show':['resultB','resultE'],
+     'reflect':['interpretD'],
+     'next':['nextC','nextD']
+    }
+    for part,fields in expected.items():
+     box=stage.locator('[data-show-first-part="'+part+'"]')
+     assert box.count()==1,part
+     assert box.locator('[data-criterion-badge]').count()==len(fields),part
+     for field in fields:
+      marker='completing:'+node+':'+field
+      assert box.locator('[data-criterion-badge="'+marker+'"]').count()==1,marker
+    before=stored(page)
+    stage.locator('[data-criterion-badge="completing:'+node+':resultE"]').click()
+    modal=page.locator('#criterionBadgeDialog')
+    assert modal.is_visible()
+    assert 'Criterion E' in modal.locator('h2').inner_text()
+    assert 'Quadratic regression' in modal.inner_text()
+    assert 'A fitted quadratic expression' in modal.inner_text()
+    page.keyboard.press('Escape')
+    assert not modal.is_visible()
+    assert stored(page)==before
+    result.append({'case':label,'status':'passed'})
+   except Exception as err:
+    result.append({'case':label,'status':'FAILED','reason':str(err)})
+    traceback.print_exc()
+    page.screenshot(path=str(OUT/(label+'-failure.png')),full_page=True)
+   ctx.close()
+ # Planned work must not gain a completed result by opening a marker.
+ sample=state_for('completing','C40')
+ sample['entries'][-1]['status']='planned'
+ sample['entries'][-1]['result']=''
+ ctx=browser.new_context(viewport={'width':390,'height':844})
+ page=ctx.new_page()
+ page.add_init_script('localStorage.setItem('+json.dumps(KEY)+','+json.dumps(json.dumps(sample))+');')
+ try:
+  page.goto(URL,wait_until='networkidle')
+  before=stored(page)
+  page.locator('[data-criterion-badge="completing:C40:interpretD"]').click()
+  guidance=page.locator('#criterionBadgeDialog').inner_text()
+  assert 'Only reflect on mathematics that has actually been carried out and checked' in guidance
+  assert 'A fitted quadratic expression' not in guidance
+  page.keyboard.press('Escape')
+  assert stored(page)==before
+  result.append({'case':'later-stage-planned-honesty','status':'passed'})
+ except Exception as err:
+  result.append({'case':'later-stage-planned-honesty','status':'FAILED','reason':str(err)})
+  traceback.print_exc()
+ ctx.close()
  # Checking process requirements must not masquerade as scored criteria.
  for mode,ids in [('draft',['D09','D10','D12']),('final',['D15','D18'])]:
   sample=state_for('completing','C70')

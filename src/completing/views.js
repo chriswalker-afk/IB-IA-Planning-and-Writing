@@ -998,7 +998,9 @@ export function createCompletingViews(ctx){
      '<button type="button" class="btn btn-secondary" data-action="completion-open" data-node="C30">'+icon("arrow-left")+' Return to first mathematics</button>'};
    const prior=substantial.fromEntryId?state.entries.find(x=>x.id===substantial.fromEntryId):null;
    const real=substantial.status==="completed"&&filled(substantial.result);
-   const priorFinding=prior?(prior.localTakeaway||prior.interpretation||prior.observationText||prior.result):substantial.previousTakeaway;
+   const priorVerified=prior?.status==="completed"&&filled(prior.result)&&prior.reviewNeeded!=="yes";
+   const priorFinding=priorVerified?(prior.localTakeaway||prior.interpretation||prior.observationText||prior.result):"";
+   const priorToReview=prior?(prior.localTakeaway||prior.interpretation||prior.observationText||prior.result):substantial.previousTakeaway;
    const card=(id,number,title,description,content)=>'<section class="show-first-part" data-show-first-part="'+id+'">'+
     '<div class="show-first-part-heading"><span class="show-first-part-number">'+number+'</span>'+
     '<div><h3>'+e(title)+'</h3><p>'+e(description)+'</p></div></div>'+content+'</section>';
@@ -1007,8 +1009,9 @@ export function createCompletingViews(ctx){
     "Begin from what the previous section actually established. Explain the mathematical question that follows, and why this technique can advance your aim.",
     entryReviewAlert()+
     '<div class="completion-evidence-anchor">'+icon("route")+'<div>'+
-      '<strong>Earlier finding this section was based on</strong>'+
-      '<p>'+e(priorFinding||"Your previous stage does not yet have a recorded finding.")+'</p>'+
+      '<strong>'+(priorVerified?'Earlier confirmed mathematical finding':'Earlier mathematical context to verify')+'</strong>'+
+      '<p>'+e(priorFinding||priorToReview||"Your earlier stage has no recorded finding yet.")+'</p>'+
+      (!priorVerified?'<span class="field-hint">This is a note, not a currently confirmed result. Check the previous mathematics in your actual IA.</span>':"")+
       (prior?'<span class="field-hint">'+e(prior.title||"Previous mathematics")+'</span>':"")+
     '</div></div>'+
     journeyPredecessorAdvice(state,substantial)+
@@ -1016,8 +1019,8 @@ export function createCompletingViews(ctx){
     entryField("title","What mathematical question is this stage investigating?",
      "A specific mathematical question arising from the previous result",{type:"textarea",rows:2})+
     '<div class="show-first-writing-field">'+
-     entryField("bridge","My linking sentence from the previous result",
-      "For example: The earlier result raises the question of ..., so I will now investigate ...",{type:"textarea",rows:3})+'</div>'+
+     criterionMarkedWritingBox(entryField("bridge","My linking sentence from the previous result",
+      "For example: The earlier result raises the question of ..., so I will now investigate ...",{type:"textarea",rows:3}),["completing:"+n+":bridgeA"])+'</div>'+
     criteriaField(entryField("purpose","Why is the chosen approach appropriate here?",
      "Link the technique to the previous finding and your overall aim",{type:"textarea",rows:3}),"completing:"+n+":title")+
     '<div class="journey-stage-method"><strong>'+icon("compass")+
@@ -1061,8 +1064,9 @@ export function createCompletingViews(ctx){
      '<div class="show-first-inline-record-heading"><span>'+icon("calculator")+'</span><div>'+
       '<h4>My mathematical work</h4><p>Record your genuine output here, including work completed in your IA without a diagram generator.</p></div></div>'+
      '<div class="show-first-inline-fields">'+
-      entryField("result","What did you actually produce or calculate?",
-       "A genuine equation, graph, calculated value, proof or observation",{type:"textarea",rows:3})+
+      criterionMarkedWritingBox(entryField("result","What did you actually produce or calculate?",
+       "A genuine equation, graph, calculated value, proof or observation",{type:"textarea",rows:3}),
+       ["completing:"+n+":resultB","completing:"+n+":resultE"])+
       entryField("resultRef","Where does it appear in my IA? (optional)","Figure, equation or page number")+
       entryField("status","Has this mathematics actually been produced?","",{type:"select",options:[
        ["planned","Not yet / still checking"],["completed","Yes — I have actually completed this work"]]})+
@@ -1079,8 +1083,9 @@ export function createCompletingViews(ctx){
       ' Write conclusions from actual work only. Section 2 must be completed and confirmed before later stages treat this as a finding.</p>')+
     coachBlock(substantial,{allowChoices:false})+journeyOutcomePicker(substantial)+
     '<div class="show-first-writing-field">'+
-     entryField("interpretation","What does this result mean for my aim?",
-      "What has the mathematics established, and what can I responsibly infer?",{type:"textarea",rows:5})+
+     criterionMarkedWritingBox(entryField("interpretation","What does this result mean for my aim?",
+      "What has the mathematics established, and what can I responsibly infer?",{type:"textarea",rows:5}),
+      ["completing:"+n+":interpretD"])+
      entryField("localTakeaway","One mathematical takeaway from this stage",
       "A concise, justified finding to connect to the next stage",{type:"textarea",rows:3})+
      entryField("limitations","Important limitation, assumption or uncertainty (if relevant)",
@@ -1094,10 +1099,12 @@ export function createCompletingViews(ctx){
        ' Your next stage should follow a real result, not a prediction or a planned calculation.</p>')+
     journeyNextDirections(substantial)+
     '<div class="show-first-writing-field">'+
-      entryField("nextQuestion","What mathematical question remains unanswered? (optional)",
-       "A worthwhile question that follows from your finding",{type:"textarea",rows:3})+
-      entryField("nextWhy","My bridge to another stage, or explanation for concluding",
-       "Justify how another technique would help, or why you now have enough evidence",{type:"textarea",rows:4})+
+      criterionMarkedWritingBox(entryField("nextQuestion","What mathematical question remains unanswered? (optional)",
+       "A worthwhile question that follows from your finding",{type:"textarea",rows:3}),
+       ["completing:"+n+":nextC"])+
+      criterionMarkedWritingBox(entryField("nextWhy","My bridge to another stage, or explanation for concluding",
+       "Justify how another technique would help, or why you now have enough evidence",{type:"textarea",rows:4}),
+       ["completing:"+n+":nextD"])+
     '</div>');
    return{intro:"Build on the actual finding from the previous stage. Explain why this mathematics follows, show the work, and interpret what it establishes for your aim—without starting your IA introduction again.",
     html:'<div class="show-first-sequence math-stage-sequence" data-math-stage-page="'+stageNumber+'">'+

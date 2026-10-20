@@ -12,7 +12,7 @@ import {createProjectState} from '../src/core/project-state.js';
 
 test('three passes retain selective and specific criteria without new administrative badges',()=>{
  const keys=Object.keys(CRITERION_SPOTS);
- assert.equal(keys.length,55); // The overlapping C20 choice was removed; one unified conclusion D was added.
+ assert.equal(keys.length,67); // Pass 2 adds six focused contextual opportunities per later mathematical stage.
  for(const [key,criterion] of [
   ['planning:N01V:benefit','C'],['planning:N02M:title','E'],
   ['completing:C10:aim','A'],['completing:C10:motivation','C'],
@@ -37,6 +37,11 @@ test('three passes retain selective and specific criteria without new administra
   ['completing:C35:nextQuestion','C'],['completing:C35:nextReason','D'],
   ['completing:C35B:title','E'],['completing:C35P:title','E'],
   ['completing:C40:title','E'],['completing:C50:title','E'],
+  ...['C40','C50'].flatMap(node=>[
+   ['completing:'+node+':bridgeA','A'],['completing:'+node+':resultB','B'],
+   ['completing:'+node+':resultE','E'],['completing:'+node+':interpretD','D'],
+   ['completing:'+node+':nextC','C'],['completing:'+node+':nextD','D']
+  ]),
   ['completing:C40T:title','E'],['completing:C40L:title','E'],
   ['completing:C60:meaningAndLimits','D'],
   ['completing:C61:mainConclusion','A'],['completing:C61:uncertainty','D'],
@@ -51,6 +56,13 @@ test('three passes retain selective and specific criteria without new administra
  assert.equal(criterionSpotFor('completing','C20'),'');
  assert(isCriterionSpotPage('planning','N01V'));
  assert(!isCriterionSpotPage('planning','N03D'));
+ for(const node of ['C40','C50']){
+  const keys=criterionFieldSpots('completing',node);
+  assert.equal(keys.length,7);
+  assert(keys.includes('completing:'+node+':title'));
+  for(const id of ['bridgeA','resultB','resultE','interpretD','nextC','nextD'])
+   assert(keys.includes('completing:'+node+':'+id),node+id);
+ }
  assert.deepEqual(criterionFieldSpots('completing','C30'),['completing:C30:introduceA','completing:C30:introduceB','completing:C30:reflectD','completing:C30:reflectE','completing:C30:nextC','completing:C30:nextD']);
  assert.deepEqual(criterionFieldSpots('completing','C35'),['completing:C35:nextQuestion','completing:C35:nextReason']);
  assert.deepEqual(criterionFieldSpots('completing','C34'),['completing:C34:observation']);
@@ -363,4 +375,75 @@ test('E advice in later mathematical stages annotates technique suitability, not
  const bridge=part.slice(part.indexOf('entryField("bridge"'),part.indexOf('entryField("purpose"'));
  assert(!bridge.includes('completing:"+n+":title'),'Criterion E must not be attached to the coherence-only bridge');
  assert(part.includes('Keep your mathematical argument focused')===false,'first-stage appendix advice belongs to C30');
+});
+
+test('repeatable stage guidance is active-entry scoped, method-aware and does not invent a result',()=>{
+ const s=createProjectState();
+ s.route='completing';
+ s.planning.fields.aim='Does a suitable model describe the observed values?';
+ s.planning.fields.kind='modelling';
+ s.entries=[
+  {id:'first',phase:'first',status:'completed',kind:'scatter',title:'Inspect scatter',
+   result:'The scatter points appear curved',localTakeaway:'A curved rather than linear pattern'},
+  {id:'second',phase:'substantial',fromEntryId:'first',status:'planned',
+   title:'Test a quadratic model',methodId:'quadratic-fit',technique:'Quadratic regression',
+   result:'',knowledge:'syllabus'},
+  {id:'third',phase:'substantial',fromEntryId:'second',status:'completed',
+   title:'Another investigation',methodId:'proof',technique:'Mathematical proof',
+   result:'An unrelated theorem was proved'}
+ ];
+ s.completion.activeEntryIndex=1;
+ const before=JSON.stringify(s);
+ for(const node of ['C40','C50']){
+  for(const part of ['resultB','resultE','interpretD','nextC','nextD']){
+   const response=info(s,'completing:'+node+':'+part);
+   assert(!response.real,node+part);
+   assert(!response.details.some(x=>x.text.includes('unrelated theorem')),part+' must not borrow a later stage');
+   assert(!response.details.some(x=>x.label.includes('completed result')),part);
+  }
+  const bridge=info(s,'completing:'+node+':bridgeA');
+  assert(bridge.details.some(x=>x.text.includes('curved rather than linear')),node);
+  assert(!bridge.details.some(x=>x.text.includes('unrelated theorem')),node);
+  const model=info(s,'completing:'+node+':resultB');
+  assert(model.strong.includes('model equation'),node+' model communication');
+ }
+ assert.equal(JSON.stringify(s),before,'opening criterion explanations never changes user work');
+ s.entries[1].status='completed';
+ s.entries[1].result='Residuals still show a systematic pattern';
+ for(const node of ['C40','C50']){
+  const e=info(s,'completing:'+node+':resultE'),d=info(s,'completing:'+node+':interpretD');
+  assert(e.real&&d.real,node);
+  assert(e.strong.includes('residuals'),node);
+  assert(d.strong.includes('residual pattern'),node);
+  assert(d.details.some(x=>x.text.includes('Residuals still show')),node);
+  assert(!d.details.some(x=>x.text.includes('unrelated theorem')),node);
+ }
+ s.entries[1].reviewNeeded='yes';
+ const flagged=info(s,'completing:C40:nextC');
+ assert(!flagged.real,'a result flagged after a change must not be treated as verified');
+ assert(!flagged.details.some(x=>x.text.includes('Residuals still show')));
+ assert(flagged.reminder.includes('genuine finding')||flagged.reminder.includes('review'));
+});
+test('repeatable stage guidance varies correctly across proofs, statistics and a missing prior result',()=>{
+ const s=createProjectState();s.route='completing';
+ s.planning.fields.aim='Which general claims actually hold?';
+ s.planning.fields.kind='theoretical';
+ s.entries=[
+  {id:'first',phase:'first',status:'planned',title:'Tentative conjecture',
+   result:'An unverified calculation',localTakeaway:'An unverified assertion'},
+  {id:'proof',phase:'substantial',fromEntryId:'first',status:'completed',
+   methodId:'proof',kind:'theory',result:'A statement proved for positive integers',title:'Prove a conjecture'}
+ ];
+ s.completion.activeEntryIndex=1;
+ const bridge=info(s,'completing:C40:bridgeA');
+ assert(!bridge.details.some(x=>x.text.includes('An unverified assertion')));
+ assert(bridge.strong.includes('verified finding'));
+ assert(info(s,'completing:C40:resultB').strong.includes('logical steps'));
+ assert(info(s,'completing:C40:resultE').strong.includes('numerical examples'));
+ assert(info(s,'completing:C40:interpretD').strong.includes('domain'));
+ s.entries[1].methodId='pmcc';s.entries[1].technique='Pearson correlation';s.entries[1].kind='scatter';
+ assert(info(s,'completing:C40:resultE').strong.includes('chosen statistic'));
+ assert(info(s,'completing:C40:interpretD').strong.includes('causation'));
+ s.entries[1].methodId='optimisation';s.entries[1].technique='Differentiation';
+ assert(info(s,'completing:C40:resultE').strong.includes('feasible boundaries'));
 });

@@ -3,6 +3,7 @@ import {guidanceContext} from '../completing/guidance-context.js';
 import {firstUnfamiliarUse,methodFamilies} from '../completing/method-identity.js';
 import {linkedAccuracy} from '../completing/evidence-links.js';
 import {CRITERIA,REVIEW_IDS} from './catalog.js';
+import {laterMathsBadgeGuidance} from './later-maths-criterion-guidance.js';
 
 const str=x=>typeof x==='string'?x.trim():'';
 const short=x=>str(x).replace(/\s+/g,' ').slice(0,160);
@@ -91,6 +92,8 @@ export function contextualBadgeGuidance(state,key,base){
  if(closingNodes.has(node))return closingBadgeGuidance(state,key,base);
  const ctx=guidanceContext(state,node),entry=ctx.entry,c=ctx.c||{},f=ctx.f||{},real=ctx.real===true;
  result.real=real;
+ const stageSpecific=laterMathsBadgeGuidance(state,ctx,key,base);
+ if(stageSpecific)return stageSpecific;
  const add=(label,value)=>{if(short(value)&&result.details.length<3)result.details.push({label,text:short(value)});};
  add('Your current aim',ctx.aim);
  if(node==='C10'){

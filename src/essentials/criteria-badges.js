@@ -5,9 +5,11 @@ import {guidanceContext} from '../completing/guidance-context.js';
 import {firstUnfamiliarUse,methodFamilies} from '../completing/method-identity.js';
 import {linkedAccuracy} from '../completing/evidence-links.js';
 import {escapeHtml} from '../ui/primitives.js';
+import {LATER_MATHS_SPOTS,LATER_MATHS_SPOT_IDS} from './later-maths-criterion-spots.js';
 
 /** Selective, read-only opportunities. A badge never represents a score or checklist point. */
 export const CRITERION_SPOTS=Object.freeze({
+ ...LATER_MATHS_SPOTS,
  'planning:N01V:benefit':Object.freeze({
   criterion:'C',location:'Who might benefit, and how could the answer help?',stage:'Planning · motivation',
   why:'Your genuine purpose can influence which mathematical questions you pursue and which decisions you make. A personal story by itself is not evidence of engagement.',
@@ -283,6 +285,8 @@ const TITLE_SPOTS=Object.freeze({
 });
 export const criterionSpotFor=(route,node)=>TITLE_SPOTS[route+':'+node]||'';
 const FIELD_SPOTS=Object.freeze({
+ 'completing:C40':['completing:C40:title',...LATER_MATHS_SPOT_IDS.map(id=>'completing:C40:'+id)],
+ 'completing:C50':['completing:C50:title',...LATER_MATHS_SPOT_IDS.map(id=>'completing:C50:'+id)],
  'completing:C30':['completing:C30:introduceA','completing:C30:introduceB','completing:C30:reflectD','completing:C30:reflectE','completing:C30:nextC','completing:C30:nextD'],
  'completing:C31':['completing:C31:firstPurpose'],
  'completing:C32':['completing:C32:purpose'],
