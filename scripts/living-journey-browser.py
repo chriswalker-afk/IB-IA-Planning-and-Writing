@@ -158,6 +158,19 @@ with sync_playwright() as pw:
   wrap.locator('.planning-trail-overview-node.checking').click()
   assert p.locator('.checking-page').is_visible()
   assert core(saved(p))==baseline,"Trail navigation must preserve student work"
+  # The exact current question heading must match the Trail (both widths).
+  snapshot=saved(p)
+  snapshot["route"]="planning";snapshot["planning"]["current"]="N01V"
+  snapshot["ui"]["planningIntroSeen"]=True
+  p.evaluate("(args)=>localStorage.setItem(args.key,JSON.stringify(args.value))",{"key":KEY,"value":snapshot})
+  p.reload(wait_until="networkidle")
+  assert p.locator('[data-source-node="N01V"]').count()==1
+  assert "Have a clear motivation." in p.locator('[data-source-node="N01V"]').inner_text()
+  if p.viewport_size["width"]>980:
+   assert "Have a clear motivation." in p.locator('.planning-trail-desktop .planning-trail-current-title').inner_text()
+  else:
+   assert "Have a clear motivation." in p.locator('.planning-trail-compact > summary').inner_text()
+  assert core(saved(p))==baseline
  for w,h in [(390,844),(1440,1000)]:
   run("planning-discovery-pass-2-"+str(w),planning_design,w,h)
  def reduced(p,original):
@@ -167,6 +180,9 @@ with sync_playwright() as pw:
   assert p.evaluate('getComputedStyle(document.querySelector(".living-ribbon-part")).transitionDuration') in ("0s","0.0s")
   p.locator('[data-nav="home"]:visible').first.click()
   assert p.locator(".living-trail").is_visible()
+  assert p.locator('.living-trail.is-compact .living-trail-step.current:visible').count()==1
+  assert p.locator('.living-trail.is-compact .living-trail-step:not(.current):visible').count()==0
+  assert p.locator('.living-trail-view-full').is_visible()
   assert "My Toolkit" in p.locator("#main").inner_text()
   assert core(saved(p))==baseline,(baseline,core(saved(p)))
  run("motion-preference",reduced,390,844,"reduce")
