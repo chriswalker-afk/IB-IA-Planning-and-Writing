@@ -2,12 +2,14 @@
 import JSZip from 'jszip';
 import {createPlanningEnvelope} from './schema.js';
 import {modelFromFullProject,fullProjectFilename} from './full-project-model.js';
+import {prepareReportFigures} from './figure-report.js';
 
 export async function createFullProjectExport(state,format){
  if(!['pdf','docx','zip'].includes(format))throw new Error('Unsupported project export format.');
  // Isolate a point-in-time copy. Exporting must never change the student workspace.
  const snapshot=JSON.parse(JSON.stringify({...state,route:'home'}));
  const model=modelFromFullProject(snapshot);
+ await prepareReportFigures(model);
  const plan=createPlanningEnvelope(snapshot,{exportedAt:model.exportedAt});
  const createPdf=async()=>{
   const {createPdfPlanningReport}=await import('./formats/pdf.js');
