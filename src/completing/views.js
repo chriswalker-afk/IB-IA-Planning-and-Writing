@@ -232,6 +232,9 @@ export function createCompletingViews(ctx){
  };
  const stageBranchActions=()=>{
   const s=getState(),active=completeEntry(s),confirmed=active?.status==="completed"&&filled(active.result);
+  const advice=active?adaptiveNextDirections(s,active):null;
+  const latest=active?.id===s.entries.at(-1)?.id;
+  const ready=confirmed&&latest&&(!advice?.route||advice.status==="ready");
   return '<nav class="math-stage-branch" data-math-stage-branch aria-label="Choose your next mathematical stage">'+
    '<div class="math-stage-branch-heading"><strong>Where does your mathematical investigation go next?</strong>'+
    '<p>Another stage is useful when a genuine finding leads to a worthwhile mathematical question. You can also bring your work together in a conclusion.</p></div>'+
@@ -241,8 +244,14 @@ export function createCompletingViews(ctx){
     '<button type="button" class="btn btn-primary math-stage-branch-button" data-action="stage-conclude">'+
       '<span>'+icon("flag")+' Continue to Conclusion</span>'+icon("arrow-right")+'</button>'+
    '</div>'+
-   (!confirmed?'<p class="math-stage-branch-note">'+icon("info")+
-    ' To connect another mathematical stage, record and confirm the genuine result of this stage in Section 2 first. You can still consider the conclusion whenever you wish.</p>':"")+
+   (!latest?'<p class="math-stage-branch-note">'+icon("info")+
+    ' You are reviewing an earlier stage. Open the latest mathematical page before extending the chain.</p>':
+    !confirmed?'<p class="math-stage-branch-note">'+icon("info")+
+    ' To add another stage, confirm the actual mathematical result in Section 2. You may still conclude.</p>':
+    !ready?'<p class="math-stage-branch-note">'+icon("info")+
+    ' Confirm what your result establishes in Section 3, then write your question and mathematical justification in Section 4. An uncertain result is valid.</p>':
+    '<p class="math-stage-branch-note">'+icon("info")+
+    ' Only continue when the result raises a worthwhile question; concluding is equally valid.</p>')+
    '</nav>';
  };
  const conclusionReadiness=state=>{
