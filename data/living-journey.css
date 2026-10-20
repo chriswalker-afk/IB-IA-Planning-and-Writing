@@ -707,7 +707,13 @@
  .planning-trail-compact-body .planning-trail-map-detail{max-width:430px;margin-inline:auto}
 }
 @media(max-width:540px){
- .living-trail.is-compact .living-trail-route .living-trail-steps .living-trail-step{min-height:66px}
+ /* In the Home/Studio compact version show the current chapter rather than
+    repeating five tall cards. The full five-chapter trail remains one tap away. */
+ .living-trail.is-compact .living-trail-route>.living-trail-zone-headings{display:none}
+ .living-trail.is-compact .living-trail-route>.living-trail-steps::before{display:none}
+ .living-trail.is-compact .living-trail-route .living-trail-steps .living-trail-step:not(.current){display:none}
+ .living-trail.is-compact .living-trail-route .living-trail-steps .living-trail-step.current{min-height:67px;padding:10px 12px}
+ .living-trail.is-compact .living-trail-route{padding:6px 0 4px}
  .living-trail.is-compact .living-trail-top{flex-wrap:wrap;gap:8px}
  .living-trail-view-full{min-height:35px}
 }
