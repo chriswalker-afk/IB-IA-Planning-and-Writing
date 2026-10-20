@@ -1065,7 +1065,7 @@ export function createCompletingViews(ctx){
       ' Actual mathematics from Section 2</strong><p>'+e(substantial.result)+'</p></div>':
      '<p class="show-first-draft-note">'+icon("info")+
       ' Write conclusions from actual work only. Section 2 must be completed and confirmed before later stages treat this as a finding.</p>')+
-    coachBlock(substantial)+journeyOutcomePicker(substantial)+
+    coachBlock(substantial,{allowChoices:false})+journeyOutcomePicker(substantial)+
     '<div class="show-first-writing-field">'+
      entryField("interpretation","What does this result mean for my aim?",
       "What has the mathematics established, and what can I responsibly infer?",{type:"textarea",rows:5})+
