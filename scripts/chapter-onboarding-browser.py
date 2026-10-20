@@ -51,6 +51,18 @@ def first_time(browser,width):
   assert stored(page)["planning"]["completed"]==False
   page.locator('[data-nav="completing"]:visible').first.click()
   assert page.locator('[data-source-node="C00"]').count()==1
+  welcome=page.locator(".writer-guide-welcome-drawer")
+  assert welcome.is_visible()
+  assert welcome.locator(".writer-guide-welcome-essential").count()==6
+  assert stored(page)["ui"]["writerGuideIntroSeen"]==False
+  welcome.locator('[data-action="writer-guide-welcome-dismiss"]').click()
+  assert stored(page)["ui"]["writerGuideIntroSeen"]==True
+  assert page.locator(".writer-guide-welcome-drawer").count()==0
+  header=page.locator(".writer-guide-header-button")
+  assert header.is_visible()
+  header.click()
+  assert page.locator(".writer-guide-drawer [data-guide-card]").count()==14
+  page.locator(".writer-guide-drawer .drawer-header [data-action='close-drawer']").click()
   setup=page.locator(".chapter-onboarding-write")
   assert "WRITE IN YOUR IA" in setup.inner_text()
   assert "Write relevant Set up answers directly into your actual IA document" in setup.inner_text()
@@ -137,6 +149,7 @@ def first_time(browser,width):
   # the sidebar's duplicate navigation links are deliberately hidden.
   page.locator('.living-trail-step.writing').first.click()
   assert page.locator('[data-source-node="C00"]').count()==1
+  assert page.locator(".writer-guide-welcome-drawer").count()==0
   without_overflow(page)
   page.screenshot(path=str(OUT/f"setup-quick-sparks-{width}.png"),full_page=True,animations="disabled")
   # Student can explore the full advice guide without losing their own work.
@@ -256,6 +269,12 @@ def completed_plan(browser,width):
   assert page.locator('[data-source-node="N07"]').count()==1
   page.locator('[data-action="plan-finish-writing"]').click()
   assert page.locator('[data-source-node="C00"]').count()==1
+  intro=page.locator(".writer-guide-welcome-drawer")
+  assert intro.is_visible()
+  intro.locator('[data-action="writer-guide-welcome-full"]').click()
+  assert page.locator(".writer-guide-drawer [data-guide-card]").count()==14
+  assert stored(page)["ui"]["writerGuideIntroSeen"]==True
+  page.locator(".writer-guide-drawer .drawer-header [data-action='close-drawer']").click()
   assert page.locator(".spark-shelf-featured").count()==2
   assert page.locator('.setup-spark-already').count()==1
   assert page.locator('.setup-quick-sparks').count()==0

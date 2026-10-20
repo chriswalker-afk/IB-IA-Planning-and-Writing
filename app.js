@@ -70,7 +70,7 @@ import {displayVoronoiBounds,coordinateFromCanvas,canvasPosition,voronoiFrame,re
 import {renderRepresentationHub,renderRepresentationSwitcher,representationFocusActive} from "./src/diagrams/representation-hub.js";
 import {renderPresentationCoach,renderFigureHandover} from "./src/diagrams/presentation-coach-view.js";
 import {figureCaption} from "./src/diagrams/presentation-coach-core.js";
-import {renderWriterFieldGuide} from "./src/completing/writer-field-guide.js";
+import {renderWriterFieldGuide,renderWriterGuideWelcome,shouldShowWriterGuideWelcome} from "./src/completing/writer-field-guide.js";
 import {C_MAJOR_STAGES,setCompletionNode,moveCompletionRoute,completionBack,markCompletionStage,setCompletionField,startFirstRepresentation,addMathematicalStage,routesAt,addAccuracyDecision,completionSuggestions,sectionForNode,targetForSection,completionStage,completeEntry,latestRealResult,sourceResultForNext,flagDependentMathematics,acknowledgeMathReview} from "./src/completing/engine.js";
 import {adaptiveNextDirections,flagJourneyRouteDependents} from "./src/completing/adaptive-journey.js";
 
@@ -699,6 +699,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     detachIdeaMapGraph();
     const map={home:viewHome,planning:viewPlanning,completing:viewCompleting,checking:viewChecking,path:viewPath,report:viewReport};
     document.body.classList.toggle("representation-focus-active",representationFocusActive(state));
+    document.body.classList.toggle("route-completing",state.route==="completing");
     main.dataset.assessmentFramework=assessmentFramework(state);
     main.innerHTML=previewBanner()+assessmentBanner(state,e)+stuckViews.returnBanner()+map[state.route]();
     refreshMathPreviews(main);
@@ -708,6 +709,9 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     document.querySelectorAll("[data-nav]").forEach(b=>b.classList.toggle("active",b.dataset.nav===state.route));
     refreshPathCount();
     if(opts.top){window.scrollTo({top:0,behavior:"auto"});main.focus({preventScroll:true})}
+    // Show only at the first entry to C00; never for example previews or other stages.
+    if(shouldShowWriterGuideWelcome(state,preview.active)&&layer.hidden&&!document.querySelector("dialog[open]"))
+      openDrawer("writer-guide-intro");
   }
   function nav(route,opts={}) {
     state.route=route;
@@ -791,6 +795,8 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       body=resourceDrawer(state,resourceSession);
     }else if(panel==="writer-guide"){
       body=renderWriterFieldGuide(icon,e);
+    }else if(panel==="writer-guide-intro"){
+      body=renderWriterGuideWelcome(icon,e);
     }else if(panel==="help"){
       body='<section><p>Pathfinder is a thinking and writing companion. You remain the author of your mathematics and explanations.</p><div class="panel-list">'+
         '<button class="panel-link" data-action="open-stuck">I am stuck '+icon("arrow-right")+'</button>'+
@@ -817,10 +823,10 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     }else if(panel==="stuck"){
       body=stuckViews.render();
     }
-    const titles={resources:"Tools & tutorials",project:"My project",files:"Save & export",help:"Here to help","writer-guide":"The IA Writer's Field Guide",demos:"Choose a sample",stuck:"Find a way forward", "import-preview":"Review planning import","import-manual":"Recover a plan",handover:"Confirm your starting plan"};
+    const titles={resources:"Tools & tutorials",project:"My project",files:"Save & export",help:"Here to help","writer-guide":"The IA Writer's Field Guide","writer-guide-intro":"Your Writer's Field Guide",demos:"Choose a sample",stuck:"Find a way forward", "import-preview":"Review planning import","import-manual":"Recover a plan",handover:"Confirm your starting plan"};
     layer.hidden=false;document.body.classList.add("dialog-open");
     document.querySelectorAll(".topbar,.app-grid,.mobile-nav").forEach(el=>el.inert=true);
-    layer.innerHTML='<aside class="drawer'+(panel==="resources"?" resource-drawer":"")+(panel==="writer-guide"?" writer-guide-drawer":"")+'" role="dialog" aria-modal="true" aria-labelledby="drawerTitle" tabindex="-1"><div class="drawer-header"><h2 id="drawerTitle">'+titles[panel]+'</h2>'+
+    layer.innerHTML='<aside class="drawer'+(panel==="resources"?" resource-drawer":"")+(panel==="writer-guide"?" writer-guide-drawer":panel==="writer-guide-intro"?" writer-guide-drawer writer-guide-welcome-drawer":"")+'" role="dialog" aria-modal="true" aria-labelledby="drawerTitle" tabindex="-1"><div class="drawer-header"><h2 id="drawerTitle">'+titles[panel]+'</h2>'+
       '<button class="btn btn-secondary btn-sm" type="button" data-action="close-drawer">'+(panel==="resources"&&resourceSession.parent==="stuck"?"Back to I am stuck":"Return to my work")+' '+icon("x")+'</button></div>'+body+'</aside>';
     refreshMathPreviews(layer);
     $(".drawer",layer).focus();
@@ -831,7 +837,11 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     if(restore){restoreReturn(drawerReturn||captureReturn(lastFocus));drawerReturn=null;}
   }
   function dismissDrawer(){
-    if(lastDrawer==="resources"&&resourceSession.parent==="stuck")openDrawer("stuck");
+    if(lastDrawer==="writer-guide-intro"){
+      state.ui.writerGuideIntroSeen=true;
+      save();
+      closeDrawer();
+    }else if(lastDrawer==="resources"&&resourceSession.parent==="stuck")openDrawer("stuck");
     else closeDrawer();
   }
   function exportJson() {
@@ -2088,6 +2098,13 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       case "close-cue":state.ui.openCue="";save();render();break;
       case "cue-covered":state.cues[el.dataset.key]="done";state.ui.openCue="";save();render();toast("Noted — this reminder won't keep appearing.");break;
       case "cue-skip":state.cues[el.dataset.key]="not-relevant";state.ui.openCue="";save();render();toast("Okay — this cue is now hidden.");break;
+      case "writer-guide-welcome-dismiss":dismissDrawer();break;
+      case "writer-guide-welcome-full":{
+        state.ui.writerGuideIntroSeen=true;
+        save();
+        openDrawer("writer-guide");
+        break;
+      }
       case "writer-guide-filter":{
         const guide=el.closest(".writer-guide-main");if(!guide)break;
         const family=el.dataset.guideFilter||"all";

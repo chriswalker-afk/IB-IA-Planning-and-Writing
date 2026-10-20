@@ -1030,3 +1030,61 @@
 .journey-stage-method select{max-width:100%}
 .journey-next-course{display:flex;align-items:flex-start;gap:8px;font-size:11px;line-height:1.65;margin:0;color:#596976}
 .journey-next-course .icon{width:16px;height:16px;flex:none;margin-top:1px}
+
+/* Field Guide Pass 1: visible in IA Studio, including reduced advice and mobile. */
+.writer-guide-header-button{display:none;align-items:center;gap:7px;min-height:36px;padding:7px 11px;border:1px solid #d9cbea;border-radius:11px;background:#f6f0fc;color:#604387;font:inherit;font-size:11px;font-weight:800;white-space:nowrap;cursor:pointer}
+.route-completing .writer-guide-header-button{display:inline-flex}
+.writer-guide-header-button .icon{width:17px;height:17px}
+.writer-guide-header-button:hover,.writer-guide-header-button:focus-visible{background:#eadef6;border-color:#a990ca}
+.writer-guide-overview-card{display:flex;align-items:center;gap:14px;padding:17px 18px;margin:9px 0 19px;border:1px solid #ddcfee;border-radius:15px;background:linear-gradient(110deg,#f2ecfa,#fcfafc 78%)}
+.writer-guide-overview-icon{display:grid;place-items:center;flex:none;width:44px;height:44px;border-radius:13px;background:#e6d9f5;color:#63468d}
+.writer-guide-overview-icon .icon{width:23px;height:23px}
+.writer-guide-overview-copy{flex:1;min-width:0}
+.writer-guide-overview-copy>span{display:block;margin:0 0 3px;font-size:9px;font-weight:850;letter-spacing:.09em;color:#75539d}
+.writer-guide-overview-copy h3{font-size:15px;line-height:1.35;color:#342849;margin:0 0 5px}
+.writer-guide-overview-copy p{margin:0;font-size:12px;line-height:1.55;color:#5e5969}
+.writer-guide-overview-action{display:inline-flex;align-items:center;justify-content:center;gap:7px;flex:none;border:1px solid #73569d;border-radius:11px;background:#684c92;color:#fff;font-weight:800;font-size:12px;padding:11px 12px;min-height:42px;cursor:pointer}
+.writer-guide-overview-action:hover{background:#503677}
+.writer-guide-overview-action .icon{width:16px;height:16px}
+.writer-guide-welcome-drawer{width:min(100%,640px)}
+.writer-guide-welcome{display:grid;gap:16px;padding-bottom:15px}
+.writer-guide-welcome-hero{padding:21px 23px 23px;border-radius:17px;background:linear-gradient(120deg,#ebe2f7,#faf7fd 65%,#f2f9f5);border:1px solid #dacdeb}
+.writer-guide-welcome-eyebrow{display:flex;align-items:center;gap:7px;font-size:10px;font-weight:850;letter-spacing:.11em;color:#65468f}
+.writer-guide-welcome-eyebrow .icon{width:16px;height:16px}
+.writer-guide-welcome-hero h2{font-size:clamp(25px,3vw,31px);line-height:1.2;margin:10px 0;color:#2e3343}
+.writer-guide-welcome-hero p{font-size:13px;line-height:1.65;margin:0;color:#4b5d61}
+.writer-guide-welcome-heading h3{font-size:17px;color:#274047;margin:0 0 3px}
+.writer-guide-welcome-heading p{font-size:12px;color:#657778;line-height:1.5;margin:0}
+.writer-guide-welcome-six{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.writer-guide-welcome-essential{display:flex;align-items:flex-start;gap:9px;padding:11px;border:1px solid #e3e5e8;border-radius:11px;background:#fff;min-width:0}
+.writer-guide-welcome-tip-icon{display:grid;place-items:center;flex:none;width:31px;height:31px;border-radius:9px;color:#64488a;background:#eee5f7}
+.writer-guide-welcome-essential.writer-family-maths .writer-guide-welcome-tip-icon{color:#1c7462;background:#e2f2eb}
+.writer-guide-welcome-essential.writer-family-reader .writer-guide-welcome-tip-icon{color:#886427;background:#fff1d7}
+.writer-guide-welcome-tip-icon .icon{width:17px;height:17px}
+.writer-guide-welcome-essential>div{display:grid;gap:4px;min-width:0}
+.writer-guide-welcome-essential strong{font-size:12px;line-height:1.35;color:#2a4146}
+.writer-guide-welcome-essential span:not(.writer-guide-welcome-tip-icon){font-size:11px;line-height:1.45;color:#5e7375}
+.writer-guide-welcome-note{font-size:11px;line-height:1.55;color:#5a696c;margin:0}
+.writer-guide-welcome-actions{display:flex;gap:9px;flex-wrap:wrap}
+.writer-guide-welcome-actions .btn{flex:1 1 200px;min-height:44px}
+.writer-guide-welcome-reassurance{font-size:11px;line-height:1.5;color:#6a6677;margin:-7px 0 0}
+@media(max-width:760px){
+ .writer-guide-header-button{width:37px;min-width:37px;height:37px;padding:0;justify-content:center}
+ .writer-guide-header-button span{display:none}
+ .writer-guide-header-button .icon{width:18px;height:18px}
+ .writer-guide-overview-card{align-items:flex-start;flex-wrap:wrap;padding:14px}
+ .writer-guide-overview-copy{flex-basis:calc(100% - 66px)}
+ .writer-guide-overview-action{margin-left:58px}
+ .writer-guide-welcome-drawer{padding:18px 15px 30px}
+ .writer-guide-welcome-hero{padding:18px}
+ .writer-guide-welcome-six{grid-template-columns:1fr}
+}
+@media(max-width:400px){
+ .route-completing .topbar .brand-label{font-size:14px}
+ .route-completing .topbar-actions{gap:4px}
+ .route-completing .ess-header-button{padding:7px 5px;font-size:10px}
+ .writer-guide-overview-action{width:100%;margin-left:0}
+ .writer-guide-welcome-actions .btn{flex-basis:100%}
+}
+@media(max-width:345px){.route-completing .topbar .brand-label{display:none}}
+@media print{.writer-guide-header-button,.writer-guide-overview-card{display:none!important}}

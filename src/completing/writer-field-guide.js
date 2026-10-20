@@ -237,6 +237,31 @@ const STORIES=Object.freeze([
 ]);
 const byId=new Map(FIELD_GUIDE_TIPS.map(t=>[t.id,t]));
 export function contextualGuideTip(node){return byId.get(FIELD_GUIDE_CONTEXT[node])||null;}
+/** First-visit writing craft: separate from the assessment criteria and editable IA. */
+export function shouldShowWriterGuideWelcome(state,sampleActive=false){
+ return !sampleActive&&state?.route==="completing"&&state?.completion?.current==="C00"&&
+  state?.ui?.writerGuideIntroSeen!==true;
+}
+export function renderWriterGuideWelcome(icon,e){
+ const essentials=FIELD_GUIDE_TIPS.filter(t=>t.essential);
+ return '<section class="writer-guide-welcome" aria-labelledby="writer-guide-welcome-title">'+
+  '<div class="writer-guide-welcome-hero"><span class="writer-guide-welcome-eyebrow">'+icon("sparkles")+' BEFORE YOU WRITE</span>'+
+   '<h2 id="writer-guide-welcome-title">Make your IA worth reading.</h2>'+
+   '<p>A strong exploration is more than a sequence of calculations. Show the question, why you chose your mathematics, what you found and what those findings mean.</p></div>'+
+  '<div class="writer-guide-welcome-heading"><h3>Six ideas to take into your IA</h3>'+
+   '<p>These are writing habits, not a marking checklist or extra tasks to complete.</p></div>'+
+  '<div class="writer-guide-welcome-six">'+essentials.map(t=>
+    '<div class="writer-guide-welcome-essential writer-family-'+e(t.family)+'">'+
+     '<span class="writer-guide-welcome-tip-icon">'+icon(t.icon)+'</span>'+
+     '<div><strong>'+e(t.title)+'</strong><span>'+e(t.hook)+'</span></div></div>'
+   ).join("")+'</div>'+
+  '<p class="writer-guide-welcome-note">Your thinking and mathematics must be your own. For the official current assessment criteria, use <strong>IA essentials</strong> in the header.</p>'+
+  '<div class="writer-guide-welcome-actions">'+
+   '<button type="button" class="btn btn-primary" data-action="writer-guide-welcome-dismiss">Start writing my IA '+icon("arrow-right")+'</button>'+
+   '<button type="button" class="btn btn-secondary" data-action="writer-guide-welcome-full">'+icon("book")+' Explore all 14 tips</button></div>'+
+  '<p class="writer-guide-welcome-reassurance">The purple Writing Guide button stays available throughout IA Studio. This introduction only appears once per project.</p>'+
+  '</section>';
+}
 export function renderFieldGuideTeaser(icon,e){
  return '<section class="chapter-onboarding-tile writer-guide-teaser" aria-labelledby="writer-guide-teaser-heading">'+
   '<div class="writer-guide-teaser-top"><span class="chapter-onboarding-tile-icon">'+icon("book")+'</span><span class="writer-guide-teaser-tag">THE WRITER’S FIELD GUIDE</span></div>'+

@@ -58,7 +58,7 @@ export function createProjectState() {
     },
     ui: {
       planStep:0,planMax:0,studioSection:"overview",mathIndex:0,mathPhase:"work",
-      helpKey:"",openCue:"",noteDraft:"",adviceMode:"guided",planningIntroSeen:false,planningIntroOpen:false,lastWorkRoute:"",lastStudioNode:"",representationFilter:"all",checkingMode:"draft",latestTitle:"",latestDetail:"",latestNode:"",latestEntry:"",latestAt:""
+      helpKey:"",openCue:"",noteDraft:"",adviceMode:"guided",planningIntroSeen:false,planningIntroOpen:false,writerGuideIntroSeen:false,lastWorkRoute:"",lastStudioNode:"",representationFilter:"all",checkingMode:"draft",latestTitle:"",latestDetail:"",latestNode:"",latestEntry:"",latestAt:""
     },
     scratch: {introduction:"",dataNotes:"",conclusion:"",finalReview:""},
     entries:[], dataShelf:[], graphStudio:newGraphStudio(), imageTracer:newImageTracer(), statStudio:newStatStudio(), tableStudio:newTableStudio(), voronoiStudio:newVoronoiStudio(), cues:{},cueNotes:{},cueLocations:{},
@@ -113,6 +113,7 @@ export function normalizeProjectState(value) {
   if(!["draft","feedback","final"].includes(u.checkingMode))u.checkingMode="draft";
   u.planningIntroSeen=u.planningIntroSeen===true;
   u.planningIntroOpen=u.planningIntroOpen===true;
+  u.writerGuideIntroSeen=u.writerGuideIntroSeen===true;
   const next={
     ...blank,
     updatedAt: str(value.updatedAt)||null,

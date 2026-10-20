@@ -4,7 +4,8 @@ import assert from "node:assert/strict";
 import {icon,escapeHtml} from "../src/ui/primitives.js";
 import {
  FIELD_GUIDE_TIPS,FIELD_GUIDE_CONTEXT,contextualGuideTip,
- renderFieldGuideTeaser,renderWriterFieldGuide,renderContextualGuide
+ renderFieldGuideTeaser,renderWriterFieldGuide,renderContextualGuide,
+ renderWriterGuideWelcome,shouldShowWriterGuideWelcome
 } from "../src/completing/writer-field-guide.js";
 
 test("Writer's Field Guide includes six essentials plus eight meaningful extra lessons",()=>{
@@ -63,4 +64,24 @@ test("Contextual guidance is linked to the correct stage without becoming a stud
  assert.equal(contextualGuideTip("C00"),null);
  assert.equal(renderContextualGuide(icon,escapeHtml,"C00"),"");
  assert.equal(contextualGuideTip("not-a-stage"),null);
+});
+
+test("Writing Guide first-visit welcome is substantial but does not change the current criteria",()=>{
+ const html=renderWriterGuideWelcome(icon,escapeHtml);
+ assert.match(html,/BEFORE YOU WRITE/);
+ assert.match(html,/Six ideas to take into your IA/);
+ assert.equal((html.match(/writer-guide-welcome-essential writer-family-/g)||[]).length,6);
+ assert.match(html,/writer-guide-welcome-dismiss/);
+ assert.match(html,/writer-guide-welcome-full/);
+ assert.match(html,/IA essentials/);
+ assert.doesNotMatch(html,/2029|predicted mark/);
+ const s={route:"completing",completion:{current:"C00"},ui:{writerGuideIntroSeen:false}};
+ assert.equal(shouldShowWriterGuideWelcome(s),true);
+ assert.equal(shouldShowWriterGuideWelcome(s,true),false);
+ s.ui.writerGuideIntroSeen=true;
+ assert.equal(shouldShowWriterGuideWelcome(s),false);
+ s.ui.writerGuideIntroSeen=false;s.completion.current="C10";
+ assert.equal(shouldShowWriterGuideWelcome(s),false);
+ s.completion.current="C00";s.route="planning";
+ assert.equal(shouldShowWriterGuideWelcome(s),false);
 });
