@@ -58,7 +58,7 @@ export function createProjectState() {
     },
     ui: {
       planStep:0,planMax:0,studioSection:"overview",mathIndex:0,mathPhase:"work",
-      helpKey:"",openCue:"",noteDraft:"",adviceMode:"guided",planningIntroSeen:false,planningIntroOpen:false,lastWorkRoute:"",lastStudioNode:"",representationFilter:"all",latestTitle:"",latestDetail:"",latestNode:"",latestEntry:"",latestAt:""
+      helpKey:"",openCue:"",noteDraft:"",adviceMode:"guided",planningIntroSeen:false,planningIntroOpen:false,lastWorkRoute:"",lastStudioNode:"",representationFilter:"all",checkingMode:"draft",latestTitle:"",latestDetail:"",latestNode:"",latestEntry:"",latestAt:""
     },
     scratch: {introduction:"",dataNotes:"",conclusion:"",finalReview:""},
     entries:[], dataShelf:[], graphStudio:newGraphStudio(), imageTracer:newImageTracer(), statStudio:newStatStudio(), tableStudio:newTableStudio(), voronoiStudio:newVoronoiStudio(), cues:{},cueNotes:{},cueLocations:{},
@@ -110,13 +110,14 @@ export function normalizeProjectState(value) {
   if(!["work","interpret","next"].includes(u.mathPhase))u.mathPhase="work";
   if(!["guided","reduced"].includes(u.adviceMode))u.adviceMode="guided";
   if(!["all","data","geometry","models","decisions"].includes(u.representationFilter))u.representationFilter="all";
+  if(!["draft","feedback","final"].includes(u.checkingMode))u.checkingMode="draft";
   u.planningIntroSeen=u.planningIntroSeen===true;
   u.planningIntroOpen=u.planningIntroOpen===true;
   const next={
     ...blank,
     updatedAt: str(value.updatedAt)||null,
     demo: str(value.demo),
-    route:["home","planning","completing","path","report"].includes(value.route)?value.route:"home",
+    route:["home","planning","completing","checking","path","report"].includes(value.route)?value.route:"home",
     project:p,ui:u,scratch:s,
     resources:normalizeResourceState(value.resources),
     ideaExplorer:normalizeIdeaState(value.ideaExplorer),
