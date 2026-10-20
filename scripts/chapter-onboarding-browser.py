@@ -556,7 +556,7 @@ def growing_discovery_trail(browser,width):
  try:
   trail=page.locator('.living-trail:not(.is-compact)').first
   assert trail.count()==1
-  assert trail.locator('.living-trail-step').count()==4
+  assert trail.locator('.living-trail-step').count()==5
   assert trail.locator('.living-trail-math-loop').count()==1
   assert "3 mathematical stages" in trail.inner_text()
   assert trail.locator('[data-trail-chapter-guide]').count()==1
@@ -570,7 +570,7 @@ def growing_discovery_trail(browser,width):
   assert pages.nth(0).get_attribute("data-index")=="0"
   assert pages.nth(1).get_attribute("data-index")=="1"
   assert pages.nth(2).get_attribute("data-index")=="2"
-  assert page.locator('.journey-rail-context').count()==4
+  assert page.locator('.journey-rail-context').count()==5
   assert "3 mathematical stages" in page.locator('.journey-rail-context').nth(2).inner_text()
   without_overflow(page)
   page.screenshot(path=str(OUT/f"discovery-accurate-{width}.png"),full_page=True,animations="disabled")
