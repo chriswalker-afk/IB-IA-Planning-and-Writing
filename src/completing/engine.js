@@ -391,6 +391,12 @@ export function startFirstRepresentation(state){
 export function addMathematicalStage(state){
  const c=state.completion,entries=state.entries||[],prior=entries.at(-1);
  const current=entries[c.activeEntryIndex];
+ // The first mathematics page can reopen its existing unfinished successor;
+ // never create a second draft for the same pending stage.
+ if(c.current==="C30"&&prior?.phase==="substantial"&&!genuinelyDone(prior)){
+  c.activeEntryIndex=entries.length-1;state.ui.mathIndex=c.activeEntryIndex;
+  return{ok:true,existing:true,index:c.activeEntryIndex};
+ }
  if(current&&prior&&current.id!==prior.id&&prior.phase==="substantial")
   return{ok:false,error:"You are reviewing an earlier stage. Open the latest mathematical stage before continuing the journey.",latestIndex:entries.length-1};
  if(prior?.phase==="substantial"&&!genuinelyDone(prior))
