@@ -19,7 +19,7 @@ def fixture():
  s["completion"]["accuracyDecisions"]=[{"id":"acc-a","quantity":"Distance","symbol":"d","unit":"cm","resolution":"1 cm","policy":"Nearest centimetre","reason":"Recorded resolution","sourceId":"src-a"}]
  s["entries"]=[
   {"id":"result-one","phase":"first","status":"completed","title":"First actual graph","result":"A genuine result was recorded by a fictional student","localTakeaway":"The graph is curved.","sourceRefs":["src-a"],"accuracyRefs":["acc-a"],"interpretation":"The curve helps answer the aim."},
-  {"id":"result-two","phase":"substantial","status":"planned","title":"Possible next method","purpose":"Would a curved model be useful?","fromEntryId":"result-one","sourceRefs":[],"accuracyRefs":[]}
+  {"id":"result-two","phase":"substantial","status":"planned","title":"Possible next method","methodId":"pmcc","purpose":"Would a correlation coefficient help answer the aim?","fromEntryId":"result-one","sourceRefs":[],"accuracyRefs":[]}
  ]
  s["completion"]["stages"]["C30"]="complete"
  s["completion"]["stages"]["C40"]="working"
@@ -94,6 +94,10 @@ with sync_playwright() as pw:
   assert sky.is_visible()
   assert sky.locator("svg .constellation-link").count()==1
   assert sky.locator('[data-action="completion-edit-entry"].constellation-star-hit').count()==2
+  assert sky.locator('.math-journey-step-card').count()==2
+  assert "Calculate Pearson's r (PMCC)" in sky.inner_text()
+  assert sky.locator('.constellation-sky-wrap').evaluate("(el)=>el.getBoundingClientRect().height")<=112,"the constellation should be compact rather than stretching to desktop width"
+  assert p.locator('.journey-record-heading').count()==0,"the old mathematical record list should not duplicate the journey"
   assert "1 actual result" in sky.inner_text()
   assert "Only a narrow range was measured" in p.locator(".insight-toolkit").inner_text()
   p.screenshot(path=str(OUT/("living-journey-"+str(p.viewport_size["width"])+".png")),full_page=True,animations="disabled")
