@@ -315,17 +315,28 @@ export function criterionBadge(key){
   '" title="Why '+escapeHtml(label)+' matter'+(multi?'':'s')+' here">'+
   '<span aria-hidden="true">'+(multi?'A–E':spot.criterion)+'</span></button>';
 }
-export function criterionMarkedField(html,key){
- return html&&Object.hasOwn(CRITERION_SPOTS,key)?'<div class="criterion-marked-field">'+html+criterionBadge(key)+'</div>':html;
+/** Optional non-assessment writing craft is a separate sibling of criterion
+ * badges. Keeping this slot generic avoids coupling the rubric to writing tips
+ * and allows the current and later assessment cohorts to remain independent. */
+export function criterionMarkedField(html,key,writingHelp=""){
+ if(!html)return html;
+ const mark=Object.hasOwn(CRITERION_SPOTS,key);
+ if(!mark&&!writingHelp)return html;
+ return '<div class="criterion-marked-field'+(writingHelp?' has-writer-guide':'')+
+  (mark?'':' criterion-field-guide-only')+'">'+html+
+  (mark?criterionBadge(key):'')+writingHelp+'</div>';
 }
-/** Same contextual criterion bubbles as Planning, with a compact group for
- * writing boxes linked to two meaningful criteria. Both remain optional help. */
-export function criterionMarkedWritingBox(html,keys=[]){
+/** Same contextual criterion bubbles as Planning, with optional additional
+ * writing-craft help beside (never inside) the assessment bubble group. */
+export function criterionMarkedWritingBox(html,keys=[],writingHelp=""){
  const valid=[...new Set(keys)].filter(k=>Object.hasOwn(CRITERION_SPOTS,k));
- if(!html||!valid.length)return html;
- return '<div class="criterion-marked-field criterion-marked-writing-box">'+html+
-  '<div class="criterion-writing-bubbles" role="group" aria-label="Relevant IA marking criteria">'+
-  valid.map(k=>criterionBadge(k)).join("")+'</div></div>';
+ if(!html||(!valid.length&&!writingHelp))return html;
+ return '<div class="criterion-marked-field criterion-marked-writing-box'+
+  (writingHelp?' has-writer-guide':'')+
+  (!valid.length?' criterion-field-guide-only':'')+'">'+html+
+  (valid.length?'<div class="criterion-writing-bubbles" role="group" aria-label="Relevant IA marking criteria">'+
+  valid.map(k=>criterionBadge(k)).join("")+'</div>':'')+
+  writingHelp+'</div>';
 }
 export function criterionPageHeading(title,route,node){
  const key=criterionSpotFor(route,node),name=escapeHtml(title);
