@@ -214,55 +214,58 @@ export function discoveryMathStages(s){
   '<p class="living-trail-math-footnote">Each page connects to an earlier finding. These markers reflect saved working records, not an IA grade or a required number of calculations.</p>'+
  '</section>';
 }
+function discoveryChapterGuide(){
+ return '<details class="living-trail-chapter-guide" data-trail-chapter-guide>'+
+  '<summary>'+icon('book')+' What do the five chapters include? '+icon('chevron-right')+'</summary>'+
+  '<div class="living-trail-chapter-guide-grid">'+
+   '<div><strong>1 · Planning</strong><p>Develop a worthwhile aim, explore mathematical pathways, choose primary, secondary or theoretical starting material, and plan sampling, permissions, sources and precision where relevant. Save useful ideas as sparks.</p></div>'+
+   '<div><strong>2 · Start writing</strong><p>Write your introduction, connect it to the investigation aim, and justify the first mathematics and evidence you intend to use. Writing belongs in your own IA.</p></div>'+
+   '<div><strong>3 · Explore &amp; explain</strong><p>Show real calculations or well-presented diagrams and tables, interpret results, reflect on meaningful limitations, and add further linked mathematical stages when they help answer the aim.</p></div>'+
+   '<div><strong>4 · Conclude &amp; next steps</strong><p>Answer your aim from actual mathematics, explain what it means and its important limitations, and consider worthwhile potential mathematical questions.</p></div>'+
+   '<div><strong>5 · Check your IA</strong><p>Inspect your actual written IA against Presentation (A), Mathematical communication (B), Personal engagement (C), Reflection (D) and Use of mathematics (E). Revisit teacher-draft checks, record permitted feedback and verify the final file.</p></div>'+
+  '</div><p class="living-trail-chapter-guide-note">Sparks, worked examples, diagram generators and criteria help you along the way; they are not compulsory extra stages or automatic marks. A saved figure is not proof that the mathematics has been completed.</p></details>';
+}
 export function discoveryTrail(s,{compact=false}={}){
- const now=currentGroup(s);
- const stages=JOURNEY_GROUPS.map(g=>({g,status:groupStatus(s,g)}));
+ const stages=discoveryChapters(s);
  return '<section class="living-trail '+(compact?'is-compact':'')+'" aria-label="Discovery Trail">'+
   '<div class="living-trail-top"><div><span class="section-eyebrow">'+icon('route')+
-  ' DISCOVERY TRAIL</span><h3>Follow your mathematical journey</h3>'+
-  '<p class="living-trail-purpose">Five chapters across Plan, Write your IA and Checking, with as many meaningful mathematical stages as your investigation needs.</p></div></div>'+
+   ' DISCOVERY TRAIL</span><h3>Your mathematical journey</h3>'+
+   (compact?'':'<p class="living-trail-purpose">Five chapters across Plan, Write your IA and Checking, with as many meaningful mathematical stages as your investigation needs.</p>')+
+   '</div>'+(compact?'<button type="button" class="living-trail-view-full" data-nav="path">Full trail '+icon('arrow-right')+'</button>':'')+'</div>'+
   '<div class="living-trail-route" role="group" aria-label="Chapter 1 is planning, Chapters 2 to 4 are writing, and Chapter 5 is checking.">'+
    '<div class="living-trail-zone-underlay" aria-hidden="true"><span class="plan"></span><span class="writing"></span><span class="checking"></span></div>'+
    '<div class="living-trail-zone-headings">'+
-    '<div class="living-trail-zone-title plan">'+icon('compass')+'<div><strong>Plan</strong><small>Explore your idea</small></div></div>'+
-    '<div class="living-trail-zone-title writing">'+icon('pencil')+'<div><strong>Write your IA</strong><small>Build your actual mathematical exploration</small></div></div>'+
-    '<div class="living-trail-zone-title checking">'+icon('clipboard')+'<div><strong>Checking</strong><small>Read, revise and verify</small></div></div>'+
+    DISCOVERY_ZONES.map(z=>'<div class="living-trail-zone-title '+e(z.mode==='planning'?'plan':z.mode)+'">'+
+     icon(z.icon)+'<div><strong>'+e(z.label)+'</strong><small>'+e(z.description)+'</small></div></div>').join('')+
    '</div>'+
    '<div class="living-trail-path" aria-hidden="true">'+
-   '<svg class="living-trail-svg" viewBox="0 0 1000 155" preserveAspectRatio="none" focusable="false">'+
-    insightTrailLines(s)+
-    curves.map((path,i)=>'<path d="'+path+'" class="living-trail-road '+(i===0?'plan-to-writing':i===stages.length-2?'writing-to-checking':'writing')+'"/>'+
-     (stages[i].status==='complete'?'<path d="'+path+'" class="living-trail-done"/>':'')).join('')+
-    '<path d="M305 25 v7 M301 29 h8 M710 137 v7 M706 141 h8" class="living-trail-star"/>'+
-   '</svg>'+
-   coordinates.map((p,i)=>{
-    const x=stages[i],current=now.id===x.g.id;
-    return '<span class="living-trail-node living-trail-marker '+e(x.status)+' '+e(x.g.mode)+(current?' is-current':'')+
-     '" style="left:'+(p.x/10)+'%;top:'+p.y+'px">'+
-     (current?'<span class="living-trail-focus"></span>':'')+
-     '<span class="living-trail-circle">'+(x.status==='complete'?icon('check'):(i+1))+'</span></span>';
-   }).join('')+'</div>'+
-   '<div class="living-trail-steps">'+stages.map(({g,status},i)=>
-    '<button type="button" class="living-trail-step '+e(status)+(now.id===g.id?' current':'')+
-    ' '+e(g.mode)+'" data-action="journey-open" data-target="'+e(groupTarget(s,g))+
-    '" aria-label="'+e('Chapter '+(i+1)+': '+g.name+'. '+(g.mode==='planning'?'Plan your exploration.':g.mode==='checking'?'Check the IA you wrote.':'Write in your IA.')+' '+STATUS_LABELS[status]+'. '+chapterProgressCopy(s,g))+'.">'+
-    chapterJourneyIcon(g)+'<span class="living-trail-step-order" aria-hidden="true">'+(status==='complete'?icon('check'):i+1)+'</span>'+
+    '<svg class="living-trail-svg" viewBox="0 0 1000 155" preserveAspectRatio="none" focusable="false">'+
+     (compact?'':insightTrailLines(s))+
+     curves.map((path,i)=>'<path d="'+path+'" class="living-trail-road '+(i===0?'plan-to-writing':i===stages.length-2?'writing-to-checking':'writing')+'"/>'+
+      (stages[i].status==='complete'?'<path d="'+path+'" class="living-trail-done"/>':'')).join('')+
+     '<path d="M305 25 v7 M301 29 h8 M710 137 v7 M706 141 h8" class="living-trail-star"/>'+
+    '</svg>'+
+    coordinates.map((p,i)=>{
+     const item=stages[i],current=item.current;
+     return '<span class="living-trail-node living-trail-marker '+e(item.status)+' '+e(item.g.mode)+(current?' is-current':'')+
+      '" style="left:'+(p.x/10)+'%;top:'+p.y+'px">'+
+      (current?'<span class="living-trail-focus"></span>':'')+
+      '<span class="living-trail-circle">'+(item.status==='complete'?icon('check'):(i+1))+'</span></span>';
+    }).join('')+'</div>'+
+   '<div class="living-trail-steps">'+stages.map(({g,number,status,current,target,progress})=>
+    '<button type="button" class="living-trail-step '+e(status)+(current?' current':'')+
+    ' '+e(g.mode)+'" data-action="journey-open" data-target="'+e(target)+'"'+
+    (current?' aria-current="step"':'')+
+    ' aria-label="'+e('Chapter '+number+': '+g.name+'. '+chapterRole(g)+'. '+STATUS_LABELS[status]+'. '+progress)+'">'+
+    chapterJourneyIcon(g)+'<span class="living-trail-step-order" aria-hidden="true">'+(status==='complete'?icon('check'):number)+'</span>'+
     '<strong>'+e(g.name)+'</strong><small>'+e(STATUS_LABELS[status])+'</small>'+
-    '<span class="living-trail-step-detail">'+e(chapterProgressCopy(s,g))+'</span>'+
+    '<span class="living-trail-step-detail">'+e(progress)+'</span>'+
     chapterMini(s,g)+'</button>').join('')+'</div>'+
   '</div>'+
   discoveryMathStages(s)+
-  '<details class="living-trail-chapter-guide" data-trail-chapter-guide>'+
-   '<summary>'+icon('book')+' What do the five chapters include? '+icon('chevron-right')+'</summary>'+
-   '<div class="living-trail-chapter-guide-grid">'+
-    '<div><strong>1 · Planning</strong><p>Develop a worthwhile aim, explore mathematical pathways, choose primary, secondary or theoretical starting material, and plan sampling, permissions, sources and precision where relevant. Save useful ideas as sparks.</p></div>'+
-    '<div><strong>2 · Start writing</strong><p>Write your introduction, connect it to the investigation aim, and justify the first mathematics and evidence you intend to use. Writing belongs in your own IA.</p></div>'+
-    '<div><strong>3 · Explore &amp; explain</strong><p>Show real calculations or well-presented diagrams and tables, interpret results, reflect on meaningful limitations, and add further linked mathematical stages when they help answer the aim.</p></div>'+
-    '<div><strong>4 · Conclude &amp; next steps</strong><p>Answer your aim from actual mathematics, explain what it means and its important limitations, and consider worthwhile potential mathematical questions.</p></div>'+
-    '<div><strong>5 · Check your IA</strong><p>Inspect your actual written IA against Presentation (A), Mathematical communication (B), Personal engagement (C), Reflection (D) and Use of mathematics (E). Revisit teacher-draft checks, record permitted feedback and verify the final file.</p></div>'+
-   '</div><p class="living-trail-chapter-guide-note">Sparks, worked examples, diagram generators and criteria help you along the way; they are not compulsory extra stages or automatic marks. A saved figure is not proof that the mathematics has been completed.</p>'+
-  '</details>'+
-  insightTrailControls(s)+'<p class="living-trail-note">Mint is for planning; purple is for writing your IA; blue is for checking the actual file. A recorded plan is not completed mathematics. All chapters and mathematical stages stay revisitable.</p></section>';
+  (compact?'':discoveryChapterGuide()+insightTrailControls(s)+
+   '<p class="living-trail-note">Mint is for planning; purple is for writing your IA; blue is for checking the actual file. A recorded plan is not completed mathematics. All chapters and mathematical stages stay revisitable.</p>')+
+  '</section>';
 }
 // One presentation model is shared by Home and My Path.
 export {mathConstellation} from './math-constellation.js';
