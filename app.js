@@ -2339,15 +2339,16 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         "completion.fields.scatterDetail","completion.fields.scatterAimRelevance",
         "entries."+state.completion.activeEntryIndex+".methodId",
         "entries."+state.completion.activeEntryIndex+".accuracyRef"].includes(path)||
-       (state.completion.current==="C30"&&(
-         ["completion.fields.firstWorkStatus","completion.fields.firstWorkResult",
-          "completion.fields.firstWorkTitle","completion.fields.firstWorkLocation"].includes(path)||
+       (["C30","C40","C50"].includes(state.completion.current)&&(
+         (state.completion.current==="C30"&&
+           ["completion.fields.firstWorkStatus","completion.fields.firstWorkResult",
+            "completion.fields.firstWorkTitle","completion.fields.firstWorkLocation"].includes(path))||
          /^entries\.\d+\.(status|result|title|resultRef)$/.test(path)))||
        /^entries\.\d+\.resultSignal$/.test(path)||
        (/^entries\.\d+\.result$/.test(path)&&["C40","C50"].includes(state.completion.current)&&
         state.entries[Number(path.split(".")[1])]?.status==="completed")){
        const at=window.scrollY;render();
-       if(state.completion.current==="C30")window.scrollTo({top:at,behavior:"auto"});
+       if(["C30","C40","C50"].includes(state.completion.current))window.scrollTo({top:at,behavior:"auto"});
        if(/^entries\.\d+\.resultSignal$/.test(path)||path==="completion.fields.firstMathsBridgePlacement"){
          const input=document.querySelector('[data-bind="'+path+'"]');
          if(input)input.focus({preventScroll:true});
