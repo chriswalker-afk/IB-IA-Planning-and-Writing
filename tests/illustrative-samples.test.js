@@ -4,6 +4,12 @@ import {readFileSync} from "node:fs";
 import {createProjectState,normalizeProjectState,STORAGE_KEY} from "../src/core/project-state.js";
 import {createSamplePreview} from "../src/core/sample-preview.js";
 import {createIllustrativeSample,SAMPLE_CHOICES,lineSummary,exponentialSummary} from "../src/core/illustrative-samples.js";
+import {sampleIAWritingWords} from "../src/core/sample-current-workflow.js";
+import {analyseGraph} from "../src/diagrams/graph-core.js";
+import {analyzeTable} from "../src/diagrams/table-studio-core.js";
+import {journeyOutcomeOptions,selectedJourneyOutcome,needsJourneyLinkReview} from "../src/completing/adaptive-journey.js";
+import {reviewChecksFor} from "../src/completing/review.js";
+import {collectProjectFigures} from "../src/handover/figure-report.js";
 import {modelFromFullProject} from "../src/handover/full-project-model.js";
 import {createFullProjectExport} from "../src/handover/full-export.js";
 import {createPlanningEnvelope} from "../src/handover/schema.js";
@@ -27,10 +33,10 @@ const studio=[
  "firstObservedFeature","firstInterpretation","accuracyForResult","aimLinkedResult",
  "predictionComparison","benefitFinding","nextQuestion","nextMethod","nextReason",
  "nextLocation","variableDefinitions","specialistTerms","sourceReferences",
- "mainConclusion","conclusionEvidence","conclusionUncertainty","conclusionBenefit",
- "conclusionAdvice","conclusionExtension","conclusionFocus","notationIssue",
- "presentationIssue","referencesIssue","draftComplete","draftCriteria",
- "finalCriteria","finalProofread","finalRequirements","nextStepSelected"
+ "mainConclusion","conclusionBenefit","conclusionExtension","notationIssue",
+ "presentationIssue","referencesIssue","draftComplete","nextStepSelected",
+ "firstMathsBridgePlacement","methodAim","firstMethodEvaluation","firstOutputIntroduction",
+ "firstWorkTitle","firstWorkResult","firstWorkLocation","firstWorkStatus","permissionNotes","courseConcern"
 ];
 const empirical=[
  "statisticsContext","dataSource","secondaryPublisher","secondaryVariables","secondaryScope",
@@ -58,6 +64,7 @@ const actualTheory=["actualSourceType","actualSource","actualMethod","theoretica
  "researchedUnderstanding","mathsLearning"];
 const entryFields=[
  "title","purpose","technique","methodId","kind","status","result","resultRef",
+ "journeyOutcome","journeyRouteId","methodChangeReason",
  "observationText","interpretation","localTakeaway","limitations","nextQuestion",
  "nextWhy","bridge","mathsInsight"
 ];
@@ -71,8 +78,12 @@ test("the five sample choices have distinct and coherent complete Planning + Stu
    assert(filled(pf[key]),kind+" missing appropriate Planning field "+key);
   for(const key of [...studio,...(theory?actualTheory:actualEmpirical)])
    assert(filled(cf[key]),kind+" missing applicable Studio field "+key);
-  for(const key of ["introduction","dataNotes","conclusion","finalReview"])
+  for(const key of ["introduction","dataNotes"])
    assert(state.scratch[key].length>170,kind+" missing substantive "+key+" writing notes");
+  assert.equal(state.scratch.conclusion,"",kind+" should have no outdated conclusion draft");
+  assert.equal(state.scratch.finalReview,"",kind+" should not claim final review has happened");
+  for(const key of ["conclusionEvidence","conclusionUncertainty","conclusionAdvice","conclusionFocus","draftCriteria","finalCriteria","finalProofread","finalRequirements"])
+   assert.equal(cf[key],"",kind+" obsolete writing slot "+key+" should be empty");
   assert.equal(state.demo,kind);assert.equal(state.route,"completing");
   assert.equal(state.completion.current,"C34B");assert.equal(state.completion.activeEntryIndex,0);
   assert.equal(state.planning.completed,true);
@@ -88,9 +99,10 @@ test("the five sample choices have distinct and coherent complete Planning + Stu
    assert(state.entries[i].bridge.length>50);
   }
   assert(state.entries[2].nextQuestion.length>35);
-  for(const id of ["C10","C20","C30","C40","C60","C70"])
+  for(const id of ["C10","C20","C30","C40","C60"])
    assert.equal(state.completion.stages[id],"complete",kind+" incomplete fictional example section "+id);
-  assert.equal(state.completion.stages.C80,"working");
+  assert.equal(state.completion.stages.C70,"working");
+  assert.equal(state.completion.stages.C80,"not-started");
   assert.equal(state.completion.stages.C90,"not-started");
   assert.equal(state.teacher.feedbackStatus,"not-requested");
   assert.equal(state.teacher.pendingApproval,false);
@@ -99,12 +111,27 @@ test("the five sample choices have distinct and coherent complete Planning + Stu
   assert.equal(pf.milestoneSchoolDraft,"");
   assert.equal(state.project.documentUrl,"");
   assert.equal(state.ideaExplorer.shortlist.length,1);
-  for(const mode of ["draft","final"])for(const id of ["D02","D03","D04","D05","D06"]){
+  for(const mode of ["draft","feedback","final"])for(const {id} of reviewChecksFor(state,mode)){
    const v=state.completion.review.records[mode+"-"+id];
    assert(v&&filled(v.location)&&filled(v.note)&&filled(v.action),kind+" missing "+mode+" review notes "+id);
    assert.equal(v.status,"unchecked");assert.equal(v.selfMark,"");assert.equal(v.markLevel,"");
   }
   assert.deepEqual(state.completion.review.feedbackItems,[]);
+  assert.equal(state.planning.routeExplorer.selectedRoute,kind==="theory"?"proof":kind==="curved"?"fitted-models":"relationships");
+  assert.equal(state.ui.checkingMode,"draft");
+  assert.deepEqual(state.completion.conclusionResultIds,state.entries.slice(1).map(x=>x.id));
+  const figureRecords=collectProjectFigures(state);
+  assert.equal(figureRecords.length,3,kind+" should have three saved generator figures");
+  assert(figureRecords.every(x=>x.svg?.startsWith("<svg")||x.svg?.includes("<svg")),kind+" should use real mathematical SVG figures");
+  assert(figureRecords.every(x=>state.entries.some(en=>en.id===x.entryId)),kind+" unlinked illustrative figure");
+  assert.equal(state.entries.filter(x=>x.graphFigureId||x.tableFigureId).length,3);
+  for(const graph of state.graphStudio.figures)assert(analyseGraph(graph.draft).ready,kind+" invalid illustrative graph");
+  for(const table of state.tableStudio.figures)assert(analyzeTable(table.draft).ready,kind+" invalid illustrative table");
+  assert(state.entries.every((x,i)=>!!selectedJourneyOutcome(state,x)),kind+" missing current adaptive journey decisions");
+  assert(state.entries.slice(1).every(x=>!needsJourneyLinkReview(state,x)),kind+" has stale mathematical-journey links");
+  const writingWords=sampleIAWritingWords(state);
+  assert(writingWords>=1800&&writingWords<=4000,kind+" illustrative IA-facing writing is "+writingWords+" words, outside target");
+
   if(theory){
    assert.equal(pf.dataSource,"");
    assert.equal(cf.dataStatus,"theoretical");
@@ -127,7 +154,9 @@ test("the five sample choices have distinct and coherent complete Planning + Stu
   const restored=normalizeProjectState(JSON.parse(JSON.stringify(state)));
   assert.equal(restored.entries.length,3);
   assert.equal(restored.entries[1].fromEntryId,state.entries[0].id);
-  assert.equal(restored.scratch.conclusion,state.scratch.conclusion);
+  assert.equal(restored.scratch.introduction,state.scratch.introduction);
+  assert.equal(restored.graphStudio.figures.length,state.graphStudio.figures.length);
+  assert.equal(restored.tableStudio.figures.length,state.tableStudio.figures.length);
   assert.equal(restored.planning.fields.timelineWeeks,"8");
   assert.equal(restored.completion.review.records["draft-D06"].note,
    state.completion.review.records["draft-D06"].note);
@@ -144,10 +173,34 @@ test("sample reports contain the actual mathematical sequence, conclusions and e
   assert(text.includes(state.entries[0].result),kind+" lost initial result in report");
   assert(text.includes(state.entries[1].result),kind+" lost second result in report");
   assert(text.includes(state.entries[2].result),kind+" lost third result in report");
-  assert(text.includes(state.scratch.conclusion));
+  assert(text.includes(state.completion.fields.mainConclusion));
+  assert(full.sections.flatMap(s=>s.figures||[]).length>=3,"full project report must include sample figures");
   assert(text.includes(state.completion.review.records["draft-D06"].note));
   assert(full.isDemonstration);
   assert(/sample|fictional|demonstration/i.test(full.status));
+ }
+});
+test("samples omit irrelevant source branches and leave real evidence-check decisions unclaimed",()=>{
+ for(const kind of all){
+  const s=createIllustrativeSample(kind);
+  const theory=kind==="theory";
+  assert.equal(s.planning.sourceBranches.primary,false);
+  assert.equal(s.planning.sourceBranches.secondary,!theory);
+  assert(s.completion.review.feedbackItems.length===0);
+  assert(s.completion.review.records["final-D16"].status==="unchecked");
+  assert(s.entries.every(x=>x.status==="completed"&&x.reviewNeeded!=="yes"));
+  assert(s.completion.fields.mainConclusion.includes("FICTIONAL"));
+  if(theory){
+   assert.equal(s.graphStudio.figures.length,0);
+   assert.equal(s.tableStudio.figures.length,3);
+   assert.equal(s.planning.accuracyPlans.length,0);
+   assert(s.entries[1].result.includes("Tₙ²−Tₙ₋₁²"));
+  }else{
+   assert.equal(s.graphStudio.figures.length,2);
+   assert.equal(s.tableStudio.figures.length,1);
+   assert.equal(s.planning.accuracyPlans.length,1);
+   assert(s.planning.accuracyPlans[0].resolution.includes("Display increment"));
+  }
  }
 });
 test("linear statistics and curved fitted mathematics agree numerically with all six displayed points",()=>{
