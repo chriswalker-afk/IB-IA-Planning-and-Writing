@@ -72,7 +72,7 @@ function chooseTip(state,node){
  if(LATER_NODES.has(node)&&entry?.phase==="substantial"){
   if(["C40","C50"].includes(node)){
    const link=stageLinkContext(state,entry);
-   if(link.needsReview)id="imperfect";
+   if(link.needsReview)id="thinking";
    else if(link.advice?.status==="ready")id="why-now";
    else if(entry.methodId==="proof")id="thinking";
   }
@@ -93,7 +93,11 @@ export function writingGuideRecommendation(state,node,requestedTip=""){
   else if(kind==="theoretical")note="Your starting material is theoretical; there is no need to invent data or observations.";
  }else if(LATER_NODES.has(node)&&entry?.phase==="substantial"){
   const link=stageLinkContext(state,entry);
-  if(link.needsReview)note="An earlier mathematical result has changed. Check this connection before describing it as established.";
+  if(link.needsReview)note=entry.reviewNeeded==="yes"?
+    "The earlier stage was revised. Review your existing mathematical connection before treating it as established.":
+    link.prior&&!actualMathematics(link.prior)?
+    "The previous stage does not yet contain a completed result. Do not present a planned mathematical step as a finding.":
+    "The link to the earlier result still needs review or a confirmed follow-up outcome. Do not describe it as a verified next step yet.";
   else if(link.prior&&actualMathematics(link.prior)){
    note="Earlier recorded finding: "+limited(link.finding||link.prior.result);
    if(link.advice?.status==="ready"&&link.advice.chosen){
