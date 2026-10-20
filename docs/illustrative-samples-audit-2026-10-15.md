@@ -1,46 +1,37 @@
-# Illustrative sample quality audit — 15 October 2026
+# Illustrative samples: current-field, mathematics and diagram audit
+Updated 20 October 2026
 
-## Why these were rebuilt
+## What students see
 
-The original five previews were early prototypes: one brief fictional scatter plot or small-case pattern, a few Planning answers, and almost none of the newer IA Studio journey. Reopening such a preview from the current app made the source/method, mathematical extension, reflection, conclusion, communication and review screens look unfinished.
+The **Try an illustrative sample** help action opens one of five synthetic, tab-isolated examples in the current Pathfinder interface. Switching or closing a sample leaves the student's own local project untouched. Each example follows **Plan → Write your IA → Checking**, with three linked mathematical stages, exactly three saved diagram-creator figures and a visible IA-facing writing word count.
 
-The revised **five fictional examples** use a single maintainable data factory in \`src/core/illustrative-samples.js\`, so their Planning, Studio, linked mathematics and exports cannot silently diverge into separate old implementations.
+The **Read IA-style sample PDF** button assembles only the mathematical narrative and saved figures, not every Planning field and every private checklist answer. The generated pages use spaced reading text, a clearly marked fictional-source disclaimer, figures beside the appropriate stage, and a separate, concise conclusion. All five teaching PDFs are checked in a headless browser for **12–20 pages and at least three embedded images**. That is a *presentation goal* for examples, not a claim that any fictional example meets the criteria for a real student's IA. The ordinary **Full project** PDF/Word/ZIP remains a complete working record and will naturally be substantially longer; its page count must not be mistaken for IA length.
 
-| Sample | Clearly constructed starting material | First actual step | Further mathematics | Reason for the conclusion |
-| --- | --- | --- | --- | --- |
-| Nearly straight | Six invented pairs: sleep hours versus reaction time | Scatter and shape | Pearson's r, linear fit and residuals | A very tidy descriptive linear relationship, **not causation** |
-| Curved | Six invented decreasing values with a flattening trend | Scatter and shrinking successive changes | Straight-line residual critique; baseline-adjusted exponential fit | A large absolute r need not validate the linear form; baseline is assumed |
-| Unclear | Six invented variable values | Scatter lacking direction | Pearson's r; two-group mean comparison | Inconclusive evidence can justify **not fitting** another model |
-| Unusual point | Six invented pairs, one high value at x=7 | Scatter and unusual-pair recognition | Whole-data correlation/fit; with/without sensitivity analysis | Exclusion without independent reason is unjustified |
-| Theoretical | Exact integer cases n=1,2,3,4 | Table of sums of cubes and triangular squares | General telescoping proof; interval-sum extension | Finite checks make a conjecture, a proof establishes the identity |
+## Five actual mathematical narratives
 
-### Mathematical quality controls
+| Scenario | Appropriate first representation | What the actual mathematics justifies | Saved figures |
+| --- | --- | --- | --- |
+| Nearly straight | Plot six **fictional paired** sleep-duration/reaction-time values | PMCC, then fitted line and residual comparison. A strong coefficient is not causation. | Initial scatter, full-data residual scatter, fitted/predicted/residual table |
+| Curved | Plot six decreasing, flattening **fictional** values | Test linear residual structure; compare an assumed-baseline exponential model while explicitly acknowledging the hypothetical baseline. | Initial scatter, linear residual scatter, side-by-side residual table |
+| Weak association | Plot a **fictional** non-directional scatter | PMCC near zero; compare groups only descriptively, without manufacturing a significance result or unrelated curve. | Initial scatter, diagnostic residual scatter, grouped summaries |
+| Unusual observation | Plot the **fictional** unusual value alongside the other five | Whole-data regression and a clearly diagnostic with/without calculation. Never silently remove data. | Initial scatter, six-point residual scatter, sensitivity comparison |
+| Sum of cubes | Exact integer sums beside triangular squares | Small cases → telescoping algebraic proof → interval extension with limiting-case checks. | Numerical-conjecture table, adjacent square-differences table, interval-sum table |
 
-For the four empirical stories the whole dataset is displayed with units and all calculated summaries use the same six values. Pearson correlations, slopes, intercepts, residuals and RMSE are checked numerically; the curved example explicitly fixes an assumed 250 ms baseline and does not present that value as observed. The unusual-pair case compares models **diagnostically**, never quietly replaces the full dataset. The theoretical case proves the positive-integer identity by deriving \`T_n² - T_(n-1)² = n³\` and extends it to interval sums; one worked interval example is checked.
+The code differentiates real mathematical results from intentions. Each entry has a purpose, linked source or exact-case explanation, explicit mathematical result, interpretation, consequential limitations, reasoned transition and current adaptive journey outcome. The route selections are **stored** and remain supported by the corresponding stage's actual method rather than using old outcome codes. Every figure is a saved editable draft in `graphStudio` or `tableStudio`, is directly linked to its mathematical stage, and is regenerated by the exact same SVG figure creators students use. Figure titles, coordinates, units and explanatory captions must pass the studio validation rules.
 
-### Field coverage
+## Current field coverage and deliberate omissions
 
-All five cases now include:
+- Planning is filled with an appropriate aim, personal purpose, provisional prediction, course and suitability discussion, source/theory assumptions, a meaningful first step, alternatives, teacher questions and a provisional timeline. All demos select an appropriate saved investigative route.
+- Mathematical writing is distributed across the **current** introduction, first-mathematics bridge, three separate mathematical-stage records, **three current conclusion boxes** (answer; meaning/limits; worthwhile next steps) and relevant writing/precision/source notes.
+- The **Checking** page uses the same A–E self-review records as the rest of the app. The sample provides guidance for current, applicable draft, feedback and final checks. It marks **none** as completed and never invents teacher feedback, a predicted mark, a finished final file or actual submission.
+- Legacy conclusion and review content from superseded interfaces has been removed from the **sample factory**, not merely hidden. `scratch.conclusion`, `scratch.finalReview` and superseded conclusion/grade/status fields remain empty in previews.
+- Conditional and unavailable inputs are *not falsely populated*. In the theoretical example there is no sample, population, instrument accuracy or empirical data source. In empirical examples there is no genuine publisher, real URL, research participant or documented resolution. School deadlines and teacher-approved decisions remain blank or explicitly unverified.
+- Saved simulated-data display increments are described as **formatting**, never as measured instrument accuracy.
 
-- A substantial and course-relevant Planning narrative: aim, motivation, why the mathematics is useful, prediction/conjecture, feasibility, first step, alternative route, provisional eight-week timeline, a specific teacher question and no invented official deadlines.
-- Four substantive student-style writing-note sections: introduction, source/definitions, conclusion and future review.
-- **Three completed fictional mathematical records** with explicit purposes, results, interpretation in context, limitations, logical links to prior results and a genuinely motivated next question.
-- IA Studio records for source/assumptions, first representation, mathematical progression, conclusion and communication. For empirical cases, explicit source IDs and presentation accuracy decisions link to each mathematical step. For the theoretical case, numerical definitions and proof assumptions replace irrelevant data-collection fields.
-- A–E **draft and prospective final self-review guidance**, all marked unchecked, without fabricated grades or teacher certification.
-- A student-controlled teaching preview that remains separated from the personal project. A **See the sample journey** action exposes the full working trajectory.
+## Acceptance checks
 
-### Deliberately unfilled, rather than invented
+`tests/illustrative-samples.test.js` checks modern field completeness, IA-facing word-volume bounds, mathematics and source-to-stage link integrity, validated editable saved figures, current adaptive journey selections and reason-for-next-stage signatures, unused-field clearing, conclusion-evidence references, state normalization, backup and preview isolation. Original exact statistical calculations and algebraic identities continue to be regression-tested.
 
-All samples are **fictional teaching work**, not assessed IB exemplars, verified empirical measurements, real surveys, published datasets, a student's finished IA document, teacher feedback, predicted marks, school deadlines, or permission to collect participant data. Such values are **intentionally blank or explicitly described as not performed**, rather than producing false completeness.
+`scripts/illustrative-samples-browser.py` and `.github/workflows/illustrative-samples-browser.yml` open **all five examples on desktop and phone**, check their interactive journey, conclusion, diagram state and A–E Checking page, generate all five IA-style PDFs, inspect actual page count and embedded figure count, export selected complete project ZIPs, and verify that an original student's browser work remains unchanged after sample switches and reloads.
 
-For the empirical cases, the “secondary” source route is used only to illustrate analysis of an already available fictional table. Its publisher and citation fields explicitly disclose that **no real secondary source exists**. Those previews must not be used as submitted IA data. For the theoretical case, no fake population, sampling or instrument uncertainty is supplied.
-
-Teacher draft and final check milestones are left unfinished where actual school documents or feedback would be required. Preview stage labels represent illustrative working progress only.
-
-### Export and test gates
-
-\`tests/illustrative-samples.test.js\` verifies every applicable Planning and Studio field, completion sections, three-result chains, exact numerical/proof content, linkage consistency, grade/teacher/permission safeguards, project restoration and full ZIP export. The existing sample-preview isolation tests continue to protect students’ own local storage.
-
-\`scripts/illustrative-samples-browser.py\` exercises all five choices at desktop and phone widths, navigates into sample sections, checks a draft review and full archive, changes samples, reloads and returns to the original project without mutation. It runs alongside the rest of the browser acceptance suite.
-
-Pedagogical judgement remains with the teacher. These exemplars show **a coherent route through Pathfinder**, not a claim that six simulated values or one algebraic identity alone would earn a high IB IA mark.
+**Important pedagogical limit:** satisfying a target length or including diagrams never certifies an example as appropriately challenging for a particular course. In particular, the AA HL identity proof is a transparent demonstration of coherent proof-writing, *not* a guarantee of adequate mathematical sophistication for a student's assessed IA. It explicitly requires a teacher discussion and a genuinely motivated deeper investigation where appropriate.
