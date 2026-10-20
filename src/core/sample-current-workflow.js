@@ -233,7 +233,7 @@ function buildFigures(s,kind,{lineSummary,exponentialSummary}){
   notice='Groups have three invented pairs each; these are descriptive means and ranges, not inferential tests.';
  }else{
   const xo=sleepHours.filter(x=>x!==7),yo=y.filter((_,i)=>sleepHours[i]!==7),sub=lineSummary(xo,yo);
-  columns=['Model','Pairs used','Correlation r','Gradient'];units:['','','','ms/h'];
+  columns=['Model','Pairs used','Correlation r','Gradient'];units=['','','','ms/h'];
   rows=[['Full data',6,n(fit.r,5),n(fit.slope,2)],['Sensitivity only',5,n(sub.r,5),n(sub.slope,2)]];
   notice='Five-point line is a DIAGNOSTIC only. No independent reason exists to remove the unusual pair from the reported data.';
  }
