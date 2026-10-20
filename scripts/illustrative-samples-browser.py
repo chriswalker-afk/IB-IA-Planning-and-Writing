@@ -94,7 +94,7 @@ def check(kind,p):
  assert "FICTIONAL" in p.locator('[data-bind="completion.fields.mainConclusion"]').input_value()
  p.locator('[data-action="go-checking"]').click()
  assert p.locator('.checking-page').is_visible()
- assert p.locator('[data-criterion="A"].checking-criterion-bubble').count()>=1
+ assert p.locator('[data-criterion-badge="checking:A"]').count()>=1
  assert p.locator('.checking-progress').is_visible()
  assert own(p)==before
  set_preview_node(p,"C80")
