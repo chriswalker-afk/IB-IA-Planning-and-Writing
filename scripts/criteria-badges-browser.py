@@ -14,8 +14,6 @@ CASES=[
  ('mathematics','planning','N02M','E','planning:N02M:title'),
  ('interpretation','completing','C34B','D','completing:C34B:title'),
  ('notation','completing','C70N','B','completing:C70N:title'),
- ('first-purpose','completing','C31','E','completing:C31:firstPurpose'),
- ('intro-purpose','completing','C32','A','completing:C32:purpose'),
  ('first-presentation','completing','C33','B','completing:C33:title'),
  ('real-observation','completing','C34','E','completing:C34:observation'),
  ('next-question','completing','C35','C','completing:C35:nextQuestion'),
@@ -26,11 +24,6 @@ CASES=[
  ('substantial-later','completing','C50','E','completing:C50:title'),
  ('technology','completing','C40T','E','completing:C40T:title'),
  ('unfamiliar-maths','completing','C40L','E','completing:C40L:title'),
- ('conclusion-answer','completing','C61','A','completing:C61:mainConclusion'),
- ('conclusion-limit','completing','C61','D','completing:C61:uncertainty'),
- ('meaning-for-purpose','completing','C62','D','completing:C62:benefit'),
- ('optional-extension','completing','C63','D','completing:C63:extension'),
- ('concise-ending','completing','C64','A','completing:C64:title'),
  ('presentation-coherence','completing','C70','A','completing:C70:title'),
  ('draft-evidence','completing','C80D','A–E','completing:C80D:title'),
  ('final-evidence','completing','C90F','A–E','completing:C90F:title')
@@ -220,6 +213,8 @@ with sync_playwright() as pw:
     assert 'Criterion '+letter in dialog.locator('h2').inner_text()
     if node=='C60':
      assert 'The model approximates the observed trend' in dialog.inner_text()
+     assert page.locator('[data-conclusion-part="answer"] [data-criterion-badge="completing:C61:mainConclusion"]').count()==1
+     assert page.locator('[data-conclusion-part="next"] [data-criterion-badge="completing:C63:extension"]').count()==1
     page.keyboard.press('Escape')
     assert not dialog.is_visible()
     assert stored(page)==before
@@ -229,6 +224,39 @@ with sync_playwright() as pw:
     traceback.print_exc()
     page.screenshot(path=str(OUT/(label+'-failure.png')),full_page=True)
    ctx.close()
+
+ # C30 is the unified first-mathematics journey. Check every visible criterion
+ # opportunity on its actual writing boxes, not obsolete C31/C32 subpages.
+ for width,height in [(1440,960),(360,740)]:
+  sample=state_for('completing','C30')
+  ctx=browser.new_context(viewport={'width':width,'height':height})
+  page=ctx.new_page()
+  page.add_init_script('localStorage.setItem('+json.dumps(KEY)+','+json.dumps(json.dumps(sample))+');')
+  label='unified-first-maths-'+str(width)
+  try:
+   page.goto(URL,wait_until='networkidle')
+   expected={
+    'introduce':['completing:C30:introduceA','completing:C30:introduceB'],
+    'reflect':['completing:C30:reflectD','completing:C30:reflectE'],
+    'next':['completing:C30:nextC','completing:C30:nextD']
+   }
+   for part,keys in expected.items():
+    box=page.locator('[data-show-first-part="'+part+'"]')
+    assert box.count()==1,part
+    assert box.locator('[data-criterion-badge]').count()==len(keys),part
+    for key in keys:assert box.locator('[data-criterion-badge="'+key+'"]').count()==1,key
+   before=stored(page)
+   page.locator('[data-criterion-badge="completing:C30:reflectD"]').click()
+   dialog=page.locator('#criterionBadgeDialog')
+   assert dialog.is_visible()
+   assert 'Criterion D' in dialog.locator('h2').inner_text()
+   page.keyboard.press('Escape')
+   assert stored(page)==before
+   result.append({'case':label,'status':'passed'})
+  except Exception as err:
+   result.append({'case':label,'status':'FAILED','reason':str(err)})
+   traceback.print_exc()
+  ctx.close()
  # Later-stage E guidance belongs beside method suitability rather than the linking sentence.
  for node in ['C40','C50']:
   sample=state_for('completing',node)
