@@ -75,11 +75,39 @@ test('all writing stages preserve four or six original lessons in pop-ins while 
  }
  for(const node of ['C20','C30','C60']){
   const html=stage(s,node,{reduced:true});
-  assert(!html.includes('data-studio-tip='),node);
-  assert(html.includes('data-writing-examples'),node);
+  assert(html.includes('data-advice-mode="reduced"'),node);
   assert(html.includes('data-writing-stage-part="task"'),node);
-  assert(html.includes('writer-guide-inline-more'),node);
+  assert(!html.includes('data-writing-stage-part="advice"'),node);
+  assert(!html.includes('data-writing-examples'),node);
+  assert(!html.includes('writer-guide-inline-more'),node);
+  if(node==='C30')assert(html.includes('Show real mathematics, label figures and units clearly'),node);
  }
+});
+test('reduced mode is task-first throughout every writing stage, without losing sparks or task fields',()=>{
+ const s=make(),before=JSON.stringify(s);
+ for(const node of STUDIO_WRITING_NODES){
+  const full=stage(s,node),compact=stage(s,node,{reduced:true});
+  assert(compact.includes('data-writing-stage-flow data-advice-mode="reduced"'),node);
+  assert(compact.includes('data-writing-stage-part="task"'),node);
+  assert(!compact.includes('data-writing-stage-part="advice"'),node);
+  assert(!compact.includes('data-writing-stage-part="examples"'),node);
+  assert(!compact.includes('data-writing-examples'),node);
+  assert(!compact.includes('studio-stage-advice-head'),node);
+  assert(!compact.includes('writer-guide-inline-more'),node);
+  assert(compact.includes('data-bind="completion.fields.exampleNote"'),node);
+  assert(compact.includes('nothing is inserted into your IA automatically.'),node);
+  assert(compact.length<full.length,node+' did not become smaller');
+  const task=compact.indexOf('data-writing-stage-part="task"');
+  const spark=compact.indexOf('data-writing-stage-part="sparks"');
+  if(node==='C60'){
+   assert.equal(spark,-1,'Conclusion has no supplementary sparks section');
+  }else{
+   assert(spark>task,'Saved mathematical context should come AFTER the task');
+   assert(compact.includes('data-reduced-saved-context'),node);
+   assert(compact.includes('<details class="writing-stage-reduced-reference"'),node);
+  }
+ }
+ assert.equal(JSON.stringify(s),before,'Switching advice mode never changes students\' evidence, notes or saved mathematical stages');
 });
 test('Data guidance about honest evidence remains intact in pop-ins, and theoretical work remains valid',()=>{
  const s=make();
