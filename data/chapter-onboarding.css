@@ -1136,3 +1136,15 @@
  .writing-stage-reduced-reference>summary::after{order:2}
 }
 @media(prefers-reduced-motion:reduce){.writing-stage-reduced-reference>summary::after{transition:none}}
+
+/* Both chapter tours use consistent tiles; the Writing tour is a real screen, not a drawer. */
+.chapter-onboarding-writing-welcome .chapter-onboarding-grid{align-items:stretch}
+.chapter-onboarding-writing-welcome .chapter-onboarding-tile{background:linear-gradient(160deg,#fff,#fbf9ff)}
+.chapter-onboarding-writing-welcome .chapter-onboarding-tile h3{line-height:1.35}
+.chapter-onboarding-writing-actions{border-top:1px solid var(--line);padding-top:19px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.chapter-onboarding-writing-actions>span{font-size:12px;color:var(--muted);line-height:1.5}
+.chapter-onboarding-writing-actions .btn{min-height:45px}
+.chapter-onboarding-writing-welcome .chapter-onboarding-reassurance{margin-bottom:18px;color:#65518b}
+.completing-page .chapter-guide-reopen{color:#65518b}
+@media(max-width:760px){.chapter-onboarding-writing-actions{align-items:stretch;flex-direction:column}.chapter-onboarding-writing-actions .btn{width:100%}}
+@media print{.chapter-onboarding-writing-actions{display:none!important}}
