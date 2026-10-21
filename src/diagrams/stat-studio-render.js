@@ -251,7 +251,7 @@ function dots(q){
  const placements=series.map(group=>dotPlacement(group.values,range[0],range[1],PW,d.dotMode,11));
  const rowHeight=Math.max(96,...placements.map(p=>32+p.levels*12));
  const plotHeight=Math.max(PH,rowHeight*series.length),canvasHeight=H+plotHeight-PH;
- const parts=base(d,d.dotMode==="counted"?"Counted dot plot: number beside each dot gives repetitions":"One dot per original measurement",canvasHeight,plotHeight);
+ const parts=base(d,d.dotMode==="counted"?"Counted dot plot: number beside each dot gives repetitions":"Dot plot shows individual measured observations, without joining points",canvasHeight,plotHeight);
  const X=horizontalNumeric(parts,...range,axisLabel(d,"x"),d.showGrid,plotHeight,canvasHeight);
  const space=plotHeight/Math.max(1,series.length),colors=["#208879","#5074b1","#a35e91","#b28c34","#6f7bb2"];
  series.forEach((group,i)=>{
