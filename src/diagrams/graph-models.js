@@ -1,3 +1,4 @@
+import {fitAdvancedGraphModel} from "./graph-advanced-fits.js";
 /**
  * Optional, student-chosen mathematical models for genuine paired data.
  * Deliberately no automatic model selection, fitting on page load or fabricated observations.
@@ -6,9 +7,14 @@
  */
 export const MAX_GRAPH_MODELS=3;
 export const GRAPH_MODEL_TYPES=Object.freeze({
- linear:{label:"Linear regression",color:"#2769b3",dash:"",degree:1},
- quadratic:{label:"Quadratic regression",color:"#9858a8",dash:"",degree:2},
- custom:{label:"My own equation",color:"#c37825",dash:"7 5",degree:null}
+ linear:{label:"Linear regression",color:"#2769b3",dash:"",degree:1,tier:"core"},
+ quadratic:{label:"Quadratic regression",color:"#9858a8",dash:"",degree:2,tier:"core"},
+ cubic:{label:"Cubic regression",color:"#7849ad",dash:"5 2",degree:3,tier:"advanced"},
+ exponential:{label:"Exponential regression",color:"#bf6229",dash:"",degree:null,tier:"advanced"},
+ logarithmic:{label:"Logarithmic regression",color:"#2b8474",dash:"5 2",degree:null,tier:"advanced"},
+ power:{label:"Power regression",color:"#a17b23",dash:"",degree:null,tier:"advanced"},
+ sinusoidal:{label:"Sinusoidal regression",color:"#bb4684",dash:"",degree:null,tier:"advanced"},
+ custom:{label:"My own equation",color:"#c37825",dash:"7 5",degree:null,tier:"core"}
 });
 export function normalizeGraphModels(raw){
  const used=new Set(),types=new Set();
@@ -21,7 +27,9 @@ export function normalizeGraphModels(raw){
   while(used.has(id))id="model-"+(i+1)+"-"+used.size;
   used.add(id);
   return [{id,type:entry.type,visible:entry.visible!==false,
-   expression:entry.type==="custom"&&typeof entry.expression==="string"?entry.expression.slice(0,180):""}];
+   expression:entry.type==="custom"&&typeof entry.expression==="string"?entry.expression.slice(0,180):"",
+   fitMethod:["exponential","power"].includes(entry.type)&&entry.fitMethod==="original"?"original":"transformed",
+   period:entry.type==="sinusoidal"&&typeof entry.period==="string"?entry.period.slice(0,36):""}];
  }).slice(0,MAX_GRAPH_MODELS);
 }
 const fmt=n=>{
@@ -35,7 +43,8 @@ function polynomialEquation(coeffs,variable="x"){
  for(let i=coeffs.length-1;i>=0;i--){
   const v=coeffs[i];
   if(Math.abs(v)<=cutoff)continue;
-  const atom=fmt(Math.abs(v))+(i===0?"":i===1?variable:variable+"²");
+  const power=i===0?"":i===1?variable:i===2?variable+"²":variable+"³";
+  const atom=fmt(Math.abs(v))+power;
   terms.push((terms.length?(v<0?" − ":" + "):(v<0?"−":""))+atom);
  }
  return "y ≈ "+(terms.join("")||"0");
@@ -51,7 +60,8 @@ export function fitPolynomialLeastSquares(points,degree){
  const scale=Math.max(...points.map(pt=>Math.abs(pt.x-mean)));
  if(!(scale>0)||!Number.isFinite(scale))return {ok:false,error:"The horizontal values do not provide enough variation to fit a model."};
  const t=points.map(pt=>(pt.x-mean)/scale);
- const values=[points.map(()=>1),t,...(degree===2?[t.map(v=>v*v)]:[])];
+ if(![1,2,3].includes(degree))return {ok:false,error:"Polynomial degree must be 1, 2 or 3."};
+ const values=Array.from({length:p},(_,power)=>t.map(v=>v**power));
  const q=[],R=Array.from({length:p},()=>Array(p).fill(0)),baseline=points[0].y;
  const centred=points.map(pt=>pt.y-baseline);
  for(let j=0;j<p;j++){
@@ -64,7 +74,7 @@ export function fitPolynomialLeastSquares(points,degree){
   }
   const length=Math.hypot(...v);
   if(!Number.isFinite(length)||length<1e-10*Math.sqrt(n))
-   return {ok:false,error:"The chosen x-values cannot support a numerically reliable "+(degree===2?"quadratic":"linear")+" fit."};
+   return {ok:false,error:"The chosen x-values cannot support a numerically reliable "+(degree===3?"cubic":degree===2?"quadratic":"linear")+" fit."};
   R[j][j]=length;
   q.push(v.map(value=>value/length));
  }
@@ -77,20 +87,26 @@ export function fitPolynomialLeastSquares(points,degree){
  coeff[0]+=baseline;
  const predict=x=>{
   const z=(x-mean)/scale;
-  return degree===2?coeff[0]+z*(coeff[1]+z*coeff[2]):coeff[0]+z*coeff[1];
+  return coeff.reduceRight((acc,c)=>acc*z+c,0);
  };
- const coefficients=degree===1?
-  [coeff[0]-coeff[1]*mean/scale,coeff[1]/scale]:
-  [coeff[0]-coeff[1]*mean/scale+coeff[2]*(mean/scale)**2,
-   coeff[1]/scale-2*coeff[2]*mean/scale**2,coeff[2]/scale**2];
- if(!coefficients.every(Number.isFinite)||!points.every(pt=>Number.isFinite(predict(pt.x))))
-  return {ok:false,error:"The values exceed the reliable numeric range for this fit."};
  const centredDisplay=Math.abs(mean)>100*scale;
- const equation=centredDisplay?
+ // Expand the stable centred polynomial into powers of x when sensible.
+ const choose=(j,k)=>j===k?1:j===3&&k===1?3:j===3&&k===2?3:j===2&&k===1?2:1;
+ const coefficients=Array.from({length:p},(_,k)=>{
+  let result=0;
+  for(let j=k;j<p;j++)result+=coeff[j]*choose(j,k)*(-mean)**(j-k)/scale**j;
+  return result;
+ });
+ if((!centredDisplay&&!coefficients.every(Number.isFinite))||
+    !points.every(pt=>Number.isFinite(predict(pt.x))))
+  return {ok:false,error:"The values exceed the reliable numeric range for this fit."};
+ const equation=centredDisplay||!coefficients.every(Number.isFinite)?
   polynomialEquation(coeff,"t")+", where t = (x − "+fmt(mean)+") / "+fmt(scale):
   polynomialEquation(coefficients);
- return {ok:true,predict,equation,coefficients,n,method:"Ordinary least squares",
-  note:"Coefficients are rounded for display; plotted predictions use full precision."};
+ return {ok:true,predict,equation,coefficients,n,method:"Ordinary least squares of y (original scale)",
+  note:"Coefficients are rounded for display; plotted predictions use full precision.",
+  caution:degree===3?
+   "A cubic has four fitted parameters. Small datasets can be overfitted even when RMSE is low; inspect residuals and justify the extra curvature.":""};
 }
 /** Comparable, in-sample diagnostics for the SAME complete set of observed pairs.
  * No observations are quietly dropped for a model's domain. R² is deliberately
@@ -146,7 +162,8 @@ export function assessGraphModels(rawModels,points,compile){
      method:"Student-entered equation",n:points.length,note:"Equation entered by the student; no regression has been calculated."}:
      {ok:false,error:"The equation has fewer than two valid plotted values over the observed x-range."};
    }catch(err){fit={ok:false,error:err.message};}
-  }else fit=fitPolynomialLeastSquares(points,type.degree);
+  }else if([1,2,3].includes(type.degree))fit=fitPolynomialLeastSquares(points,type.degree);
+  else fit=fitAdvancedGraphModel(points,m);
   const diagnostics=fit.ok===true?diagnoseGraphModel(points,fit.predict):
    {ok:false,n:points.length,reason:fit.error||"The selected model is not available."};
   return {...m,...type,...fit,valid:fit.ok===true,diagnostics};
