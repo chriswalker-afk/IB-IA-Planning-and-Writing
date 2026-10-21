@@ -279,7 +279,7 @@ function dots(q){
     'font-size="11" font-weight="700" text-anchor="middle" font-family="Arial,sans-serif" fill="#354d5a"'));
   }
  });
- return footer(d,parts,d.dotMode==="counted"?"Each distinct value is marked once; counts preserve all observations.":"Each dot represents exactly one original observation.",canvasHeight);
+ return footer(d,parts,d.dotMode==="counted"?"Each distinct value is marked once; counts preserve all observations.":"Each dot represents one observation; no original measurement was removed.",canvasHeight);
 }
 function bars(q){
  const {draft:d,result:r,override}=q,rows=r.categories||[],groups=r.names||[],totals=r.totals||[],
