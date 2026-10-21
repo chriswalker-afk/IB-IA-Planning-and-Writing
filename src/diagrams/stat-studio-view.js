@@ -34,6 +34,8 @@ function checkbox(key,label,value){
 }
 const kindDesc={
  histogram:"Continuous data belong in touching class intervals. Class width matters: the vertical axis is frequency density, not frequency.",
+ ogive:"Use individual observations or real grouped class frequencies. The curve accumulates counts or percentages at class boundaries; interpolated quartiles are estimates.",
+ polygon:"Use class midpoints and frequency densities to reveal distribution shape. For unequal class widths, plotting ordinary frequency would be misleading.",
  box:"Use raw numerical observations for one or more groups. State the quartile convention and distinguish genuine outliers from mistakes.",
  dot:"Each dot represents an actual observation. Repeated values stack, making a dot plot good for relatively small datasets.",
  bar:"The first column contains discrete category names; other columns are groups of genuine integer counts. Percentages use each group's own denominator."
@@ -48,6 +50,40 @@ export function statSummaryHtml(studio,icon,e){
    (r.series?.length>1?'<div class="stat-summary-rows">'+r.series.map(group=>'<div class="stat-summary-row"><strong>'+e(group.name)+'</strong><span>n = '+group.n+'</span></div>').join("")+'</div>':'')+
    (r.summary?'<p class="stat-summary-note">Mean: '+formatBoxNumber(r.summary.mean)+' · Median: '+formatBoxNumber(r.summary.median)+' · IQR: '+formatBoxNumber(r.summary.iqr)+' · Sample SD: '+formatBoxNumber(r.summary.sd)+'</p>':'')+
    (r.comparisons?.length?'<details class="stat-analysis-detail"><summary>Compare distributions</summary>'+r.comparisons.map(c=>'<p>'+e(c.second)+' − '+e(c.first)+': difference in medians '+formatBoxNumber(c.medianDifference)+'; IQR '+formatBoxNumber(c.iqrDifference)+'. These are descriptive comparisons, not significance tests.</p>').join("")+'</details>':'');
+ }
+ if(d.kind==="ogive"){
+  const curves=r.curves||[];
+  if(!curves.length||curves.some(group=>group.curve?.error))
+   return '<p class="stat-summary-empty">Choose complete intervals and frequencies to calculate cumulative totals.</p>';
+  const estimates=curves.map(group=>'<div class="stat-analysis-group"><h4>'+e(group.name)+' · n = '+group.n+'</h4>'+
+   '<p>Estimated Q1 = '+formatBoxNumber(group.curve.estimates.q1)+
+   '; median = '+formatBoxNumber(group.curve.estimates.median)+
+   '; Q3 = '+formatBoxNumber(group.curve.estimates.q3)+
+   (d.curveShowPercentile?'; P'+e(d.curvePercentile)+' = '+formatBoxNumber(group.curve.estimates.percentile):'')+
+   '</p></div>').join("");
+  const first=curves[0].curve.rows;
+  return '<div class="stat-summary-metrics"><div><strong>'+curves.reduce((n,g)=>n+g.n,0)+
+   '</strong><span>Total observations</span></div><div><strong>'+first.length+'</strong><span>Classes</span></div></div>'+
+   '<p class="stat-summary-note">Each point shows cumulative frequency at an upper class boundary. Percentile values are estimates from linear interpolation within classes; do not quote them as exact raw-data quartiles.</p>'+
+   estimates+'<details class="stat-analysis-detail"><summary>Show cumulative frequency calculations</summary>'+
+   curves.map(group=>'<section class="stat-analysis-group"><h4>'+e(group.name)+'</h4>'+
+    '<div class="stat-analysis-scroll"><table class="stat-compare-table"><thead><tr><th>Class</th><th>Frequency</th><th>Cumulative</th><th>Cumulative %</th></tr></thead><tbody>'+
+    group.curve.rows.map(bin=>'<tr><td>['+formatBoxNumber(bin.low)+', '+formatBoxNumber(bin.high)+')</td><td>'+
+     bin.frequency+'</td><td>'+bin.cumulative+'</td><td>'+formatBoxNumber(bin.cumulativePercent)+'%</td></tr>').join("")+
+    '</tbody></table></div></section>').join("")+'</details>';
+ }
+ if(d.kind==="polygon"){
+  const polygons=r.polygons||[];
+  if(!polygons.length)return '<p class="stat-summary-empty">Complete the class intervals before constructing your polygon.</p>';
+  return '<div class="stat-summary-metrics"><div><strong>'+r.total+'</strong><span>Observations</span></div><div><strong>'+r.bins.length+'</strong><span>Classes</span></div></div>'+
+   '<p class="stat-summary-note">Plot each class midpoint at its frequency density (or relative-frequency density when comparing samples). Classes separated by a gap are not joined across missing intervals.</p>'+
+   '<details class="stat-analysis-detail"><summary>Show class midpoints and plotted values</summary>'+
+    polygons.map(group=>'<section class="stat-analysis-group"><h4>'+e(group.name)+' · n = '+group.n+'</h4>'+
+     '<div class="stat-analysis-scroll"><table class="stat-compare-table"><thead><tr><th>Midpoint</th><th>Frequency</th><th>Frequency density</th>'+
+     (polygons.length>1?'<th>Relative density</th>':'')+'</tr></thead><tbody>'+
+     group.polygon.points.map(p=>'<tr><td>'+formatBoxNumber(p.x)+'</td><td>'+p.frequency+'</td><td>'+
+      formatBoxNumber(p.density)+'</td>'+(polygons.length>1?'<td>'+formatBoxNumber(p.relativeDensity)+'</td>':'')+'</tr>').join("")+
+     '</tbody></table></div></section>').join("")+'</details>';
  }
  if(d.kind==="box"||d.kind==="dot"){
   const series=r.series||[],num=v=>formatBoxNumber(v,d.boxPrecision);
@@ -102,7 +138,10 @@ export function statSummaryHtml(studio,icon,e){
    '</details>';
  }
  return '<div class="stat-summary-metrics"><div><strong>'+(r.categories?.length||0)+'</strong><span>Categories</span></div><div><strong>'+(r.names?.length||0)+'</strong><span>Groups</span></div></div>'+
-  '<div class="stat-summary-rows">'+(r.names||[]).map((name,i)=>'<div class="stat-summary-row"><strong>'+e(name)+'</strong><span>n = '+(r.totals?.[i]||0)+'</span></div>').join("")+'</div>';
+  '<div class="stat-summary-rows">'+(r.names||[]).map((name,i)=>'<div class="stat-summary-row"><strong>'+e(name)+'</strong><span>n = '+(r.totals?.[i]||0)+'</span></div>').join("")+'</div>'+
+  '<p class="stat-summary-note">'+(d.barStyle==="stacked100"?"Within each category, all stacked sections add to 100%; the denominator is that category's response total.":
+   d.barStyle==="stacked"?"Stacked sections show original counts, and the bar height is the combined category count.":
+   d.barMode==="percent"?"Percentages use each group's total across categories as denominator.":"All displayed heights are observed counts.")+'</p>';
 }
 export function statPreviewHtml(studio,icon,e){
  return '<section class="stat-preview" data-stat-preview><div class="stat-preview-heading"><strong>Live diagram preview</strong><small>Readable at IA page width</small></div>'+
