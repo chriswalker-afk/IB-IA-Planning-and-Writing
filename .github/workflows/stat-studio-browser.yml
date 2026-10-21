@@ -6,6 +6,7 @@ on:
     paths:
       - 'src/diagrams/stat-studio-**'
       - 'src/diagrams/box-analysis.js'
+      - 'src/diagrams/distribution-analysis.js'
       - 'src/core/project-state.js'
       - 'src/completing/entry-record.js'
       - 'src/completing/views.js'
@@ -14,6 +15,7 @@ on:
       - 'data/stat-studio.css'
       - 'tests/stat-studio.test.js'
       - 'tests/stat-studio-pass1.test.js'
+      - 'tests/stat-studio-pass2.test.js'
       - 'tests/ui-smoke.test.js'
       - 'scripts/stat-studio-browser.py'
       - '.github/workflows/stat-studio-browser.yml'

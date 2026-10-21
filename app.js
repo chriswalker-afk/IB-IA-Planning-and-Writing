@@ -53,7 +53,7 @@ import {exportTraceFigure} from "./src/diagrams/image-tracer-export.js";
 import {statAnalysis,importStatTable,newStatDraft} from "./src/diagrams/stat-studio-core.js";
 import {renderStatSvg} from "./src/diagrams/stat-studio-render.js";
 import {renderStatStudio,statDataChoices,statPreviewHtml,statSummaryHtml,statQualityHtml,statOutputHtml} from "./src/diagrams/stat-studio-view.js";
-import {setStatField,changeStatKind,toggleStatSeries,importStatValues,freshStat,loadStat,saveStatDraft,saveAndLinkStat} from "./src/diagrams/stat-studio-actions.js";
+import {setStatField,changeStatKind,toggleStatSeries,importStatValues,freshStat,loadStat,saveStatDraft,saveAndLinkStat,chooseHistogramSuggestion} from "./src/diagrams/stat-studio-actions.js";
 import {exportStat} from "./src/diagrams/stat-studio-export.js";
 import {analyzeTable,importTableData,newTableDraft,tableColumnFormat} from "./src/diagrams/table-studio-core.js";
 import {renderTableSvg} from "./src/diagrams/table-studio-render.js";
@@ -1950,6 +1950,12 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       case "stat-kind":{
         if(!changeStatKind(state.statStudio,el.dataset.statValue))break;
         save();render();break;
+      }
+      case "stat-bin-suggestion":{
+        if(!chooseHistogramSuggestion(state.statStudio,el.dataset.statValue)){toast("This suggested width is not available for the selected measurements.");break;}
+        save();render();
+        toast("Class width suggested","Inspect the resulting shape and justify the class width in your investigation.");
+        break;
       }
       case "stat-new":{
         if(state.statStudio.draft.matrix.length&&state.statStudio.draft.title.trim()&&!window.confirm(

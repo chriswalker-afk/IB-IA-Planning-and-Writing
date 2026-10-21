@@ -44,7 +44,10 @@ export function statSummaryHtml(studio,icon,e){
  if(d.kind==="histogram"){
   if(!r.bins?.length)return '<p class="stat-summary-empty">Check the class boundaries or chosen width.</p>';
   return '<div class="stat-summary-metrics"><div><strong>'+r.total+'</strong><span>Total frequency</span></div><div><strong>'+r.bins.length+'</strong><span>Intervals</span></div></div>'+
-   '<p class="stat-summary-note">Frequency density = frequency ÷ width. The area of each bar therefore represents its frequency.</p>';
+   '<p class="stat-summary-note">Frequency density = frequency ÷ width. The area of each bar represents its frequency.</p>'+
+   (r.series?.length>1?'<div class="stat-summary-rows">'+r.series.map(group=>'<div class="stat-summary-row"><strong>'+e(group.name)+'</strong><span>n = '+group.n+'</span></div>').join("")+'</div>':'')+
+   (r.summary?'<p class="stat-summary-note">Mean: '+formatBoxNumber(r.summary.mean)+' · Median: '+formatBoxNumber(r.summary.median)+' · IQR: '+formatBoxNumber(r.summary.iqr)+' · Sample SD: '+formatBoxNumber(r.summary.sd)+'</p>':'')+
+   (r.comparisons?.length?'<details class="stat-analysis-detail"><summary>Compare distributions</summary>'+r.comparisons.map(c=>'<p>'+e(c.second)+' − '+e(c.first)+': difference in medians '+formatBoxNumber(c.medianDifference)+'; IQR '+formatBoxNumber(c.iqrDifference)+'. These are descriptive comparisons, not significance tests.</p>').join("")+'</details>':'');
  }
  if(d.kind==="box"||d.kind==="dot"){
   const series=r.series||[],num=v=>formatBoxNumber(v,d.boxPrecision);
@@ -52,7 +55,9 @@ export function statSummaryHtml(studio,icon,e){
    '<div class="stat-summary-row"><strong>'+e(s.name)+'</strong><span>n = '+s.values.length+
    (d.kind==="box"&&s.box?' · Median '+num(s.box.median)+' · IQR '+num(s.box.iqr)+
     ' · '+s.box.outliers.length+' flagged':'')+'</span></div>').join("")+'</div>';
-  if(d.kind!=="box")return rows;
+  if(d.kind!=="box")return rows+
+   '<div class="stat-summary-rows">'+series.map(group=>'<div class="stat-summary-row"><strong>'+e(group.name)+'</strong><span>Mean '+formatBoxNumber(group.summary?.mean)+' · Median '+formatBoxNumber(group.summary?.median)+' · SD '+formatBoxNumber(group.summary?.sd)+'</span></div>').join("")+'</div>'+
+   (r.comparisons?.length?'<details class="stat-analysis-detail"><summary>Compare groups</summary>'+r.comparisons.map(c=>'<p>'+e(c.second)+' − '+e(c.first)+': median difference '+formatBoxNumber(c.medianDifference)+', mean difference '+formatBoxNumber(c.meanDifference)+'. Descriptive only.</p>').join("")+'</details>':'');
   const method={
    tukey:"1.5 × IQR",extreme:"3 × IQR",zscore:"Z-score",modified:"Modified Z-score",
    none:"No outlier classification",minmax:"No classification (legacy min–max)"
@@ -136,6 +141,7 @@ function selectedControls(d,e){
   if(d.histogramInput==="table")
    return '<div class="stat-form-grid">'+pick("lowIndex","Lower boundary column",d.lowIndex)+pick("highIndex","Upper boundary column",d.highIndex)+
     pick("frequencyIndex","Frequency column",d.frequencyIndex)+'</div>';
+  if(d.histogramCompare!=="single")return '<div class="stat-column-list"><strong>Compare two to four measurement columns</strong>'+numChoices+'</div>';
   return pick("singleIndex","Measurements column",d.selected[0]||0);
  }
  if(d.kind==="bar")
@@ -184,11 +190,14 @@ export function renderStatStudio(state,icon,e){
  (d.matrix.length?'<p class="stat-import-status">'+icon("check-circle")+' '+d.matrix.length+' rows and '+d.columns.length+' columns imported.'+
   (d.pendingPaste?' Your latest edits have not been parsed yet.':'')+'</p>':
   '<p class="native-grid-tip">Start by entering actual measurements or category counts in the worksheet above.</p>')+
- (isHistogram?select("histogramInput","My histogram starts from",d.histogramInput,[["raw","Individual measurements"],["table","Class intervals and frequencies"]],e):"")+
+ (isHistogram?select("histogramInput","My histogram starts from",d.histogramInput,[["raw","Individual measurements"],["table","Class intervals and frequencies"]],e)+
+  (d.histogramInput==="raw"?select("histogramCompare","Display",d.histogramCompare,[["single","One distribution"],["overlay","Compare with transparent overlays"],["smallmultiples","Compare side by side on shared axes"]],e):""):"")+
  '<div data-native-choices="stat">'+statDataChoices(studio,e)+'</div>'+
  (isHistogram&&d.histogramInput==="raw"?'<div class="stat-form-grid">'+
   field("binWidth","Class width (required)",d.binWidth,e,{placeholder:"e.g. 5",hint:"Choose an interpretable interval, not just the prettiest shape."})+
-  field("binStart","First boundary (optional)",d.binStart,e,{placeholder:"Automatically aligned"})+'</div>':"")+
+  field("binStart","First boundary (optional)",d.binStart,e,{placeholder:"Automatically aligned"})+'</div>'+
+  (statAnalysis(d).result.suggestions?.length?'<div class="stat-bin-suggestions"><strong>Suggested starting widths</strong><p>These are options, not automatic choices. Check the shape and explain your selected intervals.</p>'+
+   statAnalysis(d).result.suggestions.map(item=>'<button type="button" class="btn btn-quiet btn-sm" data-action="stat-bin-suggestion" data-stat-value="'+item.key+'"'+(item.available?'':' disabled')+'>'+e(item.label)+': '+(item.available?e(String(item.width))+' ('+item.bins+' intervals)':e(item.reason))+'</button>').join("")+'</div>':''):"")+
  (d.kind==="box"?'<div class="stat-box-methods"><h4>Quartiles and possible outliers</h4>'+
   select("quartileRule","Which quartile convention?",d.quartileRule,[
    ["halves","Median of lower and upper halves"],["linear","Linear interpolation: (n − 1)p"]],e)+
@@ -199,6 +208,8 @@ export function renderStatStudio(state,icon,e){
    ["nonoutlier","Most extreme observations not flagged"],
    ["minmax","Actual minimum and maximum (retain full range)"]],e)+
   '<p class="stat-method-help">The outlier rule only flags possible unusual observations. It never removes measurements. Whisker ends can be chosen independently.</p></div>':"")+
+ (d.kind==="histogram"?select("histogramLabels","Labels above bars",d.histogramLabels,[["none","No value labels"],["frequency","Frequency"],["density","Frequency density"],["percentage","Percentage of group"]],e):"")+
+ (d.kind==="dot"?select("dotMode","Repeated / nearby observations",d.dotMode,[["individual","One dot per observation"],["counted","One marker per distinct value, with count"]],e):"")+
  (d.kind==="bar"?select("barMode","How do you want to compare groups?",d.barMode,[
   ["count","Compare actual counts"],["percent","Percent of each group's total"]],e):"")+
  '</section>'+
@@ -219,6 +230,7 @@ export function renderStatStudio(state,icon,e){
  '<div class="stat-form-grid">'+field("min",d.kind==="bar"?"Frequency minimum (0)":"Horizontal minimum",d.min,e,{placeholder:"Automatic"})+
  field("max",d.kind==="bar"?"Frequency maximum":"Horizontal maximum",d.max,e,{placeholder:"Automatic"})+'</div>'+
  checkbox("showGrid","Use light grid lines",d.showGrid)+checkbox("showLabels","Show figure labels where space permits",d.showLabels)+
+ (d.kind==="dot"?checkbox("dotMean","Mark group mean",d.dotMean)+checkbox("dotMedian","Mark group median",d.dotMedian):"")+
  (d.kind==="box"?'<div class="stat-box-options"><h4>Box plot annotations</h4>'+
   '<p>Select only the labels that help explain your investigation. Values appear at their corresponding plotted locations.</p>'+
   checkbox("showBoxMedian","Show numerical median at the median line",d.showBoxMedian)+

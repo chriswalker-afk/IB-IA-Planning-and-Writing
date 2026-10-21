@@ -137,3 +137,10 @@
  .stat-analysis-metrics{grid-template-columns:minmax(0,1fr) minmax(80px,auto)}
  .stat-analysis-detail{padding:10px}
 }
+
+/* Histogram width suggestions and descriptive distribution controls. */
+.stat-bin-suggestions{display:grid;gap:7px;padding:12px;border:1px solid #d9e7e5;border-radius:12px;background:#f9fcfb;margin:10px 0}
+.stat-bin-suggestions strong{font-size:12px;color:#255650}
+.stat-bin-suggestions p{font-size:11px;line-height:1.55;color:#607a7d;margin:0}
+.stat-bin-suggestions .btn{justify-content:flex-start;text-align:left;white-space:normal;max-width:100%}
+.stat-summary-card .stat-analysis-detail>p{font-size:11px;line-height:1.6}
