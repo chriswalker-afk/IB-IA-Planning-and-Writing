@@ -5,6 +5,7 @@ import {readFileSync} from 'node:fs';
 import {escapeHtml,icon} from '../src/ui/primitives.js';
 import {isStudioWritingNode,renderStudioWritingStage,STUDIO_WRITING_GROUPS,STUDIO_WRITING_NODES} from '../src/completing/studio-writing-stages.js';
 import {renderSparkShelf} from '../src/ui/insight-threads.js';
+import {writerStageAdviceBundle} from '../src/completing/writer-stage-advice.js';
 const make=()=>{
  const s=createProjectState();s.route='completing';s.completion.current='C20';
  s.planning.fields.aim='Does the amount of dough affect volume?';
@@ -56,54 +57,60 @@ test('IA writing reminder keeps its heading and explanation together for all 31 
  assert(css.includes('.studio-stage-writing-location-copy p'),"paragraph should be rendered as one block");
  assert.equal(JSON.stringify(state),before,"layout must not change saved student work");
 });
-test('main stage pages offer four high-value tips; substeps keep optional advice collapsed',()=>{
+test('all writing stages preserve four or six original lessons in pop-ins while the page stays task-focused',()=>{
  const s=make();
  for(const node of ['C20','C30','C40','C50','C60']){
   const html=stage(s,node);
-  assert.equal((html.match(node==='C20'?/data-first-maths-tip="/g:/data-studio-tip="/g)||[]).length,4,node);
-  assert(html.includes('studio-stage-advice-cards'),node);
-  if(node==='C60'){
-   assert(html.includes('studio-stage-more-advice'),"Conclusion advice is available without crowding the writing workspace");
-   assert(html.includes('How to write an effective conclusion'));
-  }else if(node==='C50'){
-   assert(html.includes('studio-stage-more-advice'),'Later mathematical work should keep general tips available without repeating them openly');
-  }else assert(!html.includes('studio-stage-more-advice'),node);
+  assert(!html.includes('data-studio-tip='),node);
+  assert(!html.includes('data-first-maths-tip='),node);
+  assert(!html.includes('studio-stage-advice-cards'),node);
+  assert(html.includes('writer-guide-inline-more'),node);
+  assert(writerStageAdviceBundle(s,node)?.items.length===4,node);
  }
  for(const node of ['C21S','C24','C32','C34B','C61','C64']){
   const html=stage(s,node);
-  assert(html.includes('studio-stage-more-advice'),node);
-  assert(html.includes('One thing to keep in mind'),node);
+  assert(html.includes('One thing to keep in mind')||node==='C61',node);
+  assert(html.includes('data-guide-scope="stage"'),node);
+  assert.equal(writerStageAdviceBundle(s,node)?.items.length,4,node);
  }
  for(const node of ['C20','C30','C60']){
   const html=stage(s,node,{reduced:true});
   assert(!html.includes('data-studio-tip='),node);
   assert(html.includes('data-writing-examples'),node);
   assert(html.includes('data-writing-stage-part="task"'),node);
+  assert(html.includes('writer-guide-inline-more'),node);
  }
 });
-test('Data guidance rejects invented collection; theoretical guidance does not force a dataset',()=>{
+test('Data guidance about honest evidence remains intact in pop-ins, and theoretical work remains valid',()=>{
  const s=make();
  const empirical=stage(s,'C20');
- assert(empirical.includes('Your plan is not your result'));
- assert(empirical.includes('Get to the mathematics'));
- assert(empirical.includes('Connect your first step to your aim'));
+ assert(empirical.includes('Four practical first-mathematics writing tips'));
+ const exact=writerStageAdviceBundle(s,'C20');
+ assert(exact.items.some(t=>t.title==='Your plan is not your result'));
+ assert(exact.items.some(t=>t.title==='Get to the mathematics'));
+ assert(exact.items.some(t=>t.title==='Connect your first step to your aim'));
  const theoretical=stage(s,'C21T');
- assert(theoretical.includes('there is no need to invent a dataset'));
  assert(theoretical.includes('data-example-topic="proof"'));
  assert(theoretical.includes('theoretical starting point'));
+ assert(writerStageAdviceBundle(s,'C21T').items.some(t=>t.detail.includes('pretend data')));
 });
-test('Mathematical exploration guidance connects results and methods; conclusion uses actual results',()=>{
+test('Mathematical interpretation and a concise honest conclusion keep their support without duplicating cards',()=>{
  const s=make();
  const math=stage(s,'C40');
- assert(math.includes('previous finding')||math.includes('earlier mathematical result'));
- assert(math.includes('no quota')||math.includes('no quota'.toUpperCase())||math.includes('no quota of graphs'));
  assert(math.includes('data-example-topic="calculation"'));
+ assert(math.includes('Four')||math.includes('four writing tips'));
+ const mathsTips=writerStageAdviceBundle(s,'C40').items;
+ assert(mathsTips.some(t=>t.detail.includes('no quota')));
+ assert(mathsTips.some(t=>t.strong.includes('residuals')));
  const conclusion=stage(s,'C60');
  assert(conclusion.includes('real results'));
  assert(conclusion.includes('Answer · support · qualify'));
- assert(conclusion.includes('How to write an effective conclusion'));
+ assert(conclusion.includes('four writing tips'));
  assert(conclusion.includes('data-example-topic="conclusion"'));
  assert(conclusion.includes('prediction'));
+ const conclusionTips=writerStageAdviceBundle(s,'C60').items;
+ assert(conclusionTips.some(t=>t.title==='Answer your aim'));
+ assert(conclusionTips.some(t=>t.detail.includes('future mathematical question')));
 });
 test('sparks contain only saved grounded ideas; no invented actual result is promoted',()=>{
  const s=make();
