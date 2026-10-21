@@ -4,6 +4,7 @@ import {renderPresentationCoach,renderFigureHandover} from "./presentation-coach
 /** Short, readable tables, contextual mathematical help and reliable quality gates. */
 import {analyzeTable,tableColumnFormat,tableDisplayColumns,tableDisplayRows,TABLE_MAX_SAVED} from "./table-studio-core.js";
 import {TABLE_MATH_SYMBOLS,formatTableMath} from "./table-studio-math.js";
+import {diagramNotationControls} from "./diagram-notation.js";
 import {renderTableSvg,assessTableA4} from "./table-studio-render.js";
 const routes={
  groups:"A compact comparison of means or medians is usually more useful than several pages of measurements. Keep the raw values in working files.",
@@ -25,23 +26,17 @@ const kinds=[
 const metricLabels={mean:"Mean",median:"Median",minmax:"Minimum–maximum",sd:"Sample standard deviation",iqr:"Interquartile range"};
 const label=(title,contents)=>'<label class="ia-table-form-field"><span>'+title+'</span>'+contents+'</label>';
 const input=(key,title,value,e,placeholder="",hint="")=>
- label(e(title),'<input type="text" data-table-field="'+key+'" value="'+e(value)+'" placeholder="'+e(placeholder)+'" autocomplete="off">'+
- (hint?'<small>'+e(hint)+'</small>':""));
+ label(e(title),'<input type="text" data-table-field="'+key+'" value="'+e(value)+'" placeholder="'+e(placeholder)+'" autocomplete="off">'+(hint?'<small>'+e(hint)+'</small>':""))+
+ (["title","groupLabel"].includes(key)?diagramNotationControls(e,{studio:"table",key}):"");
 const textarea=(key,title,value,e,placeholder="")=>
- label(e(title),'<textarea data-table-field="'+key+'" rows="'+(key==="raw"?6:2)+'" placeholder="'+e(placeholder)+'">'+e(value)+'</textarea>');
+ label(e(title),'<textarea data-table-field="'+key+'" rows="'+(key==="raw"?6:2)+'" placeholder="'+e(placeholder)+'">'+e(value)+'</textarea>')+
+ (key==="note"?diagramNotationControls(e,{studio:"table",key}):"");
 const pick=(key,title,value,items,e)=>
  label(e(title),'<select data-table-field="'+key+'">'+items.map(([val,text])=>
   '<option value="'+e(val)+'"'+(String(value)===String(val)?" selected":"")+'>'+e(text)+'</option>').join("")+'</select>');
 const toggle=(key,text,checked)=>'<label class="ia-table-switch"><input data-table-field="'+key+'" type="checkbox"'+(checked?" checked":"")+'><span>'+text+'</span></label>';
 /** Palettes target their own column heading or unit; inserting keeps the caret. */
-const mathPalette=(index,part,e)=>
- '<details class="ia-table-math-palette"><summary>∑ Mathematical symbols</summary>'+
- '<div role="group" aria-label="Insert notation into '+(part==="unit"?"unit":"column heading")+'">'+
- TABLE_MATH_SYMBOLS.map(symbol=>
-  '<button type="button" data-action="table-symbol" data-table-col="'+index+
-   '" data-table-part="'+part+'" data-table-token="'+e(symbol.token)+'" title="'+e(symbol.title)+
-   '" aria-label="'+e(symbol.title)+'">'+e(symbol.label)+'</button>').join("")+
- '</div><small>Insert at the cursor. Try x_i, \\bar{x}, \\hat{y} or m s^-2; the preview formats these automatically.</small></details>';
+const mathPalette=(index,part,e)=>diagramNotationControls(e,{studio:"table",index,part});
 function numericColumn(d,index){
  let count=0;
  for(const row of d.matrix){if(/^[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:e[-+]?\d+)?$/i.test(String(row[index]??"").trim()))count++;}
