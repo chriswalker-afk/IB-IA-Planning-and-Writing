@@ -76,7 +76,7 @@ export function normalizeTableDraft(raw){
  if(!["all","custom"].includes(d.columnSelectionMode))d.columnSelectionMode="all";
  if(!["linear","quadratic"].includes(d.calcModel))d.calcModel="linear";
  if(!["auto","yes","no"].includes(d.headers))d.headers="auto";
- if(!["unsure","primary","secondary"].includes(d.sourceKind))d.sourceKind="unsure";
+ if(!["unsure","primary","secondary","theoretical"].includes(d.sourceKind))d.sourceKind="unsure";
  if(!["source","fixed"].includes(d.numberFormat))d.numberFormat="source";
  if(!["0","1","2","3","4"].includes(d.decimals))d.decimals="2";
  if(!["halves","linear"].includes(d.quartileRule))d.quartileRule="halves";
@@ -260,7 +260,7 @@ export function analyzeTable(raw){
  if(!d.title.trim())fail("title","Add a short, descriptive table title.");
  if(d.title.length>95)fail("title-long","Shorten the table title so it fits the page.");
  if(!/^[1-9]\d{0,2}$/.test(d.number))fail("number","Give a positive table number (for example, 1 or 2).");
- if(d.sourceKind==="unsure")fail("source","Identify whether the table uses your own data or an external source.");
+ if(d.sourceKind==="unsure")fail("source","Identify whether the table uses your own, published or theoretical data.");
  if(d.sourceKind==="secondary"&&!d.sourceText.trim())fail("credit","Credit the published data source.");
  if(d.note.length>190)fail("note-length","Keep the table note short; explain the fuller reasoning in your IA text.");
  if(!d.matrix.length)fail("data","Enter actual data in the worksheet, or paste and import existing data.");
