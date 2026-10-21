@@ -77,6 +77,7 @@ export function renderStudioWritingStage(state,node,{icon,e,taskHtml="",taskIntr
   '<div class="studio-stage-writing-task-head"><span class="intro-writing-task-symbol">'+icon("pencil")+'</span>'+
   '<div><span class="intro-writing-task-eyebrow">YOUR '+e(stageName.toUpperCase())+' TASK</span>'+
   '<h2>'+e(taskTitle)+'</h2><p>'+e(taskIntro)+'</p></div></div>'+
+  (reduced&&showFirst?'<p class="studio-stage-essential-check" role="note">Show real mathematics, label figures and units clearly, and avoid long raw-data tables.</p>':"")+
   '<div class="studio-stage-writing-location" role="note" aria-label="Where to write your IA">'+
    icon("pencil")+
    '<div class="studio-stage-writing-location-copy">'+
