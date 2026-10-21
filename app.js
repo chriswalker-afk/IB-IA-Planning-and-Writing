@@ -2879,8 +2879,8 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     const control=main.querySelector('[data-action="journey-toggle-all"]');
     if(control){const all=[...main.querySelectorAll('.journey-chapter')].every(x=>x.open);control.setAttribute('aria-expanded',String(all));control.textContent=all?'Collapse full path':'Show full path';}
   },true);
-  window.addEventListener("resize",positionGuidePopin);
-  window.addEventListener("scroll",()=>{if(!guidePopinHost.hidden)positionGuidePopin();},true);
+  window.addEventListener?.("resize",positionGuidePopin);
+  window.addEventListener?.("scroll",()=>{if(!guidePopinHost.hidden)positionGuidePopin();},true);
   // Welcome: current route from a previous session should always remain reachable and understandable.
   render();
 })();
