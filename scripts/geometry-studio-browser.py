@@ -105,6 +105,15 @@ def test_one(browser,width,height,touch):
   # Student-saved figures are editable and both image exports are real files.
   page.locator('[data-action="geometry-save"]').click()
   ss=saved(page)
+  print("Geometry save diagnosis:",json.dumps({
+   "figures":len(ss["geometryStudio"]["figures"]),
+   "quality":page.locator("[data-geometry-quality]").inner_text()[:350],
+   "toast":page.locator("#toast").inner_text()[:320],
+   "vertices":ss["geometryStudio"]["draft"]["vertices"],
+   "mode":ss["geometryStudio"]["draft"]["mode"],
+   "sourceKind":ss["geometryStudio"]["draft"]["sourceKind"],
+   "current":ss["completion"]["current"]
+  }),flush=True)
   assert len(ss["geometryStudio"]["figures"])==1
   original=ss["geometryStudio"]["figures"][0]["id"]
   for fmt,signature in [("svg",b"<svg"),("png",b"\x89PNG")]:
