@@ -4,10 +4,12 @@ import {completeEntry,startFirstRepresentation} from "../completing/engine.js";
 import {splitHeading} from "./graph-core.js";
 
 const TEXT=new Set(["raw","headers","histogramInput","binWidth","binStart","barMode",
- "quartileRule","outlierRule","title","figureNumber","variable","unit","unitMode","sourceKind","sourceText",
+ "quartileRule","outlierRule","whiskerMode","zThreshold","boxPrecision",
+ "title","figureNumber","variable","unit","unitMode","sourceKind","sourceText",
  "caption","min","max"]);
 const SELECT=new Set(["categoryIndex","lowIndex","highIndex","frequencyIndex"]);
-const CHECK=new Set(["showGrid","showOutliers","showLabels"]);
+const CHECK=new Set(["showGrid","showOutliers","showLabels","showBoxQuartiles","showBoxMedian",
+ "showBoxExtremes","showBoxWhiskers","showBoxOutlierValues","showBoxFences","showBoxMean"]);
 export function setStatField(studio,key,value){
  const d=studio?.draft;
  if(!d)return false;
@@ -95,7 +97,7 @@ function flagChangedStats(state,old,record){
  const entry=state.entries.find(x=>x.id===old.entryId);
  if(!entry||entry.status!=="completed"||!entry.result?.trim())return false;
  entry.reviewNeeded="yes";
- entry.reviewReason="The observations, groups, class intervals, quartile method or scale changed. Recheck any earlier findings and interpretations in the actual IA.";
+ entry.reviewReason="The observations, group selection, class intervals, quartile convention, outlier-screening rule, whisker rule or scale changed. Recheck earlier findings and interpretations in the IA.";
  state.completion.stages[entry.phase==="first"?"C30":"C40"]="needs-review";
  return true;
 }
