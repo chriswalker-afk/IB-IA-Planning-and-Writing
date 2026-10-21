@@ -2565,7 +2565,12 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     if(!state.geometryStudio?.open||state.completion.current!=="C31"||evt.button>0)return;
     const point=evt.target.closest?.("[data-geometry-vertex-index]"),
       svg=point?.closest?.("[data-geometry-canvas]");
-    if(!point||!svg)return;
+    if(!point||!svg){
+      // A pointerup can be lost when a draggable SVG is refreshed. Never
+      // keep a stale drag armed when the user presses a Save or Export button.
+      if(geometryPointer){geometryPointer=null;save();}
+      return;
+    }
     const index=Number(point.dataset.geometryVertexIndex),transform=svg.getScreenCTM?.();
     if(!transform||!Number.isInteger(index))return;
     let inverse;try{inverse=transform.inverse();}catch{return;}
@@ -2574,6 +2579,11 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   });
   document.addEventListener("pointermove",evt=>{
     const drag=geometryPointer;if(!drag||drag.id!==evt.pointerId)return;
+    if(evt.pointerType!=="touch"&&!(evt.buttons&1)){
+      // The original SVG circle may have been detached while redrawing.
+      // When no mouse button is held, further movement is not dragging.
+      geometryPointer=null;save();return;
+    }
     const svgPoint=drag.svg.createSVGPoint();svgPoint.x=evt.clientX;svgPoint.y=evt.clientY;
     const pt=svgPoint.matrixTransform(drag.inverse),coord=drag.layout.from(pt.x,pt.y);
     if(!Number.isFinite(coord.x)||!Number.isFinite(coord.y))return;
@@ -2583,16 +2593,24 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   });
   document.addEventListener("pointerup",evt=>{
     if(geometryPointer?.id!==evt.pointerId)return;
-    geometryPointer=null;save();render();
+    geometryPointer=null;save();
+    // Updating the whole page here can detach an unrelated button between
+    // pointerdown and click, silently swallowing the student's Save action.
+    const root=main.querySelector?.("[data-geometry-studio]");
+    for(const axis of ["x","y"]){
+      const input=root?.querySelector('[data-geometry-vertex="'+drag.index+'"][data-geometry-vertex-key="'+axis+'"]');
+      if(input&&document.activeElement!==input)
+        input.value=state.geometryStudio.draft.vertices[drag.index]?.[axis]??"";
+    }
   });
   document.addEventListener("pointercancel",evt=>{
-    if(geometryPointer?.id===evt.pointerId){geometryPointer=null;save();render();}
+    if(geometryPointer?.id===evt.pointerId){geometryPointer=null;save();}
   });
   document.addEventListener("keydown",evt=>{
     const target=evt.target?.closest?.("[data-geometry-vertex-index]");
     if(!target||!state.geometryStudio?.open||!["ArrowLeft","ArrowRight","ArrowUp","ArrowDown"].includes(evt.key))return;
     const index=Number(target.dataset.geometryVertexIndex),p=state.geometryStudio.draft.vertices[index];
-    if(!p)return;evt.preventDefault();
+    if(!p)return;evt.preventDefault();geometryPointer=null;
     const step=evt.shiftKey?1:.1;
     if(evt.key==="ArrowLeft")p.x-=step;
     if(evt.key==="ArrowRight")p.x+=step;
