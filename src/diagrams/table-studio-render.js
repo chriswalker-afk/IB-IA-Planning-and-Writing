@@ -18,11 +18,11 @@ function breakLines(input,available,fontSize=17){
  const result=[];
  let line="";
  const push=()=>{if(line){result.push(line);line="";}};
- for(const item of (value.match(/\([^)]*\)|\S+/g)||[])){
+ for(const item of (value.match(/\\\([\s\S]*?\\\)|\([^)]*\)|\S+/g)||[])){
   let word=item;
-  if(line&&(line+" "+word).length<=chars){line+=" "+word;continue;}
+  if(line&&diagramVisibleLength(line+" "+word,fontSize)<=chars){line+=" "+word;continue;}
   if(line)push();
-  while(word.length>chars){
+  while(diagramVisibleLength(word,fontSize)>chars&&!/\\\(|\\\[/.test(word)){
    result.push(word.slice(0,chars));
    word=word.slice(chars);
   }
