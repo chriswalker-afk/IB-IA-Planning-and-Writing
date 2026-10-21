@@ -3,6 +3,7 @@ import {escapeGraph} from "./graph-core.js";
 import {statAnalysis} from "./stat-studio-core.js";
 import {svgDiagramText,diagramUnitPower,diagramSafeExcerpt} from "./diagram-notation.js";
 import {formatBoxNumber} from "./box-analysis.js";
+import {dotPlacement} from "./distribution-analysis.js";
 const W=960,H=630,LEFT=119,RIGHT=47,TOP=102,PH=394,PW=W-LEFT-RIGHT;
 const E=escapeGraph;
 const fmt=(v,d=3)=>Number(v.toFixed(d)).toString();
@@ -68,25 +69,61 @@ function paddedRange(min,max){
  return [min-margin,max+margin];
 }
 function histogram(q){
- const {draft:d,result:r,override}=q,bins=r.bins||[];
- const total=bins.reduce((s,b)=>s+b.frequency,0),parts=base(d,"Frequency density represents frequency ÷ class width   ·   n = "+total);
- const min=override?override[0]:(bins.length?Math.min(...bins.map(x=>x.low)):0);
- const max=override?override[1]:(bins.length?Math.max(...bins.map(x=>x.high)):10);
- const xrange=max>min?[min,max]:[0,10],X=horizontalNumeric(parts,...xrange,axisLabel(d,"x"),d.showGrid);
- const yHigh=niceUpper(Math.max(.1,...bins.map(b=>b.density))*1.10);
- // Frequency is a count; dividing by a measured class width gives reciprocal units.
- const densityUnit=d.unitMode==="unit"&&d.unit.trim()?
-   " ("+diagramUnitPower(d.unit,-1)+")":"";
- const Y=verticalNumeric(parts,yHigh,"Frequency density"+densityUnit,d.showGrid);
- parts.push('<defs><clipPath id="stat-histo-clip"><rect x="'+LEFT+'" y="'+TOP+'" width="'+PW+'" height="'+PH+'"/></clipPath></defs><g clip-path="url(#stat-histo-clip)">');
- for(const b of bins){
-  const x=X(b.low),right=X(b.high),top=Y(b.density),width=Math.max(0,right-x);
-  parts.push('<rect x="'+fmt(x)+'" y="'+fmt(top)+'" width="'+fmt(width)+'" height="'+fmt(Y(0)-top)+'" fill="#58a19d" fill-opacity=".83" stroke="#23586b" stroke-width="1.5"/>');
-  if(d.showLabels&&width>45&&b.frequency>0)
-   parts.push(tag(String(b.frequency),x+width/2,Math.max(TOP+14,top-7),'font-size="12" font-family="Arial,sans-serif" fill="#284953" font-weight="700" text-anchor="middle"'));
+ const {draft:d,result:r,override}=q,bins=r.bins||[],groups=r.series||[];
+ const compared=d.histogramCompare!=="single"&&d.histogramInput==="raw"&&groups.length>1;
+ const small=compared&&d.histogramCompare==="smallmultiples",extra=small?(groups.length-1)*270:0;
+ const plotHeight=PH+extra,canvasHeight=H+extra;
+ const total=r.total||bins.reduce((sum,b)=>sum+b.frequency,0);
+ const parts=base(d,(compared?"Common class boundaries · "+groups.length+" groups":"Frequency density = frequency ÷ class width")+" · n = "+total,canvasHeight,plotHeight);
+ const min=override?override[0]:(bins.length?Math.min(...bins.map(b=>b.low)):0);
+ const max=override?override[1]:(bins.length?Math.max(...bins.map(b=>b.high)):10);
+ const X=horizontalNumeric(parts,min,max>min?max:min+1,axisLabel(d,"x"),d.showGrid,plotHeight,canvasHeight);
+ const densityUnit=d.unitMode==="unit"&&d.unit.trim()?" ("+diagramUnitPower(d.unit,-1)+")":"";
+ const palette=["#248779","#457cb5","#a7668b","#b18c3b"];
+ const drawn=compared?groups:[{name:d.variable,n:total,bins}];
+ const useRelative=compared;
+ const highest=Math.max(0,...drawn.flatMap(group=>group.bins.map(b=>useRelative?b.relativeDensity:b.density)));
+ const commonY=niceUpper(Math.max(0.01,highest)*1.15);
+ function drawPanel(group,index,lowY,highY,sharedY,showYAxis){
+  const Y=value=>highY-(value/sharedY)*(highY-lowY);
+  if(showYAxis){
+   for(const v of ticks(0,sharedY)){
+    const yy=Y(v);
+    parts.push(line(LEFT,yy,LEFT+PW,yy,'stroke="#e4edef" stroke-width="1"'));
+    parts.push(tag(fmt(v,5),LEFT-12,yy+4,'font-size="11" font-family="Arial,sans-serif" fill="#36515e" text-anchor="end"'));
+   }
+  }
+  for(const bin of group.bins){
+   const x=X(bin.low),width=Math.max(0,X(bin.high)-x),value=useRelative?bin.relativeDensity:bin.density;
+   const top=Y(value),color=palette[index%palette.length],opacity=compared&&!small?.42:.82;
+   parts.push('<rect x="'+fmt(x)+'" y="'+fmt(top)+'" width="'+fmt(width)+'" height="'+fmt(Math.max(0,highY-top))+'" fill="'+color+'" fill-opacity="'+opacity+'" stroke="'+color+'" stroke-width="1.3"/>');
+   const label=d.histogramLabels==="none"?"":d.histogramLabels==="density"?fmt(bin.density,3):
+    d.histogramLabels==="percentage"?fmt(100*bin.frequency/Math.max(1,group.n||total),1)+"%":String(bin.frequency);
+   if(d.showLabels&&label&&width>Math.max(38,label.length*7)&&bin.frequency>0){
+    parts.push(tag(label,x+width/2,Math.max(lowY+16,top-6),
+     'font-size="11" font-family="Arial,sans-serif" fill="#294953" text-anchor="middle"'));
+   }
+  }
  }
- parts.push('</g>');
- return footer(d,parts,"Bars touch only for adjacent classes. Displayed bar labels give frequencies, not densities.");
+ if(small){
+  const row=plotHeight/groups.length;
+  groups.forEach((group,i)=>{
+   const top=TOP+i*row+24,bottom=TOP+(i+1)*row-18;
+   parts.push(tag(group.name+" (n="+group.n+")",LEFT+8,top-9,
+    'font-size="13" font-weight="700" font-family="Arial,sans-serif" fill="'+palette[i%palette.length]+'"'));
+   drawPanel(group,i,top,bottom,commonY,true);
+  });
+ }else{
+  drawn.forEach((group,i)=>drawPanel(group,i,TOP,TOP+plotHeight,commonY,i===0));
+  if(compared)drawn.forEach((group,i)=>parts.push(tag(group.name+" (n="+group.n+")",
+   LEFT+8+(i%2)*PW/2,TOP+18+Math.floor(i/2)*19,
+   'font-size="13" font-family="Arial,sans-serif" font-weight="700" fill="'+palette[i%palette.length]+'"')));
+ }
+ const yName=(useRelative?"Relative-frequency density":"Frequency density")+
+  (d.unitMode==="unit"&&d.unit.trim()?densityUnit:"");
+ parts.push(tag(yName,34,TOP+plotHeight/2,
+  'transform="rotate(-90 34 '+(TOP+plotHeight/2)+')" font-size="15" text-anchor="middle" font-family="Arial,sans-serif" fill="#294956"',plotHeight-22));
+ return footer(d,parts,compared?"Shared half-open intervals, area gives each group's proportion.":"Area gives frequency; widths and density are not interchangeable.",canvasHeight);
 }
 function boxes(q){
  const {draft:d,result:r,override}=q,series=r.series||[];
@@ -209,28 +246,40 @@ function boxes(q){
   (someOmitted?" Some outlier values are listed only in the calculations panel.":""),canvasHeight);
 }
 function dots(q){
- const {draft:d,result:r,override}=q,series=r.series||[];
- const values=series.flatMap(s=>s.values);
+ const {draft:d,result:r,override}=q,series=r.series||[],values=series.flatMap(group=>group.values);
  const range=override||paddedRange(values.length?Math.min(...values):0,values.length?Math.max(...values):1);
- const parts=base(d,"Dot plot shows individual measured observations, without joining points");
- const X=horizontalNumeric(parts,...range,axisLabel(d,"x"),d.showGrid);
- const space=PH/Math.max(1,series.length),colors=["#208879","#5074b1","#a35e91","#b28c34","#6f7bb2"];
- series.forEach((s,i)=>{
-  const y0=TOP+(i+1)*space-Math.max(12,space*.19),color=colors[i%colors.length];
-  parts.push(line(LEFT,y0+5,LEFT+PW,y0+5,'stroke="#afc3c8" stroke-width="1" stroke-dasharray="3 5"'));
-  const counts=new Map();
-  for(const value of s.values)counts.set(value,(counts.get(value)||0)+1);
-  for(const [v,n] of [...counts.entries()].sort((a,b)=>a[0]-b[0]))
-   for(let k=0;k<n;k++){
-    const radius=Math.max(2.8,Math.min(5,space/(2*(n+1))));
-    parts.push('<circle cx="'+fmt(X(v))+'" cy="'+fmt(y0-k*radius*2.22)+'" r="'+fmt(radius)+'" stroke="#fff" stroke-width="1" fill="'+color+'"/>');
-   }
-  parts.push(tag(s.name.length>24?diagramSafeExcerpt(s.name,25):s.name,LEFT-12,y0-space*.22,
+ const placements=series.map(group=>dotPlacement(group.values,range[0],range[1],PW,d.dotMode,11));
+ const rowHeight=Math.max(96,...placements.map(p=>32+p.levels*12));
+ const plotHeight=Math.max(PH,rowHeight*series.length),canvasHeight=H+plotHeight-PH;
+ const parts=base(d,d.dotMode==="counted"?"Counted dot plot: number beside each dot gives repetitions":"One dot per original measurement",canvasHeight,plotHeight);
+ const X=horizontalNumeric(parts,...range,axisLabel(d,"x"),d.showGrid,plotHeight,canvasHeight);
+ const space=plotHeight/Math.max(1,series.length),colors=["#208879","#5074b1","#a35e91","#b28c34","#6f7bb2"];
+ series.forEach((group,i)=>{
+  const y0=TOP+(i+1)*space-17,color=colors[i%colors.length],placement=placements[i];
+  parts.push(line(LEFT,y0+8,LEFT+PW,y0+8,'stroke="#afc3c8" stroke-width="1" stroke-dasharray="3 5"'));
+  for(const point of placement.dots){
+   const yy=y0-8-point.level*12;
+   parts.push('<circle cx="'+fmt(LEFT+point.x)+'" cy="'+fmt(yy)+'" r="4.8" fill="'+color+'" stroke="#fff" stroke-width=".9"><title>'+
+    E(formatBoxNumber(point.value)+(d.dotMode==="counted"?" × "+point.count:""))+'</title></circle>');
+   if(d.dotMode==="counted"&&point.count>1)parts.push(tag("×"+point.count,LEFT+point.x+8,yy-6,
+    'font-size="11" font-family="Arial,sans-serif" fill="#34555c"'));
+  }
+  const label=group.name.length>24?diagramSafeExcerpt(group.name,25):group.name;
+  parts.push(tag(label,LEFT-12,y0-space*.26,
    'font-size="12" font-weight="700" text-anchor="end" font-family="Arial,sans-serif" fill="#31515c"'));
-  parts.push(tag("n = "+s.values.length,LEFT-12,y0-space*.22+16,
+  parts.push(tag("n = "+group.values.length,LEFT-12,y0-space*.26+17,
    'font-size="11" text-anchor="end" font-family="Arial,sans-serif" fill="#607984"'));
+  const summary=group.summary;
+  for(const [enabled,value,text,dash] of [[d.dotMean,summary?.mean,"Mean","5 3"],[d.dotMedian,summary?.median,"Median","2 4"]]){
+   if(!enabled||!Number.isFinite(value))continue;
+   const x=X(value);
+   parts.push(line(x,y0-placement.levels*12-16,x,y0+9,
+    'stroke="#374d60" stroke-width="1.7" stroke-dasharray="'+dash+'"'));
+   parts.push(tag(text+" "+formatBoxNumber(value),Math.max(LEFT+45,Math.min(LEFT+PW-45,x)),y0-placement.levels*12-22,
+    'font-size="11" font-weight="700" text-anchor="middle" font-family="Arial,sans-serif" fill="#354d5a"'));
+  }
  });
- return footer(d,parts,"Each dot represents one observation. Duplicated values are stacked vertically.");
+ return footer(d,parts,d.dotMode==="counted"?"Each distinct value is marked once; counts preserve all observations.":"Each dot represents exactly one original observation.",canvasHeight);
 }
 function bars(q){
  const {draft:d,result:r,override}=q,rows=r.categories||[],groups=r.names||[],totals=r.totals||[],
