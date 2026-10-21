@@ -25,7 +25,7 @@ function renderAdvice(state,node,icon,e,reduced=false){
  return '<section class="studio-stage-advice'+(node==="C60"?' conclusion-stage-advice':'')+'" aria-label="Writing advice for '+e(group.name)+'" data-stage-advice="'+kind+'" data-advice-moved-to-guide="'+e(kind)+'">'+
   '<div class="studio-stage-advice-head"><span class="studio-stage-icon">'+icon(node==="C60"?"lightbulb":group.icon)+'</span>'+
   '<div><span class="intro-writing-guide-eyebrow">BEFORE YOU WRITE · '+e(group.name.toUpperCase())+'</span>'+
-  '<h2>'+headline+'</h2><p>'+e(CONFIG.hints[node])+'</p></div></div>'+
+  '<h2>'+headline+'</h2><p>'+(node==="C60"?'Your conclusion should draw together your real results, not retell every calculation. '+e(CONFIG.hints[node]):e(CONFIG.hints[node]))+'</p></div></div>'+
   '<button type="button" class="writer-guide-inline-more" data-action="writer-guide-open" data-guide-scope="stage" data-guide-node="'+e(node)+'">'+icon("book")+' '+e(label)+' · four writing tips '+icon("arrow-right")+'</button>'+
  '</section>';
 }
