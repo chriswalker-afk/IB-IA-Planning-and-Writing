@@ -75,7 +75,7 @@ def compact(p,width):
  heading.evaluate("(el)=>{el.focus();el.setSelectionRange(3,3);}")
  palette.locator('[data-action="table-symbol"][data-table-token="x_i"]').click()
  assert heading.input_value()=="Lenx_igth"
- assert "xᵢ" in p.locator('[data-table-preview] svg').inner_text()
+ assert "xᵢ" in p.locator('[data-table-preview] svg').text_content()
  assert saved(p)["tableStudio"]["draft"]["matrix"][0][1]=="14.0"
  heading.fill("Length")
  assert saved(p)["tableStudio"]["draft"]["headings"][1]=="Length"
@@ -85,11 +85,11 @@ def compact(p,width):
  p.locator('[data-table-format-index="1"][data-table-format-part="mode"]').select_option("dp")
  p.locator('[data-table-format-index="1"][data-table-format-part="digits"]').select_option("0")
  assert saved(p)["tableStudio"]["draft"]["columnFormats"]["compact:1"]["digits"]=="0"
- assert "14.0" not in p.locator('[data-table-preview] svg').inner_text()
+ assert "14.0" not in p.locator('[data-table-preview] svg').text_content()
  assert saved(p)["tableStudio"]["draft"]["matrix"][0][1]=="14.0"
  p.locator('[data-table-format-index="2"][data-table-format-part="mode"]').select_option("sf")
  p.locator('[data-table-format-index="2"][data-table-format-part="digits"]').select_option("3")
- assert "2.30" in p.locator('[data-table-preview] svg').inner_text()
+ assert "2.30" in p.locator('[data-table-preview] svg').text_content()
  p.locator('[data-table-format-index="1"][data-table-format-part="mode"]').select_option("default")
  p.locator('[data-table-format-index="2"][data-table-format-part="mode"]').select_option("default")
  # Live paper preview represents portrait A4 without replacing the main editing preview.
