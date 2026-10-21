@@ -199,7 +199,9 @@ function groupedControls(d,e){
  toggle("groupShowCumulative","Show cumulative frequency",d.groupShowCumulative)+
  toggle("groupShowPercent","Show percentage of total observations",d.groupShowPercent)+
  '<small>Intervals with no observations remain visible. The total frequency is always shown; density has no meaningful total. A histogram plots frequency density, not frequency, when class widths differ.</small>'+
- (d.groupOrigin?'<p class="ia-table-grouped-origin">Copied from '+e(d.groupOrigin)+'. Original data remain in your working files; this is not a live link.</p>':"")+
+ (d.groupOrigin?'<p class="ia-table-grouped-origin">Copied from '+e(d.groupOrigin)+'. '+
+  (d.groupInput==="raw"?"All selected original measurements have been retained.":"Only the supplied grouped frequencies are available; individual readings cannot be reconstructed.")+
+  ' This is not a live link.</p>':"")+
  '</div>';
 }
 function emphasisControls(studio,e){
