@@ -994,7 +994,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
 
   function positionGuidePopin(){
     const popin=guidePopinHost.querySelector(".writer-guide-popin");
-    if(!popin||guidePopinHost.hidden||!guidePopinOrigin)return;
+    if(!popin||guidePopinHost.hidden||!guidePopinOrigin?.getBoundingClientRect)return;
     if(window.matchMedia("(max-width: 700px)").matches){popin.style.removeProperty("top");popin.style.removeProperty("left");return;}
     const rect=guidePopinOrigin.getBoundingClientRect();
     const width=popin.offsetWidth||420,edge=12;
