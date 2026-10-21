@@ -447,7 +447,7 @@ export function renderGraphSvg(draft){
  if(showEquationPanel){
   parts.push('<rect class="graph-model-equation-panel" x="'+LEFT+'" y="'+annotationY+'" width="'+PW+'" height="'+annotationHeight+
    '" rx="10" fill="#f7fafb" stroke="#d5e4e8" stroke-width="1.2"/>',
-   '<text x="'+(LEFT+18)+'" y="'+(annotationY+27)+'" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="700" fill="#27464b">Fitted model equations</text>');
+   '<text x="'+(LEFT+18)+'" y="'+(annotationY+27)+'" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="700" fill="#27464b">Model equations</text>');
   let rowY=annotationY+55;
   annotatedModels.forEach(model=>{
    parts.push('<line x1="'+(LEFT+18)+'" y1="'+(rowY-5)+'" x2="'+(LEFT+34)+'" y2="'+(rowY-5)+'" stroke="'+model.color+
