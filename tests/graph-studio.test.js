@@ -6,6 +6,8 @@ import {
 } from "../src/diagrams/graph-core.js";
 import {updateGraphField,chooseGraphType,saveAndLinkGraph,saveGraphDraft,loadSavedGraph,freshGraph} from "../src/diagrams/graph-actions.js";
 import {renderGraphStudio} from "../src/diagrams/graph-view.js";
+import {fitPolynomialLeastSquares,normalizeGraphModels,assessGraphModels,sampleGraphModel} from "../src/diagrams/graph-models.js";
+import {addGraphModel,toggleGraphModel,removeGraphModel,updateGraphModelExpression} from "../src/diagrams/graph-actions.js";
 import {createProjectState,normalizeProjectState} from "../src/core/project-state.js";
 import {escapeHtml,icon} from "../src/ui/primitives.js";
 
@@ -173,4 +175,123 @@ test("graph generated during a later stage stays linked to that stage, not first
  assert.equal(project.entries[1].graphFigureId,linked.record.id);
  assert.equal(project.entries[1].status,"planned","Saving a figure is not performing all the mathematical work");
  assert.equal(project.entries[0].result,"A real finding from stage 1");
+});
+
+
+test("regression is always opt-in and the default scatter diagram remains untouched",()=>{
+ const g=validData(),a=analyseGraph(g.draft),svg=renderGraphSvg(g.draft);
+ assert.equal(g.draft.models.length,0);
+ assert.equal(a.models.length,0);
+ assert(!svg.includes('class="graph-model-overlay"'));
+ assert(!svg.includes('Observed points</text>'));
+ assert.match(renderGraphStudio({graphStudio:g},icon,escapeHtml),/data-action="graph-model-add"/);
+ assert.match(renderGraphStudio({graphStudio:g},icon,escapeHtml),/No models added/);
+ assert.equal(a.ready,true);
+});
+test("linear and quadratic least squares reproduce known coefficients and resist large x offsets",()=>{
+ const line=[0,1,2,3,4].map(x=>({x,y:2+3*x}));
+ const l=fitPolynomialLeastSquares(line,1);
+ assert(l.ok,l.error);
+ for(const pt of line)assert(Math.abs(l.predict(pt.x)-pt.y)<1e-10);
+ assert(Math.abs(l.coefficients[0]-2)<1e-10);
+ assert(Math.abs(l.coefficients[1]-3)<1e-10);
+ const poly=[-2,-1,0,1,2,3].map(x=>({x,y:1+2*x+4*x*x}));
+ const p=fitPolynomialLeastSquares(poly,2);
+ assert(p.ok,p.error);
+ for(const pt of poly)assert(Math.abs(p.predict(pt.x)-pt.y)<1e-9);
+ assert(Math.abs(p.coefficients[2]-4)<1e-9);
+ assert(Math.abs(p.coefficients[1]-2)<1e-9);
+ assert(Math.abs(p.coefficients[0]-1)<1e-9);
+ const shifted=[0,1,2,3,4].map(x=>({x:x+1000000000,y:4*x*x-3*x+6}));
+ const stable=fitPolynomialLeastSquares(shifted,2);
+ assert(stable.ok,stable.error);
+ for(const pt of shifted)assert(Math.abs(stable.predict(pt.x)-pt.y)<1e-8);
+ assert(stable.equation.includes("where t"),"Centered equation should avoid cancellation from giant x");
+ assert.equal(fitPolynomialLeastSquares([{x:1,y:1},{x:1,y:3}],1).ok,false);
+ assert.equal(fitPolynomialLeastSquares([{x:1,y:1},{x:2,y:4}],2).ok,false);
+ assert.equal(fitPolynomialLeastSquares([{x:1,y:1},{x:1,y:4},{x:2,y:5}],2).ok,false);
+});
+test("linear, quadratic and student-written overlays coexist with independent controls",()=>{
+ const g=validData();
+ assert(addGraphModel(g,"linear").ok);
+ assert(addGraphModel(g,"quadratic").ok);
+ const model=addGraphModel(g,"custom");
+ assert(model.ok);
+ assert.equal(addGraphModel(g,"linear").ok,false);
+ assert.equal(addGraphModel(g,"custom").ok,false);
+ assert(updateGraphModelExpression(g,model.model.id,"x^2 + 1"));
+ const a=analyseGraph(g.draft);
+ assert.equal(a.ready,true);
+ assert.equal(a.models.length,3);
+ assert(a.models.every(m=>m.valid));
+ let svg=renderGraphSvg(g.draft);
+ assert.equal((svg.match(/class="graph-model-overlay"/g)||[]).length,3);
+ assert(svg.includes("Linear regression:"));
+ assert(svg.includes("Quadratic regression:"));
+ assert(svg.includes("My own equation:"));
+ assert(svg.includes("Observed points"));
+ assert.equal((svg.match(/<circle cx=/g)||[]).length,5); // four measured points + legend marker
+ assert.equal(sampleGraphModel(a.models[0],a.points).length,261);
+ assert(Math.max(...sampleGraphModel(a.models[0],a.points).map(p=>p.x))===3);
+ assert(toggleGraphModel(g,a.models[1].id));
+ svg=renderGraphSvg(g.draft);
+ assert.equal((svg.match(/class="graph-model-overlay"/g)||[]).length,2);
+ assert(!svg.includes('data-graph-model-plot="'+a.models[1].id+'"'));
+ assert.equal(analyseGraph(g.draft).ready,true);
+ assert(removeGraphModel(g,a.models[1].id));
+ assert.equal(g.draft.models.length,2);
+});
+test("bad manual equations are never evaluated as code and hidden invalid overlays do not block export",()=>{
+ const g=validData(),model=addGraphModel(g,"custom").model;
+ assert(updateGraphModelExpression(g,model.id,"window.alert(1)"));
+ let a=analyseGraph(g.draft);
+ assert.equal(a.ready,false);
+ assert(a.problems.some(p=>p.code==="model-"+model.id));
+ assert.equal((renderGraphSvg(g.draft).match(/class="graph-model-overlay"/g)||[]).length,0);
+ assert(toggleGraphModel(g,model.id));
+ a=analyseGraph(g.draft);assert.equal(a.ready,true);
+ assert(updateGraphModelExpression(g,model.id,'<script>alert("x")</script>'));
+ const html=renderGraphStudio({graphStudio:g},icon,escapeHtml);
+ assert(!html.includes('<script>'));
+ assert(html.includes("&lt;script&gt;"));
+ assert.equal(normalizeGraphModels([{id:"model-1",type:"custom",expression:"x^2",visible:false}])[0].visible,false);
+});
+test("source changes recompute selected least-squares models while saved figures restore them",()=>{
+ const state=createProjectState();state.completion.current="C31";state.graphStudio=validData();
+ const g=state.graphStudio;
+ assert(addGraphModel(g,"linear").ok);
+ let original=analyseGraph(g.draft).models[0].predict(3);
+ let linked=saveAndLinkGraph(state);
+ assert(linked.ok,linked.error);
+ state.entries[0].status="completed";state.entries[0].result="Student original interpretation";
+ updateGraphField(g,"raw",dataset.replace("7.2","24.2"));
+ assert.equal(analyseGraph(g.draft).ready,false,"Changed unparsed values should never silently refit");
+ applyPastedGraphData(g,g.draft.raw);
+ let later=analyseGraph(g.draft).models[0].predict(3);
+ assert(Math.abs(later-original)>1);
+ const saved=saveAndLinkGraph(state);
+ assert(saved.ok,saved.error);
+ assert(saved.reviewNeeded,"Linked completed mathematics must be flagged for review");
+ assert.equal(state.entries[0].result,"Student original interpretation");
+ const restored=normalizeProjectState(JSON.parse(JSON.stringify(state)));
+ assert.equal(restored.graphStudio.figures[0].draft.models[0].type,"linear");
+ assert.equal(restored.graphStudio.draft.models[0].visible,true);
+ assert.equal(loadSavedGraph(restored.graphStudio,saved.record.id),true);
+ assert(Math.abs(analyseGraph(restored.graphStudio.draft).models[0].predict(3)-later)<1e-10);
+});
+test("malformed model imports are constrained and existing function mode still behaves normally",()=>{
+ const raw={...validData().draft,models:[
+  {id:"model-1",type:"linear",visible:true},{id:"model-1",type:"linear",visible:true},
+  {id:"model-2",type:"quadratic",visible:false},
+  {id:"wrong-tag",type:"custom",expression:"a".repeat(400)},{id:"hack",type:"dangerous"}]};
+ const g=normalizeGraphModels(raw.models);
+ assert.equal(g.length,3);
+ assert(g[2].expression.length<=180);
+ assert.notEqual(g[0].id,g[1].id);
+ const func=newGraphDraft();
+ Object.assign(func,{kind:"function",expression:"x^2 + 1",title:"Function",
+  xLabel:"x",yLabel:"f(x)",xUnitMode:"dimensionless",yUnitMode:"dimensionless",models:raw.models});
+ assert.equal(analyseGraph(func).ready,true);
+ assert.equal(analyseGraph(func).models.length,0);
+ assert(!renderGraphSvg(func).includes('class="graph-model-overlay"'));
 });
