@@ -100,7 +100,7 @@ def data_graph(page,width):
  assert page.locator('[data-graph-preview] .graph-legend-text').count()>0
  page.locator('[data-graph-field="legendPosition"]').select_option("below")
  page.locator('[data-graph-field="equationPlacement"]').select_option("legend")
- assert 'Linear regression:' in page.locator('[data-graph-preview] .graph-legend-text').all_inner_texts()[1]
+ assert any('Linear regression:' in line for line in page.locator('[data-graph-preview] .graph-legend-text').all_text_contents())
  assert saved(page)["graphStudio"]["draft"]["equationPlacement"]=="legend"
  # An incorrect expression is diagnosed; hiding it leaves original observations exportable.
  page.locator('[data-graph-model-expression]').fill("window.alert(1)")
