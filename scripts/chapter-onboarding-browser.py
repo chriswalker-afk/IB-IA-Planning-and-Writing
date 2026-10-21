@@ -841,7 +841,7 @@ def reduced_writing(browser,width):
    main.locator('.writer-guide-field-bubble:visible').first.click()
    popin=page.locator('#writerGuidePopinLayer .writer-guide-popin')
    assert popin.is_visible(),(node,width,'purple contextual pop-in does not open')
-   assert popin.locator('[data-guide-popin-tip]').count()==1
+   assert popin.get_attribute('data-guide-popin-tip'),(node,width,'missing contextual lesson identity')
    popin.locator('[data-action="writer-guide-popin-close"]').first.click()
    badge=main.locator('.criterion-field-help-rail .criterion-badge:visible')
    if badge.count():
