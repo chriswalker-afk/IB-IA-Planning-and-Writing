@@ -15,21 +15,21 @@ function breakLines(input,available,fontSize=17){
  const value=String(input??"").trim();
  if(!value)return [""];
  const chars=Math.max(6,Math.floor(available/(fontSize*.54)));
- const result=[];
- let line="";
+ const result=[];let line="";
  const push=()=>{if(line){result.push(line);line="";}};
- for(const item of (value.match(/\\\([\s\S]*?\\\)|\([^)]*\)|\S+/g)||[])){
+ // Keep legacy plain text layout identical; treat authored maths as atomic.
+ const maths=/\\\(/.test(value);
+ for(const item of (maths?value.match(/\\\([\s\S]*?\\\)|\([^)]*\)|\S+/g):
+   value.match(/\([^)]*\)|\S+/g))||[]){
   let word=item;
-  if(line&&diagramVisibleLength(line+" "+word,fontSize)<=chars){line+=" "+word;continue;}
-  if(line)push();
-  while(diagramVisibleLength(word,fontSize)>chars&&!/\\\(|\\\[/.test(word)){
-   result.push(word.slice(0,chars));
-   word=word.slice(chars);
+  if(line&&(maths?diagramVisibleLength(line+" "+word,fontSize):(line+" "+word).length)<=chars){
+   line+=" "+word;continue;
   }
+  if(line)push();
+  if(!/\\\(/.test(word))while(word.length>chars){result.push(word.slice(0,chars));word=word.slice(chars);}
   line=word;
  }
- push();
- return result;
+ push();return result;
 }
 const number=n=>typeof n==="number"&&Number.isFinite(n);
 
@@ -39,8 +39,8 @@ export function tableWidths(model){
  if(!count)return [];
  const desired=model.headers.map((header,i)=>{
   const items=[formatTableMath(header),...model.rows.map(row=>String(row[i]??""))];
-  const longest=Math.max(...items.map(item=>diagramVisibleLength(item,17)));
-  const word=Math.max(...items.flatMap(item=>item.split(/\s+/).map(x=>diagramVisibleLength(x,17))));
+  const longest=Math.max(...items.map(item=>/\\\(/.test(item)?diagramVisibleLength(item,17):item.length));
+  const word=Math.max(...items.flatMap(item=>item.split(/\s+/).map(x=>/\\\(/.test(x)?diagramVisibleLength(x,17):x.length)));
   // Allow headings to wrap where needed; short values should stay compact.
   const estimate=28+Math.max(Math.min(200,longest*8.4),Math.min(202,word*9.4));
   return Math.max(MIN_COL_WIDTH,Math.min(MAX_COL_WIDTH,estimate));
@@ -71,7 +71,7 @@ function layout(model,d){
  const widths=tableWidths(model),tableWidth=total(widths);
  const title="Table "+d.number+". "+formatTableMath(d.title);
  // Keep the title within an A4-friendly width; wrap rather than widening a compact table.
- const innerWidth=Math.max(tableWidth,Math.min(560,diagramVisibleLength(title,23)*11.25));
+ const innerWidth=Math.max(tableWidth,Math.min(560,(/\\\(/.test(title)?diagramVisibleLength(title,23):title.length)*11.25));
  const svgWidth=Math.ceil(innerWidth+PAGE_MARGIN*2);
  const tableLeft=(svgWidth-tableWidth)/2,positions=[tableLeft];
  widths.forEach(w=>positions.push(positions.at(-1)+w));
