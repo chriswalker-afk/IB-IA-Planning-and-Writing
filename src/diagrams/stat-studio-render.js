@@ -125,6 +125,103 @@ function histogram(q){
   'transform="rotate(-90 34 '+(TOP+plotHeight/2)+')" font-size="15" text-anchor="middle" font-family="Arial,sans-serif" fill="#294956"',plotHeight-22));
  return footer(d,parts,compared?"Shared half-open intervals, area gives each group's proportion.":"Area gives frequency; widths and density are not interchangeable.",canvasHeight);
 }
+
+function ogive(q){
+ const {draft:d,result:r,override}=q,curves=r.curves||[];
+ const allBins=r.bins||[],bounds=allBins.length?[allBins[0].low,allBins.at(-1).high]:[0,1];
+ const range=override||paddedRange(...bounds),parts=base(d,
+  "Cumulative frequency curve · "+(r.curveYMode==="percent"?"percentage of each sample":"number of observations"));
+ const X=horizontalNumeric(parts,...range,axisLabel(d,"x"),d.showGrid);
+ const maxY=r.curveYMode==="percent"?100:Math.max(1,...curves.map(g=>g.n));
+ const Y=verticalNumeric(parts,maxY,r.curveYMode==="percent"?"Cumulative percentage (%)":"Cumulative frequency (count)",d.showGrid);
+ const colors=["#248779","#457cb5","#a7668b","#b18c3b"];
+ for(const [index,group] of curves.entries()){
+  const points=group.curve.points||[],color=colors[index%colors.length];
+  if(!points.length)continue;
+  const ordinate=p=>r.curveYMode==="percent"?p.percent:p.cumulative;
+  const path=points.map((p,i)=>(i?"L":"M")+fmt(X(p.x))+" "+fmt(Y(ordinate(p)))).join(" ");
+  parts.push('<path d="'+path+'" fill="none" stroke="'+color+'" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>');
+  for(const p of points){
+   parts.push('<circle cx="'+fmt(X(p.x))+'" cy="'+fmt(Y(ordinate(p)))+'" r="3.5" fill="#fff" stroke="'+color+'" stroke-width="1.6"><title>'+
+    E("Up to "+formatBoxNumber(p.x)+": "+p.cumulative+" ("+formatBoxNumber(p.percent)+"%)")+'</title></circle>');
+  }
+  const targets=[];
+  if(d.curveShowQuartiles)targets.push(["Q1",25,group.curve.estimates.q1],["Median",50,group.curve.estimates.median],["Q3",75,group.curve.estimates.q3]);
+  if(d.curveShowPercentile&&Number.isFinite(Number(d.curvePercentile)))
+   targets.push(["P"+d.curvePercentile,Number(d.curvePercentile),group.curve.estimates.percentile]);
+  for(const [label,p,value] of targets){
+   if(!Number.isFinite(value))continue;
+   const x=X(value),y=Y(r.curveYMode==="percent"?p:p/100*group.n);
+   if(d.curveGuides&&(curves.length===1||label==="Median")){
+    parts.push(line(LEFT,y,x,y,'stroke="'+color+'" stroke-width="1" stroke-dasharray="4 4" opacity=".57"'));
+    parts.push(line(x,y,x,TOP+PH,'stroke="'+color+'" stroke-width="1" stroke-dasharray="4 4" opacity=".57"'));
+   }
+   parts.push('<circle cx="'+fmt(x)+'" cy="'+fmt(y)+'" r="5" fill="#fff" stroke="'+color+'" stroke-width="2.1"><title>'+
+    E(group.name+": "+label+" ≈ "+formatBoxNumber(value)+" (grouped interpolation)")+'</title></circle>');
+   // In a comparison, every group has labelled medians; others remain discoverable via tooltips and summary.
+   if(curves.length===1||label==="Median")
+    parts.push(tag((curves.length>1?diagramSafeExcerpt(group.name,10)+" ":"")+label+" ≈ "+formatBoxNumber(value),
+     Math.max(LEFT+57,Math.min(LEFT+PW-57,x)),Math.max(TOP+16,y-12),
+     'font-family="Arial,sans-serif" font-weight="650" fill="'+color+'" font-size="11" text-anchor="middle"'));
+  }
+  if(curves.length>1){
+   const lx=LEFT+(index%2)*PW/2,ly=TOP+16+Math.floor(index/2)*19;
+   parts.push(line(lx,ly-4,lx+19,ly-4,'stroke="'+color+'" stroke-width="3.5"'));
+   parts.push(tag(diagramSafeExcerpt(group.name,27)+" (n="+group.n+")",lx+25,ly,
+    'font-family="Arial,sans-serif" fill="#2e525f" font-size="12"'));
+  }
+ }
+ return footer(d,parts,"Percentiles are estimated by linear interpolation within grouped class intervals.");
+}
+function frequencyPolygons(q){
+ const {draft:d,result:r,override}=q,groups=r.polygons||[],bins=r.bins||[];
+ const range=override||paddedRange(bins.length?bins[0].low:0,bins.length?bins.at(-1).high:1);
+ const compare=groups.length>1;
+ const parts=base(d,"Frequency polygon · class midpoints · "+(compare?"relative-frequency density":"frequency density"));
+ const X=horizontalNumeric(parts,...range,axisLabel(d,"x"),d.showGrid);
+ const high=Math.max(.001,...groups.flatMap(group=>(group.polygon.points||[]).map(p=>p.y)));
+ const ymax=niceUpper(high*1.12);
+ const Y=verticalNumeric(parts,ymax,(compare?"Relative-frequency density":"Frequency density")+
+  (d.unitMode==="unit"&&d.unit.trim()?" ("+diagramUnitPower(d.unit,-1)+")":""),d.showGrid);
+ const colors=["#248779","#457cb5","#a7668b","#b18c3b"];
+ if(d.polygonShowHistogram&&groups.length===1){
+  const group=groups[0];
+  for(const b of group.bins){
+   const x=X(b.low),w=X(b.high)-x,top=Y(b.density);
+   parts.push('<rect x="'+fmt(x)+'" y="'+fmt(top)+'" width="'+fmt(w)+'" height="'+fmt(Y(0)-top)+
+    '" fill="#82b3ab" fill-opacity=".22" stroke="#7da4a4" stroke-width="1"/>');
+  }
+ }
+ groups.forEach((group,i)=>{
+  const color=colors[i%colors.length],points=group.polygon.points||[];
+  const segments=[];let current=[];
+  for(const p of points){
+   if(p.gapBefore&&current.length){segments.push(current);current=[];}
+   current.push(p);
+  }
+  if(current.length)segments.push(current);
+  for(const segment of segments){
+   parts.push('<path d="'+segment.map((p,j)=>(j?"L":"M")+fmt(X(p.x))+" "+fmt(Y(p.y))).join(" ")+
+    '" fill="none" stroke="'+color+'" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>');
+  }
+  for(const p of points){
+   if(d.polygonShowPoints)parts.push('<circle cx="'+fmt(X(p.x))+'" cy="'+fmt(Y(p.y))+'" r="4.5" fill="#fff" stroke="'+color+'" stroke-width="2"><title>'+
+    E("Midpoint "+formatBoxNumber(p.x)+" · frequency "+p.frequency+" · density "+formatBoxNumber(p.density))+'</title></circle>');
+   if(d.polygonShowValues&&d.showLabels){
+    const value=compare?p.y:p.density;
+    parts.push(tag(formatBoxNumber(value),Math.max(LEFT+30,Math.min(LEFT+PW-30,X(p.x))),Math.max(TOP+12,Y(p.y)-11),
+     'font-family="Arial,sans-serif" font-size="11" font-weight="600" text-anchor="middle" fill="'+color+'"'));
+   }
+  }
+  if(compare){
+   const lx=LEFT+(i%2)*PW/2,ly=TOP+17+Math.floor(i/2)*19;
+   parts.push(line(lx,ly-4,lx+19,ly-4,'stroke="'+color+'" stroke-width="3"'));
+   parts.push(tag(diagramSafeExcerpt(group.name,24)+" (n="+group.n+")",lx+25,ly,
+    'font-family="Arial,sans-serif" font-size="12" fill="#34535b"'));
+  }
+ });
+ return footer(d,parts,compare?"Each group has area 1 under its density histogram.":"Only observed class midpoints are joined; gaps are not bridged.");
+}
 function boxes(q){
  const {draft:d,result:r,override}=q,series=r.series||[];
  const values=series.flatMap(s=>s.values),outMethod={
