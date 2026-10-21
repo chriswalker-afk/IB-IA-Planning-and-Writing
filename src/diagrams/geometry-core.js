@@ -136,7 +136,8 @@ export function geometryAnalysis(raw){
   if(p.rightAngle){
    const ux=previous.x-p.x,uy=previous.y-p.y,vx=next.x-p.x,vy=next.y-p.y;
    const lengthProduct=Math.hypot(ux,uy)*Math.hypot(vx,vy);
-   if(lengthProduct<=1e-9||Math.abs(ux*vx+uy*vy)/lengthProduct>0.0001)
+   if(lengthProduct<=1e-9||Math.abs(ux*vx+uy*vy)/lengthProduct>0.0001||
+    (angles.length&&Math.abs(angles[i]-90)>0.05))
     issues.push("Angle at "+p.label+" is marked as a right angle but its sides are not perpendicular.");
   }
  }
