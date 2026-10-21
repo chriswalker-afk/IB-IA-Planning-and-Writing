@@ -20,25 +20,16 @@ const tipCard=(tip,i,icon,e)=>'<details class="intro-advice-tip studio-stage-tip
  '<p><strong>Instead of</strong> '+e(tip[3])+'</p><p><strong>Try</strong> '+e(tip[4])+'</p></div></div></details>';
 function renderAdvice(state,node,icon,e,reduced=false){
  const kind=groupOf(node),group=CONFIG.tips[kind],main=group.overview.includes(node);
- const cards='<div class="intro-advice-cards studio-stage-advice-cards">'+
-  group.cards.map((tip,i)=>tipCard(tip,i,icon,e)).join("")+'</div>';
- if(node==="C60")return '<section class="studio-stage-advice conclusion-stage-advice" aria-label="Optional conclusion writing guidance" data-stage-advice="conclusion">'+
-  '<div class="studio-stage-advice-head"><span class="studio-stage-icon">'+icon("lightbulb")+'</span><div>'+
-   '<h2>Answer · support · qualify</h2>'+
-   '<p>Your conclusion should draw together your real results, not retell every calculation.</p></div></div>'+
-  (reduced?"":'<details class="studio-stage-more-advice"><summary>'+icon("book")+
-    ' How to write an effective conclusion '+icon("chevron-right")+'</summary>'+cards+'</details>')+
-  '</section>';
- return '<section class="studio-stage-advice" aria-label="Writing advice for '+e(group.name)+'" data-stage-advice="'+kind+'">'+
-  '<div class="studio-stage-advice-head"><span class="studio-stage-icon">'+icon(group.icon)+'</span>'+
+ const label=kind==="conclusion"?"Writing your conclusion":kind==="maths"?"Exploring and explaining your mathematics":"Presenting your data and methods";
+ const headline=node==="C60"?"Answer · support · qualify":main&&node!=="C50"?"Before you write":"One thing to keep in mind";
+ return '<section class="studio-stage-advice'+(node==="C60"?' conclusion-stage-advice':'')+'" aria-label="Writing advice for '+e(group.name)+'" data-stage-advice="'+kind+'" data-advice-moved-to-guide="'+e(kind)+'">'+
+  '<div class="studio-stage-advice-head"><span class="studio-stage-icon">'+icon(node==="C60"?"lightbulb":group.icon)+'</span>'+
   '<div><span class="intro-writing-guide-eyebrow">BEFORE YOU WRITE · '+e(group.name.toUpperCase())+'</span>'+
-  '<h2>'+(main&&node!=="C50"?'Before you write':'One thing to keep in mind')+'</h2>'+
-  '<p>'+e(CONFIG.hints[node])+'</p></div></div>'+
-  (reduced?'':main&&node!=="C50"?cards:
-   '<details class="studio-stage-more-advice"><summary>'+icon("book")+
-   ' Revisit general '+e(group.name.toLowerCase())+' writing tips '+icon("chevron-right")+'</summary>'+cards+'</details>')+
+  '<h2>'+headline+'</h2><p>'+e(CONFIG.hints[node])+'</p></div></div>'+
+  '<button type="button" class="writer-guide-inline-more" data-action="writer-guide-open" data-guide-scope="stage" data-guide-node="'+e(node)+'">'+icon("book")+' '+e(label)+' · four writing tips '+icon("arrow-right")+'</button>'+
  '</section>';
 }
+
 function renderSparks(state,node,icon,e){
  const kind=groupOf(node),lead=kind==='data'?
   'Use planned source, sampling or accuracy sparks only after checking what you actually collected. A plan is not a finding.':
