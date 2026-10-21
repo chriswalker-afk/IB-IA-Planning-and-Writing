@@ -1139,7 +1139,7 @@ test("Reduce advice shows only core writing instructions while keeping green and
   state.planning.fields.aim="Does the observed pattern follow the chosen model?";
   state.scratch.introduction="A genuinely saved introduction";
   state.entries=[{id:"original-maths",title:"Original mathematics",phase:["C40","C50"].includes(node)?"substantial":"first",
-   status:"completed",result:"The real figure rises then levels off",interpretation:"A straight line may not suffice"}];
+   status:"completed",result:"The real figure rises then levels off",interpretation:node==="C34B"?"":"A straight line may not suffice"}];
   state.completion.activeEntryIndex=0;
   const h=createHarness(state);
   const evidence=entries=>entries.map(({id,title,phase,status,result,interpretation})=>({id,title,phase,status,result,interpretation}));
