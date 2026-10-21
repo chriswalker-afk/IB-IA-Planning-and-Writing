@@ -486,7 +486,7 @@ test("cubic regression accurately fits a known cubic with full precision",()=>{
   assert(Math.abs(actual-expected)<1e-8,fit.coefficients.join(", "));
  assert.match(fit.caution,/overfitted/);
  assert.equal(fitPolynomialLeastSquares(data.slice(0,3),3).ok,false);
- const clustered=[10,10,10,12,15,17].map((x,i)=>({x,y:i}));
+ const clustered=[10,10,10,12,15,15].map((x,i)=>({x,y:i}));
  assert.equal(fitPolynomialLeastSquares(clustered,3).ok,false,"Only three distinct x-values cannot fit a cubic");
 });
 test("logarithmic least squares uses all positive x-values and original y-units",()=>{
