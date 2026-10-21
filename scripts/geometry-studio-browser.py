@@ -100,6 +100,8 @@ def test_one(browser,width,height,touch):
   assert keyboard_after>after,(after,keyboard_after)
   # Reset vertex to the exact known test shape.
   page.locator('[data-geometry-vertex="0"][data-geometry-vertex-key="x"]').fill("0")
+  # Preserve a screenshot of the actual editable canvas before the Files drawer.
+  page.screenshot(path=str(OUT/f"geometry-editor-{width}.png"),full_page=True,animations="disabled")
   # Student-saved figures are editable and both image exports are real files.
   page.locator('[data-action="geometry-save"]').click()
   ss=saved(page)
@@ -116,10 +118,10 @@ def test_one(browser,width,height,touch):
   assert final["entries"][0]["geometryFigureId"]==original
   assert len(final["geometryStudio"]["figures"])==1
   assert final["entries"][0]["status"]=="planned","Saving a figure must not invent a completed IA result"
-  assert page.locator('.geometry-entry svg').count()==1,"Linked preview missing from writing stage"
+  assert page.locator('.geometry-entry > svg').count()==1,"Linked preview missing from writing stage"
   page.reload(wait_until="networkidle")
   assert saved(page)["entries"][0]["geometryFigureId"]==original
-  assert page.locator('.geometry-entry svg').count()==1
+  assert page.locator('.geometry-entry > svg').count()==1
   # Figure must also appear in the full project PDF, not merely the JSON.
   page.locator('[data-action="open-files"]').first.click()
   with page.expect_download(timeout=50000) as received:
@@ -128,7 +130,6 @@ def test_one(browser,width,height,touch):
   assert pdf.startswith(b"%PDF-") and len(pdf)>2000,"Full-project PDF missing or invalid"
   assert not errors,errors
   overflow(page)
-  page.screenshot(path=str(OUT/f"geometry-{width}.png"),full_page=True,animations="disabled")
   print(f"PASS Geometry Studio: width={width}, touch={touch}, PDF={len(pdf)} bytes",flush=True)
  finally:ctx.close()
 if __name__=="__main__":
