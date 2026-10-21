@@ -30,8 +30,8 @@ import {planningMove,planAutoAdvance,planningBack,planningEdit,applyPlanningFiel
 import {createStudioViews} from "../src/ui/studio-views.js";
 import {createCompletingViews} from "../src/completing/views.js";
 import {newGraphDraft,saveGraphFigure,renderGraphSvg,graphData,splitHeading,analyseGraph} from "../src/diagrams/graph-core.js";
-import {renderGraphQuality,renderGraphActions,graphSourceChoices} from "../src/diagrams/graph-view.js";
-import {updateGraphField,chooseGraphType,importGraphTable,loadSavedGraph,freshGraph,saveAndLinkGraph,saveGraphDraft} from "../src/diagrams/graph-actions.js";
+import {renderGraphQuality,renderGraphActions,graphSourceChoices,renderGraphModelSummary} from "../src/diagrams/graph-view.js";
+import {updateGraphField,chooseGraphType,importGraphTable,loadSavedGraph,freshGraph,saveAndLinkGraph,saveGraphDraft,addGraphModel,toggleGraphModel,removeGraphModel,updateGraphModelExpression} from "../src/diagrams/graph-actions.js";
 import {exportGraphFigure} from "../src/diagrams/graph-export.js";
 import {imageTraceChecks,renderTraceOverlaySvg,renderCleanTraceSvg,traceCoordinates,traceCalibration} from "../src/diagrams/image-tracer-core.js";
 import {renderImageTracer,tracePreviewHtml,traceWorkingHtml,traceQualityHtml,traceOutputHtml} from "../src/diagrams/image-tracer-view.js";
@@ -112,7 +112,7 @@ function createHarness(savedValue,{welcome=false}={}){
     KEY:"ia-pathfinder-prototype-v1",
     readRecordValue,updateRecordValue,icon,escapeHtml,cleanUrl,button,
     referenceNodeForPrototypeStep,createPlanningViews,createStudioViews,createCompletingViews,createCheckingViews,renderWriterFieldGuide,renderWriterGuideWelcome,shouldShowWriterGuideWelcome,renderWriterGuidePopin,writingGuideRecommendation,createProjectViews,
-    newGraphDraft,saveGraphFigure,renderGraphSvg,graphData,splitHeading,analyseGraph,renderGraphQuality,renderGraphActions,graphSourceChoices,
+    newGraphDraft,saveGraphFigure,renderGraphSvg,graphData,splitHeading,analyseGraph,renderGraphModelSummary,addGraphModel,toggleGraphModel,removeGraphModel,updateGraphModelExpression,renderGraphQuality,renderGraphActions,graphSourceChoices,
     updateGraphField,chooseGraphType,importGraphTable,loadSavedGraph,freshGraph,saveAndLinkGraph,saveGraphDraft,exportGraphFigure,
     imageTraceChecks,renderTraceOverlaySvg,renderCleanTraceSvg,traceCoordinates,traceCalibration,renderImageTracer,
     tracePreviewHtml,traceWorkingHtml,traceQualityHtml,traceOutputHtml,setTraceField,setTraceView,setTraceTool,
@@ -1284,4 +1284,28 @@ test("Native creator return restores a live writing stage or the previously open
  assert.equal(other.saved.completion.current,"C31");
  assert(other.saved.graphStudio.open);
  assert(!other.saved.tableStudio.open);
+});
+
+test("Graph Studio Pass 1 opt-in model controls are handled in the complete app without adding results",()=>{
+ const st=createProjectState();
+ st.route="completing";st.completion.current="C31";st.ui.writingIntroSeen=true;st.graphStudio.open=true;
+ Object.assign(st.graphStudio.draft,{
+  kind:"scatter",columns:["Time (s)","Distance (m)"],matrix:[["0","1"],["1","3"],["2","5"],["3","7"]],
+  xLabel:"Time",yLabel:"Distance",xUnit:"s",yUnit:"m",xUnitMode:"unit",yUnitMode:"unit",
+  title:"Fictional test observations",sourceKind:"primary"
+ });
+ const h=createHarness(st);
+ assert(h.html.includes('data-action="graph-model-add"'));
+ assert(!h.html.includes('class="graph-model-overlay"'));
+ h.action("graph-model-add");
+ assert.equal(h.saved.graphStudio.draft.models.length,1);
+ assert.equal(h.saved.graphStudio.draft.models[0].type,"linear");
+ assert(h.html.includes('class="graph-model-overlay"'));
+ const id=h.saved.graphStudio.draft.models[0].id;
+ h.action("graph-model-toggle",{graphModelId:id});
+ assert.equal(h.saved.graphStudio.draft.models[0].visible,false);
+ assert(!h.html.includes('class="graph-model-overlay"'));
+ h.action("graph-model-remove",{graphModelId:id});
+ assert.equal(h.saved.graphStudio.draft.models.length,0);
+ assert.equal(h.saved.entries.length,0);
 });
