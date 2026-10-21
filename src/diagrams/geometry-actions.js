@@ -67,7 +67,8 @@ export function saveAndLinkGeometry(state){
  entry.geometryFigureId=saved.record.id;
  if(!entry.title?.trim())entry.title=saved.record.draft.title;
  if(!entry.technique?.trim())entry.technique="Geometric construction and measurement";
- if(!entry.methodId?.trim())entry.methodId="triangulation";
+ // The diagram itself does not determine the student’s mathematical method.
+ // Preserve any explicit method they chose in their writing stage.
  entry.kind="diagram";state.completion.activeEntryIndex=index;state.ui.mathIndex=index;
  if(entry.phase==="first")state.completion.fields.firstType="diagram";
  return{ok:true,record:saved.record,index,reviewNeeded};
