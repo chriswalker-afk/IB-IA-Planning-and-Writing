@@ -34,7 +34,7 @@ jobs:
       - run: npm run build
       - run: pip install playwright==1.57.0 pypdf==5.9.0
       - run: python -m playwright install --with-deps chromium
-      - name: Source-hosted and built PDF and Word downloads
+      - name: Test PDF, Word and ZIP downloads from the production bundle
         run: python scripts/report-exports-browser.py
       - name: Verify published reports after deployment
         if: github.event_name == 'workflow_run'
