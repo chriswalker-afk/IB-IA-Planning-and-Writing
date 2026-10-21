@@ -17,17 +17,19 @@ export const newGraphDraft=()=>({
  kind:"scatter",raw:"",columns:[],matrix:[],pendingPaste:false,xIndex:0,yIndex:1,
  title:"",figureNumber:"1",xLabel:"",yLabel:"",xUnit:"",yUnit:"",xUnitMode:"unsure",yUnitMode:"unsure",
  expression:"",sourceKind:"unsure",sourceText:"",caption:"",models:[],modelChoice:"linear",
+ residualModelId:"",showResidualSegments:false,showResidualPlot:false,modelReflection:"",
  xMin:"",xMax:"",yMin:"",yMax:"",showGrid:true,showPoints:true,includeZeroY:false
 });
 export function normalizeGraphDraft(raw){
  const o=newGraphDraft(),v=raw&&typeof raw==="object"&&!Array.isArray(raw)?raw:{};
  for(const [k,value] of Object.entries(o)){
-  if(typeof value==="string")o[k]=text(v[k],k==="raw"?MAX_RAW:k==="expression"?180:k==="sourceText"?500:k==="caption"?320:120);
+  if(typeof value==="string")o[k]=text(v[k],k==="raw"?MAX_RAW:k==="expression"?180:k==="sourceText"?500:k==="caption"?320:k==="modelReflection"?1200:120);
   else if(typeof value==="boolean")o[k]=typeof v[k]==="boolean"?v[k]:value;
  }
  o.kind=["scatter","time","function"].includes(v.kind)?v.kind:o.kind;
  o.modelChoice=["linear","quadratic","custom"].includes(v.modelChoice)?v.modelChoice:"linear";
  o.models=normalizeGraphModels(v.models);
+ if(!o.models.some(m=>m.id===o.residualModelId))o.residualModelId="";
  o.columns=Array.isArray(v.columns)?v.columns.slice(0,MAX_COLS).map(x=>text(x,100)):[];
  o.matrix=cleanRows(v.matrix);
  o.xIndex=Number.isInteger(v.xIndex)?Math.max(0,Math.min(MAX_COLS-1,v.xIndex)):0;
@@ -259,9 +261,18 @@ export function analyseGraph(draft){
   if(model.visible&&!model.valid)
    fail("model-"+model.id,model.label+": "+model.error+" Hide or remove this overlay if you want to export the observations alone.");
  }
+ const selectedResidualModel=models.find(m=>m.id===d.residualModelId)||null;
+ const inspecting=d.showResidualSegments||d.showResidualPlot;
+ if(inspecting){
+  if(!selectedResidualModel)fail("residual-model","Choose a model to examine before showing residuals.");
+  else if(!selectedResidualModel.visible)
+   warn("residual-hidden","The selected model is hidden. Show it to see its residual plots and segments.");
+  else if(!selectedResidualModel.valid||!selectedResidualModel.diagnostics?.ok)
+   fail("residual-unavailable","Residuals require a model with finite predictions at every measured x-value.");
+ }
  if(d.kind==="scatter"&&points.length&&!models.length)
   warn("no-automatic-fit","No model was added automatically. Inspect your data and choose an overlay only if mathematically justified.");
- return {ready:problems.length===0,problems,warnings,points,skipped,bounds,draft:d,models};
+ return {ready:problems.length===0,problems,warnings,points,skipped,bounds,draft:d,models,selectedResidualModel};
 }
 const niceStep=span=>{
  const magnitude=Math.pow(10,Math.floor(Math.log10(span/5||1))),fraction=span/5/magnitude;
@@ -285,7 +296,7 @@ const W=940,H=620,LEFT=109,RIGHT=55,TOP=112,BOTTOM=122,PW=W-LEFT-RIGHT,PH=H-TOP-
 export function renderGraphSvg(draft){
  const analysis=analyseGraph(draft),d=analysis.draft;let {points,bounds}=analysis;
  const visibleModels=(analysis.models||[]).filter(model=>model.visible&&model.valid);
- const svgHeight=visibleModels.length?680:H;
+ const svgHeight=visibleModels.length?700:H;
  const title=escapeGraph(d.title.trim()||"Graph preview — add a descriptive title");
  const xLabel=escapeGraph(axisTitle(d.xLabel||"Horizontal variable",d.xUnit,d.xUnitMode));
  const yLabel=escapeGraph(axisTitle(d.yLabel||"Vertical variable",d.yUnit,d.yUnitMode));
@@ -337,6 +348,20 @@ export function renderGraphSvg(draft){
     '" d="'+line+'" fill="none" stroke="'+model.color+'" stroke-width="3"'+
     (model.dash?' stroke-dasharray="'+model.dash+'"':'')+' stroke-linejoin="round" stroke-linecap="round"/>');
   }
+  // A residual is observed minus predicted: draw its vertical distance
+  // only for the student's explicitly selected, visible model.
+  const selected=analysis.selectedResidualModel;
+  if(d.showResidualSegments&&selected?.visible&&selected.valid&&selected.diagnostics?.ok){
+   for(const residual of selected.diagnostics.residuals){
+    const px=X(residual.x),actual=Y(residual.y),predicted=Y(residual.predicted);
+    if(!Number.isFinite(px)||!Number.isFinite(actual)||!Number.isFinite(predicted)||
+       Math.abs(predicted)>1e7||Math.abs(actual)>1e7)continue;
+    parts.push('<line class="graph-residual-segment" data-graph-residual-model="'+selected.id+
+     '" x1="'+px.toFixed(2)+'" x2="'+px.toFixed(2)+'" y1="'+predicted.toFixed(2)+
+     '" y2="'+actual.toFixed(2)+'" stroke="'+selected.color+
+     '" stroke-width="1.8" stroke-dasharray="4 3" opacity=".82"/>');
+   }
+  }
   if(d.kind==="function"&&points.length){
    let line="",last=null;
    for(const p of points){
@@ -353,6 +378,8 @@ export function renderGraphSvg(draft){
   if(visibleModels.length){
    const legendItems=[{name:"Observed points",color:"#147e75",observed:true},
     ...visibleModels.map(m=>({name:m.label+": "+m.equation,color:m.color,dash:m.dash}))];
+   if(d.showResidualSegments&&analysis.selectedResidualModel?.visible&&analysis.selectedResidualModel.diagnostics?.ok)
+    legendItems.push({name:"Residual distances (observed − predicted)",color:analysis.selectedResidualModel.color,dash:"4 3"});
    legendItems.forEach((item,i)=>{
     const y=522+22*i;
     if(item.observed)parts.push('<circle cx="116" cy="'+(y-4)+'" r="4.5" fill="'+item.color+'"/>');
@@ -371,6 +398,63 @@ export function renderGraphSvg(draft){
  const source=d.kind==="function"?"Function: "+d.expression:d.sourceKind==="secondary"?"Source: "+(d.sourceText||"not yet supplied"):d.sourceKind==="primary"?"Source: student's observations":"Source: not yet confirmed";
  parts.push('<text x="'+W/2+'" y="'+(svgHeight-17)+'" text-anchor="middle" fill="#5b6f76" font-family="Arial,Helvetica,sans-serif" font-size="12">'+escapeGraph(source.slice(0,145))+'</text>',
   '</svg>');
+ return parts.join("");
+}
+/** Residual figure for one explicitly selected model, independent of the main
+ * plot's vertical axis. Zero is always shown, and points are never joined.
+ * Empty state is handled in the UI: no unlabelled SVG is exported.
+ */
+export function renderGraphResidualSvg(draft){
+ const analysis=analyseGraph(draft),d=analysis.draft,m=analysis.selectedResidualModel;
+ if(!m?.visible||!m.valid||!m.diagnostics?.ok||!analysis.bounds.x)return "";
+ const rows=m.diagnostics.residuals,W=940,H=500;
+ const left=110,right=54,top=104,bottom=128,width=W-left-right,height=H-top-bottom,base=top+height;
+ const lower=analysis.bounds.x[0],upper=analysis.bounds.x[1];
+ const X=x=>left+(x-lower)/(upper-lower)*width;
+ const magnitude=Math.max(0,...rows.map(r=>Math.abs(r.residual)));
+ const limit=magnitude>0?magnitude*1.18:1;
+ const Y=y=>top+height-(y+limit)/(2*limit)*height;
+ const title=escapeGraph("Residual plot — "+m.label),xLabel=escapeGraph(axisTitle(d.xLabel||"x",d.xUnit,d.xUnitMode));
+ const yLabel=escapeGraph(axisTitle("Residual: observed − predicted",d.yUnit,d.yUnitMode));
+ const parts=['<svg class="graph-figure-svg graph-residual-svg" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="'+title+
+  '" viewBox="0 0 '+W+' '+H+'" width="'+W+'" height="'+H+'">',
+  '<title>'+title+'</title><desc>'+rows.length+' signed residuals, observed minus model prediction, plotted against measured x-values. A central horizontal line represents zero.</desc>',
+  '<rect width="'+W+'" height="'+H+'" fill="#fff"/>',
+  '<text x="'+(W/2)+'" y="37" font-family="Arial,Helvetica,sans-serif" font-size="20" font-weight="700" text-anchor="middle" fill="#203d43">'+title+'</text>',
+  '<text x="'+(W/2)+'" y="66" font-family="Arial,Helvetica,sans-serif" font-size="13" text-anchor="middle" fill="#526c71">'+
+   escapeGraph("e = observed y − predicted y · "+rows.length+" genuine pairs")+'</text>',
+  '<rect x="'+left+'" y="'+top+'" width="'+width+'" height="'+height+'" fill="#fafcfd" stroke="#ccd8dc" stroke-width="1.2"/>'];
+ const xTicks=ticks(lower,upper);
+ for(const value of xTicks.values){
+  const px=X(value);
+  if(px<left||px>left+width)continue;
+  if(d.showGrid)parts.push('<line x1="'+px.toFixed(2)+'" y1="'+top+'" x2="'+px.toFixed(2)+'" y2="'+base+'" stroke="#e1eced" stroke-width="1"/>');
+  parts.push('<line x1="'+px.toFixed(2)+'" y1="'+base+'" x2="'+px.toFixed(2)+'" y2="'+(base+6)+'" stroke="#425b63"/>',
+   '<text x="'+px.toFixed(2)+'" y="'+(base+26)+'" text-anchor="middle" font-size="14" font-family="Arial,Helvetica,sans-serif" fill="#40575c">'+escapeGraph(tickLabel(value,xTicks.step))+'</text>');
+ }
+ const yTicks=ticks(-limit,limit);
+ for(const value of yTicks.values){
+  const py=Y(value);
+  if(py<top||py>base)continue;
+  if(d.showGrid)parts.push('<line x1="'+left+'" y1="'+py.toFixed(2)+'" x2="'+(left+width)+'" y2="'+py.toFixed(2)+'" stroke="#e1eced" stroke-width="1"/>');
+  parts.push('<text x="'+(left-15)+'" y="'+(py+5).toFixed(2)+'" text-anchor="end" font-size="14" font-family="Arial,Helvetica,sans-serif" fill="#40575c">'+escapeGraph(tickLabel(value,yTicks.step))+'</text>');
+ }
+ parts.push('<defs><clipPath id="ia-residual-clip"><rect x="'+left+'" y="'+top+'" width="'+width+'" height="'+height+'"/></clipPath></defs>',
+  '<g clip-path="url(#ia-residual-clip)">',
+  '<line class="graph-residual-zero" x1="'+left+'" x2="'+(left+width)+'" y1="'+Y(0).toFixed(2)+'" y2="'+Y(0).toFixed(2)+'" stroke="#556e75" stroke-width="2.4"/>');
+ for(const r of rows){
+  const cx=X(r.x),cy=Y(r.residual);
+  if(!Number.isFinite(cx)||!Number.isFinite(cy))continue;
+  parts.push('<circle class="graph-residual-point" cx="'+cx.toFixed(2)+'" cy="'+cy.toFixed(2)+'" r="4.5" fill="'+m.color+'" stroke="#fff" stroke-width="1"><title>'+
+   escapeGraph("x: "+r.x+" | observed: "+r.y+" | predicted: "+Number(r.predicted.toPrecision(8))+
+    " | residual: "+Number(r.residual.toPrecision(8)))+'</title></circle>');
+ }
+ parts.push('</g>',
+  '<text x="'+(left+width/2)+'" y="'+(H-62)+'" text-anchor="middle" fill="#263f47" font-family="Arial,Helvetica,sans-serif" font-size="17" font-weight="600">'+xLabel+'</text>',
+  '<text x="34" y="'+(top+height/2)+'" transform="rotate(-90 34 '+(top+height/2)+')" text-anchor="middle" fill="#263f47" font-family="Arial,Helvetica,sans-serif" font-size="16" font-weight="600">'+yLabel+'</text>',
+  '<text x="'+(W/2)+'" y="'+(H-19)+'" text-anchor="middle" fill="#60747a" font-family="Arial,Helvetica,sans-serif" font-size="12">'+
+  escapeGraph("Measured range only · "+(d.sourceKind==="secondary"?"Data source: "+(d.sourceText||"not specified"):
+   d.sourceKind==="primary"?"Student observations":"Check the original data source"))+'</text>','</svg>');
  return parts.join("");
 }
 export const graphFileBase=d=>{
