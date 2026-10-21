@@ -137,3 +137,9 @@
 
 .journey-course-switch-note{display:flex;align-items:start;gap:8px;padding:11px 13px;margin:10px 0;background:#fff9ed;border:1px solid #efdfbf;border-radius:11px;font-size:10px;line-height:1.6;color:#85642e}
 .journey-course-switch-note .icon{width:15px;height:15px;flex:none;margin-top:1px}
+
+
+/* Optional pathway-matched geometry tool, not another required IA stage. */
+.journey-optional-tool{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;padding:14px 16px;margin:12px 0 18px;border:1px solid #d7e4eb;background:var(--surface,#f8fafb);border-radius:12px}
+.journey-optional-tool p{flex:1 1 310px;margin:0;font-size:.91rem;line-height:1.5}
+.journey-optional-tool .btn{white-space:normal;text-align:left}
