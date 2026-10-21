@@ -1,6 +1,7 @@
 /** Browser-local, printable statistical diagrams and compact working-data summaries. */
 import {statAnalysis} from "./stat-studio-core.js";
 import {renderStatSvg} from "./stat-studio-render.js";
+import {diagramUnitPower} from "./diagram-notation.js";
 const filename=d=>(String(d.title||"statistical-diagram").normalize("NFKD")
  .replace(/[^a-z0-9 -]/gi,"").trim().replace(/\s+/g,"-").slice(0,64).toLowerCase()||"statistical-diagram");
 const cell=value=>{
@@ -15,7 +16,8 @@ export function statSummaryCSV(raw){
  if(d.kind==="histogram"){
   rows=[["Lower boundary"+(d.unitMode==="unit"?" ("+d.unit+")":""),
    "Upper boundary"+(d.unitMode==="unit"?" ("+d.unit+")":""),
-   "Class width","Frequency","Frequency density"],...r.bins.map(b=>[
+   "Class width"+(d.unitMode==="unit"?" ("+d.unit+")":""),"Frequency",
+   "Frequency density"+(d.unitMode==="unit"?" ("+diagramUnitPower(d.unit,-1)+")":"")],...r.bins.map(b=>[
     b.low,b.high,b.high-b.low,b.frequency,b.density
    ])];
  }else if(d.kind==="box"){
