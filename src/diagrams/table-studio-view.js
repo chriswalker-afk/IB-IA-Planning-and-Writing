@@ -95,6 +95,49 @@ export function tableDataChoices(studio,e){
  return headerEditors(d,e)+selectionControls(d,e)+unitsEditors(d,e)+
   (d.mode==="frequency"?toggle("showPercent","Include percentage of all responses",d.showPercent):"");
 }
+
+function columnPrecisionOptions(d,e){
+ const model=analyzeTable(d).model;
+ if(!model)return '<p class="ia-table-precision-note">Finish entering a valid table to customise its numerical columns.</p>';
+ const options=model.headers.map((header,i)=>({header,index:i})).filter(({index:i})=>
+  d.mode==="compact"?!!model.numeric[i]:i>=2);
+ if(!options.length)return '<p class="ia-table-precision-note">No precision-adjustable columns in the current table.</p>';
+ return '<div class="ia-table-column-precision-grid">'+options.map(({header,index})=>{
+  const rule=tableColumnFormat(d,index),selected=rule.mode,digits=rule.digits;
+  const showDigits=selected==="dp"||selected==="sf";
+  const choices=[["default","Use overall table setting"],...(d.mode==="compact"?[["source","Exactly as entered"]]:[]),
+   ["dp","Decimal places"],["sf","Significant figures"]];
+  return '<div class="ia-table-column-precision-row"><strong>'+e(formatTableMath(header))+'</strong>'+
+   '<label class="ia-table-form-field"><span>Display format</span><select data-table-format-index="'+index+'" data-table-format-part="mode">'+
+   choices.map(([v,t])=>'<option value="'+v+'"'+(selected===v?' selected':"")+'>'+t+'</option>').join("")+
+   '</select></label>'+
+   '<label class="ia-table-form-field ia-table-format-digits" data-table-format-digits'+(!showDigits?' hidden':"")+
+   '><span>'+(selected==="sf"?"Significant figures":"Decimal places")+'</span>'+
+   '<select data-table-format-index="'+index+'" data-table-format-part="digits">'+
+   Array.from({length:7},(_,n)=>'<option value="'+n+'"'+(String(n)===String(digits)?' selected':"")+
+    (selected==="sf"&&n===0?' disabled':"")+'>'+n+'</option>').join("")+
+   '</select></label></div>';
+ }).join("")+'</div>';
+}
+function a4Preview(studio,e){
+ const q=analyzeTable(studio.draft),fit=assessTableA4(studio.draft),d=studio.draft;
+ const warnings=fit.warnings||[];
+ const headline=!fit.ready?"Check A4 fit once the data are valid":warnings.length?
+  "A4 check: review readability":"A4 check: likely to fit comfortably";
+ const widthPercent=fit.ready?Math.min(100,Math.max(10,100*fit.usedWidth/fit.contentWidth)).toFixed(1):"0";
+ return '<section class="ia-table-paper-check" data-table-a4><details>'+
+  '<summary>'+e(headline)+'</summary>'+
+  (fit.ready?'<p>Estimated portrait A4, with 20 mm margins. This is a guide; Google Docs and your final IA may lay out the table differently.</p>'+
+    '<div class="ia-table-paper-surround"><div class="ia-table-paper-page" aria-label="Portrait A4 page preview">'+
+     '<div class="ia-table-paper-figure" style="width:'+widthPercent+'%">'+renderTableSvg(d)+'</div>'+
+    '</div></div>'+
+    '<p>Width '+fit.width+' × height '+fit.height+' SVG units · '+Math.round(fit.scale*100)+
+    '% A4 print scale · estimated body '+fit.bodyPt+' pt, source '+fit.footerPt+' pt.</p>':
+    '<p>Complete the essential table details before checking page fit.</p>')+
+   (warnings.length?'<ul>'+warnings.map(w=>'<li>'+e(w)+'</li>').join("")+'</ul>':
+    '<p class="ia-table-a4-ok">No automatic A4 sizing or heading-wrap issues detected.</p>')+
+  '</details></section>';
+}
 function preview(studio,e){
  const check=analyzeTable(studio.draft);
  return '<section class="ia-table-preview" data-table-preview>'+
@@ -127,7 +170,7 @@ function output(studio,icon){
  btn("table-csv",icon("table")+' Table CSV')+
  '</div><p>The editable version can be pasted into Google Docs, but check its column widths after pasting. The SVG/PNG preserves the precise on-screen layout.</p>';
 }
-export const tablePreviewHtml=preview,tableQualityHtml=quality,tableOutputHtml=output;
+export const tablePreviewHtml=preview,tableA4PreviewHtml=a4Preview,tableQualityHtml=quality,tableOutputHtml=output;
 export function renderTableStudio(state,icon,e){
  const s=state.tableStudio,d=s.draft,route=state.planning?.routeExplorer?.selectedRoute;
  const accuracy=state.planning?.accuracyPlans||[];
@@ -178,9 +221,12 @@ export function renderTableStudio(state,icon,e){
   ["center","Centre all headings and values (recommended)"],["numeric","Text left; numerical values right"]],e)+
  toggle("showColumnLines","Show subtle vertical column separators",d.showColumnLines)+
  toggle("showRowLines","Use subtle horizontal row separators",d.showRowLines)+
+ '<details class="ia-table-precision-options"><summary>Customise individual column precision (optional)</summary>'+
+ '<p>Choose decimal places or significant figures for each result column. Values remain unrounded in your working data.</p>'+
+ columnPrecisionOptions(d,e)+'</details>'+
  '<p class="ia-table-precision-advice">Rounding changes the displayed output, not the original data used in calculations. Explain important uncertainty and degree of accuracy in the surrounding writing.</p>'+
  '</section></div>'+
- '<div class="ia-table-preview-stack">'+preview(s,e)+
+ '<div class="ia-table-preview-stack">'+preview(s,e)+a4Preview(s,e)+
  '<section class="ia-table-quality-card" data-table-quality>'+quality(s,icon,e)+'</section>'+
  renderPresentationCoach(state,"table",d,icon,e)+
  '<section class="ia-table-output-card" data-table-output data-representation-step="use">'+output(s,icon)+'</section>'+
