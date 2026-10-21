@@ -152,7 +152,7 @@ function columnPrecisionOptions(d,e){
  return '<div class="ia-table-column-precision-grid">'+options.map(({header,index})=>{
   const rule=tableColumnFormat(d,index),selected=rule.mode,digits=rule.digits;
   const showDigits=selected==="dp"||selected==="sf";
-  const choices=[["default","Use overall table setting"],...(["compact","calculated"].includes(d.mode)?[["source","Exactly as entered"]]:[]),
+  const choices=[["default","Use overall table setting"],...(d.mode==="compact"||d.mode==="calculated"&&index<2?[["source","Exactly as entered"]]:[]),
    ["dp","Decimal places"],["sf","Significant figures"]];
   return '<div class="ia-table-column-precision-row"><strong>'+e(formatTableMath(header))+'</strong>'+
    '<label class="ia-table-form-field"><span>Display format</span><select data-table-format-index="'+index+'" data-table-format-part="mode">'+
@@ -191,7 +191,7 @@ function preview(studio,e){
  '<div class="ia-table-preview-top"><strong>Live, compact table</strong><span>Widths adapt to your headings and values</span></div>'+
  '<div class="ia-table-preview-art">'+renderTableSvg(studio.draft)+'</div>'+
  '<p>'+e(["compact","calculated"].includes(studio.draft.mode)?
- "Only explicitly selected source rows and columns appear here; all original data remain in the editable worksheet.":
+ "The preview uses your chosen source values; the complete original dataset remains unchanged in the worksheet.":
  "Summary values are derived from all applicable source data; no observations have been silently removed.")+'</p>'+
  '</section>';
 }
