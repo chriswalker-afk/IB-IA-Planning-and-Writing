@@ -2,7 +2,7 @@
 import {escapeGraph} from "./graph-core.js";
 import {analyzeVoronoi,bisectorInBounds} from "./voronoi-core.js";
 import {VORONOI_STARTER_BOUNDS} from "./voronoi-interactions.js";
-import {svgDiagramText,diagramUnitPower} from "./diagram-notation.js";
+import {svgDiagramText,diagramUnitPower,hasDiagramEquation} from "./diagram-notation.js";
 const E=escapeGraph,W=1000,H=690,LEFT=135,TOP=110,PLOT_WIDTH=790,PLOT_HEIGHT=440;
 const colours=["#b5e1d0","#bdd9f1","#efcce0","#ffe3bb","#dcd5f5","#c9e7e4",
  "#f3d4b4","#d3dcee","#d8eabf","#e4d4e5","#f4dfa5","#bcdcc6"];
@@ -104,7 +104,10 @@ export function renderVoronoiSvg(raw,options={}){
   if(site.kind==="candidate"){
    body.push('<path d="M'+coord(x)+' '+coord(y-8)+' L'+coord(x+8)+' '+coord(y)+' L'+coord(x)+' '+coord(y+8)+' L'+coord(x-8)+' '+coord(y)+' Z" fill="#b25742" stroke="#fff" stroke-width="2" pointer-events="none"/>');
   }else body.push('<circle cx="'+coord(x)+'" cy="'+coord(y)+'" r="6" fill="#1f4961" stroke="#fff" stroke-width="2.2" pointer-events="none"/>');
-  if(d.showLabels)body.push(text((site.kind==="candidate"?"Proposed: ":"")+ (site.name.length>20?site.name.slice(0,18)+"…":site.name),
+  // Do not cut an authored \(...\) expression midway through its delimiter.
+  const siteLabel=hasDiagramEquation(site.name)?site.name:
+   (site.name.length>20?site.name.slice(0,18)+"…":site.name);
+  if(d.showLabels)body.push(text((site.kind==="candidate"?"Proposed: ":"")+siteLabel,
    Math.min(LEFT+PLOT_WIDTH-10,Math.max(LEFT+10,x+9)),Math.max(TOP+16,y-12),
    'font-family="Arial,sans-serif" font-size="12" font-weight="700" fill="#233f4c" text-anchor="start" stroke="#fff" stroke-width="3" paint-order="stroke" pointer-events="none"'));
   if(interactive)body.push('<circle cx="'+coord(x)+'" cy="'+coord(y)+'" r="13" fill="transparent" pointer-events="all"'+
@@ -143,7 +146,7 @@ export function renderVoronoiSvg(raw,options={}){
   'font-family="Arial,sans-serif" font-size="16" font-weight="700" fill="#2c505d" text-anchor="middle" transform="rotate(-90 45 '+(TOP+PLOT_HEIGHT/2)+')"'));
  const siteLine=d.sites.filter(s=>s.kind==="observed").length+" existing / defined and "+d.sites.filter(s=>s.kind==="candidate").length+" proposed site(s)"+(q.nearest?
   "   ·   Test P is nearest to "+q.nearest.tied.join(" / ")+", distance "+fmt(q.nearest.distance)+(d.unitMode==="unit"?" "+d.unit:""):"");
- body.push(text(siteLine.slice(0,126),W/2,TOP+PLOT_HEIGHT+112,
+ body.push(text(hasDiagramEquation(siteLine)?siteLine:siteLine.slice(0,126),W/2,TOP+PLOT_HEIGHT+112,
   'font-family="Arial,sans-serif" font-size="12" fill="#526d77" text-anchor="middle"'));
  const credit=(d.sourceKind==="primary"?"Coordinates: student-collected data":d.sourceKind==="secondary"?
   "Coordinates: "+d.sourceCredit:"Coordinate source not yet confirmed")+
