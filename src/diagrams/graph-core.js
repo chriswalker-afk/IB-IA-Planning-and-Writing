@@ -409,7 +409,11 @@ export function renderGraphResidualSvg(draft){
  if(!m?.visible||!m.valid||!m.diagnostics?.ok||!analysis.bounds.x)return "";
  const rows=m.diagnostics.residuals,W=940,H=500;
  const left=110,right=54,top=104,bottom=128,width=W-left-right,height=H-top-bottom,base=top+height;
- const lower=analysis.bounds.x[0],upper=analysis.bounds.x[1];
+ // Residuals use their own full observed x-range. Manual cropping of the
+ // main figure must never silently hide errors in the diagnostic figure.
+ const xValues=rows.map(r=>r.x),xMin=Math.min(...xValues),xMax=Math.max(...xValues);
+ const xPad=(xMax-xMin)*.07;
+ const lower=xMin-xPad,upper=xMax+xPad;
  const X=x=>left+(x-lower)/(upper-lower)*width;
  const magnitude=Math.max(0,...rows.map(r=>Math.abs(r.residual)));
  const limit=magnitude>0?magnitude*1.18:1;
