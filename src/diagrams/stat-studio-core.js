@@ -231,8 +231,9 @@ export function statAnalysis(raw){
  if(d.title.length>95)warn("title-length","The title may be too long to read when printed.");
  if(d.matrix.length>300)warn("many-rows","Large data tables should stay in working files, not the IA or appendix.");
  let result={kind:d.kind};
- if(d.kind==="histogram"){
-  const data=d.histogramInput==="table"?buildGroupedHistogram(d):buildRawHistogram(d);
+ if(["histogram","ogive","polygon"].includes(d.kind)){
+  const curveKind=d.kind!=="histogram";
+  const data=buildContinuous(d);
   if(data.error)fail("histogram-data",data.error);
   const bins=data.bins||[];
   if(bins.length<1&&!data.error)fail("histogram-empty","No usable histogram classes were found.");
@@ -244,15 +245,35 @@ export function statAnalysis(raw){
   if(d.histogramInput==="raw"&&bins.length>20)warn("many-bins","Consider whether many narrow bins communicate the distribution effectively.");
   if(d.histogramInput==="table")warn("class-assumption","Explain how grouped data and the class boundaries were obtained; original values cannot be recovered from frequencies.");
   const series=data.series||[],values=data.values||[];
-  if(d.histogramInput==="table"&&d.histogramCompare!=="single")fail("compare-grouped","Comparison requires original measurements, not grouped frequencies.");
-  if(d.histogramCompare!=="single"&&series.length<2)fail("compare-groups","Choose at least two groups.");
-  if(d.histogramCompare!=="single"&&series.length>4)fail("compare-limit","Choose at most four groups.");
-  if(d.histogramCompare!=="single"&&series.length>1&&series.some(group=>group.n!==series[0].n))
+  const compare=curveKind?d.curveCompare==="multiple":d.histogramCompare!=="single";
+  if(d.histogramInput==="table"&&compare)fail("compare-grouped","Comparisons require original measurements; a grouped-frequency table is one distribution.");
+  if(compare&&series.length<2)fail("compare-groups","Choose at least two groups.");
+  if(compare&&series.length>4)fail("compare-limit","Choose at most four groups.");
+  if(compare&&series.length>1&&series.some(group=>group.n!==series[0].n))
    warn("unequal-group-n","Different sample sizes: compare relative-frequency density, not raw counts.");
   result={...result,bins,total,series,skipped:data.skipped||0,
    suggestions:d.histogramInput==="raw"?histogramBinSuggestions(values):[],
    summary:d.histogramInput==="raw"?distributionSummary(values,d.quartileRule):null,
    comparisons:d.histogramInput==="raw"?distributionComparisons(series.map(group=>({...group,summary:distributionSummary(group.values,d.quartileRule)}))):[]};
+  if(curveKind){
+   const groups=series.length?series:[{name:d.variable||"Measurement",n:total,bins}];
+   if(d.kind==="ogive"){
+    const percentile=Number(d.curvePercentile);
+    if(d.curveShowPercentile&&(!d.curvePercentile.trim()||!Number.isFinite(percentile)||percentile<=0||percentile>=100))
+     fail("percentile","Choose a percentile strictly between 0 and 100.");
+    const curves=groups.map(group=>({...group,curve:groupedCurve(group.bins,percentile)}));
+    if(curves.some(group=>group.curve.error))fail("ogive-data","Cumulative frequencies could not be calculated from the supplied intervals.");
+    result={...result,curves,curveYMode:curves.length>1?"percent":d.ogiveYMode};
+    warn("percentile-estimates","Quartiles and percentiles are linearly interpolated estimates within grouped class intervals, not exact raw-data quantiles.");
+   }else{
+    const polygons=groups.map(group=>({...group,
+     polygon:frequencyPolygon(group.bins,groups.length>1,group.n)}));
+    if(polygons.some(group=>group.polygon.error))
+     fail("polygon-data","The selected classes cannot form a frequency polygon.");
+    result={...result,polygons};
+    warn("polygon-midpoints","Polygon points are at class midpoints; unequal class widths use frequency density.");
+   }
+  }
  }else if(d.kind==="box"||d.kind==="dot"){
   const series=numericCols(d).map(i=>{
    const data=columnData(d,i);
@@ -303,7 +324,9 @@ export function statAnalysis(raw){
    const small=Math.min(...b.totals),large=Math.max(...b.totals);
    if(small===0||large>small*1.25)warn("group-size","The groups have different sample sizes. Counts can mislead: consider percentages of each group's total.");
   }
-  if(d.barMode==="percent")warn("percent-denominator","Percentages use each group's total across the displayed categories as the denominator. Check whether that matches your population or sampling question.");
+  if(d.barStyle==="grouped"&&d.barMode==="percent")warn("percent-denominator","Each value is a percentage of its group's total across the categories.");
+  if(d.barStyle==="stacked100")warn("category-denominator","Each bar totals 100% of that category's responses, not 100% of a group's responses.");
+  if(d.barStyle==="stacked"&&d.barMode==="percent")warn("stacked-counts","Stacked counts use original frequencies; grouped-chart percentage settings are not applied.");
   result={...result,...b};
  }
  let override=null;
@@ -313,20 +336,22 @@ export function statAnalysis(raw){
   else override=[lo,hi];
  }
  if(d.kind==="bar"&&override&&override[0]!==0)fail("zero-bar","A categorical bar chart must start its frequency/percentage axis at zero.");
- if(d.kind==="histogram"&&override){
+ if(["histogram","ogive","polygon"].includes(d.kind)&&override){
   if(override[0]>Math.min(...(result.bins||[{low:0}]).map(x=>x.low))||
      override[1]<Math.max(...(result.bins||[{high:1}]).map(x=>x.high)))
    fail("cropped-classes","The chosen horizontal range must include every class boundary.");
  }
  if((d.kind==="dot"||d.kind==="box")&&override&&result.series?.some(s=>s.values.some(x=>x<override[0]||x>override[1])))
   fail("cropped-points","The chosen horizontal scale excludes observations or outliers.");
- if(d.kind==="bar"&&override&&result.categories?.some(c=>c.values.some(x=>x>override[1])))
+ if(d.kind==="bar"&&override&&result.categories?.some(c=>d.barStyle==="grouped"?c.values.some(x=>x>override[1]):c.values.reduce((a,b)=>a+b,0)>override[1]))
   fail("cropped-bars","The upper scale limit cuts off a bar.");
  return {draft:d,ready:problems.length===0,problems,warnings,result,override};
 }
 export const statSignature=d=>JSON.stringify([d.kind,d.matrix,d.columns,d.selected,d.categoryIndex,d.lowIndex,
  d.highIndex,d.frequencyIndex,d.histogramInput,d.binWidth,d.binStart,d.barMode,d.quartileRule,d.outlierRule,
- d.whiskerMode,d.zThreshold,d.histogramCompare,d.histogramLabels,d.dotMode,d.dotMean,d.dotMedian,d.min,d.max]);
+ d.whiskerMode,d.zThreshold,d.histogramCompare,d.histogramLabels,d.dotMode,d.dotMean,d.dotMedian,
+ d.curveCompare,d.ogiveYMode,d.curveShowQuartiles,d.curveShowPercentile,d.curvePercentile,d.curveGuides,
+ d.polygonShowHistogram,d.polygonShowPoints,d.polygonShowValues,d.barStyle,d.barSort,d.barLabels,d.min,d.max]);
 export function saveStatFigure(studio,entryId=""){
  const q=statAnalysis(studio.draft);
  if(!q.ready)return {ok:false,error:"Resolve the required statistical diagram checks first.",checks:q};
