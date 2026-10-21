@@ -246,7 +246,7 @@ test("two-column results use compact widths, centred labels and genuine column s
  const svg=renderTableSvg(s.draft),viewBox=/viewBox="0 0 (\d+) (\d+)"/.exec(svg);
  assert(viewBox&&Number(viewBox[1])<620,"Compact table should have a compact exported figure");
  assert(svg.includes("m s⁻¹"),"Powers entered with ^ should display as superscript");
- assert(svg.includes("Test a (cm)"));
+ assert(svg.includes("Test a")&&svg.includes("(cm)"),"Wrapped headings should preserve the full text");
  assert.equal((svg.match(/class="ia-table-column-divider"/g)||[]).length,1);
  assert.equal((svg.match(/class="ia-table-row-divider"/g)||[]).length,4);
  assert.match(svg,/text-anchor="middle"/);
