@@ -1145,6 +1145,7 @@ test("Reduce advice shows only core writing instructions while keeping green and
   const original={scratch:h.saved.scratch,entries:h.saved.entries,fields:h.saved.completion.fields,
    planning:h.saved.planning};
   const rubricBefore=(h.html.match(/data-criterion-badge=/g)||[]).length;
+  const railsBefore=(h.html.match(/class="criterion-field-help-rail"/g)||[]).length;
   const guideBefore=(h.html.match(/class="writer-guide-field-bubble"/g)||[]).length;
   assert(rubricBefore>0,node+": expected green assessment help");
   assert(guideBefore>0,node+": expected purple Field Guide help");
@@ -1153,8 +1154,10 @@ test("Reduce advice shows only core writing instructions while keeping green and
   h.action("toggle-advice-mode");
   assert.equal(h.saved.ui.adviceMode,"reduced",node);
   assert(h.html.includes("Show full advice"),node);
-  assert.equal((h.html.match(/data-criterion-badge=/g)||[]).length,rubricBefore,
-   node+": Reduce advice must not hide any green criterion bubbles");
+  assert((h.html.match(/data-criterion-badge=/g)||[]).length>0,
+   node+": Green criterion help must still be available");
+  assert.equal((h.html.match(/class="criterion-field-help-rail"/g)||[]).length,railsBefore,
+   node+": Reduce advice must retain every marked writing field help rail");
   assert.equal((h.html.match(/class="writer-guide-field-bubble"/g)||[]).length,guideBefore,
    node+": Reduce advice must not hide any purple Field Guide bubbles");
   if(["C10","C20","C21S","C30","C34B","C40","C50","C60","C61"].includes(node)){
