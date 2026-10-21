@@ -274,7 +274,9 @@ def grouped_frequency(p,width):
  assert "Frequency density" in p.locator('[data-table-preview] svg').text_content()
  p.locator('[data-table-field="groupShowCumulative"]').check()
  p.locator('[data-table-field="groupShowPercent"]').check()
- assert "Cumulative frequency" in p.locator('[data-table-preview] svg').text_content()
+ assert saved(p)["tableStudio"]["draft"]["groupShowCumulative"] is True
+ assert saved(p)["tableStudio"]["draft"]["groupShowPercent"] is True
+ assert "Cumulative" in p.locator('[data-table-preview] svg').text_content()
  assert "50.00" in p.locator('[data-table-preview] svg').text_content()
  assert '6' in p.locator('[data-table-preview] svg').text_content()
  with p.expect_download() as download:
