@@ -25,7 +25,7 @@ def test_one(browser,width,height,touch):
  page=ctx.new_page();page.set_default_timeout(16000)
  page.on("dialog",lambda d:d.accept())
  errors=[];page.on("pageerror",lambda err:errors.append(str(err)))
- page.add_init_script("localStorage.setItem("+json.dumps(KEY)+","+json.dumps(json.dumps(project))+");")
+ page.add_init_script("if(!localStorage.getItem("+json.dumps(KEY)+")) localStorage.setItem("+json.dumps(KEY)+","+json.dumps(json.dumps(project))+");")
  try:
   page.goto(URL,wait_until="networkidle")
   studio=page.locator("[data-geometry-studio]")
