@@ -50,35 +50,26 @@ test('introduction sparks become explicit writing prompts without claiming the a
  assert(html.includes('How well can a mathematical model explain my result?'));
  assert.deepEqual(s.scratch,JSON.parse(start).scratch);
 });
-test('introduction writing craft is coherent, accessible, contextual and collapsible',()=>{
+test('introduction writing craft remains fully accessible without six large cards above the task',()=>{
  assert.equal(INTRODUCTION_TIPS.length,6);
  assert.equal(INTRODUCTION_TIPS.filter(t=>t.essential).length,4);
- const tips=new Set(INTRODUCTION_TIPS.map(t=>t.id));
- assert.equal(tips.size,6);
+ assert.equal(new Set(INTRODUCTION_TIPS.map(t=>t.id)).size,6);
  const html=renderIntroductionWritingAdvice(icon,escapeHtml,{state:make()});
  assert(html.includes('Before you write'));
- assert(html.includes('Start the journey; don&#39;t write an itinerary'));
- assert.equal((html.match(/data-intro-advice="/g)||[]).length,6);
- assert(html.includes('Two more ways to keep it sharp'));
- assert(html.includes('Define specialist terms briefly'));
- assert(html.includes('honest starting prediction or hope')===false);
- assert(html.includes('mathematics more than background detail')===false); // concise text, not an extra essay
- assert(!html.includes('data-example-id="EX34"'));
- assert(!html.includes('data-example-topic="introduction"'));
- assert(!html.includes('data-action="writer-guide-open"'),'General intro advice should not duplicate help next to the actual writing box');
+ assert(html.includes('Write the opening, not the ending'));
+ assert(html.includes('State your precise mathematical aim'));
+ assert(html.includes('non-mathematical specialist terms briefly'));
+ assert.equal((html.match(/data-intro-advice="/g)||[]).length,0);
+ assert(html.includes('All six introduction writing tips'));
+ assert(html.includes('data-guide-spot="completing:C10:aim"'));
  assert(!html.includes('data-criterion-badge="completing:C10:aim"'));
- assert(!html.includes('data-criterion-badge="completing:C10:motivation"'));
  assert(!html.includes('Set up your IA document'));
- assert(!html.includes('Format and length'));
  assert(!html.includes('Why this matters in the criteria'));
- assert(!html.includes('intro-criteria-mini'));
  for(const t of INTRODUCTION_TIPS)assert(t.body.length>90&&t.weak.length>15&&t.strong.length>25);
  const reduced=renderIntroductionWritingAdvice(icon,escapeHtml,{reduced:true,state:make()});
- assert(reduced.includes('State your precise mathematical aim'));
- assert(reduced.includes('non-mathematical specialist terms briefly'));
  assert(reduced.includes('prediction spark'));
+ assert(reduced.includes('All six introduction writing tips'),"Reduced advice must not hide the complete tip library");
  assert(!reduced.includes('data-intro-advice='));
- assert(!reduced.includes('data-action="writer-guide-open"'),'The field-level icon is rendered beside the actual writing box, even in reduced advice mode');
 });
 test('criterion A/C comments are introduction-specific, and remain best-fit guidance',()=>{
  const a=CRITERION_SPOTS['completing:C10:aim'],c=CRITERION_SPOTS['completing:C10:motivation'];
