@@ -20,13 +20,14 @@ export function geometryQualityHtml(studio,icon,e){
   (a.notes.length>1?'<ul>'+a.notes.slice(1).map(x=>'<li>'+e(x)+'</li>').join("")+'</ul>':"")+'</div>';
 }
 export function geometryOutputHtml(studio,icon){
- const remaining=MAX_GEOMETRY_FIGURES-studio.figures.length+(studio.activeId?1:0);
+ const remaining=MAX_GEOMETRY_FIGURES-studio.figures.length+(studio.activeId?1:0),ready=geometryAnalysis(studio.draft).ready;
+ const disabled=ready?"":' disabled aria-disabled="true"';
  return '<div class="geometry-output"><p>Keep your saved figures editable in your project. Export a vector SVG or a high-resolution PNG to insert into your IA.</p>'+
-  '<div class="geometry-buttons"><button type="button" class="btn btn-secondary" data-action="geometry-save">'+icon("save")+' Save editable figure</button>'+
-  '<button type="button" class="btn btn-primary" data-action="geometry-use">'+icon("arrow-right")+' Use in this mathematical stage</button>'+
-  '<button type="button" class="btn btn-secondary" data-action="geometry-svg">Download SVG</button>'+
-  '<button type="button" class="btn btn-secondary" data-action="geometry-png">Download PNG</button></div>'+
-  '<p class="geometry-note">'+remaining+' available saved-figure slot(s). Saving does not claim the mathematics is correct or automatically put the figure in your IA.</p></div>';
+  '<div class="geometry-buttons"><button type="button" class="btn btn-secondary" data-action="geometry-save"'+disabled+'>'+icon("save")+' Save editable figure</button>'+
+  '<button type="button" class="btn btn-primary" data-action="geometry-use"'+disabled+'>'+icon("arrow-right")+' Use in this mathematical stage</button>'+
+  '<button type="button" class="btn btn-secondary" data-action="geometry-svg"'+disabled+'>Download SVG</button>'+
+  '<button type="button" class="btn btn-secondary" data-action="geometry-png"'+disabled+'>Download PNG</button></div>'+
+  '<p class="geometry-note">'+remaining+' available saved-figure slot(s). '+(ready?'Save your diagram before moving it into the IA.':'Complete the highlighted checks before saving, linking or downloading.')+' Saved figures remain editable; they are not independent evidence of mathematical correctness.</p></div>';
 }
 export function renderGeometryStudio(state,icon,e){
  const studio=state.geometryStudio,d=studio.draft,q=geometryAnalysis(d);
@@ -38,6 +39,7 @@ export function renderGeometryStudio(state,icon,e){
   '<h3>1. Choose your construction</h3>'+
   '<div class="geometry-buttons">'+[["triangle","Triangle"],["rectangle","Rectangle"],["polygon","Polygon"]].map(([id,name])=>
    '<button type="button" class="btn '+(d.kind===id?"btn-primary":"btn-secondary")+' btn-sm" data-action="geometry-template" data-geometry-template="'+id+'">'+name+'</button>').join("")+'</div>'+
+  '<button type="button" class="btn btn-quiet btn-sm" data-action="geometry-new">+ Start a new figure</button>'+ 
   choices("mode","Representation",d.mode,[["schematic","Schematic — labels only"],["coordinate","Coordinate-scaled construction"]],e)+
   field("title","Diagram title",d.title,e)+field("figureNumber","Figure number",d.figureNumber,e)+
   field("unit","Length unit (if known)",d.unit,e,"e.g. cm or \\(\\mathrm{m}\\)")+
@@ -50,7 +52,10 @@ export function renderGeometryStudio(state,icon,e){
    '<label>Side to next vertex <input type="text" data-geometry-vertex="'+i+'" data-geometry-vertex-key="edgeLabel" value="'+e(p.edgeLabel)+'" placeholder="e.g. 5.2 cm"></label>'+
    '<label>Angle at vertex <input type="text" data-geometry-vertex="'+i+'" data-geometry-vertex-key="angleLabel" value="'+e(p.angleLabel)+'" placeholder="e.g. 35°"></label>'+
    (d.vertices.length>3?'<button type="button" class="btn btn-quiet btn-sm" data-action="geometry-remove" data-geometry-index="'+i+'">Remove</button>':"")+
-   '</div>').join("")+'</div>'+
+   '<details class="geometry-vertex-notation"><summary>Maths in point or side labels</summary>'+
+    [["label","Point label"],["edgeLabel","Side label"],["angleLabel","Angle label"]].map(([key,name])=>
+      '<div class="geometry-notation-row"><span>'+name+'</span>'+diagramNotationControls(e,{studio:"geometry",key,vertexIndex:i})+'</div>').join("")+
+    '</details></div>').join("")+'</div>'+
   '<button type="button" class="btn btn-secondary btn-sm" data-action="geometry-add"'+(d.vertices.length>=8?" disabled":"")+'>+ Add point</button>'+
   '<h3>3. Show appropriate information</h3>'+
   tick("filled","Soft fill",d.filled)+tick("showGrid","Cartesian guide grid",d.showGrid)+
