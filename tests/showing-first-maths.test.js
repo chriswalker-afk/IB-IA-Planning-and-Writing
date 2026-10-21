@@ -32,8 +32,16 @@ test("the four-stage writing screen displays in both guidance modes",()=>{
    taskIntro:"A genuine first result",reduced
   });
   assert.match(html,/Showing your first mathematics/);
-  assert.match(html,/show-first-advice/);
   assert.match(html,/show-first-sparks/);
+  if(reduced){
+   assert.match(html,/data-advice-mode="reduced"/);
+   assert(!html.includes("show-first-advice"),"Optional first mathematics advice should be hidden");
+   assert.match(html,/Show real mathematics, label figures and units clearly/);
+   assert.match(html,/data-reduced-saved-context/);
+  }else{
+   assert.match(html,/show-first-advice/);
+   assert.match(html,/data-writing-examples/);
+  }
  }
 });
 test("contextual advice changes for an explicitly selected route",()=>{
