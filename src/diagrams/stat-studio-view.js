@@ -154,7 +154,7 @@ export function renderStatStudio(state,icon,e){
  (d.kind!=="bar"?select("unitMode","Does the measurement have units?",d.unitMode,[
   ["unsure","Select units or dimensionless"],["unit","It has units"],["dimensionless","Dimensionless measurement"]],e):"")+
  (d.kind!=="bar"&&d.unitMode==="unit"?field("unit","Units",d.unit,e,{placeholder:"e.g. m/s, cm, seconds"}):"")+
- select("sourceKind","Data origin",d.sourceKind,[["unsure","Choose actual source"],["primary","Measurements I collected"],["secondary","External dataset"]],e)+
+ select("sourceKind","Data origin",d.sourceKind,[["unsure","Choose actual source"],["primary","Measurements I collected"],["secondary","External dataset"],["theoretical","Theoretical / constructed values (not measurements)"]],e)+
  (d.sourceKind==="secondary"?field("sourceText","Full source / citation",d.sourceText,e,{placeholder:"Publisher, dataset name and URL"}):"")+
  accuracyEcho(state,e)+
  field("caption","Optional concise mathematical caption",d.caption,e,{rows:2,placeholder:"e.g. Class width = 5 cm, based on instrument resolution"})+
