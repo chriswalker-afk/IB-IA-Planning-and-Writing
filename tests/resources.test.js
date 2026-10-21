@@ -130,7 +130,7 @@ test('resources: native diagram creators are available without hiding or replaci
  const s=fixture(),before=educational(s),session=newResourceSession();
  const html=resourceDrawer(s,session);
  for(const name of ['Graph plotter','Statistical diagrams','Table Studio','Image & coordinate tracer','Voronoi Studio'])
-  assert(html.includes(name),name);
+  assert(html.includes(name.replace(/&/g,'&amp;')),name);
  for(const id of ['graph','stat','table','trace','voronoi']){
   assert(html.includes('data-action="resource-creator-open" data-resource-creator="'+id+'"'),id);
   assert.deepEqual(resourceAction(s,session,'resource-creator-open',{resourceCreator:id}),{ok:true,creator:id});
