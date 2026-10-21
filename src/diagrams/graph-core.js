@@ -323,7 +323,7 @@ export function renderGraphSvg(draft){
  const parts=['<svg class="graph-figure-svg" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="'+title+'" viewBox="0 0 '+svgWidth+' '+svgHeight+'" width="'+svgWidth+'" height="'+svgHeight+'">',
   '<title>'+title+'</title><desc>Student-generated '+escapeGraph(d.kind)+' graph with '+points.length+' valid points. Axis values and scale are listed in the labels.</desc>',
   '<rect width="'+svgWidth+'" height="'+svgHeight+'" fill="#ffffff"/>'];
- const figureNumber=d.figureNumber.trim().replace(/^figure\\s*/i,"").slice(0,24);
+ const figureNumber=d.figureNumber.trim().replace(/^figure\s*/i,"").slice(0,24);
  if(figureNumber)parts.push('<text class="graph-figure-number" x="'+W/2+'" y="23" font-family="Arial,Helvetica,sans-serif" font-size="14" font-weight="600" text-anchor="middle" fill="#526c71">Figure '+escapeGraph(figureNumber)+'</text>');
  const titleLines=polarised(d.title.trim()||"Graph preview — add a descriptive title",75).slice(0,2);
  titleLines.forEach((t,i)=>parts.push('<text x="'+W/2+'" y="'+(52+i*24)+'" font-family="Arial,Helvetica,sans-serif" font-size="20" font-weight="700" text-anchor="middle" fill="#203d43">'+escapeGraph(t)+'</text>'));
