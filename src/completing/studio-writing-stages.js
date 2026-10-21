@@ -19,6 +19,8 @@ const tipCard=(tip,i,icon,e)=>'<details class="intro-advice-tip studio-stage-tip
  '<div class="intro-advice-tip-body"><p>'+e(tip[2])+'</p><div class="intro-advice-example">'+
  '<p><strong>Instead of</strong> '+e(tip[3])+'</p><p><strong>Try</strong> '+e(tip[4])+'</p></div></div></details>';
 function renderAdvice(state,node,icon,e,reduced=false){
+ // Supplementary writing advice remains in the help bubbles and the full guide.
+ if(reduced)return "";
  const kind=groupOf(node),group=CONFIG.tips[kind],main=group.overview.includes(node);
  const label=kind==="conclusion"?"Writing your conclusion":kind==="maths"?"Exploring and explaining your mathematics":"Presenting your data and methods";
  const headline=node==="C60"?"Answer · support · qualify":main&&node!=="C50"?"Before you write":"One thing to keep in mind";
