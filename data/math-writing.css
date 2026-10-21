@@ -56,3 +56,7 @@
 .diagram-notation-invalid,.diagram-notation-error{color:#9b4738;background:#fff2eb}
 .diagram-notation-actions{display:flex;flex-wrap:wrap;gap:7px}
 .diagram-notation-panel small{font-size:11px;color:#6a8083;line-height:1.45}
+
+/* Keep text fields and their maths palette together in two-column studio forms. */
+.diagram-notation-field-wrap{display:flex;flex-direction:column;min-width:0}
+.diagram-notation-field-wrap>.diagram-notation-tools{min-width:0;margin-top:0}
