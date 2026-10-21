@@ -18,6 +18,8 @@ import {renderTableStudio} from "../diagrams/table-studio-view.js";
 import {renderTableSvg} from "../diagrams/table-studio-render.js";
 import {renderVoronoiStudio} from "../diagrams/voronoi-view.js";
 import {renderVoronoiSvg} from "../diagrams/voronoi-render.js";
+import {renderGeometryStudio} from "../diagrams/geometry-view.js";
+import {renderGeometrySvg} from "../diagrams/geometry-render.js";
 import {renderRepresentationHub,renderRepresentationSwitcher} from "../diagrams/representation-hub.js";
 import {REPRESENTATION_TOOLS,activeRepresentationTool,representationReturnNode} from "../diagrams/representation-registry.js";
 import {renderFirstFigureGallery} from "./first-figure-gallery.js";
@@ -398,6 +400,13 @@ export function createCompletingViews(ctx){
    renderVoronoiSvg(fig.draft)+
    renderFigureHandover(state,"voronoi",fig.draft,icon,e,{id:fig.id,linked:true})+
    '<button type="button" class="btn btn-secondary btn-sm" data-action="voronoi-open">'+icon("pencil")+' Edit or export this construction</button></section>';
+ };
+ const geometryEntryPanel=()=>{
+  const st=getState(),id=completeEntry(st)?.geometryFigureId,fig=id?st.geometryStudio?.figures.find(f=>f.id===id):null;
+  if(!fig)return "";
+  return '<section class="geometry-entry"><h3>'+icon("ruler")+' Saved geometry: '+e(fig.draft.title||"Construction")+'</h3>'+
+   renderGeometrySvg(fig.draft)+renderFigureHandover(st,"geometry",fig.draft,icon,e,{id:fig.id,linked:true})+
+   '<button type="button" class="btn btn-secondary btn-sm" data-action="geometry-open">Edit or export geometry</button></section>';
  };
  const actualRecord=()=>{
   const st=completeEntry(getState());
@@ -814,7 +823,7 @@ export function createCompletingViews(ctx){
       '<div class="show-first-tool-picker-body">'+renderRepresentationHub(s,icon,e)+'</div></details>'+
     renderFirstFigureGallery(s,icon,e,{
       graph:graphEntryPanel,trace:traceEntryPanel,stat:statEntryPanel,
-      table:tableEntryPanel,voronoi:voronoiEntryPanel
+      table:tableEntryPanel,voronoi:voronoiEntryPanel,geometry:geometryEntryPanel
     })+
     '<p class="show-first-table-rule"><strong>Keep your mathematical argument focused.</strong> Avoid long raw-data tables in the main discussion. Where genuinely useful, place large datasets or supporting material in an appendix (following the applicable school rules), while keeping essential figures, selected data and reasoning beside the mathematics that uses them.</p>'+
     entryReviewAlert()+
@@ -886,7 +895,8 @@ export function createCompletingViews(ctx){
    const toolOpen=Boolean(activeRepresentationTool(s));
    const toolHtml=toolOpen?
      renderRepresentationSwitcher(s,icon,e)+
-      (s.voronoiStudio?.open?renderVoronoiStudio(s,icon,e):
+      (s.geometryStudio?.open?renderGeometryStudio(s,icon,e):
+       s.voronoiStudio?.open?renderVoronoiStudio(s,icon,e):
        s.tableStudio?.open?renderTableStudio(s,icon,e):
        s.statStudio?.open?renderStatStudio(s,icon,e):
        s.imageTracer?.open?renderImageTracer(s,icon,e):renderGraphStudio(s,icon,e)):
@@ -912,7 +922,7 @@ export function createCompletingViews(ctx){
    };
   }
   case "C32":return{intro:"Optional first-output details. If you have already introduced your mathematics in the four-part writing screen, do not write the same explanation again.",
-   html:actualRecord()+graphEntryPanel()+traceEntryPanel()+statEntryPanel()+tableEntryPanel()+voronoiEntryPanel()+
+   html:actualRecord()+graphEntryPanel()+traceEntryPanel()+statEntryPanel()+tableEntryPanel()+voronoiEntryPanel()+geometryEntryPanel()+
     entryField("title","A short title for this step","e.g. Inspect a scatter graph")+
     '<details class="representation-prelude"><summary>Review or adjust the purpose (optional, not another IA paragraph)</summary>'+
     criteriaField(entryField("purpose","Mathematical purpose BEFORE it","What question should this graph/calculation help answer?",{type:"textarea",rows:3}),"completing:C32:purpose")+
@@ -925,7 +935,7 @@ export function createCompletingViews(ctx){
     accuracySelector()+accuracyNote()
   };
   case "C33":return{intro:"Create the actual figure or short calculation in your IA document. Describe what you did here without copying an invented result.",
-   html:entryReviewAlert()+actualRecord()+graphEntryPanel()+traceEntryPanel()+statEntryPanel()+tableEntryPanel()+voronoiEntryPanel()+
+   html:entryReviewAlert()+actualRecord()+graphEntryPanel()+traceEntryPanel()+statEntryPanel()+tableEntryPanel()+voronoiEntryPanel()+geometryEntryPanel()+
     entryField("title","Short title for this mathematical result","e.g. Compare the two distributions")+
     entryField("technique","Mathematics actually used","e.g. Compare medians and interquartile ranges")+
     entryChoice("status",[
@@ -1094,7 +1104,7 @@ export function createCompletingViews(ctx){
       '</div></details>'+
     renderFirstFigureGallery(state,icon,e,{
      graph:graphEntryPanel,trace:traceEntryPanel,stat:statEntryPanel,
-     table:tableEntryPanel,voronoi:voronoiEntryPanel
+     table:tableEntryPanel,voronoi:voronoiEntryPanel,geometry:geometryEntryPanel
     },{scope:"active"})+
     '<div class="show-first-inline-record" data-stage-inline-result>'+
      '<div class="show-first-inline-record-heading"><span>'+icon("calculator")+'</span><div>'+
