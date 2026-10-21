@@ -1166,7 +1166,7 @@ test("Reduce advice shows only core writing instructions while keeping green and
    assert(!h.html.includes('data-writing-stage-part="advice"'),node);
    assert(!h.html.includes('data-writing-stage-part="examples"'),node);
    assert(h.html.includes('data-writing-stage-part="task"'),node);
-   if(node!=="C60")assert(h.html.includes("data-reduced-saved-context"),node);
+   if(h.html.includes('data-writing-stage-part="sparks"'))assert(h.html.includes("data-reduced-saved-context"),node);
    assert(h.html.length<fullHtml.length,node+": reduced page should be shorter");
   }
   assert.deepEqual(h.saved.scratch,original.scratch,node);
