@@ -1112,6 +1112,7 @@
  * context is still available (and editable) without occupying a full page.
  * Criterion and Writer's Field Guide bubbles remain attached to the fields. */
 .writing-stage-flow.is-reduced{gap:11px;margin-top:9px}
+.studio-stage-essential-check{font-size:12px;line-height:1.5;font-weight:650;color:#38695d;margin:9px 0 12px;padding:8px 11px;border-left:3px solid #9bc8b7;background:#f7faf8}
 .writing-stage-flow.is-reduced>.writing-stage-task{order:0}
 .writing-stage-flow.is-reduced>.writing-stage-sparks{order:1}
 .writing-stage-reduced-reference{border:1px solid #dce7e3;border-radius:12px;background:#fbfdfc;overflow:hidden}
