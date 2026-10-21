@@ -2929,11 +2929,21 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   document.addEventListener("change",evt=>{
     const target=evt.target;
     if(target.dataset.geometryVertex!==undefined){
-      if(setGeometryVertex(state.geometryStudio,Number(target.dataset.geometryVertex),target.dataset.geometryVertexKey,target.value)){save();refreshGeometryPreview();}
+      const point=state.geometryStudio.draft.vertices[Number(target.dataset.geometryVertex)];
+      const key=target.dataset.geometryVertexKey,prior=point?.[key];
+      // Input events already persisted the value and refreshed the preview.
+      // Replacing the output on blur detaches Save between mouse-down and
+      // mouse-up, swallowing the click before any save action can run.
+      if(String(prior??"")===target.value)return;
+      if(setGeometryVertex(state.geometryStudio,Number(target.dataset.geometryVertex),key,target.value)){
+        save();refreshGeometryPreview();
+      }
       return;
     }
     if(target.dataset.geometryField!==undefined){
-      if(setGeometryField(state.geometryStudio,target.dataset.geometryField,target.type==="checkbox"?target.checked:target.value)){
+      const key=target.dataset.geometryField,value=target.type==="checkbox"?target.checked:target.value;
+      if(state.geometryStudio.draft[key]===value)return;
+      if(setGeometryField(state.geometryStudio,key,value)){
         save();if(target.tagName==="SELECT"||target.type==="checkbox")render();else refreshGeometryPreview();
       }return;
     }
