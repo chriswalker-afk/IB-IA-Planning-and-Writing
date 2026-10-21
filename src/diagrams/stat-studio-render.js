@@ -140,27 +140,31 @@ function histogram(q){
 
 function ogive(q){
  const {draft:d,result:r,override}=q,curves=r.curves||[];
- const allBins=r.bins||[],bounds=allBins.length?[allBins[0].low,allBins.at(-1).high]:[0,1];
- const range=override||paddedRange(...bounds),parts=base(d,
-  "Cumulative frequency curve · "+(r.curveYMode==="percent"?"percentage of each sample":"number of observations"));
- const X=horizontalNumeric(parts,...range,axisLabel(d,"x"),d.showGrid);
+ const bins=r.bins||[],bounds=bins.length?[bins[0].low,bins.at(-1).high]:[0,1];
+ const range=override||paddedRange(...bounds),canvasHeight=H+120;
+ const parts=base(d,"Cumulative frequency curve · "+
+  (r.curveYMode==="percent"?"percentage of each sample":"number of observations"),canvasHeight);
+ const X=horizontalNumeric(parts,...range,axisLabel(d,"x"),d.showGrid,PH,canvasHeight,TOP+PH+60);
  const maxY=r.curveYMode==="percent"?100:Math.max(1,...curves.map(g=>g.n));
- const Y=verticalNumeric(parts,maxY,r.curveYMode==="percent"?"Cumulative percentage (%)":"Cumulative frequency (count)",d.showGrid);
- const colors=["#248779","#457cb5","#a7668b","#b18c3b"];
+ const Y=verticalNumeric(parts,maxY,r.curveYMode==="percent"?
+  "Cumulative percentage (%)":"Cumulative frequency (count)",d.showGrid);
+ const colors=["#248779","#457cb5","#a7668b","#b18c3b"],labels=[];
  for(const [index,group] of curves.entries()){
-  const points=group.curve.points||[],color=colors[index%colors.length];
-  if(!points.length)continue;
+  const pts=group.curve.points||[],color=colors[index%colors.length];
+  if(!pts.length)continue;
   const ordinate=p=>r.curveYMode==="percent"?p.percent:p.cumulative;
-  const path=points.map((p,i)=>(i?"L":"M")+fmt(X(p.x))+" "+fmt(Y(ordinate(p)))).join(" ");
-  parts.push('<path d="'+path+'" fill="none" stroke="'+color+'" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>');
-  for(const p of points){
-   parts.push('<circle cx="'+fmt(X(p.x))+'" cy="'+fmt(Y(ordinate(p)))+'" r="3.5" fill="#fff" stroke="'+color+'" stroke-width="1.6"><title>'+
+  parts.push('<path d="'+pts.map((p,i)=>(i?"L":"M")+fmt(X(p.x))+" "+fmt(Y(ordinate(p)))).join(" ")+
+   '" fill="none" stroke="'+color+'" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>');
+  for(const p of pts){
+   parts.push('<circle cx="'+fmt(X(p.x))+'" cy="'+fmt(Y(ordinate(p)))+
+    '" r="3.5" fill="#fff" stroke="'+color+'" stroke-width="1.6"><title>'+
     E("Up to "+formatBoxNumber(p.x)+": "+p.cumulative+" ("+formatBoxNumber(p.percent)+"%)")+'</title></circle>');
   }
   const targets=[];
   if(d.curveShowQuartiles)targets.push(["Q1",25,group.curve.estimates.q1],["Median",50,group.curve.estimates.median],["Q3",75,group.curve.estimates.q3]);
   if(d.curveShowPercentile&&Number.isFinite(Number(d.curvePercentile)))
    targets.push(["P"+d.curvePercentile,Number(d.curvePercentile),group.curve.estimates.percentile]);
+  let hasNamedLabel=false;
   for(const [label,p,value] of targets){
    if(!Number.isFinite(value))continue;
    const x=X(value),y=Y(r.curveYMode==="percent"?p:p/100*group.n);
@@ -170,20 +174,26 @@ function ogive(q){
    }
    parts.push('<circle cx="'+fmt(x)+'" cy="'+fmt(y)+'" r="5" fill="#fff" stroke="'+color+'" stroke-width="2.1"><title>'+
     E(group.name+": "+label+" ≈ "+formatBoxNumber(value)+" (grouped interpolation)")+'</title></circle>');
-   // In a comparison, every group has labelled medians; others remain discoverable via tooltips and summary.
-   if(curves.length===1||label==="Median")
-    parts.push(tag((curves.length>1?diagramSafeExcerpt(group.name,10)+" ":"")+label+" ≈ "+formatBoxNumber(value),
-     Math.max(LEFT+57,Math.min(LEFT+PW-57,x)),Math.max(TOP+16,y-12),
-     'font-family="Arial,sans-serif" font-weight="650" fill="'+color+'" font-size="11" text-anchor="middle"'));
+   // A fixed two-column key is more readable than overlapping labels at nearby curve intersections.
+   if(curves.length===1||label==="Median"){
+    labels.push({color,text:(curves.length>1?diagramSafeExcerpt(group.name,19)+" · ":"")+
+     label+" ≈ "+formatBoxNumber(value)+(curves.length>1?" (n="+group.n+")":"")});
+    hasNamedLabel=true;
+   }
   }
-  if(curves.length>1){
-   const lx=LEFT+(index%2)*PW/2,ly=TOP+16+Math.floor(index/2)*19;
-   parts.push(line(lx,ly-4,lx+19,ly-4,'stroke="'+color+'" stroke-width="3.5"'));
-   parts.push(tag(diagramSafeExcerpt(group.name,27)+" (n="+group.n+")",lx+25,ly,
-    'font-family="Arial,sans-serif" fill="#2e525f" font-size="12"'));
+  if(curves.length>1&&!hasNamedLabel)
+   labels.push({color,text:diagramSafeExcerpt(group.name,26)+" (n="+group.n+")"});
+ }
+ if(labels.length){
+  parts.push('<rect x="'+LEFT+'" y="'+(TOP+PH+76)+'" width="'+PW+'" height="66" rx="8" fill="#f8fbfa" stroke="#dfebe7"/>');
+  for(const [i,item] of labels.slice(0,8).entries()){
+   const lx=LEFT+13+(i%2)*PW/2,ly=TOP+PH+99+Math.floor(i/2)*25;
+   parts.push('<circle cx="'+lx+'" cy="'+(ly-4)+'" r="4" fill="'+item.color+'"/>');
+   parts.push(tag(item.text,lx+13,ly,
+    'font-size="12" font-family="Arial,sans-serif" fill="#294b58"',PW/2-32));
   }
  }
- return footer(d,parts,"Percentiles are estimated by linear interpolation within grouped class intervals.");
+ return footer(d,parts,"Percentiles are estimated by linear interpolation within grouped class intervals.",canvasHeight);
 }
 function frequencyPolygons(q){
  const {draft:d,result:r,override}=q,groups=r.polygons||[],bins=r.bins||[];
