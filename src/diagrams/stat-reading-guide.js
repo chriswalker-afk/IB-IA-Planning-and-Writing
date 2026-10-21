@@ -71,7 +71,7 @@ export function statReadingGuide(raw){
     " distinct measured value(s), largest repeat count "+max;
   });
   return {...base,valid:true,observation:details.join("; "),
-   question:"Describe clustering, repeated readings and variation in the context of the precision of your instrument.",
+   question:"Do repeated values reflect instrument precision, clustering or meaningful variation for your aim?",
    caution:"Repeated identical recorded values might reflect rounding; never infer that they are exactly equal measurements."};
  }
  if(d.kind==="bar"){
