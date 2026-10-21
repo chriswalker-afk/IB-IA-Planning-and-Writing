@@ -17,7 +17,7 @@ export const newTableDraft=()=>({
  headings:[],unitDecisions:[],selected:[0],measures:["mean","median"],categoryIndex:0,showPercent:true,
  title:"",number:"1",purpose:"",sourceKind:"unsure",sourceText:"",note:"",
  decimals:"2",numberFormat:"source",quartileRule:"halves",showRowLines:true,
- showColumnLines:true,cellAlignment:"center"
+ showColumnLines:true,cellAlignment:"center",columnFormats:{}
 });
 export const newTableStudio=()=>({open:false,draft:newTableDraft(),figures:[],activeId:""});
 export function normalizeTableDraft(raw){
@@ -57,6 +57,16 @@ export function normalizeTableDraft(raw){
  if(typeof r.showPercent==="boolean")d.showPercent=r.showPercent;
  if(typeof r.showRowLines==="boolean")d.showRowLines=r.showRowLines;
  if(typeof r.showColumnLines==="boolean")d.showColumnLines=r.showColumnLines;
+ if(object(r.columnFormats)){
+  d.columnFormats={};
+  for(const [key,rawFormat] of Object.entries(r.columnFormats).slice(0,18)){
+   if(!/^(compact|summary|frequency):[0-4]$/.test(key)||!object(rawFormat))continue;
+   const mode=["default","source","dp","sf"].includes(rawFormat.mode)?rawFormat.mode:"default";
+   const rawDigits=String(rawFormat.digits??"2");
+   const digits=/^[0-6]$/.test(rawDigits)?rawDigits:"2";
+   d.columnFormats[key]={mode,digits:mode==="sf"&&digits==="0"?"2":digits};
+  }
+ }
  return d;
 }
 export function normalizeTableStudio(raw){
@@ -80,7 +90,7 @@ export function importTableData(studio,raw){
  const numeric=columns.map((_,i)=>({index:i,count:matrix.filter(r=>finiteCell(r[i])!==null).length}))
   .filter(r=>r.count>0).sort((a,b)=>b.count-a.count||a.index-b.index);
  d.selected=(d.mode==="summary"?numeric.slice(0,3).map(x=>x.index):columns.map((_,i)=>i).slice(0,4));
- d.categoryIndex=0;
+ d.categoryIndex=0;d.columnFormats={};
  return {rows:matrix.length,columns:columns.length,hasHeaders:parsed.hasHeaders};
 }
 const columnType=(d,index)=>{
@@ -98,16 +108,27 @@ export function tableHeader(d,index){
  const base=splitHeading(label).label||label;
  return decision.mode==="unit"&&decision.unit.trim()?base+" ("+decision.unit.trim()+")":label;
 }
-const displayValue=(v,d,derived=false)=>{
- if(typeof v==="string"){
-  if(!derived&&d.numberFormat==="source")return v;
-  const number=finiteCell(v);
-  return number===null?v:formatNumber(number,d);
- }
- if(typeof v!=="number"||!Number.isFinite(v))return String(v??"");
- return formatNumber(v,d);
+/** Display-only rules keyed to the output table column. Never edit the observations. */
+export const tableColumnFormat=(d,index,mode=d.mode)=>{
+ const stored=d.columnFormats?.[mode+":"+index];
+ const kind=["source","dp","sf"].includes(stored?.mode)?stored.mode:"default";
+ const digits=Number(stored?.digits);
+ return {mode:kind,digits:Number.isInteger(digits)&&digits>=0&&digits<=6?digits:2};
 };
-const formatNumber=(n,d)=>n.toFixed(Number(d.decimals)).replace(/^-0(?=\.|$)/,s=>s.replace("-",""));
+const formatNumber=(number,kind,digits)=>{
+ const value=kind==="sf"?Number(number).toPrecision(Math.max(1,digits)):Number(number).toFixed(digits);
+ return value.replace(/^-0(?=\.0+$|$)/, "0").replace(/^-0\.0+(?=e)/,match=>match.slice(1));
+};
+const displayValue=(v,d,derived=false,index=-1,mode=d.mode)=>{
+ const rule=tableColumnFormat(d,index,mode);
+ const defaultSource=!derived&&d.mode==="compact"&&d.numberFormat==="source";
+ const kind=rule.mode==="default"?(defaultSource?"source":"dp"):rule.mode;
+ if(kind==="source"&&!derived)return String(v??"");
+ const numeric=typeof v==="number"&&Number.isFinite(v)?v:finiteCell(v);
+ if(numeric===null||!Number.isFinite(numeric))return String(v??"");
+ const digits=rule.mode==="default"?Number(d.decimals):rule.digits;
+ return formatNumber(numeric,kind==="sf"?"sf":"dp",digits);
+};
 const formatMeasure=(values,measure,rule)=>{
  const stats=boxStats(values,rule,"minmax"),avg=mean(values);
  if(measure==="mean")return avg;
@@ -156,7 +177,7 @@ export function analyzeTable(raw){
   });
   if(!problems.some(p=>["data","raw-table-too-long","too-wide","ragged","empty-cell","cell-length","mixed-column"].includes(p.code))){
    model={headers:d.columns.map((_,i)=>tableHeader(d,i)),
-    rows:d.matrix.map(row=>row.map(value=>displayValue(value,d))),
+    rows:d.matrix.map(row=>row.map((value,index)=>displayValue(value,d,false,index))),
     numeric:nums.map(n=>n.numeric),kind:"compact",
     note:d.note||"",metadata:""};
   }
@@ -185,7 +206,8 @@ export function analyzeTable(raw){
    if(values.length>=2){
     const measures=d.measures.map(m=>{
      const x=formatMeasure(values,m,d.quartileRule);
-     return Array.isArray(x)?x.map(v=>displayValue(v,d,true)).join("–"):displayValue(x,d,true);
+     return Array.isArray(x)?x.map(v=>displayValue(v,d,true,d.measures.indexOf(m)+2,"summary")).join("–"):
+      displayValue(x,d,true,d.measures.indexOf(m)+2,"summary");
     });
     rows.push([headings[index],String(values.length),...measures]);
    }
@@ -224,7 +246,7 @@ export function analyzeTable(raw){
    &&total>=2){
    const labels=[headings[col]||"Category","Frequency (count)"];
    if(d.showPercent)labels.push("Percentage (%)");
-   const rows=[...counts.entries()].map(([name,n])=>[name,String(n),...(d.showPercent?[displayValue(100*n/total,d,true)]:[])]);
+   const rows=[...counts.entries()].map(([name,n])=>[name,String(n),...(d.showPercent?[displayValue(100*n/total,d,true,2,"frequency")]:[])]);
    rows.push(["Total",String(total),...(d.showPercent?["100"]:[])]);
    model={headers:labels,rows,numeric:[false,true,...(d.showPercent?[true]:[])],kind:"frequency",
     note:d.note||"",metadata:"Denominator: all "+total+" non-missing responses; every response is counted once."};
@@ -238,6 +260,11 @@ export function analyzeTable(raw){
   if(model.headers.length>5)fail("formatted-wide",
    "This summary is too wide. Select fewer statistics or groups.");
  }
+ if(d.mode==="compact"){
+  const custom=d.columns.map((_,i)=>tableColumnFormat(d,i)).some(f=>f.mode==="dp"||f.mode==="sf");
+  if(custom)warn("column-rounding",
+   "Custom decimal places or significant figures affect displayed cells only. Check that the number of digits reflects actual measurement resolution; the source observations are unchanged.");
+ }
  if(d.numberFormat==="fixed"&&d.mode==="compact")
   warn("rounding","Fixed decimal places change only the displayed values. Do not claim greater measurement accuracy or round intermediate calculations.");
  if(d.mode!=="compact")
@@ -248,7 +275,7 @@ export function analyzeTable(raw){
  return {ready:problems.length===0&&!!model,problems,warnings,model,draft:d};
 }
 export const tableSignature=d=>JSON.stringify([d.mode,d.matrix,d.columns,d.headings,d.unitDecisions,
- d.selected,d.measures,d.categoryIndex,d.showPercent,d.decimals,d.numberFormat,d.quartileRule]);
+ d.selected,d.measures,d.categoryIndex,d.showPercent,d.decimals,d.numberFormat,d.quartileRule,d.columnFormats]);
 export function saveTableFigure(studio,entryId=""){
  const q=analyzeTable(studio.draft);
  if(!q.ready)return {ok:false,error:"Resolve the table size, source, units and mathematical quality checks before saving.",checks:q};
