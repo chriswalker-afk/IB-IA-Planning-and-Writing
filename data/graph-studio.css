@@ -183,3 +183,9 @@
 .graph-legend-options>.graph-check{font-weight:650;color:#244d49}
 .graph-legend-options>.graph-form-field{margin:9px 0 5px}
 .graph-legend-options>small{display:block;font-size:10px;line-height:1.55;color:#526f6b}
+
+/* Deliberate model-to-table transfer, beside the source model's diagnostics. */
+.graph-model-table-transfer{display:grid;gap:6px;margin:12px 0 3px;padding:10px 11px;background:#f2f8f6;border:1px solid #d4e5de;border-radius:9px}
+.graph-model-table-transfer>.btn{justify-self:start;white-space:normal}
+.graph-model-table-transfer>small{font-size:11px;line-height:1.55;color:#59756d}
+@media(max-width:620px){.graph-model-table-transfer>.btn{width:100%;justify-self:stretch}}
