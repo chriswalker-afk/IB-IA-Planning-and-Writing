@@ -1041,7 +1041,8 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     if(action==="writer-guide-popin-close"){closeGuidePopin();return;}
     if(action==="writer-guide-popin-full"){
       const guide=guidePopinRecommendation;
-      if(guidePopinOrigin?.isConnected)lastFocus=guidePopinOrigin;
+      const origin=guidePopinOrigin;
+      if(origin?.isConnected){lastFocus=origin;drawerReturn=captureReturn(origin);}
       openFullWriterGuide(guide);return;
     }
     if(action==="writer-guide-open"){
@@ -2310,6 +2311,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   });
   document.addEventListener("click",evt=>{
     if(!guidePopinHost.hidden&&!evt.target.closest?.("#writerGuidePopinLayer,[data-action='writer-guide-open']"))closeGuidePopin(false);
+    if(!guidePopinHost.hidden&&evt.target===guidePopinHost){closeGuidePopin();return;}
     const traceTap=evt.target.closest?.("[data-trace-tap]");
     if(traceTap&&state.imageTracer?.open){
       const svg=traceTap.closest("[data-trace-canvas]");
