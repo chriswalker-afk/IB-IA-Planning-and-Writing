@@ -35,7 +35,7 @@ test("graph axis label and dimensioned unit retain inline mathematical SVG after
 });
 test("table headings and notes typeset maths while preserving original source values",()=>{
  const d=newTableDraft();
- importTableData(d,"Trial\tLength (m)\nA\t10\nB\t12");
+ importTableData({draft:d},"Trial\tLength (m)\nA\t10\nB\t12");
  d.title="Comparing \\(\\bar{x}\\)";d.sourceKind="primary";
  d.headings[1]="Observed \\(\\hat{y}\\)";
  d.unitDecisions[1]={mode:"unit",unit:"m s^-2"};
