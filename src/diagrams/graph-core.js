@@ -296,7 +296,7 @@ const W=940,H=620,LEFT=109,RIGHT=55,TOP=112,BOTTOM=122,PW=W-LEFT-RIGHT,PH=H-TOP-
 export function renderGraphSvg(draft){
  const analysis=analyseGraph(draft),d=analysis.draft;let {points,bounds}=analysis;
  const visibleModels=(analysis.models||[]).filter(model=>model.visible&&model.valid);
- const svgHeight=visibleModels.length?700:H;
+ const svgHeight=visibleModels.length?680:H;
  const title=escapeGraph(d.title.trim()||"Graph preview — add a descriptive title");
  const xLabel=escapeGraph(axisTitle(d.xLabel||"Horizontal variable",d.xUnit,d.xUnitMode));
  const yLabel=escapeGraph(axisTitle(d.yLabel||"Vertical variable",d.yUnit,d.yUnitMode));
@@ -381,7 +381,7 @@ export function renderGraphSvg(draft){
    if(d.showResidualSegments&&analysis.selectedResidualModel?.visible&&analysis.selectedResidualModel.diagnostics?.ok)
     legendItems.push({name:"Residual distances (observed − predicted)",color:analysis.selectedResidualModel.color,dash:"4 3"});
    legendItems.forEach((item,i)=>{
-    const y=522+22*i;
+    const y=519+19*i;
     if(item.observed)parts.push('<circle cx="116" cy="'+(y-4)+'" r="4.5" fill="'+item.color+'"/>');
     else parts.push('<line x1="106" y1="'+(y-4)+'" x2="127" y2="'+(y-4)+
      '" stroke="'+item.color+'" stroke-width="3"'+(item.dash?' stroke-dasharray="'+item.dash+'"':'')+'/>');
