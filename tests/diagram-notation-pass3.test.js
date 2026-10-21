@@ -5,7 +5,7 @@ import {diagramNotationControls,diagramSafeExcerpt,diagramWrapLines,
  diagramHtmlMath,svgDiagramText} from "../src/diagrams/diagram-notation.js";
 import {editNativeHeading,editNativeCell,nativeSnapshot,applyNativeDataset,
  saveNativeDataset} from "../src/diagrams/native-data-core.js";
-import {setStatField} from "../src/diagrams/stat-studio-actions.js";
+import {setStatField,changeStatKind} from "../src/diagrams/stat-studio-actions.js";
 import {renderGraphSvg} from "../src/diagrams/graph-core.js";
 import {renderStatSvg} from "../src/diagrams/stat-studio-render.js";
 import {renderCleanTraceSvg,newImageTraceDraft} from "../src/diagrams/image-tracer-core.js";
@@ -119,6 +119,11 @@ test("statistical heading inference treats f(x) as a variable, not measurement x
  assert.equal(setStatField(s,"singleIndex","1"),true);
  assert.equal(s.draft.variable,"Time");
  assert.equal(s.draft.unit,"s");
+ setStatField(s,"variable","Elapsed \\(t_i\\)");
+ setStatField(s,"unit","\\(\\mathrm{s}\\)");
+ assert.equal(changeStatKind(s,"box"),true);
+ assert.equal(s.draft.variable,"Elapsed \\(t_i\\)");
+ assert.equal(s.draft.unit,"\\(\\mathrm{s}\\)");
 });
 
 test("SVGs and full-project figures keep inline mathematical paths without external image fonts",()=>{
