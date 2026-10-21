@@ -229,6 +229,11 @@ def first_time(browser,width):
   without_overflow(page)
   assert page.locator('.writer-guide-return').count()==0
   assert page.locator('.intro-writing-task .writer-guide-field-bubble').count()==1
+  intro_rail=page.locator('.intro-writing-task .criterion-field-help-rail')
+  assert intro_rail.count()==1
+  assert intro_rail.locator('.criterion-badge').count()==2
+  assert intro_rail.locator('.writer-guide-field-bubble').count()==1
+  assert intro_rail.locator('.criterion-badge').first.bounding_box()['x']<intro_rail.locator('.writer-guide-field-bubble').bounding_box()['x']
   page.locator('.intro-writing-task .writer-guide-field-bubble').click()
   focused=page.locator('#writerGuidePopinLayer .writer-guide-popin')
   assert focused.is_visible()
@@ -345,6 +350,49 @@ def writing_sections(browser,width):
      });
     }""")
     assert not overlaps,(node,'Guide and assessment bubbles overlap')
+   # Pass 3 geometry contract: every marked IA field shares a single
+   # title-level help rail; green criteria always precede the purple guide.
+   # No left-floating badges, input overlap or clipped controls at any width.
+   marked=main.locator('.criterion-marked-field.has-field-help-rail')
+   assert marked.count()>=1,(node,'missing shared heading rails')
+   for item in marked.all():
+    geometry=item.evaluate("""root=>{
+     const rect=el=>{if(!el)return null;const r=el.getBoundingClientRect();
+      return {left:r.left,top:r.top,right:r.right,bottom:r.bottom,width:r.width,height:r.height};};
+     const head=root.querySelector('.criterion-field-header');
+     const rail=head?.querySelector('.criterion-field-help-rail');
+     const label=head?.querySelector('label.field-label');
+     const control=root.querySelector('textarea.field,input.field,select.field');
+     const icons=[...(rail?.querySelectorAll('.criterion-badge,.writer-guide-field-bubble')||[])]
+       .filter(el=>getComputedStyle(el).display!=='none');
+     return {root:rect(root),head:rect(head),rail:rect(rail),label:rect(label),
+      control:rect(control),icons:icons.map(el=>({rect:rect(el),
+      criterion:el.classList.contains('criterion-badge'),
+      guide:el.classList.contains('writer-guide-field-bubble')}))};
+    }""")
+    assert geometry['head'] and geometry['rail'],(node,width,'no help rail',geometry)
+    assert geometry['icons'],(node,width,'empty help rail',geometry)
+    assert geometry['rail']['left']>=geometry['root']['left']-2,(node,width,geometry)
+    assert geometry['rail']['right']<=geometry['root']['right']+2,(node,width,geometry)
+    if geometry['control']:
+     assert geometry['rail']['bottom']<=geometry['control']['top']+2,(node,width,'rail overlaps writing area',geometry)
+    icons=geometry['icons']
+    for one,two in zip(icons,icons[1:]):
+     assert one['rect']['right']<=two['rect']['left']+2,(node,width,'bubble collision',geometry)
+     assert abs(one['rect']['top']-two['rect']['top'])<=2,(node,width,'uneven bubble rail',geometry)
+     assert not(one['guide'] and two['criterion']),(node,width,'guide precedes rubric',geometry)
+    for one in icons:
+     assert 40<=one['rect']['width']<=60,(node,width,'bubble has wrong size',geometry)
+    if geometry['label']:
+     if width>700:
+      assert geometry['rail']['left']>=geometry['label']['right']-2,(node,width,'rail not beside heading',geometry)
+     else:
+      assert geometry['rail']['top']>=geometry['label']['bottom']-2,(node,width,'mobile rail not below heading',geometry)
+   if node in ('C40','C50'):
+    purpose=main.locator('.criterion-marked-field.has-field-help-rail').filter(has_text='Why is the chosen approach appropriate here?')
+    assert purpose.count()==1,(node,width,'the lone green criterion field must use the same heading layout')
+    assert purpose.locator('.criterion-field-help-rail .criterion-badge').count()==1
+    assert purpose.locator('.criterion-field-help-rail .writer-guide-field-bubble').count()==0
    selected=badge.first
    suggested=selected.get_attribute('data-guide-tip')
    spot=selected.get_attribute('data-guide-spot')
