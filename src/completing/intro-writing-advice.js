@@ -139,6 +139,8 @@ function adviceCard(t,i,icon,e){
   '</div></details>';
 }
 export function renderIntroductionWritingAdvice(icon,e,{reduced=false,state=null}={}){
+ // The task prompt and contextual A/C/Field Guide bubbles stay visible.
+ if(reduced)return "";
  return '<section class="intro-writing-guide intro-writing-guide-compact" aria-label="Essential introduction writing advice" data-advice-moved-to-guide="introduction">'+
   '<div class="intro-writing-guide-head"><span class="intro-writing-guide-icon">'+icon("book")+'</span><div>'+
    '<span class="intro-writing-guide-eyebrow">WRITING GUIDE · INTRODUCTION</span><h2>Before you write</h2></div></div>'+
