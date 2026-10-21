@@ -159,6 +159,56 @@ def bar(p,width):
  p.locator('[data-action="stat-reset-scale"]').click()
  assert p.locator('[data-action="stat-png"]').is_enabled()
 
+def ogive(p,width):
+ fresh(p,"ogive")
+ p.locator('[data-stat-field="histogramInput"]').select_option("table")
+ read_sheet(p,GROUPED)
+ title(p,"Cumulative frequency of measured heights")
+ p.locator('[data-stat-field="variable"]').fill("Measured height")
+ p.locator('[data-stat-field="unitMode"]').select_option("unit")
+ p.locator('[data-stat-field="unit"]').fill("cm")
+ source(p)
+ assert p.locator('[data-action="stat-png"]').is_enabled()
+ assert "Q1" in p.locator('[data-stat-preview] svg').text_content()
+ assert "Median" in p.locator('[data-stat-summary]').inner_text() or "median" in p.locator('[data-stat-summary]').inner_text()
+ p.locator('[data-stat-field="curveShowPercentile"]').check()
+ p.locator('[data-stat-field="curvePercentile"]').fill("90")
+ assert "P90" in p.locator('[data-stat-preview] svg').text_content()
+ p.locator('[data-stat-field="ogiveYMode"]').select_option("count")
+ assert "Cumulative frequency" in p.locator('[data-stat-preview] svg').text_content()
+ assert p.locator('[data-action="stat-svg"]').is_enabled()
+ with p.expect_download() as exported:
+  p.locator('[data-action="stat-csv"]').click()
+ assert exported.value.suggested_filename.endswith("-summary.csv")
+ no_overflow(p)
+ p.screenshot(path=str(OUT/f"stat-ogive-{width}.png"),full_page=True,animations="disabled")
+
+def polygon(p,width):
+ fresh(p,"polygon")
+ p.locator('[data-stat-field="histogramInput"]').select_option("table")
+ read_sheet(p,GROUPED)
+ title(p,"Frequency polygon for measured heights")
+ p.locator('[data-stat-field="variable"]').fill("Measured height")
+ p.locator('[data-stat-field="unitMode"]').select_option("unit")
+ p.locator('[data-stat-field="unit"]').fill("cm")
+ source(p)
+ assert p.locator('[data-action="stat-svg"]').is_enabled()
+ p.locator('[data-stat-field="polygonShowHistogram"]').check()
+ p.locator('[data-stat-field="polygonShowValues"]').check()
+ assert p.locator('[data-stat-preview] svg circle').count()>=3
+ assert "midpoint" in p.locator('[data-stat-summary]').inner_text().lower()
+ no_overflow(p)
+ p.screenshot(path=str(OUT/f"stat-polygon-{width}.png"),full_page=True,animations="disabled")
+ # Test both directions of the grouped Table Studio handover without overwriting a saved figure.
+ original=snapshot(p)["statStudio"]["draft"]["matrix"]
+ p.locator('[data-action="stat-to-table"]').click()
+ assert p.locator('[data-table-studio]').is_visible()
+ assert p.locator('[data-action="table-to-ogive"]').is_enabled()
+ assert p.locator('[data-action="table-to-polygon"]').is_enabled()
+ p.locator('[data-action="table-to-ogive"]').click()
+ assert snapshot(p)["statStudio"]["draft"]["kind"]=="ogive"
+ assert snapshot(p)["statStudio"]["draft"]["matrix"]==original
+
 results=[]
 with sync_playwright() as playwright:
  browser=playwright.chromium.launch(headless=True,args=["--no-sandbox"])
@@ -170,6 +220,8 @@ with sync_playwright() as playwright:
    box(p,width)
    dot(p,width)
    bar(p,width)
+   ogive(p,width)
+   polygon(p,width)
    assert not errors,errors
    results.append({"viewport":width,"status":"passed"})
   except Exception as exc:
