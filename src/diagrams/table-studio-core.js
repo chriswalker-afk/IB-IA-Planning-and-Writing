@@ -5,6 +5,7 @@
  */
 import {finiteCell,splitHeading,formatGraphMath} from "./graph-core.js";
 import {parseStatTable,boxStats} from "./stat-studio-core.js";
+import {continuousBins,groupedClassBins} from "./continuous-classes.js";
 export const TABLE_MAX_ROWS=500,TABLE_MAX_COLS=8,TABLE_MAX_SAVED=12;
 const trimmed=(x,n=120)=>typeof x==="string"?x.slice(0,n):"";
 const object=x=>x&&typeof x==="object"&&!Array.isArray(x);
@@ -58,6 +59,10 @@ export const newTableDraft=()=>({
  columnSelectionMode:"all",displayColumns:[],rowSelection:"",selectionReason:"",
  calcXIndex:0,calcYIndex:1,calcModel:"linear",calcA:"",calcB:"",calcC:"",
  calcShowPrediction:true,calcShowResidual:true,calcShowPercent:false,graphSnapshot:null,
+ groupInput:"raw",groupValueIndex:0,groupLowIndex:0,groupHighIndex:1,groupFreqIndex:2,
+ groupWidth:"",groupStart:"",groupLabel:"",groupOrigin:"",
+ groupShowDensity:true,groupShowCumulative:false,groupShowPercent:false,
+ highlightMode:"none",highlightRows:"",highlightReason:"",
  headings:[],unitDecisions:[],selected:[0],measures:["mean","median"],categoryIndex:0,showPercent:true,
  title:"",number:"1",purpose:"",sourceKind:"unsure",sourceText:"",note:"",
  decimals:"2",numberFormat:"source",quartileRule:"halves",showRowLines:true,
@@ -68,11 +73,14 @@ export function normalizeTableDraft(raw){
  const d=newTableDraft(),r=object(raw)?raw:{};
  for(const key of ["mode","raw","headers","title","number","purpose","sourceKind","sourceText","note",
   "columnSelectionMode","rowSelection","selectionReason","calcModel","calcA","calcB","calcC",
-  "decimals","numberFormat","quartileRule","cellAlignment"]){
-  const max=key==="raw"?85000:key==="sourceText"||key==="purpose"||key==="note"?500:key==="selectionReason"?360:140;
+  "decimals","numberFormat","quartileRule","cellAlignment","groupInput","groupWidth","groupStart",
+  "groupLabel","groupOrigin","highlightMode","highlightRows","highlightReason"]){
+  const max=key==="raw"?85000:key==="sourceText"||key==="purpose"||key==="note"?500:key==="selectionReason"||key==="highlightReason"?360:140;
   if(typeof r[key]==="string")d[key]=r[key].slice(0,max);
  }
- if(!["compact","summary","frequency","calculated"].includes(d.mode))d.mode="compact";
+ if(!["compact","summary","frequency","calculated","grouped"].includes(d.mode))d.mode="compact";
+ if(!["raw","classes"].includes(d.groupInput))d.groupInput="raw";
+ if(!["none","selected"].includes(d.highlightMode))d.highlightMode="none";
  if(!["all","custom"].includes(d.columnSelectionMode))d.columnSelectionMode="all";
  if(!["linear","quadratic"].includes(d.calcModel))d.calcModel="linear";
  if(!["auto","yes","no"].includes(d.headers))d.headers="auto";
@@ -97,7 +105,10 @@ export function normalizeTableDraft(raw){
   [...new Set(r.displayColumns.filter(Number.isInteger).filter(i=>i>=0&&i<d.columns.length))].sort((a,b)=>a-b).slice(0,5):[];
  d.calcXIndex=Number.isInteger(r.calcXIndex)&&r.calcXIndex>=0&&r.calcXIndex<d.columns.length?r.calcXIndex:0;
  d.calcYIndex=Number.isInteger(r.calcYIndex)&&r.calcYIndex>=0&&r.calcYIndex<d.columns.length?r.calcYIndex:Math.min(1,Math.max(0,d.columns.length-1));
- for(const key of ["calcShowPrediction","calcShowResidual","calcShowPercent"])
+ for(const [k,defaultIndex] of [["groupValueIndex",0],["groupLowIndex",0],["groupHighIndex",1],["groupFreqIndex",2]]){
+  d[k]=Number.isInteger(r[k])&&r[k]>=0&&r[k]<d.columns.length?r[k]:Math.min(defaultIndex,Math.max(0,d.columns.length-1));
+ }
+ for(const key of ["calcShowPrediction","calcShowResidual","calcShowPercent","groupShowDensity","groupShowCumulative","groupShowPercent"])
   if(typeof r[key]==="boolean")d[key]=r[key];
  d.selected=Array.isArray(r.selected)?
   [...new Set(r.selected.filter(Number.isInteger).filter(i=>i>=0&&i<d.columns.length))].slice(0,4):
@@ -114,7 +125,7 @@ export function normalizeTableDraft(raw){
  if(object(r.columnFormats)){
   d.columnFormats={};
   for(const [key,rawFormat] of Object.entries(r.columnFormats).slice(0,18)){
-   if(!/^(?:compact:[0-7]|calculated:(?:[0-4]|x|y|prediction|residual|percentage)|frequency:[0-4]|summary:(?:[0-4]|mean|median|sd|iqr|minmax))$/.test(key)||!object(rawFormat))continue;
+   if(!/^(?:compact:[0-7]|calculated:(?:[0-4]|x|y|prediction|residual|percentage)|grouped:(?:[0-4]|density|cumulative|percent)|frequency:[0-4]|summary:(?:[0-4]|mean|median|sd|iqr|minmax))$/.test(key)||!object(rawFormat))continue;
    const mode=["default","source","dp","sf"].includes(rawFormat.mode)?rawFormat.mode:"default";
    const rawDigits=String(rawFormat.digits??"2");
    const digits=/^[0-6]$/.test(rawDigits)?rawDigits:"2";
@@ -147,6 +158,9 @@ export function importTableData(studio,raw){
  d.categoryIndex=0;d.columnFormats={};
  d.columnSelectionMode="all";d.displayColumns=[];d.rowSelection="";d.selectionReason="";
  d.calcA="";d.calcB="";d.calcC="";d.graphSnapshot=null;
+ d.groupOrigin="";d.highlightMode="none";d.highlightRows="";d.highlightReason="";
+ d.groupValueIndex=numeric[0]?.index??0;
+ d.groupLowIndex=0;d.groupHighIndex=Math.min(1,columns.length-1);d.groupFreqIndex=Math.min(2,columns.length-1);
  d.calcXIndex=numeric[0]?.index??0;
  d.calcYIndex=numeric.find(entry=>entry.index!==d.calcXIndex)?.index??Math.min(1,Math.max(0,d.columns.length-1));
  return {rows:matrix.length,columns:columns.length,hasHeaders:parsed.hasHeaders};
@@ -210,6 +224,13 @@ export const tableFormatKey=(d,index,mode=d.mode)=>{
  // Compact formats follow source columns, not positions in a selected subset.
  if(mode==="compact")return "compact:"+(tableDisplayColumns(d)[index]??index);
  // Calculated formats follow the mathematical quantity even when result columns are toggled.
+ if(mode==="grouped"){
+  if(index===0)return "grouped:0";
+  if(index===1)return "grouped:1";
+  const metrics=[...(d.groupShowDensity?["density"]:[]),...(d.groupShowCumulative?["cumulative"]:[]),
+   ...(d.groupShowPercent?["percent"]:[])];
+  return "grouped:"+(metrics[index-2]??index);
+ }
  if(mode==="calculated"){
   if(index===0)return "calculated:x";
   if(index===1)return "calculated:y";
@@ -251,6 +272,39 @@ const formatMeasure=(values,measure,rule)=>{
  return null;
 };
 const measureLabels={mean:"Mean",median:"Median",iqr:"IQR",sd:"Sample SD",minmax:"Min–max"};
+/** Strictly count every observation or explicitly supplied class frequency. */
+export function tableGroupedBins(raw){
+ const d=normalizeTableDraft(raw);
+ if(d.groupInput==="classes"){
+  if(d.columns.length<3)return {bins:[],error:"At least three columns are needed for lower limit, upper limit and frequency."};
+  const result=groupedClassBins(d.matrix,d.groupLowIndex,d.groupHighIndex,d.groupFreqIndex,8);
+  return {...result,measurementIndex:d.groupLowIndex};
+ }
+ if(!d.columns.length||d.groupValueIndex>=d.columns.length)
+  return {bins:[],error:"Choose the numerical measurements column."};
+ const values=[];
+ for(let i=0;i<d.matrix.length;i++){
+  const row=d.matrix[i],n=finiteCell(row?.[d.groupValueIndex]);
+  if(!row||row.length!==d.columns.length||n===null)
+   return {bins:[],error:"Source row "+(i+1)+" has a missing or non-numeric measurement. Every original row must be accounted for."};
+  values.push(n);
+ }
+ return {...continuousBins(values,d.groupWidth,d.groupStart,8),measurementIndex:d.groupValueIndex};
+}
+const boundaryLabel=n=>Number(Number(n).toPrecision(13)).toString();
+export function tableHighlightedRows(d,rowCount,hasTotal=false){
+ if(d.highlightMode!=="selected")return {ok:true,indices:[]};
+ const raw=d.highlightRows.trim(),parts=raw.split(",").map(x=>x.trim());
+ if(!raw||parts.length>2||parts.some(x=>!/^([1-9]\d*)$/.test(x)))
+  return {ok:false,error:"Choose one or two numbered result rows, separated by commas (for example 2, 4)."};
+ const indices=parts.map(Number);
+ if(new Set(indices).size!==indices.length||indices.some(x=>x>rowCount-(hasTotal?1:0)))
+  return {ok:false,error:"Choose distinct rows containing results, not the Total row; no row has been emphasised automatically."};
+ if(d.highlightReason.trim().length<18)
+  return {ok:false,error:"Explain the mathematical significance of the highlighted result (at least a short sentence)."};
+ return {ok:true,indices:indices.map(x=>x-1)};
+}
+
 const addErr=(list,code,message)=>list.push({code,message});
 const meaningfulLimit=label=>label.length<=58&&!/\n/.test(label);
 export function analyzeTable(raw){
@@ -269,8 +323,10 @@ export function analyzeTable(raw){
  const chooseRows=["compact","calculated"].includes(d.mode);
  const chosen=chooseRows?tableDisplayRows(d):{ok:true,indices:[],custom:false};
  const cols=d.mode==="compact"?tableDisplayColumns(d):
-  d.mode==="calculated"?[d.calcXIndex,d.calcYIndex]:d.columns.map((_,i)=>i);
- const visibleHeadingIndices=["compact","calculated"].includes(d.mode)?cols:d.columns.map((_,i)=>i);
+  d.mode==="calculated"?[d.calcXIndex,d.calcYIndex]:
+  d.mode==="grouped"?d.groupInput==="raw"?[d.groupValueIndex]:
+   [d.groupLowIndex,d.groupHighIndex,d.groupFreqIndex]:d.columns.map((_,i)=>i);
+ const visibleHeadingIndices=["compact","calculated","grouped"].includes(d.mode)?cols:d.columns.map((_,i)=>i);
  if(visibleHeadingIndices.some(i=>!headings[i]?.trim()))fail("headings","Every displayed source column needs a meaningful heading.");
  if(visibleHeadingIndices.some(i=>!meaningfulLimit(headings[i]||"")))fail("headings-long",
   "Shorten displayed headings and put full explanations into your surrounding writing.");
@@ -286,7 +342,7 @@ export function analyzeTable(raw){
    fail("selection-reason","Explain in at least a short sentence why these particular rows or columns are shown; do not conceal inconvenient data.");
   if(selection?.subset)warn("selected-subset","This is an explicitly selected subset, not the full dataset. Explain the choice and retain every original observation in your working files.");
  }
- const validSummary=d.mode==="summary",validFrequency=d.mode==="frequency",validCalculated=d.mode==="calculated";
+ const validSummary=d.mode==="summary",validFrequency=d.mode==="frequency",validCalculated=d.mode==="calculated",validGrouped=d.mode==="grouped";
  const provenance=selection?.subset?
   "Selected source rows "+selection.rowNumbers.join(", ")+" of "+selection.sourceRows+
   "; "+selection.columnCount+" of "+selection.sourceColumns+" source columns. Selection reason: "+d.selectionReason.trim():"";
@@ -384,6 +440,55 @@ export function analyzeTable(raw){
   warn("model-provenance",d.graphSnapshot?
    "Model results are a copy from Graph Plotter. Changing the graph does not automatically update this table; transfer it again after fitting a new model.":
    "Coefficients must come from a justified calculation or fitted model elsewhere in your IA. This table does not fit a model.");
+ }else if(validGrouped){
+  if(!d.columns.length)fail("grouped-column","Choose at least one measurement column.");
+  if(!d.groupShowDensity&&!d.groupShowCumulative&&!d.groupShowPercent)
+   warn("grouped-minimal","Only frequencies are shown. Consider density for unequal class widths or cumulative frequency for distribution comparisons.");
+  const sourceColumns=d.groupInput==="raw"?[d.groupValueIndex]:
+   [d.groupLowIndex,d.groupHighIndex,d.groupFreqIndex];
+  const unit=d.unitDecisions[sourceColumns[0]]||unitDefault();
+  if(unit.mode==="unsure"||unit.mode==="unit"&&!unit.unit.trim())
+   fail("grouped-unit","Confirm the measurement unit or dimensionless status for the class boundaries.");
+  if(d.groupInput==="classes"){
+   for(const i of [d.groupLowIndex,d.groupHighIndex]){
+    const other=d.unitDecisions[i]||unitDefault();
+    if(other.mode==="unit"&&unit.mode==="unit"&&other.unit.trim()!==unit.unit.trim())
+     fail("grouped-unit-mismatch","Lower and upper class boundaries must use the same measurement unit.");
+   }
+  }
+  const grouped=tableGroupedBins(d);
+  if(grouped.error)fail("grouped-classes",grouped.error);
+  const bins=grouped.bins||[],total=grouped.total??0;
+  if(total<2&&!grouped.error)fail("grouped-observations","At least two observations are needed for a meaningful frequency distribution.");
+  if(grouped.gaps)warn("grouped-gaps","The given class intervals contain gaps; a histogram must keep those intervals separated on its axis.");
+  if(bins.length>6)warn("grouped-many-classes","Check that every class interval is necessary for your IA argument.");
+  if(d.groupInput==="classes")warn("grouped-originals","These are supplied grouped counts: individual original readings cannot be recovered from frequencies.");
+  if(!grouped.error&&total>=2){
+   const unitText=unit.mode==="unit"&&unit.unit.trim()?" ("+unit.unit.trim()+")":"";
+   const actualClassName=d.groupLabel.trim()||
+    (d.groupInput==="raw"?headings[d.groupValueIndex]||"Measurement":"Class");
+   const headers=[actualClassName+" interval"+unitText,"Frequency"];
+   if(d.groupShowDensity)headers.push("Frequency density"+(unit.mode==="unit"?" (per "+unit.unit.trim()+")":""));
+   if(d.groupShowCumulative)headers.push("Cumulative frequency");
+   if(d.groupShowPercent)headers.push("Percentage (%)");
+   let cumulative=0;
+   const rows=bins.map(b=>{
+    cumulative+=b.frequency;
+    return ["["+boundaryLabel(b.low)+", "+boundaryLabel(b.high)+")",String(b.frequency),
+     ...(d.groupShowDensity?[displayValue(b.density,d,true,d.groupShowDensity?2:0,"grouped")]:[]),
+     ...(d.groupShowCumulative?[String(cumulative)]:[]),
+     ...(d.groupShowPercent?[displayValue(100*b.frequency/total,d,true,2+Number(d.groupShowDensity)+Number(d.groupShowCumulative),"grouped")]:[])];
+   });
+   rows.push(["Total",String(total),...(d.groupShowDensity?["—"]:[]),
+    ...(d.groupShowCumulative?[String(total)]:[]),...(d.groupShowPercent?["100"]:[])]);
+   model={headers,rows,numeric:[false,...headers.slice(1).map(()=>true)],kind:"grouped",note:d.note||"",
+    bins:bins.map(b=>({...b})),total,sourceColumnIndices:sourceColumns,
+    metadata:"Continuous class intervals are left-inclusive and right-exclusive: [lower, upper). "+
+     "All "+total+" observations are counted. "+(d.groupShowDensity?"Frequency density = frequency ÷ class width. ":"")+
+     (d.groupInput==="classes"?"Supplied grouped frequencies; individual readings are not recoverable. ":
+      "Class counts calculated from every unrounded source measurement. ")+
+     (d.groupOrigin?"Source worksheet copied from "+d.groupOrigin+". ":"")};
+  }
  }else if(validSummary){
   if(!d.selected.length)fail("variables","Select at least one numerical column to summarise.");
   if(d.selected.length>4)fail("many-variables","Select at most four comparable variables/groups.");
@@ -454,6 +559,12 @@ export function analyzeTable(raw){
   }
  }
  if(model){
+  const marked=tableHighlightedRows(d,model.rows.length,["frequency","grouped"].includes(model.kind));
+  if(!marked.ok)fail("highlight-rows",marked.error);
+  else if(marked.indices.length){
+   model.highlightIndices=marked.indices;
+   model.highlightNote="Emphasised result rows "+marked.indices.map(i=>i+1).join(", ")+": "+d.highlightReason.trim();
+  }
   if(model.headers.some(x=>x.length>58))fail("formatted-headings",
    "The resulting headings are too long. Use a shorter label or reduce the number of displayed statistics.");
   if(model.rows.some(row=>row.some(c=>String(c).length>58)))fail("formatted-cells",
@@ -478,7 +589,10 @@ export function analyzeTable(raw){
 export const tableSignature=d=>JSON.stringify([d.mode,d.matrix,d.columns,d.headings,d.unitDecisions,
  d.selected,d.measures,d.categoryIndex,d.showPercent,d.decimals,d.numberFormat,d.quartileRule,d.columnFormats,
  d.columnSelectionMode,d.displayColumns,d.rowSelection,d.selectionReason,d.calcXIndex,d.calcYIndex,d.calcModel,
- d.calcA,d.calcB,d.calcC,d.calcShowPrediction,d.calcShowResidual,d.calcShowPercent,d.graphSnapshot]);
+ d.calcA,d.calcB,d.calcC,d.calcShowPrediction,d.calcShowResidual,d.calcShowPercent,d.graphSnapshot,
+ d.groupInput,d.groupValueIndex,d.groupLowIndex,d.groupHighIndex,d.groupFreqIndex,d.groupWidth,
+ d.groupStart,d.groupLabel,d.groupOrigin,d.groupShowDensity,d.groupShowCumulative,d.groupShowPercent,
+ d.highlightMode,d.highlightRows,d.highlightReason]);
 export function saveTableFigure(studio,entryId=""){
  const q=analyzeTable(studio.draft);
  if(!q.ready)return {ok:false,error:"Resolve the table size, source, units and mathematical quality checks before saving.",checks:q};
