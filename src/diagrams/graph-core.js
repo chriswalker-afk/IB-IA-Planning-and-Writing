@@ -6,6 +6,7 @@ import {GRAPH_MODEL_TYPES,normalizeGraphModels,assessGraphModels,sampleGraphMode
 const MAX_ROWS=500, MAX_COLS=10, MAX_RAW=85000, MAX_FIGURES=16;
 const text=(x,n=240)=>typeof x==="string"?x.slice(0,n):"";
 const number=x=>typeof x==="number"&&Number.isFinite(x);
+import {typesetGraphSvgLabels} from "./diagram-notation.js";
 export const escapeGraph=x=>String(x??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const NUM=/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:e[+-]?\d+)?$/i;
 export const finiteCell=x=>{
@@ -89,7 +90,12 @@ export function readPastedGraphData(raw){
 export const splitHeading=x=>{
  const h=String(x??"").trim();
  const hit=/^(.*?)\s*(?:\(([^)]+)\)|\[([^\]]+)\])\s*$/.exec(h);
- return hit?{label:hit[1].trim(),unit:(hit[2]||hit[3]).trim()}:{label:h,unit:""};
+ // Parenthesised function arguments are not units: f(x), g(t), a(t).
+ const unit=hit?(hit[2]||hit[3]).trim():"";
+ if(hit&&/^[A-Za-z]$/.test(hit[1].trim())&&/^[A-Za-z]$/.test(unit)&&
+    ["x","t","y","z","u","v","n"].includes(unit))
+  return {label:h,unit:""};
+ return hit?{label:hit[1].trim(),unit}:{label:h,unit:""};
 };
 export function applyPastedGraphData(studio,raw){
  const d=studio.draft,parsed=readPastedGraphData(raw);
@@ -463,7 +469,7 @@ export function renderGraphSvg(draft){
  const source=d.kind==="function"?"Function: "+d.expression:d.sourceKind==="secondary"?"Source: "+(d.sourceText||"not yet supplied"):d.sourceKind==="primary"?"Source: student's observations":"Source: not yet confirmed";
  parts.push('<text x="'+W/2+'" y="'+sourceY+'" text-anchor="middle" fill="#5b6f76" font-family="Arial,Helvetica,sans-serif" font-size="12">'+escapeGraph(source.slice(0,145))+'</text>',
   '</svg>');
- return parts.join("");
+ return typesetGraphSvgLabels(parts.join(""));
 }
 /** Residual figure for one explicitly selected model, independent of the main
  * plot's vertical axis. Zero is always shown, and points are never joined.
@@ -524,7 +530,7 @@ export function renderGraphResidualSvg(draft){
   '<text x="'+(W/2)+'" y="'+(H-19)+'" text-anchor="middle" fill="#60747a" font-family="Arial,Helvetica,sans-serif" font-size="12">'+
   escapeGraph("Measured range only · "+(d.sourceKind==="secondary"?"Data source: "+(d.sourceText||"not specified"):
    d.sourceKind==="primary"?"Student observations":"Check the original data source"))+'</text>','</svg>');
- return parts.join("");
+ return typesetGraphSvgLabels(parts.join(""));
 }
 export const graphFileBase=d=>{
  const title=String(d.title||"my-graph").normalize("NFKD").replace(/[^a-z0-9 -]/gi,"").trim().replace(/\s+/g,"-").slice(0,65).toLowerCase();

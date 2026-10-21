@@ -36,3 +36,23 @@
 .math-composer-actions .btn{font-size:11px;min-height:36px}
 @media(max-width:560px){.math-composer{padding:12px}.math-writing-preview{padding:12px}.math-writing-preview-content{font-size:13px}.math-tool-description{font-size:10px}}
 @media(prefers-reduced-motion:reduce){.math-open-tool{transition:none}}
+
+
+/* A shared, optional maths palette for graph and table labels. */
+.diagram-notation-tools{display:grid;gap:7px;margin:6px 0 12px;min-width:0}
+.diagram-notation-toggle{justify-self:start;display:inline-flex;align-items:center;gap:7px;border:1px solid #b8d6cf;background:#f0f8f6;border-radius:9px;padding:6px 10px;font:inherit;font-weight:700;font-size:12px;color:#176659;cursor:pointer}
+.diagram-notation-toggle:hover,.diagram-notation-toggle[aria-expanded="true"]{background:#dff0ec}
+.diagram-notation-toggle span{font-family:Georgia,serif;font-size:17px}
+.diagram-notation-panel{background:#fff;border:1px solid #bdd8d1;border-radius:12px;padding:12px;display:grid;gap:9px;min-width:0}
+.diagram-notation-panel[hidden],.diagram-notation-value-preview[hidden],.diagram-notation-error[hidden]{display:none!important}
+.diagram-notation-palette{display:flex;flex-wrap:wrap;gap:5px}
+.diagram-notation-palette button{font:inherit;font-size:13px;min-width:38px;min-height:35px;padding:5px 8px;border:1px solid #d4e3e1;border-radius:7px;background:#f6faf8;color:#244c49;cursor:pointer}
+.diagram-notation-palette button:hover{background:#e4f3ed}
+.diagram-notation-expression-label{display:grid;gap:5px;font-size:11px;font-weight:700;color:#48656a}
+.diagram-notation-expression-label input{width:100%;min-width:0;padding:9px 10px;border:1px solid #c6d8d5;border-radius:8px;font:13px ui-monospace,Consolas,monospace}
+.diagram-notation-expression-preview,.diagram-notation-value-preview{border:1px solid #d3e8e4;border-radius:9px;background:#f8fbfa;padding:10px 12px;min-height:26px;color:#274147;overflow-x:auto;overflow-y:hidden;font-size:13px;line-height:1.6}
+.diagram-notation-expression-preview svg,.diagram-notation-value-preview svg,.diagram-inline-math svg{max-width:100%;height:auto!important;vertical-align:middle}
+.diagram-inline-math{display:inline-flex;align-items:center;vertical-align:middle}
+.diagram-notation-invalid,.diagram-notation-error{color:#9b4738;background:#fff2eb}
+.diagram-notation-actions{display:flex;flex-wrap:wrap;gap:7px}
+.diagram-notation-panel small{font-size:11px;color:#6a8083;line-height:1.45}

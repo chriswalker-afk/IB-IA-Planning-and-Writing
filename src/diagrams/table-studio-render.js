@@ -4,6 +4,7 @@
  */
 import {escapeGraph} from "./graph-core.js";
 import {formatTableMath} from "./table-studio-math.js";
+import {svgDiagramText,diagramHtmlMath,diagramVisibleLength} from "./diagram-notation.js";
 import {analyzeTable} from "./table-studio-core.js";
 
 const E=escapeGraph,PAGE_MARGIN=36,MAX_TABLE_WIDTH=750,MIN_COL_WIDTH=100,MAX_COL_WIDTH=255;
@@ -14,21 +15,21 @@ function breakLines(input,available,fontSize=17){
  const value=String(input??"").trim();
  if(!value)return [""];
  const chars=Math.max(6,Math.floor(available/(fontSize*.54)));
- const result=[];
- let line="";
+ const result=[];let line="";
  const push=()=>{if(line){result.push(line);line="";}};
- for(const item of (value.match(/\([^)]*\)|\S+/g)||[])){
+ // Keep legacy plain text layout identical; treat authored maths as atomic.
+ const maths=/\\\(/.test(value);
+ for(const item of (maths?value.match(/\\\([\s\S]*?\\\)|\([^)]*\)|\S+/g):
+   value.match(/\([^)]*\)|\S+/g))||[]){
   let word=item;
-  if(line&&(line+" "+word).length<=chars){line+=" "+word;continue;}
-  if(line)push();
-  while(word.length>chars){
-   result.push(word.slice(0,chars));
-   word=word.slice(chars);
+  if(line&&(maths?diagramVisibleLength(line+" "+word,fontSize):(line+" "+word).length)<=chars){
+   line+=" "+word;continue;
   }
+  if(line)push();
+  if(!/\\\(/.test(word))while(word.length>chars){result.push(word.slice(0,chars));word=word.slice(chars);}
   line=word;
  }
- push();
- return result;
+ push();return result;
 }
 const number=n=>typeof n==="number"&&Number.isFinite(n);
 
@@ -38,8 +39,8 @@ export function tableWidths(model){
  if(!count)return [];
  const desired=model.headers.map((header,i)=>{
   const items=[formatTableMath(header),...model.rows.map(row=>String(row[i]??""))];
-  const longest=Math.max(...items.map(item=>item.length));
-  const word=Math.max(...items.flatMap(item=>item.split(/\s+/).map(x=>x.length)));
+  const longest=Math.max(...items.map(item=>/\\\(/.test(item)?diagramVisibleLength(item,17):item.length));
+  const word=Math.max(...items.flatMap(item=>item.split(/\s+/).map(x=>/\\\(/.test(x)?diagramVisibleLength(x,17):x.length)));
   // Allow headings to wrap where needed; short values should stay compact.
   const estimate=28+Math.max(Math.min(200,longest*8.4),Math.min(202,word*9.4));
   return Math.max(MIN_COL_WIDTH,Math.min(MAX_COL_WIDTH,estimate));
@@ -60,15 +61,17 @@ export function tableWidths(model){
  return desired.map(w=>Number(w.toFixed(3)));
 }
 function svgText(lines,x,y,lineHeight,attrs){
- return '<text x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" '+attrs+'>'+
-  lines.map((line,i)=>'<tspan x="'+x.toFixed(1)+'" dy="'+(i?lineHeight:0)+'">'+E(line)+'</tspan>').join("")+
- '</text>';
+ if(!lines.some(line=>/\\\(|\\\[/.test(line)))
+  return '<text x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" '+attrs+'>'+
+    lines.map((line,i)=>'<tspan x="'+x.toFixed(1)+'" dy="'+(i?lineHeight:0)+'">'+E(line)+'</tspan>').join("")+
+   '</text>';
+ return lines.map((line,i)=>svgDiagramText(line,x,y+i*lineHeight,attrs)).join("");
 }
 function layout(model,d){
  const widths=tableWidths(model),tableWidth=total(widths);
  const title="Table "+d.number+". "+formatTableMath(d.title);
  // Keep the title within an A4-friendly width; wrap rather than widening a compact table.
- const innerWidth=Math.max(tableWidth,Math.min(560,title.length*11.25));
+ const innerWidth=Math.max(tableWidth,Math.min(560,(/\\\(/.test(title)?diagramVisibleLength(title,23):title.length)*11.25));
  const svgWidth=Math.ceil(innerWidth+PAGE_MARGIN*2);
  const tableLeft=(svgWidth-tableWidth)/2,positions=[tableLeft];
  widths.forEach(w=>positions.push(positions.at(-1)+w));
@@ -206,19 +209,19 @@ export function tableToHtml(raw){
  const heading="Table "+d.number+". "+formatTableMath(d.title);
  const th=model.headers.map((header,i)=>
   '<th scope="col" style="'+cellStyle(widths[i],alignment(d,model.numeric[i]),true,d.showColumnLines&&i>0,true)+
-  ';background:#e8f3f0;">'+E(formatTableMath(header))+'</th>').join("");
+  ';background:#e8f3f0;">'+diagramHtmlMath(header)+'</th>').join("");
  const body=model.rows.map((row,i)=>{
   const subtotal=["frequency","grouped"].includes(model.kind)&&i===model.rows.length-1;
   const highlighted=(model.highlightIndices||[]).includes(i);
   return '<tr'+(highlighted?' data-table-emphasis-row="'+(i+1)+'"':"")+'>'+row.map((value,j)=>'<td style="'+cellStyle(widths[j],alignment(d,model.numeric[j]),subtotal||highlighted,
     d.showColumnLines&&j>0,d.showRowLines||subtotal)+
-   ';background:'+(subtotal?"#e9f3ef":highlighted?"#e5f2ea":i%2?"#f6faf9":"#ffffff")+';'+(highlighted?"border-left:3px solid #417966;":"")+'">'+E(value)+'</td>').join("")+'</tr>';
+   ';background:'+(subtotal?"#e9f3ef":highlighted?"#e5f2ea":i%2?"#f6faf9":"#ffffff")+';'+(highlighted?"border-left:3px solid #417966;":"")+'">'+diagramHtmlMath(value)+'</td>').join("")+'</tr>';
  }).join("");
  const foot=[model.metadata,model.highlightNote?"Emphasis: "+model.highlightNote:"",model.note,d.sourceKind==="primary"?"Source: student-collected data":
   d.sourceKind==="theoretical"?"Source: theoretical / student-constructed values (not measurements)":"Source: "+d.sourceText]
-  .filter(Boolean).map(t=>'<p style="font-family:Arial,sans-serif;font-size:10pt;margin:5px 0 0;color:#566e75;">'+E(formatTableMath(t))+'</p>').join("");
+  .filter(Boolean).map(t=>'<p style="font-family:Arial,sans-serif;font-size:10pt;margin:5px 0 0;color:#566e75;">'+diagramHtmlMath(t)+'</p>').join("");
  return '<div style="max-width:'+htmlWidth+'px;">'+
-  '<p style="font-family:Arial,sans-serif;font-weight:700;font-size:13pt;margin:0 0 8px;">'+E(heading)+'</p>'+
+  '<p style="font-family:Arial,sans-serif;font-weight:700;font-size:13pt;margin:0 0 8px;">'+diagramHtmlMath(heading)+'</p>'+
   '<table style="width:'+htmlWidth+'px;max-width:100%;table-layout:fixed;border-collapse:collapse;border-top:2px solid #286960;border-bottom:2px solid #286960;"><colgroup>'+
   widths.map(w=>'<col style="width:'+w.toFixed(1)+'px">').join("")+'</colgroup><thead><tr>'+th+'</tr></thead><tbody>'+body+
   '</tbody></table>'+foot+'</div>';
