@@ -314,6 +314,8 @@ def advanced_graph(page,width):
  updated=saved(page)["tableStudio"]["draft"]["graphSnapshot"]
  assert updated["method"].startswith("Least squares on ln(y)")
  assert len(updated["rows"])==8
+ assert updated["graphTitle"]=="Advanced regression verification"
+ assert updated["modelLabel"]=="Exponential regression"
  assert updated["rows"][0]["predicted"]!=table["graphSnapshot"]["rows"][0]["predicted"]
  assert page.locator('[data-action="table-svg"]').is_enabled()
  assert saved(page)["graphStudio"]["draft"]["matrix"]==before
