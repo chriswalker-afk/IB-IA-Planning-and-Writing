@@ -106,3 +106,10 @@
  .stat-type{min-height:105px;padding:10px}
  .stat-output-buttons{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
+
+
+/* Explicit continuous histogram -> IA grouped frequency table handover. */
+.stat-table-transfer{display:grid;gap:7px;background:#f2f9f5;border:1px solid #d2e5dc;border-radius:10px;margin:10px 0;padding:11px}
+.stat-table-transfer>.btn{justify-self:start;white-space:normal}
+.stat-table-transfer>small{color:#526f64;font-size:11px;line-height:1.6}
+@media(max-width:650px){.stat-table-transfer>.btn{width:100%;justify-self:stretch}}
