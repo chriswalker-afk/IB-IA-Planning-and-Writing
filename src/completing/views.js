@@ -434,7 +434,7 @@ export function createCompletingViews(ctx){
    '<h3>'+e(advice.heading)+'</h3>'+
    choiceHtml+
    '<p class="route-coach-essential">'+e(advice.essential)+'</p>'+
-   (!reduced&&showDepth&&advice.depth?'<div class="route-depth-check"><strong>Mathematical development</strong><p>'+e(advice.depth)+'</p></div>':"")+
+   (showDepth&&advice.depth?'<div class="route-depth-check"><strong>Mathematical development</strong><p>'+e(advice.depth)+'</p></div>':"")+
    (!reduced&&advice.detail?'<p class="route-coach-detail">'+e(advice.detail)+'</p>':"")+
    '</section>';
  };
