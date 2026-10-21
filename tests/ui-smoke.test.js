@@ -59,7 +59,7 @@ import {renderRepresentationHub,renderRepresentationSwitcher,representationFocus
 import {renderPresentationCoach,renderFigureHandover} from "../src/diagrams/presentation-coach-view.js";
 import {figureCaption} from "../src/diagrams/presentation-coach-core.js";
 import {displayVoronoiBounds,coordinateFromCanvas,canvasPosition,voronoiFrame,recordVoronoiHistory,applyVoronoiFrame,undoVoronoi,redoVoronoi,freezeVoronoiWindow,fitVoronoiSites,setVoronoiTool,selectVoronoiSite,moveVoronoiSite,proposeVoronoiComparison,showVoronoiComparison,finishVoronoiComparison,selectNearestBisector} from "../src/diagrams/voronoi-interactions.js";
-import {renderWriterFieldGuide,renderWriterGuideWelcome,shouldShowWriterGuideWelcome} from "../src/completing/writer-field-guide.js";
+import {renderWriterFieldGuide,renderWriterGuideWelcome,shouldShowWriterGuideWelcome,renderWriterGuidePopin} from "../src/completing/writer-field-guide.js";
 import {writingGuideRecommendation} from "../src/completing/writer-guide-context.js";
 import {adaptiveNextDirections,flagJourneyRouteDependents} from "../src/completing/adaptive-journey.js";
 import {setCompletionNode,moveCompletionRoute,completionBack,markCompletionStage,setCompletionField,addMathematicalStage,routesAt,addAccuracyDecision,completionSuggestions,sectionForNode,targetForSection,completeEntry,latestRealResult,flagDependentMathematics,acknowledgeMathReview} from "../src/completing/engine.js";
@@ -83,10 +83,12 @@ function createHarness(savedValue){
   const store=new Map(savedValue?[["ia-pathfinder-prototype-v1",JSON.stringify(savedValue)]]:[]);
   const classList={add(){},remove(){},toggle(){}};
   const elements={};
-  for(const id of ["#main","#drawerLayer","#saveStatus","#pathCount","#importFile","#reportImportFile","#graphCsvFile","#imageTraceFile","#statCsvFile","#tableCsvFile","#voronoiCsvFile","#voronoiMapFile","#toast"]){
+  for(const id of ["#main","#drawerLayer","#saveStatus","#pathCount","#importFile","#reportImportFile","#graphCsvFile","#imageTraceFile","#statCsvFile","#tableCsvFile","#voronoiCsvFile","#voronoiMapFile","#toast","#writerGuidePopinLayer"]){
     elements[id]={innerHTML:"",textContent:"",dataset:{},hidden:id==="#drawerLayer",classList,focus(){},addEventListener(n,cb){events["file-"+n]=cb;}};
   }
   elements["#drawerLayer"].querySelector=()=>({focus(){}});
+  elements["#writerGuidePopinLayer"].hidden=true;
+  elements["#writerGuidePopinLayer"].querySelector=()=>({focus(){}});
   const document={
     querySelector:q=>elements[q]??null,
     getElementById:()=>null,
@@ -106,7 +108,7 @@ function createHarness(savedValue){
     newState:createProjectState,normalise:normalizeProjectState,
     KEY:"ia-pathfinder-prototype-v1",
     readRecordValue,updateRecordValue,icon,escapeHtml,cleanUrl,button,
-    referenceNodeForPrototypeStep,createPlanningViews,createStudioViews,createCompletingViews,createCheckingViews,renderWriterFieldGuide,renderWriterGuideWelcome,shouldShowWriterGuideWelcome,writingGuideRecommendation,createProjectViews,
+    referenceNodeForPrototypeStep,createPlanningViews,createStudioViews,createCompletingViews,createCheckingViews,renderWriterFieldGuide,renderWriterGuideWelcome,shouldShowWriterGuideWelcome,renderWriterGuidePopin,writingGuideRecommendation,createProjectViews,
     newGraphDraft,saveGraphFigure,renderGraphSvg,graphData,splitHeading,analyseGraph,renderGraphQuality,renderGraphActions,graphSourceChoices,
     updateGraphField,chooseGraphType,importGraphTable,loadSavedGraph,freshGraph,saveAndLinkGraph,saveGraphDraft,exportGraphFigure,
     imageTraceChecks,renderTraceOverlaySvg,renderCleanTraceSvg,traceCoordinates,traceCalibration,renderImageTracer,
@@ -141,6 +143,7 @@ function createHarness(savedValue){
   return {
     get html(){return elements["#main"].innerHTML;},
     get drawer(){return elements["#drawerLayer"].innerHTML;},
+    get popin(){return elements["#writerGuidePopinLayer"].innerHTML;},
     get saved(){return JSON.parse(store.get("ia-pathfinder-prototype-v1")??"null");},
     action:(action,other={})=>click("action",{action,...other}),
     choose:(choice,value)=>click("choice",{choice,value}),
@@ -584,9 +587,10 @@ test("Writer's Field Guide replaces the old tile, opens without changing student
  assert(!h.html.includes('class="writer-guide-context-badge"'));
  assert(h.html.includes('data-action="writer-guide-open"'));
  h.action("writer-guide-open",{guideTip:"voice",guideSpot:"completing:C10:aim"});
- assert(h.drawer.includes("You&#39;re allowed to say &#39;I&#39;!"));
- assert(h.drawer.includes('data-guide-stage-focus="C10"'));
- assert(h.drawer.includes("Introduction and motivation"));
+ assert(h.popin.includes("You&#39;re allowed to say &#39;I&#39;!"));
+ assert(h.popin.includes('data-guide-popin-tip="voice"'));
+ assert(h.popin.includes("Introduction and motivation"));
+ assert(h.popin.includes('data-action="writer-guide-popin-full"'));
  assert.equal(h.saved.scratch.introduction,"My original opening");
  assert.equal(h.saved.planning.fields.aim,"Is larger pizza better value?");
 });
