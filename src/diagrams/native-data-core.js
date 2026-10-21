@@ -220,6 +220,8 @@ export function applyNativeDataset(studio,type,dataset){
   const numeric=columns.map((_,i)=>({i,n:matrix.filter(row=>finiteCell(row[i])!==null).length}))
    .filter(r=>r.n>0).sort((a,b)=>b.n-a.n||a.i-b.i);
   d.selected=d.mode==="summary"?numeric.slice(0,3).map(x=>x.i):columns.map((_,i)=>i).slice(0,4);
+  d.calcXIndex=numeric[0]?.i??0;
+  d.calcYIndex=numeric.find(x=>x.i!==d.calcXIndex)?.i??Math.min(1,columns.length-1);
   d.categoryIndex=0;d.note="";d.purpose="";
  }
  return {ok:true,rows:matrix.length,cols:columns.length};
