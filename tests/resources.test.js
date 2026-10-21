@@ -138,7 +138,9 @@ test('resources: native diagram creators are available without hiding or replaci
  assert.deepEqual(resourceAction(s,session,'resource-creator-return'),{ok:true,creatorReturn:true});
  assert.equal(resourceAction(s,session,'resource-creator-open',{resourceCreator:'../../evil'}).ok,false);
  assert.equal(educational(s),before);
- assert.equal((html.match(/class="resource-row"/g)||[]).length,8);
+ const browseResults=html.split('<div id="resource-results">')[1];
+ assert(browseResults);
+ assert.equal((browseResults.match(/class="resource-row"/g)||[]).length,8);
  assert(html.includes('31 matching guides'));
  assert(!html.includes('target="_self"'));
  const guide=resourceDrawer(s,{...session,id:'sheets-scatter'});
