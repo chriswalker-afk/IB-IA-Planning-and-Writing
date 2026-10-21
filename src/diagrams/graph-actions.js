@@ -60,6 +60,23 @@ export function updateGraphModelExpression(studio,id,expression){
  model.expression=expression.slice(0,180);
  return true;
 }
+/** All advanced settings are explicit. No extrapolation or objective changes
+ * happen just because a user browses the model list.
+ */
+export function updateGraphModelOption(studio,id,key,value){
+ const model=studio?.draft?.models?.find(m=>m.id===id);
+ if(!model||typeof value!=="string")return false;
+ if(key==="fitMethod"&&["exponential","power"].includes(model.type)){
+  if(!["transformed","original"].includes(value))return false;
+  model.fitMethod=value;
+  return true;
+ }
+ if(key==="period"&&model.type==="sinusoidal"){
+  model.period=value.slice(0,36);
+  return true;
+ }
+ return false;
+}
 export function chooseGraphType(studio,kind){
  if(!["scatter","time","function"].includes(kind))return false;
  const d=studio.draft,old=d.kind;
