@@ -1,7 +1,7 @@
 """Browser acceptance of the on-device first-mathematics Graph Studio.
 Uses fictional test measurements; never uploads student data.
 """
-import copy,json,os,subprocess,traceback
+import copy,json,os,struct,subprocess,traceback
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 
@@ -102,6 +102,13 @@ def data_graph(page,width):
  with page.expect_download() as download:
   page.locator('[data-action="graph-svg"]').click()
  assert download.value.suggested_filename.endswith(".svg")
+ with page.expect_download() as download:
+  page.locator('[data-action="graph-png"]').click()
+ assert download.value.suggested_filename.endswith(".png")
+ png=Path(download.value.path()).read_bytes()
+ assert png[:8]==b"\\x89PNG\\r\\n\\x1a\\n"
+ width_px,height_px=struct.unpack(">II",png[16:24])
+ assert (width_px,height_px)==(2820,2040),(width_px,height_px)
  page.locator('[data-action="graph-use"]').click()
  assert page.locator('[data-source-node="C30"]').count()==1
  snapshot=saved(page)
