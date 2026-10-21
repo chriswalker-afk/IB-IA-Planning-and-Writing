@@ -31,7 +31,7 @@ export function voronoiLayout(bounds){
 }
 const closedPolygon=(polygon,L)=>polygon.map((p,i)=>(i?"L":"M")+coord(L.x(p.x))+" "+coord(L.y(p.y))).join(" ")+" Z";
 function captionLines(input,max=123,maxLines=2){
- const words=String(input||"").trim().split(/\s+/),out=[];
+ const words=String(input||"").trim().match(/\\\([\s\S]*?\\\)|\S+/g)||[],out=[];
  let curr="";
  for(const word of words){
   if((curr+" "+word).trim().length>max){out.push(curr);curr=word;}
@@ -44,8 +44,11 @@ function captionLines(input,max=123,maxLines=2){
 export function renderVoronoiSvg(raw,options={}){
  const q=analyzeVoronoi(raw),d=q.draft,b=q.bounds||VORONOI_STARTER_BOUNDS;
  const interactive=options.interactive===true,selectedId=options.selectedSiteId||"";
+ // Keep the saved student caption visible in the standalone figure without
+ // moving, clipping or distorting the coordinate rectangle.
+ const caption=captionLines(d.note,120,2),exportHeight=H+(caption.length?84:0);
 
- const body=['<svg class="voronoi-svg" data-voronoi-canvas="true"'+(interactive?' data-voronoi-interactive="true"':'')+' xmlns="http://www.w3.org/2000/svg" role="'+(interactive?"group":"img")+'" aria-label="'+E(d.title||"Student Voronoi construction")+'" viewBox="0 0 '+W+" "+H+'" width="'+W+'" height="'+H+'">',
+ const body=['<svg class="voronoi-svg" data-voronoi-canvas="true"'+(interactive?' data-voronoi-interactive="true"':'')+' xmlns="http://www.w3.org/2000/svg" role="'+(interactive?"group":"img")+'" aria-label="'+E(d.title||"Student Voronoi construction")+'" viewBox="0 0 '+W+" "+exportHeight+'" width="'+W+'" height="'+exportHeight+'">',
   '<rect width="'+W+'" height="'+H+'" fill="#fff"/>',
   text(d.title||"Voronoi studio — add title and sites",W/2,40,'font-family="Arial,sans-serif" font-size="22" font-weight="700" fill="#24464e" text-anchor="middle"'),
   text("Euclidean nearest-site regions — displayed cells clipped to the stated rectangular study window",W/2,67,
@@ -147,6 +150,8 @@ export function renderVoronoiSvg(raw,options={}){
   (d.mapSrc?"   ·   Background map: "+d.mapCredit:"");
  captionLines(credit,122,2).forEach((s,i)=>body.push(text(s,W/2,TOP+PLOT_HEIGHT+132+i*18,
   'font-family="Arial,sans-serif" font-size="11" fill="#6a7c81" text-anchor="middle"')));
+ caption.forEach((line,i)=>body.push(text(line,W/2,TOP+PLOT_HEIGHT+175+i*18,
+  'font-family="Arial,sans-serif" font-size="12" fill="#3d626a" text-anchor="middle"')));
  body.push("</svg>");
  return body.join("");
 }
