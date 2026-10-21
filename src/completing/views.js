@@ -1336,19 +1336,19 @@ export function createCompletingViews(ctx){
    }):screen.html+(screen.extra||"");
   // The Studio overview shows its own illustrated Discovery Trail.
   // Focused IA-writing screens retain the small five-chapter ribbon.
-  return '<div class="page narrow completing-page">'+tabletNav()+(node==="C04"?"":chapterRibbon(s))+
+  return '<div class="page narrow completing-page">'+tabletNav()+(writingIntro||node==="C04"?"":chapterRibbon(s))+
     '<div class="completion-topline"><span>'+icon("route")+' '+e(node==="C04"?"Your IA Studio":(JOURNEY_GROUPS.indexOf(currentGroup(s))+1)+'. '+currentGroup(s).name)+'</span>'+
-    '<div class="completion-top-actions">'+(writingIntro||node==="C00"?"":'<button type="button" class="chapter-guide-reopen" data-action="writing-intro-open">'+icon("circle-help")+' How writing works</button>')+
+    '<div class="completion-top-actions">'+(writingIntro?"":'<button type="button" class="chapter-guide-reopen" data-action="writing-intro-open">'+icon("circle-help")+' How writing works</button>')+
     '<button type="button" class="advice-mode-toggle" data-action="toggle-advice-mode" aria-pressed="'+isAdviceReduced(s)+'" aria-label="'+(isAdviceReduced(s)?"Show full advice":"Reduce optional advice")+'">'+
       icon(isAdviceReduced(s)?"eye":"eye-off")+' '+(isAdviceReduced(s)?"Show full advice":"Reduce advice")+'</button>'+
-    (node==="C04"?"":'<button class="btn btn-quiet btn-sm" data-action="completion-open" data-node="C04">'+icon("layers")+' My stages</button>')+'</div></div>'+
-    topWarnings+
-    (c.conclusionWarningOpen&&node!=="C60"?conclusionReadiness(s):"")+
-    (node!=="C00"&&node!=="C04"&&node!=="C10"&&!studioWriting&&!isStuckNode(node)?'<p class="studio-ia-writing-reminder">'+icon("pencil")+
+    (writingIntro||node==="C04"?"":'<button class="btn btn-quiet btn-sm" data-action="completion-open" data-node="C04">'+icon("layers")+' My stages</button>')+'</div></div>'+
+    (writingIntro?"":topWarnings)+
+    (!writingIntro&&c.conclusionWarningOpen&&node!=="C60"?conclusionReadiness(s):"")+
+    (!writingIntro&&node!=="C00"&&node!=="C04"&&node!=="C10"&&!studioWriting&&!isStuckNode(node)?'<p class="studio-ia-writing-reminder">'+icon("pencil")+
       ' WRITE IN YOUR IA · Use these prompts to develop your own document; nothing is inserted automatically.</p>':'')+
     '<div class="task-shell'+(writingIntro||node==="C00"?' chapter-onboarding-shell':'')+'" data-source-node="'+e(node)+'">'+
     criterionPageHeading(writingIntro?"Welcome to Writing.":label,"completing",writingIntro?"":(fieldBadgeInsteadOfTitle?"":node))+
-    (node==="C10"||studioWriting?"":'<p class="task-intro">'+e(screen.intro)+'</p>')+
+    (node==="C10"&&!writingIntro||studioWriting?"":'<p class="task-intro">'+e(screen.intro)+'</p>')+
     (writingIntro||node==="C10"||studioWriting?"":insightEcho(s,node))+(writingIntro?"":extra.returnToReview())+
     (writingIntro||studioWriting||isStuckNode(node)||["C00","C04","C10","C10E"].includes(node)||isAdviceReduced(s)?"":criteriaPanel(s))+
     stagedHtml+
