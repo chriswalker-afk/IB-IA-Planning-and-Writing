@@ -2,8 +2,9 @@ import {representationEmpty} from "./workspace-ui.js";
 import {renderNativeDataGrid} from "./native-data-view.js";
 import {renderPresentationCoach,renderFigureHandover} from "./presentation-coach-view.js";
 /** Short, readable tables, contextual mathematical help and reliable quality gates. */
-import {analyzeTable,TABLE_MAX_SAVED} from "./table-studio-core.js";
-import {renderTableSvg} from "./table-studio-render.js";
+import {analyzeTable,tableColumnFormat,TABLE_MAX_SAVED} from "./table-studio-core.js";
+import {TABLE_MATH_SYMBOLS,formatTableMath} from "./table-studio-math.js";
+import {renderTableSvg,assessTableA4} from "./table-studio-render.js";
 const routes={
  groups:"A compact comparison of means or medians is usually more useful than several pages of measurements. Keep the raw values in working files.",
  variation:"Summarise n, mean, spread or IQR from unrounded measurements. Show the mathematical method and justify your choice of statistics in your writing.",
@@ -30,6 +31,15 @@ const pick=(key,title,value,items,e)=>
  label(e(title),'<select data-table-field="'+key+'">'+items.map(([val,text])=>
   '<option value="'+e(val)+'"'+(String(value)===String(val)?" selected":"")+'>'+e(text)+'</option>').join("")+'</select>');
 const toggle=(key,text,checked)=>'<label class="ia-table-switch"><input data-table-field="'+key+'" type="checkbox"'+(checked?" checked":"")+'><span>'+text+'</span></label>';
+/** Palettes target their own column heading or unit; inserting keeps the caret. */
+const mathPalette=(index,part,e)=>
+ '<details class="ia-table-math-palette"><summary>∑ Mathematical symbols</summary>'+
+ '<div role="group" aria-label="Insert notation into '+(part==="unit"?"unit":"column heading")+'">'+
+ TABLE_MATH_SYMBOLS.map(symbol=>
+  '<button type="button" data-action="table-symbol" data-table-col="'+index+
+   '" data-table-part="'+part+'" data-table-token="'+e(symbol.token)+'" title="'+e(symbol.title)+
+   '" aria-label="'+e(symbol.title)+'">'+e(symbol.label)+'</button>').join("")+
+ '</div><small>Insert at the cursor. Try x_i, \\bar{x}, \\hat{y} or m s^-2; the preview formats these automatically.</small></details>';
 function numericColumn(d,index){
  let count=0;
  for(const row of d.matrix){if(/^[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:e[-+]?\d+)?$/i.test(String(row[index]??"").trim()))count++;}
@@ -45,11 +55,11 @@ function unitsEditors(d,e){
  numeric.map(i=>{
   const dec=d.unitDecisions[i]||{mode:"unsure",unit:""};
   return '<div class="ia-table-column-card">'+
-   '<label class="ia-table-form-field"><span>Column '+(i+1)+' heading</span><input type="text" data-table-col="'+i+'" data-table-part="heading" value="'+e(d.headings[i]||"")+'" placeholder="Variable name"></label>'+
+   '<label class="ia-table-form-field"><span>Column '+(i+1)+' heading</span><input type="text" data-table-col="'+i+'" data-table-part="heading" value="'+e(d.headings[i]||"")+'" placeholder="Variable name"></label>'+mathPalette(i,"heading",e)+
    '<label class="ia-table-form-field"><span>Units for this column</span><select data-table-col="'+i+'" data-table-part="unitMode">'+
     [["unsure","Confirm units"],["unit","Has a measurement unit"],["dimensionless","Dimensionless / counts"]].map(([value,desc])=>
       '<option value="'+value+'"'+(value===dec.mode?" selected":"")+'>'+desc+'</option>').join("")+'</select></label>'+
-   (dec.mode==="unit"?'<label class="ia-table-form-field"><span>Unit</span><input type="text" data-table-col="'+i+'" data-table-part="unit" value="'+e(dec.unit)+'" placeholder="e.g. m s^-1, cm^2, kg m^-3"><small>Use ^ for powers. For example, m s^-1 displays as m s⁻¹, and cm^2 displays as cm².</small></label>':"")+
+   (dec.mode==="unit"?'<label class="ia-table-form-field"><span>Unit</span><input type="text" data-table-col="'+i+'" data-table-part="unit" value="'+e(dec.unit)+'" placeholder="e.g. m s^-1, cm^2, kg m^-3"><small>Use ^ for powers. For example, m s^-1 displays as m s⁻¹, and cm^2 displays as cm².</small></label>'+mathPalette(i,"unit",e):"")+
    '</div>';
  }).join("")+'</div>';
 }
@@ -58,13 +68,16 @@ function headerEditors(d,e){
  if(d.mode==="frequency"){
   const options=d.columns.map((text,i)=>[String(i),d.headings[i]||text]);
   return pick("categoryIndex","Column containing the categories",String(d.categoryIndex),options,e)+
-   label("Category heading",'<input type="text" data-table-col="'+d.categoryIndex+'" data-table-part="heading" value="'+e(d.headings[d.categoryIndex]||"")+'">');
+   '<div class="ia-table-column-card">'+
+   label("Category heading",'<input type="text" data-table-col="'+d.categoryIndex+'" data-table-part="heading" value="'+e(d.headings[d.categoryIndex]||"")+'">')+
+   mathPalette(d.categoryIndex,"heading",e)+'</div>';
  }
  const indexes=d.columns.map((_,i)=>i).filter(i=>!numericColumn(d,i));
  if(!indexes.length)return"";
  return '<div class="ia-table-column-settings"><strong>Text headings</strong>'+
-  indexes.map(i=>label("Column "+(i+1)+' heading',
-   '<input type="text" data-table-col="'+i+'" data-table-part="heading" value="'+e(d.headings[i]||"")+'" placeholder="e.g. Trial">')).join("")+'</div>';
+  indexes.map(i=>'<div class="ia-table-column-card">'+label("Column "+(i+1)+' heading',
+   '<input type="text" data-table-col="'+i+'" data-table-part="heading" value="'+e(d.headings[i]||"")+'" placeholder="e.g. Trial">')+
+   mathPalette(i,"heading",e)+'</div>').join("")+'</div>';
 }
 function selectionControls(d,e){
  if(d.mode!=="summary"||!d.columns.length)return"";
