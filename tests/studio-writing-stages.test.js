@@ -95,6 +95,10 @@ test('reduced mode is task-first throughout every writing stage, without losing 
   assert(!compact.includes('studio-stage-advice-head'),node);
   assert(!compact.includes('writer-guide-inline-more'),node);
   assert(compact.includes('data-bind="completion.fields.exampleNote"'),node);
+  if(node==="C20"||node==="C30"){
+   assert(compact.includes('Your saved aim'),node);
+   assert(compact.includes('Does the amount of dough affect volume?'),node);
+  }
   assert(compact.includes('nothing is inserted into your IA automatically.'),node);
   assert(compact.length<full.length,node+' did not become smaller');
   const task=compact.indexOf('data-writing-stage-part="task"');
