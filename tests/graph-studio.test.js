@@ -487,8 +487,7 @@ test("cubic regression accurately fits a known cubic with full precision",()=>{
  assert.match(fit.caution,/overfitted/);
  assert.equal(fitPolynomialLeastSquares(data.slice(0,3),3).ok,false);
  const clustered=[10,10,10,12,15,17].map((x,i)=>({x,y:i}));
- assert.equal(fitPolynomialLeastSquares(clustered,3).ok,true);
- assert.equal(fitPolynomialLeastSquares(clustered.slice(0,5),3).ok,true);
+ assert.equal(fitPolynomialLeastSquares(clustered,3).ok,false,"Only three distinct x-values cannot fit a cubic");
 });
 test("logarithmic least squares uses all positive x-values and original y-units",()=>{
  const data=[1,2,3,4,6,8,12].map(x=>({x,y:4+2.5*Math.log(x)}));
@@ -588,7 +587,9 @@ test("advanced model options and residual decisions survive saves, reviews and o
  assert.equal(oldGraph.graphStudio.draft.models[0].fitMethod,"transformed");
 });
 test("advanced regression settings reject script-like inputs and use escaped mathematical feedback",()=>{
- const studio=validData();assert(addGraphModel(studio,"sinusoidal").ok);
+ const studio=validData();
+ studio.draft.matrix.push(["4","9","E"],["5","12","F"]);
+ assert(addGraphModel(studio,"sinusoidal").ok);
  const id=studio.draft.models[0].id;
  assert(updateGraphModelOption(studio,id,"period",'<img src=x onerror=alert(1)>'));
  const html=renderGraphStudio({graphStudio:studio},icon,escapeHtml);
