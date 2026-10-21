@@ -1,4 +1,5 @@
 import {representationEmpty} from "./workspace-ui.js";
+import {diagramNotationControls} from "./diagram-notation.js";
 import {renderNativeDataGrid} from "./native-data-view.js";
 import {renderPresentationCoach,renderFigureHandover} from "./presentation-coach-view.js";
 /** Cohesive graph editing surface inside C31. Every editor control has a real action. */
@@ -16,7 +17,7 @@ const field=(key,label,value,e,{placeholder="",hint="",rows=0}={})=>{
  const element=rows?
   '<textarea data-graph-field="'+key+'" rows="'+rows+'" placeholder="'+e(placeholder)+'">'+e(value)+'</textarea>':
   '<input type="text" data-graph-field="'+key+'" value="'+e(value)+'" placeholder="'+e(placeholder)+'" autocomplete="off">';
- return '<label class="graph-form-field"><span>'+e(label)+'</span>'+element+(hint?'<small>'+e(hint)+'</small>':"")+'</label>';
+ return '<label class="graph-form-field"><span>'+e(label)+'</span>'+element+(hint?'<small>'+e(hint)+'</small>':"")+'</label>'+ (["title","xLabel","yLabel","xUnit","yUnit","caption"].includes(key)?diagramNotationControls(e,{studio:"graph",key}):"");
 };
 const pick=(key,label,value,choices,e)=>'<label class="graph-form-field"><span>'+e(label)+'</span>'+
  '<select data-graph-field="'+key+'">'+choices.map(([v,n])=>opt(e(v),e(n),value)).join("")+'</select></label>';
