@@ -81,10 +81,11 @@ export function renderStudioWritingStage(state,node,{icon,e,taskHtml="",taskIntr
    icon("pencil")+
    '<div class="studio-stage-writing-location-copy">'+
     '<strong>Write in your actual IA document</strong>'+
-    '<p>'+(node==="C60"?"Use these notes to write your own concise conclusion. No text is inserted into your IA automatically.":"Put the relevant mathematical work, explanations and conclusions there as you go. Pathfinder saves your notes and decisions only; nothing is inserted into your IA automatically.")+'</p>'+
+    '<p>'+(reduced?"Pathfinder saves notes only; nothing is inserted into your IA automatically.":node==="C60"?"Use these notes to write your own concise conclusion. No text is inserted into your IA automatically.":"Put the relevant mathematical work, explanations and conclusions there as you go. Pathfinder saves your notes and decisions only; nothing is inserted into your IA automatically.")+'</p>'+
    '</div></div>'+
   taskHtml+'</section>';
  return renderWritingStageFlow({
+  reduced,
   advice:first?renderFirstMathsAdvice(state,icon,e,{reduced}):showFirst?renderShowingMathsAdvice(state,icon,e,{reduced}):renderAdvice(state,node,icon,e,reduced),
   sparks:node==="C60"?"":first?renderFirstMathsSparks(state,icon,e):showFirst?renderShowingMathsSparks(state,icon,e):renderSparks(state,node,icon,e),
   task,
