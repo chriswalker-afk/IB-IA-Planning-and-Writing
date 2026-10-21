@@ -106,10 +106,10 @@ def box(p,width):
  assert snapshot(p)["statStudio"]["draft"]["quartileRule"]=="linear"
  # Box-plot Pass 1: calculations, classification and labels are independent controls.
  p.locator('[data-stat-field="outlierRule"]').select_option("modified")
- assert "MAD" in p.locator('[data-stat-summary]').inner_text()
+ assert "Modified Z-score" in p.locator('[data-stat-summary]').inner_text()
  p.locator('[data-stat-field="showBoxQuartiles"]').check()
- assert "Q1 " in p.locator('[data-stat-preview] svg').inner_text()
- assert "Q3 " in p.locator('[data-stat-preview] svg').inner_text()
+ assert "Q1 " in p.locator('[data-stat-preview] svg').text_content()
+ assert "Q3 " in p.locator('[data-stat-preview] svg').text_content()
  p.locator('[data-stat-field="showBoxMean"]').check()
  p.locator('[data-stat-field="showBoxOutlierValues"]').check()
  assert p.locator('[data-stat-field="showBoxOutlierValues"]').is_checked()
