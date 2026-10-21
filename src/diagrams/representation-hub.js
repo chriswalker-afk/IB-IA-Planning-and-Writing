@@ -90,6 +90,9 @@ export function renderRepresentationHub(state,icon,e){
   '<span class="representation-card-icon">'+icon(t.icon)+'</span><span class="representation-card-details"><strong>'+
   e(t.title)+'</strong><small>'+e(t.detail)+'</small></span>'+icon("arrow-right")+'</button>').join(""):'<p>No tools in this category yet. Choose another mathematical purpose.</p>')+'</div>';
  return '<section class="representation-hub" data-representation-hub aria-label="Choose a mathematical representation">'+
+ (state.ui?.resourceCreatorReturnRoute?
+  '<button type="button" class="btn btn-quiet btn-sm resource-creator-hub-back" data-action="resource-creator-return">'+
+   icon("arrow-left")+' Back to my previous page</button>':'')+
  '<header class="representation-header"><div><span class="intro-writing-guide-eyebrow">'+icon("layers")+
  ' CHOOSE YOUR MATHEMATICAL REPRESENTATION</span><h2>Which tool helps tell your mathematical story?</h2>'+
  '<p>Start from your investigative aim. A clear, purposeful figure is more valuable than using extra mathematics just to make the IA look complicated.</p></div></header>'+
@@ -123,14 +126,24 @@ export function renderRepresentationSwitcher(state,icon,e){
   ["voronoi",state.voronoiStudio?.open]
  ].some(([id,open])=>t.id===id&&open));
  const steps=[["create","1 · Create"],["refine","2 · Refine"],["use","3 · Use in IA"]];
+ const fromLibrary=state.ui?.resourceCreatorReturnRoute||"";
+ const originLabel={
+  home:"Back to Home",planning:"Back to Planning",completing:"Back to IA Studio",
+  checking:"Back to Checking",path:"Back to My path",report:"Back to my report"
+ };
+ const backButton=fromLibrary?
+  '<button type="button" class="btn btn-quiet btn-sm" data-action="resource-creator-return">'+
+   icon("arrow-left")+' '+e(originLabel[fromLibrary]||"Back to my work")+'</button>':
+  '<button type="button" class="btn btn-quiet btn-sm" data-action="completion-open" data-node="C30">'+
+   icon("arrow-left")+' Back to my IA</button>';
+
  return '<div class="representation-workspace-header" data-representation-workspace data-representation-switcher>'+
   '<nav class="representation-workspace-bar" aria-label="Mathematical tool navigation">'+
   '<div class="representation-workspace-identity"><span class="representation-workspace-mark">'+
     icon(active?.icon||"layers")+'</span><span><small>IA Studio / Explore &amp; explain</small>'+
     '<strong>'+e(active?.title||"Mathematical workspace")+'</strong></span></div>'+
   '<div class="representation-workspace-actions">'+
-   '<button type="button" class="btn btn-quiet btn-sm" data-action="completion-open" data-node="C30">'+
-    icon("arrow-left")+' Back to my IA</button>'+
+   backButton+
    '<button type="button" class="btn btn-secondary btn-sm" data-action="representation-back">'+
     icon("grid-2x2")+' All tools</button></div></nav>'+
   '<nav class="representation-workspace-steps" aria-label="Jump within this generator">'+

@@ -125,3 +125,26 @@ test('resources: unchanged blur/change filters preserve clickable results and pa
  assert.equal(resourceFilter(u,'query','PMCC'),false);assert.equal(u.limit,16);
  assert(filterResources({query:'inference'}).some(r=>r.id==='inference'));
 });
+
+test('resources: native diagram creators are available without hiding or replacing the existing tutorial guides',()=>{
+ const s=fixture(),before=educational(s),session=newResourceSession();
+ const html=resourceDrawer(s,session);
+ for(const name of ['Graph plotter','Statistical diagrams','Table Studio','Image & coordinate tracer','Voronoi Studio'])
+  assert(html.includes(name.replace(/&/g,'&amp;')),name);
+ for(const id of ['graph','stat','table','trace','voronoi']){
+  assert(html.includes('data-action="resource-creator-open" data-resource-creator="'+id+'"'),id);
+  assert.deepEqual(resourceAction(s,session,'resource-creator-open',{resourceCreator:id}),{ok:true,creator:id});
+ }
+ assert.deepEqual(resourceAction(s,session,'resource-creator-return'),{ok:true,creatorReturn:true});
+ assert.equal(resourceAction(s,session,'resource-creator-open',{resourceCreator:'../../evil'}).ok,false);
+ assert.equal(educational(s),before);
+ const browseResults=html.split('<div id="resource-results">')[1];
+ assert(browseResults);
+ assert.equal((browseResults.match(/class="resource-row"/g)||[]).length,8);
+ assert(html.includes('31 matching guides'));
+ assert(!html.includes('target="_self"'));
+ const guide=resourceDrawer(s,{...session,id:'sheets-scatter'});
+ assert(guide.includes('Use a Pathfinder diagram creator'));
+ assert(guide.includes('data-resource-creator="graph"'));
+ assert(guide.includes('Read the steps'));
+});

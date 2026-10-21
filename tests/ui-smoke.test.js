@@ -1233,3 +1233,55 @@ test("Writing welcome explains available tools, preserves saved work, and can be
  assert.equal(h.saved.scratch.introduction,"An original student introduction");
  assert(h.html.includes('data-bind="scratch.introduction"'));
 });
+
+test("Tools & tutorials opens every built-in diagram creator and returns to Planning without losing work",()=>{
+ const keys={graph:"graphStudio",stat:"statStudio",table:"tableStudio",trace:"imageTracer",voronoi:"voronoiStudio"};
+ for(const [type,studio] of Object.entries(keys)){
+  const state=createProjectState();
+  state.route="planning";state.ui.planningIntroSeen=true;state.planning.current="N01";
+  state.planning.fields.aim="An original student mathematical question";
+  state.scratch.introduction="Saved writing from an earlier session";
+  const h=createHarness(state);
+  h.action("resource-browse");
+  assert(h.drawer.includes('data-resource-creator="'+type+'"'),type);
+  h.action("resource-creator-open",{resourceCreator:type});
+  assert.equal(h.saved.route,"completing",type);
+  assert.equal(h.saved.completion.current,"C31",type);
+  assert.equal(h.saved.ui.resourceCreatorReturnRoute,"planning");
+  assert.equal(h.saved.ui.resourceCreatorReturnNode,"C00");
+  assert.equal(h.saved[studio].open,true,type);
+  assert(h.html.includes('data-action="resource-creator-return"'),type);
+  assert.equal(h.saved.entries.length,0,"Opening a creator does not invent a mathematical result");
+  h.action("resource-creator-return");
+  assert.equal(h.saved.route,"planning",type);
+  assert.equal(h.saved.planning.current,"N01",type);
+  assert.equal(h.saved.completion.current,"C00",type);
+  assert.equal(h.saved.ui.resourceCreatorReturnRoute,"",type);
+  assert.equal(h.saved.planning.fields.aim,state.planning.fields.aim,type);
+  assert.equal(h.saved.scratch.introduction,state.scratch.introduction,type);
+  assert(!h.saved[studio].open,type);
+ }
+});
+test("Native creator return restores a live writing stage or the previously open generator",()=>{
+ const state=createProjectState();state.route="completing";state.ui.writingIntroSeen=true;
+ state.completion.current="C40";state.entries=[{id:"sample-stage",phase:"substantial",status:"completed",result:"Original mathematical result",interpretation:"Original reasoning"}];
+ state.completion.activeEntryIndex=0;
+ const h=createHarness(state);
+ h.action("resource-browse");
+ h.action("resource-creator-open",{resourceCreator:"graph"});
+ assert.equal(h.saved.completion.current,"C31");
+ h.action("resource-creator-return");
+ assert.equal(h.saved.completion.current,"C40");
+ assert.equal(h.saved.entries[0].result,"Original mathematical result");
+ const state2=createProjectState();state2.route="completing";state2.ui.writingIntroSeen=true;
+ state2.completion.current="C31";state2.graphStudio.open=true;
+ const other=createHarness(state2);
+ other.action("resource-browse");
+ other.action("resource-creator-open",{resourceCreator:"table"});
+ assert(other.saved.tableStudio.open);
+ assert(!other.saved.graphStudio.open);
+ other.action("resource-creator-return");
+ assert.equal(other.saved.completion.current,"C31");
+ assert(other.saved.graphStudio.open);
+ assert(!other.saved.tableStudio.open);
+});

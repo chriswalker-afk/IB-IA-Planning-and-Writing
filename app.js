@@ -479,6 +479,52 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     save();render();
     document.querySelector?.("[data-voronoi-studio]")?.scrollIntoView?.({block:"start",behavior:"auto"});
   }
+  // The resource library launches the existing five editors, not a second
+  // set of drawing implementations. Remember the authentic page and active
+  // editor so closing the creator does not strand Planning/Checking students.
+  function activeResourceCreator(){
+    return state.graphStudio.open?"graph":state.statStudio.open?"stat":
+      state.tableStudio.open?"table":state.imageTracer.open?"trace":
+      state.voronoiStudio.open?"voronoi":"";
+  }
+  function closeResourceCreators(){
+    state.graphStudio.open=false;state.statStudio.open=false;
+    state.tableStudio.open=false;state.imageTracer.open=false;state.voronoiStudio.open=false;
+  }
+  function clearResourceCreatorReturn(){
+    state.ui.resourceCreatorReturnRoute="";
+    state.ui.resourceCreatorReturnNode="";
+    state.ui.resourceCreatorReturnTool="";
+  }
+  function launchResourceCreator(type){
+    const openers={graph:navigateGraph,stat:navigateStat,table:navigateTable,
+      trace:navigateTrace,voronoi:navigateVoronoi};
+    if(!Object.hasOwn(openers,type)){toast("That diagram creator is unavailable.");return;}
+    state.ui.resourceCreatorReturnRoute=state.route;
+    state.ui.resourceCreatorReturnNode=state.completion.current||"C00";
+    state.ui.resourceCreatorReturnTool=activeResourceCreator();
+    if(!layer.hidden)closeDrawer(false);
+    state.route="completing";
+    openers[type]();
+  }
+  function returnFromResourceCreator(){
+    const route=state.ui.resourceCreatorReturnRoute;
+    if(!route)return;
+    const node=state.ui.resourceCreatorReturnNode;
+    const priorTool=state.ui.resourceCreatorReturnTool;
+    clearResourceCreatorReturn();
+    closeResourceCreators();
+    if(node&&node!==state.completion.current){
+      if(state.completion.history.at(-1)===node)state.completion.history.pop();
+      setCompletionNode(state,node,{history:false,reason:"return-from-resource-creator"});
+    }
+    if(node==="C31"){
+      const flags={graph:"graphStudio",stat:"statStudio",table:"tableStudio",
+        trace:"imageTracer",voronoi:"voronoiStudio"};
+      if(flags[priorTool])state[flags[priorTool]].open=true;
+    }
+    nav(route,{top:true});
+  }
   function updateBoundField(path,value) {
     if(path.startsWith("planning.fields.")){
       const before=getPath(path),ok=applyPlanningField(state,path.slice("planning.fields.".length),value);
@@ -700,6 +746,8 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   }
   let detachIdeaMapGraph=()=>{};
   function render(opts={}) {
+    if(state.ui.resourceCreatorReturnRoute&&(state.route!=="completing"||state.completion.current!=="C31"))
+      clearResourceCreatorReturn();
     closeGuidePopin(false);
     detachIdeaMapGraph();
     const map={home:viewHome,planning:viewPlanning,completing:viewCompleting,checking:viewChecking,path:viewPath,report:viewReport};
@@ -730,6 +778,8 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       }
       setCompletionNode(state,target,{reason:"stage-navigation"});
     }
+    if(state.ui.resourceCreatorReturnRoute&&(route!=="completing"||state.completion.current!=="C31"))
+      clearResourceCreatorReturn();
     state.ui.helpKey="";state.ui.openCue="";
     save();render({top:true});
   }
@@ -1118,6 +1168,8 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     const resources=resourceAction(state,resourceSession,action,el.dataset,layer.hidden?"":lastDrawer);
     if(resources){
       if(!resources.ok){toast(resources.error);return;}
+      if(resources.creator){launchResourceCreator(resources.creator);return;}
+      if(resources.creatorReturn){returnFromResourceCreator();return;}
       if(resources.save)save();
       if(resources.render){render();if(!layer.hidden&&lastDrawer==="stuck")openDrawer("stuck");return;}
       if(resources.open){if(layer.hidden)lastFocus=el;openDrawer("resources");return;}

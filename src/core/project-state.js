@@ -58,7 +58,7 @@ export function createProjectState() {
     },
     ui: {
       planStep:0,planMax:0,studioSection:"overview",mathIndex:0,mathPhase:"work",
-      helpKey:"",openCue:"",noteDraft:"",adviceMode:"guided",planningIntroSeen:false,planningIntroOpen:false,writingIntroSeen:false,writingIntroOpen:false,writerGuideIntroSeen:false,lastWorkRoute:"",lastStudioNode:"",representationFilter:"all",checkingMode:"draft",latestTitle:"",latestDetail:"",latestNode:"",latestEntry:"",latestAt:""
+      helpKey:"",openCue:"",noteDraft:"",adviceMode:"guided",planningIntroSeen:false,planningIntroOpen:false,writingIntroSeen:false,writingIntroOpen:false,writerGuideIntroSeen:false,resourceCreatorReturnRoute:"",resourceCreatorReturnNode:"",resourceCreatorReturnTool:"",lastWorkRoute:"",lastStudioNode:"",representationFilter:"all",checkingMode:"draft",latestTitle:"",latestDetail:"",latestNode:"",latestEntry:"",latestAt:""
     },
     scratch: {introduction:"",dataNotes:"",conclusion:"",finalReview:""},
     entries:[], dataShelf:[], graphStudio:newGraphStudio(), imageTracer:newImageTracer(), statStudio:newStatStudio(), tableStudio:newTableStudio(), voronoiStudio:newVoronoiStudio(), cues:{},cueNotes:{},cueLocations:{},
@@ -116,6 +116,9 @@ export function normalizeProjectState(value) {
   u.writingIntroSeen=u.writingIntroSeen===true;
   u.writingIntroOpen=u.writingIntroOpen===true;
   u.writerGuideIntroSeen=u.writerGuideIntroSeen===true;
+  if(!["","home","planning","completing","checking","path","report"].includes(u.resourceCreatorReturnRoute))u.resourceCreatorReturnRoute="";
+  if(!/^C\d{2}[A-Z0-9]*$/.test(u.resourceCreatorReturnNode))u.resourceCreatorReturnNode="";
+  if(!["","graph","stat","table","trace","voronoi"].includes(u.resourceCreatorReturnTool))u.resourceCreatorReturnTool="";
   const next={
     ...blank,
     updatedAt: str(value.updatedAt)||null,
