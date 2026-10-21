@@ -147,7 +147,7 @@ export function statSummaryHtml(studio,icon,e){
 export function statReadingGuideHtml(studio,icon,e){
  const guide=statReadingGuide(studio.draft);
  return '<section class="stat-reading-guide" data-stat-reading-guide aria-label="Read and interpret your statistical diagram">'+
-  '<div class="stat-reading-head"><strong>'+icon("book-open")+' From diagram to mathematical explanation</strong>'+
+  '<div class="stat-reading-head"><strong>'+icon("lightbulb")+' From diagram to mathematical explanation</strong>'+
   '<small>Observations from your data, prompts for your own IA writing</small></div>'+
   '<div class="stat-reading-steps">'+
   '<div><span class="stat-reading-step">1 · Read</span><p>'+e(guide.observation)+'</p></div>'+
