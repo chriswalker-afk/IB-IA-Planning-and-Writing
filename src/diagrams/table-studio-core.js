@@ -3,7 +3,7 @@
  * Large pasted datasets may be summarised, but raw data are never silently
  * truncated into a "presentable" table or moved into an appendix.
  */
-import {finiteCell,splitHeading} from "./graph-core.js";
+import {finiteCell,splitHeading,formatGraphMath} from "./graph-core.js";
 import {parseStatTable,boxStats} from "./stat-studio-core.js";
 export const TABLE_MAX_ROWS=500,TABLE_MAX_COLS=8,TABLE_MAX_SAVED=12;
 const trimmed=(x,n=120)=>typeof x==="string"?x.slice(0,n):"";
@@ -120,7 +120,8 @@ export const tableColumnFormat=(d,index,mode=d.mode)=>{
 };
 const formatNumber=(number,kind,digits)=>{
  const value=kind==="sf"?Number(number).toPrecision(Math.max(1,digits)):Number(number).toFixed(digits);
- return value.replace(/^-0(?=\.0+$|$)/, "0").replace(/^-0\.0+(?=e)/,match=>match.slice(1));
+ const clean=value.replace(/^-0(?=\.0+$|$)/, "0").replace(/^-0\.0+(?=e)/,match=>match.slice(1));
+ return kind==="sf"?formatGraphMath(clean.replace(/e\+?(-?\d+)$/i,(_whole,power)=>" × 10^"+power)):clean;
 };
 const displayValue=(v,d,derived=false,index=-1,mode=d.mode)=>{
  const rule=tableColumnFormat(d,index,mode);
