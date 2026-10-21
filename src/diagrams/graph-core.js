@@ -307,37 +307,47 @@ const W=940,H=620,LEFT=109,RIGHT=55,TOP=112,BOTTOM=122,PW=W-LEFT-RIGHT,PH=H-TOP-
 export function renderGraphSvg(draft){
  const analysis=analyseGraph(draft),d=analysis.draft;let {points,bounds}=analysis;
  const visibleModels=(analysis.models||[]).filter(model=>model.visible&&model.valid);
- const svgHeight=visibleModels.length?680:H;
+ const showKey=d.showLegend&&visibleModels.length>0;
+ const keyCount=showKey?visibleModels.length+1+(d.showResidualSegments&&analysis.selectedResidualModel?.visible&&analysis.selectedResidualModel.diagnostics?.ok?1:0):0;
+ const rightKey=showKey&&d.legendPosition==="right",aboveKey=showKey&&d.legendPosition==="above",belowKey=showKey&&d.legendPosition==="below";
+ const plotTop=TOP+(aboveKey?keyCount*22+18:0);
+ const svgWidth=W+(rightKey?390:0);
+ const axisY=plotTop+PH;
+ const keyStart=belowKey?axisY+119:aboveKey?93:plotTop+28;
+ const captionLines=d.caption.trim()?[d.caption.trim().slice(0,140)]:[];
+ const captionY=Math.max(axisY+118,belowKey?keyStart+keyCount*22+22:0);
+ const svgHeight=Math.max(620,captionY+(captionLines.length?24:0)+30);
  const title=escapeGraph(d.title.trim()||"Graph preview — add a descriptive title");
  const xLabel=escapeGraph(axisTitle(d.xLabel||"Horizontal variable",d.xUnit,d.xUnitMode));
  const yLabel=escapeGraph(axisTitle(d.yLabel||"Vertical variable",d.yUnit,d.yUnitMode));
- const parts=['<svg class="graph-figure-svg" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="'+title+'" viewBox="0 0 '+W+' '+svgHeight+'" width="'+W+'" height="'+svgHeight+'">',
+ const parts=['<svg class="graph-figure-svg" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="'+title+'" viewBox="0 0 '+svgWidth+' '+svgHeight+'" width="'+svgWidth+'" height="'+svgHeight+'">',
   '<title>'+title+'</title><desc>Student-generated '+escapeGraph(d.kind)+' graph with '+points.length+' valid points. Axis values and scale are listed in the labels.</desc>',
-  '<rect width="'+W+'" height="'+svgHeight+'" fill="#ffffff"/>'];
+  '<rect width="'+svgWidth+'" height="'+svgHeight+'" fill="#ffffff"/>'];
+ const figureNumber=d.figureNumber.trim().replace(/^figure\\s*/i,"").slice(0,24);
+ if(figureNumber)parts.push('<text class="graph-figure-number" x="'+W/2+'" y="23" font-family="Arial,Helvetica,sans-serif" font-size="14" font-weight="600" text-anchor="middle" fill="#526c71">Figure '+escapeGraph(figureNumber)+'</text>');
  const titleLines=polarised(d.title.trim()||"Graph preview — add a descriptive title",75).slice(0,2);
- titleLines.forEach((t,i)=>parts.push('<text x="'+W/2+'" y="'+(42+i*24)+'" font-family="Arial,Helvetica,sans-serif" font-size="20" font-weight="700" text-anchor="middle" fill="#203d43">'+escapeGraph(t)+'</text>'));
- const axisY=TOP+PH;
- parts.push('<rect x="'+LEFT+'" y="'+TOP+'" width="'+PW+'" height="'+PH+'" fill="#fafcfd" stroke="#ccd8dc" stroke-width="1.2"/>');
+ titleLines.forEach((t,i)=>parts.push('<text x="'+W/2+'" y="'+(52+i*24)+'" font-family="Arial,Helvetica,sans-serif" font-size="20" font-weight="700" text-anchor="middle" fill="#203d43">'+escapeGraph(t)+'</text>'));
+ parts.push('<rect x="'+LEFT+'" y="'+plotTop+'" width="'+PW+'" height="'+PH+'" fill="#fafcfd" stroke="#ccd8dc" stroke-width="1.2"/>');
  if(bounds.x&&bounds.y){
   const X=n=>LEFT+(n-bounds.x[0])/(bounds.x[1]-bounds.x[0])*PW;
-  const Y=n=>TOP+PH-(n-bounds.y[0])/(bounds.y[1]-bounds.y[0])*PH;
+  const Y=n=>plotTop+PH-(n-bounds.y[0])/(bounds.y[1]-bounds.y[0])*PH;
   for(const [key,bound,func] of [["x",bounds.x,X],["y",bounds.y,Y]]){
    const t=ticks(...bound);
    for(const v of t.values){
     if(key==="x"){
      const x=func(v);if(x<LEFT||x>LEFT+PW)continue;
-     if(d.showGrid)parts.push('<line x1="'+x.toFixed(2)+'" y1="'+TOP+'" x2="'+x.toFixed(2)+'" y2="'+axisY+'" stroke="#dfebee" stroke-width="1"/>');
+     if(d.showGrid)parts.push('<line x1="'+x.toFixed(2)+'" y1="'+plotTop+'" x2="'+x.toFixed(2)+'" y2="'+axisY+'" stroke="#dfebee" stroke-width="1"/>');
      parts.push('<line x1="'+x.toFixed(2)+'" y1="'+axisY+'" x2="'+x.toFixed(2)+'" y2="'+(axisY+7)+'" stroke="#425b63" stroke-width="1.4"/>',
      '<text x="'+x.toFixed(2)+'" y="'+(axisY+27)+'" text-anchor="middle" fill="#3b535a" font-family="Arial,Helvetica,sans-serif" font-size="14">'+escapeGraph(tickLabel(v,t.step))+'</text>');
     }else{
-     const y=func(v);if(y<TOP||y>axisY)continue;
+     const y=func(v);if(y<plotTop||y>axisY)continue;
      if(d.showGrid)parts.push('<line x1="'+LEFT+'" y1="'+y.toFixed(2)+'" x2="'+(LEFT+PW)+'" y2="'+y.toFixed(2)+'" stroke="#dfebee" stroke-width="1"/>');
      parts.push('<line x1="'+(LEFT-7)+'" y1="'+y.toFixed(2)+'" x2="'+LEFT+'" y2="'+y.toFixed(2)+'" stroke="#425b63" stroke-width="1.4"/>',
      '<text x="'+(LEFT-14)+'" y="'+(y+5).toFixed(2)+'" text-anchor="end" fill="#3b535a" font-family="Arial,Helvetica,sans-serif" font-size="14">'+escapeGraph(tickLabel(v,t.step))+'</text>');
     }
    }
   }
-  parts.push('<defs><clipPath id="ia-plot-clip"><rect x="'+LEFT+'" y="'+TOP+'" width="'+PW+'" height="'+PH+'"/></clipPath></defs>');
+  parts.push('<defs><clipPath id="ia-plot-clip"><rect x="'+LEFT+'" y="'+plotTop+'" width="'+PW+'" height="'+PH+'"/></clipPath></defs>');
   parts.push('<g clip-path="url(#ia-plot-clip)">');
   const sorted=d.kind==="time"?[...points].sort((a,b)=>a.x-b.x):points;
   if(d.kind==="time"&&sorted.length>1){
@@ -386,26 +396,26 @@ export function renderGraphSvg(draft){
    sorted.forEach(p=>parts.push('<circle cx="'+X(p.x).toFixed(2)+'" cy="'+Y(p.y).toFixed(2)+'" r="'+(sorted.length>220?"3.0":"4.5")+'" fill="#147e75" stroke="#fff" stroke-width="1"/>'));
   }
   parts.push('</g>');
-  if(visibleModels.length){
+  if(showKey){
    const legendItems=[{name:"Observed points",color:"#147e75",observed:true},
     ...visibleModels.map(m=>({name:m.label+": "+m.equation,color:m.color,dash:m.dash}))];
    if(d.showResidualSegments&&analysis.selectedResidualModel?.visible&&analysis.selectedResidualModel.diagnostics?.ok)
     legendItems.push({name:"Residual distances (observed − predicted)",color:analysis.selectedResidualModel.color,dash:"4 3"});
    legendItems.forEach((item,i)=>{
-    const y=519+19*i;
-    if(item.observed)parts.push('<circle cx="116" cy="'+(y-4)+'" r="4.5" fill="'+item.color+'"/>');
-    else parts.push('<line x1="106" y1="'+(y-4)+'" x2="127" y2="'+(y-4)+
+    const y=keyStart+i*22,markerX=rightKey?LEFT+PW+25:LEFT+6;
+    if(item.observed)parts.push('<circle class="graph-legend-marker" cx="'+(markerX+6)+'" cy="'+(y-4)+'" r="4.5" fill="'+item.color+'"/>');
+    else parts.push('<line class="graph-legend-marker" x1="'+markerX+'" y1="'+(y-4)+'" x2="'+(markerX+21)+'" y2="'+(y-4)+
      '" stroke="'+item.color+'" stroke-width="3"'+(item.dash?' stroke-dasharray="'+item.dash+'"':'')+'/>');
-    const label=item.name.length>99?item.name.slice(0,96)+"…":item.name;
-    parts.push('<text x="140" y="'+y+'" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#27464b">'+
-     escapeGraph(label)+'</text>');
+    const label=item.name.length>(rightKey?48:110)?item.name.slice(0,rightKey?45:107)+"…":item.name;
+    parts.push('<text class="graph-legend-text" x="'+(markerX+34)+'" y="'+y+'" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#27464b">'+escapeGraph(label)+'</text>');
    });
   }
  }else{
-  parts.push('<text x="'+W/2+'" y="'+(TOP+PH/2)+'" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="19" fill="#647d85">Add valid data or a function to see your graph</text>');
+  parts.push('<text x="'+W/2+'" y="'+(plotTop+PH/2)+'" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="19" fill="#647d85">Add valid data or a function to see your graph</text>');
  }
- parts.push('<text x="'+(LEFT+PW/2)+'" y="'+(svgHeight-59)+'" text-anchor="middle" fill="#263f47" font-family="Arial,Helvetica,sans-serif" font-size="17" font-weight="600">'+xLabel+'</text>',
-  '<text x="35" y="'+(TOP+PH/2)+'" transform="rotate(-90 35 '+(TOP+PH/2)+')" text-anchor="middle" fill="#263f47" font-family="Arial,Helvetica,sans-serif" font-size="17" font-weight="600">'+yLabel+'</text>');
+ parts.push('<text x="'+(LEFT+PW/2)+'" y="'+(axisY+64)+'" text-anchor="middle" fill="#263f47" font-family="Arial,Helvetica,sans-serif" font-size="17" font-weight="600">'+xLabel+'</text>',
+  '<text x="35" y="'+(plotTop+PH/2)+'" transform="rotate(-90 35 '+(plotTop+PH/2)+')" text-anchor="middle" fill="#263f47" font-family="Arial,Helvetica,sans-serif" font-size="17" font-weight="600">'+yLabel+'</text>');
+ captionLines.forEach((caption,i)=>parts.push('<text class="graph-figure-caption" x="'+W/2+'" y="'+(captionY+18*i)+'" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#405e66">'+escapeGraph(caption)+'</text>'));
  const source=d.kind==="function"?"Function: "+d.expression:d.sourceKind==="secondary"?"Source: "+(d.sourceText||"not yet supplied"):d.sourceKind==="primary"?"Source: student's observations":"Source: not yet confirmed";
  parts.push('<text x="'+W/2+'" y="'+(svgHeight-17)+'" text-anchor="middle" fill="#5b6f76" font-family="Arial,Helvetica,sans-serif" font-size="12">'+escapeGraph(source.slice(0,145))+'</text>',
   '</svg>');
