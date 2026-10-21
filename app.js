@@ -60,7 +60,7 @@ import {renderTableSvg} from "./src/diagrams/table-studio-render.js";
 import {renderTableStudio,tableDataChoices,tablePreviewHtml,tableA4PreviewHtml,tableQualityHtml,tableOutputHtml} from "./src/diagrams/table-studio-view.js";
 import {setTableField,setTableColumn,setTableColumnFormat,toggleTableDisplayColumn,chooseTableMode,toggleTableVariable,toggleTableMeasure,loadTable,freshTable,saveTableDraft,saveAndLinkTable} from "./src/diagrams/table-studio-actions.js";
 import {exportTable} from "./src/diagrams/table-studio-export.js";
-import {transferTableHistogram,transferStatFrequencyTable} from "./src/diagrams/frequency-handover.js";
+import {transferTableHistogram,transferTableCurve,transferStatFrequencyTable} from "./src/diagrams/frequency-handover.js";
 import {copyGraphModelToTable,detachTableGraphModel} from "./src/diagrams/graph-to-table.js";
 import {nativeGridSummary,editNativeHeading,editNativeCell,pasteNativeRange,NATIVE_MAX_ROWS,NATIVE_PAGE_ROWS} from "./src/diagrams/native-data-core.js";
 import {handleNativeDataAction,nativeStudio,activeNativeType} from "./src/diagrams/native-data-actions.js";
@@ -1885,6 +1885,15 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
          "Copied "+result.bins+" class intervals without changing the original table. The diagram uses frequency density, not counts, as bar heights.");
         break;
       }
+      case "table-to-ogive":case "table-to-polygon":{
+        const kind=action==="table-to-ogive"?"ogive":"polygon";
+        const result=transferTableCurve(state,kind);
+        if(!result.ok){toast("Cannot prepare this statistical curve",result.error);break;}
+        openNativeTool("stat");
+        toast(kind==="ogive"?"Cumulative-frequency curve prepared":"Frequency polygon prepared",
+          "All "+result.bins+" source class intervals are retained. The original Table Studio work has not changed.");
+        break;
+      }
       case "table-open":navigateTable();break;
       case "table-close":state.tableStudio.open=false;save();render();break;
       case "table-mode":{
@@ -1942,7 +1951,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         if(!result.ok){toast("Cannot prepare a grouped-frequency table",result.error);break;}
         openNativeTool("table");
         toast("Grouped-frequency table prepared",
-          "Copied "+result.bins+" complete class intervals with source measurements and provenance. The saved histogram remains unchanged.");
+          "Copied "+result.bins+" complete class intervals and original provenance. Saved diagrams remain unchanged.");
         break;
       }
       case "stat-open":navigateStat();break;

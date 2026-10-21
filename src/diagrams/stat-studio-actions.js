@@ -5,11 +5,13 @@ import {splitHeading} from "./graph-core.js";
 
 const TEXT=new Set(["raw","headers","histogramInput","binWidth","binStart","barMode",
  "quartileRule","outlierRule","whiskerMode","zThreshold","boxPrecision","histogramCompare","histogramLabels","dotMode",
+ "curveCompare","ogiveYMode","curvePercentile","barStyle","barSort","barLabels",
  "title","figureNumber","variable","unit","unitMode","sourceKind","sourceText",
  "caption","min","max"]);
 const SELECT=new Set(["categoryIndex","lowIndex","highIndex","frequencyIndex"]);
 const CHECK=new Set(["showGrid","showOutliers","showLabels","showBoxQuartiles","showBoxMedian",
- "showBoxExtremes","showBoxWhiskers","showBoxOutlierValues","showBoxFences","showBoxMean","dotMean","dotMedian"]);
+ "showBoxExtremes","showBoxWhiskers","showBoxOutlierValues","showBoxFences","showBoxMean","dotMean","dotMedian",
+ "curveShowQuartiles","curveShowPercentile","curveGuides","polygonShowHistogram","polygonShowPoints","polygonShowValues"]);
 export function setStatField(studio,key,value){
  const d=studio?.draft;
  if(!d)return false;
@@ -17,10 +19,17 @@ export function setStatField(studio,key,value){
   if(typeof value!=="string")return false;
   if(key==="histogramCompare"&&!["single","overlay","smallmultiples"].includes(value))return false;
   if(key==="histogramCompare"&&value!=="single"&&d.histogramInput==="table")return false;
+  if(key==="curveCompare"&&!["single","multiple"].includes(value))return false;
+  if(key==="curveCompare"&&value!=="single"&&d.histogramInput==="table")return false;
+  if(key==="ogiveYMode"&&!["count","percent"].includes(value))return false;
+  if(key==="barStyle"&&!["grouped","stacked","stacked100"].includes(value))return false;
+  if(key==="barSort"&&!["source","name","total-desc","total-asc"].includes(value))return false;
+  if(key==="barLabels"&&!["auto","none","count","percent"].includes(value))return false;
   const original=d[key];
   d[key]=value.slice(0,key==="raw"?85000:key==="sourceText"||key==="caption"?480:150);
   if(key==="histogramCompare"&&value==="single")d.selected=d.selected.slice(0,1);
-  if(key==="histogramInput"&&value==="table"){d.histogramCompare="single";d.selected=d.selected.slice(0,1);}
+  if(key==="curveCompare"&&value==="single")d.selected=d.selected.slice(0,1);
+  if(key==="histogramInput"&&value==="table"){d.histogramCompare="single";d.curveCompare="single";d.selected=d.selected.slice(0,1);}
   if((key==="raw"||key==="headers")&&original!==d[key]&&d.matrix.length)d.pendingPaste=true;
   return true;
  }
@@ -48,10 +57,19 @@ function columnHeading(value){
  return splitHeading(value);
 }
 export function changeStatKind(studio,kind){
- if(!["histogram","box","dot","bar"].includes(kind))return false;
+ if(!["histogram","ogive","polygon","box","dot","bar"].includes(kind))return false;
  const d=studio.draft,old=d.kind,oldFirst=d.selected?.[0]??0;
  if(old===kind)return true;
  d.kind=kind;d.min="";d.max="";
+ // Grouped frequency tables describe one distribution; hidden comparison settings
+ // must never invalidate a new curve after switching away from a raw-data view.
+ if(["histogram","ogive","polygon"].includes(kind)&&d.histogramInput==="table"){
+  d.histogramCompare="single";d.curveCompare="single";
+ }
+ if(["ogive","polygon"].includes(kind)&&old==="histogram"&&d.histogramInput==="raw"&&d.histogramCompare!=="single")
+  d.curveCompare="multiple";
+ if(kind==="histogram"&&["ogive","polygon"].includes(old)&&d.histogramInput==="raw"&&d.curveCompare==="multiple")
+  d.histogramCompare="overlay";
  if(kind==="bar"){
   d.categoryIndex=0;
   d.selected=d.selected.filter(i=>i!==d.categoryIndex).slice(0,4);
@@ -61,7 +79,9 @@ export function changeStatKind(studio,kind){
   if(!d.selected.length||d.selected.every(i=>i===0)&&old==="bar"){
    d.selected=d.columns.length>1?[1]:[0];
   }
-  d.selected=d.selected.slice(0,kind==="histogram"&&d.histogramCompare==="single"?1:5);
+  const continuous=["histogram","ogive","polygon"].includes(kind);
+  const compare=kind==="histogram"?d.histogramCompare!=="single":d.curveCompare==="multiple";
+  d.selected=d.selected.slice(0,continuous&&!compare?1:continuous?4:5);
   if(d.columns.length){
    const split=columnHeading(d.columns[d.selected[0]||0]);
    // Switching between numerical chart styles must not discard a student's
@@ -78,11 +98,12 @@ export function changeStatKind(studio,kind){
 export function toggleStatSeries(studio,index,selected){
  const d=studio.draft;
  if(!Number.isInteger(index)||index<0||index>=d.columns.length)return false;
- if(d.kind==="histogram"&&(d.histogramInput==="table"||d.histogramCompare==="single"))return false;
+ if(["histogram","ogive","polygon"].includes(d.kind)&&(d.histogramInput==="table"||
+    (d.kind==="histogram"?d.histogramCompare==="single":d.curveCompare==="single")))return false;
  if(d.kind==="bar"&&index===d.categoryIndex)return false;
  const next=d.selected.filter(i=>i!==index);
  if(selected){
-  const limit=d.kind==="bar"||d.kind==="histogram"?4:5;
+  const limit=["bar","histogram","ogive","polygon"].includes(d.kind)?4:5;
   if(next.length>=limit)return false;
   next.push(index);next.sort((a,b)=>a-b);
  }
@@ -91,7 +112,7 @@ export function toggleStatSeries(studio,index,selected){
 }
 export function chooseHistogramSuggestion(studio,key){
  const d=studio?.draft;
- if(!d||d.kind!=="histogram"||d.histogramInput!=="raw")return false;
+ if(!d||!["histogram","ogive","polygon"].includes(d.kind)||d.histogramInput!=="raw")return false;
  const suggestion=statAnalysis(d).result.suggestions?.find(item=>item.key===key&&item.available);
  if(!suggestion)return false;
  d.binWidth=String(suggestion.width);

@@ -7,10 +7,13 @@ import {escapeGraph,finiteCell,splitHeading} from "./graph-core.js";
 import {continuousBins,groupedClassBins} from "./continuous-classes.js";
 import {boxStats,boxComparisons} from "./box-analysis.js";
 import {distributionSummary,distributionComparisons,histogramBinSuggestions,alignedHistograms} from "./distribution-analysis.js";
+import {groupedCurve,frequencyPolygon,categoricalBars} from "./stat-curve-analysis.js";
 export {boxStats} from "./box-analysis.js";
 
 export const STAT_TYPES=Object.freeze([
  ["histogram","Histogram","Continuous measurements with class widths and frequency density."],
+ ["ogive","Cumulative frequency","Read quartiles and percentiles from an ogive; compare cumulative distributions."],
+ ["polygon","Frequency polygon","Compare class-midpoint frequencies or densities; overlay a histogram."],
  ["box","Box plot","Distribution, median, IQR and possible outliers; compare groups."],
  ["dot","Dot plot","See actual measured values and repeated readings."],
  ["bar","Comparative bar chart","Compare categories using counts or within-group percentages."]
@@ -25,6 +28,9 @@ export function newStatDraft(){
   kind:"histogram",raw:"",columns:[],matrix:[],pendingPaste:false,headers:"auto",
   selected:[0],categoryIndex:0,lowIndex:0,highIndex:1,frequencyIndex:2,
   histogramInput:"raw",binWidth:"",binStart:"",barMode:"count",histogramCompare:"single",histogramLabels:"frequency",dotMode:"individual",dotMean:false,dotMedian:false,
+  curveCompare:"single",ogiveYMode:"percent",curveShowQuartiles:true,curveShowPercentile:false,
+  curvePercentile:"90",curveGuides:true,polygonShowHistogram:false,polygonShowPoints:true,polygonShowValues:false,
+  barStyle:"grouped",barSort:"source",barLabels:"auto",
   quartileRule:"halves",outlierRule:"tukey",whiskerMode:"nonoutlier",zThreshold:"3",boxPrecision:"auto",
   title:"",figureNumber:"1",variable:"",unit:"",unitMode:"unsure",sourceKind:"unsure",sourceText:"",
   caption:"",min:"",max:"",showGrid:true,showOutliers:true,showLabels:true,
@@ -36,6 +42,7 @@ export function normalizeStatDraft(raw){
  const d=newStatDraft(),r=valid(raw)?raw:{};
  for(const key of ["kind","raw","headers","histogramInput","binWidth","binStart","barMode",
   "quartileRule","outlierRule","whiskerMode","zThreshold","boxPrecision","histogramCompare","histogramLabels","dotMode",
+  "curveCompare","ogiveYMode","curvePercentile","barStyle","barSort","barLabels",
   "title","figureNumber","variable","unit","unitMode","sourceKind","sourceText",
   "caption","min","max"]){
   const cap=key==="raw"?MAX_STAT_RAW:key==="sourceText"?480:key==="caption"?480:150;
@@ -45,6 +52,11 @@ export function normalizeStatDraft(raw){
  if(!["auto","yes","no"].includes(d.headers))d.headers="auto";
  if(!["raw","table"].includes(d.histogramInput))d.histogramInput="raw";
  if(!["count","percent"].includes(d.barMode))d.barMode="count";
+ if(!["single","multiple"].includes(d.curveCompare))d.curveCompare="single";
+ if(!["count","percent"].includes(d.ogiveYMode))d.ogiveYMode="percent";
+ if(!["grouped","stacked","stacked100"].includes(d.barStyle))d.barStyle="grouped";
+ if(!["source","name","total-desc","total-asc"].includes(d.barSort))d.barSort="source";
+ if(!["auto","none","count","percent"].includes(d.barLabels))d.barLabels="auto";
  if(!["single","overlay","smallmultiples"].includes(d.histogramCompare))d.histogramCompare="single";
  if(!["none","frequency","density","percentage"].includes(d.histogramLabels))d.histogramLabels="frequency";
  if(!["individual","counted"].includes(d.dotMode))d.dotMode="individual";
@@ -66,7 +78,8 @@ export function normalizeStatDraft(raw){
  }
  for(const key of ["pendingPaste","showGrid","showOutliers","showLabels","showBoxQuartiles",
   "showBoxMedian","showBoxExtremes","showBoxWhiskers","showBoxOutlierValues",
-  "showBoxFences","showBoxMean","dotMean","dotMedian"]){
+  "showBoxFences","showBoxMean","dotMean","dotMedian","curveShowQuartiles","curveShowPercentile","curveGuides",
+  "polygonShowHistogram","polygonShowPoints","polygonShowValues"]){
   if(typeof r[key]==="boolean")d[key]=r[key];
  }
  return d;
@@ -130,11 +143,13 @@ export function importStatTable(studio,raw){
  const numeric=data.columns.map((_,i)=>({
   index:i,valid:data.matrix.filter(row=>ncell(row[i])!==null).length
  })).filter(x=>x.valid>0).sort((a,b)=>b.valid-a.valid||a.index-b.index);
- d.selected=numeric.slice(0,d.kind==="histogram"&&d.histogramCompare==="single"?1:Math.min(4,numeric.length)).map(x=>x.index);
+ const continuous=["histogram","ogive","polygon"].includes(d.kind);
+ const compare=d.kind==="histogram"?d.histogramCompare!=="single":d.curveCompare==="multiple";
+ d.selected=numeric.slice(0,continuous&&!compare?1:Math.min(4,numeric.length)).map(x=>x.index);
  if(!d.selected.length)d.selected=[0];
  if(d.kind==="bar"){
   d.categoryIndex=0;d.selected=numeric.filter(x=>x.index!==d.categoryIndex).slice(0,4).map(x=>x.index);
- }else if(d.kind==="histogram"&&d.histogramInput==="table"){
+ }else if(["histogram","ogive","polygon"].includes(d.kind)&&d.histogramInput==="table"){
   d.lowIndex=0;d.highIndex=1;d.frequencyIndex=2;
  }
  const heading=data.columns[d.selected[0]??0]||"";
@@ -165,30 +180,39 @@ function buildRawHistogram(d){
  const source=entries[0],b=continuousBins(source.values,d.binWidth,d.binStart,36);
  return {...b,values:source.values,skipped:source.skipped,series:[{...source,n:source.values.length,bins:b.bins||[]}]};
 }
+function buildContinuous(d){
+ if(d.histogramInput==="table")return buildGroupedHistogram(d);
+ return buildRawHistogram({...d,
+  histogramCompare:d.kind==="histogram"?d.histogramCompare:d.curveCompare==="multiple"?"overlay":"single"});
+}
 function buildGroupedHistogram(d){
  if(d.columns.length<3)return {bins:[],error:"A grouped-frequency histogram needs lower, upper and frequency columns."};
  const result=groupedClassBins(d.matrix,d.lowIndex,d.highIndex,d.frequencyIndex,36);
  return {...result,values:[],skipped:0};
 }
 function barAnalysis(d){
- const categories=[],names=numericCols(d).filter(i=>i!==d.categoryIndex);
- if(!names.length)return {categories:[],error:"Choose at least one numerical group column, different from the category column."};
- const seen=new Set();
+ const categories=[],indices=numericCols(d).filter(i=>i!==d.categoryIndex);
+ if(!indices.length)return {categories:[],error:"Choose at least one count column distinct from the category."};
+ const names=indices.map(i=>d.columns[i]),seen=new Set();
  for(let i=0;i<d.matrix.length;i++){
-  const row=d.matrix[i],category=(row[d.categoryIndex]||"").trim();
+  const row=d.matrix[i],category=String(row?.[d.categoryIndex]??"").trim();
   if(!category)return {categories:[],error:"Row "+(i+1)+" has an empty category."};
-  if(seen.has(category))return {categories:[],error:"The category '"+category+"' appears more than once. Combine it before graphing."};
+  if(seen.has(category))return {categories:[],error:"The category '"+category+"' is duplicated. Combine it explicitly."};
   seen.add(category);
-  const counts=names.map(index=>ncell(row[index]));
-  if(counts.some(x=>x===null||x<0||!Number.isSafeInteger(x)))
-   return {categories:[],error:"Row "+(i+1)+" needs a non-negative whole-number count in every selected group."};
+  const counts=indices.map(index=>ncell(row?.[index]));
+  if(counts.some(value=>value===null||value<0||!Number.isSafeInteger(value)))
+   return {categories:[],error:"Row "+(i+1)+" needs a non-negative whole-number count in each selected group."};
+  if(!Number.isSafeInteger(counts.reduce((a,b)=>a+b,0)))
+   return {categories:[],error:"The category total exceeds the reliable integer range."};
   categories.push({category,counts});
  }
- const totals=names.map((_,i)=>categories.reduce((s,r)=>s+r.counts[i],0));
- if(d.barMode==="percent"&&totals.some(n=>n<=0))
-  return {categories:[],error:"A group with zero observations cannot be converted into percentages."};
- return {categories:categories.map(c=>({...c,values:c.counts.map((n,i)=>d.barMode==="count"?n:100*n/totals[i])})),
-  names:names.map(i=>d.columns[i]),totals};
+ const totals=indices.map((_,j)=>categories.reduce((n,c)=>n+c.counts[j],0));
+ if(totals.some(n=>!Number.isSafeInteger(n)))return {categories:[],error:"The group total exceeds the reliable integer range."};
+ if(d.barStyle==="grouped"&&d.barMode==="percent"&&totals.some(n=>n<=0))
+  return {categories:[],error:"A group with no responses cannot be converted to a percentage."};
+ if(d.barStyle==="stacked100"&&categories.some(c=>c.counts.every(n=>n===0)))
+  return {categories:[],error:"Each category needs at least one response for a 100%-stacked chart."};
+ return categoricalBars(categories,names,d.barMode,d.barStyle,d.barSort);
 }
 export function statAnalysis(raw){
  const d=normalizeStatDraft(raw),problems=[],warnings=[];
@@ -207,8 +231,9 @@ export function statAnalysis(raw){
  if(d.title.length>95)warn("title-length","The title may be too long to read when printed.");
  if(d.matrix.length>300)warn("many-rows","Large data tables should stay in working files, not the IA or appendix.");
  let result={kind:d.kind};
- if(d.kind==="histogram"){
-  const data=d.histogramInput==="table"?buildGroupedHistogram(d):buildRawHistogram(d);
+ if(["histogram","ogive","polygon"].includes(d.kind)){
+  const curveKind=d.kind!=="histogram";
+  const data=buildContinuous(d);
   if(data.error)fail("histogram-data",data.error);
   const bins=data.bins||[];
   if(bins.length<1&&!data.error)fail("histogram-empty","No usable histogram classes were found.");
@@ -220,15 +245,35 @@ export function statAnalysis(raw){
   if(d.histogramInput==="raw"&&bins.length>20)warn("many-bins","Consider whether many narrow bins communicate the distribution effectively.");
   if(d.histogramInput==="table")warn("class-assumption","Explain how grouped data and the class boundaries were obtained; original values cannot be recovered from frequencies.");
   const series=data.series||[],values=data.values||[];
-  if(d.histogramInput==="table"&&d.histogramCompare!=="single")fail("compare-grouped","Comparison requires original measurements, not grouped frequencies.");
-  if(d.histogramCompare!=="single"&&series.length<2)fail("compare-groups","Choose at least two groups.");
-  if(d.histogramCompare!=="single"&&series.length>4)fail("compare-limit","Choose at most four groups.");
-  if(d.histogramCompare!=="single"&&series.length>1&&series.some(group=>group.n!==series[0].n))
+  const compare=curveKind?d.curveCompare==="multiple":d.histogramCompare!=="single";
+  if(d.histogramInput==="table"&&compare)fail("compare-grouped","Comparisons require original measurements; a grouped-frequency table is one distribution.");
+  if(compare&&series.length<2)fail("compare-groups","Choose at least two groups.");
+  if(compare&&series.length>4)fail("compare-limit","Choose at most four groups.");
+  if(compare&&series.length>1&&series.some(group=>group.n!==series[0].n))
    warn("unequal-group-n","Different sample sizes: compare relative-frequency density, not raw counts.");
   result={...result,bins,total,series,skipped:data.skipped||0,
    suggestions:d.histogramInput==="raw"?histogramBinSuggestions(values):[],
    summary:d.histogramInput==="raw"?distributionSummary(values,d.quartileRule):null,
    comparisons:d.histogramInput==="raw"?distributionComparisons(series.map(group=>({...group,summary:distributionSummary(group.values,d.quartileRule)}))):[]};
+  if(curveKind){
+   const groups=series.length?series:[{name:d.variable||"Measurement",n:total,bins}];
+   if(d.kind==="ogive"){
+    const percentile=Number(d.curvePercentile);
+    if(d.curveShowPercentile&&(!d.curvePercentile.trim()||!Number.isFinite(percentile)||percentile<=0||percentile>=100))
+     fail("percentile","Choose a percentile strictly between 0 and 100.");
+    const curves=groups.map(group=>({...group,curve:groupedCurve(group.bins,percentile)}));
+    if(curves.some(group=>group.curve.error))fail("ogive-data","Cumulative frequencies could not be calculated from the supplied intervals.");
+    result={...result,curves,curveYMode:curves.length>1?"percent":d.ogiveYMode};
+    warn("percentile-estimates","Quartiles and percentiles are linearly interpolated estimates within grouped class intervals, not exact raw-data quantiles.");
+   }else{
+    const polygons=groups.map(group=>({...group,
+     polygon:frequencyPolygon(group.bins,groups.length>1,group.n)}));
+    if(polygons.some(group=>group.polygon.error))
+     fail("polygon-data","The selected classes cannot form a frequency polygon.");
+    result={...result,polygons};
+    warn("polygon-midpoints","Polygon points are at class midpoints; unequal class widths use frequency density.");
+   }
+  }
  }else if(d.kind==="box"||d.kind==="dot"){
   const series=numericCols(d).map(i=>{
    const data=columnData(d,i);
@@ -279,7 +324,9 @@ export function statAnalysis(raw){
    const small=Math.min(...b.totals),large=Math.max(...b.totals);
    if(small===0||large>small*1.25)warn("group-size","The groups have different sample sizes. Counts can mislead: consider percentages of each group's total.");
   }
-  if(d.barMode==="percent")warn("percent-denominator","Percentages use each group's total across the displayed categories as the denominator. Check whether that matches your population or sampling question.");
+  if(d.barStyle==="grouped"&&d.barMode==="percent")warn("percent-denominator","Each value is a percentage of its group's total across the categories.");
+  if(d.barStyle==="stacked100")warn("category-denominator","Each bar totals 100% of that category's responses, not 100% of a group's responses.");
+  if(d.barStyle==="stacked"&&d.barMode==="percent")warn("stacked-counts","Stacked counts use original frequencies; grouped-chart percentage settings are not applied.");
   result={...result,...b};
  }
  let override=null;
@@ -289,20 +336,22 @@ export function statAnalysis(raw){
   else override=[lo,hi];
  }
  if(d.kind==="bar"&&override&&override[0]!==0)fail("zero-bar","A categorical bar chart must start its frequency/percentage axis at zero.");
- if(d.kind==="histogram"&&override){
+ if(["histogram","ogive","polygon"].includes(d.kind)&&override){
   if(override[0]>Math.min(...(result.bins||[{low:0}]).map(x=>x.low))||
      override[1]<Math.max(...(result.bins||[{high:1}]).map(x=>x.high)))
    fail("cropped-classes","The chosen horizontal range must include every class boundary.");
  }
  if((d.kind==="dot"||d.kind==="box")&&override&&result.series?.some(s=>s.values.some(x=>x<override[0]||x>override[1])))
   fail("cropped-points","The chosen horizontal scale excludes observations or outliers.");
- if(d.kind==="bar"&&override&&result.categories?.some(c=>c.values.some(x=>x>override[1])))
+ if(d.kind==="bar"&&override&&result.categories?.some(c=>d.barStyle==="grouped"?c.values.some(x=>x>override[1]):c.values.reduce((a,b)=>a+b,0)>override[1]))
   fail("cropped-bars","The upper scale limit cuts off a bar.");
  return {draft:d,ready:problems.length===0,problems,warnings,result,override};
 }
 export const statSignature=d=>JSON.stringify([d.kind,d.matrix,d.columns,d.selected,d.categoryIndex,d.lowIndex,
  d.highIndex,d.frequencyIndex,d.histogramInput,d.binWidth,d.binStart,d.barMode,d.quartileRule,d.outlierRule,
- d.whiskerMode,d.zThreshold,d.histogramCompare,d.histogramLabels,d.dotMode,d.dotMean,d.dotMedian,d.min,d.max]);
+ d.whiskerMode,d.zThreshold,d.histogramCompare,d.histogramLabels,d.dotMode,d.dotMean,d.dotMedian,
+ d.curveCompare,d.ogiveYMode,d.curveShowQuartiles,d.curveShowPercentile,d.curvePercentile,d.curveGuides,
+ d.polygonShowHistogram,d.polygonShowPoints,d.polygonShowValues,d.barStyle,d.barSort,d.barLabels,d.min,d.max]);
 export function saveStatFigure(studio,entryId=""){
  const q=statAnalysis(studio.draft);
  if(!q.ready)return {ok:false,error:"Resolve the required statistical diagram checks first.",checks:q};

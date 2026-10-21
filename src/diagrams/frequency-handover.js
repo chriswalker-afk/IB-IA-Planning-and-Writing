@@ -8,7 +8,8 @@ import {newStatDraft,statAnalysis} from "./stat-studio-core.js";
 import {diagramSafeExcerpt} from "./diagram-notation.js";
 const heading=(name,unit)=>unit?name+" ("+unit+")":name;
 const sourceMode=v=>["primary","secondary","theoretical"].includes(v)?v:"unsure";
-export function prepareTableHistogram(tableStudio){
+export function prepareTableHistogram(tableStudio,kind="histogram"){
+ if(!["histogram","ogive","polygon"].includes(kind))return {ok:false,error:"Choose a supported continuous statistical diagram."};
  const old=tableStudio?.draft;
  if(!old||old.mode!=="grouped")return {ok:false,error:"Open a continuous grouped-frequency table first."};
  const quality=analyzeTable(old);
@@ -16,7 +17,7 @@ export function prepareTableHistogram(tableStudio){
   "Complete the source, units, class-interval and table quality checks before making a histogram."};
  const d=quality.draft,unit=d.unitDecisions[d.groupInput==="raw"?d.groupValueIndex:d.groupLowIndex]||{};
  const s=newStatDraft();
- s.kind="histogram";s.histogramInput=d.groupInput==="raw"?"raw":"table";
+ s.kind=kind;s.histogramInput=d.groupInput==="raw"?"raw":"table";
  const indices=d.groupInput==="raw"?[d.groupValueIndex]:[d.groupLowIndex,d.groupHighIndex,d.groupFreqIndex];
  s.columns=indices.map(i=>d.columns[i]);
  s.matrix=d.matrix.map(row=>indices.map(i=>row[i]));
@@ -25,7 +26,7 @@ export function prepareTableHistogram(tableStudio){
  s.variable=d.groupLabel.trim()||d.headings[indices[0]]||"Measurement";
  s.unitMode=unit.mode;s.unit=unit.unit||"";
  s.sourceKind=sourceMode(d.sourceKind);s.sourceText=d.sourceText;
- s.title=diagramSafeExcerpt("Histogram of "+s.variable,85);
+ s.title=diagramSafeExcerpt((kind==="ogive"?"Cumulative frequency of ":kind==="polygon"?"Frequency polygon of ":"Histogram of ")+s.variable,85);
  s.caption="Prepared using the class intervals of Table "+d.number+". "+
   (d.groupInput==="raw"?"Original measurements were retained in this copy.":"Grouped frequencies are not individual observations.");
  // The histogram uses frequency density, even if the table suppresses that column.
@@ -38,8 +39,8 @@ export function prepareTableHistogram(tableStudio){
   return {ok:false,error:"Histogram intervals differ from the table. No transfer was made."};
  return {ok:true,draft:s,bins:valid.result.bins.length,rows:s.matrix.length};
 }
-export function transferTableHistogram(state){
- const result=prepareTableHistogram(state?.tableStudio);
+export function transferTableHistogram(state,kind="histogram"){
+ const result=prepareTableHistogram(state?.tableStudio,kind);
  if(!result.ok)return result;
  if(!state?.statStudio)return {ok:false,error:"The Statistical Diagram Generator is unavailable."};
  state.statStudio.activeId="";state.statStudio.draft=result.draft;state.statStudio.open=true;
@@ -47,7 +48,9 @@ export function transferTableHistogram(state){
 }
 export function prepareStatFrequencyTable(statStudio){
  const d=statStudio?.draft;
- if(!d||d.kind!=="histogram")return {ok:false,error:"Open a histogram based on real observations or supplied grouped frequencies."};
+ if(!d||!["histogram","ogive","polygon"].includes(d.kind))return {ok:false,error:"Open a continuous statistical diagram based on measurements or supplied grouped frequencies."};
+ if(d.histogramInput==="raw"&&(d.kind==="histogram"?d.histogramCompare!=="single":d.curveCompare==="multiple"))
+  return {ok:false,error:"Choose a single measurement group before making one grouped-frequency table; comparative data have different group totals."};
  const q=statAnalysis(d);
  if(!q.ready)return {ok:false,error:"Resolve the statistical diagram quality checks before transferring its data."};
  if(q.result.bins.length>8)return {ok:false,error:
@@ -85,4 +88,14 @@ export function transferStatFrequencyTable(state){
  if(!state?.tableStudio)return {ok:false,error:"Table Studio is unavailable."};
  state.tableStudio.activeId="";state.tableStudio.draft=result.draft;state.tableStudio.open=true;
  return result;
+}
+
+/** Explicit Table Studio → new diagram without mutating the source or any saved figures. */
+export function prepareTableCurve(tableStudio,kind){
+ if(!["ogive","polygon"].includes(kind))return {ok:false,error:"Choose cumulative frequency or frequency polygon."};
+ return prepareTableHistogram(tableStudio,kind);
+}
+export function transferTableCurve(state,kind){
+ if(!["ogive","polygon"].includes(kind))return {ok:false,error:"Choose a supported curve."};
+ return transferTableHistogram(state,kind);
 }

@@ -292,7 +292,9 @@ function output(studio,icon){
  (studio.draft.mode==="grouped"?
  '<div class="ia-table-stat-transfer"><button type="button" class="btn btn-secondary btn-sm" data-action="table-to-stat"'+disable+
  '>'+icon("chart")+' Build matching frequency-density histogram</button>'+
- '<small>Uses exactly these class boundaries, all frequencies and the original source type. Your table and any saved diagrams remain unchanged.</small></div>':"")+
+ '<button type="button" class="btn btn-secondary btn-sm" data-action="table-to-ogive"'+disable+'>'+icon("chart")+' Build cumulative-frequency curve</button>'+
+ '<button type="button" class="btn btn-secondary btn-sm" data-action="table-to-polygon"'+disable+'>'+icon("chart")+' Build frequency polygon</button>'+
+ '<small>Each diagram uses this exact grouped dataset, source and class boundaries. No measurements, saved tables or saved diagrams are overwritten.</small></div>':"")+
  '<div class="ia-table-export-buttons">'+
  btn("table-editable",icon("copy")+' Copy editable table')+
  btn("table-html",icon("download")+' Editable HTML')+

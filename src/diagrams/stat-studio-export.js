@@ -24,6 +24,22 @@ export function statSummaryCSV(raw){
    rows=[["Group","Lower boundary","Upper boundary","Frequency","Frequency density","Relative-frequency density","Percentage of group"],
     ...r.series.flatMap(group=>group.bins.map(bin=>[group.name,bin.low,bin.high,bin.frequency,bin.density,bin.relativeDensity,100*bin.frequency/group.n]))];
   }
+ }else if(d.kind==="ogive"){
+  rows=[["Group","Class lower boundary","Class upper boundary","Class frequency",
+   "Cumulative frequency","Cumulative percentage"],...(r.curves||[]).flatMap(group=>
+    group.curve.rows.map(bin=>[group.name,bin.low,bin.high,bin.frequency,bin.cumulative,bin.cumulativePercent]))];
+  rows.push([],["INTERPOLATED PERCENTILES — grouped class estimates, not raw-data quartiles"],
+   ["Group","n","Estimated Q1","Estimated median","Estimated Q3","Selected percentile","Estimated selected percentile"]);
+  for(const group of r.curves||[]){
+   const x=group.curve.estimates;
+   rows.push([group.name,group.n,x.q1,x.median,x.q3,d.curveShowPercentile?d.curvePercentile:"",
+    d.curveShowPercentile?x.percentile:""]);
+  }
+ }else if(d.kind==="polygon"){
+  rows=[["Group","Lower boundary","Upper boundary","Class midpoint","Frequency","Frequency density",
+   "Relative-frequency density"],...(r.polygons||[]).flatMap(group=>
+    group.polygon.points.map((point,i)=>[group.name,group.bins[i].low,group.bins[i].high,
+     point.x,point.frequency,point.density,point.relativeDensity]))];
  }else if(d.kind==="box"){
   rows=[["Group","n","Minimum","Q1","Median","Q3","Maximum","IQR","Mean",
    "Sample standard deviation","MAD","Lower whisker","Upper whisker","Whisker rule",
@@ -47,8 +63,15 @@ export function statSummaryCSV(raw){
   rows=[["Group","Measurement"],...r.series.flatMap(s=>s.values.map(v=>[s.name,v]))];
   rows.push([],["GROUP SUMMARIES"],["Group","n","Mean","Median","Q1","Q3","IQR","Sample SD"]);
   for(const s of r.series)rows.push([s.name,s.summary.n,s.summary.mean,s.summary.median,s.summary.q1,s.summary.q3,s.summary.iqr,s.summary.sd]);
- }else rows=[["Category",...r.names.map(name=>name+(d.barMode==="percent"?" (%)":" (count)"))],
-  ...r.categories.map(cat=>[cat.category,...cat.values])];
+ }else{
+  const isPercent=d.barStyle==="stacked100"||d.barStyle==="grouped"&&d.barMode==="percent";
+  rows=[["Category",...r.names.map(name=>name+(isPercent?" (%)":" (count)"))],
+   ...r.categories.map(cat=>[cat.category,...cat.values])];
+  rows.push([],["ORIGINAL CATEGORY COUNTS"],["Category",...r.names.map(name=>name+" (count)"),"Category total"]);
+  for(const cat of r.categories)rows.push([cat.category,...cat.counts,cat.categoryTotal]);
+  rows.push([],["Chart type",d.barStyle],["Percentage denominator",r.denominator],
+   ["Category sort",d.barSort]);
+ }
  return rows.map(row=>row.map(cell).join(",")).join("\r\n")+"\r\n";
 }
 function download(blob,name){
