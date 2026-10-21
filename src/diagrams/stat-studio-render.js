@@ -295,7 +295,7 @@ function boxes(q){
    lanes[lane].push(interval);
    item.labelX=x;item.lane=lane;
   }
-  return {s,i,items,lanes:lanes.length,omitted:Math.max(0,new Set(box.outliers).size-8)};
+  return {s,i,items,lanes:lanes.length,omitted:d.showBoxOutlierValues&&d.showOutliers?Math.max(0,new Set(box.outliers).size-8):0};
  });
  const maxLanes=Math.max(0,...groups.map(x=>x.lanes));
  const rowHeight=Math.max(86,48+Math.ceil(maxLanes/2)*36);
@@ -368,7 +368,7 @@ function dots(q){
  const {draft:d,result:r,override}=q,series=r.series||[],values=series.flatMap(group=>group.values);
  const range=override||paddedRange(values.length?Math.min(...values):0,values.length?Math.max(...values):1);
  const placements=series.map(group=>dotPlacement(group.values,range[0],range[1],PW,d.dotMode,11));
- const rowHeight=Math.max(96,...placements.map(p=>32+p.levels*12));
+ const rowHeight=Math.max(112,...placements.map(p=>60+p.levels*12));
  const plotHeight=Math.max(PH,rowHeight*series.length),canvasHeight=H+plotHeight-PH;
  const parts=base(d,d.dotMode==="counted"?"Counted dot plot: number beside each dot gives repetitions":"Dot plot shows individual measured observations, without joining points",canvasHeight,plotHeight);
  const X=horizontalNumeric(parts,...range,axisLabel(d,"x"),d.showGrid,plotHeight,canvasHeight);
@@ -389,13 +389,15 @@ function dots(q){
   parts.push(tag("n = "+group.values.length,LEFT-12,y0-space*.26+17,
    'font-size="11" text-anchor="end" font-family="Arial,sans-serif" fill="#607984"'));
   const summary=group.summary;
-  for(const [enabled,value,text,dash] of [[d.dotMean,summary?.mean,"Mean","5 3"],[d.dotMedian,summary?.median,"Median","2 4"]]){
+  for(const [markerIndex,[enabled,value,text,dash]] of
+   [[d.dotMean,summary?.mean,"Mean","5 3"],[d.dotMedian,summary?.median,"Median","2 4"]].entries()){
    if(!enabled||!Number.isFinite(value))continue;
-   const x=X(value);
+   const x=X(value),keyX=LEFT+15+markerIndex*PW/2,keyY=TOP+i*space+19;
    parts.push(line(x,y0-placement.levels*12-16,x,y0+9,
     'stroke="#374d60" stroke-width="1.7" stroke-dasharray="'+dash+'"'));
-   parts.push(tag(text+" "+formatBoxNumber(value),Math.max(LEFT+45,Math.min(LEFT+PW-45,x)),y0-placement.levels*12-22,
-    'font-size="11" font-weight="700" text-anchor="middle" font-family="Arial,sans-serif" fill="#354d5a"'));
+   parts.push(line(keyX,keyY-4,keyX+21,keyY-4,'stroke="#374d60" stroke-width="2" stroke-dasharray="'+dash+'"'));
+   parts.push(tag(text+" "+formatBoxNumber(value),keyX+27,keyY,
+    'font-size="11" font-weight="700" font-family="Arial,sans-serif" fill="#354d5a"',PW/2-42));
   }
  });
  return footer(d,parts,d.dotMode==="counted"?"Each distinct value is marked once; counts preserve all observations.":"Each dot represents one observation; no original measurement was removed.",canvasHeight);
