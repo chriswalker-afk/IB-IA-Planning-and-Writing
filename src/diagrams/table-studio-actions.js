@@ -4,17 +4,18 @@ import {
 } from "./table-studio-core.js";
 import {completeEntry,startFirstRepresentation} from "../completing/engine.js";
 const fields=new Set(["raw","headers","title","number","purpose","sourceKind","sourceText","note",
- "decimals","numberFormat","quartileRule"]);
+ "decimals","numberFormat","quartileRule","cellAlignment"]);
 export function setTableField(studio,key,value){
  const d=studio?.draft;if(!d)return false;
  if(fields.has(key)){
   if(typeof value!=="string")return false;
+  if(key==="cellAlignment"&&!["center","numeric"].includes(value))return false;
   const old=d[key];
   d[key]=value.slice(0,key==="raw"?85000:["purpose","sourceText","note"].includes(key)?500:140);
   if((key==="raw"||key==="headers")&&old!==d[key]&&d.matrix.length)d.pendingPaste=true;
   return true;
  }
- if(["showPercent","showRowLines"].includes(key)){d[key]=value===true;return true;}
+ if(["showPercent","showRowLines","showColumnLines"].includes(key)){d[key]=value===true;return true;}
  if(key==="categoryIndex"){
   const i=Number(value);
   if(!Number.isInteger(i)||i<0||i>=d.columns.length)return false;
