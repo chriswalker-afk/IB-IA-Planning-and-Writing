@@ -82,6 +82,7 @@ function layout(model,d){
  const tableBottom=tableTop+headerHeight+total(rowHeights);
  const notes=[
   model.metadata,
+  model.highlightNote?"Emphasis: "+model.highlightNote:"",
   model.note?formatTableMath(model.note.startsWith("Note:")?model.note:"Note: "+model.note):"",
   d.sourceKind==="primary"?"Source: student-collected data":
   d.sourceKind==="theoretical"?"Source: theoretical / student-constructed values (not measurements)":"Source: "+d.sourceText
@@ -153,8 +154,14 @@ export function renderTableSvg(raw){
   '" x2="'+(L.tableLeft+L.tableWidth).toFixed(2)+'" y2="'+headingBottom+'" stroke="#bed4ce" stroke-width="1.3"/>');
  let y=headingBottom;
  model.rows.forEach((row,i)=>{
-  const height=L.rowHeights[i],subtotal=model.kind==="frequency"&&i===model.rows.length-1;
+  const height=L.rowHeights[i],subtotal=["frequency","grouped"].includes(model.kind)&&i===model.rows.length-1;
+  const highlighted=(model.highlightIndices||[]).includes(i);
   if(subtotal)out.push('<rect x="'+L.tableLeft.toFixed(2)+'" y="'+y+'" width="'+L.tableWidth.toFixed(2)+'" height="'+height+'" fill="#e9f3ef"/>');
+  else if(highlighted){
+   out.push('<rect class="ia-table-emphasis-row" data-table-emphasis-row="'+(i+1)+'" x="'+L.tableLeft.toFixed(2)+'" y="'+y+
+    '" width="'+L.tableWidth.toFixed(2)+'" height="'+height+'" fill="#e5f2ea"/>');
+   out.push('<rect x="'+L.tableLeft.toFixed(2)+'" y="'+y+'" width="4" height="'+height+'" fill="#417966"/>');
+  }
   else if(i%2)out.push('<rect x="'+L.tableLeft.toFixed(2)+'" y="'+y+'" width="'+L.tableWidth.toFixed(2)+'" height="'+height+'" fill="#f6faf9"/>');
   if(d.showRowLines||subtotal)out.push('<line class="ia-table-row-divider" x1="'+L.tableLeft.toFixed(2)+'" y1="'+(y+height)+
    '" x2="'+(L.tableLeft+L.tableWidth).toFixed(2)+'" y2="'+(y+height)+'" stroke="#d5e1e1" stroke-width="1"/>');
@@ -163,7 +170,7 @@ export function renderTableSvg(raw){
    const a=anchor(alignment(d,model.numeric[j]),px,L.widths[j]);
    out.push(svgText(L.rows[i][j],a.x,y+26,23,
     'font-family="Arial,Helvetica,sans-serif" font-size="17" fill="#25434b" text-anchor="'+a.attr+'"'+
-     (subtotal?' font-weight="700"':"")));
+     (subtotal||highlighted?' font-weight="700"':"")));
    px+=L.widths[j];
   });
   y+=height;
@@ -201,12 +208,13 @@ export function tableToHtml(raw){
   '<th scope="col" style="'+cellStyle(widths[i],alignment(d,model.numeric[i]),true,d.showColumnLines&&i>0,true)+
   ';background:#e8f3f0;">'+E(formatTableMath(header))+'</th>').join("");
  const body=model.rows.map((row,i)=>{
-  const subtotal=model.kind==="frequency"&&i===model.rows.length-1;
-  return '<tr>'+row.map((value,j)=>'<td style="'+cellStyle(widths[j],alignment(d,model.numeric[j]),subtotal,
+  const subtotal=["frequency","grouped"].includes(model.kind)&&i===model.rows.length-1;
+  const highlighted=(model.highlightIndices||[]).includes(i);
+  return '<tr'+(highlighted?' data-table-emphasis-row="'+(i+1)+'"':"")+'>'+row.map((value,j)=>'<td style="'+cellStyle(widths[j],alignment(d,model.numeric[j]),subtotal||highlighted,
     d.showColumnLines&&j>0,d.showRowLines||subtotal)+
-   ';background:'+(subtotal?"#e9f3ef":i%2?"#f6faf9":"#ffffff")+';">'+E(value)+'</td>').join("")+'</tr>';
+   ';background:'+(subtotal?"#e9f3ef":highlighted?"#e5f2ea":i%2?"#f6faf9":"#ffffff")+';'+(highlighted?"border-left:3px solid #417966;":"")+'">'+E(value)+'</td>').join("")+'</tr>';
  }).join("");
- const foot=[model.metadata,model.note,d.sourceKind==="primary"?"Source: student-collected data":
+ const foot=[model.metadata,model.highlightNote?"Emphasis: "+model.highlightNote:"",model.note,d.sourceKind==="primary"?"Source: student-collected data":
   d.sourceKind==="theoretical"?"Source: theoretical / student-constructed values (not measurements)":"Source: "+d.sourceText]
   .filter(Boolean).map(t=>'<p style="font-family:Arial,sans-serif;font-size:10pt;margin:5px 0 0;color:#566e75;">'+E(formatTableMath(t))+'</p>').join("");
  return '<div style="max-width:'+htmlWidth+'px;">'+
