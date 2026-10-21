@@ -1217,8 +1217,10 @@ test("Writing welcome explains available tools, preserves saved work, and can be
  const state=createProjectState();state.route="completing";
  let h=createHarness(state,{welcome:true});
  assert(h.html.includes('data-writing-welcome="true"'));
- for(const phrase of ["Welcome to Writing.","Let the mathematical journey adapt","Voronoi studio","Reduce advice","complete JSON project backup","writing-intro-continue"])
+ for(const phrase of ["Welcome to Writing.","Let the mathematical journey adapt","Reduce advice","complete JSON project backup","writing-intro-continue"])
    assert(h.html.includes(phrase),phrase);
+ for(const tool of REPRESENTATION_TOOLS)
+   assert(h.html.includes(tool.title),"Writing welcome should mention registered "+tool.id+" creator");
  assert.equal(h.saved.ui.writingIntroSeen,false);
  h.action("writing-intro-continue");
  assert.equal(h.saved.ui.writingIntroSeen,true);
