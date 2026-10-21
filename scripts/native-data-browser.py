@@ -53,6 +53,8 @@ def run_journey(page,width):
  assert "4 paired observations plotted" in page.locator('[data-graph-preview-meta]').inner_text()
  assert page.locator('[data-native-choices="graph"] select').count()==2
  page.locator('[data-graph-field="title"]').fill("Distance travelled over time")
+ page.locator('[data-graph-field="xLabel"]').fill(r'Elapsed \(t_i\)')
+ assert page.locator('[data-notation-studio="graph"][data-notation-key="xLabel"] [data-notation-value-preview]').is_visible()
  page.locator('[data-graph-field="sourceKind"]').select_option("primary")
  assert page.locator('[data-action="graph-use"]').is_enabled()
  no_overflow(page)
@@ -67,6 +69,7 @@ def run_journey(page,width):
  assert len(saved["dataShelf"])==1
  assert saved["dataShelf"][0]["matrix"][1][0]=="1.20"
  assert saved["dataShelf"][0]["columns"]==["Time (s)","Distance (m)"]
+ assert saved["dataShelf"][0]["presentation"][0]["label"]==r'Elapsed \(t_i\)'
  # Move to statistics without going through spreadsheet paste.
  page.locator('[data-action="native-send"][data-native-to="stat"]').click()
  assert page.locator('[data-stat-studio]').is_visible()
@@ -74,7 +77,9 @@ def run_journey(page,width):
  assert stat["columns"]==saved["dataShelf"][0]["columns"]
  assert stat["matrix"][1][0]=="1.20"
  assert stat["sourceKind"]=="primary"
+ assert stat["variable"]==r'Elapsed \(t_i\)'
  page.locator('[data-action="stat-kind"][data-stat-value="box"]').click()
+ assert state(page)["statStudio"]["draft"]["variable"]==r'Elapsed \(t_i\)'
  page.locator('[data-stat-field="title"]').fill("Measured times: four readings")
  assert page.locator('[data-native-grid="stat"] [data-native-heading][data-native-col="0"]').input_value()=="Time (s)"
  assert page.locator('[data-native-choices="stat"] input[type=checkbox]').count()>=2
@@ -86,6 +91,8 @@ def run_journey(page,width):
  assert t["matrix"][1][0]=="1.20"
  assert t["unitDecisions"][0]["unit"]=="s"
  assert t["unitDecisions"][1]["unit"]=="m"
+ assert t["headings"][0]==r'Elapsed \(t_i\)'
+ assert t["matrix"][1][0]=="1.20"
  page.locator('[data-table-field="title"]').fill("Four sample times and distances")
  assert page.locator('[data-action="table-use"]').is_enabled()
  assert page.locator('[data-table-preview] svg').is_visible()
