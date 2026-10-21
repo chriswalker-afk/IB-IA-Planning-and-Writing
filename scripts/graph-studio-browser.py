@@ -79,6 +79,29 @@ def data_graph(page,width):
  assert page.locator('[data-graph-preview] .graph-model-overlay').count()==3
  assert page.locator('[data-action="graph-model-add"]').is_disabled()
  assert page.locator('[data-graph-preview] svg text').filter(has_text="My own equation").count()==1
+ # Model-equation presentation is independent of model visibility and of the legend.
+ assert page.locator('[data-graph-field="equationPlacement"]').input_value()=="legend"
+ page.locator('[data-graph-field="equationPlacement"]').select_option("annotation")
+ assert page.locator('[data-graph-preview] .graph-model-equation-panel').count()==1
+ assert page.locator('[data-graph-preview] .graph-model-equation-label').count()==3
+ assert page.locator('[data-graph-preview] .graph-model-overlay').count()==3
+ with page.expect_download() as equation_svg:
+  page.locator('[data-action="graph-svg"]').click()
+ assert 'graph-model-equation-panel' in Path(equation_svg.value.path()).read_text(encoding="utf-8")
+ page.locator('[data-graph-field="showLegend"]').uncheck()
+ assert page.locator('[data-graph-preview] .graph-legend-text').count()==0
+ assert page.locator('[data-graph-preview] .graph-model-equation').count()>=3
+ assert page.locator('[data-graph-preview] .graph-model-overlay').count()==3
+ page.locator('[data-graph-field="equationPlacement"]').select_option("hidden")
+ assert page.locator('[data-graph-preview] .graph-model-equation-panel').count()==0
+ assert page.locator('[data-graph-preview] .graph-model-overlay').count()==3
+ page.locator('[data-graph-field="showLegend"]').check()
+ page.locator('[data-graph-field="legendPosition"]').select_option("right")
+ assert page.locator('[data-graph-preview] .graph-legend-text').count()>0
+ page.locator('[data-graph-field="legendPosition"]').select_option("below")
+ page.locator('[data-graph-field="equationPlacement"]').select_option("legend")
+ assert 'Linear regression:' in page.locator('[data-graph-preview] .graph-legend-text').all_inner_texts()[1]
+ assert saved(page)["graphStudio"]["draft"]["equationPlacement"]=="legend"
  # An incorrect expression is diagnosed; hiding it leaves original observations exportable.
  page.locator('[data-graph-model-expression]').fill("window.alert(1)")
  assert page.locator('[data-action="graph-png"]').is_disabled()
