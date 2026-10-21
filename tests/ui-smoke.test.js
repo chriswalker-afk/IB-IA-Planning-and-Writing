@@ -1181,3 +1181,27 @@ test("Reduce advice shows only core writing instructions while keeping green and
   }
  }
 });
+
+test("Reduce advice also trims the IA setup and stage dashboard without hiding their actions",()=>{
+ for(const node of ["C00","C04"]){
+  const s=createProjectState();s.route="completing";s.completion.current=node;
+  const h=createHarness(s),full=h.html;
+  assert(full.includes('data-source-node="'+node+'"'));
+  if(node==="C04")assert(full.includes('writer-guide-overview-card'));
+  h.action("toggle-advice-mode");
+  assert.equal(h.saved.ui.adviceMode,"reduced");
+  assert(h.html.includes('data-source-node="'+node+'"'));
+  assert(h.html.length<full.length,node+": no optional prose removed");
+  if(node==="C00"){
+   assert(h.html.includes('data-action="setup-start-writing"'),"Keep primary introduction action");
+   assert(h.html.includes('chapter-onboarding-grid-setup is-reduced'),"One-column core setup");
+   assert(h.html.includes('data-action="go-planning"'),"Keep Planning access");
+  }else{
+   assert(!h.html.includes('writer-guide-overview-card'),"Avoid duplicate Field Guide promotion");
+   assert(h.html.includes("My mathematical path")||h.html.includes("Your mathematical"),"Keep mathematical-stage navigation");
+  }
+  h.action("toggle-advice-mode");
+  assert.equal(h.saved.ui.adviceMode,"guided");
+  if(node==="C04")assert(h.html.includes("writer-guide-overview-card"));
+ }
+});
