@@ -174,7 +174,7 @@ export function statQualityHtml(studio,icon,e){
 }
 export function statOutputHtml(studio,icon,e){
  const q=statAnalysis(studio.draft),disabled=q.ready?"":' disabled title="Fix the required mathematical and presentation checks first"';
- return '<button type="button" class="btn btn-primary" data-action="stat-use"'+disabled+'>'+icon("check-circle")+' Save and link to my first mathematics</button>'+
+ return '<button type="button" class="btn btn-primary" data-action="stat-use"'+disabled+'>'+icon("check-circle")+' Save and link to this mathematical stage</button>'+
  (["histogram","ogive","polygon"].includes(q.draft.kind)?'<div class="stat-table-transfer"><button type="button" class="btn btn-secondary btn-sm" data-action="stat-to-table"'+disabled+
  '>'+icon("table")+' Create matching grouped-frequency table</button>'+
  '<small>Copies the source measurements or grouped classes and their boundaries without altering either saved generator.</small></div>':"")+
