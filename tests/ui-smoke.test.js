@@ -78,7 +78,10 @@ import {createPlanningEnvelope,getFieldDiff,mergePlanningEnvelope} from "../src/
 import {modelFromEnvelope,suggestedFilename} from "../src/handover/report-model.js";
 
 const read=p=>readFileSync(new URL(p,import.meta.url),"utf8");
-function createHarness(savedValue){
+function createHarness(savedValue,{welcome=false}={}){
+  // Older workflow tests exercise setup directly; onboarding has its own dedicated assertions.
+  savedValue=structuredClone(savedValue??createProjectState());
+  if(!welcome)savedValue.ui.writingIntroSeen=true;
   const events={};
   const store=new Map(savedValue?[["ia-pathfinder-prototype-v1",JSON.stringify(savedValue)]]:[]);
   const classList={add(){},remove(){},toggle(){}};
@@ -1205,4 +1208,28 @@ test("Reduce advice also trims the IA setup and stage dashboard without hiding t
   assert.equal(h.saved.ui.adviceMode,"guided");
   if(node==="C04")assert(h.html.includes("writer-guide-overview-card"));
  }
+});
+
+test("Writing welcome explains available tools, preserves saved work, and can be reopened",()=>{
+ const state=createProjectState();state.route="completing";
+ let h=createHarness(state,{welcome:true});
+ assert(h.html.includes('data-writing-welcome="true"'));
+ for(const phrase of ["Welcome to Writing.","Let the mathematical journey adapt","Voronoi studio","Reduce advice","complete JSON project backup","writing-intro-continue"])
+   assert(h.html.includes(phrase),phrase);
+ assert.equal(h.saved.ui.writingIntroSeen,false);
+ h.action("writing-intro-continue");
+ assert.equal(h.saved.ui.writingIntroSeen,true);
+ assert(!h.html.includes('data-writing-welcome="true"'));
+ assert(h.html.includes("Your writing starts here."));
+ h.action("setup-start-writing");
+ assert.equal(h.saved.completion.current,"C10");
+ h.write("scratch.introduction","An original student introduction");
+ h.action("writing-intro-open");
+ assert(h.html.includes("Welcome to Writing."));
+ assert.equal(h.saved.completion.current,"C10");
+ assert.equal(h.saved.scratch.introduction,"An original student introduction");
+ h.action("writing-intro-continue");
+ assert.equal(h.saved.completion.current,"C10");
+ assert.equal(h.saved.scratch.introduction,"An original student introduction");
+ assert(h.html.includes('data-bind="scratch.introduction"'));
 });

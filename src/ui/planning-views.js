@@ -142,26 +142,32 @@ export function createPlanningViews(ctx){
  }
  /** Informal onboarding: a separate visual screen, not another source-sheet question. */
  function planningWelcome(){
-  return stepBody("Welcome to Planning.","Discover a worthwhile mathematical question, make practical choices and collect useful sparks. You do not need to know your final answer yet.",
+  const tile=(symbol,title,description,extra="")=>
+   '<section class="chapter-onboarding-tile"><span class="chapter-onboarding-tile-icon">'+symbol+'</span>'+
+   '<h3>'+title+'</h3><p>'+description+'</p>'+extra+'</section>';
+  return stepBody("Welcome to Planning.","Explore a mathematical question that matters to you. Pathfinder helps you make and revise decisions before you write your IA.",
    '<div class="chapter-onboarding chapter-onboarding-plan">'+
     '<div class="chapter-onboarding-banner"><span class="chapter-onboarding-symbol">'+icon("compass")+'</span>'+
      '<div><span class="chapter-onboarding-eyebrow">CHAPTER 1 · PLAN ONLY</span><strong>Think first. Write the IA afterwards.</strong>'+
-     '<p>This chapter helps you decide what to investigate. Your choices are provisional notes, not completed mathematics or text you must copy into your IA.</p></div></div>'+
+     '<p>Find a promising question, check that your evidence and mathematics are feasible, and collect provisional decisions. Nothing here claims you have already done the mathematics.</p></div></div>'+
     '<div class="chapter-onboarding-grid">'+
-     '<section class="chapter-onboarding-tile"><span class="chapter-onboarding-tile-icon">'+icon("sparkles")+'</span>'+
-       '<h3>Sparks remember your ideas</h3><p>When you save a useful decision, it becomes a <strong>spark</strong>. Later pages bring back the two most relevant sparks. Select <strong>View all sparks</strong> to find or edit the rest. Your sparks can change as you investigate.</p></section>'+
-     '<section class="chapter-onboarding-tile"><span class="chapter-onboarding-tile-icon onboarding-criterion-letter" aria-hidden="true">C</span>'+
-       '<h3>Criteria appear where they matter</h3><p>Tap a small letter badge beside a question or heading to see exactly how an IB criterion connects to it. For the full A–E rubrics, open <strong>IA essentials</strong>.</p>'+
-       '<button class="onboarding-inline-action" type="button" data-action="essentials-open">'+icon("book")+' Explore the IB criteria '+icon("arrow-right")+'</button></section>'+
-     '<section class="chapter-onboarding-tile"><span class="chapter-onboarding-tile-icon">'+icon("lightbulb")+'</span>'+
-       '<h3>Help is always nearby</h3><p>Use <strong>Compare examples</strong>, <strong>Tools & tutorials</strong> or <strong>I am stuck</strong> whenever you need them. You can return to previous questions from the Discovery Trail.</p>'+
-       '<div class="chapter-onboarding-links">'+
-        '<button class="onboarding-inline-action" type="button" data-action="example-open" data-example-browse="true">Compare examples '+icon("arrow-right")+'</button>'+
-        '<button class="onboarding-inline-action" type="button" data-action="resource-browse">Tools & tutorials '+icon("arrow-right")+'</button></div></section>'+
-     '<section class="chapter-onboarding-tile"><span class="chapter-onboarding-tile-icon">'+icon("download")+'</span>'+
-       '<h3>Make progress at your own pace</h3><p>Look at the <strong>Discovery Trail</strong> to see all five chapters. Your work is saved on this device; save a project backup to move between devices. Planning ends with a report and a clear link into writing your IA.</p></section>'+
+     tile(icon("lightbulb"),"Start from wherever you are",
+      "Already have an idea? Compare a few possibilities, or use the interactive idea map to explore hobbies, daily life and your world. Refine a working title, a mathematical aim and a genuine motivation.")+
+     tile(icon("route"),"Choose a feasible mathematical journey",
+      "Explore mathematics based on your aim, browse typical investigative routes or view the course list. Decide whether to use primary or secondary data, or theoretical work; consider sources, sampling, accuracy, permissions, timelines and an optional prediction.")+
+     tile(icon("sparkles"),"Sparks remember your ideas",
+      "When you save a useful decision, it becomes a <strong>spark</strong>. Later pages bring back the two most relevant sparks. Select <strong>View all sparks</strong> to find or edit the rest. These are revisable planning notes, not verified findings.")+
+     tile('<span class="onboarding-criterion-letter" aria-hidden="true">C</span>',"Criteria appear where they matter",
+      "Tap a small letter badge beside a question or heading for specific IB assessment advice. The complete current A–E criteria live in <strong>IA essentials</strong>.",
+      '<button class="onboarding-inline-action" type="button" data-action="essentials-open">'+icon("book")+' Explore the IB criteria '+icon("arrow-right")+'</button>')+
+     tile(icon("lightbulb"),"Help is always nearby",
+      "Use <strong>Compare examples</strong>, <strong>Tools &amp; tutorials</strong> or <strong>I am stuck</strong> when useful. The Discovery Trail lets you revisit earlier choices.",
+      '<div class="chapter-onboarding-links"><button class="onboarding-inline-action" type="button" data-action="example-open" data-example-browse="true">Compare examples '+icon("arrow-right")+'</button>'+
+      '<button class="onboarding-inline-action" type="button" data-action="resource-browse">Tools &amp; tutorials '+icon("arrow-right")+'</button></div>')+
+     tile(icon("download"),"Keep your progress and move into writing",
+      "The five-chapter <strong>Discovery Trail</strong> shows where you are. Your work saves on this device; download a project backup before switching devices. At the end of Planning you can export a Planning PDF or editable Word report, then move into IA Studio without losing your sparks.")+
     '</div>'+
-    '<p class="chapter-onboarding-reassurance">'+icon("check-circle")+' No grades or marks are predicted here. It is fine to revise your question later.</p>'+
+    '<p class="chapter-onboarding-reassurance">'+icon("check-circle")+' No marks are predicted, and your question can change in response to real mathematics.</p>'+
    '</div>',"","Start planning");
  }
  function nodePage(state){
