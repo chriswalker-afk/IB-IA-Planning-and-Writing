@@ -64,10 +64,10 @@ def test_one(browser,width,height,touch):
   maths.evaluate("(el)=>el.open=true")
   row=page.locator('[data-notation-studio="geometry"][data-notation-key="angleLabel"][data-notation-vertex-index="0"]')
   row.locator('[data-action="diagram-notation-toggle"]').click()
-  row.locator('[data-diagram-expression]').fill(r'\\theta')
+  row.locator('[data-diagram-expression]').fill(r'\theta')
   row.locator('[data-action="diagram-notation-insert"]').click()
   label=saved(page)["geometryStudio"]["draft"]["vertices"][0]["angleLabel"]
-  assert r'\\(\\theta\\)' in label,label
+  assert r'\(\theta\)' in label,label
   assert page.locator("[data-geometry-preview] svg").count()==1
   assert "theta" in label
   row.locator('[data-action="diagram-notation-close"]').click()
@@ -101,7 +101,7 @@ def test_one(browser,width,height,touch):
   ss=saved(page)
   assert len(ss["geometryStudio"]["figures"])==1
   original=ss["geometryStudio"]["figures"][0]["id"]
-  for fmt,signature in [("svg",b"<svg"),("png",b"\\x89PNG")]:
+  for fmt,signature in [("svg",b"<svg"),("png",b"\x89PNG")]:
    with page.expect_download(timeout=30000) as received:
     page.locator(f'[data-action="geometry-{fmt}"]').click()
    download=received.value
