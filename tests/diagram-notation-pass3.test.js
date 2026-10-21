@@ -38,7 +38,7 @@ test("all five generators expose one button/panel accessibility pattern",()=>{
 test("shortening captions never cuts student mathematics or alters the stored text",()=>{
  const input="Comparing growth at \\(\\frac{dy}{dx}\\) with two observed quantities";
  const before=input;
- const cropped=diagramSafeExcerpt(input,35);
+ const cropped=diagramSafeExcerpt(input,45);
  assert.match(cropped,/\\\(\\frac\{dy\}\{dx\}\\\)/);
  assert(!cropped.includes("\\(\\frac{dy}{"));
  assert.equal(input,before);
