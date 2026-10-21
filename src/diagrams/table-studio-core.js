@@ -72,7 +72,7 @@ export function normalizeTableDraft(raw){
  if(object(r.columnFormats)){
   d.columnFormats={};
   for(const [key,rawFormat] of Object.entries(r.columnFormats).slice(0,18)){
-   if(!/^(?:compact:[0-4]|frequency:[0-4]|summary:(?:[0-4]|mean|median|sd|iqr|minmax))$/.test(key)||!object(rawFormat))continue;
+   if(!/^(?:compact:[0-4]|calculated:[0-4]|frequency:[0-4]|summary:(?:[0-4]|mean|median|sd|iqr|minmax))$/.test(key)||!object(rawFormat))continue;
    const mode=["default","source","dp","sf"].includes(rawFormat.mode)?rawFormat.mode:"default";
    const rawDigits=String(rawFormat.digits??"2");
    const digits=/^[0-6]$/.test(rawDigits)?rawDigits:"2";
