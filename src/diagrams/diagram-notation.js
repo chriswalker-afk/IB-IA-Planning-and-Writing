@@ -173,7 +173,7 @@ export function diagramVisibleLength(value,size=16){
 export function svgDiagramText(value,x,y,attrs="",{maxWidth=Infinity,fontSize=16}={}){
  if(!hasDiagramEquation(value)){
   const formatted=formatDiagramShorthand(value);
-  const plainSize=Number((attrs.match(/\\bfont-size="([\\d.]+)"/)||[])[1])||fontSize;
+  const plainSize=Number((attrs.match(/\bfont-size="([\d.]+)"/)||[])[1])||fontSize;
   const widthEstimate=formatted.length*plainSize*.54;
   const squeeze=Number.isFinite(maxWidth)&&maxWidth>0&&widthEstimate>maxWidth?
    ' textLength="'+num(maxWidth)+'" lengthAdjust="spacingAndGlyphs"':"";
