@@ -58,7 +58,7 @@ export function setTableColumnFormat(studio,index,part,value){
  if(!output||index>=output.headers.length)return false;
  if(["compact","calculated"].includes(d.mode)?!output.numeric[index]:index<2)return false;
  const old=d.columnFormats?.[tableFormatKey(d,index)]||d.columnFormats?.[d.mode+":"+index]||{mode:"default",digits:"2"};
- if(part==="mode"&&!["default","dp","sf",...(["compact","calculated"].includes(d.mode)?["source"]:[])].includes(value))return false;
+ if(part==="mode"&&!["default","dp","sf",...(d.mode==="compact"||d.mode==="calculated"&&index<2?["source"]:[])].includes(value))return false;
  if(part==="digits"&&(!/^[0-6]$/.test(String(value))||old.mode==="sf"&&String(value)==="0"))return false;
  const mode=part==="mode"?value:old.mode;
  const digits=part==="digits"?String(value):old.digits==="0"&&mode==="sf"?"2":old.digits||"2";
