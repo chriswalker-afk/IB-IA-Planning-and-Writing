@@ -4,6 +4,7 @@
  */
 import {analyseGraph,finiteCell} from "./graph-core.js";
 import {newTableDraft,normalizeTableGraphSnapshot,TABLE_MAX_ROWS} from "./table-studio-core.js";
+import {diagramSafeExcerpt} from "./diagram-notation.js";
 
 const fmt=n=>Number(n).toString();
 /** Returns an uncommitted draft when the selected model is valid. */
@@ -58,7 +59,7 @@ export function prepareGraphModelTable(graphStudio,modelId){
   {mode:d.xUnitMode,unit:d.xUnit||""},{mode:d.yUnitMode,unit:d.yUnit||""}
  ];
  draft.calcXIndex=0;draft.calcYIndex=1;
- draft.title=("Model predictions and residuals: "+d.title).slice(0,85);
+ draft.title=diagramSafeExcerpt("Model predictions and residuals: "+d.title,85);
  draft.sourceKind=sourceKind;draft.sourceText=d.sourceText||"";
  draft.graphSnapshot=snapshot;
  draft.numberFormat="source";
