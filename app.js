@@ -800,7 +800,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     }else if(panel==="resources"){
       body=resourceDrawer(state,resourceSession);
     }else if(panel==="writer-guide"){
-      body=renderWriterFieldGuide(icon,e,guide);
+      body=renderWriterFieldGuide(icon,e,guide,state);
     }else if(panel==="writer-guide-intro"){
       body=renderWriterGuideWelcome(icon,e);
     }else if(panel==="help"){
@@ -1048,7 +1048,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       const spot=String(el.dataset.guideSpot||"").replace(/[^A-Za-z0-9:-]/g,"");
       const node=state.route==="completing"?state.completion.current:"";
       const guide=writingGuideRecommendation(state,node,tip,spot);
-      if(guide&&(spot||el.classList.contains("writer-guide-context-badge")||el.closest(".writer-guide-return"))){
+      if(guide&&(spot||el.dataset.guideScope==="stage"||el.classList.contains("writer-guide-context-badge")||el.closest(".writer-guide-return"))){
         openGuidePopin(el,guide);
       }else{
         if(layer.hidden)lastFocus=el;
@@ -2158,6 +2158,16 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         state.ui.writerGuideIntroSeen=true;
         save();
         openDrawer("writer-guide");
+        break;
+      }
+      case "writer-guide-stage-jump":{
+        const group=String(el.dataset.guideBundle||"").replace(/[^a-z-]/g,"");
+        const target=el.closest(".drawer")?.querySelector('[data-writer-advice-group="'+group+'"]');
+        if(target){
+          target.open=true;
+          target.scrollIntoView?.({block:"start",behavior:"auto"});
+          target.querySelector("summary")?.focus?.({preventScroll:true});
+        }
         break;
       }
       case "writer-guide-filter":{

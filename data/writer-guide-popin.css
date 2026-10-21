@@ -36,3 +36,52 @@
 }
 @media(prefers-reduced-motion:reduce){.writer-guide-popin{scroll-behavior:auto}}
 @media print{#writerGuidePopinLayer{display:none!important}}
+
+
+/* Pass 2: the short on-page invitation does not replace mathematical help. */
+.writer-guide-inline-more{display:inline-flex;align-items:center;gap:7px;flex-wrap:wrap;border:1px solid #cbb7e2;background:#f8f4fc;color:#63488a;border-radius:10px;padding:9px 12px;font-size:12px;font-weight:750;line-height:1.35;cursor:pointer;margin:9px 0 0;max-width:100%;text-align:left}
+.writer-guide-inline-more .icon{width:15px;height:15px;flex:none}
+.writer-guide-inline-more:hover{background:#f0e7fa;border-color:#a788cf}
+.writer-guide-inline-more:focus-visible,.writer-guide-stage-jump:focus-visible{outline:3px solid #7554aa;outline-offset:3px}
+.intro-writing-guide-compact .intro-writing-guide-head{margin-bottom:9px}
+.intro-writing-guide-compact .intro-writing-guide-head h2{margin:0}
+.intro-writing-guide-compact>strong{display:block;font-size:13px;margin:3px 0}
+.intro-writing-guide-compact>p{margin:5px 0;line-height:1.65}
+.writer-guide-popin-practical{border-top:1px solid #e9ddf2;margin:17px 0 2px;padding-top:14px}
+.writer-guide-popin-practical-head{display:flex;align-items:center;gap:7px;color:#6d4e8e;font-size:11px;font-weight:800}
+.writer-guide-popin-practical-head .icon{width:15px;height:15px}
+.writer-guide-popin-practical h3{font-size:14px;margin:8px 0 3px;color:#293e45}
+.writer-guide-popin-practical>p{font-size:12px;line-height:1.6}
+.writer-guide-popin-practical-note{color:#627278;font-size:11px!important}
+.writer-guide-supplement-group{border:1px solid #e7dff0;border-radius:12px;background:#fff;overflow:hidden;margin:10px 0}
+.writer-guide-supplement-group>summary{display:flex;gap:9px;align-items:center;padding:12px;cursor:pointer;list-style:none;color:#624889}
+.writer-guide-supplement-group>summary::-webkit-details-marker{display:none}
+.writer-guide-supplement-group>summary>.icon:first-child{width:17px;height:17px;flex:none}
+.writer-guide-supplement-group>summary>.icon:last-child{width:14px;height:14px;flex:none;margin-left:auto}
+.writer-guide-supplement-group>summary span{min-width:0}
+.writer-guide-supplement-group>summary strong{display:block;font-size:12px}
+.writer-guide-supplement-group>summary small{display:block;font-size:10px;color:#707b82;font-weight:500;line-height:1.45;margin-top:2px}
+.writer-guide-supplement-list{padding:2px 11px 12px;display:grid;gap:7px}
+.writer-guide-supplement-tip{border:1px solid #e8e4ee;border-radius:10px;background:#fcfbfe}
+.writer-guide-supplement-tip>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:9px;padding:10px;font-size:12px}
+.writer-guide-supplement-tip>summary::-webkit-details-marker{display:none}
+.writer-guide-supplement-tip>summary>span:nth-child(2){flex:1;min-width:0}
+.writer-guide-supplement-tip>summary strong{display:block;font-size:12px;color:#3a4452}
+.writer-guide-supplement-tip>summary small{display:block;font-size:10px;color:#637579;font-weight:500}
+.writer-guide-supplement-tip>summary>.icon{width:13px;height:13px}
+.writer-guide-supplement-number{display:grid;place-items:center;border-radius:7px;background:#eee6f7;color:#715097;font-weight:800;min-width:23px;height:23px}
+.writer-guide-supplement-tip-body{padding:2px 12px 12px;font-size:12px;line-height:1.6}
+.writer-guide-supplement-tip-body p{font-size:12px!important;line-height:1.6}
+.writer-guide-supplement-comparison{display:grid;gap:7px}
+.writer-guide-supplement-comparison>div{background:#f7f7f8;border-radius:9px;padding:9px 11px}
+.writer-guide-supplement-comparison>div:last-child{background:#f0f7f4}
+.writer-guide-supplement-comparison strong{display:block;color:#44565c;font-size:11px}
+.writer-guide-supplement-why{color:#495f62}
+.writer-guide-supplement-tip-body>small{font-size:10px;color:#67747b}
+.writer-guide-supplement-library{margin:30px 0;border-top:1px solid #ede5f4;padding-top:20px}
+.writer-guide-supplement-library>.writer-guide-supplement-group{margin:9px 0}
+.writer-guide-stage-jump{display:inline-flex;align-items:center;gap:5px;background:#f1eafb;border:1px solid #cab6e0;border-radius:9px;color:#65488d;font-size:12px;padding:8px 11px;cursor:pointer;margin:6px 0}
+.writer-guide-stage-jump>.icon{width:15px;height:15px}
+@media(max-width:700px){.writer-guide-inline-more{width:100%;justify-content:space-between}.writer-guide-supplement-comparison{grid-template-columns:1fr}}
+@media(min-width:701px){.writer-guide-supplement-comparison{grid-template-columns:1fr 1fr}}
+@media(prefers-reduced-motion:reduce){.writer-guide-inline-more{transition:none}}

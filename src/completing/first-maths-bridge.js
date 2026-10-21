@@ -89,15 +89,15 @@ export function firstMathsTips(ctx){
  ];
 }
 export function renderFirstMathsAdvice(state,icon,e,{reduced=false}={}){
- const ctx=firstMathsContext(state),tips=firstMathsTips(ctx);
- return '<section class="studio-stage-advice first-maths-advice" data-stage-advice="data" aria-label="Advice for introducing the first mathematics">'+
+ return '<section class="studio-stage-advice first-maths-advice" data-stage-advice="data" data-advice-moved-to-guide="first-mathematics" aria-label="Advice for introducing the first mathematics">'+
   '<div class="studio-stage-advice-head"><span class="studio-stage-icon">'+icon("compass")+'</span>'+
   '<div><span class="intro-writing-guide-eyebrow">BEFORE YOU WRITE · FIRST MATHEMATICS</span>'+
   '<h2>Aim first. Then one useful mathematical step.</h2>'+
   '<p>Make the mathematical story flow naturally from the Introduction without explaining your entire investigation in advance.</p></div></div>'+
-  (!reduced?'<div class="intro-advice-cards studio-stage-advice-cards">'+tips.map((t,i)=>tip(icon,e,t,i)).join("")+'</div>':'')+
+  '<button type="button" class="writer-guide-inline-more" data-action="writer-guide-open" data-guide-tip="thinking" data-guide-spot="completing:C20:methodIntroduction">'+icon("book")+' Four practical first-mathematics writing tips '+icon("arrow-right")+'</button>'+
  '</section>';
 }
+
 const planningLink=(icon,label,node)=>'<button type="button" class="first-maths-edit-plan" data-action="insight-jump" data-insight-type="planning" data-node="'+node+'">'+label+' '+icon("arrow-up-right")+'</button>';
 
 /** Specific beginning → diagnostic check → logical next move. All methods are

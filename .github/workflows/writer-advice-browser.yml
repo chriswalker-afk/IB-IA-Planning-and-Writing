@@ -1,0 +1,63 @@
+name: Writer's Field Guide — advice-preservation browser acceptance
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/completing/writer-*.js'
+      - 'src/completing/intro-writing-advice.js'
+      - 'src/completing/first-maths-bridge.js'
+      - 'src/completing/showing-first-maths.js'
+      - 'src/completing/studio-writing-stages.js'
+      - 'app.js'
+      - 'data/writer-guide-popin.css'
+      - 'scripts/writer-advice-browser.py'
+      - 'tests/writer-stage-advice.test.js'
+  push:
+    branches: [main]
+    paths:
+      - 'src/completing/writer-*.js'
+      - 'src/completing/intro-writing-advice.js'
+      - 'src/completing/first-maths-bridge.js'
+      - 'src/completing/showing-first-maths.js'
+      - 'src/completing/studio-writing-stages.js'
+      - 'app.js'
+      - 'data/writer-guide-popin.css'
+      - 'scripts/writer-advice-browser.py'
+      - 'tests/writer-stage-advice.test.js'
+permissions:
+  contents: read
+jobs:
+  focused-writing:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Build and verify lossless writing advice
+        run: |
+          npm install --no-audit --no-fund
+          node --test tests/writer-stage-advice.test.js tests/writer-field-guide.test.js
+          npm run build
+      - name: Install browser
+        run: |
+          python -m pip install playwright==1.57.0
+          python -m playwright install --with-deps chromium
+      - name: Verify focused Writer Guide and complete tip library
+        run: |
+          mkdir -p qa-output
+          python -m http.server 8765 --directory dist > qa-output/writer-advice-server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID"' EXIT
+          python scripts/writer-advice-browser.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: writer-advice-browser-results
+          path: qa-output
+          retention-days: 7

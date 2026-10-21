@@ -15,7 +15,9 @@ test("no long raw data tables are recommended",()=>{
  const x=renderShowingMathsAdvice(createProjectState(),icon,escapeHtml);
  assert.match(x,/not even in the appendix/i);
  assert.match(x,/before they see it/i);
- assert.equal((x.match(/data-show-first-tip=/g)||[]).length,4);
+ assert.equal((x.match(/data-show-first-tip=/g)||[]).length,0);
+ assert.match(x,/Four tips for showing mathematics clearly/);
+ assert.match(x,/data-advice-moved-to-guide="showing-mathematics"/);
 });
 test("source and route advice stays safe when saved data are untrusted",()=>{
  const s=createProjectState();s.planning.fields.aim="<script>bad()</script>";

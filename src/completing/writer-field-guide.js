@@ -1,4 +1,5 @@
 /* Student-facing, optional writing craft. This is editorial advice, never a scoring rubric or student-authored evidence. */
+import {allWriterStageAdviceBundles} from "./writer-stage-advice.js";
 export const FIELD_GUIDE_TIPS=Object.freeze([
   {
     "id": "lab",
@@ -301,6 +302,39 @@ function example(t,e,contextual=false){
  * Reuses the exact full-guide lesson and its fictional comparison; nothing is removed
  * from the complete Field Guide. Student-specific context is escaped, never copied.
  */
+/** Original supplemental writing tips remain individually expandable everywhere. */
+function stageWritingTipCard(item,index,icon,e,expanded=false){
+ return '<details class="writer-guide-supplement-tip" data-stage-tip-id="'+e(item.id)+'"'+(expanded?' open':'')+'>'+
+  '<summary><span class="writer-guide-supplement-number">'+String(index+1)+'</span><span><strong>'+e(item.title)+'</strong><small>'+e(item.hook)+'</small></span>'+icon("chevron-right")+'</summary>'+
+  '<div class="writer-guide-supplement-tip-body"><p>'+e(item.detail)+'</p>'+
+  '<div class="writer-guide-supplement-comparison"><div><strong>Just reporting</strong><p>'+e(item.weak)+'</p></div>'+
+  '<div><strong>Showing mathematical thinking</strong><p>'+e(item.strong)+'</p></div></div>'+
+  (item.why?'<p class="writer-guide-supplement-why"><strong>Why this works</strong> '+e(item.why)+'</p>':'')+
+  '<small>Fictional examples only. Use your actual mathematics and your own words.</small></div></details>';
+}
+function stageWritingBundle(bundle,icon,e){
+ return '<details class="writer-guide-supplement-group" data-writer-advice-group="'+e(bundle.group)+'">'+
+  '<summary>'+icon("book")+' <span><strong>'+e(bundle.title)+'</strong><small>All '+bundle.items.length+' original tips, with complete explanations and examples</small></span>'+icon("chevron-right")+'</summary>'+
+  '<div class="writer-guide-supplement-list">'+bundle.items.map((item,index)=>stageWritingTipCard(item,index,icon,e,index===bundle.selectedIndex)).join("")+'</div></details>';
+}
+function popinStageWriting(bundle,icon,e){
+ if(!bundle?.items?.length)return "";
+ const featured=bundle.items[bundle.selectedIndex];
+ return '<section class="writer-guide-popin-practical" aria-label="Practical advice for this part of the IA">'+
+  '<div class="writer-guide-popin-practical-head">'+icon("lightbulb")+' <strong>A practical tip for this writing box</strong></div>'+
+  '<h3>'+e(featured.title)+'</h3><p>'+e(featured.detail)+'</p>'+
+  '<p class="writer-guide-popin-practical-note">The complete writing tips, including fictional before-and-after examples, are preserved below.</p>'+
+  stageWritingBundle(bundle,icon,e)+'</section>';
+}
+function stageWritingLibrary(icon,e,state){
+ return '<section class="writer-guide-supplement-library" aria-labelledby="writer-guide-supplements-heading">'+
+  '<div class="writer-guide-section-heading"><span class="writer-guide-section-symbol">'+icon("book")+'</span>'+
+  '<div><h3 id="writer-guide-supplements-heading">Practical writing advice for each IA section</h3>'+
+  '<p>Every original stage-specific tip and example is here. Open only the section you need; mathematical pathway advice remains in your writing workspace.</p></div></div>'+
+  allWriterStageAdviceBundles(state).map(bundle=>stageWritingBundle(bundle,icon,e)).join("")+
+  '</section>';
+}
+
 export function renderWriterGuidePopin(icon,e,guide){
  const t=guide?.tip;
  if(!t)return "";
@@ -315,6 +349,7 @@ export function renderWriterGuidePopin(icon,e,guide){
     (guide.question?'<p class="writer-guide-popin-question">'+e(guide.question)+'</p>':"")+
     '<div class="writer-guide-popin-lesson"><h3>'+e(t.title)+'</h3><p>'+e(t.explanation)+'</p></div>'+
     example(t,e,true)+
+    popinStageWriting(guide.stageAdvice,icon,e)+
     '<p class="writer-guide-popin-when"><strong>Remember this:</strong> '+e(t.moment)+'</p>'+
     '<p class="writer-guide-popin-disclaimer">These are fictional teaching examples, not text to copy. Use your own genuine mathematical decisions and results.</p>'+
    '</div>'+
@@ -331,6 +366,7 @@ function tipCard(t,i,icon,e,guide=null){
   '<p>'+e(guide.cue)+'</p>'+
   (guide.note?'<p class="writer-guide-stage-note">'+e(guide.note)+'</p>':'')+
   (guide.question?'<p class="writer-guide-stage-question">'+e(guide.question)+'</p>':'')+
+  (guide.stageAdvice?'<button type="button" class="writer-guide-stage-jump" data-action="writer-guide-stage-jump" data-guide-bundle="'+e(guide.stageAdvice.group)+'">Read all '+guide.stageAdvice.items.length+' practical tips for this section '+icon("arrow-right")+'</button>':'')+
   '<small>Use this as advice to think with, not text to copy into your IA.</small></aside>':'';
  return '<details class="writer-guide-tip writer-family-'+e(t.family)+'" id="writer-guide-'+e(t.id)+'" data-guide-card="'+e(t.id)+'" data-guide-family="'+e(t.family)+'"'+((guide?relevant:i===0)?' open':'')+'>'+
   '<summary><span class="writer-guide-tip-icon">'+icon(t.icon)+'</span>'+
@@ -350,13 +386,13 @@ function storyStrip(icon,e){
  '<div class="writer-guide-story-panels">'+STORIES.map((s,i)=>'<p data-story-panel="'+i+'"'+(i===0?'':' hidden')+'><strong>'+e(s.heading)+'</strong> '+e(s.text)+'</p>').join("")+'</div>'+
  '<p class="writer-guide-story-footnote">It\'s a helpful pattern, not a compulsory five-step template. A thoughtful conclusion can be a perfectly good next step.</p></section>';
 }
-export function renderWriterFieldGuide(icon,e,guide=null){
+export function renderWriterFieldGuide(icon,e,guide=null,state=null){
  const essential=FIELD_GUIDE_TIPS.filter(x=>x.essential),additional=FIELD_GUIDE_TIPS.filter(x=>!x.essential);
  return '<div class="writer-guide-main">'+
   '<div class="writer-guide-hero"><span class="writer-guide-eyebrow">'+icon("sparkles")+' BEFORE YOU WRITE</span>'+
   '<div class="writer-guide-hero-layout"><div><h2>Make your IA worth reading.</h2>'+
   '<p>Great mathematical writing shows the questions you asked, the choices you made, what you discovered — and what those discoveries mean.</p>'+
-  '<span class="writer-guide-hero-note">14 short tips · 6 essentials · examples you can explore</span></div>'+
+  '<span class="writer-guide-hero-note">14 core writing tips · 26 practical section tips · examples you can explore</span></div>'+
   '<div class="writer-guide-art" aria-hidden="true"><span class="writer-guide-art-sheet sheet-one">'+icon("chart")+'</span>'+
   '<span class="writer-guide-art-sheet sheet-two">'+icon("brain")+'</span><span class="writer-guide-art-star">'+icon("sparkles")+'</span></div></div></div>'+
   '<p class="writer-guide-disclaimer">These are fictional teaching examples, not passages to copy. Your IA must reflect your own genuine thinking and mathematics.</p>'+
@@ -374,6 +410,7 @@ export function renderWriterFieldGuide(icon,e,guide=null){
   '<div class="writer-guide-section-heading"><span class="writer-guide-section-symbol">'+icon("compass")+'</span>'+
   '<div><h3 id="writer-guide-extra-heading">Eight more ideas when you need them</h3><p>Extra craft for methods, mathematical limitations, results and editing.</p></div></div>'+
   '<div class="writer-guide-tip-list">'+additional.map((t,i)=>tipCard(t,i+6,icon,e,guide)).join("")+'</div></section>'+
+  stageWritingLibrary(icon,e,state)+
   '<div class="writer-guide-finish"><div><strong>You\'re ready to write something real.</strong>'+
   '<p>You do not need to memorise these tips. Pathfinder will bring relevant ideas back during your mathematical journey, and you can reopen this guide anytime.</p></div>'+
   '<button type="button" class="btn btn-primary" data-action="close-drawer">Back to my IA '+icon("arrow-right")+'</button></div>'+

@@ -139,22 +139,15 @@ function adviceCard(t,i,icon,e){
   '</div></details>';
 }
 export function renderIntroductionWritingAdvice(icon,e,{reduced=false,state=null}={}){
- if(reduced)return '<section class="intro-writing-guide intro-writing-guide-compact" aria-label="Essential introduction writing advice">'+
-  '<strong>Write the opening, not the ending.</strong><p>State your precise mathematical aim, genuine motivation and, if helpful, what you predict or hope to discover and why. Define unfamiliar non-mathematical specialist terms briefly, avoid background essays and do not list every planned calculation. Write in your actual IA document, then update your prediction spark.</p>'+
+ return '<section class="intro-writing-guide intro-writing-guide-compact" aria-label="Essential introduction writing advice" data-advice-moved-to-guide="introduction">'+
+  '<div class="intro-writing-guide-head"><span class="intro-writing-guide-icon">'+icon("book")+'</span><div>'+
+   '<span class="intro-writing-guide-eyebrow">WRITING GUIDE · INTRODUCTION</span><h2>Before you write</h2></div></div>'+
+  '<strong>Write the opening, not the ending.</strong><p>Keep your introduction short, personal and mathematically focused. Open a tip only if you need more guidance.</p>'+
+  '<p>State your precise mathematical aim, genuine motivation and, if helpful, what you predict or hope to discover and why. Define unfamiliar non-mathematical specialist terms briefly, avoid background essays and do not list every planned calculation. Write in your actual IA document, then update your prediction spark.</p>'+
+  '<button type="button" class="writer-guide-inline-more" data-action="writer-guide-open" data-guide-tip="story" data-guide-spot="completing:C10:aim">'+icon("book")+' All six introduction writing tips '+icon("arrow-right")+'</button>'+
   '</section>';
- const main=INTRODUCTION_TIPS.filter(t=>t.essential),extra=INTRODUCTION_TIPS.filter(t=>!t.essential);
- return '<section class="intro-writing-guide" aria-labelledby="intro-guide-heading">'+
- '<div class="intro-writing-guide-head"><span class="intro-writing-guide-icon">'+icon("book")+'</span><div>'+
-  '<span class="intro-writing-guide-eyebrow">WRITING GUIDE · INTRODUCTION</span>'+
-  '<h2 id="intro-guide-heading">Before you write</h2>'+
-  '<p>Keep your introduction short, personal and mathematically focused. Open a tip only if you need more guidance.</p>'+
- '</div></div>'+
- '<div class="intro-advice-cards">'+main.map((t,i)=>adviceCard(t,i,icon,e)).join("")+'</div>'+
- '<details class="intro-advice-extra-group"><summary>'+icon("sparkles")+
-  '<span><strong>Two more ways to keep it sharp</strong><small>Concision and an honest prediction or hope</small></span>'+icon("chevron-right")+'</summary>'+
-  '<div class="intro-advice-cards intro-advice-extra-cards">'+extra.map((t,i)=>adviceCard(t,i+main.length,icon,e)).join("")+'</div></details>'+
- '</section>';
 }
+
 
 /** One optional example entrance after the student's primary writing task. */
 export function renderIntroductionOptionalExamples(icon){
