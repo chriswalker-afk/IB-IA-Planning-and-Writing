@@ -57,10 +57,12 @@ export function diagramNotationControls(e,{studio,key="",index=null,part=""}={})
   '<button type="button" data-action="'+action+'" data-notation-token="'+e(s.token)+'"'+
   (tableColumn?' data-table-col="'+index+'" data-table-part="'+e(part)+'" data-table-token="'+e(s.token)+'"':"")+
   ' title="'+e(s.title)+'" aria-label="'+e(s.title)+'">'+e(s.label)+'</button>').join("");
- return '<div class="diagram-notation-tools" data-diagram-notation'+attrs+'>'+
+ return (tableColumn?
+  '<details class="ia-table-math-palette diagram-notation-tools" data-diagram-notation'+attrs+'><summary>∑ Mathematical symbols</summary>':
+  '<div class="diagram-notation-tools" data-diagram-notation'+attrs+'>'+
   '<button type="button" class="diagram-notation-toggle" data-action="diagram-notation-toggle" aria-expanded="false">'+
-  '<span aria-hidden="true">∑</span> Insert maths</button>'+
-  '<div class="diagram-notation-panel" data-notation-panel hidden>'+
+  '<span aria-hidden="true">∑</span> Insert maths</button>')+
+  '<div class="diagram-notation-panel" data-notation-panel'+(tableColumn?'':' hidden')+'>'+
   '<div class="diagram-notation-palette" role="group" aria-label="Mathematical symbols">'+tokens+'</div>'+
   '<label class="diagram-notation-expression-label">Or write a mathematical expression (optional LaTeX)'+
   '<input type="text" data-diagram-expression spellcheck="false" autocomplete="off" placeholder="e.g. \\frac{dy}{dx}, \\sqrt{x}, a_{12}"></label>'+
@@ -69,7 +71,8 @@ export function diagramNotationControls(e,{studio,key="",index=null,part=""}={})
   '<div class="diagram-notation-actions"><button type="button" data-action="diagram-notation-insert" class="btn btn-secondary btn-sm">Insert expression</button>'+
   '<button type="button" data-action="diagram-notation-close" class="btn btn-quiet btn-sm">Close</button></div>'+
   '<small>Shortcuts such as cm^2, x_1 and \\theta work without using the editor. Maths changes labels only, not measured data.</small>'+
-  '</div><div class="diagram-notation-value-preview" data-notation-value-preview hidden></div></div>';
+  '</div><div class="diagram-notation-value-preview" data-notation-value-preview hidden></div>'+
+  (tableColumn?'</details>':'</div>');
 }
 export function diagramHtmlMath(value){
  return mixedMathTokens(value).map(token=>{
