@@ -90,7 +90,12 @@ export function readPastedGraphData(raw){
 export const splitHeading=x=>{
  const h=String(x??"").trim();
  const hit=/^(.*?)\s*(?:\(([^)]+)\)|\[([^\]]+)\])\s*$/.exec(h);
- return hit?{label:hit[1].trim(),unit:(hit[2]||hit[3]).trim()}:{label:h,unit:""};
+ // Parenthesised function arguments are not units: f(x), g(t), a(t).
+ const unit=hit?(hit[2]||hit[3]).trim():"";
+ if(hit&&/^[A-Za-z]$/.test(hit[1].trim())&&/^[A-Za-z]$/.test(unit)&&
+    ["x","t","y","z","u","v","n"].includes(unit))
+  return {label:h,unit:""};
+ return hit?{label:hit[1].trim(),unit}:{label:h,unit:""};
 };
 export function applyPastedGraphData(studio,raw){
  const d=studio.draft,parsed=readPastedGraphData(raw);
