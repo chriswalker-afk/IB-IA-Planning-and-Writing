@@ -76,7 +76,9 @@ export function renderGraphModelSummary(model,e){
  return visibility+'<p class="graph-model-equation">'+e(model.equation)+'</p>'+
   '<p class="graph-model-method">'+e(model.method)+' · '+model.n+' observations</p>'+
   statistics+(model.caution?'<p class="graph-model-caution">'+e(model.caution)+'</p>':'')+
-  '<small>'+e(model.note)+'</small>';
+  '<small>'+e(model.note)+'</small>'+
+  (diagnostics.ok?'<div class="graph-model-table-transfer"><button type="button" class="btn btn-secondary btn-sm" data-action="graph-to-table" data-graph-model-id="'+e(model.id)+'">'+
+    'Use this model in Table Studio</button><small>Copy observed values, full-precision fitted predictions and residuals. Your graph remains unchanged; the table is not live-synced.</small></div>':'');
 }
 const graphModelOptions=(choice,e)=>{
  const group=items=>items.map(([id,name])=>'<option value="'+e(id)+'"'+(id===choice?" selected":"")+'>'+e(name)+'</option>').join("");
