@@ -111,7 +111,7 @@ test("stacked and 100%-stacked bars preserve counts and use correct category den
  assert.match(renderStatSvg(d),/Percent of category/);
  assert.match(statSummaryCSV(d),/ORIGINAL CATEGORY COUNTS/);
  d.barStyle="grouped";d.barMode="percent";q=statAnalysis(d);
- assert.equal(q.result.categories[0].values[0],30/45*100);
+ assert.ok(Math.abs(q.result.categories[0].values[0]-30/45*100)<1e-10);
  assert.equal(q.result.denominator,"group");
  d.barSort="name";assert.deepEqual(statAnalysis(d).result.categories.map(c=>c.category),["Bus","Cycle","Walk"]);
 });
