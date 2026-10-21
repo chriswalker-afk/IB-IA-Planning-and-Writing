@@ -25,3 +25,16 @@
 .geometry-studio [data-geometry-vertex-index]:focus-visible{stroke:#e89c32;stroke-width:4;outline:none}
 @media(max-width:900px){.geometry-workspace{grid-template-columns:1fr}.geometry-controls{position:static;max-height:none;overflow:visible}.geometry-main svg{max-height:none}.geometry-vertices{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:560px){.geometry-vertices{grid-template-columns:1fr}.geometry-controls,.geometry-main{padding:12px}.geometry-buttons .btn{font-size:.8rem}.geometry-main svg{min-width:0}}
+
+
+/* Extra annotation editors remain collapsed so they do not overwhelm the
+   coordinate inputs, particularly on smaller screens. */
+.geometry-vertex-notation{grid-column:1/-1;margin-top:1px;border-top:1px solid #d8e3e8;padding-top:7px;min-width:0}
+.geometry-vertex-notation>summary{cursor:pointer;font-size:.82rem;color:#2e637e;font-weight:600}
+.geometry-notation-row{display:flex;align-items:flex-start;justify-content:space-between;gap:7px;min-width:0;padding:7px 0}
+.geometry-notation-row>span{flex:1 1 auto;font-size:.79rem;padding-top:7px}
+.geometry-notation-row>.diagram-notation-tools{flex:0 1 auto;min-width:0}
+.geometry-vertex-notation .diagram-notation-panel{max-width:min(315px,72vw)}
+.geometry-preview [data-geometry-vertex-index]{touch-action:none;cursor:grab}
+.geometry-preview [data-geometry-vertex-index]:active{cursor:grabbing}
+.geometry-studio .geometry-output button:disabled{opacity:.52;cursor:not-allowed}
