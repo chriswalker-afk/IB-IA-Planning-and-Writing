@@ -61,6 +61,8 @@ export function fitLogarithmic(points){
   "y ≈ "+label(intercept)+" + "+label(slope)+" ln(x)";
  if(!predictorOK(points,predict))return fail("The logarithmic predictions exceed the reliable numeric range.");
  return {ok:true,n:points.length,predict,equation,method:"Ordinary least squares of y against ln(x)",
+  parameters:{lnMean:data.mean,lnScale:data.scale,centeredIntercept:coef[0],
+   centeredSlope:coef[1],slope,intercept},
   note:"Requires x > 0. The fit minimises squared errors in the original y-units, not ln(y).",
   caution:"A logarithmic model is undefined for x ≤ 0. Interpret the model only on the observed positive x-range."};
 }
@@ -145,7 +147,9 @@ export function fitPositiveGrowth(points,type,method="transformed"){
   "This numerical search minimises original-scale squared errors but can have local or boundary minima. ")+
   (atBound?"The fitted slope reaches the search limit: inspect the data and prefer an independently justified model. ":"")+
   (power?"Power regression requires x > 0 and y > 0.":"This exponential fitting option requires y > 0.");
- return {ok:true,n:points.length,predict:transform,equation,method:methodLabel,note:
+ return {ok:true,n:points.length,predict:transform,equation,method:methodLabel,
+  parameters:{logAmplitude:logA,centeredRate:rate,xMean:std.mean,xScale:std.scale,
+   slope,rawAmplitude},note:
   "Predictions use full-precision parameters. The fitted objective is shown above; observed-scale residuals use every original pair.",
   caution};
 }
@@ -221,7 +225,10 @@ export function fitSinusoidal(points,periodInput=""){
   "The period was supplied by the student; amplitude, phase and offset were then fitted by least squares. ":
   "The period was estimated by an exploratory frequency search; several different periods can match the same observations. ")+
   "Confirm periodic behaviour and the meaning of the period before using this model for predictions.";
- return {ok:true,n:points.length,predict,equation,method:requested?
+ return {ok:true,n:points.length,predict,equation,
+  parameters:{offset:best.offset,amplitude:best.amplitude,phase:best.phase,
+   period,xOrigin:min,cycles:best.cycles},
+  method:requested?
   "Fixed-period sine/cosine least squares":"Exploratory period search + sine/cosine least squares",
   note:"Amplitude, angular frequency and phase are measured in radians where appropriate. A mathematical fit alone does not prove periodic behaviour.",
   caution,period,cycles:best.cycles};
