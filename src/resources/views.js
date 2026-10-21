@@ -37,7 +37,7 @@ export function resourceCreatorHub({compact=false}={}){
     '<span class="resource-creator-card-cta">Open creator '+icon("arrow-right")+'</span></span></button>').join("");
  const headline='<div class="resource-creator-heading"><span class="resource-creator-heading-icon">'+icon("layers")+'</span>'+
   '<div><h3>Pathfinder diagram creators</h3><p>Make and refine diagrams here, without switching to another website.</p></div></div>';
- const note='<p class="resource-creator-note">All five creators are optional. Your drafts stay editable; opening a creator does not add a result to your IA. Use <strong>Back to my work</strong> to return to your previous page.</p>';
+ const note='<p class="resource-creator-note">All '+REPRESENTATION_TOOLS.length+' creators are optional. Your drafts stay editable; opening a creator does not add a result to your IA. Use <strong>Back to my work</strong> to return to your previous page.</p>';
  return compact?'<details class="resource-creators resource-creators-compact"><summary>'+icon("layers")+
    ' Use a Pathfinder diagram creator</summary>'+headline+'<div class="resource-creator-grid">'+cards+'</div>'+note+'</details>':
   '<section class="resource-creators" aria-label="Pathfinder diagram creators">'+headline+
