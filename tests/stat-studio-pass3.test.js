@@ -157,3 +157,12 @@ test("new settings survive backups; older diagrams retain safe defaults",()=>{
  assert.notEqual(statSignature(s.draft),statSignature({...s.draft,barSort:"source"}));
  assert.equal(normalizeStatStudio({draft:{kind:"histogram"}}).draft.barStyle,"grouped");
 });
+
+test("switching grouped classes into a curve clears hidden raw-comparison settings",()=>{
+ const studio=grouped("histogram");
+ studio.draft.histogramCompare="single";
+ studio.draft.curveCompare="multiple";
+ assert.equal(changeStatKind(studio,"ogive"),true);
+ assert.equal(studio.draft.curveCompare,"single");
+ assert.equal(statAnalysis(studio.draft).ready,true);
+});
