@@ -90,6 +90,9 @@ export function renderRepresentationHub(state,icon,e){
   '<span class="representation-card-icon">'+icon(t.icon)+'</span><span class="representation-card-details"><strong>'+
   e(t.title)+'</strong><small>'+e(t.detail)+'</small></span>'+icon("arrow-right")+'</button>').join(""):'<p>No tools in this category yet. Choose another mathematical purpose.</p>')+'</div>';
  return '<section class="representation-hub" data-representation-hub aria-label="Choose a mathematical representation">'+
+ (state.ui?.resourceCreatorReturnRoute?
+  '<button type="button" class="btn btn-quiet btn-sm resource-creator-hub-back" data-action="resource-creator-return">'+
+   icon("arrow-left")+' Back to my previous page</button>':'')+
  '<header class="representation-header"><div><span class="intro-writing-guide-eyebrow">'+icon("layers")+
  ' CHOOSE YOUR MATHEMATICAL REPRESENTATION</span><h2>Which tool helps tell your mathematical story?</h2>'+
  '<p>Start from your investigative aim. A clear, purposeful figure is more valuable than using extra mathematics just to make the IA look complicated.</p></div></header>'+
