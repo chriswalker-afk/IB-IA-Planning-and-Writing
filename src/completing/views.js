@@ -60,9 +60,8 @@ export function createCompletingViews(ctx){
  // Writing-craft guidance is separate from the current-IA criterion markings.
  const criterionMarkedWritingBox=(html,keys=[])=>baseCriterionMarkedWritingBox(html,keys,guideBubble(keys));
  const criteriaField=(html,key)=>{
-  const state=getState(),node=state.completion.current;
-  const showRubric=isStudioWritingNode(node)||!isAdviceReduced(state);
-  return criterionMarkedField(html,showRubric?key:"",guideBubble(key));
+  // Assessment bubbles are help controls and stay available in both modes.
+  return criterionMarkedField(html,key,guideBubble(key));
  };
  const writerGuideOnly=(html,key)=>criterionMarkedField(html,"",guideBubble(key));
  const entryChoice=(key,options)=>{
@@ -498,12 +497,12 @@ export function createCompletingViews(ctx){
         '<strong>Your writing starts here.</strong>'+
         '<p><b>Write relevant Set up answers directly into your actual IA document</b> as you work: the introduction, sources and methods you really use. Pathfinder stores your notes here; it does not automatically insert text into Word or Google Docs.</p>'+
        '</div></div>'+
-      essentialsNudge(s)+
-      '<div class="chapter-onboarding-grid chapter-onboarding-grid-setup">'+
+      (isAdviceReduced(s)?"":essentialsNudge(s))+
+      '<div class="chapter-onboarding-grid chapter-onboarding-grid-setup'+(isAdviceReduced(s)?' is-reduced':'')+'">'+
        '<section class="chapter-onboarding-tile"><span class="chapter-onboarding-tile-icon">'+icon("compass")+'</span>'+
         '<h3>Planning first is recommended</h3><p>Choose an aim, explore possible mathematics and check sources before writing. Your saved sparks follow you into IA Studio.</p>'+
         '<button type="button" class="onboarding-inline-action" data-action="go-planning">'+icon("arrow-right")+' '+(hasPlan?'Review my Planning':'Complete Planning first')+'</button></section>'+
-       renderFieldGuideTeaser(icon,e)+'</div>'+
+       (isAdviceReduced(s)?"":renderFieldGuideTeaser(icon,e))+'</div>'+
       setupQuickSparks(s)+
       '<div class="setup-start-actions">'+
        button("Start writing my introduction","setup-start-writing","btn-primary","","arrow-right")+
@@ -547,12 +546,12 @@ export function createCompletingViews(ctx){
    };
   }
   case "C04":return{intro:"Choose a meaningful task. A section may be revisited whenever the evidence changes; there is no required number of maths sections.",
-    html:'<section class="writer-guide-overview-card" aria-labelledby="writer-guide-overview-title">'+
+    html:(isAdviceReduced(s)?"":'<section class="writer-guide-overview-card" aria-labelledby="writer-guide-overview-title">'+
        '<span class="writer-guide-overview-icon">'+icon("book")+'</span>'+
        '<div class="writer-guide-overview-copy"><span>YOUR WRITING COMPANION</span>'+
        '<h3 id="writer-guide-overview-title">Make each mathematical step worth reading</h3>'+
        '<p>Writing advice, examples and reminders of how to communicate real mathematical thinking. Open it whenever you need it.</p></div>'+
-       '<button type="button" class="writer-guide-overview-action" data-action="writer-guide-open">Open Writing Guide '+icon("arrow-right")+'</button></section>'+
+       '<button type="button" class="writer-guide-overview-action" data-action="writer-guide-open">Open Writing Guide '+icon("arrow-right")+'</button></section>')+
        stageDashboard()+miniList()+
       '<div class="button-row">'+sourceAction("Save progress","Save a full project backup")+
       sourceAction("I'm stuck / Something isn't working","I'm stuck")+'</div>'};
@@ -563,10 +562,12 @@ export function createCompletingViews(ctx){
      '<span class="intro-writing-task-eyebrow">YOUR WRITING TASK</span>'+
      '<h2 id="intro-writing-task-heading">Write your introduction</h2>'+
      '<p>In your actual IA document, write a few focused paragraphs that introduce your aim, your motivation and, if useful, a tentative prediction. You do not need to list every technique you might use.</p></div></div>'+
+    (isAdviceReduced(s)&&currentAim()!=="Still to decide"?'<p class="writing-stage-compact-aim"><strong>Your saved aim</strong> '+e(currentAim())+'</p>':"")+
     criterionMarkedWritingBox(notes,["completing:C10:aim","completing:C10:motivation"])+
-    '<p class="intro-writing-task-footnote">Your notes here are private to Pathfinder. The green <strong>A</strong> and <strong>C</strong> bubbles explain assessment opportunities, while the purple book opens a relevant writing example. None of these bubbles marks or grades your draft.</p></section>';
+    (isAdviceReduced(s)?"":'<p class="intro-writing-task-footnote">Your notes here are private to Pathfinder. The green <strong>A</strong> and <strong>C</strong> bubbles explain assessment opportunities, while the purple book opens a relevant writing example. None of these bubbles marks or grades your draft.</p>')+'</section>';
    return{intro:"",
     html:renderWritingStageFlow({
+     reduced:isAdviceReduced(s),
      advice:renderIntroductionWritingAdvice(icon,e,{reduced:isAdviceReduced(s),state:s}),
      sparks:renderIntroductionSparkPrompt(s,icon,e)+renderSparkShelf(s,"C10",{surface:"studio",libraryOnly:true}),
      task,
@@ -1324,7 +1325,7 @@ export function createCompletingViews(ctx){
     (node!=="C00"&&node!=="C04"&&node!=="C10"&&!studioWriting&&!isStuckNode(node)?'<p class="studio-ia-writing-reminder">'+icon("pencil")+
       ' WRITE IN YOUR IA · Use these prompts to develop your own document; nothing is inserted automatically.</p>':'')+
     '<div class="task-shell'+(node==="C00"?' chapter-onboarding-shell':'')+'" data-source-node="'+e(node)+'">'+
-    criterionPageHeading(label,"completing",isAdviceReduced(s)||fieldBadgeInsteadOfTitle?"":node)+
+    criterionPageHeading(label,"completing",fieldBadgeInsteadOfTitle?"":node)+
     (node==="C10"||studioWriting?"":'<p class="task-intro">'+e(screen.intro)+'</p>')+
     (node==="C10"||studioWriting?"":insightEcho(s,node))+extra.returnToReview()+
     (studioWriting||isStuckNode(node)||["C00","C04","C10","C10E"].includes(node)||isAdviceReduced(s)?"":criteriaPanel(s))+
@@ -1336,7 +1337,7 @@ export function createCompletingViews(ctx){
     (["C00","C04"].includes(node)?"":contextualPrompt(node)+resourcePrompt(s)))+statusControls+
     (node==="C00"?"":allButtons(node,primaryByNode[node]||[]))+
     (["C30","C40","C50"].includes(node)?stageBranchActions():"")+'</div>'+
-    (studioWriting?"":'<p class="small-callout">Only actual mathematics supports a mathematical conclusion. Your planning, predictions and teacher questions remain separate from real findings. No compulsory number of calculations or IA grade.</p>')+
+    (studioWriting?"":'<p class="small-callout">'+(isAdviceReduced(s)?"Only genuine mathematical results, not plans or predictions, support your conclusion.":"Only actual mathematics supports a mathematical conclusion. Your planning, predictions and teacher questions remain separate from real findings. No compulsory number of calculations or IA grade.")+'</p>')+
     (studioWriting||["C00","C04"].includes(node)?"":miniList())+'</div>';
  }
  return {viewCompleting:render};

@@ -144,6 +144,8 @@ const ADVICE=[
 /** Exact four source-writing lessons (no rewording): now surfaced by the Field Guide. */
 export const SHOWING_MATHS_TIPS=Object.freeze(ADVICE.map(row=>Object.freeze([...row])));
 export function renderShowingMathsAdvice(state,icon,e,{reduced=false}={}){
+ // Purpose, evidence and interpretation prompts remain inside the task itself.
+ if(reduced)return "";
  return '<section class="studio-stage-advice show-first-advice" data-stage-advice="maths" data-advice-moved-to-guide="showing-mathematics" aria-label="Writing advice for showing the first mathematics">'+
   '<div class="studio-stage-advice-head"><span class="studio-stage-icon">'+icon("chart")+'</span><div>'+
   '<span class="intro-writing-guide-eyebrow">BEFORE YOU WRITE · SHOWING FIRST MATHEMATICS</span>'+

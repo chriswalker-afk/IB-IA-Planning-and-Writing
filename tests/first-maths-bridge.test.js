@@ -121,8 +121,7 @@ test("help remains short, tailored, optional and safely escaped",()=>{
  assert(html.includes("Four practical first-mathematics writing tips"));
  assert(html.includes("Aim first. Then one useful mathematical step."));
  const reduced=renderFirstMathsAdvice(s,icon,escapeHtml,{reduced:true});
- assert(!reduced.includes("data-first-maths-tip="));
- assert(reduced.includes("Aim first"));
+ assert.equal(reduced,"","Reduced mode hides general prose but keeps all 4 source tips in the Field Guide");
  const examples=renderFirstMathsExamples(s,icon,escapeHtml);
  assert(examples.includes('data-example-topic="graph"'));
  assert(examples.includes("data-writing-examples"));

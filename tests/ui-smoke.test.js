@@ -1131,3 +1131,78 @@ test("Writer Guide bubbles, not duplicate stage links, accompany key IA writing 
   assert(h.html.includes('data-criterion-badge='),node+": existing marking criteria should remain");
  }
 });
+
+test("Reduce advice shows only core writing instructions while keeping green and purple help",()=>{
+ const nodes=["C10","C20","C21S","C30","C34B","C40","C50","C60","C61","C70"];
+ for(const node of nodes){
+  const state=createProjectState();state.route="completing";state.completion.current=node;
+  state.planning.fields.aim="Does the observed pattern follow the chosen model?";
+  state.scratch.introduction="A genuinely saved introduction";
+  state.entries=[{id:"original-maths",title:"Original mathematics",phase:["C40","C50"].includes(node)?"substantial":"first",
+   status:"completed",result:"The real figure rises then levels off",interpretation:node==="C34B"?"":"A straight line may not suffice"}];
+  state.completion.activeEntryIndex=0;
+  const h=createHarness(state);
+  const evidence=entries=>entries.map(({id,title,phase,status,result,interpretation})=>({id,title,phase,status,result,interpretation}));
+  const original={scratch:h.saved.scratch,entries:evidence(h.saved.entries),fields:h.saved.completion.fields,
+   planning:h.saved.planning.fields};
+  const rubricBefore=(h.html.match(/data-criterion-badge=/g)||[]).length;
+  const railsBefore=(h.html.match(/class="criterion-field-help-rail"/g)||[]).length;
+  const guideBefore=(h.html.match(/class="writer-guide-field-bubble"/g)||[]).length;
+  assert(rubricBefore>0,node+": expected green assessment help");
+  assert(guideBefore>0,node+": expected purple Field Guide help");
+  assert(h.html.includes("Reduce advice"),node);
+  const fullHtml=h.html;
+  h.action("toggle-advice-mode");
+  assert.equal(h.saved.ui.adviceMode,"reduced",node);
+  assert(h.html.includes("Show full advice"),node);
+  assert((h.html.match(/data-criterion-badge=/g)||[]).length>0,
+   node+": Green criterion help must still be available");
+  assert.equal((h.html.match(/class="criterion-field-help-rail"/g)||[]).length,railsBefore,
+   node+": Reduce advice must retain every marked writing field help rail");
+  assert.equal((h.html.match(/class="writer-guide-field-bubble"/g)||[]).length,guideBefore,
+   node+": Reduce advice must not hide any purple Field Guide bubbles");
+  if(["C10","C20","C21S","C30","C34B","C40","C50","C60","C61"].includes(node)){
+   assert(h.html.includes('data-advice-mode="reduced"'),node);
+   assert(!h.html.includes('data-writing-stage-part="advice"'),node);
+   assert(!h.html.includes('data-writing-stage-part="examples"'),node);
+   assert(h.html.includes('data-writing-stage-part="task"'),node);
+   if(["C10","C20","C30"].includes(node))assert(h.html.includes("Your saved aim"),node);
+   if(h.html.includes('data-writing-stage-part="sparks"'))assert(h.html.includes("data-reduced-saved-context"),node);
+   assert(h.html.length<fullHtml.length,node+": reduced page should be shorter");
+  }
+  assert.deepEqual(h.saved.scratch,original.scratch,node);
+  assert.deepEqual(evidence(h.saved.entries),original.entries,node);
+  assert.deepEqual(h.saved.completion.fields,original.fields,node);
+  assert.deepEqual(h.saved.planning.fields,original.planning,node);
+  h.action("toggle-advice-mode");
+  assert.equal(h.saved.ui.adviceMode,"guided",node);
+  assert(h.html.includes("Reduce advice"),node);
+  if(node==="C10"||node==="C20"||node==="C30"||node==="C40"){
+   assert(h.html.includes('data-writing-stage-part="advice"'),node+": full help not restored");
+  }
+ }
+});
+
+test("Reduce advice also trims the IA setup and stage dashboard without hiding their actions",()=>{
+ for(const node of ["C00","C04"]){
+  const s=createProjectState();s.route="completing";s.completion.current=node;
+  const h=createHarness(s),full=h.html;
+  assert(full.includes('data-source-node="'+node+'"'));
+  if(node==="C04")assert(full.includes('writer-guide-overview-card'));
+  h.action("toggle-advice-mode");
+  assert.equal(h.saved.ui.adviceMode,"reduced");
+  assert(h.html.includes('data-source-node="'+node+'"'));
+  assert(h.html.length<full.length,node+": no optional prose removed");
+  if(node==="C00"){
+   assert(h.html.includes('data-action="setup-start-writing"'),"Keep primary introduction action");
+   assert(h.html.includes('chapter-onboarding-grid-setup is-reduced'),"One-column core setup");
+   assert(h.html.includes('data-action="go-planning"'),"Keep Planning access");
+  }else{
+   assert(!h.html.includes('writer-guide-overview-card'),"Avoid duplicate Field Guide promotion");
+   assert(h.html.includes('class="journey-stage-group')&&h.html.includes('class="completion-stage-grid'),"Keep the stage navigation dashboard");
+  }
+  h.action("toggle-advice-mode");
+  assert.equal(h.saved.ui.adviceMode,"guided");
+  if(node==="C04")assert(h.html.includes("writer-guide-overview-card"));
+ }
+});

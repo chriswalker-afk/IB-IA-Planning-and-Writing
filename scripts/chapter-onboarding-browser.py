@@ -783,12 +783,94 @@ def adaptive_mathematical_journey(browser,width):
  finally:
   ctx.close()
 
+def reduced_writing(browser,width):
+ """Reduce advice must reduce visible copy, not the mathematics, field help or saved work."""
+ for node in ("C10","C20","C21S","C30","C40","C60","C70"):
+  state=copy.deepcopy(BASE)
+  state["route"]="completing"
+  state["completion"]["current"]=node
+  state["ui"]["writerGuideIntroSeen"]=True
+  state["planning"]["fields"]["aim"]="What can my mathematical model really explain?"
+  state["planning"]["fields"]["motivation"]="I noticed an interesting real pattern."
+  state["scratch"]["introduction"]="My carefully saved introduction"
+  state["entries"]=[{"id":"first-real-result","phase":"substantial" if node=="C40" else "first",
+                     "status":"completed","title":"First mathematical stage",
+                     "result":"The verified data curve levels off",
+                     "interpretation":"A straight line would miss the pattern."}]
+  state["completion"]["activeEntryIndex"]=0
+  ctx,page=open_fixture(browser,state,width)
+  try:
+   main=page.locator('[data-source-node="'+node+'"]')
+   assert main.count()==1,(node,width)
+   before=stored(page)
+   original_scratch=copy.deepcopy(before["scratch"])
+   original_fields=copy.deepcopy(before["completion"]["fields"])
+   keep_fields=("id","title","phase","status","result","interpretation")
+   original_entries=[{key:item.get(key) for key in keep_fields} for item in before["entries"]]
+   initial_book=main.locator('.writer-guide-field-bubble:visible').count()
+   assert initial_book>=1,(node,width,'missing purple help')
+   initial_rails=main.locator('.criterion-field-help-rail').count()
+   assert initial_rails>=1,(node,width,'missing field help rail')
+   initial_green=main.locator('.criterion-field-help-rail .criterion-badge:visible').count()
+   assert initial_green>=1 or main.locator('.criterion-title-row .criterion-badge:visible').count()>=1,(node,width,'missing criteria help')
+   toggle=page.locator('[data-action="toggle-advice-mode"]')
+   assert "Reduce advice" in toggle.inner_text(),(node,width)
+   toggle.click()
+   assert stored(page)["ui"]["adviceMode"]=="reduced",(node,width)
+   assert "Show full advice" in page.locator('[data-action="toggle-advice-mode"]').inner_text(),(node,width)
+   assert main.locator('.writer-guide-field-bubble:visible').count()==initial_book,(node,width,'book help lost')
+   assert main.locator('.criterion-field-help-rail').count()==initial_rails,(node,width,'field help lost')
+   assert main.locator('.criterion-field-help-rail .criterion-badge:visible').count()==initial_green,(node,width,'criterion help lost')
+   if node!="C70":
+    assert main.locator('[data-advice-mode="reduced"]').count()==1,(node,width)
+    assert main.locator('[data-writing-stage-part="task"]').is_visible(),(node,width)
+    assert main.locator('[data-writing-stage-part="advice"]').count()==0,(node,width)
+    assert main.locator('[data-writing-stage-part="examples"]').count()==0,(node,width)
+    assert main.locator('.writer-guide-inline-more').count()==0,(node,width)
+    assert main.locator('.studio-stage-advice,.intro-writing-guide').count()==0,(node,width)
+    if node!="C60":
+     refs=main.locator('[data-reduced-saved-context]')
+     assert refs.count()==1 and not refs.evaluate("(el)=>el.open"),(node,width,'saved ideas must start collapsed')
+     refs.locator(":scope > summary").click()
+     assert refs.evaluate("(el)=>el.open"),(node,width,'saved ideas cannot be opened')
+     if node=="C20":assert refs.locator('[data-first-maths-context]').count()==1
+     refs.locator(":scope > summary").click()
+   else:
+    assert main.locator('.writer-guide-field-bubble:visible').count()>=1
+   without_overflow(page)
+   # Both help systems remain usable in reduced mode.
+   main.locator('.writer-guide-field-bubble:visible').first.click()
+   popin=page.locator('#writerGuidePopinLayer .writer-guide-popin')
+   assert popin.is_visible(),(node,width,'purple contextual pop-in does not open')
+   assert popin.get_attribute('data-guide-popin-tip'),(node,width,'missing contextual lesson identity')
+   popin.locator('[data-action="writer-guide-popin-close"]').first.click()
+   badge=main.locator('.criterion-field-help-rail .criterion-badge:visible')
+   if badge.count():
+    badge.first.click()
+    assert page.locator('#criterionBadgeDialog[open]').count()==1,(node,width,'green rubric pop-in does not open')
+    page.locator('#criterionBadgeDialog [data-criterion-badge-close]').first.click()
+   if node in ("C10","C40"):page.screenshot(path=str(OUT/f"reduced-{node}-{width}.png"),animations="disabled")
+   after=stored(page)
+   saved_entries=[{key:item.get(key) for key in keep_fields} for item in after["entries"]]
+   assert after["scratch"]==original_scratch and after["completion"]["fields"]==original_fields and saved_entries==original_entries,(node,width,'saved work changed')
+   page.locator('[data-action="toggle-advice-mode"]').click()
+   assert stored(page)["ui"]["adviceMode"]=="guided",(node,width)
+   assert "Reduce advice" in page.locator('[data-action="toggle-advice-mode"]').inner_text()
+   if node!="C70":
+    assert main.locator('[data-advice-mode="guided"]').count()==1
+    assert main.locator('[data-writing-stage-part="advice"]').count()==1,(node,width,'full advice not restored')
+    assert main.locator('[data-writing-examples]').count()==1,(node,width,'optional examples not restored')
+   assert main.locator('.writer-guide-field-bubble:visible').count()==initial_book,(node,width,'help lost on restore')
+   assert stored(page)["scratch"]==original_scratch,(node,width)
+  finally:
+   ctx.close()
+
 def main():
  results=[]
  with sync_playwright() as p:
   browser=p.chromium.launch(headless=True)
   for width in (1360,390):
-   for scenario,fn in (("new",first_time),("completed",completed_plan),("writing-stages",writing_sections),("maths-model-start",modelling_math_start),("repeatable-mathematics",repeatable_mathematics),("growing-discovery-trail",growing_discovery_trail),("adaptive-mathematical-journey",adaptive_mathematical_journey)):
+   for scenario,fn in (("new",first_time),("completed",completed_plan),("writing-stages",writing_sections),("maths-model-start",modelling_math_start),("repeatable-mathematics",repeatable_mathematics),("growing-discovery-trail",growing_discovery_trail),("adaptive-mathematical-journey",adaptive_mathematical_journey),("reduced-advice",reduced_writing)):
     try:
      fn(browser,width)
      results.append({"scenario":scenario,"width":width,"status":"passed"})

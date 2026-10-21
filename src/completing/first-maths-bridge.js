@@ -89,6 +89,8 @@ export function firstMathsTips(ctx){
  ];
 }
 export function renderFirstMathsAdvice(state,icon,e,{reduced=false}={}){
+ // The task retains route-specific mathematical guidance and the Guide bubbles.
+ if(reduced)return "";
  return '<section class="studio-stage-advice first-maths-advice" data-stage-advice="data" data-advice-moved-to-guide="first-mathematics" aria-label="Advice for introducing the first mathematics">'+
   '<div class="studio-stage-advice-head"><span class="studio-stage-icon">'+icon("compass")+'</span>'+
   '<div><span class="intro-writing-guide-eyebrow">BEFORE YOU WRITE · FIRST MATHEMATICS</span>'+
