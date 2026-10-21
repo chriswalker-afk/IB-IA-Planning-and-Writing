@@ -2,7 +2,8 @@
  * All real values and headings are preserved; mathematical unit typography only
  * affects presentation, not source measurements or the CSV/TSV exports.
  */
-import {escapeGraph,formatGraphMath} from "./graph-core.js";
+import {escapeGraph} from "./graph-core.js";
+import {formatTableMath} from "./table-studio-math.js";
 import {analyzeTable} from "./table-studio-core.js";
 
 const E=escapeGraph,PAGE_MARGIN=36,MAX_TABLE_WIDTH=750,MIN_COL_WIDTH=100,MAX_COL_WIDTH=255;
@@ -36,7 +37,7 @@ export function tableWidths(model){
  const count=model.headers.length;
  if(!count)return [];
  const desired=model.headers.map((header,i)=>{
-  const items=[formatGraphMath(header),...model.rows.map(row=>String(row[i]??""))];
+  const items=[formatTableMath(header),...model.rows.map(row=>String(row[i]??""))];
   const longest=Math.max(...items.map(item=>item.length));
   const word=Math.max(...items.flatMap(item=>item.split(/\s+/).map(x=>x.length)));
   // Allow headings to wrap where needed; short values should stay compact.
@@ -65,13 +66,13 @@ function svgText(lines,x,y,lineHeight,attrs){
 }
 function layout(model,d){
  const widths=tableWidths(model),tableWidth=total(widths);
- const title="Table "+d.number+". "+d.title;
+ const title="Table "+d.number+". "+formatTableMath(d.title);
  // A long title may widen the figure canvas slightly, not the data columns.
  const innerWidth=Math.max(tableWidth,Math.min(MAX_TABLE_WIDTH,title.length*11.25));
  const svgWidth=Math.ceil(innerWidth+PAGE_MARGIN*2);
  const tableLeft=(svgWidth-tableWidth)/2,positions=[tableLeft];
  widths.forEach(w=>positions.push(positions.at(-1)+w));
- const headers=model.headers.map((h,i)=>breakLines(formatGraphMath(h),widths[i]-25,17));
+ const headers=model.headers.map((h,i)=>breakLines(formatTableMath(h),widths[i]-25,17));
  const rows=model.rows.map(row=>row.map((v,i)=>breakLines(v,widths[i]-25,17)));
  const headerHeight=Math.max(54,Math.max(...headers.map(lines=>lines.length))*23+19);
  const rowHeights=rows.map(cells=>Math.max(40,Math.max(...cells.map(lines=>lines.length))*23+14));
@@ -81,13 +82,41 @@ function layout(model,d){
  const tableBottom=tableTop+headerHeight+total(rowHeights);
  const notes=[
   model.metadata,
-  model.note?(model.note.startsWith("Note:")?model.note:"Note: "+model.note):"",
+  model.note?formatTableMath(model.note.startsWith("Note:")?model.note:"Note: "+model.note):"",
   d.sourceKind==="primary"?"Source: student-collected data":"Source: "+d.sourceText
  ].filter(Boolean);
  const footerLines=notes.flatMap(n=>breakLines(n,svgWidth-PAGE_MARGIN*2,14));
  const height=Math.max(275,tableBottom+39+footerLines.length*23+25);
  return {svgWidth,tableWidth,tableLeft,widths,positions,headers,rows,headerHeight,rowHeights,
   tableTop,tableBottom,titleLines,titleY,footerLines,height};
+}
+/** A4 portrait, 20 mm margins, measured in CSS pixels at 96 px / inch.
+ * This is a presentation estimate; the final word-processor document may reflow.
+ */
+const A4={width:210*96/25.4,height:297*96/25.4,contentWidth:170*96/25.4,contentHeight:257*96/25.4};
+export function assessTableA4(raw){
+ const q=analyzeTable(raw);
+ if(!q.model)return {ready:false,width:0,height:0,scale:1,bodyPt:0,footerPt:0,
+  warnings:["Enter valid table data to check its size on A4."]};
+ const L=layout(q.model,q.draft);
+ const scale=Math.min(1,A4.contentWidth/L.svgWidth,A4.contentHeight/L.height);
+ const bodyPt=Number((17*scale*.75).toFixed(1));
+ const footerPt=Number((14*scale*.75).toFixed(1));
+ const warnings=[];
+ if(scale<.85)warnings.push("This table needs substantial shrinking to fit a portrait A4 page. Shorten headings or use a more focused table.");
+ if(bodyPt<10.5)warnings.push("Estimated body text falls below 10.5 pt on A4. Reduce columns or shorten headings instead of accepting tiny type.");
+ if(footerPt<9)warnings.push("The source/note text may become difficult to read at A4 size.");
+ const splitWord=q.model.headers.some((heading,i)=>{
+  const chars=Math.max(6,Math.floor((L.widths[i]-25)/(17*.54)));
+  return (formatTableMath(heading).match(/\([^)]*\)|\S+/g)||[]).some(word=>word.length>chars);
+ });
+ if(splitWord)warnings.push("At least one heading contains a long unbroken term that has to split across lines. Consider a shorter heading.");
+ const expectedWidth=L.svgWidth*scale,expectedHeight=L.height*scale;
+ return {ready:true,width:L.svgWidth,height:L.height,scale,bodyPt,footerPt,
+  contentWidth:A4.contentWidth,contentHeight:A4.contentHeight,
+  pageWidth:A4.width,pageHeight:A4.height,
+  usedWidth:expectedWidth,usedHeight:expectedHeight,
+  warnings};
 }
 const alignment=(d,numeric)=>d.cellAlignment==="center"?"center":numeric?"right":"left";
 const anchor=(alignment,x,w)=>alignment==="center"?{x:x+w/2,attr:"middle"}:
@@ -166,10 +195,10 @@ export function tableToHtml(raw){
  const {model,draft:d}=check,sourceWidths=tableWidths(model);
  const sourceTotal=total(sourceWidths),htmlWidth=Math.round(Math.min(650,sourceTotal));
  const widths=sourceWidths.map(w=>w*htmlWidth/sourceTotal);
- const heading="Table "+d.number+". "+d.title;
+ const heading="Table "+d.number+". "+formatTableMath(d.title);
  const th=model.headers.map((header,i)=>
   '<th scope="col" style="'+cellStyle(widths[i],alignment(d,model.numeric[i]),true,d.showColumnLines&&i>0,true)+
-  ';background:#e8f3f0;">'+E(formatGraphMath(header))+'</th>').join("");
+  ';background:#e8f3f0;">'+E(formatTableMath(header))+'</th>').join("");
  const body=model.rows.map((row,i)=>{
   const subtotal=model.kind==="frequency"&&i===model.rows.length-1;
   return '<tr>'+row.map((value,j)=>'<td style="'+cellStyle(widths[j],alignment(d,model.numeric[j]),subtotal,
@@ -177,7 +206,7 @@ export function tableToHtml(raw){
    ';background:'+(subtotal?"#e9f3ef":i%2?"#f6faf9":"#ffffff")+';">'+E(value)+'</td>').join("")+'</tr>';
  }).join("");
  const foot=[model.metadata,model.note,d.sourceKind==="primary"?"Source: student-collected data":"Source: "+d.sourceText]
-  .filter(Boolean).map(t=>'<p style="font-family:Arial,sans-serif;font-size:10pt;margin:5px 0 0;color:#566e75;">'+E(t)+'</p>').join("");
+  .filter(Boolean).map(t=>'<p style="font-family:Arial,sans-serif;font-size:10pt;margin:5px 0 0;color:#566e75;">'+E(formatTableMath(t))+'</p>').join("");
  return '<div style="max-width:'+htmlWidth+'px;">'+
   '<p style="font-family:Arial,sans-serif;font-weight:700;font-size:13pt;margin:0 0 8px;">'+E(heading)+'</p>'+
   '<table style="width:'+htmlWidth+'px;max-width:100%;table-layout:fixed;border-collapse:collapse;border-top:2px solid #286960;border-bottom:2px solid #286960;"><colgroup>'+
