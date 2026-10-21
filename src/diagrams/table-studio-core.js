@@ -223,7 +223,8 @@ export function analyzeTable(raw){
   fail("cell-length","A cell is too long to format readably. Shorten it or move the explanation into the IA text.");
  const selection=chooseRows?tableSelectionDetails(d,cols,chosen.indices):null;
  if(chooseRows){
-  if(!chosen.ok)fail("row-selection",chosen.error||"Choose source row numbers to display.");
+  if(!chosen.ok)fail(d.matrix.length>8&&!d.rowSelection.trim()?"raw-table-too-long":"row-selection",
+   chosen.error||"Choose source row numbers to display.");
   if(chosen.ok&&(!chosen.indices.length||chosen.indices.length>8))
    fail("row-count","Choose between one and eight source rows.");
   if(selection?.subset&&d.selectionReason.trim().length<18)
@@ -257,7 +258,7 @@ export function analyzeTable(raw){
    if(nums[j].numeric&&u.mode==="unsure")fail("units","Confirm the unit or dimensionless status for displayed column "+(i+1)+".");
    if(nums[j].numeric&&u.mode==="unit"&&!u.unit.trim())fail("units","Enter the unit for displayed column "+(i+1)+".");
   });
-  if(!problems.some(p=>["data","row-selection","row-count","no-columns","too-wide","ragged","empty-cell","cell-length","mixed-column"].includes(p.code))){
+  if(!problems.some(p=>["data","raw-table-too-long","row-selection","row-count","no-columns","too-wide","ragged","empty-cell","cell-length","mixed-column"].includes(p.code))){
    model={headers:cols.map(i=>tableHeader(d,i)),
     rows:displayRows.map(row=>cols.map((i,j)=>displayValue(row[i],d,false,j,"compact"))),
     numeric:nums.map(n=>n.numeric),kind:"compact",note:d.note||"",metadata:provenance,
