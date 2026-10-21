@@ -158,7 +158,7 @@ export function analyzeTable(raw){
    model={headers:d.columns.map((_,i)=>tableHeader(d,i)),
     rows:d.matrix.map(row=>row.map(value=>displayValue(value,d))),
     numeric:nums.map(n=>n.numeric),kind:"compact",
-    note:d.note||"",metadata:"A concise selection of genuinely relevant results"};
+    note:d.note||"",metadata:""};
   }
   if(d.matrix.length>5)warn("many-rows",
    "Check that every displayed row is needed to follow your mathematics. The complete dataset belongs in working files.");
