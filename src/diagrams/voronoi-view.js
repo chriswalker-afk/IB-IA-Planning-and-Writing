@@ -8,12 +8,15 @@ import {diagramNotationControls,diagramHtmlMath,diagramUnitPower} from "./diagra
 const opt=(value,label,selected,e)=>'<option value="'+e(value)+'"'+(String(value)===String(selected)?" selected":"")+'>'+e(label)+'</option>';
 const select=(key,name,value,options,e)=>'<label class="voronoi-field"><span>'+e(name)+'</span><select data-voronoi-field="'+key+'">'+
  options.map(([v,l])=>opt(v,l,value,e)).join("")+'</select></label>';
-const field=(key,label,value,e,{placeholder="",rows=0,hint=""}={})=>
- '<label class="voronoi-field"><span>'+e(label)+'</span>'+
- (rows?'<textarea data-voronoi-field="'+key+'" rows="'+rows+'" placeholder="'+e(placeholder)+'">'+e(value)+'</textarea>':
-  '<input type="text" data-voronoi-field="'+key+'" value="'+e(value)+'" placeholder="'+e(placeholder)+'" autocomplete="off">')+
- (hint?'<small>'+e(hint)+'</small>':"")+'</label>'+
- (["title","xLabel","yLabel","unit","note","addName"].includes(key)?diagramNotationControls(e,{studio:"voronoi",key}):"");
+const field=(key,label,value,e,{placeholder="",rows=0,hint=""}={})=>{
+ const notation=["title","xLabel","yLabel","unit","note","addName"].includes(key);
+ const control='<label class="voronoi-field"><span>'+e(label)+'</span>'+
+  (rows?'<textarea data-voronoi-field="'+key+'" rows="'+rows+'" placeholder="'+e(placeholder)+'">'+e(value)+'</textarea>':
+   '<input type="text" data-voronoi-field="'+key+'" value="'+e(value)+'" placeholder="'+e(placeholder)+'" autocomplete="off">')+
+  (hint?'<small>'+e(hint)+'</small>':"")+'</label>';
+ return notation?'<div class="diagram-notation-field-wrap">'+control+
+  diagramNotationControls(e,{studio:"voronoi",key})+'</div>':control;
+};
 const check=(key,label,checked)=>'<label class="voronoi-check"><input type="checkbox" data-voronoi-field="'+key+'"'+(checked?" checked":"")+'><span>'+label+'</span></label>';
 const section=(n,title,description,html)=>
  '<section class="voronoi-panel"'+(n==="1"?' data-representation-step="create"':n==="2"?' data-representation-step="refine"':"")+'><h3><span class="voronoi-step">'+n+'</span>'+title+'</h3>'+
