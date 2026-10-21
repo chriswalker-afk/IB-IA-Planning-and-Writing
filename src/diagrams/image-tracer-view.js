@@ -1,5 +1,6 @@
 import {representationEmpty} from "./workspace-ui.js";
 import {renderPresentationCoach,renderFigureHandover} from "./presentation-coach-view.js";
+import {diagramNotationControls,diagramHtmlMath,diagramUnitPower} from "./diagram-notation.js";
 /** Image tracing studio: coordinate calibration and careful IB-style mathematical communication. */
 import {
  imageTraceChecks,traceCoordinates,traceCalibration,tracedMeasurements,
@@ -19,8 +20,9 @@ const TYPES=[["primary","My own photograph"],["secondary","A published or someon
 const esc=e=>e;
 function field(key,label,value,e,options={}){
  const hint=options.hint?'<small>'+e(options.hint)+'</small>':"";
- if(options.textarea)return '<label class="trace-field"><span>'+e(label)+'</span><textarea data-trace-field="'+key+'" rows="'+(options.rows||2)+'" placeholder="'+e(options.placeholder||"")+'">'+e(value)+'</textarea>'+hint+'</label>';
- return '<label class="trace-field"><span>'+e(label)+'</span><input data-trace-field="'+key+'" type="text" value="'+e(value)+'" placeholder="'+e(options.placeholder||"")+'" autocomplete="off">'+hint+'</label>';
+ const control=options.textarea?'<label class="trace-field"><span>'+e(label)+'</span><textarea data-trace-field="'+key+'" rows="'+(options.rows||2)+'" placeholder="'+e(options.placeholder||"")+'">'+e(value)+'</textarea>'+hint+'</label>':
+  '<label class="trace-field"><span>'+e(label)+'</span><input data-trace-field="'+key+'" type="text" value="'+e(value)+'" placeholder="'+e(options.placeholder||"")+'" autocomplete="off">'+hint+'</label>';
+ return control+(["title","xLabel","yLabel","unit","caption"].includes(key)?diagramNotationControls(e,{studio:"trace",key}):"");
 }
 function select(key,label,value,choices,e){
  return '<label class="trace-field"><span>'+e(label)+'</span><select data-trace-field="'+key+'">'+
@@ -44,7 +46,7 @@ const measureFmt=(v,d)=>Number.isFinite(v)?v.toFixed(dp(d)):"—";
 export function traceCoordinatesTable(tracer,e,icon){
  const d=tracer.draft,rows=traceCoordinates(d);
  if(!d.points.length)return '<p class="trace-empty">No points traced. Select <strong>Trace points</strong> and tap meaningful features in the image.</p>';
- return '<div class="trace-coordinates-table-wrap"><table class="trace-coordinates-table"><thead><tr><th>Point</th><th>'+e(d.xLabel||"x")+' ('+e(d.unit||"unit") +')</th><th>'+e(d.yLabel||"y")+' ('+e(d.unit||"unit")+')</th><th class="trace-point-controls">Edit</th></tr></thead><tbody>'+
+ return '<div class="trace-coordinates-table-wrap"><table class="trace-coordinates-table"><thead><tr><th>Point</th><th>'+diagramHtmlMath(d.xLabel||"x")+' ('+diagramHtmlMath(d.unit||"unit") +')</th><th>'+diagramHtmlMath(d.yLabel||"y")+' ('+diagramHtmlMath(d.unit||"unit")+')</th><th class="trace-point-controls">Edit</th></tr></thead><tbody>'+
   rows.map(({index,coordinate})=>'<tr><td>P'+index+'</td><td>'+measureFmt(coordinate?.x,d)+'</td><td>'+measureFmt(coordinate?.y,d)+'</td><td><button class="btn btn-quiet btn-sm" type="button" data-action="trace-delete-point" data-trace-index="'+(index-1)+'" aria-label="Remove traced point P'+index+'">'+icon("x")+'</button></td></tr>').join("")+
   '</tbody></table></div>'+
   '<p class="trace-table-caution">Coordinates are calculated from your selected image calibration. Decimal places are a presentation choice, not evidence of measurement accuracy.</p>';
@@ -94,7 +96,7 @@ export function traceWorkingHtml(tracer,icon,e){
  const d=tracer.draft,m=tracedMeasurements(d);
  const stat=m&&d.precision!=="unsure"?'<p class="trace-measurements"><strong>From traced points (approximate):</strong> '+
   (d.closeShape?"Boundary perimeter":"Open-path length")+': '+e(measureFmt(m.perimeter,d))+' '+e(d.unit||"units")+
-  (m.area!==null?' · Enclosed area: '+e(measureFmt(m.area,d))+' '+e(d.unit||"units")+'²':"")+
+  (m.area!==null?' · Enclosed area: '+e(measureFmt(m.area,d))+' '+diagramHtmlMath(diagramUnitPower(d.unit||"units",2)):"")+
   '</p><p class="trace-table-caution">These values assume a flat calibrated plane and straight segments between points, not an exact boundary or verified uncertainty.</p>':"";
  return '<section class="trace-working-card" data-trace-working><div class="trace-working-header"><h3>Extracted coordinates <span>'+d.points.length+' points</span></h3>'+
   '<div class="trace-mini-actions"><button type="button" class="btn btn-quiet btn-sm" data-action="trace-undo"'+(!d.points.length&&!d.refB&&!d.refA&&!d.direction&&!d.origin?" disabled":"")+'>'+
@@ -145,6 +147,7 @@ export function renderImageTracer(state,icon,e){
   select("precision","Coordinate decimal places",d.precision,[
    ["unsure","Choose justified precision"],["0","0 (whole units)"],["1","1 decimal place"],["2","2 decimal places"],["3","3 decimal places"],["4","4 decimal places"]],e)+
   field("limitations","Calibration / photographic limitations to consider",d.limitations,e,{textarea:true,rows:2,placeholder:"e.g. ruler placement, photo resolution, perspective, point selection uncertainty"})+
+   field("caption","Optional mathematical caption",d.caption,e,{textarea:true,rows:2,placeholder:"e.g. The scale marker measures 5 cm. The traced points show the arch profile."})+
   '<div class="trace-image-controls">'+
    '<label class="trace-field"><span>Photograph visibility</span><input type="range" data-trace-field="imageOpacity" min="0.1" max="1" step=".05" value="'+d.imageOpacity+'"></label>'+
    check("showGrid","Show calibrated grid",d.showGrid)+check("showLine","Join chosen points",d.showLine)+
