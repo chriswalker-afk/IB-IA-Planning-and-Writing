@@ -83,7 +83,7 @@ test("summary derived statistics have independent precision; n stays an integer"
  assert.equal(s.draft.matrix[0][0],"1");
 });
 test("frequency counts stay exact while percentages have optional column formatting",()=>{
- const s=newTableStudio();s.draft.mode="frequency";s.draft.title="Travel modes";s.draft.sourceKind="primary";
+ const s=newTableStudio();s.draft.mode="frequency";s.draft.title="Travel modes";s.draft.sourceKind="primary";s.draft.headers="yes";
  importTableData(s,"Transport\nBus\nBus\nWalk\nCycle\nWalk\nWalk");
  let m=analyzeTable(s.draft).model;
  assert.equal(m.rows[0][1],"2");assert.equal(m.rows[0][2],"33.33");
