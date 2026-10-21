@@ -191,24 +191,28 @@ function buildGroupedHistogram(d){
  return {...result,values:[],skipped:0};
 }
 function barAnalysis(d){
- const categories=[],names=numericCols(d).filter(i=>i!==d.categoryIndex);
- if(!names.length)return {categories:[],error:"Choose at least one numerical group column, different from the category column."};
- const seen=new Set();
+ const categories=[],indices=numericCols(d).filter(i=>i!==d.categoryIndex);
+ if(!indices.length)return {categories:[],error:"Choose at least one count column distinct from the category."};
+ const names=indices.map(i=>d.columns[i]),seen=new Set();
  for(let i=0;i<d.matrix.length;i++){
-  const row=d.matrix[i],category=(row[d.categoryIndex]||"").trim();
+  const row=d.matrix[i],category=String(row?.[d.categoryIndex]??"").trim();
   if(!category)return {categories:[],error:"Row "+(i+1)+" has an empty category."};
-  if(seen.has(category))return {categories:[],error:"The category '"+category+"' appears more than once. Combine it before graphing."};
+  if(seen.has(category))return {categories:[],error:"The category '"+category+"' is duplicated. Combine it explicitly."};
   seen.add(category);
-  const counts=names.map(index=>ncell(row[index]));
-  if(counts.some(x=>x===null||x<0||!Number.isSafeInteger(x)))
-   return {categories:[],error:"Row "+(i+1)+" needs a non-negative whole-number count in every selected group."};
+  const counts=indices.map(index=>ncell(row?.[index]));
+  if(counts.some(value=>value===null||value<0||!Number.isSafeInteger(value)))
+   return {categories:[],error:"Row "+(i+1)+" needs a non-negative whole-number count in each selected group."};
+  if(!Number.isSafeInteger(counts.reduce((a,b)=>a+b,0)))
+   return {categories:[],error:"The category total exceeds the reliable integer range."};
   categories.push({category,counts});
  }
- const totals=names.map((_,i)=>categories.reduce((s,r)=>s+r.counts[i],0));
- if(d.barMode==="percent"&&totals.some(n=>n<=0))
-  return {categories:[],error:"A group with zero observations cannot be converted into percentages."};
- return {categories:categories.map(c=>({...c,values:c.counts.map((n,i)=>d.barMode==="count"?n:100*n/totals[i])})),
-  names:names.map(i=>d.columns[i]),totals};
+ const totals=indices.map((_,j)=>categories.reduce((n,c)=>n+c.counts[j],0));
+ if(totals.some(n=>!Number.isSafeInteger(n)))return {categories:[],error:"The group total exceeds the reliable integer range."};
+ if(d.barStyle==="grouped"&&d.barMode==="percent"&&totals.some(n=>n<=0))
+  return {categories:[],error:"A group with no responses cannot be converted to a percentage."};
+ if(d.barStyle==="stacked100"&&categories.some(c=>c.counts.every(n=>n===0)))
+  return {categories:[],error:"Each category needs at least one response for a 100%-stacked chart."};
+ return categoricalBars(categories,names,d.barMode,d.barStyle,d.barSort);
 }
 export function statAnalysis(raw){
  const d=normalizeStatDraft(raw),problems=[],warnings=[];
