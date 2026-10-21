@@ -157,6 +157,10 @@ def test_one(browser,width,height,touch):
   page.reload(wait_until="networkidle")
   assert saved(page)["entries"][0]["geometryFigureId"]==original
   assert page.locator('.geometry-entry > svg').count()==1
+  # The Backups & Reports action is on Home, not on every writing page.
+  # Navigating there must preserve the linked figure and editable project.
+  page.locator('[data-nav="home"]').first.click()
+  assert saved(page)["entries"][0]["geometryFigureId"]==original
   # Figure must also appear in the full project PDF, not merely the JSON.
   page.locator('[data-action="open-files"]').first.click()
   with page.expect_download(timeout=50000) as received:
