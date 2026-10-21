@@ -3,6 +3,7 @@ import {renderStatSvg} from "../diagrams/stat-studio-render.js";
 import {renderTableSvg} from "../diagrams/table-studio-render.js";
 import {renderTraceOverlaySvg,renderCleanTraceSvg} from "../diagrams/image-tracer-core.js";
 import {renderVoronoiSvg} from "../diagrams/voronoi-render.js";
+import {renderGeometrySvg} from "../diagrams/geometry-render.js";
 import {renderFigureHandover} from "../diagrams/presentation-coach-view.js";
 import {REPRESENTATION_TOOLS} from "../diagrams/representation-registry.js";
 
@@ -39,6 +40,7 @@ function preview(item){
   case "table":return '<div class="show-first-table-figure">'+renderTableSvg(d)+'</div>';
   case "trace":return '<div class="trace-entry-photo">'+(d.view==="math"?renderCleanTraceSvg(d):renderTraceOverlaySvg(d))+'</div>';
   case "voronoi":return '<div class="show-first-voronoi-figure">'+renderVoronoiSvg(d)+'</div>';
+  case "geometry":return '<div class="show-first-geometry-figure">'+renderGeometrySvg(d)+'</div>';
   default:return "";
  }
 }
