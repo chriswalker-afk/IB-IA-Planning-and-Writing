@@ -212,6 +212,8 @@ export function applyNativeDataset(studio,type,dataset){
   d.variable=label;d.unit=unit;d.unitMode=unit?"unit":"unsure";d.min="";d.max="";
  }else{
   d.headings=columns.map(h=>splitHeading(h).label);
+  // A newly transferred dataset is not the same source variables: reset old formatting.
+  d.columnFormats={};
   d.unitDecisions=columns.map(h=>{const {unit}=splitHeading(h);return{mode:unit?"unit":"unsure",unit};});
   const numeric=columns.map((_,i)=>({i,n:matrix.filter(row=>finiteCell(row[i])!==null).length}))
    .filter(r=>r.n>0).sort((a,b)=>b.n-a.n||a.i-b.i);
