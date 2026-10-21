@@ -123,14 +123,24 @@ export function renderRepresentationSwitcher(state,icon,e){
   ["voronoi",state.voronoiStudio?.open]
  ].some(([id,open])=>t.id===id&&open));
  const steps=[["create","1 · Create"],["refine","2 · Refine"],["use","3 · Use in IA"]];
+ const fromLibrary=state.ui?.resourceCreatorReturnRoute||"";
+ const originLabel={
+  home:"Back to Home",planning:"Back to Planning",completing:"Back to IA Studio",
+  checking:"Back to Checking",path:"Back to My path",report:"Back to my report"
+ };
+ const backButton=fromLibrary?
+  '<button type="button" class="btn btn-quiet btn-sm" data-action="resource-creator-return">'+
+   icon("arrow-left")+' '+e(originLabel[fromLibrary]||"Back to my work")+'</button>':
+  '<button type="button" class="btn btn-quiet btn-sm" data-action="completion-open" data-node="C30">'+
+   icon("arrow-left")+' Back to my IA</button>';
+
  return '<div class="representation-workspace-header" data-representation-workspace data-representation-switcher>'+
   '<nav class="representation-workspace-bar" aria-label="Mathematical tool navigation">'+
   '<div class="representation-workspace-identity"><span class="representation-workspace-mark">'+
     icon(active?.icon||"layers")+'</span><span><small>IA Studio / Explore &amp; explain</small>'+
     '<strong>'+e(active?.title||"Mathematical workspace")+'</strong></span></div>'+
   '<div class="representation-workspace-actions">'+
-   '<button type="button" class="btn btn-quiet btn-sm" data-action="completion-open" data-node="C30">'+
-    icon("arrow-left")+' Back to my IA</button>'+
+   backButton+
    '<button type="button" class="btn btn-secondary btn-sm" data-action="representation-back">'+
     icon("grid-2x2")+' All tools</button></div></nav>'+
   '<nav class="representation-workspace-steps" aria-label="Jump within this generator">'+
