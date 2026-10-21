@@ -875,12 +875,54 @@ def reduced_writing(browser,width):
   finally:
    ctx.close()
 
+def resource_diagram_creators(browser,width):
+ s=copy.deepcopy(BASE)
+ s["route"]="planning"
+ s["scratch"]["introduction"]="An earlier student-authored paragraph"
+ ctx,page=open_fixture(browser,s,width)
+ try:
+  assert page.locator('[data-planning-intro="true"]').count()==1
+  for creator,selector in (
+   ("graph","[data-graph-studio]"),("stat","[data-stat-studio]"),
+   ("table","[data-table-studio]"),("trace","[data-image-tracer]"),
+   ("voronoi","[data-voronoi-studio]")
+  ):
+   page.locator('.chapter-onboarding-plan [data-action="resource-browse"]').click()
+   drawer=page.locator(".resource-drawer")
+   assert drawer.is_visible()
+   assert drawer.locator('.resource-creator-card').count()==5
+   assert "31 matching guides" in drawer.inner_text()
+   assert drawer.evaluate('el=>el.scrollWidth<=el.clientWidth+1')
+   if creator=="graph":
+    drawer.screenshot(path=str(OUT/f"resource-creators-{width}.png"),animations="disabled")
+   drawer.locator('[data-resource-creator="'+creator+'"]').click()
+   data=stored(page)
+   assert data["route"]=="completing",(creator,data["route"])
+   assert data["completion"]["current"]=="C31",creator
+   assert data["ui"]["resourceCreatorReturnRoute"]=="planning",creator
+   assert page.locator(selector).count()==1,creator
+   assert page.locator('[data-action="resource-creator-return"]').first.is_visible(),creator
+   assert len(data["entries"])==0,creator
+   assert data["scratch"]["introduction"]=="An earlier student-authored paragraph",creator
+   without_overflow(page)
+   page.locator('[data-action="resource-creator-return"]').first.click()
+   returned=stored(page)
+   assert returned["route"]=="planning",creator
+   assert returned["planning"]["current"]=="N00",creator
+   assert returned["completion"]["current"]=="C00",creator
+   assert returned["ui"]["resourceCreatorReturnRoute"]=="",creator
+   assert returned["scratch"]["introduction"]==s["scratch"]["introduction"],creator
+   assert page.locator('[data-planning-intro="true"]').count()==1,creator
+   without_overflow(page)
+ finally:
+  ctx.close()
+
 def main():
  results=[]
  with sync_playwright() as p:
   browser=p.chromium.launch(headless=True)
   for width in (1360,390):
-   for scenario,fn in (("new",first_time),("completed",completed_plan),("writing-stages",writing_sections),("maths-model-start",modelling_math_start),("repeatable-mathematics",repeatable_mathematics),("growing-discovery-trail",growing_discovery_trail),("adaptive-mathematical-journey",adaptive_mathematical_journey),("reduced-advice",reduced_writing)):
+   for scenario,fn in (("new",first_time),("resource-diagram-creators",resource_diagram_creators),("completed",completed_plan),("writing-stages",writing_sections),("maths-model-start",modelling_math_start),("repeatable-mathematics",repeatable_mathematics),("growing-discovery-trail",growing_discovery_trail),("adaptive-mathematical-journey",adaptive_mathematical_journey),("reduced-advice",reduced_writing)):
     try:
      fn(browser,width)
      results.append({"scenario":scenario,"width":width,"status":"passed"})
