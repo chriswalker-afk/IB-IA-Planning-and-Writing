@@ -61,6 +61,11 @@ export function changeStatKind(studio,kind){
  const d=studio.draft,old=d.kind,oldFirst=d.selected?.[0]??0;
  if(old===kind)return true;
  d.kind=kind;d.min="";d.max="";
+ // Grouped frequency tables describe one distribution; hidden comparison settings
+ // must never invalidate a new curve after switching away from a raw-data view.
+ if(["histogram","ogive","polygon"].includes(kind)&&d.histogramInput==="table"){
+  d.histogramCompare="single";d.curveCompare="single";
+ }
  if(["ogive","polygon"].includes(kind)&&old==="histogram"&&d.histogramInput==="raw"&&d.histogramCompare!=="single")
   d.curveCompare="multiple";
  if(kind==="histogram"&&["ogive","polygon"].includes(old)&&d.histogramInput==="raw"&&d.curveCompare==="multiple")
