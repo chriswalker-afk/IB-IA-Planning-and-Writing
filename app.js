@@ -57,8 +57,8 @@ import {setStatField,changeStatKind,toggleStatSeries,importStatValues,freshStat,
 import {exportStat} from "./src/diagrams/stat-studio-export.js";
 import {analyzeTable,importTableData,newTableDraft} from "./src/diagrams/table-studio-core.js";
 import {renderTableSvg} from "./src/diagrams/table-studio-render.js";
-import {renderTableStudio,tableDataChoices,tablePreviewHtml,tableQualityHtml,tableOutputHtml} from "./src/diagrams/table-studio-view.js";
-import {setTableField,setTableColumn,chooseTableMode,toggleTableVariable,toggleTableMeasure,loadTable,freshTable,saveTableDraft,saveAndLinkTable} from "./src/diagrams/table-studio-actions.js";
+import {renderTableStudio,tableDataChoices,tablePreviewHtml,tableA4PreviewHtml,tableQualityHtml,tableOutputHtml} from "./src/diagrams/table-studio-view.js";
+import {setTableField,setTableColumn,setTableColumnFormat,chooseTableMode,toggleTableVariable,toggleTableMeasure,loadTable,freshTable,saveTableDraft,saveAndLinkTable} from "./src/diagrams/table-studio-actions.js";
 import {exportTable} from "./src/diagrams/table-studio-export.js";
 import {nativeGridSummary,editNativeHeading,editNativeCell,pasteNativeRange,NATIVE_MAX_ROWS,NATIVE_PAGE_ROWS} from "./src/diagrams/native-data-core.js";
 import {handleNativeDataAction,nativeStudio,activeNativeType} from "./src/diagrams/native-data-actions.js";
@@ -433,6 +433,12 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     if(!root)return;
     const preview=root.querySelector("[data-table-preview]");
     if(preview)preview.outerHTML=tablePreviewHtml(state.tableStudio,e);
+    const paper=root.querySelector("[data-table-a4]");
+    if(paper){
+      const wasOpen=paper.querySelector("details")?.open===true;
+      paper.outerHTML=tableA4PreviewHtml(state.tableStudio,e);
+      if(wasOpen)root.querySelector("[data-table-a4] details").open=true;
+    }
     const quality=root.querySelector("[data-table-quality]");
     if(quality)quality.innerHTML=tableQualityHtml(state.tableStudio,icon,e);
     const output=root.querySelector("[data-table-output]");
@@ -1740,6 +1746,27 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
          .catch(error=>toast("Voronoi export unavailable",error.message||"Try downloading the SVG."));
         break;
       }
+      case "table-symbol":{
+        if(!state.tableStudio?.open||state.completion.current!=="C31")break;
+        const index=Number(el.dataset.tableCol),part=el.dataset.tablePart;
+        const token=el.dataset.tableToken||"";
+        if(!Number.isInteger(index)||!["heading","unit"].includes(part)||!token||token.length>24)break;
+        const selector='input[data-table-col="'+index+'"][data-table-part="'+part+'"]';
+        const field=el.closest(".ia-table-column-card")?.querySelector(selector)||
+          main.querySelector('[data-native-choices="table"] '+selector);
+        if(!field)break;
+        const start=Number.isInteger(field.selectionStart)?field.selectionStart:field.value.length;
+        const end=Number.isInteger(field.selectionEnd)?field.selectionEnd:start;
+        const candidate=field.value.slice(0,start)+token+field.value.slice(end);
+        if(!setTableColumn(state.tableStudio,index,part,candidate))break;
+        field.value=part==="heading"?state.tableStudio.draft.headings[index]:
+          state.tableStudio.draft.unitDecisions[index]?.unit||"";
+        save();refreshTablePreview();
+        field.focus({preventScroll:true});
+        field.setSelectionRange(Math.min(start+token.length,field.value.length),
+          Math.min(start+token.length,field.value.length));
+        break;
+      }
       case "table-open":navigateTable();break;
       case "table-close":state.tableStudio.open=false;save();render();break;
       case "table-mode":{
@@ -2642,6 +2669,28 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       const ok=toggleTableMeasure(state.tableStudio,target.dataset.tableMeasure,target.checked);
       if(!ok)toast("Use at most three summary statistics so your table stays readable.");
       save();render();return;
+    }
+    if(target.dataset.tableFormatIndex!==undefined){
+      const index=Number(target.dataset.tableFormatIndex),part=target.dataset.tableFormatPart;
+      if(setTableColumnFormat(state.tableStudio,index,part,target.value)){
+        save();refreshTablePreview();
+        const row=target.closest(".ia-table-column-precision-row");
+        const digitsWrapper=row?.querySelector("[data-table-format-digits]");
+        const mode=state.tableStudio.draft.columnFormats?.[state.tableStudio.draft.mode+":"+index]?.mode||"default";
+        if(digitsWrapper){
+          digitsWrapper.hidden=mode!=="dp"&&mode!=="sf";
+          const digitsSelect=digitsWrapper.querySelector('[data-table-format-part="digits"]');
+          const rule=state.tableStudio.draft.columnFormats?.[state.tableStudio.draft.mode+":"+index];
+          if(digitsSelect){
+            digitsSelect.value=rule?.digits||"2";
+            const zero=digitsSelect.querySelector('option[value="0"]');
+            if(zero)zero.disabled=mode==="sf";
+          }
+          const hint=digitsWrapper.querySelector("span");
+          if(hint)hint.textContent=mode==="sf"?"Significant figures":"Decimal places";
+        }
+      }
+      return;
     }
     if(target.dataset.tableCol!==undefined){
       const index=Number(target.dataset.tableCol),key=target.dataset.tablePart;
