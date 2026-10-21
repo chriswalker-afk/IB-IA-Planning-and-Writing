@@ -64,6 +64,7 @@ def histogram(p,width):
  editor.locator('[data-action="diagram-notation-toggle"]').click()
  editor.locator('[data-diagram-expression]').fill(r'\frac{f}{w}')
  editor.locator('[data-action="diagram-notation-insert"]').click()
+ p.wait_for_function("(term)=> (document.querySelector('[data-stat-field=caption]')?.value||'').includes(term)",arg=r'\(\frac{f}{w}\)')
  assert r'\(\frac{f}{w}\)' in snapshot(p)["statStudio"]["draft"]["caption"]
  assert p.locator('[data-stat-preview] .diagram-math-typeset').count()>=1
  editor.locator('[data-action="diagram-notation-close"]').click()
