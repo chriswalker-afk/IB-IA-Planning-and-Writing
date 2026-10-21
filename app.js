@@ -2593,6 +2593,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   });
   document.addEventListener("pointerup",evt=>{
     if(geometryPointer?.id!==evt.pointerId)return;
+    const drag=geometryPointer;
     geometryPointer=null;save();
     // Updating the whole page here can detach an unrelated button between
     // pointerdown and click, silently swallowing the student's Save action.
