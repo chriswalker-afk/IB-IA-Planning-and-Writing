@@ -69,6 +69,11 @@ import {renderVoronoiSvg,voronoiLayout} from "./src/diagrams/voronoi-render.js";
 import {voronoiPreviewHtml,voronoiResultHtml,voronoiQualityHtml,voronoiOutputHtml} from "./src/diagrams/voronoi-view.js";
 import {setVoronoiField,setVoronoiSite,addVoronoiSite,removeVoronoiSite,clearVoronoiMap,useVoronoiMap,beginVoronoi,loadVoronoi,saveVoronoiDraft,saveAndLinkVoronoi} from "./src/diagrams/voronoi-actions.js";
 import {exportVoronoi} from "./src/diagrams/voronoi-export.js";
+import {geometryAnalysis} from "./src/diagrams/geometry-core.js";
+import {renderGeometrySvg} from "./src/diagrams/geometry-render.js";
+import {geometryPreviewHtml,geometryQualityHtml} from "./src/diagrams/geometry-view.js";
+import {setGeometryField,setGeometryVertex,geometryTemplate,geometryAddVertex,geometryRemoveVertex,geometryFresh,loadGeometry,saveGeometryDraft,saveAndLinkGeometry} from "./src/diagrams/geometry-actions.js";
+import {exportGeometry} from "./src/diagrams/geometry-export.js";
 import {displayVoronoiBounds,coordinateFromCanvas,canvasPosition,voronoiFrame,recordVoronoiHistory,applyVoronoiFrame,undoVoronoi,redoVoronoi,freezeVoronoiWindow,fitVoronoiSites,setVoronoiTool,selectVoronoiSite,moveVoronoiSite,proposeVoronoiComparison,showVoronoiComparison,finishVoronoiComparison,selectNearestBisector} from "./src/diagrams/voronoi-interactions.js";
 import {renderRepresentationHub,renderRepresentationSwitcher,representationFocusActive} from "./src/diagrams/representation-hub.js";
 import {REPRESENTATION_TOOLS,representationTool,activeRepresentationTool,closeRepresentationTools,activateRepresentationTool,representationFigureKey,representationReturnNode} from "./src/diagrams/representation-registry.js";
@@ -578,6 +583,18 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       row.classList.toggle("selected",current.draft.sites[i]?.id===current.selectedSiteId);
     });
   }
+  function refreshGeometryPreview(){
+    const root=main.querySelector?.("[data-geometry-studio]");if(!root||!state.geometryStudio?.open)return;
+    const preview=root.querySelector("[data-geometry-preview]");if(preview)preview.outerHTML=geometryPreviewHtml(state.geometryStudio);
+    const quality=root.querySelector("[data-geometry-quality]");if(quality)quality.outerHTML=geometryQualityHtml(state.geometryStudio,icon,e);
+  }
+  function navigateGeometry(id=""){
+    rememberMathEditorOrigin();if(state.completion.current!=="C31")setCompletionNode(state,"C31",{reason:"geometry-editor"});
+    activateRepresentationTool(state,"geometry");
+    const entry=completeEntry(state),saved=id||entry?.geometryFigureId;
+    if(saved)loadGeometry(state.geometryStudio,saved);
+    save();render();document.querySelector?.("[data-geometry-studio]")?.scrollIntoView?.({block:"start",behavior:"auto"});
+  }
   function navigateVoronoi(figureId=""){
     rememberMathEditorOrigin();
     if(state.completion.current!=="C31")setCompletionNode(state,"C31",{reason:"voronoi-editor"});
@@ -595,7 +612,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   // Checking or a later mathematical stage.
   const diagramNavigators=Object.freeze({
     graph:navigateGraph,stat:navigateStat,table:navigateTable,
-    trace:navigateTrace,voronoi:navigateVoronoi
+    trace:navigateTrace,voronoi:navigateVoronoi,geometry:navigateGeometry
   });
   function activeResourceCreator(){
     return activeRepresentationTool(state)?.id||"";
@@ -1718,6 +1735,36 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         returnToShowingFirstMaths("representation-return");
         break;
       }
+      case "geometry-open":navigateGeometry();break;
+      case "geometry-close":state.geometryStudio.open=false;save();render();break;
+      case "geometry-template":{
+        if(state.geometryStudio.draft.edited&&!window.confirm("Switch template? Save your current figure first if needed."))break;
+        geometryTemplate(state.geometryStudio,el.dataset.geometryTemplate);save();render();break;
+      }
+      case "geometry-add":{
+        if(!geometryAddVertex(state.geometryStudio)){toast("The diagram already has eight points.");break;}
+        save();render();break;
+      }
+      case "geometry-remove":{
+        if(!geometryRemoveVertex(state.geometryStudio,Number(el.dataset.geometryIndex)))break;
+        save();render();break;
+      }
+      case "geometry-new":geometryFresh(state.geometryStudio);save();render();break;
+      case "geometry-load":{
+        if(!loadGeometry(state.geometryStudio,el.dataset.geometryId)){toast("Saved figure not found.");break;}
+        save();render();break;
+      }
+      case "geometry-save":{
+        const result=saveGeometryDraft(state);if(!result.ok){toast(result.error);break;}
+        save();render();toast("Editable geometry saved",result.reviewNeeded?"Review earlier mathematical conclusions after changing this figure.":"Included in your project backup.");break;
+      }
+      case "geometry-use":{
+        const result=saveAndLinkGeometry(state);if(!result.ok){toast(result.error);break;}
+        returnToShowingFirstMaths("linked-geometry");toast("Geometry linked to this mathematical stage");break;
+      }
+      case "geometry-svg":case "geometry-png":{
+        exportGeometry(state.geometryStudio.draft,action.slice("geometry-".length)).then(message=>toast(message)).catch(err=>toast("Geometry export unavailable",err.message));break;
+      }
       case "voronoi-open":navigateVoronoi();break;
       case "voronoi-close":state.voronoiStudio.open=false;save();render();break;
       case "voronoi-tool":{
@@ -2645,8 +2692,8 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       return;
     }
     // Show the formatted label beside its source field; never transform cell values.
-    if(target.matches?.('[data-graph-field],[data-stat-field],[data-trace-field],[data-table-field],[data-table-col],[data-voronoi-field],[data-voronoi-site-key="name"]')){
-      const studio=target.closest("[data-graph-studio],[data-stat-studio],[data-image-tracer],[data-table-studio],[data-voronoi-studio]");
+    if(target.matches?.('[data-graph-field],[data-stat-field],[data-trace-field],[data-table-field],[data-table-col],[data-voronoi-field],[data-voronoi-site-key="name"],[data-geometry-field]')){
+      const studio=target.closest("[data-graph-studio],[data-stat-studio],[data-image-tracer],[data-table-studio],[data-voronoi-studio],[data-geometry-studio]");
       for(const root of studio?.querySelectorAll?.("[data-diagram-notation]")||[]){
         if(diagramNotationField(root)===target){refreshDiagramValuePreview(root);break;}
       }
@@ -2664,6 +2711,15 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
        editNativeCell(studio,type,Number(target.dataset.nativeRow),col,target.value);
       if(ok){save();refreshNativeWorksheet(type);}
       return;
+    }
+    if(target.dataset.geometryVertex!==undefined){
+      if(setGeometryVertex(state.geometryStudio,Number(target.dataset.geometryVertex),target.dataset.geometryVertexKey,target.value)){save();refreshGeometryPreview();}
+      return;
+    }
+    if(target.dataset.geometryField!==undefined){
+      if(setGeometryField(state.geometryStudio,target.dataset.geometryField,target.type==="checkbox"?target.checked:target.value)){
+        save();if(target.tagName==="SELECT"||target.type==="checkbox")render();else refreshGeometryPreview();
+      }return;
     }
     if(target.dataset.voronoiSite!==undefined){
       if(setVoronoiSite(state.voronoiStudio,Number(target.dataset.voronoiSite),
@@ -2797,6 +2853,15 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   });
   document.addEventListener("change",evt=>{
     const target=evt.target;
+    if(target.dataset.geometryVertex!==undefined){
+      if(setGeometryVertex(state.geometryStudio,Number(target.dataset.geometryVertex),target.dataset.geometryVertexKey,target.value)){save();refreshGeometryPreview();}
+      return;
+    }
+    if(target.dataset.geometryField!==undefined){
+      if(setGeometryField(state.geometryStudio,target.dataset.geometryField,target.type==="checkbox"?target.checked:target.value)){
+        save();if(target.tagName==="SELECT"||target.type==="checkbox")render();else refreshGeometryPreview();
+      }return;
+    }
     if(target.dataset.voronoiSite!==undefined){
       const index=Number(target.dataset.voronoiSite),key=target.dataset.voronoiSiteKey;
       const old=state.voronoiStudio.draft.sites[index]?.[key];
