@@ -142,7 +142,7 @@ export function renderIntroductionWritingAdvice(icon,e,{reduced=false,state=null
  return '<section class="intro-writing-guide intro-writing-guide-compact" aria-label="Essential introduction writing advice" data-advice-moved-to-guide="introduction">'+
   '<div class="intro-writing-guide-head"><span class="intro-writing-guide-icon">'+icon("book")+'</span><div>'+
    '<span class="intro-writing-guide-eyebrow">WRITING GUIDE · INTRODUCTION</span><h2>Before you write</h2></div></div>'+
-  '<strong>Write the opening, not the ending.</strong>'+
+  '<strong>Write the opening, not the ending.</strong><p>Keep your introduction short, personal and mathematically focused. Open a tip only if you need more guidance.</p>'+
   '<p>State your precise mathematical aim, genuine motivation and, if helpful, what you predict or hope to discover and why. Define unfamiliar non-mathematical specialist terms briefly, avoid background essays and do not list every planned calculation. Write in your actual IA document, then update your prediction spark.</p>'+
   '<button type="button" class="writer-guide-inline-more" data-action="writer-guide-open" data-guide-tip="story" data-guide-spot="completing:C10:aim">'+icon("book")+' All six introduction writing tips '+icon("arrow-right")+'</button>'+
   '</section>';
