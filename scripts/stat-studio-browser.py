@@ -75,10 +75,7 @@ def histogram(p,width):
  assert p.locator('[data-stat-summary]').inner_text().find("25")>=0
  no_overflow(p)
  p.screenshot(path=str(OUT/f"stat-histogram-{width}.png"),full_page=True,animations="disabled")
- for fmt in ["svg","png","csv"]:
-  with p.expect_download() as download:
-   p.locator('[data-action="stat-'+fmt+'"]').click()
-  assert download.value.suggested_filename.endswith("."+fmt)
+ audit_figure_exports(p,"histogram",width)
  p.locator('[data-action="stat-use"]').click()
  assert p.locator('[data-source-node="C30"]').count()==1
  state=snapshot(p)
@@ -93,6 +90,48 @@ def histogram(p,width):
  p.locator('.stat-entry-preview [data-action="stat-open"]').click()
  assert p.locator('[data-stat-studio]').is_visible()
  assert p.locator('[data-stat-field="raw"]').input_value()==GROUPED
+
+def audit_figure_exports(p,kind,width):
+ """Student-facing preview, three download formats and truthful print dimensions."""
+ chart=p.locator('[data-stat-preview] svg.stat-figure-svg')
+ assert chart.count()==1,kind
+ outer=chart.evaluate("(el)=>el.outerHTML")
+ assert '<desc>' in outer and '<title>' in outer,kind+' lacks accessible SVG description'
+ assert p.locator('[data-stat-reading-guide]').is_visible()
+ guide=p.locator('[data-stat-reading-guide]').inner_text()
+ for text in ['1 · Read','2 · Interpret','3 · Evaluate']:
+  assert text in guide,(kind,text)
+ assert p.locator('[data-action="stat-png"]').is_enabled(),kind
+ frame=chart.evaluate("""svg => {
+   const view=svg.getBoundingClientRect();
+   const boxes=Array.from(svg.querySelectorAll('text')).filter(t=>t.textContent.trim()).map(t=>{
+    const b=t.getBoundingClientRect();
+    return {text:t.textContent.slice(0,55),left:b.left-view.left,right:b.right-view.right,
+      top:b.top-view.top,bottom:b.bottom-view.bottom,width:view.width,height:view.height};
+   });
+   return {overflow:boxes.filter(b=>b.left < -3 || b.right>b.width+3 || b.top < -3 || b.bottom>b.height+3)};
+ }""")
+ assert not frame["overflow"],kind+" SVG text spills outside the exported canvas: "+str(frame["overflow"][:3])
+ for fmt in ['svg','png','csv']:
+  with p.expect_download(timeout=25000) as pending:
+   p.locator('[data-action="stat-'+fmt+'"]').click()
+  download=pending.value
+  assert download.suggested_filename.endswith('.'+fmt)
+  path=OUT/f"stat-pass4-{kind}-{width}.{fmt}"
+  download.save_as(str(path))
+  data=path.read_bytes()
+  if fmt=='svg':
+   decoded=data.decode('utf-8')
+   assert 'stat-figure-svg' in decoded and '<desc>' in decoded,(kind,fmt)
+   if kind=='ogive': assert 'grouped class intervals' in decoded
+  elif fmt=='png':
+   assert data[:8]==bytes([137,80,78,71,13,10,26,10]),kind+' did not export a PNG'
+   pw=int.from_bytes(data[16:20],'big')
+   ph=int.from_bytes(data[20:24],'big')
+   assert pw==2880 and 1500<ph<13000,(kind,pw,ph)
+  elif fmt=='csv':
+   assert len(data)>40 and b'\r\n' in data
+  assert not download.failure(),(kind,fmt,download.failure())
 
 def box(p,width):
  fresh(p,"box")
@@ -127,6 +166,7 @@ def box(p,width):
 
  assert p.locator('[data-action="stat-svg"]').is_enabled()
  no_overflow(p)
+ audit_figure_exports(p,"box",width)
  p.screenshot(path=str(OUT/f"stat-box-plot-{width}.png"),full_page=True,animations="disabled")
 
 def dot(p,width):
@@ -137,6 +177,7 @@ def dot(p,width):
  assert p.locator('[data-action="stat-svg"]').is_enabled()
  assert p.locator('[data-stat-preview] svg circle').count()==10
  no_overflow(p)
+ audit_figure_exports(p,"dot",width)
  p.screenshot(path=str(OUT/f"stat-dot-plot-{width}.png"),full_page=True,animations="disabled")
 
 def bar(p,width):
@@ -151,6 +192,7 @@ def bar(p,width):
  assert p.locator('[data-action="stat-png"]').is_enabled()
  assert "100" in p.locator('[data-stat-summary]').inner_text()
  no_overflow(p)
+ audit_figure_exports(p,"bar",width)
  p.screenshot(path=str(OUT/f"stat-categorical-bars-{width}.png"),full_page=True,animations="disabled")
  p.locator('[data-stat-field="min"]').fill("5")
  p.locator('[data-stat-field="max"]').fill("100")
@@ -181,6 +223,7 @@ def ogive(p,width):
   p.locator('[data-action="stat-csv"]').click()
  assert exported.value.suggested_filename.endswith("-summary.csv")
  no_overflow(p)
+ audit_figure_exports(p,"ogive",width)
  p.screenshot(path=str(OUT/f"stat-ogive-{width}.png"),full_page=True,animations="disabled")
 
 def polygon(p,width):
@@ -198,6 +241,7 @@ def polygon(p,width):
  assert p.locator('[data-stat-preview] svg circle').count()>=3
  assert "midpoint" in p.locator('[data-stat-summary]').inner_text().lower()
  no_overflow(p)
+ audit_figure_exports(p,"polygon",width)
  p.screenshot(path=str(OUT/f"stat-polygon-{width}.png"),full_page=True,animations="disabled")
  # Test both directions of the grouped Table Studio handover without overwriting a saved figure.
  original=snapshot(p)["statStudio"]["draft"]["matrix"]
