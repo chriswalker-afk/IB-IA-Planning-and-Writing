@@ -113,3 +113,27 @@
 .stat-table-transfer>.btn{justify-self:start;white-space:normal}
 .stat-table-transfer>small{color:#526f64;font-size:11px;line-height:1.6}
 @media(max-width:650px){.stat-table-transfer>.btn{width:100%;justify-self:stretch}}
+
+/* Box plot Pass 1 — method choices, printable calculations and comparisons. */
+.stat-box-methods,.stat-box-options{margin:13px 0 4px;padding:13px;border:1px solid #d7e6e2;border-radius:12px;background:#f9fcfa}
+.stat-box-methods h4,.stat-box-options h4{font-size:12px;font-weight:760;margin:0 0 9px;color:#254e52}
+.stat-box-options p,.stat-method-help{font-size:10px;line-height:1.65;color:#596f74;margin:5px 0 10px}
+.stat-box-options .stat-checkbox{padding:5px 0}
+.stat-analysis-detail{margin:13px 0 0;border:1px solid #dce8e5;border-radius:11px;background:#f8fbfa;padding:12px}
+.stat-analysis-detail>summary{cursor:pointer;color:#236960;font-weight:750;font-size:12px;line-height:1.55}
+.stat-analysis-intro,.stat-analysis-group p{font-size:11px;color:#5d767a;line-height:1.65;margin:10px 0}
+.stat-analysis-group{margin:13px 0 0;padding:12px;background:#fff;border:1px solid #dfeae7;border-radius:10px;min-width:0}
+.stat-analysis-group h4{font-size:12px;margin:0 0 9px;color:#2e515a}
+.stat-analysis-metrics{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:5px 10px;font-size:11px;line-height:1.5}
+.stat-analysis-metrics>span{color:#657a80}
+.stat-analysis-metrics>strong{color:#294850;font-variant-numeric:tabular-nums;text-align:right;overflow-wrap:anywhere}
+.stat-analysis-group .stat-analysis-warning{color:#945124;font-weight:600}
+.stat-analysis-scroll{max-width:100%;overflow-x:auto}
+.stat-compare-table{border-collapse:collapse;width:100%;min-width:510px;font-size:10px;text-align:left;font-variant-numeric:tabular-nums}
+.stat-compare-table :is(th,td){padding:7px 8px;border-bottom:1px solid #e1ebe8;white-space:nowrap}
+.stat-compare-table th{font-weight:750;background:#eef6f2}
+@media(max-width:650px){
+ .stat-box-methods,.stat-box-options{padding:10px}
+ .stat-analysis-metrics{grid-template-columns:minmax(0,1fr) minmax(80px,auto)}
+ .stat-analysis-detail{padding:10px}
+}

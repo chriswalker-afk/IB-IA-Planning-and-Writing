@@ -104,6 +104,27 @@ def box(p,width):
  assert "Median" in p.locator('[data-stat-summary]').inner_text()
  p.locator('[data-stat-field="quartileRule"]').select_option("linear")
  assert snapshot(p)["statStudio"]["draft"]["quartileRule"]=="linear"
+ # Box-plot Pass 1: calculations, classification and labels are independent controls.
+ p.locator('[data-stat-field="outlierRule"]').select_option("modified")
+ assert "Modified Z-score" in p.locator('[data-stat-summary]').inner_text()
+ p.locator('[data-stat-field="showBoxQuartiles"]').check()
+ assert "Q1 " in p.locator('[data-stat-preview] svg').text_content()
+ assert "Q3 " in p.locator('[data-stat-preview] svg').text_content()
+ p.locator('[data-stat-field="showBoxMean"]').check()
+ p.locator('[data-stat-field="showBoxOutlierValues"]').check()
+ assert p.locator('[data-stat-field="showBoxOutlierValues"]').is_checked()
+ p.locator('[data-stat-summary] details summary').click()
+ assert "Comparing groups" in p.locator('[data-stat-summary]').inner_text()
+ p.locator('[data-stat-field="outlierRule"]').select_option("zscore")
+ assert p.locator('[data-stat-field="zThreshold"]').is_visible()
+ p.locator('[data-stat-field="zThreshold"]').select_option("2")
+ p.locator('[data-stat-field="whiskerMode"]').select_option("minmax")
+ assert p.locator('[data-action="stat-svg"]').is_enabled()
+ assert snapshot(p)["statStudio"]["draft"]["zThreshold"]=="2"
+ with p.expect_download() as calculations:
+  p.locator('[data-action="stat-csv"]').click()
+ assert calculations.value.suggested_filename.endswith("-summary.csv")
+
  assert p.locator('[data-action="stat-svg"]').is_enabled()
  no_overflow(p)
  p.screenshot(path=str(OUT/f"stat-box-plot-{width}.png"),full_page=True,animations="disabled")
