@@ -2,7 +2,7 @@
  * This captures the full-precision predictions used for plotted residuals.
  * Never infer coefficients from a rounded equation or drop invalid rows.
  */
-import {analyseGraph} from "./graph-core.js";
+import {analyseGraph,finiteCell} from "./graph-core.js";
 import {newTableDraft,normalizeTableGraphSnapshot,TABLE_MAX_ROWS} from "./table-studio-core.js";
 
 const fmt=n=>Number(n).toString();
@@ -35,7 +35,7 @@ export function prepareGraphModelTable(graphStudio,modelId){
    !Number.isFinite(r.predicted)||!Number.isFinite(r.residual))
    return {ok:false,error:"The selected model does not have a finite prediction for source row "+(index+1)+"."};
   const x=String(row[i]??""),y=String(row[j]??"");
-  if(!x.trim()||!y.trim()||Number(x)!==r.x||Number(y)!==r.y)
+  if(!x.trim()||!y.trim()||finiteCell(x)!==r.x||finiteCell(y)!==r.y)
    return {ok:false,error:"Source row "+(index+1)+" differs from the fitted observations. Recheck the graph data."};
   pairs.push({x,y,predicted:r.predicted,residual:r.residual});
  }
