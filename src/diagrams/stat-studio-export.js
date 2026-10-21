@@ -21,10 +21,24 @@ export function statSummaryCSV(raw){
     b.low,b.high,b.high-b.low,b.frequency,b.density
    ])];
  }else if(d.kind==="box"){
-  rows=[["Group","n","Minimum","Q1","Median","Q3","Maximum","IQR",
-   "Lower whisker","Upper whisker","Number of possible outliers"],
-  ...r.series.map(s=>[s.name,s.box.n,s.box.min,s.box.q1,s.box.median,s.box.q3,
-   s.box.max,s.box.iqr,s.box.lowWhisker,s.box.highWhisker,s.box.outliers.length])];
+  rows=[["Group","n","Minimum","Q1","Median","Q3","Maximum","IQR","Mean",
+   "Sample standard deviation","MAD","Lower whisker","Upper whisker","Whisker rule",
+   "Outlier screening rule","Lower screening threshold","Upper screening threshold",
+   "Score cutoff","Number flagged","Flagged measurements","Flagged scores"],
+  ...r.series.map(s=>{
+   const b=s.box;
+   return [s.name,b.n,b.min,b.q1,b.median,b.q3,b.max,b.iqr,b.mean,b.sd,b.mad,
+    b.lowWhisker,b.highWhisker,b.whiskerMode,b.outlierMethod,
+    b.limits?.[0]??"",b.limits?.[1]??"",b.threshold??"",
+    b.outliers.length,b.outliers.join("; "),b.flagged.map(v=>v.score===null?"":v.score).join("; ")];
+  })];
+  if(r.comparisons?.length){
+   rows.push([],["PAIRWISE DESCRIPTIVE COMPARISONS — second minus first"]);
+   rows.push(["First group","Second group","n first","n second","Median difference",
+    "IQR difference","Range difference","Flagged-count difference"]);
+   for(const c of r.comparisons)rows.push([c.first,c.second,c.nFirst,c.nSecond,
+    c.medianDifference,c.iqrDifference,c.rangeDifference,c.outlierDifference]);
+  }
  }else if(d.kind==="dot"){
   rows=[["Group","Measurement"],...r.series.flatMap(s=>s.values.map(v=>[s.name,v]))];
  }else rows=[["Category",...r.names.map(name=>name+(d.barMode==="percent"?" (%)":" (count)"))],
@@ -46,7 +60,11 @@ async function png(svg){
    image.onerror=()=>reject(new Error("The SVG could not be rendered as PNG. Try SVG export."));
    image.src=url;
   });
-  const canvas=document.createElement("canvas");canvas.width=2880;canvas.height=1890;
+  const canvas=document.createElement("canvas");canvas.width=2880;
+  // Annotated comparative box plots can be taller than the standard 960 × 630
+  // diagram. Preserve their actual SVG aspect ratio in the PNG export.
+  const viewBox=svg.match(/viewBox="0 0 ([0-9]+) ([0-9]+)"/);
+  canvas.height=viewBox?Math.round(canvas.width*Number(viewBox[2])/Number(viewBox[1])):1890;
   const ctx=canvas.getContext("2d");
   if(!ctx)throw new Error("This browser cannot render a canvas.");
   ctx.fillStyle="#fff";ctx.fillRect(0,0,canvas.width,canvas.height);
@@ -61,7 +79,7 @@ export async function exportStat(draft,format){
  const base=filename(q.draft);
  if(format==="csv"){
   download(new Blob([statSummaryCSV(q.draft)],{type:"text/csv;charset=utf-8"}),base+"-summary.csv");
-  return "Statistical summary CSV downloaded. Keep long raw tables in your working file, not in your IA.";
+  return "Statistical calculations CSV downloaded. Keep long raw tables in your working file, not in your IA.";
  }
  const svg=renderStatSvg(q.draft);
  if(format==="svg"){
