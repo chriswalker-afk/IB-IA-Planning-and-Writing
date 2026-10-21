@@ -16,13 +16,14 @@ export const newTableDraft=()=>({
  mode:"compact",raw:"",headers:"auto",columns:[],matrix:[],pendingPaste:false,
  headings:[],unitDecisions:[],selected:[0],measures:["mean","median"],categoryIndex:0,showPercent:true,
  title:"",number:"1",purpose:"",sourceKind:"unsure",sourceText:"",note:"",
- decimals:"2",numberFormat:"source",quartileRule:"halves",showRowLines:true
+ decimals:"2",numberFormat:"source",quartileRule:"halves",showRowLines:true,
+ showColumnLines:true,cellAlignment:"center"
 });
 export const newTableStudio=()=>({open:false,draft:newTableDraft(),figures:[],activeId:""});
 export function normalizeTableDraft(raw){
  const d=newTableDraft(),r=object(raw)?raw:{};
  for(const key of ["mode","raw","headers","title","number","purpose","sourceKind","sourceText","note",
-  "decimals","numberFormat","quartileRule"]){
+  "decimals","numberFormat","quartileRule","cellAlignment"]){
   const max=key==="raw"?85000:key==="sourceText"||key==="purpose"||key==="note"?500:140;
   if(typeof r[key]==="string")d[key]=r[key].slice(0,max);
  }
@@ -32,6 +33,7 @@ export function normalizeTableDraft(raw){
  if(!["source","fixed"].includes(d.numberFormat))d.numberFormat="source";
  if(!["0","1","2","3","4"].includes(d.decimals))d.decimals="2";
  if(!["halves","linear"].includes(d.quartileRule))d.quartileRule="halves";
+ if(!["center","numeric"].includes(d.cellAlignment))d.cellAlignment="center";
  d.columns=Array.isArray(r.columns)?r.columns.slice(0,TABLE_MAX_COLS).map(x=>trimmed(x,95)):[];
  d.matrix=Array.isArray(r.matrix)?r.matrix.slice(0,TABLE_MAX_ROWS).filter(Array.isArray)
   .map(row=>row.slice(0,TABLE_MAX_COLS).map(x=>trimmed(x,120))):[];
@@ -54,6 +56,7 @@ export function normalizeTableDraft(raw){
  if(typeof r.pendingPaste==="boolean")d.pendingPaste=r.pendingPaste;
  if(typeof r.showPercent==="boolean")d.showPercent=r.showPercent;
  if(typeof r.showRowLines==="boolean")d.showRowLines=r.showRowLines;
+ if(typeof r.showColumnLines==="boolean")d.showColumnLines=r.showColumnLines;
  return d;
 }
 export function normalizeTableStudio(raw){
