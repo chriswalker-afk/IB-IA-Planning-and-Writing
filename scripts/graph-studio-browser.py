@@ -194,7 +194,7 @@ def function_graph(page,width):
 
 def advanced_graph(page,width):
  # A separate student-chosen modelling task with genuine, positive observations.
- source="x (s)\\ty (m)\\n1\\t3.1\\n2\\t4.5\\n3\\t7.5\\n4\\t11.1\\n5\\t18.5\\n6\\t29.4\\n7\\t47.1\\n8\\t76.2"
+ source="x (s)\ty (m)\n1\t3.1\n2\t4.5\n3\t7.5\n4\t11.1\n5\t18.5\n6\t29.4\n7\t47.1\n8\t76.2"
  page.locator('[data-action="graph-new"]').click()
  page.locator('details.native-import-details').evaluate("(el)=>el.open=true")
  page.locator('[data-graph-field="raw"]').fill(source)
