@@ -81,6 +81,12 @@ test("summary derived statistics have independent precision; n stays an integer"
  assert(!setTableColumnFormat(s,1,"mode","dp"));
  assert(!setTableColumnFormat(s,2,"mode","source"));
  assert.equal(s.draft.matrix[0][0],"1");
+ // Reordering summary measures must not move one statistic's precision onto another.
+ s.draft.measures=["median","mean"];
+ assert.equal(tableColumnFormat(s.draft,2).mode,"dp");
+ assert.equal(tableColumnFormat(s.draft,2).digits,3);
+ assert.equal(tableColumnFormat(s.draft,3).mode,"sf");
+ assert.equal(tableColumnFormat(s.draft,3).digits,2);
 });
 test("frequency counts stay exact while percentages have optional column formatting",()=>{
  const s=newTableStudio();s.draft.mode="frequency";s.draft.title="Travel modes";s.draft.sourceKind="primary";s.draft.headers="yes";
