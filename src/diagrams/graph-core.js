@@ -6,7 +6,7 @@ import {GRAPH_MODEL_TYPES,normalizeGraphModels,assessGraphModels,sampleGraphMode
 const MAX_ROWS=500, MAX_COLS=10, MAX_RAW=85000, MAX_FIGURES=16;
 const text=(x,n=240)=>typeof x==="string"?x.slice(0,n):"";
 const number=x=>typeof x==="number"&&Number.isFinite(x);
-import {typesetGraphSvgLabels} from "./diagram-notation.js";
+import {typesetGraphSvgLabels,diagramWrapLines,hasDiagramEquation} from "./diagram-notation.js";
 export const escapeGraph=x=>String(x??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const NUM=/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:e[+-]?\d+)?$/i;
 export const finiteCell=x=>{
@@ -309,9 +309,10 @@ const SUPERSCRIPTS=Object.freeze({"0":"⁰","1":"¹","2":"²","3":"³","4":"⁴"
 export const formatGraphMath=value=>String(value??"").replace(/\^(?:\{([+\-−]?\d+)\}|\(([+\-−]?\d+)\)|([+\-−]?\d+))/g,
  (_match,a,b,c)=>[...(a??b??c)].map(x=>SUPERSCRIPTS[x==="−"?"-":x]||x).join(""));
 const axisTitle=(label,unit,mode)=>formatGraphMath(label)+(mode==="unit"&&unit?" ("+formatGraphMath(unit)+")":"");
-const polarised=(str,n)=>String(str||"").length<=n?[str]:[String(str).slice(0,n).replace(/\s+\S*$/,""),String(str).slice(n).trim()];
+const polarised=(str,n)=>hasDiagramEquation(str)?diagramWrapLines(str,n):String(str||"").length<=n?[str]:[String(str).slice(0,n).replace(/\s+\S*$/,""),String(str).slice(n).trim()];
 /** Split long model equations without dropping terms or silently rounding them. */
 const graphTextLines=(value,maxChars=100)=>{
+ if(hasDiagramEquation(value))return diagramWrapLines(value,maxChars);
  const lines=[],raw=String(value??"").trim();
  if(!raw)return [];
  let rest=raw;
