@@ -1,27 +1,13 @@
 /**
  * One coherent representation chooser instead of a growing stack of launch
- * boxes. Advice follows a student's explicitly selected provisional route,
- * falling back to their own first-type selection, never invented analysis.
+ * boxes. Current-stage mathematics takes precedence over provisional planning;
+ * neither the plan nor a suggested generator establishes an actual result.
  */
 import {contextualRepresentationAdvice} from "./presentation-coach-core.js";
 import {renderHubDatasetEvidence} from "./presentation-coach-view.js";
-export const REPRESENTATION_TOOLS=Object.freeze([
- {id:"graph",title:"Graph plotter",action:"graph-open",icon:"chart",
-  detail:"Scatter plots, time series and function graphs with axis and unit checks.",
-  groups:["data","models"]},
- {id:"stat",title:"Statistical diagrams",action:"stat-open",icon:"chart",
-  detail:"Histograms, box plots, dot plots and comparative bar charts.",
-  groups:["data"]},
- {id:"table",title:"Table Studio",action:"table-open",icon:"table",
-  detail:"Short labelled tables, summary statistics and frequency tables.",
-  groups:["data","decisions"]},
- {id:"trace",title:"Image & coordinate tracer",action:"trace-open",icon:"image",
-  detail:"Calibrate a photo or scale drawing, trace points and export coordinates.",
-  groups:["geometry","models"]},
- {id:"voronoi",title:"Voronoi Studio",action:"voronoi-open",icon:"map",
-  detail:"Plot real site coordinates, construct nearest-site cells and test proposed sites.",
-  groups:["geometry","decisions"]}
-]);
+import {methodFamilies} from "../completing/method-identity.js";
+import {REPRESENTATION_TOOLS,activeRepresentationTool,representationReturnNode} from "./representation-registry.js";
+export {REPRESENTATION_TOOLS} from "./representation-registry.js";
 export const REPRESENTATION_FILTERS=Object.freeze([
  ["all","All tools"],["data","Explore data"],["geometry","Explore geometry"],
  ["models","Build a model"],["decisions","Make decisions"]
@@ -65,18 +51,75 @@ const fallback={
  scatter:["graph","stat"],distribution:["stat","table"],diagram:["trace","voronoi"],
  table:["table","stat"],calculation:["table","graph"],theory:["graph","table"],other:["graph","table"],unsure:["graph","stat"]
 };
+/**
+ * Students choose a method for the present mathematical stage. Rules are
+ * matched to its explicit method identity (or an unambiguous saved technique),
+ * never inferred from aim text or hypothetical results. New creators can join
+ * these lists in later passes once fully functional.
+ */
+const methods=[
+ {keys:["voronoi"],name:"Voronoi construction",ids:["voronoi","trace"],
+  why:["Use genuine site coordinates and a justified distance metric.","Calibrate measured sites from a suitable map if needed."]},
+ {keys:["triangulation"],name:"Triangulation and surveying",ids:["trace","graph"],
+  why:["Calibrate positions and measurements before trigonometry.","Graph an actual sensitivity or measurement comparison if useful."]},
+ {keys:["geometric-model"],name:"Geometric modelling",ids:["trace","graph"],
+  why:["Trace or label measured dimensions from a calibrated image.","Plot a derived geometric function over its meaningful domain."]},
+ {keys:["optimisation"],name:"Optimisation",ids:["graph","table"],
+  why:["Inspect the objective over its feasible domain.","Compare constraints, endpoints and candidate optima."]},
+ {keys:["probability","expected-value"],name:"Conditional probability or expected value",ids:["table","stat"],
+  why:["Define outcomes and probabilities before comparing them.","Use a distribution only when simulated or collected results exist."]},
+ {keys:["binomial"],name:"Binomial probability",ids:["table","stat"],
+  why:["Set out events, trial assumptions and theoretical probabilities.","Display empirical outcomes only when results have been recorded."]},
+ {keys:["pmcc","spearman","linear-regression","quadratic-fit","fitted-model","exponential","sinusoidal","power"],name:"Relationship or fitted model",ids:["graph","table"],
+  why:["Plot real observations or a derived model, with its justified domain.","Summarise relevant fitted parameters or comparisons."]},
+ {keys:["normal","two-sample-t","chi-independence","chi-fit"],name:"Statistical comparison",ids:["stat","table"],
+  why:["Inspect the observed distribution or groups before interpreting a test.","State the relevant assumptions and sample summaries."]},
+ {keys:["finance-break-even","finance-compound","finance-loan","finance-cashflow"],name:"Financial modelling",ids:["table","graph"],
+  why:["Compare scenarios, costs and assumptions transparently.","Graph derived cost or revenue functions over a meaningful domain."]},
+ {keys:["numerical-integration","rates-from-data"],name:"Numerical approximation",ids:["graph","table"],
+  why:["Graph the function or measurements when it clarifies the calculation.","Present only the numerical steps essential to the reasoning."]},
+ {keys:["proof","algebra"],name:"Mathematical reasoning",ids:["graph","table"],
+  why:["A diagram can suggest cases, but it cannot prove a general claim.","A few selected calculations may clarify the argument."]}
+];
+const laterKindFallback={scatter:["graph","stat"],model:["graph","table"],
+ theory:["graph","table"],other:["table","graph"]};
+function activeMathsEntry(state){
+ if(state?.route!=="completing"||!["C30","C31","C40","C50"].includes(state?.completion?.current))return null;
+ const entry=state.entries?.[state.completion.activeEntryIndex];
+ return entry&&["first","substantial"].includes(entry.phase)?entry:null;
+}
 export function representationAdvice(state){
- const route=state.planning?.routeExplorer?.selectedRoute,
-  chosen=routes[route],type=state.completion?.fields?.firstType||"unsure";
+ const entry=activeMathsEntry(state);
+ if(entry){
+  const families=methodFamilies(entry,{allowPlanned:true});
+  const match=methods.find(rule=>rule.keys.some(id=>families.has(id)));
+  if(match)return {chosen:null,ids:match.ids,why:match.why,source:"method",
+   reason:"Current mathematical method: "+match.name};
+  if(entry.phase==="substantial"){
+   const parent=state.entries?.find(item=>item?.id===entry.fromEntryId);
+   const genuine=parent?.status==="completed"&&!!parent?.result?.trim();
+   const followsResult=genuine&&!!parent?.journeyOutcome&&entry.journeySourceOutcome===parent.journeyOutcome;
+   // A confirmed result justifies the next question, not a guessed next
+   // method. Do not silently repeat the method of an earlier stage.
+   return {chosen:null,ids:laterKindFallback[entry.kind]||["graph","table"],
+    source:followsResult?"next":"stage",
+    reason:followsResult?"This stage follows a confirmed mathematical result":"Current stage: choose a useful representation",
+    why:["Choose a representation for the current question, not just the planning pathway.",
+     "No generator is required when a concise calculation or proof is more appropriate."]};
+  }
+ }
+ const route=state?.planning?.routeExplorer?.selectedRoute,chosen=routes[route],
+  type=state?.completion?.fields?.firstType||"unsure";
  const ids=chosen?.ids||fallback[type]||fallback.unsure;
- return {chosen,ids,reason:chosen?"Saved provisional pathway: "+chosen.name:
-   type&&type!=="unsure"?"Based on your selected first representation":"Useful starting points",
+ return {chosen,ids,source:chosen?"route":type!=="unsure"?"first":"fallback",
+  reason:chosen?"Saved provisional pathway: "+chosen.name:
+   type!=="unsure"?"Based on your selected first representation":"Useful starting points",
   why:chosen?.why||["A possible starting tool, not a prescribed technique.","Choose tools only when they help communicate genuine mathematics."]};
 }
 export function renderRepresentationHub(state,icon,e){
  const advice=representationAdvice(state),suggestions=contextualRepresentationAdvice(state,advice),
   filter=state.ui?.representationFilter||"all",
-  first=suggestions.ids.map((id,i)=>({...REPRESENTATION_TOOLS.find(tool=>tool.id===id),reason:suggestions.why[i]}));
+  first=suggestions.ids.map((id,i)=>{const tool=REPRESENTATION_TOOLS.find(t=>t.id===id);return tool?{...tool,reason:suggestions.why[i]}:null;}).filter(Boolean);
  const chosen=new Set(suggestions.ids),all=REPRESENTATION_TOOLS.filter(t=>!chosen.has(t.id));
  const recommended='<div class="representation-feature-grid">'+first.map(t=>
   '<button type="button" class="representation-card representation-card-featured" data-action="'+t.action+'">'+
@@ -96,8 +139,8 @@ export function renderRepresentationHub(state,icon,e){
  '<header class="representation-header"><div><span class="intro-writing-guide-eyebrow">'+icon("layers")+
  ' CHOOSE YOUR MATHEMATICAL REPRESENTATION</span><h2>Which tool helps tell your mathematical story?</h2>'+
  '<p>Start from your investigative aim. A clear, purposeful figure is more valuable than using extra mathematics just to make the IA look complicated.</p></div></header>'+
- '<div class="representation-context"><div><span class="representation-context-kicker">'+icon("route")+' YOUR PATHWAY</span>'+
- '<strong>'+e(advice.reason)+'</strong><p>These recommendations come from your <em>provisional</em> planning choice. They do not identify a pattern in your actual data or require you to use either method.</p></div>'+
+ '<div class="representation-context"><div><span class="representation-context-kicker">'+icon("route")+' RECOMMENDATION CONTEXT</span>'+
+ '<strong>'+e(advice.reason)+'</strong><p>Suggestions reflect your current method, a confirmed next question or a provisional plan. They do not identify a pattern in your data or require a particular generator.</p></div>'+
  '<span class="representation-context-count">'+suggestions.ids.length+' suggestions</span></div>'+
   renderHubDatasetEvidence(state,advice,icon,e)+
  recommended+
@@ -116,15 +159,10 @@ export function renderRepresentationHub(state,icon,e){
 /** A larger canvas is activated only in C31 while one tool is open. */
 export function representationFocusActive(state){
  return state?.route==="completing"&&state.completion?.current==="C31"&&
-  Boolean(state.graphStudio?.open||state.statStudio?.open||state.tableStudio?.open||
-   state.imageTracer?.open||state.voronoiStudio?.open);
+  Boolean(activeRepresentationTool(state));
 }
 export function renderRepresentationSwitcher(state,icon,e){
- const active=REPRESENTATION_TOOLS.find(t=>[
-  ["graph",state.graphStudio?.open],["stat",state.statStudio?.open],
-  ["table",state.tableStudio?.open],["trace",state.imageTracer?.open],
-  ["voronoi",state.voronoiStudio?.open]
- ].some(([id,open])=>t.id===id&&open));
+ const active=activeRepresentationTool(state);
  const steps=[["create","1 · Create"],["refine","2 · Refine"],["use","3 · Use in IA"]];
  const fromLibrary=state.ui?.resourceCreatorReturnRoute||"";
  const originLabel={
@@ -134,8 +172,8 @@ export function renderRepresentationSwitcher(state,icon,e){
  const backButton=fromLibrary?
   '<button type="button" class="btn btn-quiet btn-sm" data-action="resource-creator-return">'+
    icon("arrow-left")+' '+e(originLabel[fromLibrary]||"Back to my work")+'</button>':
-  '<button type="button" class="btn btn-quiet btn-sm" data-action="completion-open" data-node="C30">'+
-   icon("arrow-left")+' Back to my IA</button>';
+  '<button type="button" class="btn btn-quiet btn-sm" data-action="representation-return" data-node="'+
+   representationReturnNode(state)+'">'+icon("arrow-left")+' Back to my mathematical stage</button>';
 
  return '<div class="representation-workspace-header" data-representation-workspace data-representation-switcher>'+
   '<nav class="representation-workspace-bar" aria-label="Mathematical tool navigation">'+
