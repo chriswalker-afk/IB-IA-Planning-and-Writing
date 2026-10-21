@@ -49,7 +49,7 @@ function unitsEditors(d,e){
    '<label class="ia-table-form-field"><span>Units for this column</span><select data-table-col="'+i+'" data-table-part="unitMode">'+
     [["unsure","Confirm units"],["unit","Has a measurement unit"],["dimensionless","Dimensionless / counts"]].map(([value,desc])=>
       '<option value="'+value+'"'+(value===dec.mode?" selected":"")+'>'+desc+'</option>').join("")+'</select></label>'+
-   (dec.mode==="unit"?'<label class="ia-table-form-field"><span>Unit</span><input type="text" data-table-col="'+i+'" data-table-part="unit" value="'+e(dec.unit)+'" placeholder="e.g. cm, s, kg"></label>':"")+
+   (dec.mode==="unit"?'<label class="ia-table-form-field"><span>Unit</span><input type="text" data-table-col="'+i+'" data-table-part="unit" value="'+e(dec.unit)+'" placeholder="e.g. m s^-1, cm^2, kg m^-3"><small>Use ^ for powers. For example, m s^-1 displays as m s⁻¹, and cm^2 displays as cm².</small></label>':"")+
    '</div>';
  }).join("")+'</div>';
 }
@@ -85,7 +85,7 @@ export function tableDataChoices(studio,e){
 function preview(studio,e){
  const check=analyzeTable(studio.draft);
  return '<section class="ia-table-preview" data-table-preview>'+
- '<div class="ia-table-preview-top"><strong>Live, page-width table</strong><span>Automatically sized columns</span></div>'+
+ '<div class="ia-table-preview-top"><strong>Live, compact table</strong><span>Widths adapt to your headings and values</span></div>'+
  '<div class="ia-table-preview-art">'+renderTableSvg(studio.draft)+'</div>'+
  '<p>No rows are shortened or silently omitted. This preview is deliberately limited to a concise IA output.</p>'+
  '</section>';
@@ -121,7 +121,7 @@ export function renderTableStudio(state,icon,e){
  const sparks=accuracy.filter(a=>d.columns.some(h=>h&&[a.quantity,a.symbol].some(ref=>String(ref||"").toLowerCase()===h.toLowerCase())));
  return '<section class="ia-table-studio representation-studio" data-table-studio aria-label="Mathematical Table Studio">'+
  '<header class="ia-table-head"><div><span class="intro-writing-guide-eyebrow">'+icon("table")+' MATHEMATICAL TABLE STUDIO</span>'+
- '<h2>Make a table worth showing</h2><p>Turn real information into a short, easy-to-read mathematical table. Pathfinder chooses suitable widths so columns do not stretch across the page.</p></div>'+
+ '<h2>Make a table worth showing</h2><p>Turn real information into a concise, easy-to-read mathematical table. The width adapts to its contents for a better fit in your IA.</p></div>'+
  '<button type="button" class="btn btn-quiet btn-sm" data-action="table-close">'+icon("x")+' Close studio</button></header>'+
  (routes[route]?'<aside class="ia-table-context"><strong>Your investigative pathway:</strong> '+e(routes[route])+'</aside>':"")+
  '<div class="ia-table-types" role="group" aria-label="Table purpose">'+kinds.map(([key,title,desc])=>
@@ -155,12 +155,15 @@ export function renderTableStudio(state,icon,e){
  textarea("note","Short note beneath the table (optional)",d.note,e,
   "e.g. Missing readings excluded from n, with reason stated in text")+
  '</section>'+
- '<section class="ia-table-control-card"><h3><span>3</span> Automatic size and numerical precision</h3>'+
- '<p>Column widths, header wrapping, row heights and number alignment are automatic. No shrinking to unreadable text.</p>'+
+ '<section class="ia-table-control-card"><h3><span>3</span> Table presentation and numerical precision</h3>'+
+ '<p>The table stays as narrow as its contents allow. Long headings wrap rather than making the whole table too wide.</p>'+
  (d.mode==="compact"?pick("numberFormat","How should numerical cells be displayed?",d.numberFormat,[
   ["source","Exactly as entered (recommended for measured values)"],["fixed","Fixed decimal places (display only)"]],e):"")+
  (d.mode!=="compact"||d.numberFormat==="fixed"?pick("decimals","Number of decimal places",d.decimals,
   ["0","1","2","3","4"].map(n=>[n,n==="0"?"Whole numbers":n+" decimal place"+(n==="1"?"":"s")]),e):"")+
+ pick("cellAlignment","How should the columns be aligned?",d.cellAlignment,[
+  ["center","Centre all headings and values (recommended)"],["numeric","Text left; numerical values right"]],e)+
+ toggle("showColumnLines","Show subtle vertical column separators",d.showColumnLines)+
  toggle("showRowLines","Use subtle horizontal row separators",d.showRowLines)+
  '<p class="ia-table-precision-advice">Rounding changes the displayed output, not the original data used in calculations. Explain important uncertainty and degree of accuracy in the surrounding writing.</p>'+
  '</section></div>'+
