@@ -144,7 +144,14 @@ export async function createPdfPlanningReport(envelope,fullProjectModel=null){
     text=text.trimStart();width=font.widthOfTextAtSize(text,size);
     if(!text)return;
    }
-   items.push({type:"text",text,x});x+=width;
+   // Adjacent prose belongs to one PDF text run. Splitting each word into
+   // separate drawText calls can make PDF extraction drop spaces or break
+   // sentences surrounding a MathJax equation even when the page looks right.
+   const last=items.at(-1);
+   if(last?.type==="text"&&Math.abs(last.x+font.widthOfTextAtSize(last.text,size)-x)<.03)
+    last.text+=text;
+   else items.push({type:"text",text,x});
+   x+=width;
   };
   for(const token of mixedMathTokens(value)){
    if(token.type==="text"){
