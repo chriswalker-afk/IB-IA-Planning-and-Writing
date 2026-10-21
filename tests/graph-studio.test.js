@@ -2,11 +2,12 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
  newGraphDraft,newGraphStudio,normalizeGraphStudio,readPastedGraphData,applyPastedGraphData,
- graphData,analyseGraph,compileGraphFunction,renderGraphSvg,saveGraphFigure
+ graphData,analyseGraph,compileGraphFunction,renderGraphSvg,renderGraphResidualSvg,saveGraphFigure
 } from "../src/diagrams/graph-core.js";
 import {updateGraphField,chooseGraphType,saveAndLinkGraph,saveGraphDraft,loadSavedGraph,freshGraph} from "../src/diagrams/graph-actions.js";
 import {renderGraphStudio} from "../src/diagrams/graph-view.js";
-import {fitPolynomialLeastSquares,normalizeGraphModels,assessGraphModels,sampleGraphModel} from "../src/diagrams/graph-models.js";
+import {fitPolynomialLeastSquares,normalizeGraphModels,assessGraphModels,sampleGraphModel,diagnoseGraphModel} from "../src/diagrams/graph-models.js";
+import {renderModelComparison,renderResidualOptions,renderResidualPanel,metricText} from "../src/diagrams/graph-diagnostics-view.js";
 import {addGraphModel,toggleGraphModel,removeGraphModel,updateGraphModelExpression} from "../src/diagrams/graph-actions.js";
 import {createProjectState,normalizeProjectState} from "../src/core/project-state.js";
 import {escapeHtml,icon} from "../src/ui/primitives.js";
@@ -294,4 +295,133 @@ test("malformed model imports are constrained and existing function mode still b
  assert.equal(analyseGraph(func).ready,true);
  assert.equal(analyseGraph(func).models.length,0);
  assert(!renderGraphSvg(func).includes('class="graph-model-overlay"'));
+});
+
+
+test("in-sample RMSE, R² and signed residuals use every genuine observation",()=>{
+ const data=[{x:0,y:1},{x:1,y:3},{x:2,y:5},{x:3,y:7}];
+ const exact=diagnoseGraphModel(data,x=>1+2*x);
+ assert.equal(exact.ok,true);
+ assert.equal(exact.n,4);assert.equal(exact.rmse,0);assert.equal(exact.r2,1);
+ assert.deepEqual(exact.residuals.map(p=>p.residual),[0,0,0,0]);
+ const offset=diagnoseGraphModel(data,x=>2+2*x);
+ assert.equal(offset.ok,true);
+ assert.equal(offset.rmse,1);
+ assert.equal(offset.r2,.8);
+ assert.deepEqual(offset.residuals.map(p=>p.residual),[-1,-1,-1,-1]);
+ assert.equal(offset.residuals[0].predicted,2);
+ assert.equal(offset.residuals.at(-1).index,3);
+ const awful=diagnoseGraphModel(data,x=>x*0+15);
+ assert(awful.r2<0,"R² may be negative for an authored, non-OLS model");
+});
+test("constant-y data produce undefined R² but a meaningful RMSE",()=>{
+ const data=[0,1,2,3].map(x=>({x,y:5}));
+ const good=diagnoseGraphModel(data,()=>5);
+ assert.equal(good.ok,true);assert.equal(good.rmse,0);assert.equal(good.r2,null);
+ assert.match(good.r2Note,/undefined/);
+ const bad=diagnoseGraphModel(data,()=>7);
+ assert.equal(bad.rmse,2);assert.equal(bad.r2,null);
+ assert.equal(metricText(null),"Undefined");
+});
+test("invalid custom model domains never silently discard observations when comparing",()=>{
+ const points=[-1,0,1,2,3].map(x=>({x,y:x*x}));
+ const evaluated=assessGraphModels([{id:"model-1",type:"custom",expression:"ln(x)",visible:true}],points,compileGraphFunction)[0];
+ assert(evaluated.valid,"Function is graphable on part of the observed x-range");
+ assert.equal(evaluated.diagnostics.ok,false);
+ assert.equal(evaluated.diagnostics.n,points.length);
+ assert.match(evaluated.diagnostics.reason,/every observed x-value/);
+ const contrast=diagnoseGraphModel(points,()=>Infinity);
+ assert.equal(contrast.ok,false);
+ const noPoints=diagnoseGraphModel([],()=>0);
+ assert.equal(noPoints.ok,false);
+});
+test("students must opt in to each residual view and its figure retains the correct axes and zero line",()=>{
+ const studio=validData(),d=studio.draft;
+ assert(addGraphModel(studio,"linear").ok);
+ let a=analyseGraph(d);
+ assert(a.models[0].diagnostics.ok);
+ assert.equal(renderGraphResidualSvg(d),"","No model selected yet");
+ assert.equal(d.showResidualSegments,false);
+ assert.equal(d.showResidualPlot,false);
+ const modelId=a.models[0].id;
+ assert(updateGraphField(studio,"residualModelId",modelId));
+ assert.equal(updateGraphField(studio,"residualModelId","model-evil"),false);
+ assert(updateGraphField(studio,"showResidualSegments",true));
+ assert(updateGraphField(studio,"showResidualPlot",true));
+ a=analyseGraph(d);assert.equal(a.ready,true);
+ const main=renderGraphSvg(d);
+ assert.equal((main.match(/class="graph-residual-segment"/g)||[]).length,4);
+ assert.match(main,/Residual distances/);
+ const separate=renderGraphResidualSvg(d);
+ assert.match(separate,/graph-residual-zero/);
+ assert.equal((separate.match(/class="graph-residual-point"/g)||[]).length,4);
+ assert.match(separate,/Residual: observed/);
+ assert.match(separate,/predicted/);
+ assert.match(separate,/Distance \(m\)|Residual: observed/);
+ assert.match(renderResidualOptions(d,a,escapeHtml),/data-graph-field="showResidualPlot"/);
+ const pane=renderResidualPanel(d,a,icon,escapeHtml);
+ assert.match(pane,/data-action="graph-residual-svg"/);
+ assert.match(pane,/data-action="graph-residual-png"/);
+ assert.match(pane,/Are the residuals scattered around zero/);
+ assert(updateGraphField(studio,"showResidualSegments",false));
+ assert(!renderGraphSvg(d).includes('class="graph-residual-segment"'));
+ assert.equal(renderGraphResidualSvg(d)!=="",true);
+ assert(updateGraphField(studio,"showResidualPlot",false));
+ assert.equal(renderResidualPanel(d,analyseGraph(d),icon,escapeHtml),"");
+});
+test("comparison table is factual, same-n, includes student entered models and never ranks a winner",()=>{
+ const studio=validData(),d=studio.draft;
+ assert(addGraphModel(studio,"linear").ok);
+ assert(addGraphModel(studio,"quadratic").ok);
+ const custom=addGraphModel(studio,"custom").model;
+ assert(updateGraphModelExpression(studio,custom.id,"100"));
+ const a=analyseGraph(d),comparison=renderModelComparison(d,a,escapeHtml);
+ assert.equal(a.models.length,3);
+ assert(a.models.every(m=>m.diagnostics.ok&&m.diagnostics.n===4));
+ assert.match(comparison,/RMSE \(m\)/);
+ assert.match(comparison,/R²/);
+ assert.match(comparison,/same complete observations/);
+ assert.match(comparison,/undefined/); // R² explanatory footnote
+ assert.match(comparison,/not just the largest R²/);
+ assert(!comparison.includes("The best model is"));
+ assert(a.models.find(m=>m.type==="custom").diagnostics.r2<0);
+ assert(updateGraphField(studio,"modelReflection","I need to consider the shape of the residuals."));
+ assert.equal(d.modelReflection,"I need to consider the shape of the residuals.");
+});
+test("residual selection, narrative and plot toggles survive backup; removed model clears dependent controls",()=>{
+ const s=createProjectState();s.completion.current="C31";s.graphStudio=validData();
+ const studio=s.graphStudio;
+ assert(addGraphModel(studio,"linear").ok);
+ const id=studio.draft.models[0].id;
+ assert(updateGraphField(studio,"residualModelId",id));
+ assert(updateGraphField(studio,"showResidualPlot",true));
+ assert(updateGraphField(studio,"showResidualSegments",true));
+ assert(updateGraphField(studio,"modelReflection","Observed residuals tend to rise then fall."));
+ const link=saveAndLinkGraph(s);assert(link.ok,link.error);
+ const restored=normalizeProjectState(JSON.parse(JSON.stringify(s)));
+ assert.equal(restored.graphStudio.figures[0].draft.residualModelId,id);
+ assert.equal(restored.graphStudio.figures[0].draft.showResidualPlot,true);
+ assert.equal(restored.graphStudio.figures[0].draft.showResidualSegments,true);
+ assert.equal(restored.graphStudio.figures[0].draft.modelReflection,"Observed residuals tend to rise then fall.");
+ assert.equal(renderGraphResidualSvg(restored.graphStudio.figures[0].draft).includes("graph-residual-zero"),true);
+ s.entries[0].status="completed";s.entries[0].result="My original genuine interpretation.";
+ assert(updateGraphField(s.graphStudio,"showResidualSegments",false));
+ assert(saveGraphDraft(s).reviewNeeded);
+ assert.equal(s.entries[0].result,"My original genuine interpretation.");
+ assert(removeGraphModel(s.graphStudio,id));
+ assert.equal(s.graphStudio.draft.residualModelId,"");
+ assert.equal(s.graphStudio.draft.showResidualPlot,false);
+ assert.equal(s.graphStudio.draft.showResidualSegments,false);
+});
+test("HTML escapes student reflections and does not claim unsupported fit quality",()=>{
+ const studio=validData(),d=studio.draft;assert(addGraphModel(studio,"linear").ok);
+ assert(updateGraphField(studio,"modelReflection",'<script>alert("wrong")</script>'));
+ const html=renderGraphStudio({graphStudio:studio},icon,escapeHtml);
+ assert(!html.includes('<script>'));
+ assert.match(html,/&lt;script&gt;/);
+ assert.match(html,/data-graph-field="modelReflection"/);
+ const normalized=normalizeProjectState(JSON.parse(JSON.stringify({
+  ...createProjectState(),graphStudio:{open:true,draft:{...d,modelReflection:"x".repeat(1800)}}
+ })));
+ assert.equal(normalized.graphStudio.draft.modelReflection.length,1200);
 });
