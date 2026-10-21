@@ -37,7 +37,7 @@ const specs=[
  {kind:"stat",store:"statStudio",entryKey:"statFigureId",render:d=>renderStatSvg(d),
   details:d=>[
    row("Diagram type",d.kind),row("Statistical method and convention",statMethodNote(d)),
-   row("Variable",d.variable+(d.unit?" ("+d.unit+")":""))
+   row("Variable",d.variable+(d.unit?" ("+d.unit+")":"")),
    row("Entered source data",d.raw||joined(d.matrix||[])),
    row("Statistical source",d.sourceText),row("Figure caption",d.caption)
   ]},
