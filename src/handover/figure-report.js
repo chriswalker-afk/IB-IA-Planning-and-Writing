@@ -8,14 +8,15 @@ import {renderStatSvg} from "../diagrams/stat-studio-render.js";
 import {statMethodNote} from "../diagrams/stat-reading-guide.js";
 import {renderTableSvg} from "../diagrams/table-studio-render.js";
 import {renderVoronoiSvg} from "../diagrams/voronoi-render.js";
+import {renderGeometrySvg} from "../diagrams/geometry-render.js";
 import {representationTool} from "../diagrams/representation-registry.js";
 
 const trim=x=>String(x??"").trim();
 const row=(label,value)=>trim(value)?{label,value:trim(value)}:null;
 const joined=rows=>rows.map(r=>Array.isArray(r)?r.join(" | "):String(r)).join("\n");
 const occupied=d=>!!(trim(d?.raw)||trim(d?.expression)||d?.imageSrc||
- (d?.points?.length||0)||(d?.sites?.length||0)||(d?.matrix||[]).some(r=>r.some(x=>trim(x))));
-const titles={graph:"Graph",trace:"Coordinate tracing",stat:"Statistical diagram",table:"Mathematical table",voronoi:"Voronoi diagram"};
+ (d?.points?.length||0)||(d?.sites?.length||0)||(d?.edited&&d?.vertices?.length||0)||(d?.matrix||[]).some(r=>r.some(x=>trim(x))));
+const titles={graph:"Graph",trace:"Coordinate tracing",stat:"Statistical diagram",table:"Mathematical table",voronoi:"Voronoi diagram",geometry:"Geometric construction"};
 const registeredFigure=id=>{
  const tool=representationTool(id);
  if(!tool)throw new Error("Unregistered diagram kind: "+id);
@@ -63,7 +64,13 @@ const specs=[
    row("Pasted site data",d.raw),row("Site source",d.sourceCredit),
    row("Background map",d.mapName),row("Map source",d.mapCredit),
    row("Student notes",d.note)
-  ]}
+  ]},
+ {...registeredFigure("geometry"),render:d=>renderGeometrySvg(d),details:d=>[
+   row("Scale",d.mode==="coordinate"?"Coordinate-based":"Schematic; not necessarily to scale"),
+   row("Student-entered vertices and labels",(d.vertices||[]).map(p=>p.label+" ("+p.x+", "+p.y+")"+
+    (p.edgeLabel?" | side: "+p.edgeLabel:"")+(p.angleLabel?" | angle: "+p.angleLabel:"")).join("\n")),
+   row("Unit",d.unit),row("North orientation",d.northAligned?"x east / y north":""),
+   row("Source type",d.sourceKind),row("Original source",d.sourceCredit),row("Limitations",d.note)]}
 ];
 function buildFigure(spec,record,{draft=false}={}){
  const d=record.draft||{},title=trim(d.title)||titles[spec.kind];

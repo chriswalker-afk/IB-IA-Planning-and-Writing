@@ -130,14 +130,15 @@ export function diagramUnitPower(value,power){
  return "("+unit+")^"+power;
 }
 
-export function diagramNotationControls(e,{studio,key="",index=null,part="",siteIndex=null}={}){
+export function diagramNotationControls(e,{studio,key="",index=null,part="",siteIndex=null,vertexIndex=null}={}){
  const tableColumn=studio==="table"&&Number.isInteger(index);
  const action=tableColumn?"table-symbol":"diagram-notation-token";
  const attrs=' data-notation-studio="'+e(studio)+'" data-notation-key="'+e(key)+'"'+
   (tableColumn?' data-notation-col="'+index+'" data-notation-part="'+e(part)+'"':"")+
-  (studio==="voronoi"&&Number.isInteger(siteIndex)?' data-notation-site-index="'+siteIndex+'"':"");
+  (studio==="voronoi"&&Number.isInteger(siteIndex)?' data-notation-site-index="'+siteIndex+'"':"")+
+  (studio==="geometry"&&Number.isInteger(vertexIndex)?' data-notation-vertex-index="'+vertexIndex+'"':"");
  const id="diagram-notation-"+[studio,key,tableColumn?index:"",part,
-  Number.isInteger(siteIndex)?siteIndex:""].filter(v=>v!=="").join("-").replace(/[^a-zA-Z0-9-]/g,"");
+  Number.isInteger(siteIndex)?siteIndex:"",Number.isInteger(vertexIndex)?vertexIndex:""].filter(v=>v!=="").join("-").replace(/[^a-zA-Z0-9-]/g,"");
  const tokens=DIAGRAM_NOTATION_SYMBOLS.map(s=>
   '<button type="button" data-action="'+action+'" data-notation-token="'+e(s.token)+'"'+
   (tableColumn?' data-table-col="'+index+'" data-table-part="'+e(part)+'" data-table-token="'+e(s.token)+'"':"")+

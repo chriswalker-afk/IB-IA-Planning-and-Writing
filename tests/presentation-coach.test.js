@@ -101,7 +101,7 @@ test("current probability methods recommend actual available tools without prete
  const a=contextualRepresentationAdvice(s,representationAdvice(s));
  assert.deepEqual(a.ids,["table","stat"]);
  assert.match(renderRepresentationHub(s,icon,esc),/Conditional probability or expected value/);
- assert(!renderRepresentationHub(s,icon,esc).includes('data-action="geometry-open"'));
+ assert(renderRepresentationHub(s,icon,esc).includes('data-action="geometry-open"'),"Other optional creators remain discoverable");
  assert(!renderRepresentationHub(s,icon,esc).includes('data-action="probability-open"'));
 });
 test("one numerical column recommends a distribution when no route is selected",()=>{

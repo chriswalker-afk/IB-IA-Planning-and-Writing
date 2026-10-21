@@ -73,6 +73,11 @@ function renderRouteCard(route,{e,icon,selected,opened,mode}){
 }
 function renderRouteDetail(route,state,{e,icon}){
  const c=state.planning.fields.course,m=routeCourseMath(route,c),chosen=new Set(state.planning.mathSelected);
+ const geometryHint={
+  triangulation:'Make a labelled triangle before calculating heights, distances or bearings; check what is measured and what is derived.',
+  images:'After calibrating an image, use a separate labelled geometric construction when a triangle or polygon explains your area or length model.',
+  optimisation:'For a dimensioned physical design, construct and label its geometry before forming the objective function. For financial optimisation, use other tools.'
+ }[route.id];
  const saved=state.planning.routeExplorer?.selectedRoute===route.id;
  const family=ROUTE_FAMILIES.find(f=>f.id===route.family);
  return '<section class="journey-detail" id="journey-detail" aria-label="Investigative journey for '+e(route.title)+'">'+
@@ -98,6 +103,9 @@ function renderRouteDetail(route,state,{e,icon}){
    (route.caution?'<p class="journey-route-warning">'+icon('info')+' '+e(route.caution)+'</p>':'')+
    (route.teacher?'<p class="journey-route-warning">'+icon('message-square')+
     ' Speak with your teacher before relying on a theoretical or advanced route. A pattern-heavy investigation can become an EE-style topic.</p>':'')+
+   (geometryHint?'<div class="journey-optional-tool"><p><strong>Optional diagram creator:</strong> '+e(geometryHint)+'</p>'+
+    '<button type="button" class="btn btn-secondary btn-sm" data-action="resource-creator-open" data-resource-creator="geometry">'+
+    icon('ruler')+' Open Geometry &amp; Measurement Studio</button></div>':'')+
    '<div class="journey-detail-actions">'+
     '<button type="button" class="btn '+(saved?'btn-secondary':'btn-primary')+'" data-action="'+(saved?'math-remove-route':'math-select-route')+'" data-route-id="'+e(route.id)+'">'+
       icon(saved?'check-circle':'bookmark')+' '+(saved?'Saved · Remove route':'Save this as my provisional route')+'</button>'+

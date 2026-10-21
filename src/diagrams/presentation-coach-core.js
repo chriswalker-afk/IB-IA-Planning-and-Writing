@@ -255,6 +255,9 @@ export function presentationDiagnostics(state,type,draft){
   add("tracer-scale","consider","Check image calibration","An image-to-coordinate scale is valid only under your chosen calibration assumptions. Identify reference lengths, units and any perspective distortion.");
   if(d.perspective==="unsure")add("photo-perspective","check","Perspective has not been considered","Explain whether the photographed plane was parallel to the camera and how this could affect traced lengths and angles.");
   if(d.limitations)add("photo-limits","consider","Revisit your own tracing limitation",words(d.limitations,220));
+ }else if(type==="geometry"){
+  add("geometry-scale","consider","Check schematic against coordinate geometry","Only coordinate mode derives lengths and angles; manually annotated values must be justified.");
+  if(d.showBearings&&!d.northAligned)add("geometry-north","check","Confirm north","Bearings require x east, y north.");
  }else if(type==="voronoi"){
   add("voronoi-metric","consider","Nearest means straight-line nearest","A Euclidean Voronoi construction compares planar distances, not road travel time, waiting time, demand or optimal service provision.");
   if(!d.metricConfirmed)add("voronoi-metric-check","check","Confirm the distance model","Explain the coordinate system and why straight-line distance is an appropriate first assumption.");
@@ -295,7 +298,7 @@ export function figureCaption(state,type,draft){
  const d=draft||{},prefix=type==="table"?"Table":"Figure",
   number=words(type==="table"?d.number:d.figureNumber,6),
   title=words(d.title,110),
-  note=words(type==="table"||type==="voronoi"?d.note:d.caption,320);
+  note=words(type==="table"||type==="voronoi"||type==="geometry"?d.note:d.caption,320);
  let citation="";
  if(type==="graph"&&d.kind==="function")citation="Mathematical function drawn over the stated domain; not observed data.";
  else if(sourceType(d)==="primary")citation="Source: own collected measurements (describe collection in the IA).";
@@ -316,6 +319,7 @@ export function handoverQuestions(state,type,draft){
    dot:"distribution of repeated and distinct values",bar:"category counts or proportions"}[draft?.kind]||"statistical display":
   type==="trace"?"calibrated coordinates extracted from an image":
   type==="voronoi"?"nearest-site regions under a straight-line distance assumption":
+  type==="geometry"?"a labelled geometric construction":
   {compact:"selected numerical results",summary:"summary statistics",frequency:"observed category frequencies"}[draft?.mode]||"mathematical results";
  const limitation=type==="graph"&&draft?.kind==="function"?"Which assumptions and feasible domain restrict this model?":
   type==="stat"&&draft?.kind==="bar"?"How do group sizes and percentage denominators affect the comparison?":
@@ -324,6 +328,7 @@ export function handoverQuestions(state,type,draft){
   type==="stat"&&draft?.kind==="polygon"?"How would different class widths change the plotted midpoints or density peaks?":
   type==="trace"?"How might calibration error, resolution or perspective change the traced coordinates?":
   type==="voronoi"?"How would roads, obstacles, distance metrics or the choice of sites change nearest-site regions?":
+  type==="geometry"?"Which scale assumptions, angle measurements or annotations limit this construction?":
   type==="table"?"Are these the smallest set of results needed, with justified precision?":
   "How could sampling, measurement accuracy, data exclusions or model assumptions change the conclusion?";
  return {

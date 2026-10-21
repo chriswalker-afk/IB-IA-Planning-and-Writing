@@ -189,3 +189,19 @@ test('mobile and reduced-motion styling supports route gallery, conditional bran
  for(const action of ['math-mode','math-family','math-open-route','math-select-route','math-remove-route'])
   assert(source.includes('case "'+action+'"'),action);
 });
+
+
+test('relevant planning pathways offer Geometry Studio without inventing a required mathematical method',()=>{
+ for(const id of ['triangulation','images','optimisation']){
+  const s=setup('modelling','A geometric design','AA SL');
+  s.planning.routeExplorer.mode='routes';
+  s.planning.routeExplorer.openRoute=id;
+  const view=html(s);
+  assert(view.includes('data-action="resource-creator-open" data-resource-creator="geometry"'),id);
+  assert(view.includes('Optional diagram creator'),id);
+  assert.equal(s.planning.routeExplorer.selectedRoute,'',"Opening a route must not select it");
+ }
+ const s=setup('statistics','Comparing distributions','AI SL');
+ s.planning.routeExplorer.mode='routes';s.planning.routeExplorer.openRoute='groups';
+ assert(!html(s).includes('data-resource-creator="geometry"'));
+});

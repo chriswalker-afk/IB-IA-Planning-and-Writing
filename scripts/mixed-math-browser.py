@@ -15,7 +15,7 @@ PORT=8768
 fixture=json.loads(subprocess.check_output(['node','--input-type=module','-e',r'''
 import {createProjectState} from './src/core/project-state.js';
 const s=createProjectState();
-s.route='planning';
+s.route='planning';s.ui.planningIntroSeen=true;s.ui.planningIntroOpen=false;
 s.planning.current='N01';
 s.planning.visited=['N00','N01'];
 s.planning.fields.ideaStatus='yes';
@@ -44,17 +44,28 @@ try:
    errors=[]
    page.on('pageerror',lambda err: errors.append(str(err)))
    page.goto('http://127.0.0.1:'+str(PORT)+'/',wait_until='networkidle',timeout=45000)
-   target=page.locator('textarea[data-bind="planning.fields.aim"]').first
+   target=page.locator('textarea[data-bind="planning.fields.aim"]:visible').first
+   if not target.is_visible():
+    print("Planning maths editor fixture context:",json.dumps({
+     "route":page.locator("body").get_attribute("data-route"),
+     "current":json.loads(page.evaluate('localStorage.getItem('+json.dumps(KEY)+')'))["planning"]["current"],
+     "page":page.locator("[data-source-node]").first.get_attribute("data-source-node") if page.locator("[data-source-node]").count() else "none",
+     "aimFields":page.locator('textarea[data-bind="planning.fields.aim"]').count(),
+     "welcome":page.locator('[data-planning-intro="true"]').count(),
+     "heading":page.locator("#main").inner_text()[:450]
+    }),flush=True)
    assert target.is_visible(), 'The Planning answer field must remain editable.'
    original=target.input_value()
    idx=original.index(' for these')
    target.evaluate('(el,offset)=>{el.focus();el.setSelectionRange(offset,offset)}',idx)
-   group=page.locator('[data-math-field="planning.fields.aim"]').first
+   group=page.locator('[data-math-field="planning.fields.aim"]:visible').first
    group.locator('[data-action="math-open"]').click()
    formula=group.locator('[data-math-expression]')
    formula.fill(r'\frac{x^{2}}{2}')
    assert group.locator('[data-math-formula-preview] svg').count()>0, 'No live SVG typesetting'
    group.locator('[data-action="math-insert"]').click()
+   page.wait_for_function("""tex => [...document.querySelectorAll('textarea[data-bind="planning.fields.aim"]')]
+    .some(el=>el.offsetWidth>0 && el.value.includes(tex))""",arg=r'\(\frac{x^{2}}{2}\)')
    result=target.input_value()
    assert r'\(\frac{x^{2}}{2}\)' in result,(width,result)
    assert result.startswith('The observed model is ')
@@ -62,13 +73,18 @@ try:
    assert group.locator('[data-math-preview-content] svg').count()==1
    group.locator('[data-action="math-edit-existing"]').first.click()
    formula=group.locator('[data-math-expression]')
+   page.wait_for_function("""tex=>[...document.querySelectorAll('[data-math-field="planning.fields.aim"]')]
+    .some(g=>g.offsetWidth>0 && g.querySelector('[data-math-expression]')?.value===tex)""",
+    arg=r'\frac{x^{2}}{2}')
    assert formula.input_value()==r'\frac{x^{2}}{2}'
    formula.fill(r'x^{2}+1')
    group.locator('[data-action="math-insert"]').click()
+   page.wait_for_function("""tex => [...document.querySelectorAll('textarea[data-bind="planning.fields.aim"]')]
+    .some(el=>el.offsetWidth>0 && el.value.includes(tex))""",arg=r'\(x^{2}+1\)')
    assert r'\(x^{2}+1\)' in target.input_value()
    assert r'\frac{' not in target.input_value()
    page.reload(wait_until='networkidle')
-   target=page.locator('textarea[data-bind="planning.fields.aim"]').first
+   target=page.locator('textarea[data-bind="planning.fields.aim"]:visible').first
    assert r'\(x^{2}+1\)' in target.input_value(),'Saved formula was not restored'
    assert page.locator('[data-math-preview-content] svg').first.is_visible()
    before=json.loads(page.evaluate('localStorage.getItem('+json.dumps(KEY)+')'))

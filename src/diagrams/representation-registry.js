@@ -23,7 +23,10 @@ export const REPRESENTATION_TOOLS=Object.freeze([
  {id:"voronoi",title:"Voronoi Studio",figureTitle:"Voronoi construction",action:"voronoi-open",icon:"map",
   detail:"Plot real site coordinates, construct nearest-site cells and test proposed sites.",
   groups:["geometry","decisions"],studio:"voronoiStudio",entryKey:"voronoiFigureId",
-  root:"voronoi-studio",linkedReason:"linked-voronoi"}
+  root:"voronoi-studio",linkedReason:"linked-voronoi"},
+ {id:"geometry",title:"Geometry & Measurement Studio",figureTitle:"Geometric construction",action:"geometry-open",icon:"ruler",
+  detail:"Build triangles or polygons with justified lengths, angles and bearings.",groups:["geometry","models"],
+  studio:"geometryStudio",entryKey:"geometryFigureId",root:"geometry-studio",linkedReason:"linked-geometry"}
 ].map(tool=>Object.freeze({...tool,groups:Object.freeze(tool.groups)})));
 export const representationTool=id=>REPRESENTATION_TOOLS.find(tool=>tool.id===id)||null;
 export const activeRepresentationTool=state=>REPRESENTATION_TOOLS.find(tool=>state?.[tool.studio]?.open===true)||null;
