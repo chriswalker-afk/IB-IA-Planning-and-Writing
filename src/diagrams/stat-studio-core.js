@@ -5,6 +5,8 @@
  */
 import {escapeGraph,finiteCell,splitHeading} from "./graph-core.js";
 import {continuousBins,groupedClassBins} from "./continuous-classes.js";
+import {boxStats,boxComparisons} from "./box-analysis.js";
+export {boxStats} from "./box-analysis.js";
 
 export const STAT_TYPES=Object.freeze([
  ["histogram","Histogram","Continuous measurements with class widths and frequency density."],
@@ -22,15 +24,18 @@ export function newStatDraft(){
   kind:"histogram",raw:"",columns:[],matrix:[],pendingPaste:false,headers:"auto",
   selected:[0],categoryIndex:0,lowIndex:0,highIndex:1,frequencyIndex:2,
   histogramInput:"raw",binWidth:"",binStart:"",barMode:"count",
-  quartileRule:"halves",outlierRule:"tukey",
+  quartileRule:"halves",outlierRule:"tukey",whiskerMode:"nonoutlier",zThreshold:"3",boxPrecision:"auto",
   title:"",figureNumber:"1",variable:"",unit:"",unitMode:"unsure",sourceKind:"unsure",sourceText:"",
-  caption:"",min:"",max:"",showGrid:true,showOutliers:true,showLabels:true
+  caption:"",min:"",max:"",showGrid:true,showOutliers:true,showLabels:true,
+  showBoxQuartiles:false,showBoxMedian:true,showBoxExtremes:false,
+  showBoxWhiskers:false,showBoxOutlierValues:false,showBoxFences:false,showBoxMean:false
  };
 }
 export function normalizeStatDraft(raw){
  const d=newStatDraft(),r=valid(raw)?raw:{};
  for(const key of ["kind","raw","headers","histogramInput","binWidth","binStart","barMode",
-  "quartileRule","outlierRule","title","figureNumber","variable","unit","unitMode","sourceKind","sourceText",
+  "quartileRule","outlierRule","whiskerMode","zThreshold","boxPrecision",
+  "title","figureNumber","variable","unit","unitMode","sourceKind","sourceText",
   "caption","min","max"]){
   const cap=key==="raw"?MAX_STAT_RAW:key==="sourceText"?480:key==="caption"?480:150;
   d[key]=txt(r[key],cap)|| (typeof r[key]==="string"?"":d[key]);
@@ -40,7 +45,10 @@ export function normalizeStatDraft(raw){
  if(!["raw","table"].includes(d.histogramInput))d.histogramInput="raw";
  if(!["count","percent"].includes(d.barMode))d.barMode="count";
  if(!["halves","linear"].includes(d.quartileRule))d.quartileRule="halves";
- if(!["tukey","minmax"].includes(d.outlierRule))d.outlierRule="tukey";
+ if(!["tukey","extreme","zscore","modified","none","minmax"].includes(d.outlierRule))d.outlierRule="tukey";
+ if(!["nonoutlier","minmax"].includes(d.whiskerMode))d.whiskerMode="nonoutlier";
+ if(!["2","2.5","3"].includes(d.zThreshold))d.zThreshold="3";
+ if(!["auto","0","1","2","3","4"].includes(d.boxPrecision))d.boxPrecision="auto";
  if(!["unit","dimensionless","unsure"].includes(d.unitMode))d.unitMode="unsure";
  if(!["primary","secondary","theoretical","unsure"].includes(d.sourceKind))d.sourceKind="unsure";
  d.columns=Array.isArray(r.columns)?r.columns.slice(0,MAX_STAT_COLS).map(x=>txt(x,110)):[];
@@ -52,7 +60,9 @@ export function normalizeStatDraft(raw){
  for(const key of ["categoryIndex","lowIndex","highIndex","frequencyIndex"]){
   d[key]=Number.isInteger(r[key])?Math.min(Math.max(0,r[key]),Math.max(0,d.columns.length-1)):d[key];
  }
- for(const key of ["pendingPaste","showGrid","showOutliers","showLabels"]){
+ for(const key of ["pendingPaste","showGrid","showOutliers","showLabels","showBoxQuartiles",
+  "showBoxMedian","showBoxExtremes","showBoxWhiskers","showBoxOutlierValues",
+  "showBoxFences","showBoxMean"]){
   if(typeof r[key]==="boolean")d[key]=r[key];
  }
  return d;
@@ -129,29 +139,6 @@ export function importStatTable(studio,raw){
  if(split.unit){d.unit=split.unit;d.unitMode="unit";}
  return {rows:data.matrix.length,columns:data.columns.length,hasHeaders:data.hasHeaders};
 }
-const median=sorted=>{
- if(!sorted.length)return null;
- const n=sorted.length,m=n>>1;
- return n%2?sorted[m]:(sorted[m-1]+sorted[m])/2;
-};
-function quantileLinear(sorted,p){
- if(sorted.length===1)return sorted[0];
- const index=p*(sorted.length-1),a=Math.floor(index),b=Math.ceil(index);
- return sorted[a]+(sorted[b]-sorted[a])*(index-a);
-}
-export function boxStats(values,rule="halves",outlierRule="tukey"){
- const a=values.slice().sort((x,y)=>x-y),n=a.length;
- if(!n)return null;
- const med=median(a);
- const lower=a.slice(0,Math.floor(n/2)),upper=a.slice(Math.ceil(n/2));
- const q1=rule==="linear"?quantileLinear(a,.25):(median(lower)??a[0]);
- const q3=rule==="linear"?quantileLinear(a,.75):(median(upper)??a[n-1]);
- const iqr=q3-q1,fences=[q1-1.5*iqr,q3+1.5*iqr];
- const outliers=outlierRule==="tukey"?a.filter(x=>x<fences[0]||x>fences[1]):[];
- const core=outlierRule==="tukey"?a.filter(x=>x>=fences[0]&&x<=fences[1]):a;
- return {n,min:a[0],q1,median:med,q3,max:a[n-1],iqr,
-  lowWhisker:core[0]??a[0],highWhisker:core.at(-1)??a[n-1],outliers,fences,values:a};
-}
 const numericCols=d=>d.selected.filter(i=>i>=0&&i<d.columns.length);
 function columnData(d,index){
  const values=[];let skipped=0;
@@ -227,7 +214,8 @@ export function statAnalysis(raw){
   const series=numericCols(d).map(i=>{
    const data=columnData(d,i);
    return {index:i,name:d.columns[i]||"Group "+(i+1),...data,
-    box:d.kind==="box"?boxStats(data.values,d.quartileRule,d.outlierRule):null};
+    box:d.kind==="box"?boxStats(data.values,d.quartileRule,d.outlierRule,
+     {whiskerMode:d.whiskerMode,zThreshold:d.zThreshold}):null};
   });
   if(!series.length)fail("series","Select at least one numeric column.");
   if(series.some(s=>s.name.length>24))fail("series-labels","Shorten group headings to 24 characters or fewer for a readable diagram.");
@@ -243,15 +231,22 @@ export function statAnalysis(raw){
     if(Math.max(0,...counts.values())>maxStack)fail("dot-stack","Repeated observations in '"+s.name+"' would overlap at print size. Use fewer groups or a frequency diagram.");
    }
    if(s.box?.iqr===0)warn("zero-iqr","The group '"+s.name+"' has zero IQR. Quartiles or outliers may be less informative.");
+   if(s.box&&!s.box.methodAvailable)fail("outlier-method","The group '"+s.name+"' cannot use this outlier rule: "+s.box.methodNote);
+   else if(s.box?.methodNote)warn("outlier-degenerate",s.name+": "+s.box.methodNote);
   }
   if(d.kind==="box"){
-   if(d.outlierRule==="tukey"&&!d.showOutliers&&series.some(s=>s.box?.outliers.length))
-    fail("hidden-outliers","The whiskers exclude observed outliers. Show those points, or use min–max whiskers and describe the choice.");
-   if(d.outlierRule==="tukey")warn("outliers","Whiskers extend to the most extreme non-outlier observations; 1.5 × IQR observations are shown separately.");
+   if(!d.showOutliers&&series.some(s=>s.box?.outliers.length&&s.box.whiskerMode!=="minmax"))
+    fail("hidden-outliers","Your whiskers exclude flagged observations. Show the flagged points, or choose min–max whiskers so no observations disappear.");
+   if(d.showBoxOutlierValues&&!d.showOutliers&&series.some(s=>s.box?.outliers.length))
+    warn("outlier-labels-hidden","Enable flagged outlier points to display their values on the diagram.");
+   if(d.outlierRule==="tukey")warn("outliers","The 1.5 × IQR rule screens possible outliers, not errors. Whiskers and outlier classification are separate choices.");
+   if(d.outlierRule==="zscore")warn("zscore-context","Z-scores use the sample standard deviation and are sensitive to skew and extreme values.");
+   if(d.outlierRule==="modified")warn("modified-context","Modified Z-scores use the median and MAD. Review any zero-MAD warning carefully.");
+   if(d.outlierRule==="extreme")warn("extreme-context","3 × IQR flags only more extreme departures; ordinary 1.5 × IQR points may remain unflagged.");
    if(series.some(s=>s.values.length<10))warn("small-sample","A small sample produces unstable quartiles. Explain your sampling and any limitations.");
   }
   if(d.kind==="dot"&&series.some(s=>new Set(s.values).size>50))warn("overplot","Many unique values may produce crowded dots. A box plot or histogram may communicate better.");
-  result={...result,series};
+  result={...result,series,comparisons:d.kind==="box"?boxComparisons(series):[]};
  }else if(d.kind==="bar"){
   const b=barAnalysis(d);
   if(b.error)fail("bar-data",b.error);
@@ -286,7 +281,8 @@ export function statAnalysis(raw){
  return {draft:d,ready:problems.length===0,problems,warnings,result,override};
 }
 export const statSignature=d=>JSON.stringify([d.kind,d.matrix,d.columns,d.selected,d.categoryIndex,d.lowIndex,
- d.highIndex,d.frequencyIndex,d.histogramInput,d.binWidth,d.binStart,d.barMode,d.quartileRule,d.outlierRule,d.min,d.max]);
+ d.highIndex,d.frequencyIndex,d.histogramInput,d.binWidth,d.binStart,d.barMode,d.quartileRule,d.outlierRule,
+ d.whiskerMode,d.zThreshold,d.min,d.max]);
 export function saveStatFigure(studio,entryId=""){
  const q=statAnalysis(studio.draft);
  if(!q.ready)return {ok:false,error:"Resolve the required statistical diagram checks first.",checks:q};
