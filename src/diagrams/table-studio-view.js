@@ -291,6 +291,10 @@ function output(studio,icon){
  const btn=(action,text)=>'<button type="button" class="btn btn-secondary btn-sm" data-action="'+action+'"'+disable+'>'+text+'</button>';
  return '<button type="button" class="btn btn-primary" data-action="table-use"'+disable+'>'+
  icon("check-circle")+' Save and link to my first mathematics</button>'+
+ (studio.draft.mode==="grouped"?
+ '<div class="ia-table-stat-transfer"><button type="button" class="btn btn-secondary btn-sm" data-action="table-to-stat"'+disable+
+ '>'+icon("bar-chart-3")+' Build matching frequency-density histogram</button>'+
+ '<small>Uses exactly these class boundaries, all frequencies and the original source type. Your table and any saved diagrams remain unchanged.</small></div>':"")+
  '<div class="ia-table-export-buttons">'+
  btn("table-editable",icon("copy")+' Copy editable table')+
  btn("table-html",icon("download")+' Editable HTML')+
