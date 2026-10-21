@@ -4,6 +4,7 @@ import {createProjectState} from "../src/core/project-state.js";
 import {escapeHtml,icon} from "../src/ui/primitives.js";
 import {newTableStudio,importTableData,analyzeTable,normalizeTableDraft,tableColumnFormat,tableSignature} from "../src/diagrams/table-studio-core.js";
 import {setTableColumn,setTableColumnFormat} from "../src/diagrams/table-studio-actions.js";
+import {applyNativeDataset} from "../src/diagrams/native-data-core.js";
 import {formatTableMath,TABLE_MATH_SYMBOLS} from "../src/diagrams/table-studio-math.js";
 import {renderTableSvg,tableToHtml,tableToTsv,assessTableA4} from "../src/diagrams/table-studio-render.js";
 import {tableCSV} from "../src/diagrams/table-studio-export.js";
@@ -76,6 +77,16 @@ test("significant figures display large numbers as conventional powers of ten",(
  assert(renderTableSvg(s.draft).includes("1.23 × 10⁸"));
  assert(tableToHtml(s.draft).includes("1.23 × 10⁸"));
  assert.equal(s.draft.matrix[0][1],"123456789");
+});
+test("transferring unrelated source columns never carries old precision choices",()=>{
+ const s=compact();
+ assert(setTableColumnFormat(s,1,"mode","sf"));
+ assert(setTableColumnFormat(s,1,"digits","3"));
+ const result=applyNativeDataset(s,"table",{columns:["Height (cm)","Speed (m/s)"],
+  matrix:[["12.5","2.1"],["13.2","2.4"]],sourceKind:"primary",sourceText:""});
+ assert.equal(result.ok,true);
+ assert.deepEqual(s.draft.columnFormats,{});
+ assert.equal(s.draft.matrix[0][0],"12.5");
 });
 test("summary derived statistics have independent precision; n stays an integer",()=>{
  const s=summary();let model=analyzeTable(s.draft).model;
