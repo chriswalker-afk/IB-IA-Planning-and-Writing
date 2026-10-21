@@ -4,7 +4,7 @@
  * All coordinates are derived from explicit student calibration, not guessed.
  */
 import {escapeGraph} from "./graph-core.js";
-import {svgDiagramText} from "./diagram-notation.js";
+import {svgDiagramText,diagramSafeExcerpt} from "./diagram-notation.js";
 export const MAX_TRACE_POINTS=180,MAX_TRACE_FIGURES=6,MAX_IMAGE_CHARS=245000;
 const str=(x,n=150)=>typeof x==="string"?x.slice(0,n):"";
 const finite=x=>typeof x==="number"&&Number.isFinite(x);
@@ -226,7 +226,7 @@ export function renderCleanTraceSvg(raw){
  const X=n=>plot.x+(n-bounds[0])/(bounds[1]-bounds[0])*plot.width;
  const Y=n=>plot.y+plot.height-(n-bounds[2])/(bounds[3]-bounds[2])*plot.height;
  let out='<svg xmlns="http://www.w3.org/2000/svg" class="image-trace-svg" role="img" aria-label="'+esc(d.title||"Coordinate plot")+'" viewBox="0 0 '+W+' '+H+'"><rect width="'+W+'" height="'+H+'" fill="#fff"/>';
- out+=svgDiagramText((d.title||"Coordinates from a photograph").slice(0,95),W/2,43,
+ out+=svgDiagramText(diagramSafeExcerpt(d.title||"Coordinates from a photograph",95),W/2,43,
   'text-anchor="middle" font-family="Arial,sans-serif" font-weight="700" font-size="21" fill="#264951"',{maxWidth:860});
  out+='<rect x="'+plot.x+'" y="'+plot.y+'" width="'+plot.width+'" height="'+plot.height+'" fill="#fcfdfd" stroke="#aebec6"/>';
  const t=neatStep(bounds[1]-bounds[0]);
@@ -260,7 +260,7 @@ export function renderCleanTraceSvg(raw){
   'text-anchor="middle" font-family="Arial,sans-serif" font-weight="700" font-size="17" fill="#264951"',{maxWidth:750});
  out+=svgDiagramText((d.yLabel||"y")+unit,36,plot.y+plot.height/2,
   'transform="rotate(-90 36 '+(plot.y+plot.height/2)+')" text-anchor="middle" font-family="Arial,sans-serif" font-weight="700" font-size="17" fill="#264951"',{maxWidth:390});
- if(d.caption.trim())out+=svgDiagramText(d.caption.slice(0,130),W/2,608,
+ if(d.caption.trim())out+=svgDiagramText(diagramSafeExcerpt(d.caption,130),W/2,608,
   'font-size="12" font-family="Arial,sans-serif" fill="#405d65" text-anchor="middle"',{maxWidth:860});
  out+='<text x="'+W/2+'" y="630" font-size="11" font-family="Arial,sans-serif" fill="#566d72" text-anchor="middle">Coordinates obtained by marking points on an image; calibration and perspective determine accuracy.</text></svg>';
  return out;
@@ -277,7 +277,7 @@ export function renderPrintableTraceSvg(d,mode=d.view){
  const body=inner.slice(start,end);
  return '<svg xmlns="http://www.w3.org/2000/svg" role="img" viewBox="0 0 '+w+' '+h+'" width="'+w+'" height="'+h+'">'+
   '<rect width="'+w+'" height="'+h+'" fill="#fff"/>'+
-  svgDiagramText((d.title||"Image coordinate tracing").slice(0,100),w/2,40,
+  svgDiagramText(diagramSafeExcerpt(d.title||"Image coordinate tracing",100),w/2,40,
    'font-size="21" font-weight="700" text-anchor="middle" font-family="Arial,sans-serif" fill="#23444b"',{maxWidth:850})+
   '<svg x="'+px+'" y="'+py+'" width="'+tw+'" height="'+th+'" viewBox="0 0 '+width+' '+height+'">'+body+'</svg>'+
   svgDiagramText((d.xLabel||"x")+" and "+(d.yLabel||"y")+(d.unit?" measured in "+d.unit:"")+
@@ -285,7 +285,7 @@ export function renderPrintableTraceSvg(d,mode=d.view){
     'text-anchor="middle" font-size="13" font-family="Arial,sans-serif" fill="#345962"',{maxWidth:840})+
   svgDiagramText(d.sourceKind==="secondary"?(d.sourceCredit||"Source not supplied"):"Image: student's own photograph",w/2,660,
     'text-anchor="middle" font-size="11" font-family="Arial,sans-serif" fill="#647b7d"',{maxWidth:850})+
-  (d.caption.trim()?svgDiagramText(d.caption.slice(0,132),w/2,683,
+  (d.caption.trim()?svgDiagramText(diagramSafeExcerpt(d.caption,132),w/2,683,
     'text-anchor="middle" font-size="11" font-family="Arial,sans-serif" fill="#3c5963"',{maxWidth:850}):"")+
   '</svg>';
 }
