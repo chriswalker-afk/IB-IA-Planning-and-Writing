@@ -165,3 +165,15 @@
 .graph-residual-prompts ul{margin:8px 0 0;padding-left:18px}
 .graph-residual-prompts li{margin:4px 0}
 @media(max-width:650px){.graph-model-comparison{padding:10px}.graph-comparison-table :is(th,td){padding:8px 6px}.graph-residual-options{gap:10px}.graph-residual-panel .graph-buttons .btn{flex:1 1 125px}}
+
+/* Advanced model choices: the mathematics stays legible at every viewport. */
+.graph-model-card .graph-advanced-model-option{margin:10px 0;padding:11px 12px;border:1px solid #dce7e4;border-radius:10px;background:#f9fcfa}
+.graph-model-card .graph-advanced-model-option>span{font-size:11px}
+.graph-model-card .graph-advanced-model-option select{background:#fff;min-height:39px;line-height:1.45;white-space:normal}
+.graph-model-card .graph-advanced-model-option small{margin-top:3px;display:block;line-height:1.55;color:#58716a}
+.graph-model-caution{margin:8px 0;padding:9px 10px;border-radius:8px;background:#fcf7ea;border:1px solid #e8dcba;color:#6e5a31;font-size:10px;line-height:1.6}
+.graph-model-domain{font-size:10px;line-height:1.65;color:#4b7069;background:#f4f9f6;border-left:3px solid #70a994;padding:8px 10px;margin:9px 0}
+.graph-model-add optgroup{font-style:normal;font-weight:700;color:#315e55}
+.graph-model-add option{font-weight:400;color:#203f45}
+.graph-comparison-fit-method{display:block;font-size:9px;line-height:1.45;font-weight:400;color:#617878;margin-top:4px}
+@media(max-width:650px){.graph-model-card .graph-advanced-model-option{padding:9px}.graph-model-add select{min-height:42px}}

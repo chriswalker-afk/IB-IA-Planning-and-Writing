@@ -26,9 +26,9 @@ const GRAPH_ROUTE_HINTS={
  groups:"Start with a comparable distribution or group chart. The scatter/time/function plotter may not be the right display for your first step.",
  categorical:"This question usually benefits from a two-way summary table or a comparison of proportions, not a numerical scatter plot.",
  variation:"A distribution or box plot may reveal variation better than a connected line. Those diagrams are now available in Statistical Diagrams.",
- "fitted-models":"If a model is derived theoretically, plot it as a function; if fitted from measurements, first inspect actual points.",
- growth:"A chronological plot can help you compare changes between equal time intervals before choosing a growth model.",
- cycles:"Plot a sufficiently long time series before deciding whether a sinusoidal function makes sense.",
+ "fitted-models":"Compare data with a theoretical model or choose a regression family explicitly. Transformed least squares and original-scale least squares can produce different coefficients.",
+ growth:"A chronological plot can suggest exponential or power relationships. Check whether positivity restrictions and the chosen fitting objective match your measurement process.",
+ cycles:"Only try sinusoidal fitting if cycles seem plausible. A period inferred from a short series is uncertain; consider supplying an independently measured period.",
  trajectories:"Position-versus-time or coordinate measurements can be plotted. Use Image & Coordinate Tracer for calibrated coordinates.",
  optimisation:"A function graph over the feasible domain can illustrate candidate extrema; the graph alone is not proof of the optimum.",
  images:"Use Image & Coordinate Tracer for calibration and tracing.",
@@ -75,8 +75,40 @@ export function renderGraphModelSummary(model,e){
   (diagnostics.r2Note?'<small>'+e(diagnostics.r2Note)+'</small>':'');
  return visibility+'<p class="graph-model-equation">'+e(model.equation)+'</p>'+
   '<p class="graph-model-method">'+e(model.method)+' · '+model.n+' observations</p>'+
-  statistics+'<small>'+e(model.note)+'</small>';
+  statistics+(model.caution?'<p class="graph-model-caution">'+e(model.caution)+'</p>':'')+
+  '<small>'+e(model.note)+'</small>';
 }
+const graphModelOptions=(choice,e)=>{
+ const group=items=>items.map(([id,name])=>'<option value="'+e(id)+'"'+(id===choice?" selected":"")+'>'+e(name)+'</option>').join("");
+ return '<label class="graph-form-field"><span>Choose a model to try</span><select data-graph-field="modelChoice">'+
+  '<optgroup label="Everyday modelling">'+group([
+   ["linear","Linear regression (least squares)"],["quadratic","Quadratic regression (least squares)"],
+   ["custom","My own equation (no regression)"]])+'</optgroup>'+
+  '<optgroup label="More advanced modelling">'+group([
+   ["exponential","Exponential (positive y)"],["logarithmic","Logarithmic (positive x)"],
+   ["power","Power (positive x and y)"],["cubic","Cubic (four coefficients)"],
+   ["sinusoidal","Sinusoidal (cycles and period)"]])+'</optgroup></select></label>';
+};
+const advancedGraphModelOptions=(model,e)=>{
+ if(["exponential","power"].includes(model.type)){
+  return '<label class="graph-form-field graph-advanced-model-option"><span>Which errors should the regression minimise?</span>'+
+   '<select data-graph-model-method="'+e(model.id)+'">'+
+    '<option value="transformed"'+(model.fitMethod==="transformed"?" selected":"")+'>'+
+     'Log-transformed: minimise squared errors in ln(y)</option>'+
+    '<option value="original"'+(model.fitMethod==="original"?" selected":"")+'>'+
+     'Original scale: minimise squared errors in y</option></select>'+
+   '<small>These methods can give different coefficients. RMSE and R² below always use the original y-values. Record your choice when writing your IA.</small></label>';
+ }
+ if(model.type==="sinusoidal"){
+  return '<label class="graph-form-field graph-advanced-model-option"><span>Known or estimated period (optional, in x-units)</span>'+
+   '<input type="text" inputmode="decimal" autocomplete="off" data-graph-model-period="'+e(model.id)+'" value="'+e(model.period||'')+
+    '" maxlength="36" placeholder="Leave blank to explore possible periods"/>'+
+   '<small>Enter a positive period if justified by context or observations. Otherwise Pathfinder searches for a candidate period; it cannot prove the data are periodic. Sine phase uses radians.</small></label>';
+ }
+ if(model.type==="logarithmic")return '<p class="graph-model-domain">Requires x &gt; 0. Fits the original y-values against ln(x) using least squares.</p>';
+ if(model.type==="cubic")return '<p class="graph-model-domain">Four coefficients can follow noisy data closely. Check the residuals and justify the extra complexity.</p>';
+ return '';
+};
 export function renderGraphModelControls(d,analysis,icon,e){
  const models=analysis.models||[],choice=GRAPH_MODEL_TYPES[d.modelChoice]?d.modelChoice:"linear";
  const full=models.length>=MAX_GRAPH_MODELS;
@@ -90,14 +122,13 @@ export function renderGraphModelControls(d,analysis,icon,e){
    (model.type==="custom"?'<label class="graph-form-field graph-model-input"><span>Equation y = f(x)</span>'+
     '<input type="text" data-graph-model-expression="'+e(model.id)+'" value="'+e(model.expression)+'" maxlength="180" autocomplete="off" placeholder="e.g. 2*x^2 - 3*x + 1">'+
     '<small>Enter a model you calculated yourself. Use x, ^ and *; functions such as sin(x) are allowed. Nothing is fitted for you.</small></label>':'')+
+   advancedGraphModelOptions(model,e)+
    '<div class="graph-model-summary" data-graph-model-summary="'+e(model.id)+'">'+renderGraphModelSummary(model,e)+'</div>'+
    '</article>').join("");
  return '<section class="graph-control-card graph-model-explorer" data-graph-section="models" aria-label="Optional regression and model overlays">'+
   '<h3><span>2</span> Explore a model <small>Optional</small></h3>'+
-  '<p>Inspect your observations first. If your question calls for a mathematical model, choose one explicitly. Regression uses ordinary least squares and updates when measurements change; a fitted curve does not prove the relationship is appropriate.</p>'+
-  '<div class="graph-model-add">'+pick("modelChoice","Choose a model to try",choice,[
-    ["linear","Linear regression (least squares)"],["quadratic","Quadratic regression (least squares)"],
-    ["custom","My own equation (no automatic fitting)"]],e)+
+  '<p>Inspect your observations before choosing an appropriate model. All fitting is optional, and not every regression minimises the same kind of error. The mathematical method and its restrictions appear beside each model.</p>'+
+  '<div class="graph-model-add">'+graphModelOptions(choice,e)+
     '<button type="button" class="btn btn-secondary btn-sm" data-action="graph-model-add"'+(full?' disabled title="Remove a model before adding another."':'')+'>'+
     icon("plus-circle")+' Add model</button></div>'+
   '<div class="graph-model-list" data-graph-model-list>'+

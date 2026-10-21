@@ -43,7 +43,7 @@ import {toggleConclusionResult} from "./src/completing/conclusion-workspace.js";
 import {newGraphDraft,saveGraphFigure,renderGraphSvg,graphData,splitHeading,analyseGraph} from "./src/diagrams/graph-core.js";
 import {renderGraphQuality,renderGraphActions,graphSourceChoices,renderGraphModelSummary} from "./src/diagrams/graph-view.js";
 import {renderModelComparison,renderResidualPanelContents} from "./src/diagrams/graph-diagnostics-view.js";
-import {updateGraphField,chooseGraphType,importGraphTable,loadSavedGraph,freshGraph,saveAndLinkGraph,saveGraphDraft,addGraphModel,toggleGraphModel,removeGraphModel,updateGraphModelExpression} from "./src/diagrams/graph-actions.js";
+import {updateGraphField,chooseGraphType,importGraphTable,loadSavedGraph,freshGraph,saveAndLinkGraph,saveGraphDraft,addGraphModel,toggleGraphModel,removeGraphModel,updateGraphModelExpression,updateGraphModelOption} from "./src/diagrams/graph-actions.js";
 import {exportGraphFigure} from "./src/diagrams/graph-export.js";
 import {imageTraceChecks,renderTraceOverlaySvg,renderCleanTraceSvg,traceCoordinates,traceCalibration} from "./src/diagrams/image-tracer-core.js";
 import {renderImageTracer,tracePreviewHtml,traceWorkingHtml,traceQualityHtml,traceOutputHtml} from "./src/diagrams/image-tracer-view.js";
@@ -2520,6 +2520,18 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       }
       return;
     }
+    if(target.dataset.graphModelPeriod!==undefined){
+      if(updateGraphModelOption(state.graphStudio,target.dataset.graphModelPeriod,"period",target.value)){
+        save();refreshGraphPreview();
+      }
+      return;
+    }
+    if(target.dataset.graphModelMethod!==undefined){
+      if(updateGraphModelOption(state.graphStudio,target.dataset.graphModelMethod,"fitMethod",target.value)){
+        save();refreshGraphPreview();
+      }
+      return;
+    }
     if(target.dataset.graphModelExpression!==undefined){
       if(updateGraphModelExpression(state.graphStudio,target.dataset.graphModelExpression,target.value)){
         save();refreshGraphPreview();
@@ -2685,6 +2697,19 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         if(target.tagName==="SELECT"||target.type==="checkbox"){
           const previous=captureReturn(target);render();restoreReturn(previous);
         }else refreshTracePreview();
+      }
+      return;
+    }
+    if(target.dataset.graphModelMethod!==undefined){
+      if(updateGraphModelOption(state.graphStudio,target.dataset.graphModelMethod,"fitMethod",target.value)){
+        save();
+        const position=captureReturn(target);render();restoreReturn(position);
+      }
+      return;
+    }
+    if(target.dataset.graphModelPeriod!==undefined){
+      if(updateGraphModelOption(state.graphStudio,target.dataset.graphModelPeriod,"period",target.value)){
+        save();refreshGraphPreview();
       }
       return;
     }
