@@ -133,7 +133,7 @@ function graphModelSnapshotControls(d,e){
  return '<div class="ia-table-model-snapshot" data-table-model-snapshot>'+
   '<strong>Copied from Graph Plotter: '+e(snap.modelLabel)+'</strong>'+
   '<p>Graph: '+e(snap.graphTitle||"Untitled graph")+' · '+snap.rows.length+' original paired source rows.</p>'+
-  '<p class="ia-table-model-snapshot-equation">'+e(snap.equation)+'</p>'+
+  '<p class="ia-table-model-snapshot-equation"><span>Graph equation (rounded for display):</span> '+e(snap.equation)+'</p>'+
   '<small>'+e(snap.method)+'</small>'+
   '<details><summary>Full-precision model parameters and provenance</summary>'+
    (param||parameters?param+parameters:
