@@ -7,6 +7,8 @@ import {dotPlacement} from "./distribution-analysis.js";
 const W=960,H=630,LEFT=119,RIGHT=47,TOP=102,PH=394,PW=W-LEFT-RIGHT;
 const E=escapeGraph;
 const fmt=(v,d=3)=>Number(v.toFixed(d)).toString();
+// Significant figures preserve truthful axes for very small and very large measurements.
+const axisTick=value=>Number(value.toPrecision(6)).toString();
 const number=x=>typeof x==="number"&&Number.isFinite(x);
 function tickStep(span,target=6){
  if(!number(span)||span<=0)return 1;
@@ -48,7 +50,7 @@ function horizontalNumeric(parts,low,high,label,grid=true,plotHeight=PH,canvasHe
   const px=X(t);
   if(grid)parts.push(line(px,TOP,px,TOP+plotHeight,'stroke="#e1eaed" stroke-width="1"'));
   parts.push(line(px,TOP+plotHeight,px,TOP+plotHeight+6,'stroke="#38535e" stroke-width="1.5"'));
-  parts.push(tag(fmt(t,6),px,TOP+plotHeight+26,'font-family="Arial,sans-serif" font-size="12" fill="#36515e" text-anchor="middle"'));
+  parts.push(tag(axisTick(t),px,TOP+plotHeight+26,'font-family="Arial,sans-serif" font-size="12" fill="#36515e" text-anchor="middle"'));
  }
  parts.push(tag(label,LEFT+PW/2,labelY??canvasHeight-86,'font-family="Arial,sans-serif" font-size="17" font-weight="700" fill="#294956" text-anchor="middle"',PW-40));
  return X;
@@ -60,7 +62,7 @@ function verticalNumeric(parts,max,label,grid=true){
   const py=Y(t);
   if(grid)parts.push(line(LEFT,py,LEFT+PW,py,'stroke="#e1eaed" stroke-width="1"'));
   parts.push(line(LEFT-6,py,LEFT,py,'stroke="#38535e" stroke-width="1.5"'));
-  parts.push(tag(fmt(t,6),LEFT-12,py+4,'font-family="Arial,sans-serif" font-size="12" fill="#36515e" text-anchor="end"'));
+  parts.push(tag(axisTick(t),LEFT-12,py+4,'font-family="Arial,sans-serif" font-size="12" fill="#36515e" text-anchor="end"'));
  }
  parts.push(tag(label,37,TOP+PH/2,'transform="rotate(-90 37 '+(TOP+PH/2)+')" font-family="Arial,sans-serif" font-size="17" font-weight="700" fill="#294956" text-anchor="middle"',PH-30));
  return Y;
