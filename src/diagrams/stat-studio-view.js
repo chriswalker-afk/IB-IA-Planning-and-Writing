@@ -7,6 +7,7 @@ import {renderStatSvg} from "./stat-studio-render.js";
 import {escapeGraph} from "./graph-core.js";
 import {diagramNotationControls} from "./diagram-notation.js";
 import {BOX_OUTLIER_METHODS,BOX_Z_CUTOFFS,formatBoxNumber} from "./box-analysis.js";
+import {statReadingGuide} from "./stat-reading-guide.js";
 const ROUTES={
  groups:"Comparing groups: begin with comparative box plots when you have numerical measurements, or grouped bars for counts in discrete categories.",
  variation:"Distribution and spread: histograms show shape and frequency density; box plots emphasise median, quartiles and outliers.",
@@ -143,6 +144,19 @@ export function statSummaryHtml(studio,icon,e){
    d.barStyle==="stacked"?"Stacked sections show original counts, and the bar height is the combined category count.":
    d.barMode==="percent"?"Percentages use each group's total across categories as denominator.":"All displayed heights are observed counts.")+'</p>';
 }
+export function statReadingGuideHtml(studio,icon,e){
+ const guide=statReadingGuide(studio.draft);
+ return '<section class="stat-reading-guide" data-stat-reading-guide aria-label="Read and interpret your statistical diagram">'+
+  '<div class="stat-reading-head"><strong>'+icon("book-open")+' From diagram to mathematical explanation</strong>'+
+  '<small>Observations from your data, prompts for your own IA writing</small></div>'+
+  '<div class="stat-reading-steps">'+
+  '<div><span class="stat-reading-step">1 · Read</span><p>'+e(guide.observation)+'</p></div>'+
+  '<div><span class="stat-reading-step">2 · Interpret</span><p>'+e(guide.question)+'</p></div>'+
+  '<div><span class="stat-reading-step">3 · Evaluate</span><p>'+e(guide.caution)+'</p></div>'+
+  '</div>'+
+  '<p class="stat-reading-foot">Use your own aim, units, evidence and any limitations. No result or conclusion is added to your IA automatically.</p>'+
+ '</section>';
+}
 export function statPreviewHtml(studio,icon,e){
  return '<section class="stat-preview" data-stat-preview><div class="stat-preview-heading"><strong>Live diagram preview</strong><small>Readable at IA page width</small></div>'+
  '<div class="stat-figure-frame">'+renderStatSvg(studio.draft)+'</div>'+
@@ -163,7 +177,7 @@ export function statOutputHtml(studio,icon,e){
  return '<button type="button" class="btn btn-primary" data-action="stat-use"'+disabled+'>'+icon("check-circle")+' Save and link to my first mathematics</button>'+
  (["histogram","ogive","polygon"].includes(q.draft.kind)?'<div class="stat-table-transfer"><button type="button" class="btn btn-secondary btn-sm" data-action="stat-to-table"'+disabled+
  '>'+icon("table")+' Create matching grouped-frequency table</button>'+
- '<small>Copies the original measurements or grouped classes, preserving your exact histogram boundaries. No saved table is overwritten.</small></div>':"")+
+ '<small>Copies the source measurements or grouped classes and their boundaries without altering either saved generator.</small></div>':"")+
  '<div class="stat-output-buttons">'+
  '<button type="button" class="btn btn-secondary btn-sm" data-action="stat-save"'+disabled+'>'+icon("layers")+' Save draft</button>'+
  '<button type="button" class="btn btn-secondary btn-sm" data-action="stat-copy"'+disabled+'>'+icon("copy")+' Copy PNG</button>'+
@@ -312,6 +326,7 @@ export function renderStatStudio(state,icon,e){
  '<button type="button" class="btn btn-quiet btn-sm" data-action="stat-reset-scale">Reset limits to automatic</button>'+
  '</section></div>'+
  '<div class="stat-preview-stack">'+statPreviewHtml(studio,icon,e)+
+ statReadingGuideHtml(studio,icon,e)+
  '<section class="stat-summary-card" data-stat-summary><h3>Compact numerical summary</h3>'+statSummaryHtml(studio,icon,e)+'</section>'+
  '<section class="stat-quality-card" data-stat-quality>'+statQualityHtml(studio,icon,e)+'</section>'+
  renderPresentationCoach(state,"stat",d,icon,e)+
