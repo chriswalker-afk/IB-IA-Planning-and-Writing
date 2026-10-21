@@ -67,7 +67,7 @@ def data_graph(page,width):
  assert page.locator('[data-graph-preview] .graph-model-overlay').count()==0
  page.locator('[data-action="graph-model-add"]').click()
  assert page.locator('[data-graph-preview] .graph-model-overlay').count()==1
- assert "Linear regression" in page.locator('[data-graph-model-summary]').first.inner_text()
+ assert "Linear regression" in page.locator('[data-graph-model]').first.inner_text()
  assert "y ≈" in page.locator('[data-graph-model-summary]').first.inner_text()
  page.locator('[data-graph-field="modelChoice"]').select_option("quadratic")
  page.locator('[data-action="graph-model-add"]').click()
