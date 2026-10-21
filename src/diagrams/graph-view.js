@@ -198,9 +198,16 @@ export function renderGraphStudio(state,icon,e){
   field("xMax","x maximum",d.xMax,e,{placeholder:d.kind==="function"?"10":"Auto"})+
   field("yMin","y minimum",d.yMin,e,{placeholder:"Auto"})+
   field("yMax","y maximum",d.yMax,e,{placeholder:"Auto"})+'</div>'+
-  '<div class="graph-legend-options">'+check("showLegend","Show key / legend (independent of fitted curves)",d.showLegend)+
-  pick("legendPosition","Key location",d.legendPosition,[["below","Below graph (recommended)"],["above","Above graph"],["right","Right of graph"]],e)+
-  '<small>Hide or move the key without removing any regression lines. The exported graph uses this setting.</small></div>'+
+  (d.kind!=="function"?'<div class="graph-legend-options">'+
+   check("showLegend","Show key / legend",d.showLegend)+
+   pick("legendPosition","Key location",d.legendPosition,[["below","Below graph (recommended)"],["above","Above graph"],["right","Right of graph"]],e)+
+   pick("equationPlacement","Where should fitted equations appear?",d.equationPlacement,[
+    ["legend","Inside the key"],["annotation","In a separate box below the graph"],["hidden","Do not show equations"]
+   ],e)+
+   '<small>These presentation choices never hide or remove a regression curve. The equation box only includes models that are currently visible.</small>'+
+   (d.equationPlacement==="legend"&&!d.showLegend?
+     '<small class="graph-legend-hint">Your key is hidden, so its equations are hidden too. Select a separate box to show equations without the key.</small>':"")+
+   '</div>':"")+
   '<div class="graph-checks">'+check("showGrid","Show light grid lines",d.showGrid)+
    (d.kind==="time"?check("showPoints","Show observed points",d.showPoints):"")+
    (d.kind!=="function"?check("includeZeroY","Include zero on vertical axis",d.includeZeroY):"")+'</div>'+
