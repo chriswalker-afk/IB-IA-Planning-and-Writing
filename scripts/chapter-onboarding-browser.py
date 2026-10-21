@@ -831,10 +831,10 @@ def reduced_writing(browser,width):
     if node!="C60":
      refs=main.locator('[data-reduced-saved-context]')
      assert refs.count()==1 and not refs.evaluate("(el)=>el.open"),(node,width,'saved ideas must start collapsed')
-     refs.locator("summary").click()
+     refs.locator(":scope > summary").click()
      assert refs.evaluate("(el)=>el.open"),(node,width,'saved ideas cannot be opened')
      if node=="C20":assert refs.locator('[data-first-maths-context]').count()==1
-     refs.locator("summary").click()
+     refs.locator(":scope > summary").click()
    else:
     assert main.locator('.writer-guide-field-bubble:visible').count()>=1
    without_overflow(page)
