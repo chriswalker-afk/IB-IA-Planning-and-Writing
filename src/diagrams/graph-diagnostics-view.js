@@ -22,7 +22,8 @@ export function renderModelComparison(d,analysis,e){
   const metric=ok?metricText(stats.rmse):"—";
   const r2=ok?(stats.r2===null?"Undefined":metricText(stats.r2)):"—";
   const status=!m.visible?" (hidden)":"";
-  return '<tr><th scope="row"><span class="graph-comparison-marker" style="background:'+m.color+'"></span>'+e(m.label+status)+'</th>'+
+  return '<tr><th scope="row"><span class="graph-comparison-marker" style="background:'+m.color+'"></span>'+e(m.label+status)+
+   (ok?'<small class="graph-comparison-fit-method">'+e(m.method)+'</small>':'')+'</th>'+
    '<td>'+e(metric)+'</td><td>'+e(r2)+'</td><td>'+e(String(ok?stats.n:"—"))+'</td></tr>'+
    (!ok?'<tr class="graph-comparison-explainer"><td colspan="4">'+e(stats.reason||m.error||"Model diagnostics unavailable.")+'</td></tr>':"");
  }).join("");
@@ -33,7 +34,7 @@ export function renderModelComparison(d,analysis,e){
    '<caption>In-sample model errors for your selected dataset</caption>'+
    '<thead><tr><th scope="col">Model</th><th scope="col">RMSE'+(unit?" ("+e(unit)+")":"")+'</th><th scope="col">R²</th><th scope="col">n</th></tr></thead>'+
    '<tbody>'+rows+'</tbody></table></div>'+
-  '<p class="graph-comparison-caution"><strong>How to judge:</strong> Lower RMSE means smaller errors in the original y-units. R² describes variation explained relative to a constant-mean baseline; it may be negative for a student-entered model and is undefined if every y-value is equal. More parameters can improve in-sample fit without improving usefulness. Neither statistic establishes causation or chooses the best model.</p>'+
+  '<p class="graph-comparison-caution"><strong>How to judge:</strong> Lower RMSE means smaller errors in the original y-units, even when a regression was fitted to ln(y). R² describes variation explained relative to a constant-mean baseline; it may be negative for a student-entered model and is undefined if every y-value is equal. More parameters can improve in-sample fit without improving usefulness. Neither statistic establishes causation or chooses the best model.</p>'+
   '<p class="graph-comparison-question">Which model is justified by the context, shape of the residuals, and mathematical complexity—not just the largest R²?</p>'+
   '</section>';
 }
