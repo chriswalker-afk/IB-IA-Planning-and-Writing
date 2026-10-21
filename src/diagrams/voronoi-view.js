@@ -4,6 +4,7 @@ import {renderPresentationCoach,renderFigureHandover} from "./presentation-coach
 import {analyzeVoronoi,MAX_VORONOI_FIGURES} from "./voronoi-core.js";
 import {renderVoronoiSvg} from "./voronoi-render.js";
 import {originalVoronoiDraft,voronoiInspection,voronoiComparison} from "./voronoi-interactions.js";
+import {diagramNotationControls,diagramHtmlMath,diagramUnitPower} from "./diagram-notation.js";
 const opt=(value,label,selected,e)=>'<option value="'+e(value)+'"'+(String(value)===String(selected)?" selected":"")+'>'+e(label)+'</option>';
 const select=(key,name,value,options,e)=>'<label class="voronoi-field"><span>'+e(name)+'</span><select data-voronoi-field="'+key+'">'+
  options.map(([v,l])=>opt(v,l,value,e)).join("")+'</select></label>';
@@ -11,7 +12,8 @@ const field=(key,label,value,e,{placeholder="",rows=0,hint=""}={})=>
  '<label class="voronoi-field"><span>'+e(label)+'</span>'+
  (rows?'<textarea data-voronoi-field="'+key+'" rows="'+rows+'" placeholder="'+e(placeholder)+'">'+e(value)+'</textarea>':
   '<input type="text" data-voronoi-field="'+key+'" value="'+e(value)+'" placeholder="'+e(placeholder)+'" autocomplete="off">')+
- (hint?'<small>'+e(hint)+'</small>':"")+'</label>';
+ (hint?'<small>'+e(hint)+'</small>':"")+'</label>'+
+ (["title","xLabel","yLabel","unit","note","addName"].includes(key)?diagramNotationControls(e,{studio:"voronoi",key}):"");
 const check=(key,label,checked)=>'<label class="voronoi-check"><input type="checkbox" data-voronoi-field="'+key+'"'+(checked?" checked":"")+'><span>'+label+'</span></label>';
 const section=(n,title,description,html)=>
  '<section class="voronoi-panel"'+(n==="1"?' data-representation-step="create"':n==="2"?' data-representation-step="refine"':"")+'><h3><span class="voronoi-step">'+n+'</span>'+title+'</h3>'+
@@ -155,8 +157,9 @@ function siteEditor(studio,e,icon){
   return '<div class="voronoi-site-row'+(studio.selectedSiteId===site.id?" selected":"")+'">'+
   '<button type="button" class="voronoi-site-select" data-action="voronoi-select-site" data-site-index="'+i+
    '" aria-label="Select '+e(site.name)+'">'+icon("eye")+'</button>'+
-  '<label><span>Name</span><input type="text"'+locked+' data-voronoi-site="'+i+
+  '<div class="voronoi-site-name-editor"><label><span>Name</span><input type="text"'+locked+' data-voronoi-site="'+i+
    '" data-voronoi-site-key="name" value="'+e(site.name)+'" aria-label="Site '+(i+1)+' name"></label>'+
+   (locked?"":diagramNotationControls(e,{studio:"voronoi",siteIndex:i}))+'</div>'+
   '<label><span>x</span><input type="number" step="any"'+locked+' data-voronoi-site="'+i+
    '" data-voronoi-site-key="x" value="'+(site.x??"")+'" aria-label="Site '+(i+1)+' x coordinate"></label>'+
   '<label><span>y</span><input type="number" step="any"'+locked+' data-voronoi-site="'+i+
