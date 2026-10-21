@@ -6,6 +6,7 @@ import {STAT_TYPES,statAnalysis,MAX_STAT_FIGURES} from "./stat-studio-core.js";
 import {renderStatSvg} from "./stat-studio-render.js";
 import {escapeGraph} from "./graph-core.js";
 import {diagramNotationControls} from "./diagram-notation.js";
+import {BOX_OUTLIER_METHODS,BOX_Z_CUTOFFS,formatBoxNumber} from "./box-analysis.js";
 const ROUTES={
  groups:"Comparing groups: begin with comparative box plots when you have numerical measurements, or grouped bars for counts in discrete categories.",
  variation:"Distribution and spread: histograms show shape and frequency density; box plots emphasise median, quartiles and outliers.",
@@ -46,11 +47,54 @@ export function statSummaryHtml(studio,icon,e){
    '<p class="stat-summary-note">Frequency density = frequency ÷ width. The area of each bar therefore represents its frequency.</p>';
  }
  if(d.kind==="box"||d.kind==="dot"){
-  const series=r.series||[];
-  return '<div class="stat-summary-rows">'+series.slice(0,5).map(s=>'<div class="stat-summary-row"><strong>'+e(s.name)+'</strong><span>n = '+s.values.length+
-   (d.kind==="box"&&s.box?" · Median "+s.box.median.toPrecision(4)+" · IQR "+s.box.iqr.toPrecision(4)+" · "+s.box.outliers.length+" possible outlier(s)":"")+
-   '</span></div>').join("")+'</div>'+
-   (d.kind==="box"?'<p class="stat-summary-note">Quartiles: '+(d.quartileRule==="halves"?"median of lower and upper halves (exclude the middle for odd n)":"linear interpolation, index (n − 1)p")+'.</p>':"");
+  const series=r.series||[],num=v=>formatBoxNumber(v,d.boxPrecision);
+  const rows='<div class="stat-summary-rows">'+series.slice(0,5).map(s=>
+   '<div class="stat-summary-row"><strong>'+e(s.name)+'</strong><span>n = '+s.values.length+
+   (d.kind==="box"&&s.box?' · Median '+num(s.box.median)+' · IQR '+num(s.box.iqr)+
+    ' · '+s.box.outliers.length+' flagged':'')+'</span></div>').join("")+'</div>';
+  if(d.kind!=="box")return rows;
+  const method={
+   tukey:"1.5 × IQR",extreme:"3 × IQR",zscore:"Z-score",modified:"Modified Z-score",
+   none:"No outlier classification",minmax:"No classification (legacy min–max)"
+  }[d.outlierRule];
+  const detail=series.map(s=>{
+   const b=s.box;if(!b)return "";
+   const entries=[
+    ["n",String(b.n)],["Minimum",num(b.min)],["Q1",num(b.q1)],
+    ["Median",num(b.median)],["Q3",num(b.q3)],["Maximum",num(b.max)],
+    ["IQR = Q3 − Q1",num(b.iqr)],["Mean",num(b.mean)],
+    ["Sample SD",num(b.sd)],["MAD",num(b.mad)],
+    ["Lower whisker",num(b.lowWhisker)],["Upper whisker",num(b.highWhisker)]
+   ];
+   if(b.limits)entries.push(["Lower threshold",num(b.limits[0])],["Upper threshold",num(b.limits[1])]);
+   const extra=b.outlierMethod==="tukey"||b.outlierMethod==="extreme"?
+    'Fences = Q1 − '+b.threshold+' × IQR and Q3 + '+b.threshold+' × IQR.':
+    b.outlierMethod==="zscore"?'Z = (x − mean) / sample SD. Flag |Z| > '+b.zThreshold+'.':
+    b.outlierMethod==="modified"?'Modified Z = 0.6745(x − median) / MAD. Flag |Z| > 3.5.':
+    'No numerical outlier thresholds requested.';
+   return '<section class="stat-analysis-group"><h4>'+e(s.name)+'</h4>'+
+    '<div class="stat-analysis-metrics">'+entries.map(([k,v])=>
+     '<span>'+e(k)+'</span><strong>'+e(v)+'</strong>').join("")+'</div>'+
+    '<p>'+e(extra)+'</p>'+
+    (b.methodNote?'<p class="stat-analysis-warning">'+e(b.methodNote)+'</p>':'')+
+    '<p><strong>'+b.outliers.length+' flagged observation(s):</strong> '+
+    (b.flagged.length?e(b.flagged.map(f=>num(f.value)+(f.score===null?'':' (score '+num(f.score)+')')).join(', ')):
+     'None under the chosen rule')+'</p></section>';
+  }).join("");
+  const comparisons=r.comparisons||[];
+  return rows+'<p class="stat-summary-note">Quartiles: '+
+   (d.quartileRule==="halves"?"median of lower and upper halves (middle omitted for odd n)":
+    "linear interpolation at position (n − 1)p")+'. Outlier rule: '+e(method)+'.</p>'+
+   '<details class="stat-analysis-detail"><summary>Show calculations, thresholds and compared groups</summary>'+
+   '<p class="stat-analysis-intro">These are descriptive calculations from every imported observation. A flagged value is not automatically an error or a value to delete.</p>'+
+   detail+(comparisons.length?'<section class="stat-analysis-group"><h4>Comparing groups</h4>'+
+    '<p>Differences are second group minus first group, using the original measurement units. They are not significance tests.</p>'+
+    '<div class="stat-analysis-scroll"><table class="stat-compare-table"><thead><tr><th>Groups (second − first)</th>'+
+    '<th>Median Δ</th><th>IQR Δ</th><th>Range Δ</th><th>Flagged Δ</th></tr></thead><tbody>'+
+    comparisons.map(x=>'<tr><td>'+e(x.second)+' − '+e(x.first)+'</td><td>'+num(x.medianDifference)+
+     '</td><td>'+num(x.iqrDifference)+'</td><td>'+num(x.rangeDifference)+'</td><td>'+
+     x.outlierDifference+'</td></tr>').join("")+'</tbody></table></div></section>':'')+
+   '</details>';
  }
  return '<div class="stat-summary-metrics"><div><strong>'+(r.categories?.length||0)+'</strong><span>Categories</span></div><div><strong>'+(r.names?.length||0)+'</strong><span>Groups</span></div></div>'+
   '<div class="stat-summary-rows">'+(r.names||[]).map((name,i)=>'<div class="stat-summary-row"><strong>'+e(name)+'</strong><span>n = '+(r.totals?.[i]||0)+'</span></div>').join("")+'</div>';
@@ -81,7 +125,7 @@ export function statOutputHtml(studio,icon,e){
  '<button type="button" class="btn btn-secondary btn-sm" data-action="stat-copy"'+disabled+'>'+icon("copy")+' Copy PNG</button>'+
  '<button type="button" class="btn btn-secondary btn-sm" data-action="stat-png"'+disabled+'>'+icon("download")+' PNG</button>'+
  '<button type="button" class="btn btn-secondary btn-sm" data-action="stat-svg"'+disabled+'>'+icon("download")+' SVG</button>'+
- '<button type="button" class="btn btn-secondary btn-sm" data-action="stat-csv"'+disabled+'>'+icon("table")+' Summary CSV</button></div>';
+ '<button type="button" class="btn btn-secondary btn-sm" data-action="stat-csv"'+disabled+'>'+icon("table")+' '+(q.draft.kind==="box"?"Calculations CSV":"Summary CSV")+'</button></div>';
 }
 function selectedControls(d,e){
  if(!d.columns.length)return '<p class="stat-placeholder-inline">Paste and read your source values first to select columns.</p>';
@@ -145,10 +189,16 @@ export function renderStatStudio(state,icon,e){
  (isHistogram&&d.histogramInput==="raw"?'<div class="stat-form-grid">'+
   field("binWidth","Class width (required)",d.binWidth,e,{placeholder:"e.g. 5",hint:"Choose an interpretable interval, not just the prettiest shape."})+
   field("binStart","First boundary (optional)",d.binStart,e,{placeholder:"Automatically aligned"})+'</div>':"")+
- (d.kind==="box"?select("quartileRule","Which quartile convention?",d.quartileRule,[
-  ["halves","Median of lower and upper halves"],["linear","Linear interpolation: (n − 1)p"]],e)+
-  select("outlierRule","How should whiskers work?",d.outlierRule,[
-   ["tukey","1.5 × IQR: separate possible outliers"],["minmax","Minimum and maximum (no outlier rule)"]],e):"")+
+ (d.kind==="box"?'<div class="stat-box-methods"><h4>Quartiles and possible outliers</h4>'+
+  select("quartileRule","Which quartile convention?",d.quartileRule,[
+   ["halves","Median of lower and upper halves"],["linear","Linear interpolation: (n − 1)p"]],e)+
+  select("outlierRule","How should possible outliers be identified?",d.outlierRule,BOX_OUTLIER_METHODS,e)+
+  (d.outlierRule==="zscore"?select("zThreshold","Flag absolute Z-score greater than",d.zThreshold,
+   BOX_Z_CUTOFFS.map(n=>[n,n]),e):"")+
+  select("whiskerMode","Where should the whiskers end?",d.whiskerMode,[
+   ["nonoutlier","Most extreme observations not flagged"],
+   ["minmax","Actual minimum and maximum (retain full range)"]],e)+
+  '<p class="stat-method-help">The outlier rule only flags possible unusual observations. It never removes measurements. Whisker ends can be chosen independently.</p></div>':"")+
  (d.kind==="bar"?select("barMode","How do you want to compare groups?",d.barMode,[
   ["count","Compare actual counts"],["percent","Percent of each group's total"]],e):"")+
  '</section>'+
@@ -169,7 +219,20 @@ export function renderStatStudio(state,icon,e){
  '<div class="stat-form-grid">'+field("min",d.kind==="bar"?"Frequency minimum (0)":"Horizontal minimum",d.min,e,{placeholder:"Automatic"})+
  field("max",d.kind==="bar"?"Frequency maximum":"Horizontal maximum",d.max,e,{placeholder:"Automatic"})+'</div>'+
  checkbox("showGrid","Use light grid lines",d.showGrid)+checkbox("showLabels","Show figure labels where space permits",d.showLabels)+
- (d.kind==="box"?checkbox("showOutliers","Show possible outlier points",d.showOutliers):"")+
+ (d.kind==="box"?'<div class="stat-box-options"><h4>Box plot annotations</h4>'+
+  '<p>Select only the labels that help explain your investigation. Values appear at their corresponding plotted locations.</p>'+
+  checkbox("showBoxMedian","Show numerical median at the median line",d.showBoxMedian)+
+  checkbox("showBoxQuartiles","Label Q1 and Q3 at the box edges",d.showBoxQuartiles)+
+  checkbox("showBoxWhiskers","Show both whisker endpoint values",d.showBoxWhiskers)+
+  checkbox("showBoxExtremes","Show actual minimum and maximum values",d.showBoxExtremes)+
+  checkbox("showBoxMean","Show the mean as a diamond marker",d.showBoxMean)+
+  checkbox("showOutliers","Show flagged outlier points",d.showOutliers)+
+  checkbox("showBoxOutlierValues","Label flagged outlier values",d.showBoxOutlierValues)+
+  checkbox("showBoxFences","Show screening thresholds on the plot (if in range)",d.showBoxFences)+
+  select("boxPrecision","Precision of numeric labels",d.boxPrecision,[
+   ["auto","Automatic (5 significant figures)"],["0","0 decimal places"],["1","1 decimal place"],
+   ["2","2 decimal places"],["3","3 decimal places"],["4","4 decimal places"]],e)+
+  '</div>':"")+
  '<button type="button" class="btn btn-quiet btn-sm" data-action="stat-reset-scale">Reset limits to automatic</button>'+
  '</section></div>'+
  '<div class="stat-preview-stack">'+statPreviewHtml(studio,icon,e)+
