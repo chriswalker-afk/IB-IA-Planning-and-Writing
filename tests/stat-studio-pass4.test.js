@@ -45,7 +45,7 @@ test("six diagrams each show a source-grounded observation, a separate writing q
   const info=statReadingGuide(d);
   assert.equal(info.kind,kind);
   assert.equal(info.valid,true,kind);
-  assert.ok(info.observation.length>15&&info.question.includes("?")&&info.caution.length>35);
+  assert.ok(info.observation.length>15&&info.question.includes("?")&&info.caution.length>35,kind+": "+JSON.stringify(info));
   assert.ok(!info.observation.includes("significant difference"),"The guidance must not claim significance");
   assert.ok(!info.observation.includes("caused"),"No causal interpretation is invented");
   const html=statReadingGuideHtml({draft:d},icon,escapeHtml);
