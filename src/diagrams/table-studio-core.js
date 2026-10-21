@@ -60,7 +60,7 @@ export function normalizeTableDraft(raw){
  if(object(r.columnFormats)){
   d.columnFormats={};
   for(const [key,rawFormat] of Object.entries(r.columnFormats).slice(0,18)){
-   if(!/^(compact|summary|frequency):[0-4]$/.test(key)||!object(rawFormat))continue;
+   if(!/^(?:compact:[0-4]|frequency:[0-4]|summary:(?:[0-4]|mean|median|sd|iqr|minmax))$/.test(key)||!object(rawFormat))continue;
    const mode=["default","source","dp","sf"].includes(rawFormat.mode)?rawFormat.mode:"default";
    const rawDigits=String(rawFormat.digits??"2");
    const digits=/^[0-6]$/.test(rawDigits)?rawDigits:"2";
@@ -109,8 +109,11 @@ export function tableHeader(d,index){
  return decision.mode==="unit"&&decision.unit.trim()?base+" ("+decision.unit.trim()+")":label;
 }
 /** Display-only rules keyed to the output table column. Never edit the observations. */
+/** Summary settings follow a named statistic if students reorder chosen measures. */
+export const tableFormatKey=(d,index,mode=d.mode)=>mode==="summary"&&index>=2&&d.measures?.[index-2]?
+ "summary:"+d.measures[index-2]:mode+":"+index;
 export const tableColumnFormat=(d,index,mode=d.mode)=>{
- const stored=d.columnFormats?.[mode+":"+index];
+ const stored=d.columnFormats?.[tableFormatKey(d,index,mode)]??d.columnFormats?.[mode+":"+index];
  const kind=["source","dp","sf"].includes(stored?.mode)?stored.mode:"default";
  const digits=Number(stored?.digits);
  return {mode:kind,digits:Number.isInteger(digits)&&digits>=0&&digits<=6?digits:2};
