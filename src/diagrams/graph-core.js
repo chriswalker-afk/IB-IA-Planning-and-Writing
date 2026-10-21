@@ -18,7 +18,7 @@ export const newGraphDraft=()=>({
  title:"",figureNumber:"1",xLabel:"",yLabel:"",xUnit:"",yUnit:"",xUnitMode:"unsure",yUnitMode:"unsure",
  expression:"",sourceKind:"unsure",sourceText:"",caption:"",models:[],modelChoice:"linear",
  residualModelId:"",showResidualSegments:false,showResidualPlot:false,modelReflection:"",
- xMin:"",xMax:"",yMin:"",yMax:"",showGrid:true,showPoints:true,includeZeroY:false
+ xMin:"",xMax:"",yMin:"",yMax:"",showGrid:true,showPoints:true,includeZeroY:false,showLegend:true,legendPosition:"below"
 });
 export function normalizeGraphDraft(raw){
  const o=newGraphDraft(),v=raw&&typeof raw==="object"&&!Array.isArray(raw)?raw:{};
@@ -36,6 +36,7 @@ export function normalizeGraphDraft(raw){
  o.yIndex=Number.isInteger(v.yIndex)?Math.max(0,Math.min(MAX_COLS-1,v.yIndex)):1;
  for(const k of ["xUnitMode","yUnitMode"])if(!["unsure","unit","dimensionless"].includes(o[k]))o[k]="unsure";
  if(!["unsure","primary","secondary","theoretical"].includes(o.sourceKind))o.sourceKind="unsure";
+ if(!["below","above","right"].includes(o.legendPosition))o.legendPosition="below";
  return o;
 }
 export const newGraphStudio=()=>({open:false,draft:newGraphDraft(),figures:[],activeId:""});
@@ -296,7 +297,11 @@ const ticks=(a,b)=>{
  for(let k=0;k<30;k++){const v=lo+k*step;if(v>b+step*1e-7)break;list.push(v);}
  return {step,values:list};
 };
-const axisTitle=(label,unit,mode)=>label+(mode==="unit"&&unit?" ("+unit+")":"");
+const SUPERSCRIPTS=Object.freeze({"0":"⁰","1":"¹","2":"²","3":"³","4":"⁴","5":"⁵","6":"⁶","7":"⁷","8":"⁸","9":"⁹","+":"⁺","-":"⁻"});
+/** Typeset typed unit powers such as m s^-2, cm^3 and 10^(-3). */
+export const formatGraphMath=value=>String(value??"").replace(/\^(?:\{([+\-−]?\d+)\}|\(([+\-−]?\d+)\)|([+\-−]?\d+))/g,
+ (_match,a,b,c)=>[...(a??b??c)].map(x=>SUPERSCRIPTS[x==="−"?"-":x]||x).join(""));
+const axisTitle=(label,unit,mode)=>formatGraphMath(label)+(mode==="unit"&&unit?" ("+formatGraphMath(unit)+")":"");
 const polarised=(str,n)=>String(str||"").length<=n?[str]:[String(str).slice(0,n).replace(/\s+\S*$/,""),String(str).slice(n).trim()];
 const W=940,H=620,LEFT=109,RIGHT=55,TOP=112,BOTTOM=122,PW=W-LEFT-RIGHT,PH=H-TOP-BOTTOM;
 export function renderGraphSvg(draft){
