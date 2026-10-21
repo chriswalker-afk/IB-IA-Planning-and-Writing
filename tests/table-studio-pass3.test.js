@@ -172,7 +172,7 @@ test("categorical frequency totals cannot be highlighted or misrepresented",()=>
  setTableField(s,"highlightMode","selected");setTableField(s,"highlightRows","4");
  setTableField(s,"highlightReason","Transport choices might be unevenly distributed across categories.");
  assert(!analyzeTable(s.draft).ready);
- assert.match(analyzeTable(s.draft).problems[0]?.code||"","highlight");
+ assert(analyzeTable(s.draft).problems.some(p=>p.code==="highlight-rows"));
 });
 test("table → histogram keeps class boundaries identical and no saved diagram is overwritten",()=>{
  const state=createProjectState();state.tableStudio=rawTable();
