@@ -212,8 +212,8 @@ test("student UI exposes source and projection checks, candidate editor, maps, b
 const recommended={
  relationships:["graph","stat"],groups:["stat","table"],categorical:["table","stat"],variation:["stat","table"],
  "fitted-models":["graph","table"],growth:["graph","table"],cycles:["graph","stat"],
- trajectories:["trace","graph"],optimisation:["graph","table"],images:["trace","graph"],
- triangulation:["trace","graph"],voronoi:["voronoi","trace"],finance:["table","graph"],
+ trajectories:["trace","graph"],optimisation:["graph","table"],images:["trace","geometry"],
+ triangulation:["geometry","trace"],voronoi:["voronoi","trace"],finance:["table","graph"],
  chance:["stat","table"],proof:["graph","table"],iteration:["graph","table"]
 };
 test("every planned investigative journey has two contextually relevant representation suggestions",()=>{
@@ -225,15 +225,15 @@ test("every planned investigative journey has two contextually relevant represen
   assert.match(markup,/provisional/i);
   for(const id of ids){
    assert.ok(markup.includes('data-action="'+({graph:"graph-open",stat:"stat-open",
-    table:"table-open",trace:"trace-open",voronoi:"voronoi-open"}[id])+'"'),route+" "+id);
+    table:"table-open",trace:"trace-open",voronoi:"voronoi-open",geometry:"geometry-open"}[id])+'"'),route+" "+id);
   }
   assert.ok(markup.includes('data-representation-filter="geometry"'));
  }
 });
-test("the chooser preserves access to all five available tools without duplicated buttons",()=>{
+test("the chooser preserves access to all six available tools without duplicated buttons",()=>{
  const state=createProjectState();state.planning.routeExplorer.selectedRoute="voronoi";
  const markup=renderRepresentationHub(state,icon,escapeHtml);
- for(const action of ["graph-open","stat-open","table-open","trace-open","voronoi-open"])
+ for(const action of ["graph-open","stat-open","table-open","trace-open","voronoi-open","geometry-open"])
   assert.equal(markup.split('data-action="'+action+'"').length-1,1,action);
  state.ui.representationFilter="data";
  const filtered=renderRepresentationHub(state,icon,escapeHtml);
