@@ -70,7 +70,7 @@ import {voronoiPreviewHtml,voronoiResultHtml,voronoiQualityHtml,voronoiOutputHtm
 import {setVoronoiField,setVoronoiSite,addVoronoiSite,removeVoronoiSite,clearVoronoiMap,useVoronoiMap,beginVoronoi,loadVoronoi,saveVoronoiDraft,saveAndLinkVoronoi} from "./src/diagrams/voronoi-actions.js";
 import {exportVoronoi} from "./src/diagrams/voronoi-export.js";
 import {geometryAnalysis} from "./src/diagrams/geometry-core.js";
-import {renderGeometrySvg} from "./src/diagrams/geometry-render.js";
+import {renderGeometrySvg,geometryLayout} from "./src/diagrams/geometry-render.js";
 import {geometryPreviewHtml,geometryQualityHtml} from "./src/diagrams/geometry-view.js";
 import {setGeometryField,setGeometryVertex,geometryTemplate,geometryAddVertex,geometryRemoveVertex,geometryFresh,loadGeometry,saveGeometryDraft,saveAndLinkGeometry} from "./src/diagrams/geometry-actions.js";
 import {exportGeometry} from "./src/diagrams/geometry-export.js";
@@ -2557,14 +2557,13 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     const index=Number(point.dataset.geometryVertexIndex),transform=svg.getScreenCTM?.();
     if(!transform||!Number.isInteger(index))return;
     let inverse;try{inverse=transform.inverse();}catch{return;}
-    geometryPointer={id:evt.pointerId,svg,inverse,index};
+    geometryPointer={id:evt.pointerId,svg,inverse,index,layout:geometryLayout(state.geometryStudio.draft)};
     evt.preventDefault();
   });
   document.addEventListener("pointermove",evt=>{
     const drag=geometryPointer;if(!drag||drag.id!==evt.pointerId)return;
     const svgPoint=drag.svg.createSVGPoint();svgPoint.x=evt.clientX;svgPoint.y=evt.clientY;
-    const pt=svgPoint.matrixTransform(drag.inverse),layout=geometryLayout(state.geometryStudio.draft),
-      coord=layout.from(pt.x,pt.y);
+    const pt=svgPoint.matrixTransform(drag.inverse),coord=drag.layout.from(pt.x,pt.y);
     if(!Number.isFinite(coord.x)||!Number.isFinite(coord.y))return;
     const p=state.geometryStudio.draft.vertices[drag.index];if(!p)return;
     p.x=Math.round(coord.x*100)/100;p.y=Math.round(coord.y*100)/100;state.geometryStudio.draft.edited=true;
