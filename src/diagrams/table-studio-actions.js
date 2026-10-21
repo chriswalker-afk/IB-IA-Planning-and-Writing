@@ -68,6 +68,10 @@ export function setTableColumnFormat(studio,index,part,value){
  const output=analyzeTable(d).model;
  if(!output||index>=output.headers.length)return false;
  if(["compact","calculated"].includes(d.mode)?!output.numeric[index]:index<2)return false;
+ if(d.mode==="grouped"){
+  const key=tableFormatKey(d,index);
+  if(!["grouped:density","grouped:percent"].includes(key))return false;
+ }
  const old=d.columnFormats?.[tableFormatKey(d,index)]||d.columnFormats?.[d.mode+":"+index]||{mode:"default",digits:"2"};
  if(part==="mode"&&!["default","dp","sf",...(d.mode==="compact"||d.mode==="calculated"&&index<2?["source"]:[])].includes(value))return false;
  if(part==="digits"&&(!/^[0-6]$/.test(String(value))||old.mode==="sf"&&String(value)==="0"))return false;
