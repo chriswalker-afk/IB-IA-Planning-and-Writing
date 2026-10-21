@@ -26,6 +26,8 @@ const axisLabel=(d,orientation)=>{
 };
 function base(d,subtitle,canvasHeight=H,plotHeight=PH){
  const parts=['<svg xmlns="http://www.w3.org/2000/svg" class="stat-figure-svg" role="img" aria-label="'+E(d.title||"Student statistics diagram")+'" viewBox="0 0 '+W+' '+canvasHeight+'" width="'+W+'" height="'+canvasHeight+'">',
+  '<title>'+E(d.title||"Statistical diagram")+'</title>',
+  '<desc>'+E(subtitle)+'. Scale, sample sizes and source are shown; data-driven figures require statistical interpretation by the student.</desc>',
   '<rect width="'+W+'" height="'+canvasHeight+'" fill="#fff"/>',
   tag(d.title||"Statistical diagram",W/2,38,'font-size="21" font-family="Arial,sans-serif" font-weight="700" text-anchor="middle" fill="#243e49"',870),
   tag(subtitle,W/2,66,'font-size="13" font-family="Arial,sans-serif" text-anchor="middle" fill="#57717b"'),
@@ -40,7 +42,7 @@ function footer(d,parts,method="",canvasHeight=H){
  parts.push("</svg>");
  return parts.join("");
 }
-function horizontalNumeric(parts,low,high,label,grid=true,plotHeight=PH,canvasHeight=H){
+function horizontalNumeric(parts,low,high,label,grid=true,plotHeight=PH,canvasHeight=H,labelY=null){
  const X=x=>LEFT+PW*(x-low)/(high-low);
  for(const t of ticks(low,high)){
   const px=X(t);
@@ -48,7 +50,7 @@ function horizontalNumeric(parts,low,high,label,grid=true,plotHeight=PH,canvasHe
   parts.push(line(px,TOP+plotHeight,px,TOP+plotHeight+6,'stroke="#38535e" stroke-width="1.5"'));
   parts.push(tag(fmt(t,6),px,TOP+plotHeight+26,'font-family="Arial,sans-serif" font-size="12" fill="#36515e" text-anchor="middle"'));
  }
- parts.push(tag(label,LEFT+PW/2,canvasHeight-86,'font-family="Arial,sans-serif" font-size="17" font-weight="700" fill="#294956" text-anchor="middle"',PW-40));
+ parts.push(tag(label,LEFT+PW/2,labelY??canvasHeight-86,'font-family="Arial,sans-serif" font-size="17" font-weight="700" fill="#294956" text-anchor="middle"',PW-40));
  return X;
 }
 function verticalNumeric(parts,max,label,grid=true){
@@ -72,12 +74,13 @@ function histogram(q){
  const {draft:d,result:r,override}=q,bins=r.bins||[],groups=r.series||[];
  const compared=d.histogramCompare!=="single"&&d.histogramInput==="raw"&&groups.length>1;
  const small=compared&&d.histogramCompare==="smallmultiples",extra=small?(groups.length-1)*270:0;
- const plotHeight=PH+extra,canvasHeight=H+extra;
+ const plotHeight=PH+extra,legendBelow=compared&&!small,canvasHeight=H+extra+(legendBelow?96:0);
  const total=r.total||bins.reduce((sum,b)=>sum+b.frequency,0);
  const parts=base(d,(compared?"Common class boundaries · "+groups.length+" groups":"Frequency density = frequency ÷ class width")+" · n = "+total,canvasHeight,plotHeight);
  const min=override?override[0]:(bins.length?Math.min(...bins.map(b=>b.low)):0);
  const max=override?override[1]:(bins.length?Math.max(...bins.map(b=>b.high)):10);
- const X=horizontalNumeric(parts,min,max>min?max:min+1,axisLabel(d,"x"),d.showGrid,plotHeight,canvasHeight);
+ const X=horizontalNumeric(parts,min,max>min?max:min+1,axisLabel(d,"x"),d.showGrid,plotHeight,canvasHeight,
+  legendBelow?TOP+plotHeight+59:null);
  const densityUnit=d.unitMode==="unit"&&d.unit.trim()?" ("+diagramUnitPower(d.unit,-1)+")":"";
  const palette=["#248779","#457cb5","#a7668b","#b18c3b"];
  const drawn=compared?groups:[{name:d.variable,n:total,bins}];
@@ -96,10 +99,14 @@ function histogram(q){
   for(const bin of group.bins){
    const x=X(bin.low),width=Math.max(0,X(bin.high)-x),value=useRelative?bin.relativeDensity:bin.density;
    const top=Y(value),color=palette[index%palette.length],opacity=compared&&!small?.42:.82;
-   parts.push('<rect x="'+fmt(x)+'" y="'+fmt(top)+'" width="'+fmt(width)+'" height="'+fmt(Math.max(0,highY-top))+'" fill="'+color+'" fill-opacity="'+opacity+'" stroke="'+color+'" stroke-width="1.3"/>');
+   parts.push('<rect x="'+fmt(x)+'" y="'+fmt(top)+'" width="'+fmt(width)+'" height="'+fmt(Math.max(0,highY-top))+'" fill="'+color+'" fill-opacity="'+opacity+'" stroke="'+color+'" stroke-width="1.3"><title>'+
+    E(group.name+": ["+formatBoxNumber(bin.low)+", "+formatBoxNumber(bin.high)+") · frequency "+bin.frequency+
+     " · density "+formatBoxNumber(bin.density)+(useRelative?" · relative density "+formatBoxNumber(bin.relativeDensity):""))+
+    '</title></rect>');
    const label=d.histogramLabels==="none"?"":d.histogramLabels==="density"?fmt(bin.density,3):
     d.histogramLabels==="percentage"?fmt(100*bin.frequency/Math.max(1,group.n||total),1)+"%":String(bin.frequency);
-   if(d.showLabels&&label&&width>Math.max(38,label.length*7)&&bin.frequency>0){
+   // Overlay bars compete for the same label space; the key and SVG tooltips retain exact values.
+   if(d.showLabels&&!legendBelow&&label&&width>Math.max(38,label.length*7)&&bin.frequency>0){
     parts.push(tag(label,x+width/2,Math.max(lowY+16,top-6),
      'font-size="11" font-family="Arial,sans-serif" fill="#294953" text-anchor="middle"'));
    }
@@ -115,9 +122,14 @@ function histogram(q){
   });
  }else{
   drawn.forEach((group,i)=>drawPanel(group,i,TOP,TOP+plotHeight,commonY,i===0));
-  if(compared)drawn.forEach((group,i)=>parts.push(tag(group.name+" (n="+group.n+")",
-   LEFT+8+(i%2)*PW/2,TOP+18+Math.floor(i/2)*19,
-   'font-size="13" font-family="Arial,sans-serif" font-weight="700" fill="'+palette[i%palette.length]+'"')));
+  if(legendBelow){
+   drawn.forEach((group,i)=>{
+    const lx=LEFT+(i%2)*(PW/2),ly=TOP+plotHeight+86+Math.floor(i/2)*23;
+    parts.push(line(lx,ly-4,lx+18,ly-4,'stroke="'+palette[i%palette.length]+'" stroke-width="4"'));
+    parts.push(tag(diagramSafeExcerpt(group.name,25)+" (n="+group.n+")",lx+24,ly,
+     'font-size="12" font-family="Arial,sans-serif" fill="#35535d"',PW/2-33));
+   });
+  }
  }
  const yName=(useRelative?"Relative-frequency density":"Frequency density")+
   (d.unitMode==="unit"&&d.unit.trim()?densityUnit:"");
