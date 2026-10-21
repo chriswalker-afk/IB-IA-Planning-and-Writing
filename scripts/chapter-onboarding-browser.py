@@ -196,7 +196,7 @@ def first_time(browser,width):
   assert page.locator('.spark-shelf-library-only .spark-library').count()==1
   assert page.locator('.intro-spark-needed[data-intro-spark-state="ready"]').count()==2
   assert page.locator('.intro-spark-needed[data-intro-spark="prediction"]').count()==1
-  assert "Define specialist terms briefly" in page.locator('.intro-writing-guide').inner_text()
+  assert "non-mathematical specialist terms briefly" in page.locator('.intro-writing-guide').inner_text()
   assert page.locator('.intro-prediction-update[open]').count()==1
   page.locator('[data-bind="planning.fields.prediction"]').fill("I suspect a curved relationship.")
   page.locator('[data-bind="planning.fields.predictionWhy"]').fill("A few small cases suggest the changes increase.")
@@ -204,19 +204,18 @@ def first_time(browser,width):
   assert stored(page)["planning"]["fields"]["predictionWhy"]=="A few small cases suggest the changes increase."
   assert stored(page)["project"]["prediction"]=="I suspect a curved relationship."
   assert stored(page)["project"]["predictionWhy"]=="A few small cases suggest the changes increase."
-  assert page.locator('.intro-advice-tip').count()==6
-  assert page.locator('.intro-advice-tip[data-intro-advice="journey"]').count()==1
-  assert page.locator('.intro-advice-extra-group').count()==1
+  # The original six lessons have moved intact into the focused Field Guide pop-in.
+  assert page.locator('.intro-advice-tip').count()==0
   assert page.locator('.intro-writing-guide').is_visible()
-  assert page.locator('.setup-document-guide').count()==0
-  assert page.locator('[data-criterion-badge="completing:C10:aim"]').count()==1
-  assert page.locator('[data-criterion-badge="completing:C10:motivation"]').count()==1
-  page.locator('[data-intro-advice="journey"] > summary').click()
-  assert page.locator('[data-intro-advice="journey"] .intro-advice-example').is_visible()
-  assert page.locator('[data-intro-advice="context"] > summary').is_visible()
-  page.locator('[data-intro-advice="context"] > summary').click()
-  page.locator('.intro-advice-extra-group > summary').click()
-  assert page.locator('[data-intro-advice="uncertain"] > summary').is_visible()
+  page.locator('.intro-writing-guide .writer-guide-inline-more').click()
+  advice=page.locator('#writerGuidePopinLayer .writer-guide-popin')
+  assert advice.is_visible()
+  assert advice.locator('[data-writer-advice-group="introduction"]').count()==1
+  assert advice.locator('[data-stage-tip-id]').count()==6
+  advice.locator('.writer-guide-supplement-group > summary').click()
+  advice.locator('[data-stage-tip-id="introduction-3"] > summary').click()
+  assert advice.locator('[data-stage-tip-id="introduction-3"] .writer-guide-supplement-comparison').is_visible()
+  advice.locator('[data-action="writer-guide-popin-close"]').first.click()
   page.locator('.intro-examples-panel > summary').click()
   assert page.locator('.intro-examples-panel[open]').count()==1
   page.locator('.intro-examples-panel [data-example-id="EX34"]').click()
@@ -231,10 +230,11 @@ def first_time(browser,width):
   assert page.locator('.writer-guide-return').count()==0
   assert page.locator('.intro-writing-task .writer-guide-field-bubble').count()==1
   page.locator('.intro-writing-task .writer-guide-field-bubble').click()
-  assert page.locator('.writer-guide-drawer').is_visible()
-  assert page.locator('.writer-guide-drawer [data-guide-stage-focus="C10"]').count()==1
-  assert page.locator('.writer-guide-drawer [data-guide-card="voice"][open]').count()==1
-  page.locator('.writer-guide-drawer .drawer-header [data-action="close-drawer"]').click()
+  focused=page.locator('#writerGuidePopinLayer .writer-guide-popin')
+  assert focused.is_visible()
+  assert focused.get_attribute('data-guide-popin-tip')=="voice"
+  assert focused.locator('[data-writer-advice-group="introduction"] [data-stage-tip-id]').count()==6
+  focused.locator('[data-action="writer-guide-popin-close"]').first.click()
   assert page.locator('[data-source-node="C10"]').count()==1
   # The original fixture's page-init script resets storage on EVERY reload.
   # Open a fresh tab in the same browser context to test actual persisted data.
@@ -350,12 +350,17 @@ def writing_sections(browser,width):
    spot=selected.get_attribute('data-guide-spot')
    original=stored(page)
    selected.click()
+   focused=page.locator('#writerGuidePopinLayer .writer-guide-popin')
+   assert focused.is_visible(),node
+   assert focused.get_attribute('data-guide-popin-tip')==suggested,(node,spot)
+   assert focused.locator('.writer-guide-popin-focus').is_visible(),(node,spot)
+   assert focused.locator('[data-guide-text="stronger"]').is_visible(),node
+   assert focused.locator('[data-writer-advice-group] [data-stage-tip-id]').count() in (4,6),node
+   focused.locator('[data-action="writer-guide-popin-full"]').click()
    guide=page.locator('.writer-guide-drawer')
    assert guide.is_visible(),node
    assert guide.locator('[data-guide-card="'+suggested+'"][open]').count()==1,node
    assert guide.locator('[data-guide-stage-focus="'+node+'"]').count()==1,node
-   assert guide.locator('[data-guide-card="'+suggested+'"] [data-guide-text="stronger"]').is_visible(),node
-   assert guide.locator('.writer-guide-stage-focus').is_visible(),(node,spot)
    guide.locator('.drawer-header [data-action="close-drawer"]').click()
    assert stored(page)==original,node
    if node!='C60': assert main.locator('.studio-stage-sparks .spark-library').count()==1,node
@@ -380,9 +385,10 @@ def writing_sections(browser,width):
    assert geometry['paragraph']['width']>=180,(node,width,geometry)
    if node in ("C40","C50"):
     assert "Build on the actual finding from the previous stage" in main.locator('.studio-stage-writing-task-head').inner_text(),node
-   if node in ("C20","C30","C40","C50","C60"):
-    assert main.locator('.studio-stage-tip').count()==4,node
-   else: assert main.locator('.studio-stage-more-advice').count()==1,node
+   # All original general lessons now live behind the Field Guide.
+   assert main.locator('.studio-stage-tip').count()==0,node
+   assert main.locator('.studio-stage-more-advice').count()==0,node
+   assert main.locator('.studio-stage-advice .writer-guide-inline-more').count()==1,node
    without_overflow(page)
    if node in ("C20","C40","C60"):
     main.locator('.studio-stage-examples>summary').click()
@@ -681,9 +687,12 @@ def adaptive_mathematical_journey(browser,width):
   assert page.locator('[data-journey-stage-link]').count()==1
   assert "alternative function structure" in page.locator('[data-show-first-part="introduce"]').inner_text()
   page.locator('[data-math-stage-page="2"] .writer-guide-field-bubble[data-guide-spot="completing:C40:bridgeA"]').click()
-  assert page.locator('.writer-guide-drawer [data-guide-card="why-now"][open]').count()==1
-  assert "The shape does not resemble a simple parabola" in page.locator('.writer-guide-drawer .writer-guide-stage-focus').inner_text()
-  page.locator('.writer-guide-drawer .drawer-header [data-action="close-drawer"]').click()
+  focused=page.locator('#writerGuidePopinLayer .writer-guide-popin')
+  assert focused.is_visible()
+  assert focused.get_attribute('data-guide-popin-tip')=="why-now"
+  assert focused.locator('[data-writer-advice-group="further-mathematics"] [data-stage-tip-id]').count()==4
+  assert "The shape does not resemble a simple parabola" in focused.inner_text()
+  focused.locator('[data-action="writer-guide-popin-close"]').first.click()
   data=stored(page)
   assert data["entries"][1]["journeySourceOutcome"]=="fitted-models:not-quadratic"
   assert data["entries"][1]["journeySourceSignature"]
