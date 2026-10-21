@@ -372,8 +372,11 @@ def writing_sections(browser,width):
     }""")
     assert geometry['head'] and geometry['rail'],(node,width,'no help rail',geometry)
     assert geometry['icons'],(node,width,'empty help rail',geometry)
-    assert geometry['rail']['left']>=geometry['root']['left']-2,(node,width,geometry)
-    assert geometry['rail']['right']<=geometry['root']['right']+2,(node,width,geometry)
+    # The surrounding wrapper may use display:contents; measure the actual
+    # writing control or heading, not an empty wrapper bounding rectangle.
+    bounds=geometry['control'] or geometry['head']
+    assert geometry['rail']['left']>=bounds['left']-2,(node,width,geometry)
+    assert geometry['rail']['right']<=bounds['right']+2,(node,width,geometry)
     if geometry['control']:
      assert geometry['rail']['bottom']<=geometry['control']['top']+2,(node,width,'rail overlaps writing area',geometry)
     icons=geometry['icons']
