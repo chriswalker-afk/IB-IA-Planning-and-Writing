@@ -136,6 +136,18 @@ def compact(p,width):
    print("Table debug events:",p.evaluate("window.__tableTrace"),flush=True)
    print("SVG button:",p.locator('[data-action="table-svg"]').evaluate("(e)=>e.outerHTML"),flush=True)
    raise
+ # Verify that the downloads agree with the preview and keep the original observations.
+ svg_file=next((item for item in downloads if item.suggested_filename.endswith(".svg")),None)
+ html_file=next((item for item in downloads if item.suggested_filename.endswith(".html")),None)
+ csv_file=next((item for item in downloads if item.suggested_filename.endswith(".csv")),None)
+ assert svg_file and html_file and csv_file
+ svg_text=Path(svg_file.path()).read_text(encoding="utf-8")
+ html_text=Path(html_file.path()).read_text(encoding="utf-8")
+ csv_text=Path(csv_file.path()).read_text(encoding="utf-8")
+ assert 'ia-table-column-divider' in svg_text
+ assert 'text-align:center' in html_text
+ assert '"14.0"' in csv_text and '"2.3"' in csv_text
+ assert "Results recorded using the original resolution." in svg_text
  p.locator('[data-action="table-use"]').click()
  assert p.locator('[data-source-node="C30"]').count()==1
  assert p.locator('.ia-table-entry svg.ia-table-svg').count()==1
