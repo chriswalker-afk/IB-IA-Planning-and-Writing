@@ -45,7 +45,7 @@
 .ia-table-preview-top strong{font-size:13px}
 .ia-table-preview-top span{font-size:10px;color:#61787b}
 .ia-table-preview-art{border:1px solid #dce7e4;background:#fff;border-radius:9px;overflow:hidden;min-width:0}
-.ia-table-svg{display:block;width:100%;height:auto}
+.ia-table-svg{display:block;width:auto;max-width:100%;height:auto;margin-inline:auto}
 .ia-table-preview>p,.ia-table-output-card>p{font-size:10px;line-height:1.7;color:#6e8181;margin:10px 0 0}
 .ia-table-quality-card{background:#fafcfb}
 .ia-table-quality-top{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:9px}
