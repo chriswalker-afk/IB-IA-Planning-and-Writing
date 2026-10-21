@@ -3,7 +3,35 @@
  * Plain text remains plain text; \(...\) is MathJax-rendered only for display.
  * Values in source datasets, numeric parsers and CSV exports are not changed.
  */
-import {mathSvg,mixedMathTokens,escapeMixedHtml} from "../math/mixed-math.js";
+// The production build loads the full renderer. Raw source hosting must
+// still work without npm import maps: optional typography must not blank the app.
+let mathSvg=null;
+try{
+ const module=await import("../math/mixed-math.js");
+ mathSvg=module.mathSvg;
+}catch{/* Raw source hosting retains safe plain/shortcut notation. */}
+const escapeMixedHtml=value=>String(value??"").replace(/[&<>"']/g,c=>({
+ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+}[c]));
+function mixedMathTokens(value){
+ const source=String(value??""),out=[];let from=0,i=0,count=0;
+ while(i<source.length&&count<60){
+  if(source[i]!=="\\"||!["(","["].includes(source[i+1])){i++;continue;}
+  let preceding=0;
+  while(i-1-preceding>=0&&source[i-1-preceding]==="\\")preceding++;
+  if(preceding%2){i+=2;continue;}
+  const display=source[i+1]==="[",endMark=display?"\\]":"\\)";
+  let stop=source.indexOf(endMark,i+2);
+  while(stop>=0&&source[stop-1]==="\\")stop=source.indexOf(endMark,stop+2);
+  if(stop<0){i+=2;continue;}
+  if(i>from)out.push({type:"text",value:source.slice(from,i),start:from,end:i});
+  const tex=source.slice(i+2,stop);
+  out.push({type:"math",value:tex,display,start:i,end:stop+2,source:source.slice(i,stop+2)});
+  i=stop+2;from=i;count++;
+ }
+ if(from<source.length)out.push({type:"text",value:source.slice(from),start:from,end:source.length});
+ return out.length?out:[{type:"text",value:source,start:0,end:source.length}];
+}
 
 export const DIAGRAM_NOTATION_SYMBOLS=Object.freeze([
  {label:"xᵢ",token:"x_i",title:"Subscript (edit the index)"},
