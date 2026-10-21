@@ -715,7 +715,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     refreshPathCount();
     if(opts.top){window.scrollTo({top:0,behavior:"auto"});main.focus({preventScroll:true})}
     // Show only at the first entry to C00; never for example previews or other stages.
-    if(shouldShowWriterGuideWelcome(state,preview.active)&&layer.hidden&&!document.querySelector("dialog[open]"))
+    if(state.ui.writingIntroSeen===true&&!state.ui.writingIntroOpen&&shouldShowWriterGuideWelcome(state,preview.active)&&layer.hidden&&!document.querySelector("dialog[open]"))
       openDrawer("writer-guide-intro");
   }
   function nav(route,opts={}) {
@@ -1055,6 +1055,15 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         openFullWriterGuide(guide);
       }
       return;
+    }
+    if(action==="writing-intro-continue"){
+      state.ui.writingIntroSeen=true;state.ui.writingIntroOpen=false;
+      save();render({top:true});return;
+    }
+    if(action==="writing-intro-open"){
+      state.ui.writingIntroOpen=true;
+      // Reopening a feature tour should never erase the student's current stage.
+      save();render({top:true});return;
     }
     if(action==="setup-start-writing"){
       const result=setCompletionNode(state,"C10",{reason:"setup-to-introduction"});
