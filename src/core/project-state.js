@@ -117,7 +117,7 @@ export function normalizeProjectState(value) {
   u.writingIntroOpen=u.writingIntroOpen===true;
   u.writerGuideIntroSeen=u.writerGuideIntroSeen===true;
   if(!["","home","planning","completing","checking","path","report"].includes(u.resourceCreatorReturnRoute))u.resourceCreatorReturnRoute="";
-  if(!/^C\\d{2}[A-Z0-9]*$/.test(u.resourceCreatorReturnNode))u.resourceCreatorReturnNode="";
+  if(!/^C\d{2}[A-Z0-9]*$/.test(u.resourceCreatorReturnNode))u.resourceCreatorReturnNode="";
   if(!["","graph","stat","table","trace","voronoi"].includes(u.resourceCreatorReturnTool))u.resourceCreatorReturnTool="";
   const next={
     ...blank,
