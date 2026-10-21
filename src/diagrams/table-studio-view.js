@@ -19,7 +19,8 @@ const kinds=[
  ["compact","Short results","Select up to 8 purposeful source rows and 5 columns without deleting any observations."],
  ["calculated","Calculated results","Compare original observations with model predictions, residuals and percentage deviations."],
  ["summary","Summary statistics","Use up to 3 measures to condense hundreds of numerical observations."],
- ["frequency","Frequency table","Count up to 8 discrete categories and optionally show within-sample percentages."]
+ ["frequency","Category frequency","Count up to 8 distinct response categories and optionally show percentages."],
+ ["grouped","Continuous frequencies","Choose justified numerical class intervals, frequencies, densities and cumulative totals."]
 ];
 const metricLabels={mean:"Mean",median:"Median",minmax:"Minimum–maximum",sd:"Sample standard deviation",iqr:"Interquartile range"};
 const label=(title,contents)=>'<label class="ia-table-form-field"><span>'+title+'</span>'+contents+'</label>';
@@ -48,7 +49,9 @@ function numericColumn(d,index){
 }
 function unitsEditors(d,e){
  if(d.mode==="frequency")return"";
- const visible=d.mode==="compact"?tableDisplayColumns(d):d.mode==="calculated"?[d.calcXIndex,d.calcYIndex]:d.selected;
+ const visible=d.mode==="compact"?tableDisplayColumns(d):
+  d.mode==="calculated"?[d.calcXIndex,d.calcYIndex]:
+  d.mode==="grouped"?d.groupInput==="raw"?[d.groupValueIndex]:[d.groupLowIndex]:d.selected;
  const numeric=visible.filter(i=>numericColumn(d,i));
  if(!numeric.length)return"";
  return '<div class="ia-table-column-settings"><strong>'+e(d.mode==="compact"?"Name columns and check units":"Confirm the units of each selected measurement")+'</strong>'+
@@ -65,7 +68,7 @@ function unitsEditors(d,e){
  }).join("")+'</div>';
 }
 function headerEditors(d,e){
- if(!d.columns.length||["summary","calculated"].includes(d.mode))return"";
+ if(!d.columns.length||["summary","calculated","grouped"].includes(d.mode))return"";
  if(d.mode==="frequency"){
   const options=d.columns.map((text,i)=>[String(i),d.headings[i]||text]);
   return pick("categoryIndex","Column containing the categories",String(d.categoryIndex),options,e)+
@@ -173,9 +176,51 @@ function calculatedControls(d,e){
  toggle("calcShowPercent","Include signed percentage deviation (%)",d.calcShowPercent)+
  '<p class="ia-table-calculated-note">Residual = observed − predicted. Percentage deviation = 100 × residual / |observed| and is undefined for observed values of zero. All calculations use full-precision source values; rounding affects display only.</p></div>';
 }
+function groupedControls(d,e){
+ if(d.mode!=="grouped")return "";
+ const available=d.columns.map((column,i)=>[String(i),d.headings[i]||column]);
+ return '<div class="ia-table-grouped-controls" data-table-grouped-controls>'+
+ '<strong>Group continuous measurements into honest class intervals</strong>'+
+ '<p>Every observation is counted. Class intervals include the lower boundary and exclude the upper boundary: [lower, upper). Choose widths using measurement resolution and mathematical purpose, not simply to make a pattern look attractive.</p>'+
+ pick("groupInput","My starting data",d.groupInput,[
+  ["raw","Individual numerical measurements"],["classes","Already-grouped class boundaries and frequencies"]],e)+
+ (d.columns.length?d.groupInput==="raw"?
+  '<div class="ia-table-two-col">'+
+   pick("groupValueIndex","Measurement column",d.groupValueIndex,available,e)+
+   input("groupWidth","Class width (required)",d.groupWidth,e,"e.g. 5","Choose an interpretable width. Up to eight output classes.")+
+   input("groupStart","First lower boundary (optional)",d.groupStart,e,"Automatically aligned to the data")+'</div>':
+  '<div class="ia-table-two-col">'+
+   pick("groupLowIndex","Lower boundary column",d.groupLowIndex,available,e)+
+   pick("groupHighIndex","Upper boundary column",d.groupHighIndex,available,e)+
+   pick("groupFreqIndex","Frequency column",d.groupFreqIndex,available,e)+'</div>':
+  '<p>Enter or import real measurements in the source worksheet above.</p>')+
+ input("groupLabel","Short interval heading (optional)",d.groupLabel,e,"e.g. Time")+
+ toggle("groupShowDensity","Show frequency density (frequency ÷ class width)",d.groupShowDensity)+
+ toggle("groupShowCumulative","Show cumulative frequency",d.groupShowCumulative)+
+ toggle("groupShowPercent","Show percentage of total observations",d.groupShowPercent)+
+ '<small>Intervals with no observations remain visible. The total frequency is always shown; density has no meaningful total. A histogram plots frequency density, not frequency, when class widths differ.</small>'+
+ (d.groupOrigin?'<p class="ia-table-grouped-origin">Copied from '+e(d.groupOrigin)+'. Original data remain in your working files; this is not a live link.</p>':"")+
+ '</div>';
+}
+function emphasisControls(studio,e){
+ const d=studio.draft,rows=analyzeTable(d).model?.rows||[];
+ const eligible=rows.slice(0,["frequency","grouped"].includes(d.mode)?-1:rows.length);
+ return '<details class="ia-table-emphasis"'+(d.highlightMode==="selected"?' open':"")+'>'+
+ '<summary>Highlight a mathematically significant result (optional)</summary>'+
+ '<p>Use understated emphasis for a maximum of two genuinely meaningful result rows. Do not highlight a Total row or imply that a highlighted result is statistically significant without evidence.</p>'+
+ pick("highlightMode","Emphasis",d.highlightMode,[["none","No emphasis (default)"],["selected","Emphasise selected result rows"]],e)+
+ (d.highlightMode==="selected"?
+  '<div class="ia-table-emphasis-rows">'+
+   (eligible.length?'<p>'+eligible.map((r,i)=>'<span><strong>'+String(i+1)+'</strong> '+e(r.slice(0,2).join(" · ").slice(0,65))+'</span>').join("")+'</p>':
+    '<p>Complete the mathematical table first to see its numbered rows.</p>')+'</div>'+
+   input("highlightRows","Result row number(s)",d.highlightRows,e,"e.g. 2, 4","Choose at most two result rows, using the numbering above.")+
+   textarea("highlightReason","Why are these results mathematically important?",d.highlightReason,e,
+    "e.g. This class contains the highest observed frequency and shapes the comparison in my IA."):
+  "")+'</details>';
+}
 export function tableDataChoices(studio,e){
  const d=studio.draft;
- return calculatedControls(d,e)+sourceSelectionControls(d,e)+headerEditors(d,e)+selectionControls(d,e)+unitsEditors(d,e)+
+ return calculatedControls(d,e)+groupedControls(d,e)+sourceSelectionControls(d,e)+headerEditors(d,e)+selectionControls(d,e)+unitsEditors(d,e)+
   (d.mode==="frequency"?toggle("showPercent","Include percentage of all responses",d.showPercent):"");
 }
 
@@ -310,6 +355,7 @@ export function renderTableStudio(state,icon,e){
  '<p>Choose decimal places or significant figures for each result column. Values remain unrounded in your working data.</p>'+
  columnPrecisionOptions(d,e)+'</details>'+
  '<p class="ia-table-precision-advice">Rounding changes the displayed output, not the original data used in calculations. Explain important uncertainty and degree of accuracy in the surrounding writing.</p>'+
+ emphasisControls(s,e)+
  '</section></div>'+
  '<div class="ia-table-preview-stack">'+preview(s,e)+a4Preview(s,e)+
  '<section class="ia-table-quality-card" data-table-quality>'+quality(s,icon,e)+'</section>'+
