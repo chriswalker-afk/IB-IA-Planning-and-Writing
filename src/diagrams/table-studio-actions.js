@@ -10,6 +10,7 @@ export function setTableField(studio,key,value){
  const d=studio?.draft;if(!d)return false;
  if(fields.has(key)){
   if(typeof value!=="string")return false;
+  if(d.graphSnapshot&&["calcModel","calcA","calcB","calcC"].includes(key))return false;
   if(key==="cellAlignment"&&!["center","numeric"].includes(value))return false;
   if(key==="columnSelectionMode"&&!["all","custom"].includes(value))return false;
   if(key==="calcModel"&&!["linear","quadratic"].includes(value))return false;
@@ -23,6 +24,7 @@ export function setTableField(studio,key,value){
  }
  if(["showPercent","showRowLines","showColumnLines","calcShowPrediction","calcShowResidual","calcShowPercent"].includes(key)){d[key]=value===true;return true;}
  if(["calcXIndex","calcYIndex"].includes(key)){
+  if(d.graphSnapshot)return false;
   const i=Number(value);
   if(!Number.isInteger(i)||i<0||i>=d.columns.length)return false;
   d[key]=i;return true;
