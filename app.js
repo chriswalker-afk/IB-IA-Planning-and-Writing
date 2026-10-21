@@ -223,6 +223,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     if(studio==="graph")changed=updateGraphField(state.graphStudio,root.dataset.notationKey,draft);
     else if(studio==="stat")changed=setStatField(state.statStudio,root.dataset.notationKey,draft);
     else if(studio==="trace")changed=setTraceField(state.imageTracer,root.dataset.notationKey,draft);
+    else if(studio==="geometry")changed=setGeometryField(state.geometryStudio,root.dataset.notationKey,draft);
     else if(studio==="voronoi"&&root.dataset.notationSiteIndex!==undefined)
       changed=setVoronoiSite(state.voronoiStudio,Number(root.dataset.notationSiteIndex),"name",draft);
     else if(studio==="voronoi")changed=setVoronoiField(state.voronoiStudio,root.dataset.notationKey,draft);
@@ -234,6 +235,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     field.value=studio==="graph"?state.graphStudio.draft[root.dataset.notationKey]:
       studio==="stat"?state.statStudio.draft[root.dataset.notationKey]:
       studio==="trace"?state.imageTracer.draft[root.dataset.notationKey]:
+      studio==="geometry"?state.geometryStudio.draft[root.dataset.notationKey]:
       studio==="voronoi"&&root.dataset.notationSiteIndex!==undefined?
         state.voronoiStudio.draft.sites[Number(root.dataset.notationSiteIndex)]?.name||"":
       studio==="voronoi"?state.voronoiStudio.draft[root.dataset.notationKey]:
@@ -248,6 +250,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     if(studio==="graph")refreshGraphPreview();
     else if(studio==="stat")refreshStatPreview();
     else if(studio==="trace")refreshTracePreview();
+    else if(studio==="geometry")refreshGeometryPreview();
     else if(studio==="voronoi")refreshVoronoiPreview();
     else refreshTablePreview();
   }
