@@ -103,6 +103,13 @@ def test_one(browser,width,height,touch):
   # Preserve a screenshot of the actual editable canvas before the Files drawer.
   page.screenshot(path=str(OUT/f"geometry-editor-{width}.png"),full_page=True,animations="disabled")
   # Student-saved figures are editable and both image exports are real files.
+  page.evaluate("""() => {
+   window.__geometryClickTrace=[];
+   document.addEventListener('click',e=>window.__geometryClickTrace.push({
+    action:e.target.closest('[data-action]')?.dataset.action||'none',
+    tag:e.target.tagName
+   }),true);
+  }""")
   page.locator('[data-action="geometry-save"]').click()
   ss=saved(page)
   print("Geometry save diagnosis:",json.dumps({
@@ -112,7 +119,10 @@ def test_one(browser,width,height,touch):
    "vertices":ss["geometryStudio"]["draft"]["vertices"],
    "mode":ss["geometryStudio"]["draft"]["mode"],
    "sourceKind":ss["geometryStudio"]["draft"]["sourceKind"],
-   "current":ss["completion"]["current"]
+   "current":ss["completion"]["current"],
+   "events":page.evaluate("window.__geometryClickTrace"),
+   "errors":errors,
+   "saveStatus":page.locator("#saveStatus").inner_text()
   }),flush=True)
   assert len(ss["geometryStudio"]["figures"])==1
   original=ss["geometryStudio"]["figures"][0]["id"]
