@@ -141,6 +141,8 @@ const ADVICE=[
  ["Reflect where the result appears","Tell the reader what genuine results mean for the aim.","Interpret the shape, numerical answer, approximation or proof immediately after presenting it. Compare with your prediction when relevant, and explain any restriction that materially affects the claim.","The answer is 0.83, so the hypothesis is proved.","The observed value suggests ... for these data, but it cannot establish ..."],
  ["Make the next step earn its place","The next technique must follow from a real finding.","Identify what the current mathematics has not yet resolved. A new graph or calculation is useful only if it addresses that gap; a conclusion is also a valid next step.","Next I will use a quadratic because it is harder.","The curved residuals suggest the linear model misses a feature, so I will compare ..."]
 ];
+/** Exact four source-writing lessons (no rewording): now surfaced by the Field Guide. */
+export const SHOWING_MATHS_TIPS=Object.freeze(ADVICE.map(row=>Object.freeze([...row])));
 export function renderShowingMathsAdvice(state,icon,e,{reduced=false}={}){
  const cards=ADVICE.map((t,i)=>'<details class="intro-advice-tip studio-stage-tip" data-show-first-tip="'+i+'" data-studio-tip="'+i+'"><summary>'+
   '<span class="intro-advice-tip-icon">'+icon(["pencil","chart","target","route"][i])+'</span>'+
