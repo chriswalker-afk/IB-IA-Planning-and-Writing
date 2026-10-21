@@ -66,6 +66,17 @@ test("column decimals and significant figures format independently, preserving o
  const legacy={...s.draft};delete legacy.columnFormats;
  assert.deepEqual(normalizeTableDraft(legacy).columnFormats,{});
 });
+test("significant figures display large numbers as conventional powers of ten",()=>{
+ const s=compact();
+ s.draft.matrix[0][1]="123456789";
+ assert(setTableColumnFormat(s,1,"mode","sf"));
+ assert(setTableColumnFormat(s,1,"digits","3"));
+ const q=analyzeTable(s.draft);
+ assert.equal(q.model.rows[0][1],"1.23 × 10⁸");
+ assert(renderTableSvg(s.draft).includes("1.23 × 10⁸"));
+ assert(tableToHtml(s.draft).includes("1.23 × 10⁸"));
+ assert.equal(s.draft.matrix[0][1],"123456789");
+});
 test("summary derived statistics have independent precision; n stays an integer",()=>{
  const s=summary();let model=analyzeTable(s.draft).model;
  assert.deepEqual(model.rows[0].slice(0,2),["Group A","4"]);
