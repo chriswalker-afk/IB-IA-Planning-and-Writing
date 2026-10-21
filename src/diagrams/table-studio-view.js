@@ -155,7 +155,9 @@ function calculatedControls(d,e){
  const copied=!!d.graphSnapshot;
  return '<div class="ia-table-calculated-options"><strong>Build a model-checking table</strong>'+
  (copied?graphModelSnapshotControls(d,e):
- '<p>Choose genuine numerical observations, then enter coefficients from your own justified model. No regression is fitted or coefficients invented here.</p>')+
+ '<p>Choose genuine numerical observations, then enter coefficients from your own justified model. No regression is fitted or coefficients invented here.</p>'+
+ '<p>Already fitted a regression in Graph Plotter? Transfer the model from its card to reuse full-precision predictions and residuals.</p>'+
+ '<button type="button" class="btn btn-quiet btn-sm" data-action="table-return-to-graph">Open Graph Plotter to use a fitted model</button>')+
  (copied?"":
  (d.columns.length?pick("calcXIndex","Source x variable",String(d.calcXIndex),options,e)+
   pick("calcYIndex","Observed y variable",String(d.calcYIndex),options,e):"")+
