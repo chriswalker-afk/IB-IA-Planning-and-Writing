@@ -262,7 +262,7 @@ export function analyseGraph(draft){
    fail("model-"+model.id,model.label+": "+model.error+" Hide or remove this overlay if you want to export the observations alone.");
  }
  const selectedResidualModel=models.find(m=>m.id===d.residualModelId)||null;
- const inspecting=d.showResidualSegments||d.showResidualPlot;
+ const inspecting=d.kind!=="function"&&(d.showResidualSegments||d.showResidualPlot);
  if(inspecting){
   if(!selectedResidualModel)fail("residual-model","Choose a model to examine before showing residuals.");
   else if(!selectedResidualModel.visible)
