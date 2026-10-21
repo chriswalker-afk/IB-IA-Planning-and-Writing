@@ -2,6 +2,7 @@
 Uses fictional sample data only. Run in Chromium at desktop and phone widths.
 """
 import copy,json,os,subprocess,traceback
+from xml.etree import ElementTree as ET
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 OUT=Path(os.environ.get("IA_QA_OUTPUT","qa-output"));OUT.mkdir(exist_ok=True)
@@ -147,7 +148,8 @@ def compact(p,width):
  assert 'ia-table-column-divider' in svg_text
  assert 'text-align:center' in html_text
  assert '"14.0"' in csv_text and '"2.3"' in csv_text
- assert "Results recorded using the original resolution." in svg_text
+ svg_spans=" ".join(node.text or "" for node in ET.fromstring(svg_text).iter() if node.tag.endswith("tspan"))
+ assert "Results recorded using the original resolution." in svg_spans
  p.locator('[data-action="table-use"]').click()
  assert p.locator('[data-source-node="C30"]').count()==1
  assert p.locator('.ia-table-entry svg.ia-table-svg').count()==1
