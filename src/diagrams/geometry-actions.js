@@ -1,33 +1,38 @@
 import {newGeometryDraft,normalizeGeometryDraft,geometryAnalysis,geometrySignature,saveGeometryFigure,MAX_GEOMETRY_VERTICES} from "./geometry-core.js";
 import {completeEntry,startFirstRepresentation} from "../completing/engine.js";
+import {geometryFromTrace} from "./geometry-advanced.js";
 export function setGeometryField(studio,key,value){
  const d=studio.draft;
- if(["title","figureNumber","unit","sourceCredit","note"].includes(key)){d[key]=String(value).slice(0,key==="note"||key==="sourceCredit"?800:180);d.edited=true;return true;}
+ if(["title","figureNumber","unit","sourceCredit","note","sensitivityStep"].includes(key)){d[key]=String(value).slice(0,key==="note"||key==="sourceCredit"?800:180);d.edited=true;return true;}
  if(key==="mode"&&["schematic","coordinate"].includes(value)){d.mode=value;d.showBearings=false;d.edited=true;return true;}
  if(key==="sourceKind"&&["theoretical","primary","secondary","unsure"].includes(value)){d.sourceKind=value;return true;}
- if(["northAligned","showLengths","showAngles","showBearings","showGrid","showCoordinates","filled"].includes(key)){
+ if(["northAligned","showLengths","showAngles","showBearings","showGrid","showCoordinates","showDecomposition","showSensitivity","filled"].includes(key)){
   d[key]=value===true;d.edited=true;return true;
  }
  return false;
 }
 export function setGeometryVertex(studio,index,key,value){
  const v=studio.draft.vertices[index];if(!v)return false;
+ if(["edgeConstraint"].includes(key)&&["free","horizontal","vertical"].includes(value)){v.edgeConstraint=value;studio.draft.edited=true;return true;}
+ if(["rightAngle","locked"].includes(key)&&typeof value==="boolean"){v[key]=value;studio.draft.edited=true;return true;}
  if(["label","edgeLabel","angleLabel"].includes(key)){v[key]=String(value).slice(0,key==="label"?44:100);studio.draft.edited=true;return true;}
  if(key==="x"||key==="y"){
+  if(v.locked)return false;
   const n=Number(value),valid=String(value).trim()!==""&&Number.isFinite(n)&&Math.abs(n)<=1e5;
   // A cleared or invalid coordinate must never silently reuse the old value.
   v[key]=valid?n:null;studio.draft.edited=true;return true;
  }return false;
 }
 export function geometryTemplate(studio,kind){
- if(!["triangle","rectangle","polygon"].includes(kind))return false;
+ if(!["triangle","rectangle","polygon","l-shape","t-shape"].includes(kind))return false;
  studio.activeId="";studio.draft=newGeometryDraft(kind);studio.open=true;return true;
 }
 export function geometryAddVertex(studio){
  const d=studio.draft;if(d.vertices.length>=MAX_GEOMETRY_VERTICES)return false;
  const n=d.vertices.length,a=d.vertices[n-1],b=d.vertices[0];
  d.vertices.push({id:"v-"+n,label:String.fromCharCode(65+n),x:(a.x+b.x)/2,y:(a.y+b.y)/2+1,
-  edgeLabel:"",angleLabel:""});d.edited=true;return true;
+  edgeLabel:"",angleLabel:"",edgeConstraint:"free",rightAngle:false,locked:false});
+ a.edgeConstraint="free";d.edited=true;return true;
 }
 export function geometryRemoveVertex(studio,index){
  const d=studio.draft;if(d.vertices.length<=3||index<0||index>=d.vertices.length)return false;
@@ -73,4 +78,16 @@ export function saveAndLinkGeometry(state){
  entry.kind="diagram";state.completion.activeEntryIndex=index;state.ui.mathIndex=index;
  if(entry.phase==="first")state.completion.fields.firstType="diagram";
  return{ok:true,record:saved.record,index,reviewNeeded};
+}
+
+/** A saved trace remains untouched. Import creates a new editable geometry draft. */
+export function importGeometryFromTrace(state,traceFigureId=""){
+ const tracer=state?.imageTracer;
+ const record=traceFigureId?tracer?.figures?.find(f=>f.id===traceFigureId):null;
+ if(traceFigureId&&!record)return{ok:false,error:"That saved tracing could not be found."};
+ const converted=geometryFromTrace(record?.draft||tracer?.draft,{traceFigureId});
+ if(!converted.ok)return converted;
+ const geometry=state.geometryStudio;
+ geometry.activeId="";geometry.draft=converted.draft;geometry.open=true;
+ return{...converted,recordedSource:!!record};
 }
