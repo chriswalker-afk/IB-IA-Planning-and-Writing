@@ -69,7 +69,7 @@ def test_one(browser,width,height,touch):
   page.wait_for_function("""term=>{
    const raw=localStorage.getItem('ia-pathfinder-prototype-v1');
    return !!raw&&JSON.parse(raw).geometryStudio.draft.vertices[0].angleLabel.includes(term);
-  }""",r'\(\theta\)')
+  }""",arg=r'\(\theta\)')
   label=saved(page)["geometryStudio"]["draft"]["vertices"][0]["angleLabel"]
   assert r'\(\theta\)' in label,label
   assert page.locator("[data-geometry-preview] svg").count()==1
