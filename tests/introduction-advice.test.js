@@ -67,9 +67,8 @@ test('introduction writing craft remains fully accessible without six large card
  assert(!html.includes('Why this matters in the criteria'));
  for(const t of INTRODUCTION_TIPS)assert(t.body.length>90&&t.weak.length>15&&t.strong.length>25);
  const reduced=renderIntroductionWritingAdvice(icon,escapeHtml,{reduced:true,state:make()});
- assert(reduced.includes('prediction spark'));
- assert(reduced.includes('All six introduction writing tips'),"Reduced advice must not hide the complete tip library");
- assert(!reduced.includes('data-intro-advice='));
+ assert.equal(reduced,"","Reduced mode omits the duplicate before-you-write panel; the task and bubbles remain");
+ assert.equal(INTRODUCTION_TIPS.length,6,"All source lessons are preserved and appear in the Field Guide");
 });
 test('criterion A/C comments are introduction-specific, and remain best-fit guidance',()=>{
  const a=CRITERION_SPOTS['completing:C10:aim'],c=CRITERION_SPOTS['completing:C10:motivation'];
