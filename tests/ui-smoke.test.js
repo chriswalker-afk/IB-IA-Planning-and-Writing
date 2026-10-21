@@ -31,6 +31,7 @@ import {createStudioViews} from "../src/ui/studio-views.js";
 import {createCompletingViews} from "../src/completing/views.js";
 import {newGraphDraft,saveGraphFigure,renderGraphSvg,graphData,splitHeading,analyseGraph} from "../src/diagrams/graph-core.js";
 import {renderGraphQuality,renderGraphActions,graphSourceChoices,renderGraphModelSummary} from "../src/diagrams/graph-view.js";
+import {renderModelComparison,renderResidualPanelContents} from "../src/diagrams/graph-diagnostics-view.js";
 import {updateGraphField,chooseGraphType,importGraphTable,loadSavedGraph,freshGraph,saveAndLinkGraph,saveGraphDraft,addGraphModel,toggleGraphModel,removeGraphModel,updateGraphModelExpression} from "../src/diagrams/graph-actions.js";
 import {exportGraphFigure} from "../src/diagrams/graph-export.js";
 import {imageTraceChecks,renderTraceOverlaySvg,renderCleanTraceSvg,traceCoordinates,traceCalibration} from "../src/diagrams/image-tracer-core.js";
@@ -112,7 +113,7 @@ function createHarness(savedValue,{welcome=false}={}){
     KEY:"ia-pathfinder-prototype-v1",
     readRecordValue,updateRecordValue,icon,escapeHtml,cleanUrl,button,
     referenceNodeForPrototypeStep,createPlanningViews,createStudioViews,createCompletingViews,createCheckingViews,renderWriterFieldGuide,renderWriterGuideWelcome,shouldShowWriterGuideWelcome,renderWriterGuidePopin,writingGuideRecommendation,createProjectViews,
-    newGraphDraft,saveGraphFigure,renderGraphSvg,graphData,splitHeading,analyseGraph,renderGraphModelSummary,addGraphModel,toggleGraphModel,removeGraphModel,updateGraphModelExpression,renderGraphQuality,renderGraphActions,graphSourceChoices,
+    newGraphDraft,saveGraphFigure,renderGraphSvg,graphData,splitHeading,analyseGraph,renderGraphModelSummary,renderModelComparison,renderResidualPanelContents,addGraphModel,toggleGraphModel,removeGraphModel,updateGraphModelExpression,renderGraphQuality,renderGraphActions,graphSourceChoices,
     updateGraphField,chooseGraphType,importGraphTable,loadSavedGraph,freshGraph,saveAndLinkGraph,saveGraphDraft,exportGraphFigure,
     imageTraceChecks,renderTraceOverlaySvg,renderCleanTraceSvg,traceCoordinates,traceCalibration,renderImageTracer,
     tracePreviewHtml,traceWorkingHtml,traceQualityHtml,traceOutputHtml,setTraceField,setTraceView,setTraceTool,
@@ -1307,5 +1308,33 @@ test("Graph Studio Pass 1 opt-in model controls are handled in the complete app 
  assert(!h.html.includes('class="graph-model-overlay"'));
  h.action("graph-model-remove",{graphModelId:id});
  assert.equal(h.saved.graphStudio.draft.models.length,0);
+ assert.equal(h.saved.entries.length,0);
+});
+
+test("Graph Studio Pass 2 residual selection displays signed errors without inventing IA results",()=>{
+ const st=createProjectState();
+ st.route="completing";st.completion.current="C31";st.ui.writingIntroSeen=true;st.graphStudio.open=true;
+ Object.assign(st.graphStudio.draft,{
+  kind:"scatter",columns:["Time (s)","Distance (m)"],matrix:[["0","1"],["1","3"],["2","5"],["3","7"]],
+  xLabel:"Time",yLabel:"Distance",xUnit:"s",yUnit:"m",xUnitMode:"unit",yUnitMode:"unit",
+  title:"Fictional test observations",sourceKind:"primary"
+ });
+ const id=addGraphModel(st.graphStudio,"linear").model.id;
+ updateGraphField(st.graphStudio,"residualModelId",id);
+ updateGraphField(st.graphStudio,"showResidualSegments",true);
+ updateGraphField(st.graphStudio,"showResidualPlot",true);
+ updateGraphField(st.graphStudio,"modelReflection","The observed errors are small.");
+ const h=createHarness(st);
+ assert.match(h.html,/graph-residual-segment/);
+ assert.match(h.html,/graph-residual-zero/);
+ assert.match(h.html,/data-action="graph-residual-png"/);
+ assert.match(h.html,/The observed errors are small/);
+ assert.equal(h.saved.entries.length,0);
+ h.action("graph-model-remove",{graphModelId:id});
+ assert.equal(h.saved.graphStudio.draft.models.length,0);
+ assert.equal(h.saved.graphStudio.draft.residualModelId,"");
+ assert.equal(h.saved.graphStudio.draft.showResidualPlot,false);
+ assert.equal(h.saved.graphStudio.draft.showResidualSegments,false);
+ assert(!h.html.includes("graph-residual-panel"));
  assert.equal(h.saved.entries.length,0);
 });

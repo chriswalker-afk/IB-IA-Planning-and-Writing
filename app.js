@@ -42,6 +42,7 @@ import {createCompletingViews} from "./src/completing/views.js";
 import {toggleConclusionResult} from "./src/completing/conclusion-workspace.js";
 import {newGraphDraft,saveGraphFigure,renderGraphSvg,graphData,splitHeading,analyseGraph} from "./src/diagrams/graph-core.js";
 import {renderGraphQuality,renderGraphActions,graphSourceChoices,renderGraphModelSummary} from "./src/diagrams/graph-view.js";
+import {renderModelComparison,renderResidualPanelContents} from "./src/diagrams/graph-diagnostics-view.js";
 import {updateGraphField,chooseGraphType,importGraphTable,loadSavedGraph,freshGraph,saveAndLinkGraph,saveGraphDraft,addGraphModel,toggleGraphModel,removeGraphModel,updateGraphModelExpression} from "./src/diagrams/graph-actions.js";
 import {exportGraphFigure} from "./src/diagrams/graph-export.js";
 import {imageTraceChecks,renderTraceOverlaySvg,renderCleanTraceSvg,traceCoordinates,traceCalibration} from "./src/diagrams/image-tracer-core.js";
@@ -344,6 +345,10 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       const model=modelResult.models?.find(m=>m.id===element.dataset.graphModelSummary);
       if(model)element.innerHTML=renderGraphModelSummary(model,e);
     });
+    const comparison=main.querySelector?.("[data-graph-comparison]");
+    if(comparison)comparison.innerHTML=renderModelComparison(d,modelResult,e);
+    const residual=main.querySelector?.("[data-graph-residual-content]");
+    if(residual)residual.innerHTML=renderResidualPanelContents(d,modelResult,icon,e);
     refreshPresentation("graph");
   }
 
@@ -1987,7 +1992,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
          "Next, write your introductory sentence and put the saved figure in your own IA document. No result has been marked as completed.");
         break;
       }
-      case "graph-svg":case "graph-png":case "graph-copy":{
+      case "graph-svg":case "graph-png":case "graph-copy":case "graph-residual-svg":case "graph-residual-png":{
         const format=action.slice("graph-".length);
         // Keep the linked copy and its review status aligned with any exported edits.
         const prior=state.graphStudio.figures.find(x=>x.id===state.graphStudio.activeId);
@@ -2523,7 +2528,8 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     }
     if(target.dataset.graphField!==undefined){
       if(updateGraphField(state.graphStudio,target.dataset.graphField,target.type==="checkbox"?target.checked:target.value)){
-        save();refreshGraphPreview();
+        save();
+        if(target.dataset.graphField!=="modelReflection")refreshGraphPreview();
       }
       return;
     }
@@ -2691,6 +2697,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     if(target.dataset.graphField!==undefined){
       if(updateGraphField(state.graphStudio,target.dataset.graphField,target.type==="checkbox"?target.checked:target.value)){
         save();
+        if(target.dataset.graphField==="modelReflection")return;
         if(target.tagName==="SELECT"||target.type==="checkbox"){
           const position=captureReturn(target);
           render();restoreReturn(position);

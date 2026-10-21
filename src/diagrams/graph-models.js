@@ -92,6 +92,42 @@ export function fitPolynomialLeastSquares(points,degree){
  return {ok:true,predict,equation,coefficients,n,method:"Ordinary least squares",
   note:"Coefficients are rounded for display; plotted predictions use full precision."};
 }
+/** Comparable, in-sample diagnostics for the SAME complete set of observed pairs.
+ * No observations are quietly dropped for a model's domain. R² is deliberately
+ * undefined for a constant response, and can be negative for authored models.
+ * The residual convention is always observation minus predicted value.
+ */
+export function diagnoseGraphModel(points,predict){
+ const n=points.length;
+ if(n<2)return {ok:false,n,reason:"At least two paired observations are needed."};
+ const residuals=[];
+ for(let i=0;i<n;i++){
+  const {x,y}=points[i];let predicted;
+  try{predicted=predict(x);}catch{predicted=NaN;}
+  const residual=y-predicted;
+  if(!Number.isFinite(predicted)||!Number.isFinite(residual)){
+   return {ok:false,n,reason:"Predictions are not finite for every observed x-value. Model diagnostics cannot be compared on different subsets."};
+  }
+  residuals.push({x,y,predicted,residual,index:i});
+ }
+ // Center y relative to an actual observation to limit cancellation.
+ const reference=points[0].y,average=reference+points.reduce((sum,p)=>sum+(p.y-reference),0)/n;
+ let ssResidual=0,ssTotal=0;
+ for(const r of residuals){
+  ssResidual+=r.residual*r.residual;
+  const dy=r.y-average;
+  ssTotal+=dy*dy;
+ }
+ if(!Number.isFinite(ssResidual)||!Number.isFinite(ssTotal))
+  return {ok:false,n,reason:"Values are too large for reliable error statistics on this scale."};
+ const rmse=Math.sqrt(ssResidual/n);
+ const r2=ssTotal===0?null:1-ssResidual/ssTotal;
+ if(!Number.isFinite(rmse)||(r2!==null&&!Number.isFinite(r2)))
+  return {ok:false,n,reason:"Error statistics could not be represented reliably."};
+ return {ok:true,n,rmse,r2,ssResidual,ssTotal,residuals,
+  r2Note:ssTotal===0?"R² is undefined when all observed y-values are identical.":""};
+}
+
 /** Evaluate only models that the student has explicitly added. */
 export function assessGraphModels(rawModels,points,compile){
  const models=normalizeGraphModels(rawModels);
@@ -111,7 +147,9 @@ export function assessGraphModels(rawModels,points,compile){
      {ok:false,error:"The equation has fewer than two valid plotted values over the observed x-range."};
    }catch(err){fit={ok:false,error:err.message};}
   }else fit=fitPolynomialLeastSquares(points,type.degree);
-  return {...m,...type,...fit,valid:fit.ok===true};
+  const diagnostics=fit.ok===true?diagnoseGraphModel(points,fit.predict):
+   {ok:false,n:points.length,reason:fit.error||"The selected model is not available."};
+  return {...m,...type,...fit,valid:fit.ok===true,diagnostics};
  });
 }
 /** A fit is displayed only across the measured range, not extrapolated into unexplored territory. */

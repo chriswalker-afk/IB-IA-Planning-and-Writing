@@ -1,5 +1,5 @@
 /** Browser export only. SVG is generated from escaped student strings; no remote resources. */
-import {analyseGraph,graphFileBase,renderGraphSvg} from "./graph-core.js";
+import {analyseGraph,graphFileBase,renderGraphSvg,renderGraphResidualSvg} from "./graph-core.js";
 const svgBlob=svg=>new Blob([svg],{type:"image/svg+xml;charset=utf-8"});
 const triggerDownload=(blob,name)=>{
  const url=URL.createObjectURL(blob),link=document.createElement("a");
@@ -32,16 +32,24 @@ async function asPng(svg){
 export async function exportGraphFigure(draft,format){
  const q=analyseGraph(draft);
  if(!q.ready)throw new Error("Fix the required graph quality checks before exporting.");
- const svg=renderGraphSvg(draft),basename=graphFileBase(draft);
- if(format==="svg"){
+ const residual=["residual-svg","residual-png"].includes(format);
+ const model=q.selectedResidualModel;
+ if(residual&&(!q.draft.showResidualPlot||!model?.visible||!model.valid||!model.diagnostics?.ok))
+  throw new Error("Select a visible model that predicts every observation, then show its residual plot before exporting.");
+ const svg=residual?renderGraphResidualSvg(draft):renderGraphSvg(draft);
+ if(!svg)throw new Error("There is no residual plot to export.");
+ const basename=graphFileBase(draft)+(residual?"-residuals-"+model.type:"");
+ const outputFormat=residual?format.slice("residual-".length):format;
+ if(outputFormat==="svg"){
   triggerDownload(svgBlob(svg),basename+".svg");
-  return "SVG figure downloaded. Insert it after introducing it in your IA.";
+  return residual?"Residual SVG downloaded. Explain the error pattern in your IA.":"SVG figure downloaded. Insert it after introducing it in your IA.";
  }
- if(!["png","copy"].includes(format))throw new Error("Unsupported graph export.");
+ if(!["png","copy"].includes(outputFormat))throw new Error("Unsupported graph export.");
  const png=await asPng(svg);
- if(format==="png"){
+ if(outputFormat==="png"){
   triggerDownload(png,basename+".png");
-  return "High-resolution PNG downloaded. Insert it into your actual IA document.";
+  return residual?"Residual PNG downloaded. Introduce and interpret it in your IA.":
+   "High-resolution PNG downloaded. Insert it into your actual IA document.";
  }
  if(!navigator.clipboard?.write||typeof ClipboardItem==="undefined")
   throw new Error("Direct image copying is unavailable in this browser. Download the PNG instead.");
