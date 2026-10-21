@@ -2546,6 +2546,51 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     const top=window.scrollY;
     save();render();window.scrollTo({top,behavior:"auto"});
   }
+  // Geometry vertices can be dragged without interfering with Voronoi
+  // interactions. A confirmed save is still required to alter a linked figure.
+  let geometryPointer=null;
+  document.addEventListener("pointerdown",evt=>{
+    if(!state.geometryStudio?.open||state.completion.current!=="C31"||evt.button>0)return;
+    const point=evt.target.closest?.("[data-geometry-vertex-index]"),
+      svg=point?.closest?.("[data-geometry-canvas]");
+    if(!point||!svg)return;
+    const index=Number(point.dataset.geometryVertexIndex),transform=svg.getScreenCTM?.();
+    if(!transform||!Number.isInteger(index))return;
+    let inverse;try{inverse=transform.inverse();}catch{return;}
+    geometryPointer={id:evt.pointerId,svg,inverse,index};
+    evt.preventDefault();
+  });
+  document.addEventListener("pointermove",evt=>{
+    const drag=geometryPointer;if(!drag||drag.id!==evt.pointerId)return;
+    const svgPoint=drag.svg.createSVGPoint();svgPoint.x=evt.clientX;svgPoint.y=evt.clientY;
+    const pt=svgPoint.matrixTransform(drag.inverse),layout=geometryLayout(state.geometryStudio.draft),
+      coord=layout.from(pt.x,pt.y);
+    if(!Number.isFinite(coord.x)||!Number.isFinite(coord.y))return;
+    const p=state.geometryStudio.draft.vertices[drag.index];if(!p)return;
+    p.x=Math.round(coord.x*100)/100;p.y=Math.round(coord.y*100)/100;state.geometryStudio.draft.edited=true;
+    refreshGeometryPreview();
+  });
+  document.addEventListener("pointerup",evt=>{
+    if(geometryPointer?.id!==evt.pointerId)return;
+    geometryPointer=null;save();render();
+  });
+  document.addEventListener("pointercancel",evt=>{
+    if(geometryPointer?.id===evt.pointerId){geometryPointer=null;save();render();}
+  });
+  document.addEventListener("keydown",evt=>{
+    const target=evt.target?.closest?.("[data-geometry-vertex-index]");
+    if(!target||!state.geometryStudio?.open||!["ArrowLeft","ArrowRight","ArrowUp","ArrowDown"].includes(evt.key))return;
+    const index=Number(target.dataset.geometryVertexIndex),p=state.geometryStudio.draft.vertices[index];
+    if(!p)return;evt.preventDefault();
+    const step=evt.shiftKey?1:.1;
+    if(evt.key==="ArrowLeft")p.x-=step;
+    if(evt.key==="ArrowRight")p.x+=step;
+    if(evt.key==="ArrowUp")p.y+=step;
+    if(evt.key==="ArrowDown")p.y-=step;
+    p.x=Number(p.x.toFixed(3));p.y=Number(p.y.toFixed(3));
+    state.geometryStudio.draft.edited=true;save();render();
+    main.querySelector?.('[data-geometry-vertex-index="'+index+'"]')?.focus?.();
+  });
   document.addEventListener("pointerdown",evt=>{
     if(!state.voronoiStudio?.open||state.completion.current!=="C31"||state.voronoiStudio.scenario?.showOriginal)return;
     const svg=evt.target.closest?.("[data-voronoi-canvas]");
