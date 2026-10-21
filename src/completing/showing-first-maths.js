@@ -144,19 +144,16 @@ const ADVICE=[
 /** Exact four source-writing lessons (no rewording): now surfaced by the Field Guide. */
 export const SHOWING_MATHS_TIPS=Object.freeze(ADVICE.map(row=>Object.freeze([...row])));
 export function renderShowingMathsAdvice(state,icon,e,{reduced=false}={}){
- const cards=ADVICE.map((t,i)=>'<details class="intro-advice-tip studio-stage-tip" data-show-first-tip="'+i+'" data-studio-tip="'+i+'"><summary>'+
-  '<span class="intro-advice-tip-icon">'+icon(["pencil","chart","target","route"][i])+'</span>'+
-  '<span class="intro-advice-tip-copy"><strong>'+e(t[0])+'</strong><span>'+e(t[1])+'</span></span>'+icon("chevron-right")+'</summary>'+
-  '<div class="intro-advice-tip-body"><p>'+e(t[2])+'</p><div class="intro-advice-example"><p><strong>Instead of</strong> '+e(t[3])+'</p><p><strong>Try</strong> '+e(t[4])+'</p></div></div></details>').join("");
- return '<section class="studio-stage-advice show-first-advice" data-stage-advice="maths" aria-label="Writing advice for showing the first mathematics">'+
+ return '<section class="studio-stage-advice show-first-advice" data-stage-advice="maths" data-advice-moved-to-guide="showing-mathematics" aria-label="Writing advice for showing the first mathematics">'+
   '<div class="studio-stage-advice-head"><span class="studio-stage-icon">'+icon("chart")+'</span><div>'+
   '<span class="intro-writing-guide-eyebrow">BEFORE YOU WRITE · SHOWING FIRST MATHEMATICS</span>'+
   '<h2>Introduce it. Show it. Interpret it. Follow it.</h2>'+
   '<p>Your reader should always know why a figure or calculation is appearing before they see it, and what it means immediately afterwards.</p></div></div>'+
   '<p class="show-first-no-tables">'+icon("info")+' <strong>Long tables are not IA content — not even in the appendix.</strong> Keep raw datasets in your working files and present only concise, useful summaries or graphs.</p>'+
-  (!reduced?'<div class="intro-advice-cards studio-stage-advice-cards">'+cards+'</div>':"")+
+  '<button type="button" class="writer-guide-inline-more" data-action="writer-guide-open" data-guide-tip="purpose" data-guide-spot="completing:C30:introduceA">'+icon("book")+' Four tips for showing mathematics clearly '+icon("arrow-right")+'</button>'+
   '</section>';
 }
+
 export function renderShowingMathsSparks(state,icon,e){
  const ctx=firstMathsContext(state),p=state?.planning?.fields||{},f=state?.completion?.fields||{};
  const source=SOURCE_REMINDERS[ctx.sourceKey];
