@@ -40,7 +40,7 @@ def prep(browser,width,height,touch):
  errors=[]
  page.on("pageerror",lambda error: errors.append(str(error)))
  page.on("dialog",lambda dialog:dialog.accept())
- page.add_init_script("localStorage.setItem("+json.dumps(KEY)+","+json.dumps(json.dumps(state))+");")
+ page.add_init_script("if(!localStorage.getItem("+json.dumps(KEY)+"))localStorage.setItem("+json.dumps(KEY)+","+json.dumps(json.dumps(state))+");")
  page.goto(URL,wait_until="networkidle")
  return context,page,errors
 
