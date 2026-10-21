@@ -44,7 +44,7 @@ try:
    errors=[]
    page.on('pageerror',lambda err: errors.append(str(err)))
    page.goto('http://127.0.0.1:'+str(PORT)+'/',wait_until='networkidle',timeout=45000)
-   target=page.locator('textarea[data-bind="planning.fields.aim"]').first
+   target=page.locator('textarea[data-bind="planning.fields.aim"]:visible').first
    if not target.is_visible():
     print("Planning maths editor fixture context:",json.dumps({
      "route":page.locator("body").get_attribute("data-route"),
@@ -58,7 +58,7 @@ try:
    original=target.input_value()
    idx=original.index(' for these')
    target.evaluate('(el,offset)=>{el.focus();el.setSelectionRange(offset,offset)}',idx)
-   group=page.locator('[data-math-field="planning.fields.aim"]').first
+   group=page.locator('[data-math-field="planning.fields.aim"]:visible').first
    group.locator('[data-action="math-open"]').click()
    formula=group.locator('[data-math-expression]')
    formula.fill(r'\frac{x^{2}}{2}')
@@ -77,7 +77,7 @@ try:
    assert r'\(x^{2}+1\)' in target.input_value()
    assert r'\frac{' not in target.input_value()
    page.reload(wait_until='networkidle')
-   target=page.locator('textarea[data-bind="planning.fields.aim"]').first
+   target=page.locator('textarea[data-bind="planning.fields.aim"]:visible').first
    assert r'\(x^{2}+1\)' in target.input_value(),'Saved formula was not restored'
    assert page.locator('[data-math-preview-content] svg').first.is_visible()
    before=json.loads(page.evaluate('localStorage.getItem('+json.dumps(KEY)+')'))
