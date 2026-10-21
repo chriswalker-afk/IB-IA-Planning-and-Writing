@@ -105,10 +105,19 @@ def test_one(browser,width,height,touch):
   # Student-saved figures are editable and both image exports are real files.
   page.evaluate("""() => {
    window.__geometryClickTrace=[];
-   document.addEventListener('click',e=>window.__geometryClickTrace.push({
-    action:e.target.closest('[data-action]')?.dataset.action||'none',
-    tag:e.target.tagName
-   }),true);
+   window.__geometryPointerTrace=[];
+   for(const type of ['pointerdown','pointerup','mousedown','mouseup','click']){
+    document.addEventListener(type,e=>{
+     window.__geometryPointerTrace.push({
+      type,target:e.target.closest?.('[data-action]')?.dataset.action||e.target.tagName,
+      button:e.button,buttons:e.buttons,pointerId:e.pointerId
+     });
+     if(type==='click')window.__geometryClickTrace.push({
+      action:e.target.closest('[data-action]')?.dataset.action||'none',
+      tag:e.target.tagName
+     });
+    },true);
+   }
   }""")
   page.locator('[data-action="geometry-save"]').click()
   ss=saved(page)
@@ -121,6 +130,13 @@ def test_one(browser,width,height,touch):
    "sourceKind":ss["geometryStudio"]["draft"]["sourceKind"],
    "current":ss["completion"]["current"],
    "events":page.evaluate("window.__geometryClickTrace"),
+   "pointerEvents":page.evaluate("window.__geometryPointerTrace"),
+   "saveButton":page.locator('[data-action="geometry-save"]').evaluate("""btn=>{
+     const r=btn.getBoundingClientRect(),x=r.x+r.width/2,y=r.y+r.height/2;
+     return {disabled:btn.disabled,connected:btn.isConnected,x,y,
+       hit:document.elementFromPoint(x,y)?.outerHTML?.slice(0,210),
+       button:btn.outerHTML.slice(0,210)};
+    }"""),
    "errors":errors,
    "saveStatus":page.locator("#saveStatus").inner_text()
   }),flush=True)
