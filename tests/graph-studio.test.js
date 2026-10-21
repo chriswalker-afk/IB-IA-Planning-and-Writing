@@ -232,7 +232,8 @@ test("linear, quadratic and student-written overlays coexist with independent co
  assert(svg.includes("Quadratic regression:"));
  assert(svg.includes("My own equation:"));
  assert(svg.includes("Observed points"));
- assert.equal((svg.match(/<circle cx=/g)||[]).length,5); // four measured points + legend marker
+ assert.equal((svg.match(/<circle cx=/g)||[]).length,4); // four genuine measured points
+ assert.equal((svg.match(/class="graph-legend-marker"/g)||[]).length,1); // independent key symbol
  assert.equal(sampleGraphModel(a.models[0],a.points).length,261);
  assert(Math.max(...sampleGraphModel(a.models[0],a.points).map(p=>p.x))===3);
  assert(toggleGraphModel(g,a.models[1].id));
@@ -625,4 +626,84 @@ test("graph figure labels scientific units, figure numbers, and separate legend 
  const normalized=normalizeGraphStudio({...g,draft:{...g.draft,legendPosition:"invalid"}});
  assert.equal(normalized.draft.legendPosition,"below");
  assert.equal(normalized.draft.showLegend,true);
+});
+
+test("fitted equations can appear in the legend, in a separate box, or nowhere",()=>{
+ const studio=validData(),d=studio.draft;
+ const a=addGraphModel(studio,"linear").model,b=addGraphModel(studio,"quadratic").model;
+ assert.equal(d.equationPlacement,"legend","Older figures keep their original visible equations");
+ let svg=renderGraphSvg(d);
+ assert.match(svg,/Linear regression:/);
+ assert.match(svg,/Quadratic regression:/);
+ assert(!svg.includes('class="graph-model-equation-panel"'));
+ assert.equal((svg.match(/class="graph-model-overlay"/g)||[]).length,2);
+ const markup=renderGraphStudio({graphStudio:studio},icon,escapeHtml);
+ assert.match(markup,/data-graph-field="equationPlacement"/);
+ assert.match(markup,/In a separate box below the graph/);
+
+ assert.equal(updateGraphField(studio,"equationPlacement","annotation"),true);
+ svg=renderGraphSvg(d);
+ assert(svg.includes('class="graph-model-equation-panel"'));
+ assert(svg.includes('class="graph-model-equation" data-graph-equation-model="'+a.id+'"'));
+ assert(svg.includes('class="graph-model-equation" data-graph-equation-model="'+b.id+'"'));
+ assert(!svg.includes("Linear regression:"));
+ assert(svg.includes("Linear regression</text>"));
+ assert.equal((svg.match(/class="graph-model-overlay"/g)||[]).length,2);
+
+ // Hiding the key must not hide a separately placed equation or its curve.
+ assert.equal(updateGraphField(studio,"showLegend",false),true);
+ svg=renderGraphSvg(d);
+ assert(!svg.includes('class="graph-legend-text"'));
+ assert(svg.includes('class="graph-model-equation-panel"'));
+ assert.equal((svg.match(/class="graph-model-overlay"/g)||[]).length,2);
+
+ // Turning off one model removes only its own curve and displayed equation.
+ assert(toggleGraphModel(studio,b.id));
+ svg=renderGraphSvg(d);
+ assert(svg.includes('data-graph-equation-model="'+a.id+'"'));
+ assert(!svg.includes('data-graph-equation-model="'+b.id+'"'));
+ assert.equal((svg.match(/class="graph-model-overlay"/g)||[]).length,1);
+
+ updateGraphField(studio,"showLegend",true);
+ assert.equal(updateGraphField(studio,"equationPlacement","hidden"),true);
+ svg=renderGraphSvg(d);
+ assert(!svg.includes('class="graph-model-equation-panel"'));
+ assert(!svg.includes('class="graph-model-equation"'));
+ assert(svg.includes('Linear regression</text>'));
+ assert(!svg.includes("Linear regression:"));
+ assert(svg.includes('class="graph-model-overlay"'));
+ assert.equal(updateGraphField(studio,"equationPlacement","invented"),false);
+ assert.equal(d.equationPlacement,"hidden");
+});
+test("equation annotation reserves space, wraps long equations, and survives reload",()=>{
+ const studio=validData(),d=studio.draft;
+ const expression="x"+(" + 0.1*x").repeat(17);
+ const custom=addGraphModel(studio,"custom").model;
+ assert(updateGraphModelExpression(studio,custom.id,expression));
+ assert.equal(analyseGraph(d).models[0].valid,true);
+ updateGraphField(studio,"equationPlacement","annotation");
+ d.caption="A clear figure caption explaining this mathematical model";
+ const assessed=analyseGraph(d).models[0];
+ for(const position of ["below","above","right"]){
+  assert(updateGraphField(studio,"legendPosition",position));
+  let svg=renderGraphSvg(d);
+  const panelMatch=svg.match(/<rect class="graph-model-equation-panel" x="[^"]+" y="([\d.]+)"/);
+  const plotMatch=svg.match(/<rect x="109" y="([\d.]+)" width="776"/);
+  assert(panelMatch&&plotMatch,"The panel and plotting area must both be present");
+  const yPanel=Number(panelMatch[1]),yPlot=Number(plotMatch[1]);
+  assert(yPanel>yPlot+386+64,"The equation box must sit beneath the plot and x axis label: "+position);
+  const equationLines=[...svg.matchAll(new RegExp('class="graph-model-equation" data-graph-equation-model="'+custom.id+'"[^>]*>([^<]*)</text>',"g"))];
+  assert(equationLines.length>1,"Long equations should wrap instead of being cut off");
+  assert.equal(equationLines.map(x=>x[1]).join(" "),assessed.equation,"All equation terms must survive wrapping");
+  const ys=[...svg.matchAll(/class="graph-legend-text" x="[^"]+" y="([\d.]+)"/g)].map(x=>Number(x[1]));
+  if(position==="below")assert(yPanel>Math.max(...ys),"Equation panel must follow the legend");
+  assert(svg.includes('class="graph-figure-caption"'));
+  assert(svg.includes('A clear figure caption'));
+ }
+ const saved=normalizeGraphStudio(JSON.parse(JSON.stringify(studio)));
+ assert.equal(saved.draft.equationPlacement,"annotation");
+ assert.equal(saved.draft.legendPosition,"right");
+ const legacy={...studio.draft};delete legacy.equationPlacement;
+ assert.equal(normalizeGraphStudio({draft:legacy}).draft.equationPlacement,"legend");
+ assert.equal(normalizeGraphStudio({draft:{...studio.draft,equationPlacement:"bad"}}).draft.equationPlacement,"legend");
 });
