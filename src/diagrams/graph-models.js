@@ -29,13 +29,13 @@ const fmt=n=>{
  const v=Number(n.toPrecision(6));
  return Object.is(v,-0)?"0":String(v);
 };
-function polynomialEquation(coeffs){
+function polynomialEquation(coeffs,variable="x"){
  const magnitude=Math.max(0,...coeffs.map(Math.abs)),cutoff=magnitude*1e-12;
  const terms=[];
  for(let i=coeffs.length-1;i>=0;i--){
   const v=coeffs[i];
   if(Math.abs(v)<=cutoff)continue;
-  const atom=fmt(Math.abs(v))+(i===0?"":i===1?"x":"x²");
+  const atom=fmt(Math.abs(v))+(i===0?"":i===1?variable:variable+"²");
   terms.push((terms.length?(v<0?" − ":" + "):(v<0?"−":""))+atom);
  }
  return "y ≈ "+(terms.join("")||"0");
@@ -87,8 +87,7 @@ export function fitPolynomialLeastSquares(points,degree){
   return {ok:false,error:"The values exceed the reliable numeric range for this fit."};
  const centredDisplay=Math.abs(mean)>100*scale;
  const equation=centredDisplay?
-  "y ≈ "+fmt(coeff[0])+" + "+fmt(coeff[1])+"t"+(degree===2?" + "+fmt(coeff[2])+"t²":"")+
-  ", where t = (x − "+fmt(mean)+") / "+fmt(scale):
+  polynomialEquation(coeff,"t")+", where t = (x − "+fmt(mean)+") / "+fmt(scale):
   polynomialEquation(coefficients);
  return {ok:true,predict,equation,coefficients,n,method:"Ordinary least squares",
   note:"Coefficients are rounded for display; plotted predictions use full precision."};
@@ -103,6 +102,7 @@ export function assessGraphModels(rawModels,points,compile){
    if(!m.expression.trim())fit={ok:false,error:"Enter your own function of x to plot this model."};
    else try{
     const predict=compile(m.expression),min=Math.min(...points.map(p=>p.x)),max=Math.max(...points.map(p=>p.x));
+   if(!(max>min))throw new Error("At least two distinct x-values are required to plot a model over a meaningful domain.");
     const finite=points.length>1&&Array.from({length:61},(_,i)=>predict(min+(max-min)*i/60))
      .filter(y=>Number.isFinite(y)&&Math.abs(y)<1e12).length;
     fit=finite>=2?{ok:true,predict,equation:/^\s*(?:y|f\(x\))\s*=/i.test(m.expression)?
