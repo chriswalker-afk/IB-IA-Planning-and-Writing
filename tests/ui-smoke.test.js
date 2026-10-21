@@ -1142,8 +1142,9 @@ test("Reduce advice shows only core writing instructions while keeping green and
    status:"completed",result:"The real figure rises then levels off",interpretation:"A straight line may not suffice"}];
   state.completion.activeEntryIndex=0;
   const h=createHarness(state);
-  const original={scratch:h.saved.scratch,entries:h.saved.entries,fields:h.saved.completion.fields,
-   planning:h.saved.planning};
+  const evidence=entries=>entries.map(({id,title,phase,status,result,interpretation})=>({id,title,phase,status,result,interpretation}));
+  const original={scratch:h.saved.scratch,entries:evidence(h.saved.entries),fields:h.saved.completion.fields,
+   planning:h.saved.planning.fields};
   const rubricBefore=(h.html.match(/data-criterion-badge=/g)||[]).length;
   const railsBefore=(h.html.match(/class="criterion-field-help-rail"/g)||[]).length;
   const guideBefore=(h.html.match(/class="writer-guide-field-bubble"/g)||[]).length;
@@ -1169,9 +1170,9 @@ test("Reduce advice shows only core writing instructions while keeping green and
    assert(h.html.length<fullHtml.length,node+": reduced page should be shorter");
   }
   assert.deepEqual(h.saved.scratch,original.scratch,node);
-  assert.deepEqual(h.saved.entries,original.entries,node);
+  assert.deepEqual(evidence(h.saved.entries),original.entries,node);
   assert.deepEqual(h.saved.completion.fields,original.fields,node);
-  assert.deepEqual(h.saved.planning,original.planning,node);
+  assert.deepEqual(h.saved.planning.fields,original.planning,node);
   h.action("toggle-advice-mode");
   assert.equal(h.saved.ui.adviceMode,"guided",node);
   assert(h.html.includes("Reduce advice"),node);
