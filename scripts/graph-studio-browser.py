@@ -192,6 +192,67 @@ def function_graph(page,width):
  # Choosing a function does not invent observations or overwrite earlier work.
  assert saved(page)["entries"][0]["status"]=="planned"
 
+def advanced_graph(page,width):
+ # A separate student-chosen modelling task with genuine, positive observations.
+ source="x (s)\\ty (m)\\n1\\t3.1\\n2\\t4.5\\n3\\t7.5\\n4\\t11.1\\n5\\t18.5\\n6\\t29.4\\n7\\t47.1\\n8\\t76.2"
+ page.locator('[data-action="graph-new"]').click()
+ page.locator('details.native-import-details').evaluate("(el)=>el.open=true")
+ page.locator('[data-graph-field="raw"]').fill(source)
+ page.locator('[data-action="graph-parse"]').click()
+ page.locator('[data-graph-field="title"]').fill("Advanced regression verification")
+ page.locator('[data-graph-field="sourceKind"]').select_option("primary")
+ assert page.locator('[data-action="graph-png"]').is_enabled()
+ # Students must add advanced models intentionally.
+ assert page.locator('.graph-model-card').count()==0
+ page.locator('[data-graph-field="modelChoice"]').select_option("exponential")
+ page.locator('[data-action="graph-model-add"]').click()
+ assert page.locator('.graph-model-card').count()==1
+ assert "ln(y)" in page.locator('[data-graph-model-summary]').first.inner_text()
+ assert "positive" in page.locator('.graph-model-caution').first.inner_text().lower()
+ page.locator('[data-graph-model-method]').select_option("original")
+ assert saved(page)["graphStudio"]["draft"]["models"][0]["fitMethod"]=="original"
+ assert "original-scale" in page.locator('[data-graph-model-summary]').first.inner_text()
+ assert page.locator('[data-graph-preview] .graph-model-overlay').count()==1
+ page.locator('[data-graph-field="modelChoice"]').select_option("power")
+ page.locator('[data-action="graph-model-add"]').click()
+ assert page.locator('[data-graph-model-method]').count()==2
+ page.locator('[data-graph-field="modelChoice"]').select_option("cubic")
+ page.locator('[data-action="graph-model-add"]').click()
+ assert page.locator('[data-graph-preview] .graph-model-overlay').count()==3
+ assert "Cubic" in page.locator('.graph-model-card').last.inner_text()
+ assert 'x³' in page.locator('.graph-model-card').last.inner_text()
+ assert "RMSE" in page.locator('.graph-model-comparison').inner_text()
+ assert page.locator('[data-action="graph-model-add"]').is_disabled()
+ # Try a different advanced family without changing the input data.
+ page.locator('.graph-model-card').last.locator('[data-action="graph-model-remove"]').click()
+ page.locator('[data-graph-field="modelChoice"]').select_option("logarithmic")
+ page.locator('[data-action="graph-model-add"]').click()
+ assert "ln(x)" in page.locator('.graph-model-card').last.inner_text()
+ assert page.locator('[data-graph-preview] .graph-model-overlay').count()==3
+ page.locator('.graph-model-card').last.locator('[data-action="graph-model-remove"]').click()
+ page.locator('[data-graph-field="modelChoice"]').select_option("sinusoidal")
+ page.locator('[data-action="graph-model-add"]').click()
+ assert page.locator('[data-graph-model-period]').count()==1
+ assert 'exploratory' in page.locator('.graph-model-card').last.inner_text().lower()
+ page.locator('[data-graph-model-period]').fill("4")
+ assert saved(page)["graphStudio"]["draft"]["models"][2]["period"]=="4"
+ assert 'Fixed-period' in page.locator('.graph-model-card').last.inner_text()
+ assert page.locator('[data-graph-preview] .graph-model-overlay').count()==3
+ page.locator('[data-graph-field="residualModelId"]').select_option("model-3")
+ page.locator('[data-graph-field="showResidualPlot"]').check()
+ assert page.locator('[data-graph-residual-plot] .graph-residual-point').count()==8
+ assert page.locator('[data-action="graph-residual-svg"]').is_enabled()
+ no_overflow(page)
+ page.screenshot(path=str(OUT/f"graph-studio-advanced-models-{width}.png"),full_page=True,animations="disabled")
+ # Preserve student settings through an ordinary reload and use the original pairs.
+ page.reload(wait_until="networkidle")
+ state=saved(page)
+ assert state["graphStudio"]["draft"]["models"][0]["fitMethod"]=="original"
+ assert state["graphStudio"]["draft"]["models"][2]["period"]=="4"
+ assert len(state["graphStudio"]["draft"]["matrix"])==8
+ assert page.locator('[data-graph-residual-plot] .graph-residual-point').count()==8
+ no_overflow(page)
+
 results=[]
 with sync_playwright() as pw:
  browser=pw.chromium.launch(headless=True,args=["--no-sandbox"])
@@ -202,6 +263,7 @@ with sync_playwright() as pw:
   try:
    data_graph(page,width)
    function_graph(page,width)
+   advanced_graph(page,width)
    assert not errors,errors
    results.append({"viewport":width,"status":"passed"})
   except Exception as exc:
