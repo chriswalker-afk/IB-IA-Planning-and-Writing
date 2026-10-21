@@ -53,7 +53,7 @@ test("compared histograms always have identical bin edges and preserve each samp
 test("compared histograms can display small multiples on the same numerical scale",()=>{
  const d=original();d.histogramCompare="smallmultiples";
  const svg=renderStatSvg(d);
- assert.match(svg,/viewBox="0 0 960 9\d\d"/);
+ assert.match(svg,/viewBox="0 0 960 900"/);
  assert.match(svg,/Common class boundaries/);
  assert.match(svg,/A \(cm\)/);
  assert.match(svg,/B \(cm\)/);
