@@ -5,6 +5,7 @@ import {createStuckState,normalizeStuckState,captureStuckOrigin,isStuckNode} fro
  * only student actions execute transitions. Predictions/plans are never results.
  */
 import {methodFamilies} from "./method-identity.js";
+import {representationFigureKey} from "../diagrams/representation-registry.js";
 import {journeySourceSignature,selectedInvestigativeRoute,adaptiveNextDirections} from "./adaptive-journey.js";
 import {beforeSourceChange,linkedAccuracy,flagInputDependents,normalizeSources} from "./evidence-links.js";
 import {createReviewState,normalizeReviewState} from "./review.js";
@@ -97,7 +98,7 @@ export function normalizeCompletionState(data,project={}){
   conclusionWarningOpen:v.conclusionWarningOpen===true,
   conclusionResultIds:Array.isArray(v.conclusionResultIds)?[...new Set(v.conclusionResultIds.filter(x=>typeof x==="string"&&x.length<=160))].slice(0,3):[],
   editorReturnNode:["C30","C40","C50"].includes(v.editorReturnNode)?v.editorReturnNode:"",
-  hiddenFirstFigures:Array.isArray(v.hiddenFirstFigures)?v.hiddenFirstFigures.filter(x=>typeof x==="string"&&/^(graph|stat|table|trace|voronoi):[a-z0-9-]+$/i.test(x)).slice(-80):[],
+  hiddenFirstFigures:Array.isArray(v.hiddenFirstFigures)?v.hiddenFirstFigures.filter(x=>typeof x==="string"&&!!representationFigureKey(x)).slice(-80):[],
   sourceRecords:normalizeSources(v.sourceRecords),activeSourceId:str(v.activeSourceId).slice(0,160),
   writingOrigin:{node:validNode(v.writingOrigin?.node)?v.writingOrigin.node:"",entryId:str(v.writingOrigin?.entryId).slice(0,160),nextFromEntryId:str(v.writingOrigin?.nextFromEntryId).slice(0,160)},
   review:normalizeReviewState(v.review),

@@ -19,6 +19,7 @@ import {renderTableSvg} from "../diagrams/table-studio-render.js";
 import {renderVoronoiStudio} from "../diagrams/voronoi-view.js";
 import {renderVoronoiSvg} from "../diagrams/voronoi-render.js";
 import {renderRepresentationHub,renderRepresentationSwitcher} from "../diagrams/representation-hub.js";
+import {REPRESENTATION_TOOLS,activeRepresentationTool,representationReturnNode} from "../diagrams/representation-registry.js";
 import {renderFirstFigureGallery} from "./first-figure-gallery.js";
 import {renderFigureHandover} from "../diagrams/presentation-coach-view.js";
 import {insightCapture,insightEcho,renderSparkShelf} from '../ui/insight-threads.js';
@@ -494,7 +495,7 @@ export function createCompletingViews(ctx){
     '<section class="chapter-onboarding-tile"><span class="chapter-onboarding-tile-icon">'+icon("sparkles")+'</span><h3>Start with your Planning sparks</h3><p>Your aim, motivation, mathematical route and prediction return where they help. Edit earlier decisions without pretending a planned result was discovered. Planning first is recommended, but you can begin without it.</p></section>'+
     '<section class="chapter-onboarding-tile"><span class="chapter-onboarding-tile-icon">'+icon("pencil")+'</span><h3>Write in meaningful stages</h3><p>Develop a focused introduction, explain why your first mathematical method follows, show and interpret your real calculations, then add another purposeful stage or move to a concise conclusion.</p></section>'+
     '<section class="chapter-onboarding-tile"><span class="chapter-onboarding-tile-icon">'+icon("route")+'</span><h3>Let the mathematical journey adapt</h3><p>Record what your results actually show. Pathfinder suggests different next steps depending on your investigation, method and findings—for example testing a linear association, considering another model, or explaining an unexpected pattern. Suggestions are not fabricated results.</p></section>'+
-    '<section class="chapter-onboarding-tile"><span class="chapter-onboarding-tile-icon">'+icon("chart")+'</span><h3>Make clear, purposeful figures</h3><p>Use the graph plotter, image and coordinate tracer, statistical diagram generator, formatted table generator and Voronoi studio. Check titles, labels, units, scales, captions and source links, then bring useful outputs into your IA.</p></section>'+
+    '<section class="chapter-onboarding-tile"><span class="chapter-onboarding-tile-icon">'+icon("chart")+'</span><h3>Make clear, purposeful figures</h3><p>Choose a purposeful tool from our '+REPRESENTATION_TOOLS.length+' creators: '+REPRESENTATION_TOOLS.map(t=>e(t.title)).join(', ')+'. Recommendations adapt to the mathematics you are working on; check titles, labels, units, scales, captions and sources before moving useful outputs into your IA.</p></section>'+
     '<section class="chapter-onboarding-tile"><span class="chapter-onboarding-tile-icon">'+icon("book")+'</span><h3>Two kinds of advice, right beside your writing</h3><p>Green A–E criterion bubbles explain the current IB expectations. Purple Writer’s Field Guide bubbles help you express thinking, limitations and reflection. Choose <strong>Reduce advice</strong> for shorter on-page prompts without losing those help bubbles or the complete guide.</p>'+
     '<button class="onboarding-inline-action" type="button" data-action="writer-guide-open">Explore the Writer’s Field Guide '+icon("arrow-right")+'</button></section>'+
     '<section class="chapter-onboarding-tile"><span class="chapter-onboarding-tile-icon">'+icon("download")+'</span><h3>Check, revisit and keep your work safe</h3><p>Use the Discovery Trail and My stages to return to work; use Checking to review evidence for the criteria, not predict marks. Progress saves on this device. Export a complete JSON project backup, especially before moving devices; a Planning PDF/Word report is not a full IA Studio backup.</p></section>'+
@@ -808,7 +809,7 @@ export function createCompletingViews(ctx){
       "You can make a purposeful calculation or theoretical case without any diagram. Choose only a representation that helps answer your aim."))+
     '<details class="show-first-tool-picker" data-show-first-tools>'+
       '<summary>'+icon("layers")+' <span><strong>Open diagram &amp; table tools</strong>'+
-      '<small>Pathway-aware suggestions, graph plotter, statistics, formatted tables, tracing and Voronoi diagrams</small></span>'+
+      '<small>Relevant suggestions, plus every available graph, diagram and table creator</small></span>'+
       icon("chevron-right")+'</summary>'+
       '<div class="show-first-tool-picker-body">'+renderRepresentationHub(s,icon,e)+'</div></details>'+
     renderFirstFigureGallery(s,icon,e,{
@@ -881,9 +882,8 @@ export function createCompletingViews(ctx){
       first+second+third+fourth+'</div>'};
   }
   case "C31":{
-   const returnNode=["C30","C40","C50"].includes(s.completion.editorReturnNode)?
-    s.completion.editorReturnNode:"C30";
-   const toolOpen=Boolean(s.graphStudio?.open||s.statStudio?.open||s.tableStudio?.open||s.imageTracer?.open||s.voronoiStudio?.open);
+   const returnNode=representationReturnNode(s);
+   const toolOpen=Boolean(activeRepresentationTool(s));
    const toolHtml=toolOpen?
      renderRepresentationSwitcher(s,icon,e)+
       (s.voronoiStudio?.open?renderVoronoiStudio(s,icon,e):
@@ -1085,7 +1085,7 @@ export function createCompletingViews(ctx){
     "Present genuinely performed mathematics with legible notation, meaningful scales, units and precision as appropriate.",
     '<details class="show-first-tool-picker" data-show-first-tools>'+
      '<summary>'+icon("layers")+' <span><strong>Open diagram &amp; table tools</strong>'+
-      '<small>Graph plotter, statistics, formatted tables, coordinate tracing and Voronoi diagrams</small></span>'+
+      '<small>Relevant suggestions, plus every available graph, diagram and table creator</small></span>'+
       icon("chevron-right")+'</summary>'+
       '<div class="show-first-tool-picker-body">'+
         info("Use the tool for THIS mathematical question",

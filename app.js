@@ -71,6 +71,7 @@ import {setVoronoiField,setVoronoiSite,addVoronoiSite,removeVoronoiSite,clearVor
 import {exportVoronoi} from "./src/diagrams/voronoi-export.js";
 import {displayVoronoiBounds,coordinateFromCanvas,canvasPosition,voronoiFrame,recordVoronoiHistory,applyVoronoiFrame,undoVoronoi,redoVoronoi,freezeVoronoiWindow,fitVoronoiSites,setVoronoiTool,selectVoronoiSite,moveVoronoiSite,proposeVoronoiComparison,showVoronoiComparison,finishVoronoiComparison,selectNearestBisector} from "./src/diagrams/voronoi-interactions.js";
 import {renderRepresentationHub,renderRepresentationSwitcher,representationFocusActive} from "./src/diagrams/representation-hub.js";
+import {REPRESENTATION_TOOLS,representationTool,activeRepresentationTool,closeRepresentationTools,activateRepresentationTool,representationFigureKey,representationReturnNode} from "./src/diagrams/representation-registry.js";
 import {renderPresentationCoach,renderFigureHandover} from "./src/diagrams/presentation-coach-view.js";
 import {figureCaption} from "./src/diagrams/presentation-coach-core.js";
 import {renderWriterFieldGuide,renderWriterGuideWelcome,shouldShowWriterGuideWelcome,renderWriterGuidePopin} from "./src/completing/writer-field-guide.js";
@@ -404,17 +405,14 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     rememberMathEditorOrigin();
     if(state.completion.current!=="C31")setCompletionNode(state,"C31",{reason:"dataset-transfer"});
     state.route="completing";
-    state.graphStudio.open=type==="graph";state.statStudio.open=type==="stat";state.tableStudio.open=type==="table";
-    state.imageTracer.open=false;state.voronoiStudio.open=false;
+    activateRepresentationTool(state,type);
     save();render();
     document.querySelector?.('[data-native-grid="'+type+'"]')?.scrollIntoView?.({block:"start",behavior:"auto"});
   }
   function refreshPresentation(type){
-    const studios={graph:state.graphStudio,stat:state.statStudio,table:state.tableStudio,
-      trace:state.imageTracer,voronoi:state.voronoiStudio};
-    const roots={graph:"graph-studio",stat:"stat-studio",table:"table-studio",
-      trace:"image-tracer",voronoi:"voronoi-studio"};
-    const studio=studios[type],root=main.querySelector?.('[data-'+roots[type]+']');
+    const tool=representationTool(type);
+    if(!tool)return;
+    const studio=state[tool.studio],root=main.querySelector?.('[data-'+tool.root+']');
     if(!studio?.draft||!root)return;
     const coach=root.querySelector('[data-presentation-coach="'+type+'"]');
     if(coach){
@@ -463,8 +461,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   function navigateGraph(figureId=""){
     rememberMathEditorOrigin();
     if(state.completion.current!=="C31")setCompletionNode(state,"C31",{reason:"graph-editor"});
-    state.graphStudio.open=true;
-    state.imageTracer.open=false;state.statStudio.open=false;state.tableStudio.open=false;state.voronoiStudio.open=false;
+    activateRepresentationTool(state,"graph");
     const entry=completeEntry(state);
     if(!figureId)avoidEditingUnrelatedStageFigure(state.graphStudio,entry,freshGraph);
     const id=figureId||entry?.graphFigureId;
@@ -491,8 +488,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   function navigateTrace(figureId=""){
     rememberMathEditorOrigin();
     if(state.completion.current!=="C31")setCompletionNode(state,"C31",{reason:"trace-editor"});
-    state.graphStudio.open=false;
-    state.imageTracer.open=true;state.statStudio.open=false;state.tableStudio.open=false;state.voronoiStudio.open=false;
+    activateRepresentationTool(state,"trace");
     const entry=completeEntry(state);
     if(!figureId)avoidEditingUnrelatedStageFigure(state.imageTracer,entry,startNewTrace);
     const id=figureId||entry?.imageTraceId;
@@ -519,7 +515,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   function navigateStat(figureId=""){
     rememberMathEditorOrigin();
     if(state.completion.current!=="C31")setCompletionNode(state,"C31",{reason:"stat-editor"});
-    state.graphStudio.open=false;state.imageTracer.open=false;state.statStudio.open=true;state.tableStudio.open=false;state.voronoiStudio.open=false;
+    activateRepresentationTool(state,"stat");
     const entry=completeEntry(state);
     if(!figureId)avoidEditingUnrelatedStageFigure(state.statStudio,entry,freshStat);
     const id=figureId||entry?.statFigureId;
@@ -549,8 +545,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   function navigateTable(figureId=""){
     rememberMathEditorOrigin();
     if(state.completion.current!=="C31")setCompletionNode(state,"C31",{reason:"table-editor"});
-    state.graphStudio.open=false;state.imageTracer.open=false;state.statStudio.open=false;
-    state.tableStudio.open=true;state.voronoiStudio.open=false;
+    activateRepresentationTool(state,"table");
     const entry=completeEntry(state);
     if(!figureId)avoidEditingUnrelatedStageFigure(state.tableStudio,entry,freshTable);
     const id=figureId||entry?.tableFigureId;
@@ -586,8 +581,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   function navigateVoronoi(figureId=""){
     rememberMathEditorOrigin();
     if(state.completion.current!=="C31")setCompletionNode(state,"C31",{reason:"voronoi-editor"});
-    state.graphStudio.open=false;state.imageTracer.open=false;state.statStudio.open=false;state.tableStudio.open=false;
-    state.voronoiStudio.open=true;
+    activateRepresentationTool(state,"voronoi");
     const entry=completeEntry(state);
     if(!figureId)avoidEditingUnrelatedStageFigure(state.voronoiStudio,entry,beginVoronoi);
     const id=figureId||entry?.voronoiFigureId;
@@ -596,17 +590,18 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     save();render();
     document.querySelector?.("[data-voronoi-studio]")?.scrollIntoView?.({block:"start",behavior:"auto"});
   }
-  // The resource library launches the existing five editors, not a second
-  // set of drawing implementations. Remember the authentic page and active
-  // editor so closing the creator does not strand Planning/Checking students.
+  // The resource library opens the same registered editors as IA Studio.
+  // Keep the current page and active editor when a user visits from Planning,
+  // Checking or a later mathematical stage.
+  const diagramNavigators=Object.freeze({
+    graph:navigateGraph,stat:navigateStat,table:navigateTable,
+    trace:navigateTrace,voronoi:navigateVoronoi
+  });
   function activeResourceCreator(){
-    return state.graphStudio.open?"graph":state.statStudio.open?"stat":
-      state.tableStudio.open?"table":state.imageTracer.open?"trace":
-      state.voronoiStudio.open?"voronoi":"";
+    return activeRepresentationTool(state)?.id||"";
   }
   function closeResourceCreators(){
-    state.graphStudio.open=false;state.statStudio.open=false;
-    state.tableStudio.open=false;state.imageTracer.open=false;state.voronoiStudio.open=false;
+    closeRepresentationTools(state);
   }
   function clearResourceCreatorReturn(){
     state.ui.resourceCreatorReturnRoute="";
@@ -614,15 +609,15 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     state.ui.resourceCreatorReturnTool="";
   }
   function launchResourceCreator(type){
-    const openers={graph:navigateGraph,stat:navigateStat,table:navigateTable,
-      trace:navigateTrace,voronoi:navigateVoronoi};
-    if(!Object.hasOwn(openers,type)){toast("That diagram creator is unavailable.");return;}
+    if(!representationTool(type)||!Object.hasOwn(diagramNavigators,type)){
+      toast("That diagram creator is unavailable.");return;
+    }
     state.ui.resourceCreatorReturnRoute=state.route;
     state.ui.resourceCreatorReturnNode=state.completion.current||"C00";
     state.ui.resourceCreatorReturnTool=activeResourceCreator();
     if(!layer.hidden)closeDrawer(false);
     state.route="completing";
-    openers[type]();
+    diagramNavigators[type]();
   }
   function returnFromResourceCreator(){
     const route=state.ui.resourceCreatorReturnRoute;
@@ -636,9 +631,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       setCompletionNode(state,node,{history:false,reason:"return-from-resource-creator"});
     }
     if(node==="C31"){
-      const flags={graph:"graphStudio",stat:"statStudio",table:"tableStudio",
-        trace:"imageTracer",voronoi:"voronoiStudio"};
-      if(flags[priorTool])state[flags[priorTool]].open=true;
+      if(representationTool(priorTool))activateRepresentationTool(state,priorTool);
     }
     nav(route,{top:true});
   }
@@ -840,22 +833,15 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   function returnToShowingFirstMaths(reason){
     // Generators remain editable, but they are not an extra writing stage.
     // Using an intentionally hidden figure again should make its preview visible.
-    const studioForReason={"linked-graph":["graph","graphStudio"],
-      "linked-table":["table","tableStudio"],"linked-statistics":["stat","statStudio"],
-      "linked-trace":["trace","imageTracer"],"linked-voronoi":["voronoi","voronoiStudio"]};
-    const selected=studioForReason[reason];
+    const selected=REPRESENTATION_TOOLS.find(tool=>tool.linkedReason===reason);
     if(selected){
-      const id=state[selected[1]]?.activeId;
-      const key=selected[0]+":"+id;
+      const id=state[selected.studio]?.activeId;
+      const key=selected.id+":"+id;
       if(id&&Array.isArray(state.completion.hiddenFirstFigures))
         state.completion.hiddenFirstFigures=state.completion.hiddenFirstFigures.filter(x=>x!==key);
     }
-    state.graphStudio.open=false;state.imageTracer.open=false;state.statStudio.open=false;
-    state.tableStudio.open=false;state.voronoiStudio.open=false;
-    const entry=completeEntry(state),mathStage=entry?.phase==="substantial";
-    const stageNumber=mathStage?state.entries.slice(0,state.completion.activeEntryIndex+1)
-      .filter(x=>x.phase==="substantial").length:0;
-    const page=mathStage?(stageNumber>1?"C50":"C40"):"C30";
+    const page=representationReturnNode(state);
+    closeRepresentationTools(state);
     state.completion.editorReturnNode="";
     setCompletionNode(state,page,{reason});
     save();render();
@@ -1723,9 +1709,14 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         break;
       }
       case "representation-back":{
-        state.graphStudio.open=false;state.imageTracer.open=false;
-        state.statStudio.open=false;state.tableStudio.open=false;state.voronoiStudio.open=false;
+        closeRepresentationTools(state);
         save();render();break;
+      }
+      case "representation-return":{
+        // A tool is not an extra writing stage. Return to the same first
+        // or later four-part mathematics page the student came from.
+        returnToShowingFirstMaths("representation-return");
+        break;
       }
       case "voronoi-open":navigateVoronoi();break;
       case "voronoi-close":state.voronoiStudio.open=false;save();render();break;
@@ -2196,20 +2187,15 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       }
       case "first-figure-edit":{
         const kind=el.dataset.figureKind,id=el.dataset.figureId;
-        const studios={graph:"graphStudio",stat:"statStudio",table:"tableStudio",trace:"imageTracer",voronoi:"voronoiStudio"};
-        if(!studios[kind]||!state[studios[kind]]?.figures.some(x=>x.id===id))break;
-        if(kind==="graph")navigateGraph(id);
-        if(kind==="stat")navigateStat(id);
-        if(kind==="table")navigateTable(id);
-        if(kind==="trace")navigateTrace(id);
-        if(kind==="voronoi")navigateVoronoi(id);
+        const tool=representationTool(kind);
+        if(!tool||!state[tool.studio]?.figures.some(x=>x.id===id))break;
+        diagramNavigators[kind]?.(id);
         break;
       }
       case "first-figure-hide":case "first-figure-restore":{
         const key=el.dataset.figureKey||"";
-        const match=/^(graph|stat|table|trace|voronoi):([a-z0-9-]+)$/i.exec(key);
-        const studios={graph:"graphStudio",stat:"statStudio",table:"tableStudio",trace:"imageTracer",voronoi:"voronoiStudio"};
-        if(!match||!state[studios[match[1]]]?.figures.some(f=>f.id===match[2]))break;
+        const parsed=representationFigureKey(key);
+        if(!parsed||!state[parsed.tool.studio]?.figures.some(f=>f.id===parsed.id))break;
         const visible=new Set(state.completion.hiddenFirstFigures||[]);
         if(action==="first-figure-hide")visible.add(key);
         else visible.delete(key);

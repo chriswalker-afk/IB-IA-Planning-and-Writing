@@ -4,16 +4,12 @@ import {renderTableSvg} from "../diagrams/table-studio-render.js";
 import {renderTraceOverlaySvg,renderCleanTraceSvg} from "../diagrams/image-tracer-core.js";
 import {renderVoronoiSvg} from "../diagrams/voronoi-render.js";
 import {renderFigureHandover} from "../diagrams/presentation-coach-view.js";
+import {REPRESENTATION_TOOLS} from "../diagrams/representation-registry.js";
 
 /** Saved figures are mathematical working files, not verified conclusions. */
-export const FIRST_FIGURE_TYPES=Object.freeze([
- {kind:"graph",studio:"graphStudio",entryKey:"graphFigureId",title:"Graph",icon:"chart"},
- {kind:"stat",studio:"statStudio",entryKey:"statFigureId",title:"Statistical diagram",icon:"chart"},
- {kind:"table",studio:"tableStudio",entryKey:"tableFigureId",title:"Formatted table",icon:"table"},
- {kind:"trace",studio:"imageTracer",entryKey:"imageTraceId",title:"Coordinate tracing",icon:"image"},
- {kind:"voronoi",studio:"voronoiStudio",entryKey:"voronoiFigureId",title:"Voronoi construction",icon:"map"}
-]);
-
+export const FIRST_FIGURE_TYPES=Object.freeze(REPRESENTATION_TOOLS.map(tool=>Object.freeze({
+ kind:tool.id,studio:tool.studio,entryKey:tool.entryKey,title:tool.figureTitle,icon:tool.icon
+})));
 export function firstSavedFigures(state,{scope="first"}={}){
  const entries=Array.isArray(state?.entries)?state.entries:[];
  const result=[];

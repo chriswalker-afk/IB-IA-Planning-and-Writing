@@ -57,6 +57,7 @@ import {voronoiPreviewHtml,voronoiResultHtml,voronoiQualityHtml,voronoiOutputHtm
 import {setVoronoiField,setVoronoiSite,addVoronoiSite,removeVoronoiSite,clearVoronoiMap,useVoronoiMap,beginVoronoi,loadVoronoi,saveVoronoiDraft,saveAndLinkVoronoi} from "../src/diagrams/voronoi-actions.js";
 import {exportVoronoi} from "../src/diagrams/voronoi-export.js";
 import {renderRepresentationHub,renderRepresentationSwitcher,representationFocusActive} from "../src/diagrams/representation-hub.js";
+import {REPRESENTATION_TOOLS,representationTool,activeRepresentationTool,closeRepresentationTools,activateRepresentationTool,representationFigureKey,representationReturnNode} from "../src/diagrams/representation-registry.js";
 import {renderPresentationCoach,renderFigureHandover} from "../src/diagrams/presentation-coach-view.js";
 import {figureCaption} from "../src/diagrams/presentation-coach-core.js";
 import {displayVoronoiBounds,coordinateFromCanvas,canvasPosition,voronoiFrame,recordVoronoiHistory,applyVoronoiFrame,undoVoronoi,redoVoronoi,freezeVoronoiWindow,fitVoronoiSites,setVoronoiTool,selectVoronoiSite,moveVoronoiSite,proposeVoronoiComparison,showVoronoiComparison,finishVoronoiComparison,selectNearestBisector} from "../src/diagrams/voronoi-interactions.js";
@@ -131,6 +132,7 @@ function createHarness(savedValue,{welcome=false}={}){
     setVoronoiField,setVoronoiSite,addVoronoiSite,removeVoronoiSite,clearVoronoiMap,useVoronoiMap,
     beginVoronoi,loadVoronoi,saveVoronoiDraft,saveAndLinkVoronoi,exportVoronoi,
     renderRepresentationHub,renderRepresentationSwitcher,representationFocusActive,renderPresentationCoach,renderFigureHandover,figureCaption,
+    REPRESENTATION_TOOLS,representationTool,activeRepresentationTool,closeRepresentationTools,activateRepresentationTool,representationFigureKey,representationReturnNode,
     displayVoronoiBounds,coordinateFromCanvas,canvasPosition,voronoiFrame,recordVoronoiHistory,applyVoronoiFrame,undoVoronoi,redoVoronoi,freezeVoronoiWindow,fitVoronoiSites,setVoronoiTool,selectVoronoiSite,moveVoronoiSite,proposeVoronoiComparison,showVoronoiComparison,finishVoronoiComparison,selectNearestBisector,
     setCompletionNode,moveCompletionRoute,completionBack,markCompletionStage,setCompletionField,addMathematicalStage,routesAt,addAccuracyDecision,completionSuggestions,sectionForNode,targetForSection,completeEntry,latestRealResult,flagDependentMathematics,acknowledgeMathReview,
     createHandoverViews,createPlanningEnvelope,getFieldDiff,mergePlanningEnvelope,modelFromEnvelope,suggestedFilename,
@@ -1215,8 +1217,10 @@ test("Writing welcome explains available tools, preserves saved work, and can be
  const state=createProjectState();state.route="completing";
  let h=createHarness(state,{welcome:true});
  assert(h.html.includes('data-writing-welcome="true"'));
- for(const phrase of ["Welcome to Writing.","Let the mathematical journey adapt","Voronoi studio","Reduce advice","complete JSON project backup","writing-intro-continue"])
+ for(const phrase of ["Welcome to Writing.","Let the mathematical journey adapt","Reduce advice","complete JSON project backup","writing-intro-continue"])
    assert(h.html.includes(phrase),phrase);
+ for(const tool of REPRESENTATION_TOOLS)
+   assert(h.html.includes(escapeHtml(tool.title)),"Writing welcome should mention registered "+tool.id+" creator");
  assert.equal(h.saved.ui.writingIntroSeen,false);
  h.action("writing-intro-continue");
  assert.equal(h.saved.ui.writingIntroSeen,true);
@@ -1287,6 +1291,46 @@ test("Native creator return restores a live writing stage or the previously open
  assert(!other.saved.tableStudio.open);
 });
 
+
+test("Native studio back returns to the same later mathematical stage, not the first page",()=>{
+ const state=createProjectState();
+ state.route="completing";state.ui.writingIntroSeen=true;
+ state.entries=[
+  {id:"first",phase:"first",status:"completed",result:"A genuine first observation"},
+  {id:"math-one",phase:"substantial",status:"completed",result:"A genuine first mathematical stage"},
+  {id:"math-two",phase:"substantial",status:"planned",methodId:"triangulation",purpose:"Check angular precision"}
+ ];
+ state.completion.activeEntryIndex=2;state.completion.current="C50";
+ state.scratch.introduction="Existing student writing";
+ const h=createHarness(state);
+ h.action("trace-open");
+ assert.equal(h.saved.completion.current,"C31");
+ assert(h.html.includes('data-action="representation-return"'));
+ assert(h.html.includes('data-node="C50"'));
+ h.action("representation-return");
+ assert.equal(h.saved.completion.current,"C50");
+ assert.equal(h.saved.completion.editorReturnNode,"");
+ assert.equal(h.saved.imageTracer.open,false);
+ assert.equal(h.saved.scratch.introduction,"Existing student writing");
+ assert.equal(h.saved.entries[2].purpose,"Check angular precision");
+ assert.equal(h.saved.entries.length,3,"A diagram editor does not create an extra mathematical stage");
+});
+test("Every registered creator launches from Tools and Tutorials and survives a return from a later stage",()=>{
+ const state=createProjectState();state.route="completing";state.ui.writingIntroSeen=true;
+ state.completion.current="C40";
+ state.entries=[{id:"real-stage",phase:"substantial",status:"planned",result:"",purpose:"A mathematical question"}];
+ state.completion.activeEntryIndex=0;
+ for(const tool of REPRESENTATION_TOOLS){
+  const h=createHarness(state);
+  h.action("resource-browse");
+  assert(h.drawer.includes('data-resource-creator="'+tool.id+'"'));
+  h.action("resource-creator-open",{resourceCreator:tool.id});
+  assert.equal(h.saved[tool.studio].open,true);
+  h.action("resource-creator-return");
+  assert.equal(h.saved.completion.current,"C40",tool.id);
+  assert.equal(h.saved.entries[0].purpose,"A mathematical question");
+ }
+});
 test("Graph Studio Pass 1 opt-in model controls are handled in the complete app without adding results",()=>{
  const st=createProjectState();
  st.route="completing";st.completion.current="C31";st.ui.writingIntroSeen=true;st.graphStudio.open=true;
