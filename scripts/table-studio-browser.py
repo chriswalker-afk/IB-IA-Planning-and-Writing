@@ -116,7 +116,10 @@ def compact(p,width):
  for fmt,ext in [("svg","svg"),("html","html"),("csv","csv"),("png","png")]:
   print("Checking table export:",fmt,flush=True)
   try:
-   p.locator('[data-action="table-'+fmt+'"]').click(timeout=4000)
+   button=p.locator('[data-action="table-'+fmt+'"]')
+   button.evaluate("(el)=>el.scrollIntoView({block:'center',inline:'nearest',behavior:'instant'})")
+   p.wait_for_timeout(150)
+   button.click(timeout=8000)
    p.wait_for_timeout(500)
    print("Table debug events:",p.evaluate("window.__tableTrace"),flush=True)
    print("Download events:",[x.suggested_filename for x in downloads],flush=True)
