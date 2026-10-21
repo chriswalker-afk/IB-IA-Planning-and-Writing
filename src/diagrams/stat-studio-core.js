@@ -4,6 +4,7 @@
  * Quartile conventions are explicit; histogram height is frequency density.
  */
 import {escapeGraph,finiteCell,splitHeading} from "./graph-core.js";
+import {continuousBins,groupedClassBins} from "./continuous-classes.js";
 
 export const STAT_TYPES=Object.freeze([
  ["histogram","Histogram","Continuous measurements with class widths and frequency density."],
@@ -163,43 +164,14 @@ function columnData(d,index){
  return {values,skipped};
 }
 function buildRawHistogram(d){
- const col=numericCols(d)[0],source=columnData(d,col),values=source.values;
- if(values.length<2)return {bins:[],values,...source,error:"At least two numerical measurements are required."};
- const width=ncell(d.binWidth),startText=d.binStart.trim(),start=startText?ncell(startText):null;
- if(width===null||width<=0)return {bins:[],...source,error:"Choose a positive class width. An equal-width histogram still needs a justified width."};
- if(startText&&start===null)return {bins:[],...source,error:"The first class boundary must be a number."};
- const low=startText?start:Math.floor(Math.min(...values)/width)*width;
- if(low>Math.min(...values))return {bins:[],...source,error:"The first boundary is above some observations."};
- const high=Math.max(...values);
- const count=Math.floor((high-low)/width+1e-10)+1;
- if(count>36)return {bins:[],...source,error:"This width creates more than 36 classes. Widen your intervals."};
- if(!Number.isFinite(count)||count<=0)return {bins:[],...source,error:"Class boundaries are not valid for these data."};
- const bins=Array.from({length:count},(_,i)=>({low:low+i*width,high:low+(i+1)*width,frequency:0}));
- for(const v of values){
-  const index=Math.max(0,Math.min(count-1,Math.floor((v-low)/width+1e-10)));
-  bins[index].frequency++;
- }
- return {bins:bins.map(b=>({...b,density:b.frequency/(b.high-b.low)})),values,skipped:source.skipped};
+ const col=numericCols(d)[0],source=columnData(d,col);
+ const b=continuousBins(source.values,d.binWidth,d.binStart,36);
+ return {...b,values:source.values,skipped:source.skipped};
 }
 function buildGroupedHistogram(d){
- const indices=[d.lowIndex,d.highIndex,d.frequencyIndex];
- if(new Set(indices).size!==3)return {bins:[],error:"Choose three different columns: lower boundary, upper boundary and frequency."};
  if(d.columns.length<3)return {bins:[],error:"A grouped-frequency histogram needs lower, upper and frequency columns."};
- const bins=[];
- for(const [i,row] of d.matrix.entries()){
-  const [a,b,f]=indices.map(index=>ncell(row[index]));
-  if(a===null||b===null||f===null)return {bins:[],error:"Row "+(i+1)+" has a missing or non-numeric boundary or frequency."};
-  if(b<=a)return {bins:[],error:"Row "+(i+1)+" must have an upper boundary greater than its lower boundary."};
-  if(!Number.isSafeInteger(f)||f<0)return {bins:[],error:"Row "+(i+1)+" needs a non-negative whole-number frequency."};
-  bins.push({low:a,high:b,frequency:f,density:f/(b-a)});
- }
- bins.sort((a,b)=>a.low-b.low);
- if(bins.length>36)return {bins:[],error:"Choose no more than 36 class intervals."};
- for(let i=1;i<bins.length;i++){
-  const tolerance=Math.max(1,Math.abs(bins[i].low),Math.abs(bins[i-1].high))*1e-10;
-  if(bins[i].low<bins[i-1].high-tolerance)return {bins:[],error:"Class intervals overlap. A histogram must allocate each measurement to one interval."};
- }
- return {bins,values:[],skipped:0};
+ const result=groupedClassBins(d.matrix,d.lowIndex,d.highIndex,d.frequencyIndex,36);
+ return {...result,values:[],skipped:0};
 }
 function barAnalysis(d){
  const categories=[],names=numericCols(d).filter(i=>i!==d.categoryIndex);
