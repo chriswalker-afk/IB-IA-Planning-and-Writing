@@ -1007,7 +1007,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     const origin=guidePopinOrigin;
     guidePopinHost.hidden=true;guidePopinHost.innerHTML="";
     guidePopinOrigin=null;guidePopinRecommendation=null;
-    if(origin?.isConnected)origin.setAttribute("aria-expanded","false");
+    if(origin?.isConnected)origin.setAttribute?.("aria-expanded","false");
     if(restore&&origin?.isConnected)origin.focus({preventScroll:true});
   }
   function openGuidePopin(origin,guide){
@@ -1015,7 +1015,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     if(!guidePopinHost.hidden&&guidePopinOrigin===origin){closeGuidePopin();return;}
     closeGuidePopin(false);
     guidePopinOrigin=origin;guidePopinRecommendation=guide;
-    origin.setAttribute("aria-expanded","true");
+    origin.setAttribute?.("aria-expanded","true");
     guidePopinHost.innerHTML=renderWriterGuidePopin(icon,e,guide);
     guidePopinHost.hidden=false;
     positionGuidePopin();
