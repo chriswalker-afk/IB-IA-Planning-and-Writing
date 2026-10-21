@@ -16,7 +16,7 @@ function breakLines(input,available,fontSize=17){
  const result=[];
  let line="";
  const push=()=>{if(line){result.push(line);line="";}};
- for(const item of value.split(/\s+/)){
+ for(const item of (value.match(/\([^)]*\)|\S+/g)||[])){
   let word=item;
   if(line&&(line+" "+word).length<=chars){line+=" "+word;continue;}
   if(line)push();
