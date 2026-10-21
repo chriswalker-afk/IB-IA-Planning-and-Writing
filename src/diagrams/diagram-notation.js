@@ -6,7 +6,7 @@
 import {mathSvg,mixedMathTokens,escapeMixedHtml} from "../math/mixed-math.js";
 
 export const DIAGRAM_NOTATION_SYMBOLS=Object.freeze([
- {label:"x₁",token:"x_1",title:"Subscript (edit the index)"},
+ {label:"xᵢ",token:"x_i",title:"Subscript (edit the index)"},
  {label:"x²",token:"x^2",title:"Power (edit the exponent)"},
  {label:"x̄",token:"\\bar{x}",title:"Mean"},
  {label:"ŷ",token:"\\hat{y}",title:"Predicted value"},
