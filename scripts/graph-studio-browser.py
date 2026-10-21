@@ -106,7 +106,7 @@ def data_graph(page,width):
   page.locator('[data-action="graph-png"]').click()
  assert download.value.suggested_filename.endswith(".png")
  png=Path(download.value.path()).read_bytes()
- assert png[:8]==b"\\x89PNG\\r\\n\\x1a\\n"
+ assert png[:8]==b"\x89PNG\r\n\x1a\n"
  width_px,height_px=struct.unpack(">II",png[16:24])
  assert (width_px,height_px)==(2820,2040),(width_px,height_px)
  page.locator('[data-action="graph-use"]').click()
