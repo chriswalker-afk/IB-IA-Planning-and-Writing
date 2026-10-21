@@ -96,7 +96,7 @@ export function renderGraphModelControls(d,analysis,icon,e){
     icon("plus-circle")+' Add model</button></div>'+
   '<div class="graph-model-list" data-graph-model-list>'+
    (cards||'<p class="graph-model-empty">No models added. Your original points are shown without an automatic line of best fit.</p>')+'</div>'+
-  '<p class="graph-model-guidance">Show or hide each model independently. You can include up to three; curves stop at the observed x-range. Displayed coefficients are rounded but calculations use full precision. Residual plots and fit comparisons follow in Pass 2.</p>'+
+  '<p class="graph-model-guidance">Show or hide each model independently. You can include up to three; curves stop at the observed x-range. Displayed coefficients are rounded but calculations use full precision. A curve does not establish model suitability; inspect and discuss fitting errors before drawing conclusions.</p>'+
   '</section>';
 }
 const tableExample='<span class="graph-inline-example">Example column headings: <code>Time (s)</code> and <code>Distance (m)</code></span>';
