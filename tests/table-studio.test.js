@@ -44,7 +44,7 @@ test("paste Google Sheets TSV with headings and detect units without extra-wide 
  assert.equal(q.model.rows[0][1],"14.0");
  assert.deepEqual(q.model.numeric,[false,true,true]);
  assert.equal(tableWidths(q.model).length,3);
- assert.ok(Math.abs(tableWidths(q.model).reduce((a,b)=>a+b,0)-802)<0.05);
+ assert.ok(tableWidths(q.model).reduce((a,b)=>a+b,0)<650,"Three short columns should use an intrinsic width, not stretch to the page");
 });
 test("long raw tables cannot be shrunk, truncated, or exported even if an appendix is proposed",()=>{
  const s=compact();
@@ -70,13 +70,13 @@ test("formatting wraps headings, aligns numeric values and escapes student text"
  const s=compact(),q=analyzeTable(s.draft),svg=renderTableSvg(s.draft);
  assert.match(svg,/Table 1\./);
  assert.match(svg,/Length \(cm\)/);
- assert.match(svg,/text-anchor="end"/);
+ assert.match(svg,/text-anchor="middle"/);
  assert.match(svg,/<tspan/);
  const html=tableToHtml(s.draft);
  assert.match(html,/<table/);
  assert.match(html,/table-layout:fixed/);
- assert.match(html,/width:650px/);
- assert.match(html,/text-align:right/);
+ assert.match(html,/max-width:\\?/);
+ assert.match(html,/text-align:center/);
  s.draft.title="<script>alert(1)</script>";
  const unsafe=renderTableSvg(s.draft);
  assert.ok(!unsafe.includes("<script>"));
@@ -230,4 +230,78 @@ test("table generated during a later stage stays linked to that stage, not first
  assert.equal(project.entries[1].tableFigureId,linked.record.id);
  assert.equal(project.entries[1].status,"planned","Saving a figure is not performing all the mathematical work");
  assert.equal(project.entries[0].result,"A real finding from stage 1");
+});
+
+test("two-column results use compact widths, centred labels and genuine column separators",()=>{
+ const s=newTableStudio();s.draft.title="Test data for two groups";
+ s.draft.sourceKind="primary";s.draft.purpose="Compare the two measured quantities";
+ importTableData(s,"Test a (cm)\tTest b (m s^-1)\n1\t44\n2\t55\n3\t66\n4\t77");
+ const q=analyzeTable(s.draft);
+ assert.equal(q.ready,true,JSON.stringify(q.problems));
+ const widths=tableWidths(q.model),sum=widths.reduce((a,b)=>a+b,0);
+ assert.equal(widths.length,2);
+ assert(sum<520,"Short columns should not fill an entire IA page: "+sum);
+ assert(widths.every(w=>w>=100&&w<=255));
+ const svg=renderTableSvg(s.draft),viewBox=/viewBox="0 0 (\d+) (\d+)"/.exec(svg);
+ assert(viewBox&&Number(viewBox[1])<620,"Compact table should have a compact exported figure");
+ assert(svg.includes("m s⁻¹"),"Powers entered with ^ should display as superscript");
+ assert(svg.includes("Test a (cm)"));
+ assert.equal((svg.match(/class="ia-table-column-divider"/g)||[]).length,1);
+ assert.equal((svg.match(/class="ia-table-row-divider"/g)||[]).length,4);
+ assert.match(svg,/text-anchor="middle"/);
+ const html=tableToHtml(s.draft);
+ assert.match(html,/m s⁻¹/);
+ assert.match(html,/text-align:center/);
+ assert.match(html,/border-left:1px solid/);
+ assert(!html.includes("width:650px"),"Editable copy should use its intrinsic width");
+ assert.match(tableToTsv(s.draft),/m s\^-1/,"Machine-readable copy keeps source notation");
+});
+test("table dividers and alignment can be changed without altering source values",()=>{
+ const s=compact(),raw=JSON.stringify(s.draft.matrix);
+ assert.equal(s.draft.cellAlignment,"center");
+ assert.equal(s.draft.showColumnLines,true);
+ assert(setTableField(s,"cellAlignment","numeric"));
+ assert.equal(setTableField(s,"cellAlignment","diagonal"),false);
+ assert.equal(s.draft.cellAlignment,"numeric");
+ assert(setTableField(s,"showColumnLines",false));
+ const svg=renderTableSvg(s.draft),html=tableToHtml(s.draft);
+ assert(!svg.includes('class="ia-table-column-divider"'));
+ assert(!html.includes('border-left:1px solid'));
+ assert(svg.includes('text-anchor="end"'));
+ assert(svg.includes('text-anchor="start"'));
+ assert(html.includes("text-align:right"));
+ assert(html.includes("text-align:left"));
+ assert.equal(JSON.stringify(s.draft.matrix),raw);
+ const saved=normalizeTableDraft(JSON.parse(JSON.stringify(s.draft)));
+ assert.equal(saved.showColumnLines,false);assert.equal(saved.cellAlignment,"numeric");
+ const old={...s.draft};delete old.showColumnLines;delete old.cellAlignment;
+ const restored=normalizeTableDraft(old);
+ assert.equal(restored.showColumnLines,true);
+ assert.equal(restored.cellAlignment,"center");
+});
+test("long but permitted headings and cells wrap without disappearing",()=>{
+ const s=compact();
+ const veryLong="Longest meaningful label with multiple words and powers m s^-2";
+ setTableColumn(s,1,"heading",veryLong);
+ const q=analyzeTable(s.draft);
+ assert.equal(q.ready,true,JSON.stringify(q.problems));
+ const svg=renderTableSvg(s.draft);
+ for(const word of veryLong.replace("s^-2","s⁻²").split(" ")){
+  assert(svg.includes(word),"Every word should appear, including "+word);
+ }
+ assert((svg.match(/<tspan /g)||[]).length>q.model.headers.length+q.model.rows.length);
+});
+test("table presentation settings appear in controls and are compatible with summary and frequency modes",()=>{
+ const s=compact(),st=createProjectState();st.tableStudio=s;
+ const html=renderTableStudio(st,icon,escapeHtml);
+ assert.match(html,/data-table-field="cellAlignment"/);
+ assert.match(html,/data-table-field="showColumnLines"/);
+ assert.match(html,/m s⁻¹/);
+ for(const alt of [summary(),frequency()]){
+  const q=analyzeTable(alt.draft);
+  assert.equal(q.ready,true);
+  const svg=renderTableSvg(alt.draft);
+  assert.equal((svg.match(/class="ia-table-column-divider"/g)||[]).length,q.model.headers.length-1);
+  assert(svg.includes('text-anchor="middle"'));
+ }
 });
