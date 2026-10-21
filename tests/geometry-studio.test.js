@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {newGeometryDraft,newGeometryStudio,geometryAnalysis,normalizeGeometryStudio,saveGeometryFigure} from "../src/diagrams/geometry-core.js";
 import {renderGeometrySvg} from "../src/diagrams/geometry-render.js";
-import {renderGeometryStudio} from "../src/diagrams/geometry-view.js";
+import {renderGeometryStudio,geometryOutputHtml} from "../src/diagrams/geometry-view.js";
 import {geometryTemplate,setGeometryVertex,saveAndLinkGeometry,saveGeometryDraft} from "../src/diagrams/geometry-actions.js";
 import {createProjectState,normalizeProjectState} from "../src/core/project-state.js";
 import {collectProjectFigures} from "../src/handover/figure-report.js";
@@ -77,4 +77,45 @@ test("geometry is discoverable in the common tool chooser and its editor renders
  assert(html.includes('data-action="geometry-svg"'));
  assert(html.includes('data-action="geometry-png"'));
  assert(html.includes('data-presentation-coach="geometry"'));
+});
+
+test("clearing a coordinate invalidates both the preview and download buttons rather than reusing an old value",()=>{
+ const studio=newGeometryStudio();
+ assert.equal(setGeometryVertex(studio,0,"x",""),true);
+ assert.equal(studio.draft.vertices[0].x,null);
+ assert.equal(geometryAnalysis(studio.draft).ready,false);
+ assert.match(renderGeometrySvg(studio.draft),/Enter valid coordinates for every vertex/);
+ assert.match(geometryOutputHtml(studio,icon),/data-action="geometry-save" disabled/);
+ assert.match(geometryOutputHtml(studio,icon),/data-action="geometry-svg" disabled/);
+ assert.equal(setGeometryVertex(studio,0,"x","0"),true);
+ assert.equal(geometryAnalysis(studio.draft).ready,true);
+ assert(!geometryOutputHtml(studio,icon).includes('data-action="geometry-save" disabled'));
+});
+test("concave and reverse-ordered polygons have correct reflex angles and no phantom self-crossings",()=>{
+ const d=newGeometryDraft("polygon");
+ d.mode="coordinate";
+ d.vertices=[
+  {id:"v-a",label:"A",x:0,y:0},
+  {id:"v-b",label:"B",x:5,y:0},
+  {id:"v-c",label:"C",x:5,y:5},
+  {id:"v-d",label:"D",x:2,y:2},
+  {id:"v-e",label:"E",x:0,y:5}
+ ];
+ const q=geometryAnalysis(d);
+ assert(q.ready,q.issues.join(" / "));
+ assert(q.angles[3]>180,q.angles.join(","));
+ assert(Math.abs(q.angles.reduce((s,v)=>s+v,0)-540)<1e-7);
+ d.vertices.reverse();
+ const reversed=geometryAnalysis(d);
+ assert(reversed.ready,reversed.issues.join(" / "));
+ assert(reversed.angles.some(v=>v>180));
+ assert(Math.abs(reversed.angles.reduce((s,v)=>s+v,0)-540)<1e-7);
+});
+test("all geometry text labels expose optional shared mathematical notation controls",()=>{
+ const state=createProjectState();
+ const markup=renderGeometryStudio(state,icon,e);
+ for(const key of ["label","edgeLabel","angleLabel"])
+  assert(markup.includes('data-notation-key="'+key+'" data-notation-vertex-index="0"'),key);
+ assert(markup.includes('data-notation-studio="geometry" data-notation-key="unit"'));
+ assert(markup.includes('data-action="geometry-new"'));
 });
