@@ -94,6 +94,27 @@ export function diagramSafeExcerpt(value,maxChars=100){
  }
  return result.trimEnd()+(result.length<input.length?"…":"");
 }
+/** Wrap authored mixed maths without splitting TeX delimiters or fraction syntax.
+ * A long single expression stays whole; SVG maxWidth can scale it as one piece.
+ */
+export function diagramWrapLines(value,maxChars=100){
+ const raw=String(value??"").trim();
+ if(!raw)return [];
+ const words=raw.match(/\\\([\s\S]*?\\\)|\\\[[\s\S]*?\\\]|\S+/g)||[];
+ const lines=[];let line="";
+ for(const word of words){
+  const candidate=line?line+" "+word:word;
+  if(line&&candidate.length>maxChars){lines.push(line);line="";}
+  // A mathematical expression is atomic; plain long text can break normally.
+  if(!hasDiagramEquation(word)&&word.length>maxChars){
+   let rest=word;
+   while(rest.length>maxChars){lines.push(rest.slice(0,maxChars));rest=rest.slice(maxChars);}
+   line=rest;
+  }else line=line?line+" "+word:word;
+ }
+ if(line)lines.push(line);
+ return lines;
+}
 /** Dimensional powers apply to the entire unit; metres per second squared is
  * (m/s)^2, not m/s^2. Raw source measurements are never rewritten. */
 export function diagramUnitPower(value,power){
