@@ -51,9 +51,23 @@ def compact(p,width):
  assert p.locator('[data-action="table-use"]').is_enabled()
  assert "Required checks passed" in p.locator("[data-table-quality]").inner_text()
  assert p.locator('[data-table-preview] svg text').count()>5
- assert p.locator('[data-table-preview] svg').get_attribute("viewBox").startswith("0 0 900 ")
+ box=p.locator('[data-table-preview] svg').get_attribute("viewBox").split()
+ assert box[:2]==["0","0"] and 0<int(box[2])<=825 and int(box[3])>200
+ assert p.locator('[data-table-field="cellAlignment"]').input_value()=="center"
+ assert p.locator('[data-table-field="showColumnLines"]').is_checked()
+ assert p.locator('[data-table-preview] .ia-table-column-divider').count()==2
+ assert p.locator('[data-table-preview] .ia-table-svg').evaluate("(svg)=>parseFloat(getComputedStyle(svg).width)")<=int(box[2])+1
  assert p.locator('[data-table-preview] svg').is_visible()
  no_overflow(p)
+ p.locator('[data-table-field="showColumnLines"]').uncheck()
+ assert p.locator('[data-table-preview] .ia-table-column-divider').count()==0
+ p.locator('[data-table-field="showColumnLines"]').check()
+ assert p.locator('[data-table-preview] .ia-table-column-divider').count()==2
+ p.locator('[data-table-field="cellAlignment"]').select_option("numeric")
+ assert p.locator('[data-table-preview] svg text[text-anchor="end"]').count()>0
+ p.locator('[data-table-field="cellAlignment"]').select_option("center")
+ assert p.locator('[data-table-preview] svg text[text-anchor="middle"]').count()>0
+ assert saved(p)["tableStudio"]["draft"]["cellAlignment"]=="center"
  p.screenshot(path=str(OUT/f"table-studio-compact-{width}.png"),full_page=True,animations="disabled")
  p.evaluate("""() => {
   window.__tableTrace = [];
