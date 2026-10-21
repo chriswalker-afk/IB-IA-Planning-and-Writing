@@ -497,12 +497,12 @@ export function createCompletingViews(ctx){
         '<strong>Your writing starts here.</strong>'+
         '<p><b>Write relevant Set up answers directly into your actual IA document</b> as you work: the introduction, sources and methods you really use. Pathfinder stores your notes here; it does not automatically insert text into Word or Google Docs.</p>'+
        '</div></div>'+
-      essentialsNudge(s)+
-      '<div class="chapter-onboarding-grid chapter-onboarding-grid-setup">'+
+      (isAdviceReduced(s)?"":essentialsNudge(s))+
+      '<div class="chapter-onboarding-grid chapter-onboarding-grid-setup'+(isAdviceReduced(s)?' is-reduced':'')+'">'+
        '<section class="chapter-onboarding-tile"><span class="chapter-onboarding-tile-icon">'+icon("compass")+'</span>'+
         '<h3>Planning first is recommended</h3><p>Choose an aim, explore possible mathematics and check sources before writing. Your saved sparks follow you into IA Studio.</p>'+
         '<button type="button" class="onboarding-inline-action" data-action="go-planning">'+icon("arrow-right")+' '+(hasPlan?'Review my Planning':'Complete Planning first')+'</button></section>'+
-       renderFieldGuideTeaser(icon,e)+'</div>'+
+       (isAdviceReduced(s)?"":renderFieldGuideTeaser(icon,e))+'</div>'+
       setupQuickSparks(s)+
       '<div class="setup-start-actions">'+
        button("Start writing my introduction","setup-start-writing","btn-primary","","arrow-right")+
@@ -546,12 +546,12 @@ export function createCompletingViews(ctx){
    };
   }
   case "C04":return{intro:"Choose a meaningful task. A section may be revisited whenever the evidence changes; there is no required number of maths sections.",
-    html:'<section class="writer-guide-overview-card" aria-labelledby="writer-guide-overview-title">'+
+    html:(isAdviceReduced(s)?"":'<section class="writer-guide-overview-card" aria-labelledby="writer-guide-overview-title">'+
        '<span class="writer-guide-overview-icon">'+icon("book")+'</span>'+
        '<div class="writer-guide-overview-copy"><span>YOUR WRITING COMPANION</span>'+
        '<h3 id="writer-guide-overview-title">Make each mathematical step worth reading</h3>'+
        '<p>Writing advice, examples and reminders of how to communicate real mathematical thinking. Open it whenever you need it.</p></div>'+
-       '<button type="button" class="writer-guide-overview-action" data-action="writer-guide-open">Open Writing Guide '+icon("arrow-right")+'</button></section>'+
+       '<button type="button" class="writer-guide-overview-action" data-action="writer-guide-open">Open Writing Guide '+icon("arrow-right")+'</button></section>')+
        stageDashboard()+miniList()+
       '<div class="button-row">'+sourceAction("Save progress","Save a full project backup")+
       sourceAction("I'm stuck / Something isn't working","I'm stuck")+'</div>'};
