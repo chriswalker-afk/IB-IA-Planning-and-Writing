@@ -118,11 +118,45 @@ function sourceSelectionControls(d,e){
  '<small>Required for a subset. Explain an objective or mathematically useful choice; do not hide anomalies or inconvenient results.</small>'+
  '</details>';
 }
+function graphModelSnapshotControls(d,e){
+ const snap=d.graphSnapshot;
+ if(!snap)return "";
+ const param=snap.coefficients.length?
+  '<p><strong>Polynomial coefficients, in ascending powers of x:</strong> '+
+    e(snap.coefficients.map((v,i)=>"c"+i+" = "+String(v)).join("; "))+'</p>':"";
+ const others=Object.entries(snap.parameters||{});
+ const parameters=others.length?
+  '<p><strong>Underlying fit parameters:</strong> '+
+  e(others.map(([key,value])=>key+" = "+String(value)).join("; "))+'</p>':"";
+ const err=snap.rows.length!==d.matrix.length?
+  '<p class="ia-table-snapshot-warning">The number of source rows changed. Re-transfer from Graph Plotter before exporting.</p>':"";
+ return '<div class="ia-table-model-snapshot" data-table-model-snapshot>'+
+  '<strong>Copied from Graph Plotter: '+e(snap.modelLabel)+'</strong>'+
+  '<p>Graph: '+e(snap.graphTitle||"Untitled graph")+' · '+snap.rows.length+' original paired source rows.</p>'+
+  '<p class="ia-table-model-snapshot-equation">'+e(snap.equation)+'</p>'+
+  '<small>'+e(snap.method)+'</small>'+
+  '<details><summary>Full-precision model parameters and provenance</summary>'+
+   (param||parameters?param+parameters:
+   '<p>Predictions are retained at full precision from the fitted model. '+
+   'Use the original graph for the underlying student-entered model or fit.</p>')+
+   '<p>Graph source columns: '+e(snap.graphSourceX)+' and '+e(snap.graphSourceY)+'.</p>'+
+   (snap.modelNote?'<p>'+e(snap.modelNote)+'</p>':"")+'</details>'+
+  '<p><strong>Snapshot, not a live link.</strong> Editing the graph does not change these predictions. '+
+   'Editing source measurements here invalidates the snapshot rather than silently reusing old predictions.</p>'+
+   err+
+  '<div class="ia-table-snapshot-actions">'+
+   '<button type="button" class="btn btn-secondary btn-sm" data-action="table-return-to-graph">Return to Graph Plotter to update</button>'+
+   '<button type="button" class="btn btn-quiet btn-sm" data-action="table-detach-model">Switch to my own coefficients</button>'+
+  '</div></div>';
+}
 function calculatedControls(d,e){
  if(d.mode!=="calculated")return "";
  const options=d.columns.map((column,i)=>[String(i),d.headings[i]||column]);
+ const copied=!!d.graphSnapshot;
  return '<div class="ia-table-calculated-options"><strong>Build a model-checking table</strong>'+
- '<p>Choose genuine numerical observations, then enter coefficients from your own justified model. No regression is fitted or coefficients invented here.</p>'+
+ (copied?graphModelSnapshotControls(d,e):
+ '<p>Choose genuine numerical observations, then enter coefficients from your own justified model. No regression is fitted or coefficients invented here.</p>')+
+ (copied?"":
  (d.columns.length?pick("calcXIndex","Source x variable",String(d.calcXIndex),options,e)+
   pick("calcYIndex","Observed y variable",String(d.calcYIndex),options,e):"")+
  pick("calcModel","Model to evaluate",d.calcModel,[
@@ -131,7 +165,7 @@ function calculatedControls(d,e){
  input("calcA",d.calcModel==="quadratic"?"Coefficient a (x²)":"Slope a",d.calcA,e,"e.g. 1.25")+
  input("calcB",d.calcModel==="quadratic"?"Coefficient b (x)":"Intercept b",d.calcB,e,"e.g. 2.4")+
  (d.calcModel==="quadratic"?input("calcC","Constant c",d.calcC,e,"e.g. 0.5"):"")+
- '</div>'+
+ '</div>')+
  toggle("calcShowPrediction","Include model predictions (ŷ)",d.calcShowPrediction)+
  toggle("calcShowResidual","Include signed residuals (y − ŷ)",d.calcShowResidual)+
  toggle("calcShowPercent","Include signed percentage deviation (%)",d.calcShowPercent)+
