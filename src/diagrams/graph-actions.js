@@ -1,13 +1,14 @@
 /** Student-authorised graph edits and explicit links to the mathematical journey. */
 import {analyseGraph,applyPastedGraphData,newGraphDraft,normalizeGraphDraft,saveGraphFigure,splitHeading} from "./graph-core.js";
 import {completeEntry,startFirstRepresentation} from "../completing/engine.js";
+import {GRAPH_MODEL_TYPES,MAX_GRAPH_MODELS,normalizeGraphModels} from "./graph-models.js";
 
 const ALLOWED=new Set(Object.keys(newGraphDraft()));
 const FLAGS=new Set(["showGrid","showPoints","includeZeroY"]);
 const SELECTORS=new Set(["xIndex","yIndex"]);
 export function updateGraphField(studio,key,value){
  const d=studio?.draft;
- if(!d||!ALLOWED.has(key)||["matrix","columns","pendingPaste","kind"].includes(key))return false;
+ if(!d||!ALLOWED.has(key)||["matrix","columns","pendingPaste","kind","models"].includes(key))return false;
  if(FLAGS.has(key)){d[key]=!!value;return true;}
  if(SELECTORS.has(key)){
   const index=Number(value);
@@ -21,6 +22,38 @@ export function updateGraphField(studio,key,value){
  if(typeof value!=="string")return false;
  d[key]=value.slice(0,key==="raw"?85000:key==="expression"?180:500);
  if(key==="raw")d.pendingPaste=true;
+ return true;
+}
+/** Every fitted curve is added by a deliberate student action. */
+export function addGraphModel(studio,type=studio?.draft?.modelChoice){
+ const d=studio?.draft;
+ if(!d||d.kind==="function"||!Object.hasOwn(GRAPH_MODEL_TYPES,type))
+  return {ok:false,error:"Choose an available model for a scatter or time-series graph."};
+ d.models=normalizeGraphModels(d.models);
+ if(d.models.some(m=>m.type===type))return {ok:false,error:"That model is already on the graph. You can show, hide or remove it below."};
+ if(d.models.length>=MAX_GRAPH_MODELS)return {ok:false,error:"Show at most three models on one graph so the comparison remains readable."};
+ const used=new Set(d.models.map(m=>m.id));
+ let n=1;while(used.has("model-"+n))n++;
+ const model={id:"model-"+n,type,visible:true,expression:""};
+ d.models.push(model);
+ return {ok:true,model};
+}
+export function toggleGraphModel(studio,id){
+ const model=studio?.draft?.models?.find(m=>m.id===id);
+ if(!model)return false;
+ model.visible=!model.visible;
+ return true;
+}
+export function removeGraphModel(studio,id){
+ const d=studio?.draft;
+ if(!d?.models?.some(m=>m.id===id))return false;
+ d.models=d.models.filter(m=>m.id!==id);
+ return true;
+}
+export function updateGraphModelExpression(studio,id,expression){
+ const model=studio?.draft?.models?.find(m=>m.id===id&&m.type==="custom");
+ if(!model||typeof expression!=="string")return false;
+ model.expression=expression.slice(0,180);
  return true;
 }
 export function chooseGraphType(studio,kind){
@@ -52,7 +85,7 @@ export function loadSavedGraph(studio,id){
 export function freshGraph(studio){
  studio.activeId="";studio.draft=newGraphDraft();studio.open=true;
 }
-const mathSignature=d=>JSON.stringify([d.kind,d.matrix,d.columns,d.xIndex,d.yIndex,d.expression,d.xMin,d.xMax,d.yMin,d.yMax]);
+const mathSignature=d=>JSON.stringify([d.kind,d.matrix,d.columns,d.xIndex,d.yIndex,d.expression,d.xMin,d.xMax,d.yMin,d.yMax,normalizeGraphModels(d.models)]);
 function flagChangedGraph(state,previous,current){
  if(!previous?.entryId||mathSignature(previous.draft)===mathSignature(current.draft))return false;
  const entry=state.entries.find(x=>x.id===previous.entryId);
@@ -92,8 +125,10 @@ export function saveAndLinkGraph(state){
  if(entry.phase==="first"&&(!entry.title.trim()||["First purposeful representation","scatter","diagram","table","calculation","other"].includes(entry.title)))
   entry.title=saved.record.draft.title;
  if(!entry.technique.trim())
-  entry.technique=saved.record.draft.kind==="scatter"?"Scatter diagram":
-   saved.record.draft.kind==="time"?"Time-series graph":"Function plot";
+  entry.technique=saved.record.draft.kind==="scatter"?
+   (saved.record.draft.models?.some(m=>m.visible)?"Scatter diagram with chosen models":"Scatter diagram"):
+   saved.record.draft.kind==="time"?
+    (saved.record.draft.models?.some(m=>m.visible)?"Time series with chosen models":"Time-series graph"):"Function plot";
  entry.kind=saved.record.draft.kind==="scatter"?"scatter":
   saved.record.draft.kind==="function"?"model":"other";
  state.completion.activeEntryIndex=index;state.ui.mathIndex=index;
