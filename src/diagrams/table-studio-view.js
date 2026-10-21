@@ -207,7 +207,7 @@ function emphasisControls(studio,e){
  const eligible=rows.slice(0,["frequency","grouped"].includes(d.mode)?-1:rows.length);
  return '<details class="ia-table-emphasis"'+(d.highlightMode==="selected"?' open':"")+'>'+
  '<summary>Highlight a mathematically significant result (optional)</summary>'+
- '<p>Use understated emphasis for a maximum of two genuinely meaningful result rows. Do not highlight a Total row or imply that a highlighted result is statistically significant without evidence.</p>'+
+ '<p>Use understated emphasis for a maximum of two genuinely meaningful result rows. Do not highlight a Total row or imply that a highlighted result is statistically significant without evidence. SVG, PNG and editable HTML retain the emphasis; CSV only contains values.</p>'+
  pick("highlightMode","Emphasis",d.highlightMode,[["none","No emphasis (default)"],["selected","Emphasise selected result rows"]],e)+
  (d.highlightMode==="selected"?
   '<div class="ia-table-emphasis-rows">'+
@@ -228,7 +228,8 @@ function columnPrecisionOptions(d,e){
  const model=analyzeTable(d).model;
  if(!model)return '<p class="ia-table-precision-note">Finish entering a valid table to customise its numerical columns.</p>';
  const options=model.headers.map((header,i)=>({header,index:i})).filter(({index:i})=>
-  ["compact","calculated"].includes(d.mode)?!!model.numeric[i]:i>=2);
+  ["compact","calculated"].includes(d.mode)?!!model.numeric[i]:
+  d.mode==="grouped"?i>=2&&(model.headers[i].startsWith("Frequency density")||model.headers[i]==="Percentage (%)"):i>=2);
  if(!options.length)return '<p class="ia-table-precision-note">No precision-adjustable columns in the current table.</p>';
  return '<div class="ia-table-column-precision-grid">'+options.map(({header,index})=>{
   const rule=tableColumnFormat(d,index),selected=rule.mode,digits=rule.digits;
