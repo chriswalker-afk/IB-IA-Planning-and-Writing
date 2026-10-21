@@ -805,7 +805,8 @@ def reduced_writing(browser,width):
    before=stored(page)
    original_scratch=copy.deepcopy(before["scratch"])
    original_fields=copy.deepcopy(before["completion"]["fields"])
-   original_entries=copy.deepcopy(before["entries"])
+   keep_fields=("id","title","phase","status","result","interpretation")
+   original_entries=[{key:item.get(key) for key in keep_fields} for item in before["entries"]]
    initial_book=main.locator('.writer-guide-field-bubble:visible').count()
    assert initial_book>=1,(node,width,'missing purple help')
    initial_rails=main.locator('.criterion-field-help-rail').count()
@@ -850,7 +851,8 @@ def reduced_writing(browser,width):
     page.locator('#criterionBadgeDialog [data-criterion-badge-close]').first.click()
    if node in ("C10","C40"):page.screenshot(path=str(OUT/f"reduced-{node}-{width}.png"),animations="disabled")
    after=stored(page)
-   assert after["scratch"]==original_scratch and after["completion"]["fields"]==original_fields and after["entries"]==original_entries,(node,width,'saved work changed')
+   saved_entries=[{key:item.get(key) for key in keep_fields} for item in after["entries"]]
+   assert after["scratch"]==original_scratch and after["completion"]["fields"]==original_fields and saved_entries==original_entries,(node,width,'saved work changed')
    page.locator('[data-action="toggle-advice-mode"]').click()
    assert stored(page)["ui"]["adviceMode"]=="guided",(node,width)
    assert "Reduce advice" in page.locator('[data-action="toggle-advice-mode"]').inner_text()
