@@ -6,6 +6,7 @@
 import {escapeGraph,finiteCell,splitHeading} from "./graph-core.js";
 import {continuousBins,groupedClassBins} from "./continuous-classes.js";
 import {boxStats,boxComparisons} from "./box-analysis.js";
+import {distributionSummary,distributionComparisons,histogramBinSuggestions,alignedHistograms} from "./distribution-analysis.js";
 export {boxStats} from "./box-analysis.js";
 
 export const STAT_TYPES=Object.freeze([
@@ -23,7 +24,7 @@ export function newStatDraft(){
  return {
   kind:"histogram",raw:"",columns:[],matrix:[],pendingPaste:false,headers:"auto",
   selected:[0],categoryIndex:0,lowIndex:0,highIndex:1,frequencyIndex:2,
-  histogramInput:"raw",binWidth:"",binStart:"",barMode:"count",
+  histogramInput:"raw",binWidth:"",binStart:"",barMode:"count",histogramCompare:"single",histogramLabels:"frequency",dotMode:"individual",dotMean:false,dotMedian:false,
   quartileRule:"halves",outlierRule:"tukey",whiskerMode:"nonoutlier",zThreshold:"3",boxPrecision:"auto",
   title:"",figureNumber:"1",variable:"",unit:"",unitMode:"unsure",sourceKind:"unsure",sourceText:"",
   caption:"",min:"",max:"",showGrid:true,showOutliers:true,showLabels:true,
@@ -34,7 +35,7 @@ export function newStatDraft(){
 export function normalizeStatDraft(raw){
  const d=newStatDraft(),r=valid(raw)?raw:{};
  for(const key of ["kind","raw","headers","histogramInput","binWidth","binStart","barMode",
-  "quartileRule","outlierRule","whiskerMode","zThreshold","boxPrecision",
+  "quartileRule","outlierRule","whiskerMode","zThreshold","boxPrecision","histogramCompare","histogramLabels","dotMode",
   "title","figureNumber","variable","unit","unitMode","sourceKind","sourceText",
   "caption","min","max"]){
   const cap=key==="raw"?MAX_STAT_RAW:key==="sourceText"?480:key==="caption"?480:150;
@@ -44,6 +45,9 @@ export function normalizeStatDraft(raw){
  if(!["auto","yes","no"].includes(d.headers))d.headers="auto";
  if(!["raw","table"].includes(d.histogramInput))d.histogramInput="raw";
  if(!["count","percent"].includes(d.barMode))d.barMode="count";
+ if(!["single","overlay","smallmultiples"].includes(d.histogramCompare))d.histogramCompare="single";
+ if(!["none","frequency","density","percentage"].includes(d.histogramLabels))d.histogramLabels="frequency";
+ if(!["individual","counted"].includes(d.dotMode))d.dotMode="individual";
  if(!["halves","linear"].includes(d.quartileRule))d.quartileRule="halves";
  if(!["tukey","extreme","zscore","modified","none","minmax"].includes(d.outlierRule))d.outlierRule="tukey";
  if(!["nonoutlier","minmax"].includes(d.whiskerMode))d.whiskerMode="nonoutlier";
@@ -62,7 +66,7 @@ export function normalizeStatDraft(raw){
  }
  for(const key of ["pendingPaste","showGrid","showOutliers","showLabels","showBoxQuartiles",
   "showBoxMedian","showBoxExtremes","showBoxWhiskers","showBoxOutlierValues",
-  "showBoxFences","showBoxMean"]){
+  "showBoxFences","showBoxMean","dotMean","dotMedian"]){
   if(typeof r[key]==="boolean")d[key]=r[key];
  }
  return d;
@@ -126,7 +130,7 @@ export function importStatTable(studio,raw){
  const numeric=data.columns.map((_,i)=>({
   index:i,valid:data.matrix.filter(row=>ncell(row[i])!==null).length
  })).filter(x=>x.valid>0).sort((a,b)=>b.valid-a.valid||a.index-b.index);
- d.selected=numeric.slice(0,d.kind==="histogram"?1:Math.min(4,numeric.length)).map(x=>x.index);
+ d.selected=numeric.slice(0,d.kind==="histogram"&&d.histogramCompare==="single"?1:Math.min(4,numeric.length)).map(x=>x.index);
  if(!d.selected.length)d.selected=[0];
  if(d.kind==="bar"){
   d.categoryIndex=0;d.selected=numeric.filter(x=>x.index!==d.categoryIndex).slice(0,4).map(x=>x.index);
@@ -151,9 +155,15 @@ function columnData(d,index){
  return {values,skipped};
 }
 function buildRawHistogram(d){
- const col=numericCols(d)[0],source=columnData(d,col);
- const b=continuousBins(source.values,d.binWidth,d.binStart,36);
- return {...b,values:source.values,skipped:source.skipped};
+ const entries=numericCols(d).map(index=>({index,name:d.columns[index]||"Group "+(index+1),...columnData(d,index)}));
+ if(!entries.length)return {bins:[],error:"Choose a measurement column."};
+ if(d.histogramCompare!=="single"){
+  if(entries.some(group=>group.values.length<2||group.skipped))return {bins:[],error:"Each compared group needs at least two valid observations."};
+  const combined=alignedHistograms(entries,d.binWidth,d.binStart);
+  return {...combined,values:entries.flatMap(group=>group.values),skipped:0};
+ }
+ const source=entries[0],b=continuousBins(source.values,d.binWidth,d.binStart,36);
+ return {...b,values:source.values,skipped:source.skipped,series:[{...source,n:source.values.length,bins:b.bins||[]}]};
 }
 function buildGroupedHistogram(d){
  if(d.columns.length<3)return {bins:[],error:"A grouped-frequency histogram needs lower, upper and frequency columns."};
@@ -209,11 +219,21 @@ export function statAnalysis(raw){
   if(d.histogramInput==="raw"&&data.skipped)fail("invalid-values",data.skipped+" non-numeric value(s) are present. Correct or remove them in the source before graphing.");
   if(d.histogramInput==="raw"&&bins.length>20)warn("many-bins","Consider whether many narrow bins communicate the distribution effectively.");
   if(d.histogramInput==="table")warn("class-assumption","Explain how grouped data and the class boundaries were obtained; original values cannot be recovered from frequencies.");
-  result={...result,bins,total,skipped:data.skipped||0};
+  const series=data.series||[],values=data.values||[];
+  if(d.histogramInput==="table"&&d.histogramCompare!=="single")fail("compare-grouped","Comparison requires original measurements, not grouped frequencies.");
+  if(d.histogramCompare!=="single"&&series.length<2)fail("compare-groups","Choose at least two groups.");
+  if(d.histogramCompare!=="single"&&series.length>4)fail("compare-limit","Choose at most four groups.");
+  if(d.histogramCompare!=="single"&&series.length>1&&series.some(group=>group.n!==series[0].n))
+   warn("unequal-group-n","Different sample sizes: compare relative-frequency density, not raw counts.");
+  result={...result,bins,total,series,skipped:data.skipped||0,
+   suggestions:d.histogramInput==="raw"?histogramBinSuggestions(values):[],
+   summary:d.histogramInput==="raw"?distributionSummary(values,d.quartileRule):null,
+   comparisons:d.histogramInput==="raw"?distributionComparisons(series.map(group=>({...group,summary:distributionSummary(group.values,d.quartileRule)}))):[]};
  }else if(d.kind==="box"||d.kind==="dot"){
   const series=numericCols(d).map(i=>{
    const data=columnData(d,i);
    return {index:i,name:d.columns[i]||"Group "+(i+1),...data,
+    summary:distributionSummary(data.values,d.quartileRule),
     box:d.kind==="box"?boxStats(data.values,d.quartileRule,d.outlierRule,
      {whiskerMode:d.whiskerMode,zThreshold:d.zThreshold}):null};
   });
@@ -246,7 +266,7 @@ export function statAnalysis(raw){
    if(series.some(s=>s.values.length<10))warn("small-sample","A small sample produces unstable quartiles. Explain your sampling and any limitations.");
   }
   if(d.kind==="dot"&&series.some(s=>new Set(s.values).size>50))warn("overplot","Many unique values may produce crowded dots. A box plot or histogram may communicate better.");
-  result={...result,series,comparisons:d.kind==="box"?boxComparisons(series):[]};
+  result={...result,series,comparisons:d.kind==="box"?boxComparisons(series):distributionComparisons(series)};
  }else if(d.kind==="bar"){
   const b=barAnalysis(d);
   if(b.error)fail("bar-data",b.error);
@@ -282,7 +302,7 @@ export function statAnalysis(raw){
 }
 export const statSignature=d=>JSON.stringify([d.kind,d.matrix,d.columns,d.selected,d.categoryIndex,d.lowIndex,
  d.highIndex,d.frequencyIndex,d.histogramInput,d.binWidth,d.binStart,d.barMode,d.quartileRule,d.outlierRule,
- d.whiskerMode,d.zThreshold,d.min,d.max]);
+ d.whiskerMode,d.zThreshold,d.histogramCompare,d.histogramLabels,d.dotMode,d.dotMean,d.dotMedian,d.min,d.max]);
 export function saveStatFigure(studio,entryId=""){
  const q=statAnalysis(studio.draft);
  if(!q.ready)return {ok:false,error:"Resolve the required statistical diagram checks first.",checks:q};
