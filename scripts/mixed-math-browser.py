@@ -73,6 +73,9 @@ try:
    assert group.locator('[data-math-preview-content] svg').count()==1
    group.locator('[data-action="math-edit-existing"]').first.click()
    formula=group.locator('[data-math-expression]')
+   page.wait_for_function("""tex=>[...document.querySelectorAll('[data-math-field="planning.fields.aim"]')]
+    .some(g=>g.offsetWidth>0 && g.querySelector('[data-math-expression]')?.value===tex)""",
+    arg=r'\frac{x^{2}}{2}')
    assert formula.input_value()==r'\frac{x^{2}}{2}'
    formula.fill(r'x^{2}+1')
    group.locator('[data-action="math-insert"]').click()
