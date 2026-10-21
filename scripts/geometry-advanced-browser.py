@@ -75,7 +75,7 @@ def exercise(page,width,errors):
  page.locator('[data-geometry-field="showSensitivity"]').check()
  page.locator('[data-geometry-field="sensitivityStep"]').fill("0.10")
  assert "Local coordinate sensitivity" in quality.inner_text()
- assert "one at a time" in quality.inner_text().lower()
+ assert "one x or y coordinate at a time" in quality.inner_text().lower()
  assert page.locator('[data-geometry-preview] svg[data-geometry-canvas]').count()==1
  page.screenshot(path=str(OUT/f"geometry-advanced-l-{width}.png"),full_page=True,animations="disabled")
  # Import creates a new independent draft and keeps original tracer records.
