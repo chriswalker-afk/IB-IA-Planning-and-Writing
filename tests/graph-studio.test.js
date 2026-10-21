@@ -233,7 +233,8 @@ test("linear, quadratic and student-written overlays coexist with independent co
  assert(svg.includes("My own equation:"));
  assert(svg.includes("Observed points"));
  assert.equal((svg.match(/<circle cx=/g)||[]).length,4); // four genuine measured points
- assert.equal((svg.match(/class="graph-legend-marker"/g)||[]).length,1); // independent key symbol
+ assert.equal((svg.match(/<circle class="graph-legend-marker"/g)||[]).length,1); // observed-point key symbol
+ assert.equal((svg.match(/<line class="graph-legend-marker"/g)||[]).length,3); // one key line per model
  assert.equal(sampleGraphModel(a.models[0],a.points).length,261);
  assert(Math.max(...sampleGraphModel(a.models[0],a.points).map(p=>p.x))===3);
  assert(toggleGraphModel(g,a.models[1].id));
