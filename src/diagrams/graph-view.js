@@ -4,6 +4,7 @@ import {renderPresentationCoach,renderFigureHandover} from "./presentation-coach
 /** Cohesive graph editing surface inside C31. Every editor control has a real action. */
 import {analyseGraph,renderGraphSvg,graphData} from "./graph-core.js";
 import {GRAPH_MODEL_TYPES,MAX_GRAPH_MODELS} from "./graph-models.js";
+import {metricText,renderModelComparison,renderResidualOptions,renderResidualPanel} from "./graph-diagnostics-view.js";
 
 const types=[
  ["scatter","Scatter diagram","Genuine paired measurements. Points are not joined or fitted automatically."],
@@ -67,9 +68,14 @@ export function renderGraphModelSummary(model,e){
  if(!model)return "";
  const visibility=!model.visible?'<p class="graph-model-hidden">Hidden from preview and exported figures.</p>':"";
  if(!model.valid)return visibility+'<p class="graph-model-error" role="status">'+e(model.error||"Model unavailable.")+'</p>';
+ const diagnostics=model.diagnostics||{},statistics=!diagnostics.ok?
+  '<p class="graph-model-diagnostic-unavailable">'+e(diagnostics.reason||"Comparable diagnostics unavailable.")+'</p>':
+  '<p class="graph-model-metrics">RMSE: <strong>'+e(metricText(diagnostics.rmse))+
+   '</strong> · R²: <strong>'+e(diagnostics.r2===null?"Undefined":metricText(diagnostics.r2))+'</strong></p>'+
+  (diagnostics.r2Note?'<small>'+e(diagnostics.r2Note)+'</small>':'');
  return visibility+'<p class="graph-model-equation">'+e(model.equation)+'</p>'+
   '<p class="graph-model-method">'+e(model.method)+' · '+model.n+' observations</p>'+
-  '<small>'+e(model.note)+'</small>';
+  statistics+'<small>'+e(model.note)+'</small>';
 }
 export function renderGraphModelControls(d,analysis,icon,e){
  const models=analysis.models||[],choice=GRAPH_MODEL_TYPES[d.modelChoice]?d.modelChoice:"linear";
@@ -96,6 +102,11 @@ export function renderGraphModelControls(d,analysis,icon,e){
     icon("plus-circle")+' Add model</button></div>'+
   '<div class="graph-model-list" data-graph-model-list>'+
    (cards||'<p class="graph-model-empty">No models added. Your original points are shown without an automatic line of best fit.</p>')+'</div>'+
+  '<div data-graph-comparison>'+renderModelComparison(d,analysis,e)+'</div>'+
+  renderResidualOptions(d,analysis,e)+
+  (models.length?'<div class="graph-model-reflection"><label class="graph-form-field"><span>My interpretation or reason for choosing a model (optional)</span>'+
+   '<textarea data-graph-field="modelReflection" rows="3" maxlength="1200" placeholder="What do the shape and size of the errors tell you? Why might one model be more appropriate?">'+e(d.modelReflection)+'</textarea>'+
+   '<small>Your own thinking is saved with the working figure; copy or adapt it yourself when writing your IA.</small></label></div>':'')+
   '<p class="graph-model-guidance">Show or hide each model independently. You can include up to three; curves stop at the observed x-range. Displayed coefficients are rounded but calculations use full precision. A curve does not establish model suitability; inspect and discuss fitting errors before drawing conclusions.</p>'+
   '</section>';
 }
@@ -165,6 +176,7 @@ export function renderGraphStudio(state,icon,e){
    '<div class="graph-preview-heading"><strong>Live preview</strong><small>Check how this will look on an IA page</small></div>'+
    '<div class="graph-svg-wrap" data-graph-preview>'+renderGraphSvg(d)+'</div>'+
    '<div class="graph-preview-meta" data-graph-preview-meta>'+e(d.kind==="function"?"Function (not collected observations)":data.points.length+" paired observations plotted")+'</div></section>'+
+  renderResidualPanel(d,q,icon,e)+
   '<section class="graph-quality-card" aria-label="Diagram quality checks" data-graph-quality>'+
   renderGraphQuality(studio,icon,e)+
   '</section>'+renderPresentationCoach(state,"graph",d,icon,e)+
