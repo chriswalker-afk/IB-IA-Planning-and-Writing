@@ -144,3 +144,16 @@
  .ia-table-source-columns{grid-template-columns:1fr}
  .ia-table-calculated-options .ia-table-two-col{grid-template-columns:1fr}
 }
+
+/* Graph Plotter handover: compact, accessible provenance panel. */
+.ia-table-model-snapshot{display:grid;gap:8px;padding:12px;border:1px solid #b7d6d0;background:#edf8f4;border-radius:10px;color:#254e47}
+.ia-table-model-snapshot>strong{font-size:12px}
+.ia-table-model-snapshot>p,.ia-table-model-snapshot>small{margin:0;line-height:1.6;font-size:11px;color:#4a6a63}
+.ia-table-model-snapshot-equation{font-family:Georgia,serif;font-size:14px!important;font-weight:700;color:#274841!important;overflow-wrap:anywhere}
+.ia-table-model-snapshot details{border:1px solid #cfdfdb;border-radius:8px;padding:9px;background:#fff}
+.ia-table-model-snapshot details summary{font-size:11px;color:#235f55;cursor:pointer;font-weight:700}
+.ia-table-model-snapshot details p{font-size:10px;line-height:1.65;overflow-wrap:anywhere}
+.ia-table-snapshot-warning{font-weight:700;color:#99522d!important}
+.ia-table-snapshot-actions{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0}
+.ia-table-snapshot-actions .btn{max-width:100%;white-space:normal}
+@media(max-width:650px){.ia-table-snapshot-actions{flex-direction:column}.ia-table-snapshot-actions .btn{width:100%}}
