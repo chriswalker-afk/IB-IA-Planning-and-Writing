@@ -14,8 +14,9 @@ export function setGeometryVertex(studio,index,key,value){
  const v=studio.draft.vertices[index];if(!v)return false;
  if(["label","edgeLabel","angleLabel"].includes(key)){v[key]=String(value).slice(0,key==="label"?44:100);studio.draft.edited=true;return true;}
  if(key==="x"||key==="y"){
-  const n=Number(value);if(String(value).trim()===""||!Number.isFinite(n)||Math.abs(n)>1e5)return false;
-  v[key]=n;studio.draft.edited=true;return true;
+  const n=Number(value),valid=String(value).trim()!==""&&Number.isFinite(n)&&Math.abs(n)<=1e5;
+  // A cleared or invalid coordinate must never silently reuse the old value.
+  v[key]=valid?n:null;studio.draft.edited=true;return true;
  }return false;
 }
 export function geometryTemplate(studio,kind){
