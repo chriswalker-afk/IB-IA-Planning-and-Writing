@@ -1113,6 +1113,8 @@
  * Criterion and Writer's Field Guide bubbles remain attached to the fields. */
 .chapter-onboarding-grid-setup.is-reduced{grid-template-columns:minmax(0,1fr)}
 .writing-stage-flow.is-reduced{gap:11px;margin-top:9px}
+.writing-stage-compact-aim{margin:9px 0 12px;font-size:12px;line-height:1.6;color:#456067;overflow-wrap:anywhere}
+.writing-stage-compact-aim strong{display:inline-block;margin-right:7px;color:#274d4a;font-weight:800}
 .studio-stage-essential-check{font-size:12px;line-height:1.5;font-weight:650;color:#38695d;margin:9px 0 12px;padding:8px 11px;border-left:3px solid #9bc8b7;background:#f7faf8}
 .writing-stage-flow.is-reduced>.writing-stage-task{order:0}
 .writing-stage-flow.is-reduced>.writing-stage-sparks{order:1}
