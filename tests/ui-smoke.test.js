@@ -79,6 +79,9 @@ import {modelFromEnvelope,suggestedFilename} from "../src/handover/report-model.
 
 const read=p=>readFileSync(new URL(p,import.meta.url),"utf8");
 function createHarness(savedValue){
+  // Older workflow tests exercise setup directly; onboarding has its own dedicated assertions.
+  savedValue=structuredClone(savedValue??createProjectState());
+  savedValue.ui.writingIntroSeen=true;
   const events={};
   const store=new Map(savedValue?[["ia-pathfinder-prototype-v1",JSON.stringify(savedValue)]]:[]);
   const classList={add(){},remove(){},toggle(){}};
@@ -1205,4 +1208,29 @@ test("Reduce advice also trims the IA setup and stage dashboard without hiding t
   assert.equal(h.saved.ui.adviceMode,"guided");
   if(node==="C04")assert(h.html.includes("writer-guide-overview-card"));
  }
+});
+
+test("Writing welcome explains the implemented workflow without resetting saved stages",()=>{
+ const {createCompletingViews:createViews}= {createCompletingViews};
+ const s=createProjectState();s.route="completing";s.completion.current="C00";
+ let current=s;
+ const ctx={getState:()=>current,icon:()=>"",e:v=>String(v??""),button:(label,action)=>'<button data-action="'+action+'">'+label+'</button>',
+  field:()=>"",choose:()=>"",summary:()=>"",tabletNav:()=>"",filled:x=>Boolean(x)};
+ const views=createViews(ctx);
+ let html=views.viewCompleting();
+ for(const phrase of ["Welcome to Writing.","Let the mathematical journey adapt","Voronoi studio","Reduce advice","complete JSON project backup","writing-intro-continue"])
+   assert(html.includes(phrase),phrase);
+ assert(!html.includes("Quick-fill missing sparks"));
+ current.ui.writingIntroSeen=true;
+ html=views.viewCompleting();
+ assert(html.includes("Your writing starts here."));
+ assert(html.includes("How writing works"));
+ current.completion.current="C40";current.ui.writingIntroOpen=true;
+ html=views.viewCompleting();
+ assert(html.includes("Welcome to Writing."));
+ assert(!html.includes("Mathematical stage 1"));
+ assert.equal(current.completion.current,"C40");
+ current.ui.writingIntroOpen=false;
+ html=views.viewCompleting();
+ assert(!html.includes('data-writing-welcome="true"'));
 });
