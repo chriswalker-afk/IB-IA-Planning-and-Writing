@@ -77,12 +77,20 @@ def run(p,width):
  p.locator('[data-trace-field="sourceKind"]').select_option("primary")
  p.locator('[data-trace-field="perspective"]').select_option("front-on")
  p.locator('[data-trace-field="precision"]').select_option("2")
+ # A real equation is inserted at the caret, saved and rendered in the figure.
+ editor=p.locator('[data-notation-studio="trace"][data-notation-key="caption"]')
+ editor.locator('[data-action="diagram-notation-toggle"]').click()
+ editor.locator('[data-diagram-expression]').fill(r'\frac{dy}{dx}')
+ editor.locator('[data-action="diagram-notation-insert"]').click()
+ assert r'\(\frac{dy}{dx}\)' in saved(p)["imageTracer"]["draft"]["caption"]
+ editor.locator('[data-action="diagram-notation-close"]').click()
  assert p.locator('[data-action="trace-use"]').is_enabled()
  assert "Required checks passed" in p.locator("[data-trace-quality]").inner_text()
  assert p.locator('.trace-coordinates-table tbody tr').count()==3
  assert p.locator('[data-trace-canvas="true"] circle').count()>=4
  p.locator('[data-action="trace-view"][data-trace-value="math"]').click()
  assert p.locator('[data-trace-preview] .image-trace-svg').count()==1
+ assert p.locator('[data-trace-preview] .diagram-math-typeset').count()>=1
  assert p.locator('[data-trace-preview] image').count()==0
  assert p.locator('[data-action="trace-use"]').is_enabled()
  no_overflow(p)
