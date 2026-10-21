@@ -178,7 +178,7 @@ const formatNumber=(number,kind,digits)=>{
 };
 const displayValue=(v,d,derived=false,index=-1,mode=d.mode)=>{
  const rule=tableColumnFormat(d,index,mode);
- const defaultSource=!derived&&d.mode==="compact"&&d.numberFormat==="source";
+ const defaultSource=!derived&&["compact","calculated"].includes(mode)&&d.numberFormat==="source";
  const kind=rule.mode==="default"?(defaultSource?"source":"dp"):rule.mode;
  if(kind==="source"&&!derived)return String(v??"");
  const numeric=typeof v==="number"&&Number.isFinite(v)?v:finiteCell(v);
@@ -211,35 +211,111 @@ export function analyzeTable(raw){
  if(!d.matrix.length)fail("data","Enter actual data in the worksheet, or paste and import existing data.");
  if(d.pendingPaste)fail("unparsed","The pasted cells have changed. Read the latest values before exporting.");
  const headings=d.headings;
- if(headings.some(h=>!h.trim()))fail("headings","Every displayed column needs a meaningful heading.");
- if(headings.some(h=>!meaningfulLimit(h)))fail("headings-long","Shorten long headings and put full explanations into your surrounding writing.");
+ const chooseRows=["compact","calculated"].includes(d.mode);
+ const chosen=chooseRows?tableDisplayRows(d):{ok:true,indices:[],custom:false};
+ const cols=d.mode==="compact"?tableDisplayColumns(d):
+  d.mode==="calculated"?[d.calcXIndex,d.calcYIndex]:d.columns.map((_,i)=>i);
+ const visibleHeadingIndices=["compact","calculated"].includes(d.mode)?cols:d.columns.map((_,i)=>i);
+ if(visibleHeadingIndices.some(i=>!headings[i]?.trim()))fail("headings","Every displayed source column needs a meaningful heading.");
+ if(visibleHeadingIndices.some(i=>!meaningfulLimit(headings[i]||"")))fail("headings-long",
+  "Shorten displayed headings and put full explanations into your surrounding writing.");
  if(d.matrix.some(row=>row.some(c=>c.length>80||c.includes("\n"))))
   fail("cell-length","A cell is too long to format readably. Shorten it or move the explanation into the IA text.");
- const validSummary=d.mode==="summary",validFrequency=d.mode==="frequency";
+ const selection=chooseRows?tableSelectionDetails(d,cols,chosen.indices):null;
+ if(chooseRows){
+  if(!chosen.ok)fail("row-selection",chosen.error||"Choose source row numbers to display.");
+  if(chosen.ok&&(!chosen.indices.length||chosen.indices.length>8))
+   fail("row-count","Choose between one and eight source rows.");
+  if(selection?.subset&&d.selectionReason.trim().length<18)
+   fail("selection-reason","Explain in at least a short sentence why these particular rows or columns are shown; do not conceal inconvenient data.");
+  if(selection?.subset)warn("selected-subset","This is an explicitly selected subset, not the full dataset. Explain the choice and retain every original observation in your working files.");
+ }
+ const validSummary=d.mode==="summary",validFrequency=d.mode==="frequency",validCalculated=d.mode==="calculated";
+ const provenance=selection?.subset?
+  "Selected source rows "+selection.rowNumbers.join(", ")+" of "+selection.sourceRows+
+  "; "+selection.columnCount+" of "+selection.sourceColumns+" source columns. Selection reason: "+d.selectionReason.trim():"";
  let model=null;
  if(d.mode==="compact"){
-  if(d.matrix.length>8)fail("raw-table-too-long",
-   "This is a long raw-data table. Do not include it in the IA or appendix. Use a summary table or a graph instead.");
-  if(d.columns.length>5)fail("too-wide","Use no more than five columns in a compact IA table. Select a smaller purposeful range.");
-  if(d.matrix.some(row=>row.length!==d.columns.length))fail("ragged","Every row needs the same number of cells.");
-  if(d.matrix.some(row=>row.some(cell=>!String(cell).trim())))
-   fail("empty-cell","An empty displayed cell needs an explicit, mathematically meaningful value or explanation.");
-  const nums=d.columns.map((_,i)=>columnType(d,i));
-  if(nums.some(c=>c.mixed))fail("mixed-column",
-   "A column mixes numerical values and text. Check errors or missing measurements rather than silently treating them as labels.");
-  nums.forEach((n,i)=>{
-   const u=d.unitDecisions[i]||unitDefault();
-   if(n.numeric&&u.mode==="unsure")fail("units","For numerical column "+(i+1)+", state a unit or choose dimensionless.");
-   if(n.numeric&&u.mode==="unit"&&!u.unit.trim())fail("units","Enter the unit for column "+(i+1)+".");
+  if(cols.length===0)fail("no-columns","Choose at least one source column to display.");
+  if(cols.length>5)fail("too-wide","Choose at most five source columns. Nothing has been removed automatically.");
+  if(d.matrix.some(row=>row.length!==d.columns.length))fail("ragged","Every row in the source dataset needs the same number of cells.");
+  const displayRows=chosen.ok?chosen.indices.map(i=>d.matrix[i]):[];
+  if(displayRows.some(row=>cols.some(i=>!String(row[i]??"").trim())))
+   fail("empty-cell","An included source row contains an empty displayed value. Check the data or explain a defensible selection.");
+  const nums=cols.map(i=>{
+   let numeric=0,other=0;
+   for(const row of displayRows){
+    const v=String(row[i]??"").trim();
+    if(!v)continue;
+    if(finiteCell(v)===null)other++;else numeric++;
+   }
+   return {numeric:numeric>0&&numeric>=other,mixed:numeric>0&&other>0};
   });
-  if(!problems.some(p=>["data","raw-table-too-long","too-wide","ragged","empty-cell","cell-length","mixed-column"].includes(p.code))){
-   model={headers:d.columns.map((_,i)=>tableHeader(d,i)),
-    rows:d.matrix.map(row=>row.map((value,index)=>displayValue(value,d,false,index))),
-    numeric:nums.map(n=>n.numeric),kind:"compact",
-    note:d.note||"",metadata:""};
+  if(nums.some(c=>c.mixed))fail("mixed-column","An included column mixes numerical and text values. Check the source measurements.");
+  cols.forEach((i,j)=>{
+   const u=d.unitDecisions[i]||unitDefault();
+   if(nums[j].numeric&&u.mode==="unsure")fail("units","Confirm the unit or dimensionless status for displayed column "+(i+1)+".");
+   if(nums[j].numeric&&u.mode==="unit"&&!u.unit.trim())fail("units","Enter the unit for displayed column "+(i+1)+".");
+  });
+  if(!problems.some(p=>["data","row-selection","row-count","no-columns","too-wide","ragged","empty-cell","cell-length","mixed-column"].includes(p.code))){
+   model={headers:cols.map(i=>tableHeader(d,i)),
+    rows:displayRows.map(row=>cols.map((i,j)=>displayValue(row[i],d,false,j,"compact"))),
+    numeric:nums.map(n=>n.numeric),kind:"compact",note:d.note||"",metadata:provenance,
+    sourceRowIndices:chosen.indices,sourceColumnIndices:cols};
   }
-  if(d.matrix.length>5)warn("many-rows",
-   "Check that every displayed row is needed to follow your mathematics. The complete dataset belongs in working files.");
+  if(displayRows.length>5)warn("many-rows","Check each displayed row is necessary to understand the mathematics.");
+ }else if(validCalculated){
+  const x=d.calcXIndex,y=d.calcYIndex;
+  if(d.columns.length<2||x===y)fail("calculated-variables","Choose two different numerical source columns: x and observed y.");
+  if(!d.calcShowPrediction&&!d.calcShowResidual&&!d.calcShowPercent)
+   fail("calculated-output","Choose at least one calculated result to display.");
+  if(!["linear","quadratic"].includes(d.calcModel))fail("calculated-model","Choose a supported model.");
+  const coefficients=[d.calcA,d.calcB,...(d.calcModel==="quadratic"?[d.calcC]:[])];
+  const numericCoeffs=coefficients.map(c=>finiteCell(c));
+  if(numericCoeffs.some(v=>v===null))
+   fail("calculated-coefficients","Enter finite numerical coefficients for the model. Table Studio does not invent or fit them.");
+  if([x,y].some(i=>i<0||i>=d.columns.length))fail("calculated-variables","Select columns that exist in your source data.");
+  if([x,y].some(i=>{
+   const u=d.unitDecisions[i]||unitDefault();
+   return u.mode==="unsure"||u.mode==="unit"&&!u.unit.trim();
+  }))fail("calculated-units","Confirm the units (or dimensionless status) of both source variables.");
+  const rows=[];
+  for(const index of chosen.ok?chosen.indices:[]){
+   const rawRow=d.matrix[index],xv=finiteCell(rawRow?.[x]),yv=finiteCell(rawRow?.[y]);
+   if(xv===null||yv===null){
+    fail("calculated-source","Source row "+(index+1)+" has a missing or non-numeric x or y value; do not silently omit it.");continue;
+   }
+   const [a,b,c=0]=numericCoeffs;
+   const predicted=d.calcModel==="quadratic"?a*xv*xv+b*xv+c:a*xv+b;
+   const residual=yv-predicted;
+   if(!Number.isFinite(predicted)||!Number.isFinite(residual)){
+    fail("calculated-overflow","Model calculation at source row "+(index+1)+" is not finite. Check coefficients and data.");continue;
+   }
+   if(d.calcShowPercent&&yv===0){
+    fail("calculated-zero","Percentage deviation from an observed value of zero is undefined at source row "+(index+1)+". Turn that column off or choose justified nonzero observations.");continue;
+   }
+   const row=[displayValue(rawRow[x],d,false,0,"calculated"),displayValue(rawRow[y],d,false,1,"calculated")];
+   if(d.calcShowPrediction)row.push(displayValue(predicted,d,true,row.length,"calculated"));
+   if(d.calcShowResidual)row.push(displayValue(residual,d,true,row.length,"calculated"));
+   if(d.calcShowPercent)row.push(displayValue(100*residual/Math.abs(yv),d,true,row.length,"calculated"));
+   rows.push(row);
+  }
+  if(!problems.some(p=>["calculated-source","calculated-overflow","calculated-zero","calculated-variables","calculated-coefficients","calculated-units","calculated-output","row-selection","row-count"].includes(p.code))&&rows.length){
+   const yUnit=d.unitDecisions[y].mode==="unit"?" ("+d.unitDecisions[y].unit+")":"";
+   const label=d.calcModel==="quadratic"?"ŷ = a x^2 + b x + c":"ŷ = a x + b";
+   const eq=d.calcModel==="quadratic"?"a="+d.calcA+", b="+d.calcB+", c="+d.calcC:
+    "a="+d.calcA+", b="+d.calcB;
+   const headers=[tableHeader(d,x),tableHeader(d,y)];
+   if(d.calcShowPrediction)headers.push("Predicted ŷ"+yUnit);
+   if(d.calcShowResidual)headers.push("Residual y−ŷ"+yUnit);
+   if(d.calcShowPercent)headers.push("Percentage deviation (%)");
+   model={headers,rows,numeric:headers.map(()=>true),kind:"calculated",note:d.note||"",
+    metadata:label+" ("+eq+"). Residual = observed − predicted."+
+     (d.calcShowPercent?" Percentage deviation = 100 × residual / |observed|.":"")+
+     " Calculated from unrounded source values."+(provenance?" "+provenance:""),
+    sourceRowIndices:chosen.indices,sourceColumnIndices:[x,y]};
+  }
+  warn("model-provenance","Coefficients must come from a justified calculation or fitted model elsewhere in your IA. This table does not fit a model.");
  }else if(validSummary){
   if(!d.selected.length)fail("variables","Select at least one numerical column to summarise.");
   if(d.selected.length>4)fail("many-variables","Select at most four comparable variables/groups.");
@@ -317,12 +393,12 @@ export function analyzeTable(raw){
   if(model.headers.length>5)fail("formatted-wide",
    "This summary is too wide. Select fewer statistics or groups.");
  }
- if(d.mode==="compact"){
-  const custom=d.columns.map((_,i)=>tableColumnFormat(d,i)).some(f=>f.mode==="dp"||f.mode==="sf");
+ if(d.mode==="compact"||d.mode==="calculated"){
+  const custom=Array.from({length:model?.headers.length||0},(_,i)=>tableColumnFormat(d,i)).some(f=>f.mode==="dp"||f.mode==="sf");
   if(custom)warn("column-rounding",
    "Custom decimal places or significant figures affect displayed cells only. Check that the number of digits reflects actual measurement resolution; the source observations are unchanged.");
  }
- if(d.numberFormat==="fixed"&&d.mode==="compact")
+ if(d.numberFormat==="fixed"&&["compact","calculated"].includes(d.mode))
   warn("rounding","Fixed decimal places change only the displayed values. Do not claim greater measurement accuracy or round intermediate calculations.");
  if(d.mode!=="compact")
   warn("display-precision","Choose sensible decimal places for derived values. Displayed digits are not a statement of measurement uncertainty.");
@@ -332,7 +408,9 @@ export function analyzeTable(raw){
  return {ready:problems.length===0&&!!model,problems,warnings,model,draft:d};
 }
 export const tableSignature=d=>JSON.stringify([d.mode,d.matrix,d.columns,d.headings,d.unitDecisions,
- d.selected,d.measures,d.categoryIndex,d.showPercent,d.decimals,d.numberFormat,d.quartileRule,d.columnFormats]);
+ d.selected,d.measures,d.categoryIndex,d.showPercent,d.decimals,d.numberFormat,d.quartileRule,d.columnFormats,
+ d.columnSelectionMode,d.displayColumns,d.rowSelection,d.selectionReason,d.calcXIndex,d.calcYIndex,d.calcModel,
+ d.calcA,d.calcB,d.calcC,d.calcShowPrediction,d.calcShowResidual,d.calcShowPercent]);
 export function saveTableFigure(studio,entryId=""){
  const q=analyzeTable(studio.draft);
  if(!q.ready)return {ok:false,error:"Resolve the table size, source, units and mathematical quality checks before saving.",checks:q};
