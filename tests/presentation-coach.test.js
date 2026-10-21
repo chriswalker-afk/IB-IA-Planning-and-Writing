@@ -58,6 +58,52 @@ test("selected Voronoi pathway outranks superficial shape of Cartesian site coor
  assert.deepEqual(a.ids,["voronoi","trace"]);
  assert.match(renderHubDatasetEvidence(s,representationAdvice(s),icon,esc),/data-hub-dataset-evidence/);
 });
+
+test("current later-stage method outranks an outdated provisional route and unrelated worksheet columns",()=>{
+ const state=paired();
+ state.route="completing";state.completion.current="C40";
+ state.planning.routeExplorer.selectedRoute="voronoi";
+ state.entries=[
+  {id:"first",phase:"first",status:"completed",result:"The first mathematical result"},
+  {id:"later",phase:"substantial",fromEntryId:"first",status:"planned",methodId:"optimisation",technique:""}
+ ];
+ state.completion.activeEntryIndex=1;
+ const current=representationAdvice(state);
+ assert.equal(current.source,"method");
+ assert.match(current.reason,/Optimisation/);
+ assert.deepEqual(current.ids,["graph","table"]);
+ const recommended=contextualRepresentationAdvice(state,current);
+ assert.deepEqual(recommended.ids,["graph","table"]);
+ assert.match(renderRepresentationHub(state,icon,esc),/Current mathematical method: Optimisation/);
+});
+test("a new mathematical stage is not forced to repeat the earlier planning method",()=>{
+ const s=paired();
+ s.route="completing";s.completion.current="C50";
+ s.planning.routeExplorer.selectedRoute="triangulation";
+ s.entries=[
+  {id:"first",phase:"first",status:"completed",result:"Measured baseline"},
+  {id:"math1",phase:"substantial",status:"completed",result:"Calculated measurement",journeyOutcome:"triangulation:meaningful"},
+  {id:"math2",phase:"substantial",status:"planned",fromEntryId:"math1",journeySourceOutcome:"triangulation:meaningful"}
+ ];
+ s.completion.activeEntryIndex=2;
+ const advice=representationAdvice(s);
+ assert.equal(advice.source,"next");
+ assert.deepEqual(advice.ids,["graph","table"]);
+ assert.match(advice.why[0],/current question/);
+ assert.deepEqual(contextualRepresentationAdvice(s,advice).ids,["graph","table"]);
+});
+test("current probability methods recommend actual available tools without pretending the future tree studio exists",()=>{
+ const s=paired();
+ s.route="completing";s.completion.current="C40";
+ s.planning.routeExplorer.selectedRoute="fitted-models";
+ s.entries=[{id:"chance",phase:"substantial",methodId:"probability",status:"planned",result:""}];
+ s.completion.activeEntryIndex=0;
+ const a=contextualRepresentationAdvice(s,representationAdvice(s));
+ assert.deepEqual(a.ids,["table","stat"]);
+ assert.match(renderRepresentationHub(s,icon,esc),/Conditional probability or expected value/);
+ assert(!renderRepresentationHub(s,icon,esc).includes('data-action="geometry-open"'));
+ assert(!renderRepresentationHub(s,icon,esc).includes('data-action="probability-open"'));
+});
 test("one numerical column recommends a distribution when no route is selected",()=>{
  const s=createProjectState();
  s.statStudio.draft.columns=["Length (cm)"];
