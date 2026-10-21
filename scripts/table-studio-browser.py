@@ -70,7 +70,7 @@ def compact(p,width):
  assert saved(p)["tableStudio"]["draft"]["cellAlignment"]=="center"
  # Mathematical shortcut inserts into the chosen field at the caret, not into observations.
  heading=p.locator('input[data-table-col="1"][data-table-part="heading"]')
- palette=heading.locator("xpath=../following-sibling::details[contains(@class,'ia-table-math-palette')]")
+ palette=heading.locator("xpath=../following-sibling::details[contains(@class,'ia-table-math-palette')]").first
  palette.evaluate("(el)=>el.open=true")
  heading.evaluate("(el)=>{el.focus();el.setSelectionRange(3,3);}")
  palette.locator('[data-action="table-symbol"][data-table-token="x_i"]').click()
