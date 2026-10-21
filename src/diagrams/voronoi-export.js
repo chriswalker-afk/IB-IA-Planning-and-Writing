@@ -1,6 +1,7 @@
 /** Local SVG, PNG, clipboard and site/region CSV export. No external tiles or network. */
 import {analyzeVoronoi} from "./voronoi-core.js";
 import {renderVoronoiSvg} from "./voronoi-render.js";
+import {diagramUnitPower} from "./diagram-notation.js";
 import {finiteCell} from "./graph-core.js";
 const base=d=>String(d.title||"voronoi-diagram").normalize("NFKD")
  .replace(/[^a-z0-9 -]/gi,"").trim().replace(/\s+/g,"-").slice(0,65).toLowerCase()||"voronoi-diagram";
@@ -13,7 +14,7 @@ export function voronoiCSV(raw){
  const q=analyzeVoronoi(raw);
  if(!q.ready)throw new Error("Complete the Voronoi quality checks before exporting coordinates.");
  const d=q.draft,rows=[["Site","Location type","X"+(d.unitMode==="unit"?" ("+d.unit+")":""),
-  "Y"+(d.unitMode==="unit"?" ("+d.unit+")":""),"Clipped cell area"+(d.unitMode==="unit"?" ("+d.unit+"^2)":"")]];
+  "Y"+(d.unitMode==="unit"?" ("+d.unit+")":""),"Clipped cell area"+(d.unitMode==="unit"?" ("+diagramUnitPower(d.unit,2)+")":"")]];
  for(const c of q.cells)
   rows.push([c.name,c.site.kind==="candidate"?"Hypothetical candidate":"Existing location",
    c.site.x,c.site.y,c.area]);

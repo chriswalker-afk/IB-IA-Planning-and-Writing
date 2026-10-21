@@ -59,6 +59,15 @@ def histogram(p,width):
  p.locator('[data-stat-field="unitMode"]').select_option("unit")
  p.locator('[data-stat-field="unit"]').fill("cm")
  source(p)
+ # Optional maths editor updates captions without changing measured data.
+ editor=p.locator('[data-notation-studio="stat"][data-notation-key="caption"]')
+ editor.locator('[data-action="diagram-notation-toggle"]').click()
+ editor.locator('[data-diagram-expression]').fill(r'\frac{f}{w}')
+ editor.locator('[data-action="diagram-notation-insert"]').click()
+ p.wait_for_function("(term)=> (document.querySelector('[data-stat-field=caption]')?.value||'').includes(term)",arg=r'\(\frac{f}{w}\)')
+ assert r'\(\frac{f}{w}\)' in snapshot(p)["statStudio"]["draft"]["caption"]
+ assert p.locator('[data-stat-preview] .diagram-math-typeset').count()>=1
+ editor.locator('[data-action="diagram-notation-close"]').click()
  assert p.locator('[data-action="stat-use"]').is_enabled()
  assert "Required checks passed" in p.locator("[data-stat-quality]").inner_text()
  assert p.locator('[data-stat-preview] svg rect').count()>=4

@@ -2,12 +2,13 @@
 import {escapeGraph} from "./graph-core.js";
 import {analyzeVoronoi,bisectorInBounds} from "./voronoi-core.js";
 import {VORONOI_STARTER_BOUNDS} from "./voronoi-interactions.js";
+import {svgDiagramText,diagramUnitPower,hasDiagramEquation} from "./diagram-notation.js";
 const E=escapeGraph,W=1000,H=690,LEFT=135,TOP=110,PLOT_WIDTH=790,PLOT_HEIGHT=440;
 const colours=["#b5e1d0","#bdd9f1","#efcce0","#ffe3bb","#dcd5f5","#c9e7e4",
  "#f3d4b4","#d3dcee","#d8eabf","#e4d4e5","#f4dfa5","#bcdcc6"];
 const fmt=n=>Number.isFinite(n)?Number(n.toPrecision(6)).toString():"?";
 const coord=n=>Number(n.toFixed(2));
-const text=(s,x,y,attrs="")=>'<text x="'+coord(x)+'" y="'+coord(y)+'" '+attrs+'>'+E(s)+'</text>';
+const text=(s,x,y,attrs="")=>svgDiagramText(s,coord(x),coord(y),attrs);
 const line=(x1,y1,x2,y2,attrs="")=>'<line x1="'+coord(x1)+'" y1="'+coord(y1)+'" x2="'+coord(x2)+'" y2="'+coord(y2)+'" '+attrs+'/>';
 function tickStep(span){
  const p=10**Math.floor(Math.log10(span/6)),ratio=span/6/p;
@@ -30,7 +31,7 @@ export function voronoiLayout(bounds){
 }
 const closedPolygon=(polygon,L)=>polygon.map((p,i)=>(i?"L":"M")+coord(L.x(p.x))+" "+coord(L.y(p.y))).join(" ")+" Z";
 function captionLines(input,max=123,maxLines=2){
- const words=String(input||"").trim().split(/\s+/),out=[];
+ const words=String(input||"").trim().match(/\\\([\s\S]*?\\\)|\S+/g)||[],out=[];
  let curr="";
  for(const word of words){
   if((curr+" "+word).trim().length>max){out.push(curr);curr=word;}
@@ -43,8 +44,11 @@ function captionLines(input,max=123,maxLines=2){
 export function renderVoronoiSvg(raw,options={}){
  const q=analyzeVoronoi(raw),d=q.draft,b=q.bounds||VORONOI_STARTER_BOUNDS;
  const interactive=options.interactive===true,selectedId=options.selectedSiteId||"";
+ // Keep the saved student caption visible in the standalone figure without
+ // moving, clipping or distorting the coordinate rectangle.
+ const caption=captionLines(d.note,120,2),exportHeight=H+(caption.length?84:0);
 
- const body=['<svg class="voronoi-svg" data-voronoi-canvas="true"'+(interactive?' data-voronoi-interactive="true"':'')+' xmlns="http://www.w3.org/2000/svg" role="'+(interactive?"group":"img")+'" aria-label="'+E(d.title||"Student Voronoi construction")+'" viewBox="0 0 '+W+" "+H+'" width="'+W+'" height="'+H+'">',
+ const body=['<svg class="voronoi-svg" data-voronoi-canvas="true"'+(interactive?' data-voronoi-interactive="true"':'')+' xmlns="http://www.w3.org/2000/svg" role="'+(interactive?"group":"img")+'" aria-label="'+E(d.title||"Student Voronoi construction")+'" viewBox="0 0 '+W+" "+exportHeight+'" width="'+W+'" height="'+exportHeight+'">',
   '<rect width="'+W+'" height="'+H+'" fill="#fff"/>',
   text(d.title||"Voronoi studio — add title and sites",W/2,40,'font-family="Arial,sans-serif" font-size="22" font-weight="700" fill="#24464e" text-anchor="middle"'),
   text("Euclidean nearest-site regions — displayed cells clipped to the stated rectangular study window",W/2,67,
@@ -89,7 +93,8 @@ export function renderVoronoiSvg(raw,options={}){
   if(cell.polygon.length<3||cell.area<=0) return;
   const cx=cell.polygon.reduce((s,p)=>s+p.x,0)/cell.polygon.length,
    cy=cell.polygon.reduce((s,p)=>s+p.y,0)/cell.polygon.length;
-  body.push(text(fmt(cell.area)+labelUnit.replace(/[()]/g,"")+"²",L.x(cx),L.y(cy)+14,
+  const areaUnit=d.unitMode==="unit"&&d.unit.trim()?" "+diagramUnitPower(d.unit,2):"";
+  body.push(text(fmt(cell.area)+areaUnit,L.x(cx),L.y(cy)+14,
    'font-size="11" font-family="Arial,sans-serif" text-anchor="middle" fill="#435a67"'));
  });
  if(d.showSites||interactive)d.sites.forEach((site,i)=>{
@@ -99,7 +104,10 @@ export function renderVoronoiSvg(raw,options={}){
   if(site.kind==="candidate"){
    body.push('<path d="M'+coord(x)+' '+coord(y-8)+' L'+coord(x+8)+' '+coord(y)+' L'+coord(x)+' '+coord(y+8)+' L'+coord(x-8)+' '+coord(y)+' Z" fill="#b25742" stroke="#fff" stroke-width="2" pointer-events="none"/>');
   }else body.push('<circle cx="'+coord(x)+'" cy="'+coord(y)+'" r="6" fill="#1f4961" stroke="#fff" stroke-width="2.2" pointer-events="none"/>');
-  if(d.showLabels)body.push(text((site.kind==="candidate"?"Proposed: ":"")+ (site.name.length>20?site.name.slice(0,18)+"…":site.name),
+  // Do not cut an authored \(...\) expression midway through its delimiter.
+  const siteLabel=hasDiagramEquation(site.name)?site.name:
+   (site.name.length>20?site.name.slice(0,18)+"…":site.name);
+  if(d.showLabels)body.push(text((site.kind==="candidate"?"Proposed: ":"")+siteLabel,
    Math.min(LEFT+PLOT_WIDTH-10,Math.max(LEFT+10,x+9)),Math.max(TOP+16,y-12),
    'font-family="Arial,sans-serif" font-size="12" font-weight="700" fill="#233f4c" text-anchor="start" stroke="#fff" stroke-width="3" paint-order="stroke" pointer-events="none"'));
   if(interactive)body.push('<circle cx="'+coord(x)+'" cy="'+coord(y)+'" r="13" fill="transparent" pointer-events="all"'+
@@ -138,13 +146,15 @@ export function renderVoronoiSvg(raw,options={}){
   'font-family="Arial,sans-serif" font-size="16" font-weight="700" fill="#2c505d" text-anchor="middle" transform="rotate(-90 45 '+(TOP+PLOT_HEIGHT/2)+')"'));
  const siteLine=d.sites.filter(s=>s.kind==="observed").length+" existing / defined and "+d.sites.filter(s=>s.kind==="candidate").length+" proposed site(s)"+(q.nearest?
   "   ·   Test P is nearest to "+q.nearest.tied.join(" / ")+", distance "+fmt(q.nearest.distance)+(d.unitMode==="unit"?" "+d.unit:""):"");
- body.push(text(siteLine.slice(0,126),W/2,TOP+PLOT_HEIGHT+112,
+ body.push(text(hasDiagramEquation(siteLine)?siteLine:siteLine.slice(0,126),W/2,TOP+PLOT_HEIGHT+112,
   'font-family="Arial,sans-serif" font-size="12" fill="#526d77" text-anchor="middle"'));
  const credit=(d.sourceKind==="primary"?"Coordinates: student-collected data":d.sourceKind==="secondary"?
   "Coordinates: "+d.sourceCredit:"Coordinate source not yet confirmed")+
   (d.mapSrc?"   ·   Background map: "+d.mapCredit:"");
  captionLines(credit,122,2).forEach((s,i)=>body.push(text(s,W/2,TOP+PLOT_HEIGHT+132+i*18,
   'font-family="Arial,sans-serif" font-size="11" fill="#6a7c81" text-anchor="middle"')));
+ caption.forEach((line,i)=>body.push(text(line,W/2,TOP+PLOT_HEIGHT+175+i*18,
+  'font-family="Arial,sans-serif" font-size="12" fill="#3d626a" text-anchor="middle"')));
  body.push("</svg>");
  return body.join("");
 }

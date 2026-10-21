@@ -141,6 +141,26 @@ def test_editor(page,width,touch):
  page.screenshot(path=str(OUT/f"voronoi-interactive-{width}.png"),full_page=True,animations="disabled")
  size=page.evaluate("({viewport:innerWidth,pageWidth:document.documentElement.scrollWidth})")
  assert size["pageWidth"]<=size["viewport"]+2,size
+ # Maths can be entered beside an individual site and a caption without
+ # modifying the coordinates or the Euclidean distance model.
+ prior=[(x["x"],x["y"]) for x in state(page)["voronoiStudio"]["draft"]["sites"]]
+ editor=page.locator('[data-notation-site-index="0"]')
+ editor.locator('[data-action="diagram-notation-toggle"]').click()
+ editor.locator('[data-diagram-expression]').fill(r'\theta')
+ editor.locator('[data-action="diagram-notation-insert"]').click()
+ page.wait_for_function("(term)=> (document.querySelector('[data-voronoi-site-key=name][data-voronoi-site=\"0\"]')?.value||'').includes(term)",arg=r'\(\theta\)')
+ assert r'\(\theta\)' in state(page)["voronoiStudio"]["draft"]["sites"][0]["name"]
+ editor.locator('[data-action="diagram-notation-close"]').click()
+ caption=page.locator('[data-notation-studio="voronoi"][data-notation-key="note"]')
+ caption.locator('[data-action="diagram-notation-toggle"]').click()
+ caption.locator('[data-diagram-expression]').fill(r'\sqrt{x}')
+ caption.locator('[data-action="diagram-notation-insert"]').click()
+ page.wait_for_function("(term)=> (document.querySelector('[data-voronoi-field=note]')?.value||'').includes(term)",arg=r'\(\sqrt{x}\)')
+ assert r'\(\sqrt{x}\)' in state(page)["voronoiStudio"]["draft"]["note"]
+ caption.locator('[data-action="diagram-notation-close"]').click()
+ assert page.locator('[data-voronoi-canvas] .diagram-math-typeset').count()>=1
+ assert [(x["x"],x["y"]) for x in state(page)["voronoiStudio"]["draft"]["sites"]]==prior
+ assert page.locator('[data-action="voronoi-use"]').is_enabled()
 
 if __name__=="__main__":
  with sync_playwright() as pw:

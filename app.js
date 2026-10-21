@@ -154,6 +154,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   function diagramNotationField(root){
     if(!root)return null;
     if(root.dataset.notationCol!==undefined)return root.parentElement?.querySelector('[data-table-col="'+root.dataset.notationCol+'"][data-table-part="'+root.dataset.notationPart+'"]');
+    if(root.dataset.notationSiteIndex!==undefined)return root.parentElement?.querySelector('[data-voronoi-site="'+root.dataset.notationSiteIndex+'"][data-voronoi-site-key="name"]');
     const kind=root.dataset.notationStudio,key=root.dataset.notationKey;
     return root.parentElement?.querySelector('[data-'+kind+'-field="'+key+'"]');
   }
@@ -190,15 +191,24 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     const start=field.selectionStart??field.value.length,end=field.selectionEnd??start;
     const draft=field.value.slice(0,start)+insert+field.value.slice(end);
     let changed=false;
-    if(root.dataset.notationStudio==="graph"){
-      changed=updateGraphField(state.graphStudio,root.dataset.notationKey,draft);
-    }else if(root.dataset.notationCol!==undefined){
+    const studio=root.dataset.notationStudio;
+    if(studio==="graph")changed=updateGraphField(state.graphStudio,root.dataset.notationKey,draft);
+    else if(studio==="stat")changed=setStatField(state.statStudio,root.dataset.notationKey,draft);
+    else if(studio==="trace")changed=setTraceField(state.imageTracer,root.dataset.notationKey,draft);
+    else if(studio==="voronoi"&&root.dataset.notationSiteIndex!==undefined)
+      changed=setVoronoiSite(state.voronoiStudio,Number(root.dataset.notationSiteIndex),"name",draft);
+    else if(studio==="voronoi")changed=setVoronoiField(state.voronoiStudio,root.dataset.notationKey,draft);
+    else if(studio==="table"&&root.dataset.notationCol!==undefined)
       changed=setTableColumn(state.tableStudio,Number(root.dataset.notationCol),root.dataset.notationPart,draft);
-    }else{
-      changed=setTableField(state.tableStudio,root.dataset.notationKey,draft);
-    }
+    else if(studio==="table")changed=setTableField(state.tableStudio,root.dataset.notationKey,draft);
+    else return;
     if(!changed)return;
-    field.value=root.dataset.notationStudio==="graph"?state.graphStudio.draft[root.dataset.notationKey]:
+    field.value=studio==="graph"?state.graphStudio.draft[root.dataset.notationKey]:
+      studio==="stat"?state.statStudio.draft[root.dataset.notationKey]:
+      studio==="trace"?state.imageTracer.draft[root.dataset.notationKey]:
+      studio==="voronoi"&&root.dataset.notationSiteIndex!==undefined?
+        state.voronoiStudio.draft.sites[Number(root.dataset.notationSiteIndex)]?.name||"":
+      studio==="voronoi"?state.voronoiStudio.draft[root.dataset.notationKey]:
       root.dataset.notationCol!==undefined?(root.dataset.notationPart==="heading"?
         state.tableStudio.draft.headings[Number(root.dataset.notationCol)]:
         state.tableStudio.draft.unitDecisions[Number(root.dataset.notationCol)]?.unit):
@@ -206,7 +216,10 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     const caret=Math.min(start+insert.length,field.value.length);
     field.focus({preventScroll:true});field.setSelectionRange?.(caret,caret);
     save();
-    if(root.dataset.notationStudio==="graph")refreshGraphPreview();
+    if(studio==="graph")refreshGraphPreview();
+    else if(studio==="stat")refreshStatPreview();
+    else if(studio==="trace")refreshTracePreview();
+    else if(studio==="voronoi")refreshVoronoiPreview();
     else refreshTablePreview();
   }
 

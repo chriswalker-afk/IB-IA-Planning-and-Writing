@@ -4,14 +4,19 @@ import {renderPresentationCoach,renderFigureHandover} from "./presentation-coach
 import {analyzeVoronoi,MAX_VORONOI_FIGURES} from "./voronoi-core.js";
 import {renderVoronoiSvg} from "./voronoi-render.js";
 import {originalVoronoiDraft,voronoiInspection,voronoiComparison} from "./voronoi-interactions.js";
+import {diagramNotationControls,diagramHtmlMath,diagramUnitPower} from "./diagram-notation.js";
 const opt=(value,label,selected,e)=>'<option value="'+e(value)+'"'+(String(value)===String(selected)?" selected":"")+'>'+e(label)+'</option>';
 const select=(key,name,value,options,e)=>'<label class="voronoi-field"><span>'+e(name)+'</span><select data-voronoi-field="'+key+'">'+
  options.map(([v,l])=>opt(v,l,value,e)).join("")+'</select></label>';
-const field=(key,label,value,e,{placeholder="",rows=0,hint=""}={})=>
- '<label class="voronoi-field"><span>'+e(label)+'</span>'+
- (rows?'<textarea data-voronoi-field="'+key+'" rows="'+rows+'" placeholder="'+e(placeholder)+'">'+e(value)+'</textarea>':
-  '<input type="text" data-voronoi-field="'+key+'" value="'+e(value)+'" placeholder="'+e(placeholder)+'" autocomplete="off">')+
- (hint?'<small>'+e(hint)+'</small>':"")+'</label>';
+const field=(key,label,value,e,{placeholder="",rows=0,hint=""}={})=>{
+ const notation=["title","xLabel","yLabel","unit","note","addName"].includes(key);
+ const control='<label class="voronoi-field"><span>'+e(label)+'</span>'+
+  (rows?'<textarea data-voronoi-field="'+key+'" rows="'+rows+'" placeholder="'+e(placeholder)+'">'+e(value)+'</textarea>':
+   '<input type="text" data-voronoi-field="'+key+'" value="'+e(value)+'" placeholder="'+e(placeholder)+'" autocomplete="off">')+
+  (hint?'<small>'+e(hint)+'</small>':"")+'</label>';
+ return notation?'<div class="diagram-notation-field-wrap">'+control+
+  diagramNotationControls(e,{studio:"voronoi",key})+'</div>':control;
+};
 const check=(key,label,checked)=>'<label class="voronoi-check"><input type="checkbox" data-voronoi-field="'+key+'"'+(checked?" checked":"")+'><span>'+label+'</span></label>';
 const section=(n,title,description,html)=>
  '<section class="voronoi-panel"'+(n==="1"?' data-representation-step="create"':n==="2"?' data-representation-step="refine"':"")+'><h3><span class="voronoi-step">'+n+'</span>'+title+'</h3>'+
@@ -37,17 +42,18 @@ export function voronoiInspectionHtml(studio,icon=()=>"",e=x=>String(x)){
  if(!info)return '<div class="voronoi-inspect-hint" data-voronoi-inspection>'+
   'Select a site or its cell to inspect coordinates, clipped area and the nearest neighbour.</div>';
  const {site,cell,neighbours,bisector}=info;
- const unit=studio.draft.unitMode==="unit"?e(studio.draft.unit):"coordinate units";
+ const unit=studio.draft.unitMode==="unit"?diagramHtmlMath(studio.draft.unit):"coordinate units";
+ const areaUnit=studio.draft.unitMode==="unit"?diagramHtmlMath(diagramUnitPower(studio.draft.unit,2)):"coordinate units²";
  return '<section class="voronoi-inspection" data-voronoi-inspection aria-live="polite">'+
-  '<div class="voronoi-inspection-heading"><strong>'+e(site.name)+'</strong>'+
+  '<div class="voronoi-inspection-heading"><strong>'+diagramHtmlMath(site.name)+'</strong>'+
    '<small>'+(site.kind==="candidate"?"Hypothetical proposal":"Existing / defined site")+'</small></div>'+
   '<p>Site coordinates: <strong>('+tidy(site.x)+', '+tidy(site.y)+')</strong></p>'+
-  (cell?'<p>Clipped region area: <strong>'+tidy(cell.area)+'</strong> '+unit+
-   '² · '+cell.polygon.length+' vertices</p>':
+  (cell?'<p>Clipped region area: <strong>'+tidy(cell.area)+'</strong> '+areaUnit+
+   ' · '+cell.polygon.length+' vertices</p>':
    '<p>Add another distinct site to construct the cells.</p>')+
-  (bisector?'<p>Closest other site: <strong>'+e(bisector.other.name)+'</strong>, distance <strong>'+
+  (bisector?'<p>Closest other site: <strong>'+diagramHtmlMath(bisector.other.name)+'</strong>, distance <strong>'+
    tidy(neighbours[0].distance)+'</strong> '+unit+'</p>'+
-   '<p class="voronoi-math">Perpendicular bisector with '+e(bisector.other.name)+
+   '<p class="voronoi-math">Perpendicular bisector with '+diagramHtmlMath(bisector.other.name)+
    ': ('+tidy(bisector.normal.x)+')(x − '+tidy(bisector.midpoint.x)+') + ('+
     tidy(bisector.normal.y)+')(y − '+tidy(bisector.midpoint.y)+') = 0</p>'+
    '<button type="button" class="btn btn-secondary btn-sm" data-action="voronoi-bisector-selected">'+
@@ -58,13 +64,13 @@ export function voronoiInspectionHtml(studio,icon=()=>"",e=x=>String(x)){
 export function voronoiComparisonHtml(studio,icon=()=>"",e=x=>String(x)){
  const result=voronoiComparison(studio);
  if(!result)return "";
- const unit=studio.draft.unitMode==="unit"?e(studio.draft.unit)+"²":"coordinate units²";
+ const unit=studio.draft.unitMode==="unit"?diagramHtmlMath(diagramUnitPower(studio.draft.unit,2)):"coordinate units²";
  return '<section class="voronoi-comparison" data-voronoi-comparison>'+
   '<div class="voronoi-inspection-heading"><strong>'+icon("layers")+' Before / after comparison</strong>'+
    '<small>Same rectangular window</small></div>'+
   '<p>The original configuration is preserved. Proposed sites are hypothetical, not collected evidence.</p>'+
   '<div class="voronoi-comparison-table"><table><thead><tr><th>Site</th><th>Original</th><th>What-if</th><th>Change</th></tr></thead><tbody>'+
-  result.changes.map(row=>'<tr><td>'+e(row.name)+(row.kind==="candidate"?' <em>Proposed</em>':"")+'</td>'+
+  result.changes.map(row=>'<tr><td>'+diagramHtmlMath(row.name)+(row.kind==="candidate"?' <em>Proposed</em>':"")+'</td>'+
    '<td>'+(row.before===null?"—":tidy(row.before))+'</td><td>'+tidy(row.after)+'</td>'+
    '<td>'+(row.delta===null?"new":(row.delta>0?"+":"")+tidy(row.delta))+'</td></tr>').join("")+
   '</tbody></table></div><small>Clipped areas in '+unit+'. Results depend on the study window.</small>'+
@@ -111,17 +117,18 @@ export function voronoiPreviewHtml(studio,icon=()=>"",e=x=>String(x)){
   voronoiInspectionHtml(studio,icon,e)+voronoiComparisonHtml(studio,icon,e)+'</div>';
 }
 export function voronoiResultHtml(studio,e){
- const q=analyzeVoronoi(studio.draft),unit=q.draft.unitMode==="unit"?" "+e(q.draft.unit):"";
+ const q=analyzeVoronoi(studio.draft),unit=q.draft.unitMode==="unit"?" "+diagramHtmlMath(q.draft.unit):"",
+ areaUnit=q.draft.unitMode==="unit"?" "+diagramHtmlMath(diagramUnitPower(q.draft.unit,2)):"";
  if(!q.cells.length)return '<p class="voronoi-muted">Place a second distinct site to construct Voronoi cells. Confirm coordinates, source, metric and study limits before exporting.</p>';
- const list=q.cells.map((c,i)=>'<tr><td>'+e(c.name)+(c.site.kind==="candidate"?
+ const list=q.cells.map((c,i)=>'<tr><td>'+diagramHtmlMath(c.name)+(c.site.kind==="candidate"?
   ' <em>(proposed)</em>':"")+'</td><td>'+c.polygon.length+'</td>'+
-  '<td>'+Number(c.area.toPrecision(5))+(unit?" "+unit+"²":"")+'</td></tr>').join("");
+  '<td>'+Number(c.area.toPrecision(5))+areaUnit+'</td></tr>').join("");
  return '<p class="voronoi-stats-lead">'+q.cells.length+' sites · '+
   (q.draft.regionMode==="manual"?"Specified study rectangle":q.draft.regionMode==="interactive"?"Working coordinate window":"Automatic viewing window")+
-  ' · Area '+Number(q.domainArea.toPrecision(5))+(unit?unit+"²":"")+'</p>'+
+  ' · Area '+Number(q.domainArea.toPrecision(5))+areaUnit+'</p>'+
   '<div class="voronoi-summary-table-wrap"><table class="voronoi-summary-table"><thead><tr><th>Site</th><th>Cell vertices</th><th>Clipped area</th></tr></thead><tbody>'+
   list+'</tbody></table></div>'+
-  (q.nearest?'<p class="voronoi-nearest"><strong>Test location:</strong> Nearest '+e(q.nearest.tied.join(" / "))+
+  (q.nearest?'<p class="voronoi-nearest"><strong>Test location:</strong> Nearest '+q.nearest.tied.map(diagramHtmlMath).join(" / ")+
    ' at '+Number(q.nearest.distance.toPrecision(5))+unit+(q.nearest.tied.length>1?" (equal-distance boundary)":"")+'</p>':"")+
   '<p class="voronoi-muted">The area values only describe the clipped study rectangle; they do not estimate population, journey time or service demand. Keep this full table in working files unless individual values are essential to your IA argument.</p>';
 }
@@ -155,8 +162,9 @@ function siteEditor(studio,e,icon){
   return '<div class="voronoi-site-row'+(studio.selectedSiteId===site.id?" selected":"")+'">'+
   '<button type="button" class="voronoi-site-select" data-action="voronoi-select-site" data-site-index="'+i+
    '" aria-label="Select '+e(site.name)+'">'+icon("eye")+'</button>'+
-  '<label><span>Name</span><input type="text"'+locked+' data-voronoi-site="'+i+
+  '<div class="voronoi-site-name-editor"><label><span>Name</span><input type="text"'+locked+' data-voronoi-site="'+i+
    '" data-voronoi-site-key="name" value="'+e(site.name)+'" aria-label="Site '+(i+1)+' name"></label>'+
+   (locked?"":diagramNotationControls(e,{studio:"voronoi",siteIndex:i}))+'</div>'+
   '<label><span>x</span><input type="number" step="any"'+locked+' data-voronoi-site="'+i+
    '" data-voronoi-site-key="x" value="'+(site.x??"")+'" aria-label="Site '+(i+1)+' x coordinate"></label>'+
   '<label><span>y</span><input type="number" step="any"'+locked+' data-voronoi-site="'+i+

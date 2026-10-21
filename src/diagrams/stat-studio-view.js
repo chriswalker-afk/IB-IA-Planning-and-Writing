@@ -5,6 +5,7 @@ import {renderPresentationCoach,renderFigureHandover} from "./presentation-coach
 import {STAT_TYPES,statAnalysis,MAX_STAT_FIGURES} from "./stat-studio-core.js";
 import {renderStatSvg} from "./stat-studio-render.js";
 import {escapeGraph} from "./graph-core.js";
+import {diagramNotationControls} from "./diagram-notation.js";
 const ROUTES={
  groups:"Comparing groups: begin with comparative box plots when you have numerical measurements, or grouped bars for counts in discrete categories.",
  variation:"Distribution and spread: histograms show shape and frequency density; box plots emphasise median, quartiles and outliers.",
@@ -19,7 +20,8 @@ const h=(value,e)=>e(value);
 function field(key,label,value,e,{hint="",placeholder="",rows=0}={}){
  const control=rows?'<textarea data-stat-field="'+key+'" rows="'+rows+'" placeholder="'+e(placeholder)+'">'+e(value)+'</textarea>':
   '<input type="text" data-stat-field="'+key+'" value="'+e(value)+'" placeholder="'+e(placeholder)+'" autocomplete="off">';
- return '<label class="stat-form-field"><span>'+e(label)+'</span>'+control+(hint?'<small>'+e(hint)+'</small>':"")+'</label>';
+ return '<label class="stat-form-field"><span>'+e(label)+'</span>'+control+(hint?'<small>'+e(hint)+'</small>':"")+'</label>'+
+  (["title","variable","unit","caption"].includes(key)?diagramNotationControls(e,{studio:"stat",key}):"");
 }
 function select(key,label,value,options,e){
  return '<label class="stat-form-field"><span>'+e(label)+'</span><select data-stat-field="'+key+'">'+

@@ -1,6 +1,7 @@
 /** Responsive, white-background, IA-printable statistical diagrams. */
 import {escapeGraph} from "./graph-core.js";
 import {statAnalysis} from "./stat-studio-core.js";
+import {svgDiagramText,diagramUnitPower} from "./diagram-notation.js";
 const W=960,H=630,LEFT=119,RIGHT=47,TOP=102,PH=394,PW=W-LEFT-RIGHT;
 const E=escapeGraph;
 const fmt=(v,d=3)=>Number(v.toFixed(d)).toString();
@@ -15,7 +16,7 @@ function ticks(low,high){
  const result=[];for(let k=0;k<30;k++){const v=start+k*step;if(v>high+step/1e8)break;result.push(Number(v.toPrecision(12)));}
  return result;
 }
-const tag=(text,x,y,options="")=>'<text x="'+fmt(x,2)+'" y="'+fmt(y,2)+'" '+options+'>'+E(text)+'</text>';
+const tag=(text,x,y,options="")=>svgDiagramText(text,x,y,options);
 const line=(x1,y1,x2,y2,options="")=>'<line x1="'+fmt(x1,2)+'" y1="'+fmt(y1,2)+'" x2="'+fmt(x2,2)+'" y2="'+fmt(y2,2)+'" '+options+'/>';
 const axisLabel=(d,orientation)=>{
  const unit=d.unitMode==="unit"&&d.unit.trim()?" ("+d.unit+")":"";
@@ -72,7 +73,10 @@ function histogram(q){
  const max=override?override[1]:(bins.length?Math.max(...bins.map(x=>x.high)):10);
  const xrange=max>min?[min,max]:[0,10],X=horizontalNumeric(parts,...xrange,axisLabel(d,"x"),d.showGrid);
  const yHigh=niceUpper(Math.max(.1,...bins.map(b=>b.density))*1.10);
- const Y=verticalNumeric(parts,yHigh,"Frequency density",d.showGrid);
+ // Frequency is a count; dividing by a measured class width gives reciprocal units.
+ const densityUnit=d.unitMode==="unit"&&d.unit.trim()?
+   " ("+diagramUnitPower(d.unit,-1)+")":"";
+ const Y=verticalNumeric(parts,yHigh,"Frequency density"+densityUnit,d.showGrid);
  parts.push('<defs><clipPath id="stat-histo-clip"><rect x="'+LEFT+'" y="'+TOP+'" width="'+PW+'" height="'+PH+'"/></clipPath></defs><g clip-path="url(#stat-histo-clip)">');
  for(const b of bins){
   const x=X(b.low),right=X(b.high),top=Y(b.density),width=Math.max(0,right-x);
