@@ -1338,7 +1338,7 @@ export function createCompletingViews(ctx){
   // Focused IA-writing screens retain the small five-chapter ribbon.
   return '<div class="page narrow completing-page">'+tabletNav()+(writingIntro||node==="C04"?"":chapterRibbon(s))+
     '<div class="completion-topline"><span>'+icon("route")+' '+e(node==="C04"?"Your IA Studio":(JOURNEY_GROUPS.indexOf(currentGroup(s))+1)+'. '+currentGroup(s).name)+'</span>'+
-    '<div class="completion-top-actions">'+(writingIntro?"":'<button type="button" class="chapter-guide-reopen" data-action="writing-intro-open">'+icon("circle-help")+' How writing works</button>')+
+    '<div class="completion-top-actions">'+(writingIntro?"":'<button type="button" class="chapter-guide-reopen" data-action="writing-intro-open">'+icon("help-circle")+' How writing works</button>')+
     '<button type="button" class="advice-mode-toggle" data-action="toggle-advice-mode" aria-pressed="'+isAdviceReduced(s)+'" aria-label="'+(isAdviceReduced(s)?"Show full advice":"Reduce optional advice")+'">'+
       icon(isAdviceReduced(s)?"eye":"eye-off")+' '+(isAdviceReduced(s)?"Show full advice":"Reduce advice")+'</button>'+
     (writingIntro||node==="C04"?"":'<button class="btn btn-quiet btn-sm" data-action="completion-open" data-node="C04">'+icon("layers")+' My stages</button>')+'</div></div>'+
