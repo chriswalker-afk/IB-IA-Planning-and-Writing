@@ -96,3 +96,31 @@
 .graph-context-note li{margin:3px 0;overflow-wrap:anywhere}
 .graph-context-note p{margin:5px 0 0}
 .graph-reset-row{display:flex;justify-content:flex-end;margin-top:10px}
+
+/* Pass 1: optional least-squares and student-authored overlays. */
+.graph-model-explorer{background:linear-gradient(140deg,#fbfefa,#fff)}
+.graph-model-explorer h3 small{font-size:10px;line-height:1.5;color:#2a7b63;font-weight:700;background:#e8f5ed;padding:3px 8px;border-radius:100px}
+.graph-model-add{display:flex;align-items:end;gap:10px;min-width:0}
+.graph-model-add .graph-form-field{flex:1;min-width:0}
+.graph-model-add .btn{min-height:39px;font-size:11px;white-space:nowrap;margin-bottom:10px}
+.graph-model-add .btn[disabled]{opacity:.5;cursor:not-allowed}
+.graph-model-list{display:grid;gap:10px;margin:8px 0 12px}
+.graph-model-card{padding:12px 13px;border:1px solid #dbe5e2;border-radius:12px;background:#fff;min-width:0;overflow-wrap:anywhere}
+.graph-model-row{display:flex;align-items:center;gap:9px;min-width:0;flex-wrap:wrap}
+.graph-model-row>strong{font-size:12px;line-height:1.4;min-width:0;flex:1}
+.graph-model-swatch{display:block;width:27px;height:0;border-top:3px solid var(--graph-model-color);border-radius:2px;flex:none}
+.graph-model-swatch.dashed{border-top-style:dashed}
+.graph-model-actions{display:flex;gap:2px;margin-left:auto;align-items:center;flex-wrap:wrap}
+.graph-model-actions .btn{padding:6px 7px;font-size:10px;min-height:30px;white-space:nowrap}
+.graph-model-actions .icon{width:12px;height:12px}
+.graph-model-input{margin:11px 0}
+.graph-model-input input{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+.graph-model-summary{margin:9px 0 0;font-size:11px;line-height:1.55;color:#38575d}
+.graph-model-equation{margin:0 0 4px;font-size:11px;line-height:1.65;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-weight:650;overflow-wrap:anywhere}
+.graph-model-method{margin:0 0 4px;font-size:10px;color:#497267}
+.graph-model-summary small{font-size:10px;line-height:1.5;color:#66797b}
+.graph-model-error{padding:8px 10px;background:#fff7ed;border:1px solid #f1d9ad;border-radius:8px;color:#805820;margin:0;font-size:11px}
+.graph-model-hidden{margin:0 0 6px;color:#617277;font-size:10px;font-style:italic}
+.graph-model-empty{font-size:11px;line-height:1.6;margin:0;color:#5a7472;background:#f6f9f8;border:1px dashed #d2e0dc;padding:11px;border-radius:9px}
+.graph-model-guidance{border-top:1px solid #e3ece6;padding-top:11px;font-size:10px!important;line-height:1.6;color:#5f716b;margin:12px 0 0!important}
+@media(max-width:650px){.graph-model-add{align-items:stretch;flex-direction:column;gap:0}.graph-model-add .graph-form-field{width:100%}.graph-model-add .btn{width:100%;margin-bottom:6px}.graph-model-card{padding:11px}.graph-model-actions{width:100%;justify-content:flex-end}}
