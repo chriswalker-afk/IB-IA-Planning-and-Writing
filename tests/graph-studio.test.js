@@ -6,9 +6,10 @@ import {
 } from "../src/diagrams/graph-core.js";
 import {updateGraphField,chooseGraphType,saveAndLinkGraph,saveGraphDraft,loadSavedGraph,freshGraph} from "../src/diagrams/graph-actions.js";
 import {renderGraphStudio} from "../src/diagrams/graph-view.js";
-import {fitPolynomialLeastSquares,normalizeGraphModels,assessGraphModels,sampleGraphModel,diagnoseGraphModel} from "../src/diagrams/graph-models.js";
+import {fitPolynomialLeastSquares,normalizeGraphModels,assessGraphModels,sampleGraphModel,diagnoseGraphModel,GRAPH_MODEL_TYPES} from "../src/diagrams/graph-models.js";
+import {fitLogarithmic,fitPositiveGrowth,fitSinusoidal} from "../src/diagrams/graph-advanced-fits.js";
 import {renderModelComparison,renderResidualOptions,renderResidualPanel,metricText} from "../src/diagrams/graph-diagnostics-view.js";
-import {addGraphModel,toggleGraphModel,removeGraphModel,updateGraphModelExpression} from "../src/diagrams/graph-actions.js";
+import {addGraphModel,toggleGraphModel,removeGraphModel,updateGraphModelExpression,updateGraphModelOption} from "../src/diagrams/graph-actions.js";
 import {createProjectState,normalizeProjectState} from "../src/core/project-state.js";
 import {escapeHtml,icon} from "../src/ui/primitives.js";
 
@@ -455,4 +456,145 @@ test("switching to a standalone function ignores saved residual controls from sc
  assert(chooseGraphType(studio,"scatter"));
  assert.equal(d.showResidualPlot,true);
  assert.equal(d.residualModelId,d.models[0].id);
+});
+
+
+test("Pass 3 offers five explicitly chosen advanced families without disturbing core options",()=>{
+ for(const type of ["cubic","exponential","logarithmic","power","sinusoidal"])
+  assert(Object.hasOwn(GRAPH_MODEL_TYPES,type),type);
+ const studio=validData();
+ assert.equal(studio.draft.models.length,0);
+ let html=renderGraphStudio({graphStudio:studio},icon,escapeHtml);
+ for(const label of ["Cubic","Exponential","Logarithmic","Power","Sinusoidal"])
+  assert(html.includes(label),label);
+ assert.match(html,/More advanced modelling/);
+ assert.equal(analyseGraph(studio.draft).ready,true);
+ assert.equal((renderGraphSvg(studio.draft).match(/class="graph-model-overlay"/g)||[]).length,0);
+ assert(addGraphModel(studio,"exponential").ok);
+ assert(addGraphModel(studio,"power").ok);
+ assert(addGraphModel(studio,"sinusoidal").ok);
+ assert.equal(addGraphModel(studio,"cubic").ok,false,"Same readable three-overlay limit is preserved");
+ assert.equal(studio.draft.models.length,3);
+});
+test("cubic regression accurately fits a known cubic with full precision",()=>{
+ const data=[-3,-2,-1,0,1,2,3,4].map(x=>({x,y:3-2*x+.5*x*x+.4*x*x*x}));
+ const fit=fitPolynomialLeastSquares(data,3);
+ assert(fit.ok,fit.error);
+ assert(fit.equation.includes("x³"),fit.equation);
+ for(const p of data)assert(Math.abs(fit.predict(p.x)-p.y)<1e-8);
+ for(const [actual,expected] of fit.coefficients.map((n,i)=>[n,[3,-2,.5,.4][i]]))
+  assert(Math.abs(actual-expected)<1e-8,fit.coefficients.join(", "));
+ assert.match(fit.caution,/overfitted/);
+ assert.equal(fitPolynomialLeastSquares(data.slice(0,3),3).ok,false);
+ const clustered=[10,10,10,12,15,17].map((x,i)=>({x,y:i}));
+ assert.equal(fitPolynomialLeastSquares(clustered,3).ok,true);
+ assert.equal(fitPolynomialLeastSquares(clustered.slice(0,5),3).ok,true);
+});
+test("logarithmic least squares uses all positive x-values and original y-units",()=>{
+ const data=[1,2,3,4,6,8,12].map(x=>({x,y:4+2.5*Math.log(x)}));
+ const fit=fitLogarithmic(data);
+ assert(fit.ok,fit.error);
+ assert.match(fit.equation,/ln\(x\)/);
+ assert.match(fit.method,/Ordinary least squares/);
+ for(const p of data)assert(Math.abs(fit.predict(p.x)-p.y)<1e-9);
+ assert.equal(fitLogarithmic(data.map((p,i)=>({...p,x:i===1?0:p.x}))).ok,false);
+ assert.equal(fitLogarithmic([{x:1,y:3},{x:2,y:4}]).ok,false);
+ assert(Number.isNaN(fit.predict(0)));
+});
+test("positive exponential and power regression distinguish log-errors from original-y errors",()=>{
+ const exp=[0,1,2,3,4,5,6].map(x=>({x,y:2.5*Math.exp(.31*x)}));
+ const transformed=fitPositiveGrowth(exp,"exponential","transformed");
+ const original=fitPositiveGrowth(exp,"exponential","original");
+ for(const fit of [transformed,original]){
+  assert(fit.ok,fit.error);
+  assert.match(fit.equation,/e\^/);
+  for(const p of exp)assert(Math.abs(fit.predict(p.x)-p.y)<.003);
+ }
+ assert.match(transformed.method,/ln\(y\)/);
+ assert.match(original.method,/original-scale/);
+ assert.match(transformed.caution,/minimise squared log-errors/);
+ const power=[1,2,3,4,5,8].map(x=>({x,y:3*Math.pow(x,1.4)}));
+ for(const objective of ["transformed","original"]){
+  const fit=fitPositiveGrowth(power,"power",objective);
+  assert(fit.ok,fit.error);
+  for(const p of power)assert(Math.abs(fit.predict(p.x)-p.y)<.01);
+  assert.match(fit.equation,/x\^\(/);
+ }
+ // The two objectives really differ on noisy data; both sets of statistics
+ // must be computed on the original y-values and the same complete rows.
+ const noisy=[2,3.6,5.1,9.7,10.2,24].map((y,x)=>({x,y}));
+ const lnFit=fitPositiveGrowth(noisy,"exponential","transformed");
+ const yFit=fitPositiveGrowth(noisy,"exponential","original");
+ assert(lnFit.ok&&yFit.ok);
+ const dl=diagnoseGraphModel(noisy,lnFit.predict),dy=diagnoseGraphModel(noisy,yFit.predict);
+ assert(dl.ok&&dy.ok);
+ assert(dy.rmse<=dl.rmse+1e-7,JSON.stringify({log:dl.rmse,original:dy.rmse}));
+ assert(Math.abs(lnFit.predict(4)-yFit.predict(4))>.03);
+});
+test("positive-family mathematical restrictions reject incompatible points without dropping data",()=>{
+ const exp=[{x:0,y:2},{x:1,y:0},{x:2,y:4},{x:3,y:6}];
+ const pow=[{x:0,y:1},{x:1,y:2},{x:2,y:3},{x:3,y:4}];
+ assert.match(fitPositiveGrowth(exp,"exponential","transformed").error,/all observed y-values/);
+ assert.match(fitPositiveGrowth(pow,"power","original").error,/every observed x-value/);
+ const negative=[{x:1,y:2},{x:2,y:-1},{x:3,y:4}];
+ assert.equal(fitPositiveGrowth(negative,"power","original").ok,false);
+ const candidates=assessGraphModels([{type:"power",id:"model-1",visible:true}],pow,compileGraphFunction);
+ assert.equal(candidates[0].valid,false);
+ assert.equal(candidates[0].diagnostics.n,pow.length);
+});
+test("sinusoidal regression accepts a student period or searches cautiously without claiming proof",()=>{
+ const data=Array.from({length:17},(_,x)=>({x,y:3+2.6*Math.sin(2*Math.PI*x/8+.45)}));
+ const fixed=fitSinusoidal(data,"8");
+ assert(fixed.ok,fixed.error);
+ assert.match(fixed.method,/Fixed-period/);
+ assert.match(fixed.caution,/supplied by the student/);
+ assert(Math.abs(fixed.period-8)<1e-10);
+ for(const p of data)assert(Math.abs(fixed.predict(p.x)-p.y)<1e-7);
+ const search=fitSinusoidal(data,"");
+ assert(search.ok,search.error);
+ assert.match(search.caution,/exploratory frequency search/);
+ assert(Math.abs(search.period-8)<.15,search.period);
+ const diag=diagnoseGraphModel(data,search.predict);
+ assert(diag.ok);
+ assert(diag.rmse<.02,diag.rmse);
+ assert.match(fitSinusoidal(data,"-3").error,/positive/);
+ assert.match(fitSinusoidal(data,"not a period").error,/positive/);
+ assert.match(fitSinusoidal(data,"0.00001").error,/too small/);
+ assert.match(fitSinusoidal(data.slice(0,5),"").error,/six/);
+});
+test("advanced model options and residual decisions survive saves, reviews and old project imports",()=>{
+ const state=createProjectState();state.completion.current="C31";state.graphStudio=validData();
+ const studio=state.graphStudio;
+ assert(addGraphModel(studio,"exponential").ok);
+ const model=studio.draft.models[0];
+ assert(updateGraphModelOption(studio,model.id,"fitMethod","original"));
+ assert.equal(updateGraphModelOption(studio,model.id,"fitMethod","bad"),false);
+ assert.equal(updateGraphModelOption(studio,model.id,"period","3"),false);
+ assert.equal(analyseGraph(studio.draft).models[0].fitMethod,"original");
+ assert(addGraphModel(studio,"sinusoidal").ok);
+ const sine=studio.draft.models[1];
+ assert(updateGraphModelOption(studio,sine.id,"period","2.5"));
+ assert.equal(updateGraphModelOption(studio,sine.id,"fitMethod","original"),false);
+ assert.equal(analyseGraph(studio.draft).models[1].period,"2.5");
+ assert(updateGraphField(studio,"residualModelId",model.id));
+ assert(updateGraphField(studio,"showResidualPlot",true));
+ const saved=normalizeProjectState(JSON.parse(JSON.stringify(state)));
+ assert.equal(saved.graphStudio.draft.models[0].fitMethod,"original");
+ assert.equal(saved.graphStudio.draft.models[1].period,"2.5");
+ assert.equal(saved.graphStudio.draft.residualModelId,model.id);
+ const oldGraph=normalizeProjectState(JSON.parse(JSON.stringify({...state,
+  graphStudio:{open:true,draft:{...studio.draft,models:[{id:"model-1",type:"quadratic",visible:true}]}}})));
+ assert.equal(oldGraph.graphStudio.draft.models[0].type,"quadratic");
+ assert.equal(oldGraph.graphStudio.draft.models[0].fitMethod,"transformed");
+});
+test("advanced regression settings reject script-like inputs and use escaped mathematical feedback",()=>{
+ const studio=validData();assert(addGraphModel(studio,"sinusoidal").ok);
+ const id=studio.draft.models[0].id;
+ assert(updateGraphModelOption(studio,id,"period",'<img src=x onerror=alert(1)>'));
+ const html=renderGraphStudio({graphStudio:studio},icon,escapeHtml);
+ assert(!html.includes('<img src=x'));
+ assert(html.includes('&lt;img'));
+ assert.equal(analyseGraph(studio.draft).models[0].valid,false);
+ assert.match(html,/positive, finite period/);
+ assert.equal(studio.draft.models[0].period.length<=36,true);
 });
