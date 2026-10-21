@@ -15,7 +15,7 @@ PORT=8768
 fixture=json.loads(subprocess.check_output(['node','--input-type=module','-e',r'''
 import {createProjectState} from './src/core/project-state.js';
 const s=createProjectState();
-s.route='planning';
+s.route='planning';s.ui.planningIntroSeen=true;s.ui.planningIntroOpen=false;
 s.planning.current='N01';
 s.planning.visited=['N00','N01'];
 s.planning.fields.ideaStatus='yes';
@@ -45,6 +45,15 @@ try:
    page.on('pageerror',lambda err: errors.append(str(err)))
    page.goto('http://127.0.0.1:'+str(PORT)+'/',wait_until='networkidle',timeout=45000)
    target=page.locator('textarea[data-bind="planning.fields.aim"]').first
+   if not target.is_visible():
+    print("Planning maths editor fixture context:",json.dumps({
+     "route":page.locator("body").get_attribute("data-route"),
+     "current":json.loads(page.evaluate('localStorage.getItem('+json.dumps(KEY)+')'))["planning"]["current"],
+     "page":page.locator("[data-source-node]").first.get_attribute("data-source-node") if page.locator("[data-source-node]").count() else "none",
+     "aimFields":page.locator('textarea[data-bind="planning.fields.aim"]').count(),
+     "welcome":page.locator('[data-planning-intro="true"]').count(),
+     "heading":page.locator("#main").inner_text()[:450]
+    }),flush=True)
    assert target.is_visible(), 'The Planning answer field must remain editable.'
    original=target.input_value()
    idx=original.index(' for these')
