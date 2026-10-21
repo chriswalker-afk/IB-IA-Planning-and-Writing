@@ -57,7 +57,7 @@ import {voronoiPreviewHtml,voronoiResultHtml,voronoiQualityHtml,voronoiOutputHtm
 import {setVoronoiField,setVoronoiSite,addVoronoiSite,removeVoronoiSite,clearVoronoiMap,useVoronoiMap,beginVoronoi,loadVoronoi,saveVoronoiDraft,saveAndLinkVoronoi} from "../src/diagrams/voronoi-actions.js";
 import {exportVoronoi} from "../src/diagrams/voronoi-export.js";
 import {geometryAnalysis} from "../src/diagrams/geometry-core.js";
-import {renderGeometrySvg} from "../src/diagrams/geometry-render.js";
+import {renderGeometrySvg,geometryLayout} from "../src/diagrams/geometry-render.js";
 import {geometryPreviewHtml,geometryQualityHtml} from "../src/diagrams/geometry-view.js";
 import {setGeometryField,setGeometryVertex,geometryTemplate,geometryAddVertex,geometryRemoveVertex,geometryFresh,loadGeometry,saveGeometryDraft,saveAndLinkGeometry} from "../src/diagrams/geometry-actions.js";
 import {exportGeometry} from "../src/diagrams/geometry-export.js";
@@ -136,7 +136,7 @@ function createHarness(savedValue,{welcome=false}={}){
     voronoiPreviewHtml,voronoiResultHtml,voronoiQualityHtml,voronoiOutputHtml,
     setVoronoiField,setVoronoiSite,addVoronoiSite,removeVoronoiSite,clearVoronoiMap,useVoronoiMap,
     beginVoronoi,loadVoronoi,saveVoronoiDraft,saveAndLinkVoronoi,exportVoronoi,
-    geometryAnalysis,renderGeometrySvg,geometryPreviewHtml,geometryQualityHtml,setGeometryField,setGeometryVertex,geometryTemplate,geometryAddVertex,geometryRemoveVertex,geometryFresh,loadGeometry,saveGeometryDraft,saveAndLinkGeometry,exportGeometry,
+    geometryAnalysis,renderGeometrySvg,geometryLayout,geometryPreviewHtml,geometryQualityHtml,setGeometryField,setGeometryVertex,geometryTemplate,geometryAddVertex,geometryRemoveVertex,geometryFresh,loadGeometry,saveGeometryDraft,saveAndLinkGeometry,exportGeometry,
     renderRepresentationHub,renderRepresentationSwitcher,representationFocusActive,renderPresentationCoach,renderFigureHandover,figureCaption,
     REPRESENTATION_TOOLS,representationTool,activeRepresentationTool,closeRepresentationTools,activateRepresentationTool,representationFigureKey,representationReturnNode,
     displayVoronoiBounds,coordinateFromCanvas,canvasPosition,voronoiFrame,recordVoronoiHistory,applyVoronoiFrame,undoVoronoi,redoVoronoi,freezeVoronoiWindow,fitVoronoiSites,setVoronoiTool,selectVoronoiSite,moveVoronoiSite,proposeVoronoiComparison,showVoronoiComparison,finishVoronoiComparison,selectNearestBisector,
