@@ -67,8 +67,8 @@ function svgText(lines,x,y,lineHeight,attrs){
 function layout(model,d){
  const widths=tableWidths(model),tableWidth=total(widths);
  const title="Table "+d.number+". "+formatTableMath(d.title);
- // A long title may widen the figure canvas slightly, not the data columns.
- const innerWidth=Math.max(tableWidth,Math.min(MAX_TABLE_WIDTH,title.length*11.25));
+ // Keep the title within an A4-friendly width; wrap rather than widening a compact table.
+ const innerWidth=Math.max(tableWidth,Math.min(560,title.length*11.25));
  const svgWidth=Math.ceil(innerWidth+PAGE_MARGIN*2);
  const tableLeft=(svgWidth-tableWidth)/2,positions=[tableLeft];
  widths.forEach(w=>positions.push(positions.at(-1)+w));
