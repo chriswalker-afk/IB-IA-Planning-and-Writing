@@ -73,7 +73,9 @@ test("formatting wraps headings, aligns numeric values and escapes student text"
  assert.match(svg,/>\(cm\)<\/tspan>/);
  assert.match(svg,/text-anchor="middle"/);
  assert.match(svg,/<tspan/);
+ assert.doesNotMatch(svg,/A concise selection of genuinely relevant results/);
  const html=tableToHtml(s.draft);
+ assert.doesNotMatch(html,/A concise selection of genuinely relevant results/);
  assert.match(html,/<table/);
  assert.match(html,/table-layout:fixed/);
  assert.match(html,/max-width:/);
