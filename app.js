@@ -41,8 +41,8 @@ import { createStudioViews } from "./src/ui/studio-views.js";
 import {createCompletingViews} from "./src/completing/views.js";
 import {toggleConclusionResult} from "./src/completing/conclusion-workspace.js";
 import {newGraphDraft,saveGraphFigure,renderGraphSvg,graphData,splitHeading,analyseGraph} from "./src/diagrams/graph-core.js";
-import {renderGraphQuality,renderGraphActions,graphSourceChoices} from "./src/diagrams/graph-view.js";
-import {updateGraphField,chooseGraphType,importGraphTable,loadSavedGraph,freshGraph,saveAndLinkGraph,saveGraphDraft} from "./src/diagrams/graph-actions.js";
+import {renderGraphQuality,renderGraphActions,graphSourceChoices,renderGraphModelSummary} from "./src/diagrams/graph-view.js";
+import {updateGraphField,chooseGraphType,importGraphTable,loadSavedGraph,freshGraph,saveAndLinkGraph,saveGraphDraft,addGraphModel,toggleGraphModel,removeGraphModel,updateGraphModelExpression} from "./src/diagrams/graph-actions.js";
 import {exportGraphFigure} from "./src/diagrams/graph-export.js";
 import {imageTraceChecks,renderTraceOverlaySvg,renderCleanTraceSvg,traceCoordinates,traceCalibration} from "./src/diagrams/image-tracer-core.js";
 import {renderImageTracer,tracePreviewHtml,traceWorkingHtml,traceQualityHtml,traceOutputHtml} from "./src/diagrams/image-tracer-view.js";
@@ -339,6 +339,11 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     if(actions)actions.innerHTML=renderGraphActions(state.graphStudio,icon,e);
     const status=main.querySelector?.("[data-graph-preview-meta]");
     if(status)status.textContent=d.kind==="function"?"Function (not collected observations)":graphData(d).points.length+" paired observations plotted";
+    const modelResult=analyseGraph(d);
+    main.querySelectorAll?.("[data-graph-model-summary]")?.forEach(element=>{
+      const model=modelResult.models?.find(m=>m.id===element.dataset.graphModelSummary);
+      if(model)element.innerHTML=renderGraphModelSummary(model,e);
+    });
     refreshPresentation("graph");
   }
 
@@ -1928,6 +1933,21 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         if(!chooseGraphType(state.graphStudio,el.dataset.graphValue))break;
         save();render();break;
       }
+      case "graph-model-add":{
+        const result=addGraphModel(state.graphStudio);
+        if(!result.ok){toast("Cannot add model",result.error);break;}
+        save();render();
+        toast("Model added","This curve was added at your request. Consider whether its mathematical structure suits your observations.");
+        break;
+      }
+      case "graph-model-toggle":{
+        if(!toggleGraphModel(state.graphStudio,el.dataset.graphModelId))break;
+        save();render();break;
+      }
+      case "graph-model-remove":{
+        if(!removeGraphModel(state.graphStudio,el.dataset.graphModelId))break;
+        save();render();break;
+      }
       case "graph-new":{
         freshGraph(state.graphStudio);save();render();
         toast("New graph started","Previously saved graph drafts remain available below the editor.");break;
@@ -2495,6 +2515,12 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       }
       return;
     }
+    if(target.dataset.graphModelExpression!==undefined){
+      if(updateGraphModelExpression(state.graphStudio,target.dataset.graphModelExpression,target.value)){
+        save();refreshGraphPreview();
+      }
+      return;
+    }
     if(target.dataset.graphField!==undefined){
       if(updateGraphField(state.graphStudio,target.dataset.graphField,target.type==="checkbox"?target.checked:target.value)){
         save();refreshGraphPreview();
@@ -2653,6 +2679,12 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         if(target.tagName==="SELECT"||target.type==="checkbox"){
           const previous=captureReturn(target);render();restoreReturn(previous);
         }else refreshTracePreview();
+      }
+      return;
+    }
+    if(target.dataset.graphModelExpression!==undefined){
+      if(updateGraphModelExpression(state.graphStudio,target.dataset.graphModelExpression,target.value)){
+        save();refreshGraphPreview();
       }
       return;
     }

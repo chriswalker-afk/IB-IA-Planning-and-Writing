@@ -1,3 +1,4 @@
+import {normalizeGraphModels,assessGraphModels,sampleGraphModel} from "./graph-models.js";
 /**
  * Browser-local, student-owned mathematical graph data and SVG rendering.
  * No eval, Function, remote requests or invented observations.
@@ -15,7 +16,7 @@ const cleanRows=rows=>Array.isArray(rows)?rows.slice(0,MAX_ROWS).filter(Array.is
 export const newGraphDraft=()=>({
  kind:"scatter",raw:"",columns:[],matrix:[],pendingPaste:false,xIndex:0,yIndex:1,
  title:"",figureNumber:"1",xLabel:"",yLabel:"",xUnit:"",yUnit:"",xUnitMode:"unsure",yUnitMode:"unsure",
- expression:"",sourceKind:"unsure",sourceText:"",caption:"",
+ expression:"",sourceKind:"unsure",sourceText:"",caption:"",models:[],modelChoice:"linear",
  xMin:"",xMax:"",yMin:"",yMax:"",showGrid:true,showPoints:true,includeZeroY:false
 });
 export function normalizeGraphDraft(raw){
@@ -25,6 +26,8 @@ export function normalizeGraphDraft(raw){
   else if(typeof value==="boolean")o[k]=typeof v[k]==="boolean"?v[k]:value;
  }
  o.kind=["scatter","time","function"].includes(v.kind)?v.kind:o.kind;
+ o.modelChoice=["linear","quadratic","custom"].includes(v.modelChoice)?v.modelChoice:"linear";
+ o.models=normalizeGraphModels(v.models);
  o.columns=Array.isArray(v.columns)?v.columns.slice(0,MAX_COLS).map(x=>text(x,100)):[];
  o.matrix=cleanRows(v.matrix);
  o.xIndex=Number.isInteger(v.xIndex)?Math.max(0,Math.min(MAX_COLS-1,v.xIndex)):0;
@@ -251,8 +254,14 @@ export function analyseGraph(draft){
   if(!inside)warn("empty-viewport","The chosen axis ranges hide all the mathematical values.");
   else if(inside<points.length*.85)warn("clipped","The chosen axis limits hide some values. Make sure this is intentional and does not mislead.");
  }
- if(d.kind==="scatter"&&points.length)warn("no-automatic-fit","Scatter points are intentionally not joined or given a trendline. Fit a model only after interpreting the actual pattern.");
- return {ready:problems.length===0,problems,warnings,points,skipped,bounds,draft:d};
+ const models=d.kind==="function"?[]:assessGraphModels(d.models,points,compileGraphFunction);
+ for(const model of models){
+  if(model.visible&&!model.valid)
+   fail("model-"+model.id,model.label+": "+model.error+" Hide or remove this overlay if you want to export the observations alone.");
+ }
+ if(d.kind==="scatter"&&points.length&&!models.length)
+  warn("no-automatic-fit","No model was added automatically. Inspect your data and choose an overlay only if mathematically justified.");
+ return {ready:problems.length===0,problems,warnings,points,skipped,bounds,draft:d,models};
 }
 const niceStep=span=>{
  const magnitude=Math.pow(10,Math.floor(Math.log10(span/5||1))),fraction=span/5/magnitude;
@@ -275,12 +284,14 @@ const polarised=(str,n)=>String(str||"").length<=n?[str]:[String(str).slice(0,n)
 const W=940,H=620,LEFT=109,RIGHT=55,TOP=112,BOTTOM=122,PW=W-LEFT-RIGHT,PH=H-TOP-BOTTOM;
 export function renderGraphSvg(draft){
  const analysis=analyseGraph(draft),d=analysis.draft;let {points,bounds}=analysis;
+ const visibleModels=(analysis.models||[]).filter(model=>model.visible&&model.valid);
+ const svgHeight=visibleModels.length?680:H;
  const title=escapeGraph(d.title.trim()||"Graph preview — add a descriptive title");
  const xLabel=escapeGraph(axisTitle(d.xLabel||"Horizontal variable",d.xUnit,d.xUnitMode));
  const yLabel=escapeGraph(axisTitle(d.yLabel||"Vertical variable",d.yUnit,d.yUnitMode));
- const parts=['<svg class="graph-figure-svg" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="'+title+'" viewBox="0 0 '+W+' '+H+'" width="'+W+'" height="'+H+'">',
+ const parts=['<svg class="graph-figure-svg" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="'+title+'" viewBox="0 0 '+W+' '+svgHeight+'" width="'+W+'" height="'+svgHeight+'">',
   '<title>'+title+'</title><desc>Student-generated '+escapeGraph(d.kind)+' graph with '+points.length+' valid points. Axis values and scale are listed in the labels.</desc>',
-  '<rect width="'+W+'" height="'+H+'" fill="#ffffff"/>'];
+  '<rect width="'+W+'" height="'+svgHeight+'" fill="#ffffff"/>'];
  const titleLines=polarised(d.title.trim()||"Graph preview — add a descriptive title",75).slice(0,2);
  titleLines.forEach((t,i)=>parts.push('<text x="'+W/2+'" y="'+(42+i*24)+'" font-family="Arial,Helvetica,sans-serif" font-size="20" font-weight="700" text-anchor="middle" fill="#203d43">'+escapeGraph(t)+'</text>'));
  const axisY=TOP+PH;
@@ -311,6 +322,21 @@ export function renderGraphSvg(draft){
    const path=sorted.map((p,i)=>(i?"L":"M")+X(p.x).toFixed(2)+" "+Y(p.y).toFixed(2)).join(" ");
    parts.push('<path d="'+path+'" fill="none" stroke="#137d75" stroke-width="2.9" stroke-linejoin="round" stroke-linecap="round"/>');
   }
+  // Fitted and authored overlays are strictly optional and limited to observed x-values.
+  for(const model of visibleModels){
+   let line="",previous=null;
+   for(const point of sampleGraphModel(model,points)){
+    if(point.y===null){previous=null;continue;}
+    const px=X(point.x),py=Y(point.y);
+    if(!Number.isFinite(py)||Math.abs(py)>1e6){previous=null;continue;}
+    const split=previous&&Math.abs(point.y-previous.y)>(bounds.y[1]-bounds.y[0])*.8;
+    line+=(previous&&!split?" L":" M")+px.toFixed(2)+" "+py.toFixed(2);
+    previous=point;
+   }
+   if(line)parts.push('<path class="graph-model-overlay" data-graph-model-plot="'+model.id+
+    '" d="'+line+'" fill="none" stroke="'+model.color+'" stroke-width="3"'+
+    (model.dash?' stroke-dasharray="'+model.dash+'"':'')+' stroke-linejoin="round" stroke-linecap="round"/>');
+  }
   if(d.kind==="function"&&points.length){
    let line="",last=null;
    for(const p of points){
@@ -324,13 +350,26 @@ export function renderGraphSvg(draft){
    sorted.forEach(p=>parts.push('<circle cx="'+X(p.x).toFixed(2)+'" cy="'+Y(p.y).toFixed(2)+'" r="'+(sorted.length>220?"3.0":"4.5")+'" fill="#147e75" stroke="#fff" stroke-width="1"/>'));
   }
   parts.push('</g>');
+  if(visibleModels.length){
+   const legendItems=[{name:"Observed points",color:"#147e75",observed:true},
+    ...visibleModels.map(m=>({name:m.label+": "+m.equation,color:m.color,dash:m.dash}))];
+   legendItems.forEach((item,i)=>{
+    const y=522+22*i;
+    if(item.observed)parts.push('<circle cx="116" cy="'+(y-4)+'" r="4.5" fill="'+item.color+'"/>');
+    else parts.push('<line x1="106" y1="'+(y-4)+'" x2="127" y2="'+(y-4)+
+     '" stroke="'+item.color+'" stroke-width="3"'+(item.dash?' stroke-dasharray="'+item.dash+'"':'')+'/>');
+    const label=item.name.length>99?item.name.slice(0,96)+"…":item.name;
+    parts.push('<text x="140" y="'+y+'" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#27464b">'+
+     escapeGraph(label)+'</text>');
+   });
+  }
  }else{
   parts.push('<text x="'+W/2+'" y="'+(TOP+PH/2)+'" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="19" fill="#647d85">Add valid data or a function to see your graph</text>');
  }
- parts.push('<text x="'+(LEFT+PW/2)+'" y="'+(H-59)+'" text-anchor="middle" fill="#263f47" font-family="Arial,Helvetica,sans-serif" font-size="17" font-weight="600">'+xLabel+'</text>',
+ parts.push('<text x="'+(LEFT+PW/2)+'" y="'+(svgHeight-59)+'" text-anchor="middle" fill="#263f47" font-family="Arial,Helvetica,sans-serif" font-size="17" font-weight="600">'+xLabel+'</text>',
   '<text x="35" y="'+(TOP+PH/2)+'" transform="rotate(-90 35 '+(TOP+PH/2)+')" text-anchor="middle" fill="#263f47" font-family="Arial,Helvetica,sans-serif" font-size="17" font-weight="600">'+yLabel+'</text>');
  const source=d.kind==="function"?"Function: "+d.expression:d.sourceKind==="secondary"?"Source: "+(d.sourceText||"not yet supplied"):d.sourceKind==="primary"?"Source: student's observations":"Source: not yet confirmed";
- parts.push('<text x="'+W/2+'" y="'+(H-17)+'" text-anchor="middle" fill="#5b6f76" font-family="Arial,Helvetica,sans-serif" font-size="12">'+escapeGraph(source.slice(0,145))+'</text>',
+ parts.push('<text x="'+W/2+'" y="'+(svgHeight-17)+'" text-anchor="middle" fill="#5b6f76" font-family="Arial,Helvetica,sans-serif" font-size="12">'+escapeGraph(source.slice(0,145))+'</text>',
   '</svg>');
  return parts.join("");
 }

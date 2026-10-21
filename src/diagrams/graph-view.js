@@ -3,6 +3,7 @@ import {renderNativeDataGrid} from "./native-data-view.js";
 import {renderPresentationCoach,renderFigureHandover} from "./presentation-coach-view.js";
 /** Cohesive graph editing surface inside C31. Every editor control has a real action. */
 import {analyseGraph,renderGraphSvg,graphData} from "./graph-core.js";
+import {GRAPH_MODEL_TYPES,MAX_GRAPH_MODELS} from "./graph-models.js";
 
 const types=[
  ["scatter","Scatter diagram","Genuine paired measurements. Points are not joined or fitted automatically."],
@@ -61,6 +62,43 @@ export function graphSourceChoices(studio,icon,e){
    selectCols("yIndex","Vertical (y) column",d.yIndex)+'</div>':
   '<p class="native-grid-tip">Enter genuine observations in the worksheet above to start plotting.</p>';
 }
+/** Status is refreshed independently of the input so typing never loses focus. */
+export function renderGraphModelSummary(model,e){
+ if(!model)return "";
+ const visibility=!model.visible?'<p class="graph-model-hidden">Hidden from preview and exported figures.</p>':"";
+ if(!model.valid)return visibility+'<p class="graph-model-error" role="status">'+e(model.error||"Model unavailable.")+'</p>';
+ return visibility+'<p class="graph-model-equation">'+e(model.equation)+'</p>'+
+  '<p class="graph-model-method">'+e(model.method)+' · '+model.n+' observations</p>'+
+  '<small>'+e(model.note)+'</small>';
+}
+export function renderGraphModelControls(d,analysis,icon,e){
+ const models=analysis.models||[],choice=GRAPH_MODEL_TYPES[d.modelChoice]?d.modelChoice:"linear";
+ const full=models.length>=MAX_GRAPH_MODELS;
+ const cards=models.map(model=>
+  '<article class="graph-model-card" data-graph-model="'+e(model.id)+'" style="--graph-model-color:'+model.color+'">'+
+   '<div class="graph-model-row"><span class="graph-model-swatch'+(model.dash?' dashed':'')+'" aria-hidden="true"></span>'+
+    '<strong>'+e(model.label)+'</strong>'+
+    '<div class="graph-model-actions"><button type="button" class="btn btn-quiet btn-sm" data-action="graph-model-toggle" data-graph-model-id="'+e(model.id)+'" aria-pressed="'+model.visible+'">'+
+     (model.visible?'Hide':'Show')+'</button>'+
+    '<button type="button" class="btn btn-quiet btn-sm" data-action="graph-model-remove" data-graph-model-id="'+e(model.id)+'" aria-label="Remove '+e(model.label)+'">'+icon("x")+' Remove</button></div></div>'+
+   (model.type==="custom"?'<label class="graph-form-field graph-model-input"><span>Equation y = f(x)</span>'+
+    '<input type="text" data-graph-model-expression="'+e(model.id)+'" value="'+e(model.expression)+'" maxlength="180" autocomplete="off" placeholder="e.g. 2*x^2 - 3*x + 1">'+
+    '<small>Enter a model you calculated yourself. Use x, ^ and *; functions such as sin(x) are allowed. Nothing is fitted for you.</small></label>':'')+
+   '<div class="graph-model-summary" data-graph-model-summary="'+e(model.id)+'">'+renderGraphModelSummary(model,e)+'</div>'+
+   '</article>').join("");
+ return '<section class="graph-control-card graph-model-explorer" data-graph-section="models" aria-label="Optional regression and model overlays">'+
+  '<h3><span>2</span> Explore a model <small>Optional</small></h3>'+
+  '<p>Inspect your observations first. If your question calls for a mathematical model, choose one explicitly. Regression uses ordinary least squares and updates when measurements change; a fitted curve does not prove the relationship is appropriate.</p>'+
+  '<div class="graph-model-add">'+pick("modelChoice","Choose a model to try",choice,[
+    ["linear","Linear regression (least squares)"],["quadratic","Quadratic regression (least squares)"],
+    ["custom","My own equation (no automatic fitting)"]],e)+
+    '<button type="button" class="btn btn-secondary btn-sm" data-action="graph-model-add"'+(full?' disabled title="Remove a model before adding another."':'')+'>'+
+    icon("plus-circle")+' Add model</button></div>'+
+  '<div class="graph-model-list" data-graph-model-list>'+
+   (cards||'<p class="graph-model-empty">No models added. Your original points are shown without an automatic line of best fit.</p>')+'</div>'+
+  '<p class="graph-model-guidance">Show or hide each model independently. You can include up to three; curves stop at the observed x-range. Displayed coefficients are rounded but calculations use full precision. A curve does not establish model suitability; inspect and discuss fitting errors before drawing conclusions.</p>'+
+  '</section>';
+}
 const tableExample='<span class="graph-inline-example">Example column headings: <code>Time (s)</code> and <code>Distance (m)</code></span>';
 export function renderGraphStudio(state,icon,e){
  const studio=state.graphStudio,d=studio.draft,q=analyseGraph(d),data=graphData(d);
@@ -74,7 +112,7 @@ export function renderGraphStudio(state,icon,e){
  const zero=q.ready&&q.points.length?"Ready to export":"Add the missing details before exporting";
  return '<section class="graph-studio representation-studio" data-graph-studio aria-label="Mathematical graph plotter">'+
   '<div class="graph-studio-head"><div><span class="intro-writing-guide-eyebrow">'+icon("chart")+' MY MATHEMATICS · GRAPH STUDIO</span>'+
-  '<h2>Build a graph worth including</h2><p>Create one clear mathematical representation, check it at print size and export it to your actual IA document.</p></div>'+
+  '<h2>Graph &amp; Model Explorer</h2><p>Plot genuine observations, optionally explore a justified model, and export a clear mathematical figure for your IA.</p></div>'+
   '<button type="button" class="btn btn-quiet btn-sm" data-action="graph-close">'+icon("x")+' Close plotter</button></div>'+
   '<div class="graph-type-picker" role="group" aria-label="Choose a graph type">'+
   types.map(([id,name,description])=>'<button class="graph-type'+(d.kind===id?" selected":"")+'" type="button" aria-pressed="'+(d.kind===id)+'" data-action="graph-type" data-graph-value="'+id+'"><strong>'+e(name)+'</strong><small>'+e(description)+'</small></button>').join("")+
@@ -98,7 +136,8 @@ export function renderGraphStudio(state,icon,e){
    '<p>Use <code>x</code>, numbers, <code>^</code>, <code>*</code>, brackets, and functions such as <code>sin(x)</code>, <code>sqrt(x)</code> or <code>ln(x)</code>. Trigonometric inputs use radians.</p>'+
    field("expression","Function y = f(x)",d.expression,e,{placeholder:"e.g. x^2 - 4*x + 3"})+
    '<small>Values are calculated locally. A function graph is not evidence of collected measurements.</small></section>')+
-  '<section class="graph-control-card" data-graph-section="labels" data-representation-step="refine"><h3><span>2</span> Make the mathematics clear</h3>'+
+  (d.kind==="function"?"":renderGraphModelControls(d,q,icon,e))+
+  '<section class="graph-control-card" data-graph-section="labels" data-representation-step="refine"><h3><span>'+(d.kind==="function"?"2":"3")+'</span> Make the mathematics clear</h3>'+
   field("title","Descriptive graph title",d.title,e,{placeholder:"e.g. How distance changes with elapsed time"})+
   field("figureNumber","Figure number in my IA",d.figureNumber,e,{placeholder:"e.g. 1"})+
   '<div class="graph-field-grid">'+field("xLabel","Horizontal axis name",d.xLabel,e,{placeholder:"e.g. Time"})+
@@ -111,7 +150,7 @@ export function renderGraphStudio(state,icon,e){
   ],e)+
   (d.sourceKind==="secondary"?field("sourceText","Original data source (required)",d.sourceText,e,{placeholder:"Publisher, dataset name, or source URL"}):""):"")+
   '</section>'+
-  '<section class="graph-control-card" data-graph-section="scale"><h3><span>3</span> Review your scales</h3>'+
+  '<section class="graph-control-card" data-graph-section="scale"><h3><span>'+(d.kind==="function"?"3":"4")+'</span> Review your scales</h3>'+
   '<p>Start with automatically chosen bounds. Override them only for a mathematical reason. Both ends must be given for a manual range.</p>'+
   '<div class="graph-field-grid">'+field("xMin","x minimum",d.xMin,e,{placeholder:d.kind==="function"?"-10":"Auto"})+
   field("xMax","x maximum",d.xMax,e,{placeholder:d.kind==="function"?"10":"Auto"})+
