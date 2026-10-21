@@ -12,7 +12,7 @@ const e=x=>String(x).replaceAll("&","&amp;").replaceAll("<","&lt;");
 test("generator icon references resolve to local SVG definitions",()=>{
  const names=new Set([...read("index.html").matchAll(/<symbol\s+id="i-([^"]+)"/g)].map(m=>m[1]));
  const files=["src/completing/views.js","src/diagrams/representation-hub.js",...[
-  "graph-view","stat-studio-view","table-studio-view","image-tracer-view","voronoi-view"
+  "graph-view","stat-studio-view","table-studio-view","image-tracer-view","voronoi-view","geometry-view"
  ].map(x=>"src/diagrams/"+x+".js")];
  const missing=[];
  for(const file of files)for(const match of read(file).matchAll(/\bicon\(\s*["']([^"']+)["']/g))
@@ -35,7 +35,7 @@ test("shared toolbar offers IA return, all tools, and three stages",()=>{
  for(const stage of ["create","refine","use"])assert.ok(html.includes('data-representation-step="'+stage+'"'));
  assert.match(html,/Voronoi Studio/);
 });
-test("five studios provide consistent empty states and a completion anchor",()=>{
+test("studios provide consistent empty states and a completion anchor",()=>{
  for(const name of ["graph-view","stat-studio-view","table-studio-view","image-tracer-view","voronoi-view"]){
   const source=read("src/diagrams/"+name+".js");
   assert.match(source,/representation-studio/);
@@ -56,7 +56,7 @@ test("focus CSS requires activation and does not remove the IA writing content",
 });
 
 test("one registry supplies all creator stores, figure link keys, and gallery metadata",()=>{
- assert.equal(REPRESENTATION_TOOLS.length,5,"Do not expose unfinished generators");
+ assert.equal(REPRESENTATION_TOOLS.length,6,"Only implemented generators should be listed");
  assert.deepEqual(new Set(REPRESENTATION_TOOLS.map(t=>t.id)).size,REPRESENTATION_TOOLS.length);
  const gallery=new Map(FIRST_FIGURE_TYPES.map(t=>[t.kind,t]));
  for(const tool of REPRESENTATION_TOOLS){
@@ -66,9 +66,9 @@ test("one registry supplies all creator stores, figure link keys, and gallery me
   assert.equal(representationFigureKey(tool.id+":abc-12").id,"abc-12");
   assert.equal(representationFigureKey(tool.id+":abc-12").tool.id,tool.id);
  }
- assert.equal(representationTool("geometry"),null,"Geometry editor is not implemented in Pass 1");
+ assert.ok(representationTool("geometry"),"Pass 2 Geometry Studio is implemented");
  assert.equal(representationTool("probability"),null,"Probability editor is not implemented in Pass 1");
- assert.equal(representationFigureKey("geometry:abc-12"),null);
+ assert.equal(representationFigureKey("geometry:abc-12").id,"abc-12");
 });
 test("registry switching keeps exactly one editor open and preserves saved figure data",()=>{
  const state=createProjectState();
