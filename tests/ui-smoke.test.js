@@ -32,7 +32,7 @@ import {createCompletingViews} from "../src/completing/views.js";
 import {newGraphDraft,saveGraphFigure,renderGraphSvg,graphData,splitHeading,analyseGraph} from "../src/diagrams/graph-core.js";
 import {renderGraphQuality,renderGraphActions,graphSourceChoices,renderGraphModelSummary} from "../src/diagrams/graph-view.js";
 import {renderModelComparison,renderResidualPanelContents} from "../src/diagrams/graph-diagnostics-view.js";
-import {updateGraphField,chooseGraphType,importGraphTable,loadSavedGraph,freshGraph,saveAndLinkGraph,saveGraphDraft,addGraphModel,toggleGraphModel,removeGraphModel,updateGraphModelExpression} from "../src/diagrams/graph-actions.js";
+import {updateGraphField,chooseGraphType,importGraphTable,loadSavedGraph,freshGraph,saveAndLinkGraph,saveGraphDraft,addGraphModel,toggleGraphModel,removeGraphModel,updateGraphModelExpression,updateGraphModelOption} from "../src/diagrams/graph-actions.js";
 import {exportGraphFigure} from "../src/diagrams/graph-export.js";
 import {imageTraceChecks,renderTraceOverlaySvg,renderCleanTraceSvg,traceCoordinates,traceCalibration} from "../src/diagrams/image-tracer-core.js";
 import {renderImageTracer,tracePreviewHtml,traceWorkingHtml,traceQualityHtml,traceOutputHtml} from "../src/diagrams/image-tracer-view.js";
@@ -113,7 +113,7 @@ function createHarness(savedValue,{welcome=false}={}){
     KEY:"ia-pathfinder-prototype-v1",
     readRecordValue,updateRecordValue,icon,escapeHtml,cleanUrl,button,
     referenceNodeForPrototypeStep,createPlanningViews,createStudioViews,createCompletingViews,createCheckingViews,renderWriterFieldGuide,renderWriterGuideWelcome,shouldShowWriterGuideWelcome,renderWriterGuidePopin,writingGuideRecommendation,createProjectViews,
-    newGraphDraft,saveGraphFigure,renderGraphSvg,graphData,splitHeading,analyseGraph,renderGraphModelSummary,renderModelComparison,renderResidualPanelContents,addGraphModel,toggleGraphModel,removeGraphModel,updateGraphModelExpression,renderGraphQuality,renderGraphActions,graphSourceChoices,
+    newGraphDraft,saveGraphFigure,renderGraphSvg,graphData,splitHeading,analyseGraph,renderGraphModelSummary,renderModelComparison,renderResidualPanelContents,addGraphModel,toggleGraphModel,removeGraphModel,updateGraphModelExpression,updateGraphModelOption,renderGraphQuality,renderGraphActions,graphSourceChoices,
     updateGraphField,chooseGraphType,importGraphTable,loadSavedGraph,freshGraph,saveAndLinkGraph,saveGraphDraft,exportGraphFigure,
     imageTraceChecks,renderTraceOverlaySvg,renderCleanTraceSvg,traceCoordinates,traceCalibration,renderImageTracer,
     tracePreviewHtml,traceWorkingHtml,traceQualityHtml,traceOutputHtml,setTraceField,setTraceView,setTraceTool,
@@ -1336,5 +1336,23 @@ test("Graph Studio Pass 2 residual selection displays signed errors without inve
  assert.equal(h.saved.graphStudio.draft.showResidualPlot,false);
  assert.equal(h.saved.graphStudio.draft.showResidualSegments,false);
  assert(!h.html.includes("graph-residual-panel"));
+ assert.equal(h.saved.entries.length,0);
+});
+
+test("Graph Studio Pass 3 surfaces advanced fitting choices through the complete app",()=>{
+ const st=createProjectState();st.route="completing";st.completion.current="C31";st.graphStudio.open=true;
+ st.graphStudio.draft={...st.graphStudio.draft,
+  kind:"scatter",columns:["x","y"],matrix:[["1","2"],["2","4"],["3","7"],["4","9"],["5","17"],["6","28"]],
+  xLabel:"x",yLabel:"y",xUnitMode:"dimensionless",yUnitMode:"dimensionless",
+  sourceKind:"primary",title:"Original measurements"};
+ st.graphStudio.draft.modelChoice="exponential";
+ const h=createHarness(st);
+ assert.match(h.html,/More advanced modelling/);
+ assert.match(h.html,/Sinusoidal/);
+ h.action("graph-model-add");
+ assert.equal(h.saved.graphStudio.draft.models[0].type,"exponential");
+ assert.match(h.html,/data-graph-model-method/);
+ assert.match(h.html,/Least squares on ln\(y\)/);
+ assert(!h.html.includes('data-graph-model-period="model-1"'));
  assert.equal(h.saved.entries.length,0);
 });
