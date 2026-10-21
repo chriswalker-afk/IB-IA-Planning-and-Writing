@@ -71,7 +71,7 @@ import {setVoronoiField,setVoronoiSite,addVoronoiSite,removeVoronoiSite,clearVor
 import {exportVoronoi} from "./src/diagrams/voronoi-export.js";
 import {geometryAnalysis} from "./src/diagrams/geometry-core.js";
 import {renderGeometrySvg,geometryLayout} from "./src/diagrams/geometry-render.js";
-import {geometryPreviewHtml,geometryQualityHtml} from "./src/diagrams/geometry-view.js";
+import {geometryPreviewHtml,geometryQualityHtml,geometryOutputHtml} from "./src/diagrams/geometry-view.js";
 import {setGeometryField,setGeometryVertex,geometryTemplate,geometryAddVertex,geometryRemoveVertex,geometryFresh,loadGeometry,saveGeometryDraft,saveAndLinkGeometry} from "./src/diagrams/geometry-actions.js";
 import {exportGeometry} from "./src/diagrams/geometry-export.js";
 import {displayVoronoiBounds,coordinateFromCanvas,canvasPosition,voronoiFrame,recordVoronoiHistory,applyVoronoiFrame,undoVoronoi,redoVoronoi,freezeVoronoiWindow,fitVoronoiSites,setVoronoiTool,selectVoronoiSite,moveVoronoiSite,proposeVoronoiComparison,showVoronoiComparison,finishVoronoiComparison,selectNearestBisector} from "./src/diagrams/voronoi-interactions.js";
@@ -162,6 +162,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     if(!root)return null;
     if(root.dataset.notationCol!==undefined)return root.parentElement?.querySelector('[data-table-col="'+root.dataset.notationCol+'"][data-table-part="'+root.dataset.notationPart+'"]');
     if(root.dataset.notationSiteIndex!==undefined)return root.parentElement?.querySelector('[data-voronoi-site="'+root.dataset.notationSiteIndex+'"][data-voronoi-site-key="name"]');
+    if(root.dataset.notationVertexIndex!==undefined)return root.closest(".geometry-vertex")?.querySelector('[data-geometry-vertex="'+root.dataset.notationVertexIndex+'"][data-geometry-vertex-key="'+root.dataset.notationKey+'"]');
     const kind=root.dataset.notationStudio,key=root.dataset.notationKey;
     return root.parentElement?.querySelector('[data-'+kind+'-field="'+key+'"]');
   }
@@ -223,6 +224,8 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     if(studio==="graph")changed=updateGraphField(state.graphStudio,root.dataset.notationKey,draft);
     else if(studio==="stat")changed=setStatField(state.statStudio,root.dataset.notationKey,draft);
     else if(studio==="trace")changed=setTraceField(state.imageTracer,root.dataset.notationKey,draft);
+    else if(studio==="geometry"&&root.dataset.notationVertexIndex!==undefined)
+      changed=setGeometryVertex(state.geometryStudio,Number(root.dataset.notationVertexIndex),root.dataset.notationKey,draft);
     else if(studio==="geometry")changed=setGeometryField(state.geometryStudio,root.dataset.notationKey,draft);
     else if(studio==="voronoi"&&root.dataset.notationSiteIndex!==undefined)
       changed=setVoronoiSite(state.voronoiStudio,Number(root.dataset.notationSiteIndex),"name",draft);
@@ -235,6 +238,8 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     field.value=studio==="graph"?state.graphStudio.draft[root.dataset.notationKey]:
       studio==="stat"?state.statStudio.draft[root.dataset.notationKey]:
       studio==="trace"?state.imageTracer.draft[root.dataset.notationKey]:
+      studio==="geometry"&&root.dataset.notationVertexIndex!==undefined?
+        state.geometryStudio.draft.vertices[Number(root.dataset.notationVertexIndex)]?.[root.dataset.notationKey]||"":
       studio==="geometry"?state.geometryStudio.draft[root.dataset.notationKey]:
       studio==="voronoi"&&root.dataset.notationSiteIndex!==undefined?
         state.voronoiStudio.draft.sites[Number(root.dataset.notationSiteIndex)]?.name||"":
@@ -590,6 +595,8 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     const root=main.querySelector?.("[data-geometry-studio]");if(!root||!state.geometryStudio?.open)return;
     const preview=root.querySelector("[data-geometry-preview]");if(preview)preview.outerHTML=geometryPreviewHtml(state.geometryStudio);
     const quality=root.querySelector("[data-geometry-quality]");if(quality)quality.outerHTML=geometryQualityHtml(state.geometryStudio,icon,e);
+    const output=root.querySelector(".geometry-output");if(output)output.outerHTML=geometryOutputHtml(state.geometryStudio,icon);
+    refreshPresentation("geometry");
   }
   function navigateGeometry(id=""){
     rememberMathEditorOrigin();if(state.completion.current!=="C31")setCompletionNode(state,"C31",{reason:"geometry-editor"});
@@ -1751,7 +1758,10 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         if(!geometryRemoveVertex(state.geometryStudio,Number(el.dataset.geometryIndex)))break;
         save();render();break;
       }
-      case "geometry-new":geometryFresh(state.geometryStudio);save();render();break;
+      case "geometry-new":{
+        if(state.geometryStudio.draft.edited&&!window.confirm("Start a new figure? Save your current version first if you want to keep it."))break;
+        geometryFresh(state.geometryStudio);save();render();break;
+      }
       case "geometry-load":{
         if(!loadGeometry(state.geometryStudio,el.dataset.geometryId)){toast("Saved figure not found.");break;}
         save();render();break;
@@ -2738,7 +2748,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       return;
     }
     // Show the formatted label beside its source field; never transform cell values.
-    if(target.matches?.('[data-graph-field],[data-stat-field],[data-trace-field],[data-table-field],[data-table-col],[data-voronoi-field],[data-voronoi-site-key="name"],[data-geometry-field]')){
+    if(target.matches?.('[data-graph-field],[data-stat-field],[data-trace-field],[data-table-field],[data-table-col],[data-voronoi-field],[data-voronoi-site-key="name"],[data-geometry-field],[data-geometry-vertex]')){
       const studio=target.closest("[data-graph-studio],[data-stat-studio],[data-image-tracer],[data-table-studio],[data-voronoi-studio],[data-geometry-studio]");
       for(const root of studio?.querySelectorAll?.("[data-diagram-notation]")||[]){
         if(diagramNotationField(root)===target){refreshDiagramValuePreview(root);break;}
