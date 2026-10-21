@@ -1,7 +1,7 @@
 import {resourceById,TOOLS,RESOURCES} from './catalog.js';
 import {resourceContext} from './context.js';
 import {newResourceSession,setResourcePreference,normalizeResourceState} from './state.js';
-import {REPRESENTATION_TOOLS} from '../diagrams/representation-hub.js';
+import {REPRESENTATION_TOOLS} from '../diagrams/representation-registry.js';
 /** Returns UI intents; never updates an entry, source, approval or mathematical stage. */
 export function resourceAction(state,session,action,data={},parent=''){
  if(!action.startsWith('resource-'))return null;
