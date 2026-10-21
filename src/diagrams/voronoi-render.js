@@ -2,12 +2,13 @@
 import {escapeGraph} from "./graph-core.js";
 import {analyzeVoronoi,bisectorInBounds} from "./voronoi-core.js";
 import {VORONOI_STARTER_BOUNDS} from "./voronoi-interactions.js";
+import {svgDiagramText,diagramUnitPower} from "./diagram-notation.js";
 const E=escapeGraph,W=1000,H=690,LEFT=135,TOP=110,PLOT_WIDTH=790,PLOT_HEIGHT=440;
 const colours=["#b5e1d0","#bdd9f1","#efcce0","#ffe3bb","#dcd5f5","#c9e7e4",
  "#f3d4b4","#d3dcee","#d8eabf","#e4d4e5","#f4dfa5","#bcdcc6"];
 const fmt=n=>Number.isFinite(n)?Number(n.toPrecision(6)).toString():"?";
 const coord=n=>Number(n.toFixed(2));
-const text=(s,x,y,attrs="")=>'<text x="'+coord(x)+'" y="'+coord(y)+'" '+attrs+'>'+E(s)+'</text>';
+const text=(s,x,y,attrs="")=>svgDiagramText(s,coord(x),coord(y),attrs);
 const line=(x1,y1,x2,y2,attrs="")=>'<line x1="'+coord(x1)+'" y1="'+coord(y1)+'" x2="'+coord(x2)+'" y2="'+coord(y2)+'" '+attrs+'/>';
 function tickStep(span){
  const p=10**Math.floor(Math.log10(span/6)),ratio=span/6/p;
@@ -89,7 +90,8 @@ export function renderVoronoiSvg(raw,options={}){
   if(cell.polygon.length<3||cell.area<=0) return;
   const cx=cell.polygon.reduce((s,p)=>s+p.x,0)/cell.polygon.length,
    cy=cell.polygon.reduce((s,p)=>s+p.y,0)/cell.polygon.length;
-  body.push(text(fmt(cell.area)+labelUnit.replace(/[()]/g,"")+"²",L.x(cx),L.y(cy)+14,
+  const areaUnit=d.unitMode==="unit"&&d.unit.trim()?" "+diagramUnitPower(d.unit,2):"";
+  body.push(text(fmt(cell.area)+areaUnit,L.x(cx),L.y(cy)+14,
    'font-size="11" font-family="Arial,sans-serif" text-anchor="middle" fill="#435a67"'));
  });
  if(d.showSites||interactive)d.sites.forEach((site,i)=>{
