@@ -7,10 +7,13 @@ import {escapeGraph,finiteCell,splitHeading} from "./graph-core.js";
 import {continuousBins,groupedClassBins} from "./continuous-classes.js";
 import {boxStats,boxComparisons} from "./box-analysis.js";
 import {distributionSummary,distributionComparisons,histogramBinSuggestions,alignedHistograms} from "./distribution-analysis.js";
+import {groupedCurve,frequencyPolygon,categoricalBars} from "./stat-curve-analysis.js";
 export {boxStats} from "./box-analysis.js";
 
 export const STAT_TYPES=Object.freeze([
  ["histogram","Histogram","Continuous measurements with class widths and frequency density."],
+ ["ogive","Cumulative frequency","Read quartiles and percentiles from an ogive; compare cumulative distributions."],
+ ["polygon","Frequency polygon","Compare class-midpoint frequencies or densities; overlay a histogram."],
  ["box","Box plot","Distribution, median, IQR and possible outliers; compare groups."],
  ["dot","Dot plot","See actual measured values and repeated readings."],
  ["bar","Comparative bar chart","Compare categories using counts or within-group percentages."]
@@ -25,6 +28,9 @@ export function newStatDraft(){
   kind:"histogram",raw:"",columns:[],matrix:[],pendingPaste:false,headers:"auto",
   selected:[0],categoryIndex:0,lowIndex:0,highIndex:1,frequencyIndex:2,
   histogramInput:"raw",binWidth:"",binStart:"",barMode:"count",histogramCompare:"single",histogramLabels:"frequency",dotMode:"individual",dotMean:false,dotMedian:false,
+  curveCompare:"single",ogiveYMode:"percent",curveShowQuartiles:true,curveShowPercentile:false,
+  curvePercentile:"90",curveGuides:true,polygonShowHistogram:false,polygonShowPoints:true,polygonShowValues:false,
+  barStyle:"grouped",barSort:"source",barLabels:"auto",
   quartileRule:"halves",outlierRule:"tukey",whiskerMode:"nonoutlier",zThreshold:"3",boxPrecision:"auto",
   title:"",figureNumber:"1",variable:"",unit:"",unitMode:"unsure",sourceKind:"unsure",sourceText:"",
   caption:"",min:"",max:"",showGrid:true,showOutliers:true,showLabels:true,
@@ -36,6 +42,7 @@ export function normalizeStatDraft(raw){
  const d=newStatDraft(),r=valid(raw)?raw:{};
  for(const key of ["kind","raw","headers","histogramInput","binWidth","binStart","barMode",
   "quartileRule","outlierRule","whiskerMode","zThreshold","boxPrecision","histogramCompare","histogramLabels","dotMode",
+  "curveCompare","ogiveYMode","curvePercentile","barStyle","barSort","barLabels",
   "title","figureNumber","variable","unit","unitMode","sourceKind","sourceText",
   "caption","min","max"]){
   const cap=key==="raw"?MAX_STAT_RAW:key==="sourceText"?480:key==="caption"?480:150;
@@ -45,6 +52,11 @@ export function normalizeStatDraft(raw){
  if(!["auto","yes","no"].includes(d.headers))d.headers="auto";
  if(!["raw","table"].includes(d.histogramInput))d.histogramInput="raw";
  if(!["count","percent"].includes(d.barMode))d.barMode="count";
+ if(!["single","multiple"].includes(d.curveCompare))d.curveCompare="single";
+ if(!["count","percent"].includes(d.ogiveYMode))d.ogiveYMode="percent";
+ if(!["grouped","stacked","stacked100"].includes(d.barStyle))d.barStyle="grouped";
+ if(!["source","name","total-desc","total-asc"].includes(d.barSort))d.barSort="source";
+ if(!["auto","none","count","percent"].includes(d.barLabels))d.barLabels="auto";
  if(!["single","overlay","smallmultiples"].includes(d.histogramCompare))d.histogramCompare="single";
  if(!["none","frequency","density","percentage"].includes(d.histogramLabels))d.histogramLabels="frequency";
  if(!["individual","counted"].includes(d.dotMode))d.dotMode="individual";
@@ -66,7 +78,8 @@ export function normalizeStatDraft(raw){
  }
  for(const key of ["pendingPaste","showGrid","showOutliers","showLabels","showBoxQuartiles",
   "showBoxMedian","showBoxExtremes","showBoxWhiskers","showBoxOutlierValues",
-  "showBoxFences","showBoxMean","dotMean","dotMedian"]){
+  "showBoxFences","showBoxMean","dotMean","dotMedian","curveShowQuartiles","curveShowPercentile","curveGuides",
+  "polygonShowHistogram","polygonShowPoints","polygonShowValues"]){
   if(typeof r[key]==="boolean")d[key]=r[key];
  }
  return d;
@@ -130,11 +143,13 @@ export function importStatTable(studio,raw){
  const numeric=data.columns.map((_,i)=>({
   index:i,valid:data.matrix.filter(row=>ncell(row[i])!==null).length
  })).filter(x=>x.valid>0).sort((a,b)=>b.valid-a.valid||a.index-b.index);
- d.selected=numeric.slice(0,d.kind==="histogram"&&d.histogramCompare==="single"?1:Math.min(4,numeric.length)).map(x=>x.index);
+ const continuous=["histogram","ogive","polygon"].includes(d.kind);
+ const compare=d.kind==="histogram"?d.histogramCompare!=="single":d.curveCompare==="multiple";
+ d.selected=numeric.slice(0,continuous&&!compare?1:Math.min(4,numeric.length)).map(x=>x.index);
  if(!d.selected.length)d.selected=[0];
  if(d.kind==="bar"){
   d.categoryIndex=0;d.selected=numeric.filter(x=>x.index!==d.categoryIndex).slice(0,4).map(x=>x.index);
- }else if(d.kind==="histogram"&&d.histogramInput==="table"){
+ }else if(["histogram","ogive","polygon"].includes(d.kind)&&d.histogramInput==="table"){
   d.lowIndex=0;d.highIndex=1;d.frequencyIndex=2;
  }
  const heading=data.columns[d.selected[0]??0]||"";
@@ -164,6 +179,11 @@ function buildRawHistogram(d){
  }
  const source=entries[0],b=continuousBins(source.values,d.binWidth,d.binStart,36);
  return {...b,values:source.values,skipped:source.skipped,series:[{...source,n:source.values.length,bins:b.bins||[]}]};
+}
+function buildContinuous(d){
+ if(d.histogramInput==="table")return buildGroupedHistogram(d);
+ return buildRawHistogram({...d,
+  histogramCompare:d.kind==="histogram"?d.histogramCompare:d.curveCompare==="multiple"?"overlay":"single"});
 }
 function buildGroupedHistogram(d){
  if(d.columns.length<3)return {bins:[],error:"A grouped-frequency histogram needs lower, upper and frequency columns."};
