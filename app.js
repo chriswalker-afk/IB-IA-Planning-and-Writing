@@ -1509,7 +1509,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         state.ui.adviceMode=state.ui.adviceMode==="reduced"?"guided":"reduced";
         save();render();restoreReturn(where);
         toast(state.ui.adviceMode==="reduced"?
-         "Optional advice reduced. Essential mathematical checks remain visible.":"Full contextual advice restored.");
+         "Essential instructions only. All green and purple help bubbles remain available.":"Full contextual advice restored.");
         break;
       }
       case "route-coach-next":{
