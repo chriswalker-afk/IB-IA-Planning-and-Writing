@@ -124,3 +124,23 @@
  .ia-table-column-precision-row>strong{grid-column:1/-1}
  .ia-table-column-precision-row .ia-table-format-digits{grid-column:2}
 }
+
+
+/* Pass 2: visible, explicitly justified subsets and student-owned model calculations. */
+.ia-table-source-selection,.ia-table-calculated-options{border:1px solid #d6e8df;border-radius:11px;padding:12px;background:#f8fcfa;margin:11px 0}
+.ia-table-source-selection>summary{cursor:pointer;color:#275b52;font-size:11px;font-weight:750;line-height:1.5}
+.ia-table-source-selection>p,.ia-table-calculated-options>p,.ia-table-source-selection>small{font-size:10px;line-height:1.65;color:#55736f;margin:10px 0}
+.ia-table-source-selection .ia-table-form-field,.ia-table-calculated-options .ia-table-form-field{margin:9px 0}
+.ia-table-source-selection textarea[data-table-field="selectionReason"]{min-height:72px}
+.ia-table-source-count{display:block;color:#255f54;font-weight:650;background:#e7f3ee;padding:6px 9px;border-radius:7px;margin:7px 0}
+.ia-table-source-columns{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:7px;padding:9px 0}
+.ia-table-source-columns label{display:flex;align-items:flex-start;gap:7px;font-size:11px;line-height:1.5;color:#284a46;border:1px solid #dbe9e4;border-radius:8px;background:#fff;padding:8px;cursor:pointer}
+.ia-table-source-columns input{accent-color:#2b7764;flex:none;margin-top:2px}
+.ia-table-calculated-options>strong{display:block;font-size:12px;color:#24564b}
+.ia-table-calculated-options .ia-table-switch{margin:6px 0}
+.ia-table-calculated-options .ia-table-two-col{grid-template-columns:repeat(2,minmax(0,1fr))}
+.ia-table-calculated-note{border-top:1px solid #dbe9e4;padding-top:9px}
+@media(max-width:650px){
+ .ia-table-source-columns{grid-template-columns:1fr}
+ .ia-table-calculated-options .ia-table-two-col{grid-template-columns:1fr}
+}
