@@ -72,7 +72,7 @@ export function normalizeTableDraft(raw){
  if(object(r.columnFormats)){
   d.columnFormats={};
   for(const [key,rawFormat] of Object.entries(r.columnFormats).slice(0,18)){
-   if(!/^(?:compact:[0-4]|calculated:[0-4]|frequency:[0-4]|summary:(?:[0-4]|mean|median|sd|iqr|minmax))$/.test(key)||!object(rawFormat))continue;
+   if(!/^(?:compact:[0-7]|calculated:(?:[0-4]|x|y|prediction|residual|percentage)|frequency:[0-4]|summary:(?:[0-4]|mean|median|sd|iqr|minmax))$/.test(key)||!object(rawFormat))continue;
    const mode=["default","source","dp","sf"].includes(rawFormat.mode)?rawFormat.mode:"default";
    const rawDigits=String(rawFormat.digits??"2");
    const digits=/^[0-6]$/.test(rawDigits)?rawDigits:"2";
@@ -163,11 +163,24 @@ export function tableHeader(d,index){
 }
 /** Display-only rules keyed to the output table column. Never edit the observations. */
 /** Summary settings follow a named statistic if students reorder chosen measures. */
-export const tableFormatKey=(d,index,mode=d.mode)=>mode==="summary"&&index>=2&&d.measures?.[index-2]?
- "summary:"+d.measures[index-2]:mode+":"+index;
+export const tableFormatKey=(d,index,mode=d.mode)=>{
+ if(mode==="summary"&&index>=2&&d.measures?.[index-2])return "summary:"+d.measures[index-2];
+ // Compact formats follow source columns, not positions in a selected subset.
+ if(mode==="compact")return "compact:"+(tableDisplayColumns(d)[index]??index);
+ // Calculated formats follow the mathematical quantity even when result columns are toggled.
+ if(mode==="calculated"){
+  if(index===0)return "calculated:x";
+  if(index===1)return "calculated:y";
+  const results=[...(d.calcShowPrediction?["prediction"]:[]),...(d.calcShowResidual?["residual"]:[]),
+   ...(d.calcShowPercent?["percentage"]:[])];
+  return "calculated:"+(results[index-2]??index);
+ }
+ return mode+":"+index;
+};
 export const tableColumnFormat=(d,index,mode=d.mode)=>{
  const stored=d.columnFormats?.[tableFormatKey(d,index,mode)]??d.columnFormats?.[mode+":"+index];
- const kind=["source","dp","sf"].includes(stored?.mode)?stored.mode:"default";
+ const rawKind=["source","dp","sf"].includes(stored?.mode)?stored.mode:"default";
+ const kind=mode==="calculated"&&index>=2&&rawKind==="source"?"default":rawKind;
  const digits=Number(stored?.digits);
  return {mode:kind,digits:Number.isInteger(digits)&&digits>=0&&digits<=6?digits:2};
 };
