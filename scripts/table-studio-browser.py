@@ -169,15 +169,22 @@ def compact(p,width):
  assert p.locator('[data-table-field="raw"]').input_value()==SHORT
 def enforce_long_rule(p,width):
  new_mode(p,"compact")
- many="Value (cm)\n"+ "\n".join(str(i) for i in range(1,21))
+ many="Value (cm)\n"+"\n".join(str(i) for i in range(1,21))
  enter(p,many)
- standard(p,"Unacceptable raw data table")
+ standard(p,"Purposefully selected source rows")
  assert p.locator('[data-action="table-use"]').is_disabled()
  assert p.locator('[data-action="table-svg"]').is_disabled()
- assert "long raw-data table" in p.locator('[data-table-quality]').inner_text().lower()
- assert "appendix" in p.locator('[data-table-quality]').inner_text().lower()
+ assert "source row numbers" in p.locator('[data-table-quality]').inner_text().lower()
+ assert len(saved(p)["tableStudio"]["draft"]["matrix"])==20
+ p.locator('[data-table-field="rowSelection"]').fill("1, 10, 20")
+ assert p.locator('[data-action="table-use"]').is_disabled()
+ p.locator('[data-table-field="selectionReason"]').fill(
+  "The first, midpoint and final observations span the range without hiding intermediate source data.")
+ assert p.locator('[data-action="table-use"]').is_enabled()
+ assert "Selected source rows" in p.locator('[data-table-preview] svg').text_content()
+ assert len(saved(p)["tableStudio"]["draft"]["matrix"])==20
  no_overflow(p)
- p.screenshot(path=str(OUT/f"table-studio-blocked-long-{width}.png"),full_page=True,animations="disabled")
+ p.screenshot(path=str(OUT/f"table-studio-selected-long-{width}.png"),full_page=True,animations="disabled")
 def numerical_summary(p,width):
  new_mode(p,"summary")
  enter(p,LARGE)
