@@ -83,7 +83,8 @@ function layout(model,d){
  const notes=[
   model.metadata,
   model.note?formatTableMath(model.note.startsWith("Note:")?model.note:"Note: "+model.note):"",
-  d.sourceKind==="primary"?"Source: student-collected data":"Source: "+d.sourceText
+  d.sourceKind==="primary"?"Source: student-collected data":
+  d.sourceKind==="theoretical"?"Source: theoretical / student-constructed values (not measurements)":"Source: "+d.sourceText
  ].filter(Boolean);
  const footerLines=notes.flatMap(n=>breakLines(n,svgWidth-PAGE_MARGIN*2,14));
  const height=Math.max(275,tableBottom+39+footerLines.length*23+25);
@@ -205,7 +206,8 @@ export function tableToHtml(raw){
     d.showColumnLines&&j>0,d.showRowLines||subtotal)+
    ';background:'+(subtotal?"#e9f3ef":i%2?"#f6faf9":"#ffffff")+';">'+E(value)+'</td>').join("")+'</tr>';
  }).join("");
- const foot=[model.metadata,model.note,d.sourceKind==="primary"?"Source: student-collected data":"Source: "+d.sourceText]
+ const foot=[model.metadata,model.note,d.sourceKind==="primary"?"Source: student-collected data":
+  d.sourceKind==="theoretical"?"Source: theoretical / student-constructed values (not measurements)":"Source: "+d.sourceText]
   .filter(Boolean).map(t=>'<p style="font-family:Arial,sans-serif;font-size:10pt;margin:5px 0 0;color:#566e75;">'+E(formatTableMath(t))+'</p>').join("");
  return '<div style="max-width:'+htmlWidth+'px;">'+
   '<p style="font-family:Arial,sans-serif;font-weight:700;font-size:13pt;margin:0 0 8px;">'+E(heading)+'</p>'+
