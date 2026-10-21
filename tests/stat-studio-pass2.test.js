@@ -58,7 +58,7 @@ test("compared histograms can display small multiples on the same numerical scal
  assert.match(svg,/A \(cm\)/);
  assert.match(svg,/B \(cm\)/);
  d.histogramLabels="density";
- assert.match(renderStatSvg(d),/Frequency density/);
+ assert.match(renderStatSvg(d),/Relative-frequency density/);
 });
 test("raw values and configured groups survive changes between histogram, dot and box",()=>{
  const studio=newStatStudio();studio.draft=original();
