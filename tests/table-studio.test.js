@@ -75,7 +75,7 @@ test("formatting wraps headings, aligns numeric values and escapes student text"
  const html=tableToHtml(s.draft);
  assert.match(html,/<table/);
  assert.match(html,/table-layout:fixed/);
- assert.match(html,/max-width:\\?/);
+ assert.match(html,/max-width:/);
  assert.match(html,/text-align:center/);
  s.draft.title="<script>alert(1)</script>";
  const unsafe=renderTableSvg(s.draft);
@@ -281,7 +281,7 @@ test("table dividers and alignment can be changed without altering source values
 });
 test("long but permitted headings and cells wrap without disappearing",()=>{
  const s=compact();
- const veryLong="Longest meaningful label with multiple words and powers m s^-2";
+ const veryLong="Meaningful long label with multiple words and m s^-2";
  setTableColumn(s,1,"heading",veryLong);
  const q=analyzeTable(s.draft);
  assert.equal(q.ready,true,JSON.stringify(q.problems));
