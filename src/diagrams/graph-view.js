@@ -201,7 +201,7 @@ export function renderGraphStudio(state,icon,e){
   (d.kind!=="function"?'<div class="graph-legend-options">'+
    check("showLegend","Show key / legend",d.showLegend)+
    pick("legendPosition","Key location",d.legendPosition,[["below","Below graph (recommended)"],["above","Above graph"],["right","Right of graph"]],e)+
-   pick("equationPlacement","Where should fitted equations appear?",d.equationPlacement,[
+   pick("equationPlacement","Where should model equations appear?",d.equationPlacement,[
     ["legend","Inside the key"],["annotation","In a separate box below the graph"],["hidden","Do not show equations"]
    ],e)+
    '<small>These presentation choices never hide or remove a regression curve. The equation box only includes models that are currently visible.</small>'+
