@@ -1,4 +1,4 @@
-import {normalizeGraphModels,assessGraphModels,sampleGraphModel} from "./graph-models.js";
+import {GRAPH_MODEL_TYPES,normalizeGraphModels,assessGraphModels,sampleGraphModel} from "./graph-models.js";
 /**
  * Browser-local, student-owned mathematical graph data and SVG rendering.
  * No eval, Function, remote requests or invented observations.
@@ -27,7 +27,7 @@ export function normalizeGraphDraft(raw){
   else if(typeof value==="boolean")o[k]=typeof v[k]==="boolean"?v[k]:value;
  }
  o.kind=["scatter","time","function"].includes(v.kind)?v.kind:o.kind;
- o.modelChoice=["linear","quadratic","custom"].includes(v.modelChoice)?v.modelChoice:"linear";
+ o.modelChoice=Object.hasOwn(GRAPH_MODEL_TYPES,v.modelChoice)?v.modelChoice:"linear";
  o.models=normalizeGraphModels(v.models);
  if(!o.models.some(m=>m.id===o.residualModelId))o.residualModelId="";
  o.columns=Array.isArray(v.columns)?v.columns.slice(0,MAX_COLS).map(x=>text(x,100)):[];
@@ -260,6 +260,12 @@ export function analyseGraph(draft){
  for(const model of models){
   if(model.visible&&!model.valid)
    fail("model-"+model.id,model.label+": "+model.error+" Hide or remove this overlay if you want to export the observations alone.");
+  if(model.visible&&model.valid&&bounds.y&&points.length){
+   const samples=sampleGraphModel(model,points,100).filter(p=>p.y!==null);
+   const outside=samples.some(p=>p.y<bounds.y[0]||p.y>bounds.y[1]);
+   if(outside)warn("model-clipped-"+model.id,
+    model.label+" extends outside the visible vertical range. Review the scale so the model is not misleadingly cropped.");
+  }
  }
  const selectedResidualModel=models.find(m=>m.id===d.residualModelId)||null;
  const inspecting=d.kind!=="function"&&(d.showResidualSegments||d.showResidualPlot);
