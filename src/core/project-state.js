@@ -15,6 +15,7 @@ import {newStatStudio,normalizeStatStudio} from "../diagrams/stat-studio-core.js
 import {newTableStudio,normalizeTableStudio} from "../diagrams/table-studio-core.js";
 import {normalizeNativeShelf} from "../diagrams/native-data-core.js";
 import {newVoronoiStudio,normalizeVoronoiStudio} from "../diagrams/voronoi-core.js";
+import {newGeometryStudio,normalizeGeometryStudio} from "../diagrams/geometry-core.js";
 export const STATE_VERSION = 2;
 export const STORAGE_KEY = "ia-pathfinder-prototype-v1"; // Deliberately stable across upgrades.
 export const MAX_ENTRIES = 120;
@@ -61,7 +62,7 @@ export function createProjectState() {
       helpKey:"",openCue:"",noteDraft:"",adviceMode:"guided",planningIntroSeen:false,planningIntroOpen:false,writingIntroSeen:false,writingIntroOpen:false,writerGuideIntroSeen:false,resourceCreatorReturnRoute:"",resourceCreatorReturnNode:"",resourceCreatorReturnTool:"",lastWorkRoute:"",lastStudioNode:"",representationFilter:"all",checkingMode:"draft",latestTitle:"",latestDetail:"",latestNode:"",latestEntry:"",latestAt:""
     },
     scratch: {introduction:"",dataNotes:"",conclusion:"",finalReview:""},
-    entries:[], dataShelf:[], graphStudio:newGraphStudio(), imageTracer:newImageTracer(), statStudio:newStatStudio(), tableStudio:newTableStudio(), voronoiStudio:newVoronoiStudio(), cues:{},cueNotes:{},cueLocations:{},
+    entries:[], dataShelf:[], graphStudio:newGraphStudio(), imageTracer:newImageTracer(), statStudio:newStatStudio(), tableStudio:newTableStudio(), voronoiStudio:newVoronoiStudio(), geometryStudio:newGeometryStudio(), cues:{},cueNotes:{},cueLocations:{},
     journey: {
       currentNodeId:"N00",
       answers:{}, // exact sheet/node keyed answers will be populated in Phase 2
@@ -118,7 +119,7 @@ export function normalizeProjectState(value) {
   u.writerGuideIntroSeen=u.writerGuideIntroSeen===true;
   if(!["","home","planning","completing","checking","path","report"].includes(u.resourceCreatorReturnRoute))u.resourceCreatorReturnRoute="";
   if(!/^C\d{2}[A-Z0-9]*$/.test(u.resourceCreatorReturnNode))u.resourceCreatorReturnNode="";
-  if(!["","graph","stat","table","trace","voronoi"].includes(u.resourceCreatorReturnTool))u.resourceCreatorReturnTool="";
+  if(!["","graph","stat","table","trace","voronoi","geometry"].includes(u.resourceCreatorReturnTool))u.resourceCreatorReturnTool="";
   const next={
     ...blank,
     updatedAt: str(value.updatedAt)||null,
@@ -134,6 +135,7 @@ export function normalizeProjectState(value) {
     statStudio:normalizeStatStudio(value.statStudio),
     tableStudio:normalizeTableStudio(value.tableStudio),
     voronoiStudio:normalizeVoronoiStudio(value.voronoiStudio),
+    geometryStudio:normalizeGeometryStudio(value.geometryStudio),
     cues:safeRecord(value.cues),cueNotes:safeRecord(value.cueNotes),cueLocations:safeRecord(value.cueLocations)
   };
   if(value.version===1){
