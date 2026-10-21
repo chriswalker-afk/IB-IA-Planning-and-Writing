@@ -39,6 +39,22 @@ export function setTableColumn(studio,index,key,value){
  }
  return false;
 }
+/** Change one displayed numeric column without touching stored measurements. */
+export function setTableColumnFormat(studio,index,part,value){
+ const d=studio?.draft;
+ if(!d||!Number.isInteger(index)||index<0||index>4||!["mode","digits"].includes(part))return false;
+ const output=analyzeTable(d).model;
+ if(!output||index>=output.headers.length)return false;
+ if(d.mode==="compact"?!output.numeric[index]:index<2)return false;
+ const old=d.columnFormats?.[d.mode+":"+index]||{mode:"default",digits:"2"};
+ if(part==="mode"&&!["default","dp","sf",...(d.mode==="compact"?["source"]:[])].includes(value))return false;
+ if(part==="digits"&&(!/^[0-6]$/.test(String(value))||old.mode==="sf"&&String(value)==="0"))return false;
+ const mode=part==="mode"?value:old.mode;
+ const digits=part==="digits"?String(value):old.digits==="0"&&mode==="sf"?"2":old.digits||"2";
+ if(!d.columnFormats||typeof d.columnFormats!=="object")d.columnFormats={};
+ d.columnFormats[d.mode+":"+index]={mode,digits};
+ return true;
+}
 export function chooseTableMode(studio,mode){
  if(!["compact","summary","frequency"].includes(mode))return false;
  const d=studio.draft;if(d.mode===mode)return true;
