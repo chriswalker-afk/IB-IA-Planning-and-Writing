@@ -10,7 +10,7 @@ import {criterionMarkedField,criterionMarkedWritingBox} from "../src/essentials/
 import {
  FIELD_GUIDE_TIPS,FIELD_GUIDE_CONTEXT,contextualGuideTip,
  renderFieldGuideTeaser,renderWriterFieldGuide,renderContextualGuide,
- renderWriterGuideWelcome,shouldShowWriterGuideWelcome
+ renderWriterGuideWelcome,shouldShowWriterGuideWelcome,renderWriterGuidePopin
 } from "../src/completing/writer-field-guide.js";
 
 test("Writer's Field Guide includes six essentials plus eight meaningful extra lessons",()=>{
@@ -188,4 +188,41 @@ test("The mathematics displayed by a field bubble depends on its real context, n
  assert.match(writerGuideFieldBubble(s,"C30","completing:C30:result",icon,escapeHtml),/data-guide-tip="audience"/);
  s.planning.fields.kind="statistics";s.completion.fields.firstType="scatter";
  assert.match(writerGuideFieldBubble(s,"C30","completing:C30:result",icon,escapeHtml),/data-guide-tip="graphs"/);
+});
+
+test("Focused Field Guide pop-in preserves the full lesson, relevant cue and fictional comparison",()=>{
+ const state=createProjectState();state.route="completing";state.completion.current="C20";
+ const spot="completing:C20:methodIntroduction";
+ const rec=writingGuideRecommendation(state,"C20","thinking",spot);
+ const html=renderWriterGuidePopin(icon,escapeHtml,rec);
+ assert.match(html,/writer-guide-popin/);
+ assert.match(html,/role="dialog"/);
+ assert.match(html,/For this step|FOR THIS STEP/);
+ assert(html.includes(escapeHtml(rec.stage)));
+ assert(html.includes(escapeHtml(rec.cue)));
+ assert(html.includes(escapeHtml(rec.tip.explanation)));
+ assert(html.includes(escapeHtml(rec.tip.ordinary)));
+ assert(html.includes(escapeHtml(rec.tip.stronger)));
+ assert(html.includes(escapeHtml(rec.tip.why)));
+ assert.match(html,/writer-guide-popin-full/);
+ assert.match(html,/writer-guide-popin-close/);
+ assert.equal((renderWriterFieldGuide(icon,escapeHtml).match(/data-guide-card="/g)||[]).length,14);
+});
+
+test("Pop-in escapes saved student findings and does not treat plans as results",()=>{
+ const state=createProjectState();state.route="completing";state.completion.current="C34";
+ state.entries=[{id:"real",phase:"first",status:"completed",result:"<script>alert(1)</script>"}];
+ state.completion.activeEntryIndex=0;
+ const rec=writingGuideRecommendation(state,"C34");
+ const html=renderWriterGuidePopin(icon,escapeHtml,rec);
+ assert(!html.includes("<script>"));
+ assert(html.includes("&lt;script&gt;alert(1)&lt;/script&gt;"));
+ state.entries[0].status="planned";
+ const planned=writingGuideRecommendation(state,"C34");
+ const plannedHtml=renderWriterGuidePopin(icon,escapeHtml,planned);
+ assert(!plannedHtml.includes("alert(1)"));
+});
+
+test("Focused pop-in tolerates a missing recommendation",()=>{
+ assert.equal(renderWriterGuidePopin(icon,escapeHtml,null),"");
 });
