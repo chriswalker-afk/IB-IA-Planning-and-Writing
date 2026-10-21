@@ -14,6 +14,9 @@ const median=xs=>boxStats(xs).median;
 const unitDefault=()=>({mode:"unsure",unit:""});
 export const newTableDraft=()=>({
  mode:"compact",raw:"",headers:"auto",columns:[],matrix:[],pendingPaste:false,
+ columnSelectionMode:"all",displayColumns:[],rowSelection:"",selectionReason:"",
+ calcXIndex:0,calcYIndex:1,calcModel:"linear",calcA:"",calcB:"",calcC:"",
+ calcShowPrediction:true,calcShowResidual:true,calcShowPercent:false,
  headings:[],unitDecisions:[],selected:[0],measures:["mean","median"],categoryIndex:0,showPercent:true,
  title:"",number:"1",purpose:"",sourceKind:"unsure",sourceText:"",note:"",
  decimals:"2",numberFormat:"source",quartileRule:"halves",showRowLines:true,
@@ -23,11 +26,14 @@ export const newTableStudio=()=>({open:false,draft:newTableDraft(),figures:[],ac
 export function normalizeTableDraft(raw){
  const d=newTableDraft(),r=object(raw)?raw:{};
  for(const key of ["mode","raw","headers","title","number","purpose","sourceKind","sourceText","note",
+  "columnSelectionMode","rowSelection","selectionReason","calcModel","calcA","calcB","calcC",
   "decimals","numberFormat","quartileRule","cellAlignment"]){
-  const max=key==="raw"?85000:key==="sourceText"||key==="purpose"||key==="note"?500:140;
+  const max=key==="raw"?85000:key==="sourceText"||key==="purpose"||key==="note"?500:key==="selectionReason"?360:140;
   if(typeof r[key]==="string")d[key]=r[key].slice(0,max);
  }
- if(!["compact","summary","frequency"].includes(d.mode))d.mode="compact";
+ if(!["compact","summary","frequency","calculated"].includes(d.mode))d.mode="compact";
+ if(!["all","custom"].includes(d.columnSelectionMode))d.columnSelectionMode="all";
+ if(!["linear","quadratic"].includes(d.calcModel))d.calcModel="linear";
  if(!["auto","yes","no"].includes(d.headers))d.headers="auto";
  if(!["unsure","primary","secondary"].includes(d.sourceKind))d.sourceKind="unsure";
  if(!["source","fixed"].includes(d.numberFormat))d.numberFormat="source";
@@ -46,6 +52,12 @@ export function normalizeTableDraft(raw){
   const mode=["unsure","unit","dimensionless"].includes(rawDecision?.mode)?rawDecision.mode:(fromHeader.unit?"unit":"unsure");
   return {mode,unit:typeof rawDecision?.unit==="string"?trimmed(rawDecision.unit,35):fromHeader.unit};
  });
+ d.displayColumns=Array.isArray(r.displayColumns)?
+  [...new Set(r.displayColumns.filter(Number.isInteger).filter(i=>i>=0&&i<d.columns.length))].sort((a,b)=>a-b).slice(0,5):[];
+ d.calcXIndex=Number.isInteger(r.calcXIndex)&&r.calcXIndex>=0&&r.calcXIndex<d.columns.length?r.calcXIndex:0;
+ d.calcYIndex=Number.isInteger(r.calcYIndex)&&r.calcYIndex>=0&&r.calcYIndex<d.columns.length?r.calcYIndex:Math.min(1,Math.max(0,d.columns.length-1));
+ for(const key of ["calcShowPrediction","calcShowResidual","calcShowPercent"])
+  if(typeof r[key]==="boolean")d[key]=r[key];
  d.selected=Array.isArray(r.selected)?
   [...new Set(r.selected.filter(Number.isInteger).filter(i=>i>=0&&i<d.columns.length))].slice(0,4):
   d.columns.map((_,i)=>i).slice(0,Math.min(3,d.columns.length));
@@ -91,7 +103,48 @@ export function importTableData(studio,raw){
   .filter(r=>r.count>0).sort((a,b)=>b.count-a.count||a.index-b.index);
  d.selected=(d.mode==="summary"?numeric.slice(0,3).map(x=>x.index):columns.map((_,i)=>i).slice(0,4));
  d.categoryIndex=0;d.columnFormats={};
+ d.columnSelectionMode="all";d.displayColumns=[];d.rowSelection="";d.selectionReason="";
+ d.calcA="";d.calcB="";d.calcC="";
+ d.calcXIndex=numeric[0]?.index??0;
+ d.calcYIndex=numeric.find(entry=>entry.index!==d.calcXIndex)?.index??Math.min(1,Math.max(0,d.columns.length-1));
  return {rows:matrix.length,columns:columns.length,hasHeaders:parsed.hasHeaders};
+}
+/** No silent sampling: a blank selection means every row, never the first eight.
+ * The student must explicitly name source rows when the source exceeds eight.
+ */
+export function tableDisplayRows(d){
+ const count=d.matrix?.length||0,raw=String(d.rowSelection||"").trim();
+ if(!raw)return count<=8?
+  {ok:true,indices:Array.from({length:count},(_,i)=>i),custom:false}:
+  {ok:false,indices:[],custom:false,error:"Choose up to eight source row numbers. No rows have been selected automatically."};
+ const tokens=raw.split(",").map(x=>x.trim());
+ if(!tokens.length||tokens.some(x=>!/^\d+(?:\s*-\s*\d+)?$/.test(x)))
+  return {ok:false,indices:[],custom:true,error:"Enter source row numbers separated by commas, such as 1, 4, 8-10."};
+ const set=new Set();
+ for(const token of tokens){
+  const [a,b]=token.split("-").map(x=>Number(x.trim()));
+  const first=a,last=b??a;
+  if(!Number.isSafeInteger(first)||!Number.isSafeInteger(last)||first<1||last<first||last>count)
+   return {ok:false,indices:[],custom:true,error:"Every selected row number must be between 1 and "+count+"."};
+  if(last-first>8)return {ok:false,indices:[],custom:true,error:"Show at most eight source rows in one table."};
+  for(let i=first;i<=last;i++)set.add(i-1);
+  if(set.size>8)return {ok:false,indices:[],custom:true,error:"Show at most eight source rows in one table."};
+ }
+ const indices=[...set].sort((a,b)=>a-b);
+ return {ok:indices.length>0,indices,custom:true};
+}
+export function tableDisplayColumns(d){
+ const count=d.columns?.length||0;
+ if(d.columnSelectionMode==="custom")return [...new Set(d.displayColumns||[])]
+  .filter(i=>Number.isInteger(i)&&i>=0&&i<count).sort((a,b)=>a-b);
+ return Array.from({length:count},(_,i)=>i);
+}
+export function tableSelectionDetails(d,columns,rows){
+ const totalRows=d.matrix.length,totalCols=d.columns.length;
+ const selectedRowSubset=rows.length<totalRows,selectedColSubset=columns.length<totalCols;
+ return {selectedRowSubset,selectedColSubset,subset:selectedRowSubset||selectedColSubset,
+  rowNumbers:rows.map(i=>i+1),rowCount:rows.length,sourceRows:totalRows,
+  columnCount:columns.length,sourceColumns:totalCols};
 }
 const columnType=(d,index)=>{
  let numeric=0,other=0,blanks=0;
