@@ -61,6 +61,10 @@ export function tableWidths(model){
  return desired.map(w=>Number(w.toFixed(3)));
 }
 function svgText(lines,x,y,lineHeight,attrs){
+ if(!lines.some(line=>/\\\(|\\\[/.test(line)))
+  return '<text x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" '+attrs+'>'+
+    lines.map((line,i)=>'<tspan x="'+x.toFixed(1)+'" dy="'+(i?lineHeight:0)+'">'+E(line)+'</tspan>').join("")+
+   '</text>';
  return lines.map((line,i)=>svgDiagramText(line,x,y+i*lineHeight,attrs)).join("");
 }
 function layout(model,d){
