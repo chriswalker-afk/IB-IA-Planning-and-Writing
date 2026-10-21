@@ -62,6 +62,46 @@ def data_graph(page,width):
  assert download.value.suggested_filename.endswith(".png")
  no_overflow(page)
  page.screenshot(path=str(OUT/f"graph-studio-scatter-{width}.png"),full_page=True,animations="disabled")
+ # Student explicitly chooses each overlay; ordinary plots never gain an automatic fit.
+ assert page.locator('[data-graph-section="models"]').is_visible()
+ assert page.locator('[data-graph-preview] .graph-model-overlay').count()==0
+ page.locator('[data-action="graph-model-add"]').click()
+ assert page.locator('[data-graph-preview] .graph-model-overlay').count()==1
+ assert "Linear regression" in page.locator('[data-graph-model-summary]').first.inner_text()
+ assert "y ≈" in page.locator('[data-graph-model-summary]').first.inner_text()
+ page.locator('[data-graph-field="modelChoice"]').select_option("quadratic")
+ page.locator('[data-action="graph-model-add"]').click()
+ assert page.locator('[data-graph-preview] .graph-model-overlay').count()==2
+ page.locator('[data-graph-field="modelChoice"]').select_option("custom")
+ page.locator('[data-action="graph-model-add"]').click()
+ assert page.locator('[data-graph-model-expression]').count()==1
+ page.locator('[data-graph-model-expression]').fill("0.7*x^2 + 1")
+ assert page.locator('[data-graph-preview] .graph-model-overlay').count()==3
+ assert page.locator('[data-action="graph-model-add"]').is_disabled()
+ assert page.locator('[data-graph-preview] svg text').filter(has_text="My own equation").count()==1
+ # An incorrect expression is diagnosed; hiding it leaves original observations exportable.
+ page.locator('[data-graph-model-expression]').fill("window.alert(1)")
+ assert page.locator('[data-action="graph-png"]').is_disabled()
+ manual=page.locator('[data-graph-model]').last
+ manual.locator('[data-action="graph-model-toggle"]').click()
+ assert page.locator('[data-action="graph-png"]').is_enabled()
+ assert page.locator('[data-graph-preview] .graph-model-overlay').count()==2
+ manual=page.locator('[data-graph-model]').last
+ manual.locator('[data-action="graph-model-toggle"]').click()
+ page.locator('[data-graph-model-expression]').fill("0.7*x^2 + 1")
+ assert page.locator('[data-action="graph-png"]').is_enabled()
+ quadratic=page.locator('[data-graph-model]').nth(1)
+ quadratic.locator('[data-action="graph-model-toggle"]').click()
+ assert page.locator('[data-graph-preview] .graph-model-overlay').count()==2
+ quadratic=page.locator('[data-graph-model]').nth(1)
+ quadratic.locator('[data-action="graph-model-toggle"]').click()
+ assert page.locator('[data-graph-preview] .graph-model-overlay').count()==3
+ assert len(saved(page)["graphStudio"]["draft"]["models"])==3
+ no_overflow(page)
+ page.screenshot(path=str(OUT/f"graph-studio-models-{width}.png"),full_page=True,animations="disabled")
+ with page.expect_download() as download:
+  page.locator('[data-action="graph-svg"]').click()
+ assert download.value.suggested_filename.endswith(".svg")
  page.locator('[data-action="graph-use"]').click()
  assert page.locator('[data-source-node="C30"]').count()==1
  snapshot=saved(page)
