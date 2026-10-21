@@ -32,10 +32,10 @@ const routes={
   why:["Extract defensible coordinates from a calibrated photograph.","Plot measured positions or a justified trajectory function."]},
  optimisation:{name:"Optimising a design",ids:["graph","table"],
   why:["Plot a justified function over its feasible domain.","Compare selected candidate values and constraints concisely."]},
- images:{name:"Modelling shapes from images",ids:["trace","graph"],
-  why:["Calibrate an image and trace measurements before fitting.","Explore a meaningful curve only after checking scale."]},
- triangulation:{name:"Measurement and triangulation",ids:["trace","graph"],
-  why:["A calibrated image can record reliable measured coordinates.","Plot measured results or a model over an appropriate domain."]},
+ images:{name:"Modelling shapes from images",ids:["trace","geometry"],
+  why:["Calibrate a picture before using traced measurements.","Construct and annotate relevant geometric shapes."]},
+ triangulation:{name:"Measurement and triangulation",ids:["geometry","trace"],
+  why:["Draw labelled triangles, measurement baselines and angles.","Calibrate positions from a photograph when necessary."]},
  voronoi:{name:"Locations and Voronoi diagrams",ids:["voronoi","trace"],
   why:["Construct nearest-site regions from projected Cartesian coordinates.","Calibrate sites from a scale map if their coordinates are not yet available."]},
  finance:{name:"Business and financial decisions",ids:["table","graph"],
@@ -48,7 +48,7 @@ const routes={
   why:["Plot a function or related sequence behaviour; diagrams alone do not prove convergence.","Show a short series of genuinely calculated iterates and a justified stopping rule."]}
 };
 const fallback={
- scatter:["graph","stat"],distribution:["stat","table"],diagram:["trace","voronoi"],
+ scatter:["graph","stat"],distribution:["stat","table"],diagram:["geometry","trace"],
  table:["table","stat"],calculation:["table","graph"],theory:["graph","table"],other:["graph","table"],unsure:["graph","stat"]
 };
 /**
@@ -60,10 +60,10 @@ const fallback={
 const methods=[
  {keys:["voronoi"],name:"Voronoi construction",ids:["voronoi","trace"],
   why:["Use genuine site coordinates and a justified distance metric.","Calibrate measured sites from a suitable map if needed."]},
- {keys:["triangulation"],name:"Triangulation and surveying",ids:["trace","graph"],
-  why:["Calibrate positions and measurements before trigonometry.","Graph an actual sensitivity or measurement comparison if useful."]},
- {keys:["geometric-model"],name:"Geometric modelling",ids:["trace","graph"],
-  why:["Trace or label measured dimensions from a calibrated image.","Plot a derived geometric function over its meaningful domain."]},
+ {keys:["triangulation"],name:"Triangulation and surveying",ids:["geometry","trace"],
+  why:["Construct a labelled measurement triangle and clarify assumptions.","Use photo calibration if the positions came from an image."]},
+ {keys:["geometric-model"],name:"Geometric modelling",ids:["geometry","trace"],
+  why:["Construct dimensioned geometry to explain the mathematical model.","Extract points from a calibrated photograph if needed."]},
  {keys:["optimisation"],name:"Optimisation",ids:["graph","table"],
   why:["Inspect the objective over its feasible domain.","Compare constraints, endpoints and candidate optima."]},
  {keys:["probability","expected-value"],name:"Conditional probability or expected value",ids:["table","stat"],
