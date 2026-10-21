@@ -47,6 +47,13 @@ export function renderGeometrySvg(raw,{interactive=false}={}){
  }
  if(a.issues.length)out.push(text("Review: "+diagramSafeExcerpt(a.issues[0],110),W/2,110,
   'font-family="Arial,sans-serif" font-size="13" fill="#9b4038" text-anchor="middle"',{width:990}));
+ if(d.vertices.some(v=>!Number.isFinite(v.x)||!Number.isFinite(v.y))){
+  out.push(text("Enter valid coordinates for every vertex to preview or export this figure.",
+   W/2,330,'font-family="Arial,sans-serif" font-size="19" font-weight="600" fill="#9b4038" text-anchor="middle"',{width:980}));
+  out.push(text("Your earlier measurements are not reused when a coordinate is cleared.",
+   W/2,369,'font-family="Arial,sans-serif" font-size="14" fill="'+grey+'" text-anchor="middle"',{width:980}));
+  out.push('</svg>');return out.join("");
+ }
  out.push('<path d="'+path+'" fill="'+(d.filled?teal:"none")+'" stroke="'+blue+'" stroke-width="3.5" stroke-linejoin="round"/>');
  const centroid={x:P.reduce((v,p)=>v+p.sx,0)/P.length,y:P.reduce((v,p)=>v+p.sy,0)/P.length};
  for(let i=0;i<P.length;i++){
@@ -68,7 +75,8 @@ export function renderGeometrySvg(raw,{interactive=false}={}){
    const uX=aX/la+bX/lb,uY=aY/la+bY/lb,div=Math.max(.05,Math.hypot(uX,uY));
    const alignX=uX/div,alignY=uY/div;
    const angleLabel=p.angleLabel.trim()||(a.ready?"≈ "+fmt(a.angles[i])+"°":"");
-   out.push(text(angleLabel,p.sx+alignX*41,p.sy+alignY*41,
+   const placement=a.ready&&a.angles[i]>180?-1:1;
+   out.push(text(angleLabel,p.sx+alignX*41*placement,p.sy+alignY*41*placement,
     'font-family="Arial,sans-serif" font-size="13" text-anchor="middle" fill="#855137" stroke="#fff" stroke-width="3" paint-order="stroke"',{width:120}));
   }
   out.push('<circle cx="'+num(p.sx)+'" cy="'+num(p.sy)+'" r="'+(interactive?8:5.5)+'" fill="'+blue+'" stroke="#fff" stroke-width="2"'+
