@@ -42,7 +42,7 @@ export function normalizeStatDraft(raw){
  if(!["halves","linear"].includes(d.quartileRule))d.quartileRule="halves";
  if(!["tukey","minmax"].includes(d.outlierRule))d.outlierRule="tukey";
  if(!["unit","dimensionless","unsure"].includes(d.unitMode))d.unitMode="unsure";
- if(!["primary","secondary","unsure"].includes(d.sourceKind))d.sourceKind="unsure";
+ if(!["primary","secondary","theoretical","unsure"].includes(d.sourceKind))d.sourceKind="unsure";
  d.columns=Array.isArray(r.columns)?r.columns.slice(0,MAX_STAT_COLS).map(x=>txt(x,110)):[];
  d.matrix=Array.isArray(r.matrix)?r.matrix.slice(0,MAX_STAT_ROWS)
   .filter(Array.isArray).map(row=>row.slice(0,MAX_STAT_COLS).map(x=>txt(x,115))):[];
