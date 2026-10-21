@@ -148,7 +148,7 @@ export function renderGraphStudio(state,icon,e){
  const unit=(axis)=>'<div class="graph-units">'+pick(axis+"UnitMode",axis==="x"?"Horizontal quantity":"Vertical quantity",d[axis+"UnitMode"],[
   ["unsure","Choose if units apply"],["unit","Has a unit"],["dimensionless","Dimensionless / no units"]
  ],e)+
- (d[axis+"UnitMode"]==="unit"?field(axis+"Unit",axis==="x"?"Horizontal unit":"Vertical unit",d[axis+"Unit"],e,{placeholder:"e.g. m s^-2, cm^3, kg m^-3" ,hint:"Use ^ for powers: m s^-2 appears as m s⁻². Also accepts m/s^2 and 10^(-3)."}}):"")+'</div>';
+ (d[axis+"UnitMode"]==="unit"?field(axis+"Unit",axis==="x"?"Horizontal unit":"Vertical unit",d[axis+"Unit"],e,{placeholder:"e.g. m s^-2, cm^3, kg m^-3" ,hint:"Use ^ for powers: m s^-2 appears as m s⁻². Also accepts m/s^2 and 10^(-3)."}):"")+'</div>';
  const problems=q.problems.map(x=>'<li>'+icon("x-circle")+'<span>'+e(x.message)+'</span></li>').join("");
  const warnings=q.warnings.map(x=>'<li>'+icon("alert-circle")+'<span>'+e(x.message)+'</span></li>').join("");
  const zero=q.ready&&q.points.length?"Ready to export":"Add the missing details before exporting";
