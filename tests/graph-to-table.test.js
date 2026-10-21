@@ -57,7 +57,7 @@ test("transfer real linear regression observations, full-precision parameters, p
  }
  assert.match(q.model.metadata,/Graph Plotter snapshot/);
  assert.match(q.model.metadata,/not a live link/);
- assert.match(q.model.metadata,/unrounded/i);
+ assert.match(q.model.metadata,/full precision/i);
  assert.equal(JSON.stringify(studio.draft),original,"Source graph never mutated");
  assert.equal(d.matrix[0][1],studio.draft.matrix[0][1],"Original measurement strings and precision retained");
  assert.equal(tableGraphSnapshotIssue(d),"");
