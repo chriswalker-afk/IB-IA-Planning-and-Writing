@@ -60,6 +60,7 @@ import {renderTableSvg} from "./src/diagrams/table-studio-render.js";
 import {renderTableStudio,tableDataChoices,tablePreviewHtml,tableA4PreviewHtml,tableQualityHtml,tableOutputHtml} from "./src/diagrams/table-studio-view.js";
 import {setTableField,setTableColumn,setTableColumnFormat,toggleTableDisplayColumn,chooseTableMode,toggleTableVariable,toggleTableMeasure,loadTable,freshTable,saveTableDraft,saveAndLinkTable} from "./src/diagrams/table-studio-actions.js";
 import {exportTable} from "./src/diagrams/table-studio-export.js";
+import {copyGraphModelToTable,detachTableGraphModel} from "./src/diagrams/graph-to-table.js";
 import {nativeGridSummary,editNativeHeading,editNativeCell,pasteNativeRange,NATIVE_MAX_ROWS,NATIVE_PAGE_ROWS} from "./src/diagrams/native-data-core.js";
 import {handleNativeDataAction,nativeStudio,activeNativeType} from "./src/diagrams/native-data-actions.js";
 import {analyzeVoronoi,importVoronoiSites,voronoiBounds} from "./src/diagrams/voronoi-core.js";
@@ -1767,6 +1768,15 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
           Math.min(start+token.length,field.value.length));
         break;
       }
+      case "table-return-to-graph":
+        openNativeTool("graph");break;
+      case "table-detach-model":{
+        if(!detachTableGraphModel(state.tableStudio)){toast("No copied model to detach");break;}
+        save();render();
+        toast("Switched to independent coefficients",
+          "Your original paired source values remain. Check the coefficients before exporting this table.");
+        break;
+      }
       case "table-open":navigateTable();break;
       case "table-close":state.tableStudio.open=false;save();render();break;
       case "table-mode":{
@@ -1975,6 +1985,15 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       case "graph-model-toggle":{
         if(!toggleGraphModel(state.graphStudio,el.dataset.graphModelId))break;
         save();render();break;
+      }
+      case "graph-to-table":{
+        const result=copyGraphModelToTable(state,el.dataset.graphModelId||"");
+        if(!result.ok){toast("Cannot transfer this model",result.error);break;}
+        openNativeTool("table");
+        toast("Model copied into Table Studio",
+          result.requiresSelection?"All "+result.rows+" observed pairs and full-precision predictions are retained. Choose up to eight source rows and explain your selection.":
+          "Full-precision model predictions and residuals were transferred. The original graph is unchanged.");
+        break;
       }
       case "graph-model-remove":{
         if(!removeGraphModel(state.graphStudio,el.dataset.graphModelId))break;
