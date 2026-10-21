@@ -2,7 +2,7 @@ import {representationEmpty} from "./workspace-ui.js";
 import {renderNativeDataGrid} from "./native-data-view.js";
 import {renderPresentationCoach,renderFigureHandover} from "./presentation-coach-view.js";
 /** Short, readable tables, contextual mathematical help and reliable quality gates. */
-import {analyzeTable,tableColumnFormat,TABLE_MAX_SAVED} from "./table-studio-core.js";
+import {analyzeTable,tableColumnFormat,tableDisplayColumns,tableDisplayRows,TABLE_MAX_SAVED} from "./table-studio-core.js";
 import {TABLE_MATH_SYMBOLS,formatTableMath} from "./table-studio-math.js";
 import {renderTableSvg,assessTableA4} from "./table-studio-render.js";
 const routes={
@@ -16,7 +16,8 @@ const routes={
  optimisation:"Use a short table of candidate values or relevant constraints, then justify why those values are mathematically meaningful."
 };
 const kinds=[
- ["compact","Short results","Up to 8 meaningful rows and 5 columns; never an oversized raw-data table."],
+ ["compact","Short results","Select up to 8 purposeful source rows and 5 columns without deleting any observations."],
+ ["calculated","Calculated results","Compare original observations with model predictions, residuals and percentage deviations."],
  ["summary","Summary statistics","Use up to 3 measures to condense hundreds of numerical observations."],
  ["frequency","Frequency table","Count up to 8 discrete categories and optionally show within-sample percentages."]
 ];
@@ -47,7 +48,7 @@ function numericColumn(d,index){
 }
 function unitsEditors(d,e){
  if(d.mode==="frequency")return"";
- const visible=d.mode==="compact"?d.columns.map((_,i)=>i):d.selected;
+ const visible=d.mode==="compact"?tableDisplayColumns(d):d.mode==="calculated"?[d.calcXIndex,d.calcYIndex]:d.selected;
  const numeric=visible.filter(i=>numericColumn(d,i));
  if(!numeric.length)return"";
  return '<div class="ia-table-column-settings"><strong>'+e(d.mode==="compact"?"Name columns and check units":"Confirm the units of each selected measurement")+'</strong>'+
@@ -64,7 +65,7 @@ function unitsEditors(d,e){
  }).join("")+'</div>';
 }
 function headerEditors(d,e){
- if(!d.columns.length||d.mode==="summary")return"";
+ if(!d.columns.length||["summary","calculated"].includes(d.mode))return"";
  if(d.mode==="frequency"){
   const options=d.columns.map((text,i)=>[String(i),d.headings[i]||text]);
   return pick("categoryIndex","Column containing the categories",String(d.categoryIndex),options,e)+
@@ -90,9 +91,55 @@ function selectionControls(d,e){
   (d.measures.includes("iqr")?pick("quartileRule","Quartile convention",d.quartileRule,[
    ["halves","Median of lower and upper halves"],["linear","Linear interpolation (n − 1)p"]],e):"");
 }
+
+function sourceSelectionControls(d,e){
+ if(!["compact","calculated"].includes(d.mode)||!d.columns.length)return "";
+ const rows=tableDisplayRows(d),selected=tableDisplayColumns(d);
+ const many=d.matrix.length>8||d.columns.length>5;
+ return '<details class="ia-table-source-selection"'+(many||d.columnSelectionMode==="custom"||d.rowSelection.trim()?' open':'')+'>'+
+ '<summary>Choose the evidence to display · original dataset stays complete</summary>'+
+ '<p>The full dataset stays in your working table. There is no automatic first-eight-row selection. Select and justify only rows that help explain a calculation or comparison.</p>'+
+ (d.mode==="compact"?
+  pick("columnSelectionMode","Which source columns?",d.columnSelectionMode,[
+    ["all","All source columns (at most five)"],["custom","Choose source columns below"]
+  ],e)+
+  (d.columnSelectionMode==="custom"?'<div class="ia-table-source-columns" role="group" aria-label="Source columns to display">'+
+   d.columns.map((name,i)=>'<label><input type="checkbox" data-table-display-column="'+i+'"'+(selected.includes(i)?' checked':"")+
+    '><span>'+e(d.headings[i]||name)+'</span></label>').join("")+'</div>':''):"")+
+ '<label class="ia-table-form-field"><span>Source row numbers to display</span>'+
+ '<input type="text" data-table-field="rowSelection" value="'+e(d.rowSelection)+'" placeholder="'+e(d.matrix.length>8?"e.g. 1, 4, 8-10":"Leave blank to use all rows")+
+ '" autocomplete="off"><small>Use 1-based row numbers: 1, 5, 12 or 2-6. Maximum eight rows. '+
+ (d.matrix.length>8?'There are '+d.matrix.length+' source rows: an explicit selection is required.':
+ 'Blank means all '+d.matrix.length+' rows (if no more than eight).')+'</small></label>'+
+ (d.rowSelection.trim()&&rows.ok?
+  '<small class="ia-table-source-count">Selected source rows: '+rows.indices.map(i=>i+1).join(", ")+'</small>':"")+
+ textarea("selectionReason","Why have you chosen these rows or columns?",d.selectionReason,e,
+  "e.g. I chose the first, median and largest values to show the overall model trend and deviation.")+
+ '<small>Required for a subset. Explain an objective or mathematically useful choice; do not hide anomalies or inconvenient results.</small>'+
+ '</details>';
+}
+function calculatedControls(d,e){
+ if(d.mode!=="calculated")return "";
+ const options=d.columns.map((column,i)=>[String(i),d.headings[i]||column]);
+ return '<div class="ia-table-calculated-options"><strong>Build a model-checking table</strong>'+
+ '<p>Choose genuine numerical observations, then enter coefficients from your own justified model. No regression is fitted or coefficients invented here.</p>'+
+ (d.columns.length?pick("calcXIndex","Source x variable",String(d.calcXIndex),options,e)+
+  pick("calcYIndex","Observed y variable",String(d.calcYIndex),options,e):"")+
+ pick("calcModel","Model to evaluate",d.calcModel,[
+  ["linear","Linear: predicted y = a x + b"],["quadratic","Quadratic: predicted y = a x² + b x + c"]],e)+
+ '<div class="ia-table-two-col">'+
+ input("calcA",d.calcModel==="quadratic"?"Coefficient a (x²)":"Slope a",d.calcA,e,"e.g. 1.25")+
+ input("calcB",d.calcModel==="quadratic"?"Coefficient b (x)":"Intercept b",d.calcB,e,"e.g. 2.4")+
+ (d.calcModel==="quadratic"?input("calcC","Constant c",d.calcC,e,"e.g. 0.5"):"")+
+ '</div>'+
+ toggle("calcShowPrediction","Include model predictions (ŷ)",d.calcShowPrediction)+
+ toggle("calcShowResidual","Include signed residuals (y − ŷ)",d.calcShowResidual)+
+ toggle("calcShowPercent","Include signed percentage deviation (%)",d.calcShowPercent)+
+ '<p class="ia-table-calculated-note">Residual = observed − predicted. Percentage deviation = 100 × residual / |observed| and is undefined for observed values of zero. All calculations use full-precision source values; rounding affects display only.</p></div>';
+}
 export function tableDataChoices(studio,e){
  const d=studio.draft;
- return headerEditors(d,e)+selectionControls(d,e)+unitsEditors(d,e)+
+ return calculatedControls(d,e)+sourceSelectionControls(d,e)+headerEditors(d,e)+selectionControls(d,e)+unitsEditors(d,e)+
   (d.mode==="frequency"?toggle("showPercent","Include percentage of all responses",d.showPercent):"");
 }
 
@@ -100,12 +147,12 @@ function columnPrecisionOptions(d,e){
  const model=analyzeTable(d).model;
  if(!model)return '<p class="ia-table-precision-note">Finish entering a valid table to customise its numerical columns.</p>';
  const options=model.headers.map((header,i)=>({header,index:i})).filter(({index:i})=>
-  d.mode==="compact"?!!model.numeric[i]:i>=2);
+  ["compact","calculated"].includes(d.mode)?!!model.numeric[i]:i>=2);
  if(!options.length)return '<p class="ia-table-precision-note">No precision-adjustable columns in the current table.</p>';
  return '<div class="ia-table-column-precision-grid">'+options.map(({header,index})=>{
   const rule=tableColumnFormat(d,index),selected=rule.mode,digits=rule.digits;
   const showDigits=selected==="dp"||selected==="sf";
-  const choices=[["default","Use overall table setting"],...(d.mode==="compact"?[["source","Exactly as entered"]]:[]),
+  const choices=[["default","Use overall table setting"],...(["compact","calculated"].includes(d.mode)?[["source","Exactly as entered"]]:[]),
    ["dp","Decimal places"],["sf","Significant figures"]];
   return '<div class="ia-table-column-precision-row"><strong>'+e(formatTableMath(header))+'</strong>'+
    '<label class="ia-table-form-field"><span>Display format</span><select data-table-format-index="'+index+'" data-table-format-part="mode">'+
@@ -143,7 +190,9 @@ function preview(studio,e){
  return '<section class="ia-table-preview" data-table-preview>'+
  '<div class="ia-table-preview-top"><strong>Live, compact table</strong><span>Widths adapt to your headings and values</span></div>'+
  '<div class="ia-table-preview-art">'+renderTableSvg(studio.draft)+'</div>'+
- '<p>No rows are shortened or silently omitted. This preview is deliberately limited to a concise IA output.</p>'+
+ '<p>'+e(["compact","calculated"].includes(studio.draft.mode)?
+ "Only explicitly selected source rows and columns appear here; all original data remain in the editable worksheet.":
+ "Summary values are derived from all applicable source data; no observations have been silently removed.")+'</p>'+
  '</section>';
 }
 function quality(studio,icon,e){
@@ -193,7 +242,7 @@ export function renderTableStudio(state,icon,e){
  (d.matrix.length?'<p class="ia-table-imported">'+icon("check-circle")+' '+d.matrix.length+' source rows, '+d.columns.length+' columns'+
  (d.pendingPaste?' · Pasted text changed; read it again.':' · imported.')+'</p>':
  '<p class="native-grid-tip">Enter actual source values in the worksheet; none have been invented.</p>')+
- (d.mode==="compact"?'<p class="ia-table-strong-rule"><strong>Maximum 8 rows and 5 columns in the finished table.</strong> Long raw-data tables do not belong in an IA or appendix. For a large dataset, switch to a summary or frequency table rather than making the font smaller.</p>':
+ (["compact","calculated"].includes(d.mode)?'<p class="ia-table-strong-rule"><strong>Choose up to eight source rows for display.</strong> The complete dataset remains in your workspace. Justify every subset; do not silently omit unwanted values.</p>':
  '<p class="ia-table-strong-rule"><strong>Full dataset in; short summary out.</strong> The tool calculates from actual input values without silently selecting only the first few rows.</p>')+
  '<div data-native-choices="table">'+tableDataChoices(s,e)+'</div>'+
  
@@ -213,9 +262,9 @@ export function renderTableStudio(state,icon,e){
  '</section>'+
  '<section class="ia-table-control-card"><h3><span>3</span> Table presentation and numerical precision</h3>'+
  '<p>The table stays as narrow as its contents allow. Long headings wrap rather than making the whole table too wide.</p>'+
- (d.mode==="compact"?pick("numberFormat","How should numerical cells be displayed?",d.numberFormat,[
+ (["compact","calculated"].includes(d.mode)?pick("numberFormat","How should numerical cells be displayed?",d.numberFormat,[
   ["source","Exactly as entered (recommended for measured values)"],["fixed","Fixed decimal places (display only)"]],e):"")+
- (d.mode!=="compact"||d.numberFormat==="fixed"?pick("decimals","Number of decimal places",d.decimals,
+ (d.mode!=="compact"&&d.mode!=="calculated"||d.numberFormat==="fixed"||d.mode==="calculated"?pick("decimals","Number of decimal places",d.decimals,
   ["0","1","2","3","4"].map(n=>[n,n==="0"?"Whole numbers":n+" decimal place"+(n==="1"?"":"s")]),e):"")+
  pick("cellAlignment","How should the columns be aligned?",d.cellAlignment,[
   ["center","Centre all headings and values (recommended)"],["numeric","Text left; numerical values right"]],e)+
