@@ -1,10 +1,18 @@
 import {resourceById,TOOLS,RESOURCES} from './catalog.js';
 import {resourceContext} from './context.js';
 import {newResourceSession,setResourcePreference,normalizeResourceState} from './state.js';
+import {REPRESENTATION_TOOLS} from '../diagrams/representation-hub.js';
 /** Returns UI intents; never updates an entry, source, approval or mathematical stage. */
 export function resourceAction(state,session,action,data={},parent=''){
  if(!action.startsWith('resource-'))return null;
  const help=data.resourceHelp==='true';
+ if(action==='resource-creator-open'){
+  const creator=String(data.resourceCreator||"");
+  if(!REPRESENTATION_TOOLS.some(tool=>tool.id===creator))
+   return {ok:false,error:"That diagram creator is not available."};
+  return {ok:true,creator};
+ }
+ if(action==='resource-creator-return')return {ok:true,creatorReturn:true};
  if(action==='resource-open'||action==='resource-browse'){
   if(action==='resource-open'&&!resourceById(data.resourceId))return {ok:false,error:'That tutorial is not available.'};
   if(parent!=='resources')Object.assign(session,newResourceSession(),{help,parent:parent==='stuck'?'stuck':''});
