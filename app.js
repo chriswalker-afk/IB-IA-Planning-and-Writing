@@ -55,7 +55,7 @@ import {renderStatSvg} from "./src/diagrams/stat-studio-render.js";
 import {renderStatStudio,statDataChoices,statPreviewHtml,statSummaryHtml,statQualityHtml,statOutputHtml} from "./src/diagrams/stat-studio-view.js";
 import {setStatField,changeStatKind,toggleStatSeries,importStatValues,freshStat,loadStat,saveStatDraft,saveAndLinkStat} from "./src/diagrams/stat-studio-actions.js";
 import {exportStat} from "./src/diagrams/stat-studio-export.js";
-import {analyzeTable,importTableData,newTableDraft} from "./src/diagrams/table-studio-core.js";
+import {analyzeTable,importTableData,newTableDraft,tableColumnFormat} from "./src/diagrams/table-studio-core.js";
 import {renderTableSvg} from "./src/diagrams/table-studio-render.js";
 import {renderTableStudio,tableDataChoices,tablePreviewHtml,tableA4PreviewHtml,tableQualityHtml,tableOutputHtml} from "./src/diagrams/table-studio-view.js";
 import {setTableField,setTableColumn,setTableColumnFormat,chooseTableMode,toggleTableVariable,toggleTableMeasure,loadTable,freshTable,saveTableDraft,saveAndLinkTable} from "./src/diagrams/table-studio-actions.js";
@@ -2676,11 +2676,11 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         save();refreshTablePreview();
         const row=target.closest(".ia-table-column-precision-row");
         const digitsWrapper=row?.querySelector("[data-table-format-digits]");
-        const mode=state.tableStudio.draft.columnFormats?.[state.tableStudio.draft.mode+":"+index]?.mode||"default";
+        const mode=tableColumnFormat(state.tableStudio.draft,index).mode;
         if(digitsWrapper){
           digitsWrapper.hidden=mode!=="dp"&&mode!=="sf";
           const digitsSelect=digitsWrapper.querySelector('[data-table-format-part="digits"]');
-          const rule=state.tableStudio.draft.columnFormats?.[state.tableStudio.draft.mode+":"+index];
+          const rule=tableColumnFormat(state.tableStudio.draft,index);
           if(digitsSelect){
             digitsSelect.value=rule?.digits||"2";
             const zero=digitsSelect.querySelector('option[value="0"]');
