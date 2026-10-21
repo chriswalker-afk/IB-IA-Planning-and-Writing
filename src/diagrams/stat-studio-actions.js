@@ -1,6 +1,7 @@
 /** Controlled edits and explicit links to student-generated mathematics. */
 import {newStatDraft,normalizeStatDraft,statAnalysis,statSignature,importStatTable,saveStatFigure} from "./stat-studio-core.js";
 import {completeEntry,startFirstRepresentation} from "../completing/engine.js";
+import {splitHeading} from "./graph-core.js";
 
 const TEXT=new Set(["raw","headers","histogramInput","binWidth","binStart","barMode",
  "quartileRule","outlierRule","title","figureNumber","variable","unit","unitMode","sourceKind","sourceText",
@@ -38,8 +39,7 @@ export function setStatField(studio,key,value){
  return false;
 }
 function columnHeading(value){
- const str=String(value||"").trim(),m=/^(.*?)\s*(?:\(([^)]+)\)|\[([^\]]+)\])\s*$/.exec(str);
- return m?{label:m[1],unit:m[2]||m[3]}:{label:str,unit:""};
+ return splitHeading(value);
 }
 export function changeStatKind(studio,kind){
  if(!["histogram","box","dot","bar"].includes(kind))return false;
