@@ -185,6 +185,51 @@ def enforce_long_rule(p,width):
  assert len(saved(p)["tableStudio"]["draft"]["matrix"])==20
  no_overflow(p)
  p.screenshot(path=str(OUT/f"table-studio-selected-long-{width}.png"),full_page=True,animations="disabled")
+def purposeful_columns(p,width):
+ new_mode(p,"compact")
+ p.locator('details.native-import-details').evaluate("(el)=>el.open=true")
+ p.locator('[data-table-field="headers"]').select_option("yes")
+ enter(p,"Trial\tTime (s)\tDistance (m)\tGroup\tMass (kg)\tArea (cm^2)\n"+
+   "A\t1\t4.2\tAlpha\t10\t25\nB\t2\t7.1\tAlpha\t11\t27\nC\t3\t9.9\tBeta\t12\t28")
+ standard(p,"Purposeful time and distance evidence")
+ assert p.locator('[data-action="table-use"]').is_disabled()
+ p.locator('[data-table-field="columnSelectionMode"]').select_option("custom")
+ for index in (0,1,2):
+  p.locator('[data-table-display-column="'+str(index)+'"]').check()
+ p.locator('[data-table-field="selectionReason"]').fill(
+  "These source columns establish paired time and distance values needed to evaluate a model.")
+ assert p.locator('[data-action="table-use"]').is_enabled()
+ d=saved(p)["tableStudio"]["draft"]
+ assert d["displayColumns"]==[0,1,2] and len(d["matrix"])==3
+ assert "3 of 6 source columns" in p.locator('[data-table-preview] svg').text_content()
+ no_overflow(p)
+ p.screenshot(path=str(OUT/f"table-studio-selected-columns-{width}.png"),full_page=True,animations="disabled")
+def calculated_results(p,width):
+ new_mode(p,"calculated")
+ p.locator('details.native-import-details').evaluate("(el)=>el.open=true")
+ p.locator('[data-table-field="headers"]').select_option("yes")
+ enter(p,"Time (s)\tDistance (m)\n1\t4.20\n2\t7.10\n3\t9.90\n4\t13.2")
+ standard(p,"Observed values against a linear model")
+ assert p.locator('[data-action="table-use"]').is_disabled()
+ p.locator('[data-table-field="calcA"]').fill("3")
+ p.locator('[data-table-field="calcB"]').fill("1")
+ assert p.locator('[data-action="table-use"]').is_enabled()
+ svg=p.locator('[data-table-preview] svg').text_content()
+ assert "Predicted ŷ" in svg and "Residual y−ŷ" in svg and "0.20" in svg
+ source=saved(p)["tableStudio"]["draft"]["matrix"]
+ assert source[0][1]=="4.20"
+ p.locator('[data-table-field="calcShowPercent"]').check()
+ assert "Percentage deviation" in p.locator('[data-table-preview] svg').text_content()
+ p.locator('[data-table-field="calcModel"]').select_option("quadratic")
+ assert p.locator('[data-action="table-use"]').is_disabled()
+ p.locator('[data-table-field="calcA"]').fill("0.5")
+ p.locator('[data-table-field="calcB"]').fill("2")
+ p.locator('[data-table-field="calcC"]').fill("1")
+ assert p.locator('[data-action="table-use"]').is_enabled()
+ assert "16.67" in p.locator('[data-table-preview] svg').text_content()
+ assert saved(p)["tableStudio"]["draft"]["matrix"]==source
+ no_overflow(p)
+ p.screenshot(path=str(OUT/f"table-studio-calculated-{width}.png"),full_page=True,animations="disabled")
 def numerical_summary(p,width):
  new_mode(p,"summary")
  enter(p,LARGE)
@@ -225,6 +270,8 @@ with sync_playwright() as pw:
   try:
    compact(p,width)
    enforce_long_rule(p,width)
+   purposeful_columns(p,width)
+   calculated_results(p,width)
    numerical_summary(p,width)
    category_frequency(p,width)
    assert not errors,errors
