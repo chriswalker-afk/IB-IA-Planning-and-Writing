@@ -177,3 +177,9 @@
 .graph-model-add option{font-weight:400;color:#203f45}
 .graph-comparison-fit-method{display:block;font-size:9px;line-height:1.45;font-weight:400;color:#617878;margin-top:4px}
 @media(max-width:650px){.graph-model-card .graph-advanced-model-option{padding:9px}.graph-model-add select{min-height:42px}}
+
+/* Graph legend controls stay independent from the model visibility toggles. */
+.graph-legend-options{border:1px solid #d9e8e3;border-radius:10px;padding:11px 12px;margin:10px 0 14px;background:#f7fbf9}
+.graph-legend-options>.graph-check{font-weight:650;color:#244d49}
+.graph-legend-options>.graph-form-field{margin:9px 0 5px}
+.graph-legend-options>small{display:block;font-size:10px;line-height:1.55;color:#526f6b}
