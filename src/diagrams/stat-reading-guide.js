@@ -59,7 +59,7 @@ export function statReadingGuide(raw){
     g.name+": median "+num(g.box.median)+axis(d)+", IQR "+num(g.box.iqr)+axis(d)+
      " (n="+g.box.n+", "+g.box.outliers.length+" flagged)":"").filter(Boolean);
   return {...base,valid:true,observation:details.join("; "),
-   question:"Compare the medians, IQRs and flagged observations, and decide which differences matter for your aim.",
+   question:"How do the medians, IQRs and flagged observations differ between groups, and which differences matter for your aim?",
    caution:"Quartile convention and whisker rule must be stated. Flagged values are not automatically errors or exclusions."};
  }
  if(d.kind==="dot"){
