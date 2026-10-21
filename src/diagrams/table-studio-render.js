@@ -1,51 +1,62 @@
-/** Automatic one-page-width table layout for a clean IA, not an oversized spreadsheet. */
-import {escapeGraph} from "./graph-core.js";
+/** Compact, content-sized SVG and editable tables for an IB Mathematics IA.
+ * All real values and headings are preserved; mathematical unit typography only
+ * affects presentation, not source measurements or the CSV/TSV exports.
+ */
+import {escapeGraph,formatGraphMath} from "./graph-core.js";
 import {analyzeTable} from "./table-studio-core.js";
 
-const E=escapeGraph,WIDTH=900,LEFT=49,RIGHT=49,INNER=WIDTH-LEFT-RIGHT;
-function breakLines(input,available,fontSize=18,maxLines=4){
- const text=String(input??"").trim(),chars=Math.max(6,Math.floor(available/(fontSize*.55)));
- if(!text)return [""];
- const words=text.split(/\s+/),lines=[];let line="";
- for(const word of words){
-  if(!line){
-   if(word.length<=chars){line=word;continue;}
-   for(let i=0;i<word.length;i+=chars)lines.push(word.slice(i,i+chars));
-  }else if((line+" "+word).length<=chars)line+=" "+word;
-  else{
-   lines.push(line);line="";
-   if(word.length<=chars)line=word;
-   else for(let i=0;i<word.length;i+=chars)lines.push(word.slice(i,i+chars));
+const E=escapeGraph,PAGE_MARGIN=36,MAX_TABLE_WIDTH=750,MIN_COL_WIDTH=100,MAX_COL_WIDTH=255;
+const total=values=>values.reduce((sum,n)=>sum+n,0);
+
+/** No maximum-line cutoff: long but valid student headings must never disappear. */
+function breakLines(input,available,fontSize=17){
+ const value=String(input??"").trim();
+ if(!value)return [""];
+ const chars=Math.max(6,Math.floor(available/(fontSize*.54)));
+ const result=[];
+ let line="";
+ const push=()=>{if(line){result.push(line);line="";}};
+ for(const item of value.split(/\s+/)){
+  let word=item;
+  if(line&&(line+" "+word).length<=chars){line+=" "+word;continue;}
+  if(line)push();
+  while(word.length>chars){
+   result.push(word.slice(0,chars));
+   word=word.slice(chars);
   }
+  line=word;
  }
- if(line)lines.push(line);
- return lines.slice(0,maxLines);
+ push();
+ return result;
 }
-const number=x=>typeof x==="number"&&Number.isFinite(x);
+const number=n=>typeof n==="number"&&Number.isFinite(n);
+
+/** Choose intrinsic widths; never stretch 2 short columns to fill an IA page. */
 export function tableWidths(model){
  const count=model.headers.length;
- if(!count)return[];
- const min=count===5?114:118,max=INNER-(count-1)*min;
- const scores=model.headers.map((heading,i)=>{
-  const cells=model.rows.map(row=>String(row[i]??""));
-  const longest=Math.max(heading.length,...cells.map(c=>c.length));
-  const longestWord=Math.max(...[heading,...cells].flatMap(s=>s.split(/\s+/).map(t=>t.length)));
-  return Math.max(68,Math.min(245,33+Math.max(longestWord*9.0,Math.min(longest*5.2,205))));
+ if(!count)return [];
+ const desired=model.headers.map((header,i)=>{
+  const items=[formatGraphMath(header),...model.rows.map(row=>String(row[i]??""))];
+  const longest=Math.max(...items.map(item=>item.length));
+  const word=Math.max(...items.flatMap(item=>item.split(/\s+/).map(x=>x.length)));
+  // Allow headings to wrap where needed; short values should stay compact.
+  const estimate=28+Math.max(Math.min(200,longest*8.4),Math.min(202,word*9.4));
+  return Math.max(MIN_COL_WIDTH,Math.min(MAX_COL_WIDTH,estimate));
  });
- let widths=Array(count).fill(min),extra=INNER-count*min;
- while(extra>.1){
-  const available=widths.map((w,i)=>Math.max(0,Math.min(max,Math.max(min,scores[i]))-w));
-  let total=available.reduce((s,x)=>s+x,0);
-  if(total<=.1){for(let i=0;i<count;i++)widths[i]+=extra/count;break;}
-  let used=0;
+ let excess=total(desired)-MAX_TABLE_WIDTH;
+ // Preserve minimum column widths while shrinking only genuinely wide tables.
+ for(let n=0;n<10&&excess>0.02;n++){
+  const capacity=desired.map(w=>Math.max(0,w-MIN_COL_WIDTH));
+  const available=total(capacity);
+  if(available<=0)break;
+  let removed=0;
   for(let i=0;i<count;i++){
-   const delta=Math.min(available[i],extra*available[i]/total);
-   widths[i]+=delta;used+=delta;
+   const amount=Math.min(capacity[i],excess*capacity[i]/available);
+   desired[i]-=amount;removed+=amount;
   }
-  if(used<.1)break;
-  extra-=used;
+  excess-=removed;
  }
- return widths.map(v=>Number(v.toFixed(3)));
+ return desired.map(w=>Number(w.toFixed(3)));
 }
 function svgText(lines,x,y,lineHeight,attrs){
  return '<text x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" '+attrs+'>'+
@@ -53,96 +64,123 @@ function svgText(lines,x,y,lineHeight,attrs){
  '</text>';
 }
 function layout(model,d){
- const widths=tableWidths(model),positions=[LEFT];
- for(const width of widths)positions.push(positions.at(-1)+width);
- const headers=model.headers.map((h,i)=>breakLines(h,widths[i]-22,17,4));
- const rows=model.rows.map(row=>row.map((v,i)=>breakLines(v,widths[i]-22,17,4)));
- const headerHeight=Math.max(56,Math.max(...headers.map(x=>x.length))*23+21);
- const rowHeights=rows.map(cells=>Math.max(39,Math.max(...cells.map(x=>x.length))*23+14));
- const titleLines=breakLines("Table "+d.number+". "+d.title,INNER-12,23,3);
- const titleY=53,titleEnd=titleY+(titleLines.length-1)*29;
- const tableTop=titleEnd+47;
- const tableBottom=tableTop+headerHeight+rowHeights.reduce((s,v)=>s+v,0);
+ const widths=tableWidths(model),tableWidth=total(widths);
+ const title="Table "+d.number+". "+d.title;
+ // A long title may widen the figure canvas slightly, not the data columns.
+ const innerWidth=Math.max(tableWidth,Math.min(MAX_TABLE_WIDTH,title.length*11.25));
+ const svgWidth=Math.ceil(innerWidth+PAGE_MARGIN*2);
+ const tableLeft=(svgWidth-tableWidth)/2,positions=[tableLeft];
+ widths.forEach(w=>positions.push(positions.at(-1)+w));
+ const headers=model.headers.map((h,i)=>breakLines(formatGraphMath(h),widths[i]-25,17));
+ const rows=model.rows.map(row=>row.map((v,i)=>breakLines(v,widths[i]-25,17)));
+ const headerHeight=Math.max(54,Math.max(...headers.map(lines=>lines.length))*23+19);
+ const rowHeights=rows.map(cells=>Math.max(40,Math.max(...cells.map(lines=>lines.length))*23+14));
+ const titleLines=breakLines(title,svgWidth-PAGE_MARGIN*2,23);
+ const titleY=47,titleEnd=titleY+(titleLines.length-1)*29;
+ const tableTop=titleEnd+40;
+ const tableBottom=tableTop+headerHeight+total(rowHeights);
  const notes=[
   model.metadata,
   model.note?(model.note.startsWith("Note:")?model.note:"Note: "+model.note):"",
   d.sourceKind==="primary"?"Source: student-collected data":"Source: "+d.sourceText
  ].filter(Boolean);
- const footerLines=notes.flatMap(n=>breakLines(n,INNER,14,5));
- const height=Math.max(280,tableBottom+45+footerLines.length*23+35);
- return {widths,positions,headers,rows,headerHeight,rowHeights,tableTop,tableBottom,titleLines,titleY,footerLines,height};
+ const footerLines=notes.flatMap(n=>breakLines(n,svgWidth-PAGE_MARGIN*2,14));
+ const height=Math.max(275,tableBottom+39+footerLines.length*23+25);
+ return {svgWidth,tableWidth,tableLeft,widths,positions,headers,rows,headerHeight,rowHeights,
+  tableTop,tableBottom,titleLines,titleY,footerLines,height};
 }
+const alignment=(d,numeric)=>d.cellAlignment==="center"?"center":numeric?"right":"left";
+const anchor=(alignment,x,w)=>alignment==="center"?{x:x+w/2,attr:"middle"}:
+ alignment==="right"?{x:x+w-13,attr:"end"}:{x:x+13,attr:"start"};
+
 export function renderTableSvg(raw){
  const check=analyzeTable(raw),d=check.draft,model=check.model;
  if(!model){
-  return '<svg xmlns="http://www.w3.org/2000/svg" class="ia-table-svg" role="img" aria-label="Table preview needs corrections" viewBox="0 0 900 300"><rect width="900" height="300" fill="#fff"/>'+
-   '<rect x="40" y="40" width="820" height="210" fill="#f8fbfa" stroke="#d2e1de" rx="12"/>'+
-   svgText(["Provide a short and mathematically valid table"],450,129,24,
+  return '<svg xmlns="http://www.w3.org/2000/svg" class="ia-table-svg" role="img" aria-label="Table preview needs corrections" viewBox="0 0 650 280" width="650" height="280">'+
+   '<rect width="650" height="280" fill="#fff"/>'+
+   '<rect x="28" y="35" width="594" height="210" fill="#f8fbfa" stroke="#d2e1de" rx="12"/>'+
+   svgText(["Provide a short and mathematically valid table"],325,125,24,
     'text-anchor="middle" fill="#415f65" font-family="Arial,sans-serif" font-weight="700" font-size="19"')+
-   svgText(["No rows have been hidden or shortened."],450,162,24,
+   svgText(["No rows have been hidden or shortened."],325,160,24,
     'text-anchor="middle" fill="#648088" font-family="Arial,sans-serif" font-size="15"')+"</svg>";
  }
  const L=layout(model,d),out=[
-  '<svg xmlns="http://www.w3.org/2000/svg" class="ia-table-svg" role="img" aria-label="'+E("Table "+d.number+". "+d.title)+'" viewBox="0 0 '+WIDTH+" "+Math.round(L.height)+'" width="'+WIDTH+'" height="'+Math.round(L.height)+'">',
-  '<rect width="'+WIDTH+'" height="'+Math.round(L.height)+'" fill="#fff"/>',
-  svgText(L.titleLines,LEFT,L.titleY,29,'font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="23" fill="#263f49"'),
-  '<rect x="'+LEFT+'" y="'+L.tableTop+'" width="'+INNER+'" height="'+L.headerHeight+'" fill="#e8f3f0"/>',
-  '<line x1="'+LEFT+'" y1="'+L.tableTop+'" x2="'+(LEFT+INNER)+'" y2="'+L.tableTop+'" stroke="#286960" stroke-width="2.2"/>'
+  '<svg xmlns="http://www.w3.org/2000/svg" class="ia-table-svg" role="img" aria-label="'+E("Table "+d.number+". "+d.title)+'" viewBox="0 0 '+L.svgWidth+" "+Math.round(L.height)+'" width="'+L.svgWidth+'" height="'+Math.round(L.height)+'">',
+  '<rect width="'+L.svgWidth+'" height="'+Math.round(L.height)+'" fill="#fff"/>',
+  svgText(L.titleLines,PAGE_MARGIN,L.titleY,29,'font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="23" fill="#263f49"'),
+  '<rect x="'+L.tableLeft.toFixed(2)+'" y="'+L.tableTop+'" width="'+L.tableWidth.toFixed(2)+'" height="'+L.headerHeight+'" fill="#e8f3f0"/>',
+  '<line x1="'+L.tableLeft.toFixed(2)+'" y1="'+L.tableTop+'" x2="'+(L.tableLeft+L.tableWidth).toFixed(2)+'" y2="'+L.tableTop+'" stroke="#286960" stroke-width="2.2"/>'
  ];
- let x=LEFT;
+ let x=L.tableLeft;
  L.headers.forEach((lines,i)=>{
-  const numeric=model.numeric[i];
-  out.push(svgText(lines,numeric?x+L.widths[i]-12:x+12,L.tableTop+26,23,
-   'font-family="Arial,Helvetica,sans-serif" font-size="17" font-weight="700" fill="#244f50" text-anchor="'+(numeric?"end":"start")+'"'));
+  const a=anchor(alignment(d,model.numeric[i]),x,L.widths[i]);
+  out.push(svgText(lines,a.x,L.tableTop+26,23,
+   'font-family="Arial,Helvetica,sans-serif" font-size="17" font-weight="700" fill="#244f50" text-anchor="'+a.attr+'"'));
   x+=L.widths[i];
  });
- let y=L.tableTop+L.headerHeight;
+ const headingBottom=L.tableTop+L.headerHeight;
+ out.push('<line class="ia-table-header-divider" x1="'+L.tableLeft.toFixed(2)+'" y1="'+headingBottom+
+  '" x2="'+(L.tableLeft+L.tableWidth).toFixed(2)+'" y2="'+headingBottom+'" stroke="#bed4ce" stroke-width="1.3"/>');
+ let y=headingBottom;
  model.rows.forEach((row,i)=>{
-  const height=L.rowHeights[i],total=model.kind==="frequency"&&i===model.rows.length-1;
-  if(total)out.push('<rect x="'+LEFT+'" y="'+y+'" width="'+INNER+'" height="'+height+'" fill="#e9f3ef"/>');
-  else if(i%2)out.push('<rect x="'+LEFT+'" y="'+y+'" width="'+INNER+'" height="'+height+'" fill="#f6faf9"/>');
-  if(d.showRowLines||total)out.push('<line x1="'+LEFT+'" y1="'+(y+height)+'" x2="'+(LEFT+INNER)+'" y2="'+(y+height)+'" stroke="#d5e1e1" stroke-width="1"/>');
-  let px=LEFT;
+  const height=L.rowHeights[i],subtotal=model.kind==="frequency"&&i===model.rows.length-1;
+  if(subtotal)out.push('<rect x="'+L.tableLeft.toFixed(2)+'" y="'+y+'" width="'+L.tableWidth.toFixed(2)+'" height="'+height+'" fill="#e9f3ef"/>');
+  else if(i%2)out.push('<rect x="'+L.tableLeft.toFixed(2)+'" y="'+y+'" width="'+L.tableWidth.toFixed(2)+'" height="'+height+'" fill="#f6faf9"/>');
+  if(d.showRowLines||subtotal)out.push('<line class="ia-table-row-divider" x1="'+L.tableLeft.toFixed(2)+'" y1="'+(y+height)+
+   '" x2="'+(L.tableLeft+L.tableWidth).toFixed(2)+'" y2="'+(y+height)+'" stroke="#d5e1e1" stroke-width="1"/>');
+  let px=L.tableLeft;
   row.forEach((_,j)=>{
-   const numeric=model.numeric[j],lines=L.rows[i][j];
-   out.push(svgText(lines,numeric?px+L.widths[j]-12:px+12,y+25,23,
-    'font-family="Arial,Helvetica,sans-serif" font-size="17" fill="#25434b" text-anchor="'+(numeric?"end":"start")+'"'+
-     (total?' font-weight="700"':"")));
+   const a=anchor(alignment(d,model.numeric[j]),px,L.widths[j]);
+   out.push(svgText(L.rows[i][j],a.x,y+26,23,
+    'font-family="Arial,Helvetica,sans-serif" font-size="17" fill="#25434b" text-anchor="'+a.attr+'"'+
+     (subtotal?' font-weight="700"':"")));
    px+=L.widths[j];
   });
   y+=height;
  });
- out.push('<line x1="'+LEFT+'" y1="'+y+'" x2="'+(LEFT+INNER)+'" y2="'+y+'" stroke="#286960" stroke-width="2.2"/>');
+ if(d.showColumnLines){
+  L.positions.slice(1,-1).forEach(x=>out.push('<line class="ia-table-column-divider" x1="'+x.toFixed(2)+'" y1="'+L.tableTop+
+   '" x2="'+x.toFixed(2)+'" y2="'+L.tableBottom+'" stroke="#c1d6d1" stroke-width="1.2"/>'));
+ }
+ out.push('<line x1="'+L.tableLeft.toFixed(2)+'" y1="'+y+'" x2="'+(L.tableLeft+L.tableWidth).toFixed(2)+'" y2="'+y+
+  '" stroke="#286960" stroke-width="2.2"/>');
  let footerY=y+32;
  for(const line of L.footerLines){
-  out.push(svgText([line],LEFT,footerY,22,'font-family="Arial,Helvetica,sans-serif" font-size="14" fill="#566e75"'));
+  out.push(svgText([line],PAGE_MARGIN,footerY,22,'font-family="Arial,Helvetica,sans-serif" font-size="14" fill="#566e75"'));
   footerY+=23;
  }
  out.push("</svg>");
  return out.join("");
 }
-const cellStyle=(width,numeric,bold=false)=>[
+const cellStyle=(width,align,bold=false,columnDivider=false,rowDivider=true)=>[
  "box-sizing:border-box","width:"+width.toFixed(1)+"px","overflow-wrap:break-word",
  "padding:7px 9px","font-family:Arial,Helvetica,sans-serif","font-size:12pt",
- "text-align:"+(numeric?"right":"left"),"vertical-align:top",
- "border-bottom:1px solid #d5e1e1","color:#25434b",bold?"font-weight:700":""
+ "text-align:"+align,"vertical-align:middle",
+ columnDivider?"border-left:1px solid #c1d6d1":"",
+ rowDivider?"border-bottom:1px solid #d5e1e1":"",
+ "color:#25434b",bold?"font-weight:700":""
 ].filter(Boolean).join(";");
 export function tableToHtml(raw){
  const check=analyzeTable(raw);
  if(!check.ready)throw new Error("Complete the table's quality checks before copying.");
- const {model,draft:d}=check,widths=tableWidths(model).map(w=>w*650/INNER);
+ const {model,draft:d}=check,sourceWidths=tableWidths(model);
+ const sourceTotal=total(sourceWidths),htmlWidth=Math.round(Math.min(650,sourceTotal));
+ const widths=sourceWidths.map(w=>w*htmlWidth/sourceTotal);
  const heading="Table "+d.number+". "+d.title;
  const th=model.headers.map((header,i)=>
-  '<th scope="col" style="'+cellStyle(widths[i],model.numeric[i],true)+';background:#e8f3f0;">'+E(header)+'</th>').join("");
+  '<th scope="col" style="'+cellStyle(widths[i],alignment(d,model.numeric[i]),true,d.showColumnLines&&i>0,true)+
+  ';background:#e8f3f0;">'+E(formatGraphMath(header))+'</th>').join("");
  const body=model.rows.map((row,i)=>{
-  const total=model.kind==="frequency"&&i===model.rows.length-1;
-  return '<tr>'+row.map((value,j)=>'<td style="'+cellStyle(widths[j],model.numeric[j],total)+
-   ';background:'+(total?"#e9f3ef":i%2?"#f6faf9":"#ffffff")+';">'+E(value)+'</td>').join("")+'</tr>';
+  const subtotal=model.kind==="frequency"&&i===model.rows.length-1;
+  return '<tr>'+row.map((value,j)=>'<td style="'+cellStyle(widths[j],alignment(d,model.numeric[j]),subtotal,
+    d.showColumnLines&&j>0,d.showRowLines||subtotal)+
+   ';background:'+(subtotal?"#e9f3ef":i%2?"#f6faf9":"#ffffff")+';">'+E(value)+'</td>').join("")+'</tr>';
  }).join("");
  const foot=[model.metadata,model.note,d.sourceKind==="primary"?"Source: student-collected data":"Source: "+d.sourceText]
-  .filter(Boolean).map(s=>'<p style="font-family:Arial,sans-serif;font-size:10pt;margin:5px 0 0;color:#566e75;">'+E(s)+'</p>').join("");
- return '<div><p style="font-family:Arial,sans-serif;font-weight:700;font-size:13pt;margin:0 0 8px;">'+E(heading)+'</p>'+
-  '<table style="width:650px;table-layout:fixed;border-collapse:collapse;border-top:2px solid #286960;border-bottom:2px solid #286960;"><colgroup>'+
+  .filter(Boolean).map(t=>'<p style="font-family:Arial,sans-serif;font-size:10pt;margin:5px 0 0;color:#566e75;">'+E(t)+'</p>').join("");
+ return '<div style="max-width:'+htmlWidth+'px;">'+
+  '<p style="font-family:Arial,sans-serif;font-weight:700;font-size:13pt;margin:0 0 8px;">'+E(heading)+'</p>'+
+  '<table style="width:'+htmlWidth+'px;max-width:100%;table-layout:fixed;border-collapse:collapse;border-top:2px solid #286960;border-bottom:2px solid #286960;"><colgroup>'+
   widths.map(w=>'<col style="width:'+w.toFixed(1)+'px">').join("")+'</colgroup><thead><tr>'+th+'</tr></thead><tbody>'+body+
   '</tbody></table>'+foot+'</div>';
 }
