@@ -76,11 +76,27 @@ export function formatDiagramShorthand(value){
  return mixedMathTokens(value).map(token=>token.type==="text"?shorthandPlain(token.value):token.source).join("");
 }
 export const hasDiagramEquation=value=>mixedMathTokens(value).some(token=>token.type==="math");
-export function diagramNotationControls(e,{studio,key="",index=null,part=""}={}){
+/** Dimensional powers apply to the entire unit; metres per second squared is
+ * (m/s)^2, not m/s^2. Raw source measurements are never rewritten. */
+export function diagramUnitPower(value,power){
+ const unit=String(value??"").trim();
+ if(!unit||!Number.isInteger(power))return unit;
+ const simple=/^([A-Za-zµμ°%]+)(?:\^([+-]?\d+))?$/.exec(unit);
+ if(simple){
+  const exp=Number(simple[2]??1)*power;
+  return simple[1]+(exp===1?"":"^"+exp);
+ }
+ const math=/^\\\(([\s\S]+)\\\)$/.exec(unit);
+ if(math)return "\\(("+math[1]+")^{"+power+"}\\)";
+ return "("+unit+")^"+power;
+}
+
+export function diagramNotationControls(e,{studio,key="",index=null,part="",siteIndex=null}={}){
  const tableColumn=studio==="table"&&Number.isInteger(index);
  const action=tableColumn?"table-symbol":"diagram-notation-token";
  const attrs=' data-notation-studio="'+e(studio)+'" data-notation-key="'+e(key)+'"'+
-  (tableColumn?' data-notation-col="'+index+'" data-notation-part="'+e(part)+'"':"");
+  (tableColumn?' data-notation-col="'+index+'" data-notation-part="'+e(part)+'"':"")+
+  (studio==="voronoi"&&Number.isInteger(siteIndex)?' data-notation-site-index="'+siteIndex+'"':"");
  const tokens=DIAGRAM_NOTATION_SYMBOLS.map(s=>
   '<button type="button" data-action="'+action+'" data-notation-token="'+e(s.token)+'"'+
   (tableColumn?' data-table-col="'+index+'" data-table-part="'+e(part)+'" data-table-token="'+e(s.token)+'"':"")+
