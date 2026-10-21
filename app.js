@@ -1258,9 +1258,8 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       confirm:message=>window.confirm(message),openTool:openNativeTool}))return;
     if(action==="presentation-copy-caption"){
       const type=el.dataset.presentationType,
-        studios={graph:state.graphStudio,stat:state.statStudio,table:state.tableStudio,
-          trace:state.imageTracer,voronoi:state.voronoiStudio},
-        studio=studios[type];
+        tool=representationTool(type),
+        studio=tool?state[tool.studio]:null;
       if(!studio){toast("Unknown figure type");return;}
       const id=el.dataset.presentationId||"";
       const draft=id?studio.figures.find(f=>f.id===id)?.draft:
