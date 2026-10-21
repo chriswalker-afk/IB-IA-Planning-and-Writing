@@ -483,6 +483,26 @@ export function createCompletingViews(ctx){
      '<div>'+extras.join("")+'</div></details>':'')+
    '<p class="setup-quick-sparks-note">For sampling, source checks and recording accuracy, use the full Planning chapter. These shortcuts do not mean Planning is complete.</p></div></details>';
  };
+ const writingWelcome=()=>({
+  intro:"Bring your own mathematics to life. Learn how IA Studio supports your writing, figures and next mathematical decisions.",
+  html:'<div class="chapter-onboarding chapter-onboarding-write chapter-onboarding-writing-welcome" data-writing-welcome="true">'+
+   '<div class="chapter-onboarding-banner"><span class="chapter-onboarding-symbol">'+icon("pencil")+'</span>'+
+   '<div><span class="chapter-onboarding-eyebrow">CHAPTERS 2–4 · WRITE, EXPLORE &amp; REFLECT</span>'+
+   '<strong>Make your mathematical story worth reading.</strong>'+
+   '<p>Your IA belongs in your own document. Pathfinder helps organise your thinking and record genuine decisions; it does not write, grade or automatically update your Word or Google Docs IA.</p></div></div>'+
+   '<div class="chapter-onboarding-grid">'+
+    '<section class="chapter-onboarding-tile"><span class="chapter-onboarding-tile-icon">'+icon("sparkles")+'</span><h3>Start with your Planning sparks</h3><p>Your aim, motivation, mathematical route and prediction return where they help. Edit earlier decisions without pretending a planned result was discovered. Planning first is recommended, but you can begin without it.</p></section>'+
+    '<section class="chapter-onboarding-tile"><span class="chapter-onboarding-tile-icon">'+icon("pencil")+'</span><h3>Write in meaningful stages</h3><p>Develop a focused introduction, explain why your first mathematical method follows, show and interpret your real calculations, then add another purposeful stage or move to a concise conclusion.</p></section>'+
+    '<section class="chapter-onboarding-tile"><span class="chapter-onboarding-tile-icon">'+icon("route")+'</span><h3>Let the mathematical journey adapt</h3><p>Record what your results actually show. Pathfinder suggests different next steps depending on your investigation, method and findings—for example testing a linear association, considering another model, or explaining an unexpected pattern. Suggestions are not fabricated results.</p></section>'+
+    '<section class="chapter-onboarding-tile"><span class="chapter-onboarding-tile-icon">'+icon("chart")+'</span><h3>Make clear, purposeful figures</h3><p>Use the graph plotter, image and coordinate tracer, statistical diagram generator, formatted table generator and Voronoi studio. Check titles, labels, units, scales, captions and source links, then bring useful outputs into your IA.</p></section>'+
+    '<section class="chapter-onboarding-tile"><span class="chapter-onboarding-tile-icon">'+icon("book")+'</span><h3>Two kinds of advice, right beside your writing</h3><p>Green A–E criterion bubbles explain the current IB expectations. Purple Writer’s Field Guide bubbles help you express thinking, limitations and reflection. Choose <strong>Reduce advice</strong> for shorter on-page prompts without losing those help bubbles or the complete guide.</p>'+
+    '<button class="onboarding-inline-action" type="button" data-action="writer-guide-open">Explore the Writer’s Field Guide '+icon("arrow-right")+'</button></section>'+
+    '<section class="chapter-onboarding-tile"><span class="chapter-onboarding-tile-icon">'+icon("download")+'</span><h3>Check, revisit and keep your work safe</h3><p>Use the Discovery Trail and My stages to return to work; use Checking to review evidence for the criteria, not predict marks. Progress saves on this device. Export a complete JSON project backup, especially before moving devices; a Planning PDF/Word report is not a full IA Studio backup.</p></section>'+
+   '</div>'+
+   '<p class="chapter-onboarding-reassurance">'+icon("check-circle")+' You are the mathematician and the author. A few well-justified stages are better than extra calculations just for length.</p>'+
+   '<div class="chapter-onboarding-writing-actions"><span>Short tour · You can open this again from any IA Studio stage.</span>'+
+   '<button type="button" class="btn btn-primary" data-action="writing-intro-continue">Continue to writing set up '+icon("arrow-right")+'</button></div></div>'
+ });
  const startOptions=(n)=>{
   if(isStuckNode(n))return{intro:"Choose one useful way forward. Your original work is preserved.",html:stuck.render()};
   const s=getState(),f=s.completion.fields,p=s.planning.fields,st=completeEntry(s);
@@ -1291,7 +1311,8 @@ export function createCompletingViews(ctx){
    (activeMath.title&&activeMath.title!=="Mathematical stage "+mathOrdinal?" · "+activeMath.title:""):
    node==="C00"?"Set up: start writing your IA":node==="C20"?"Introducing your first mathematics":
    node==="C31"?"Diagram & table tools":(titleMap.get(node)||"IA Studio");
-  const screen=startOptions(node),stage=completionStage(node,s);
+  const writingIntro=node==="C00"&&(s.ui.writingIntroOpen===true||s.ui.writingIntroSeen!==true);
+  const screen=writingIntro?writingWelcome():startOptions(node),stage=completionStage(node,s);
   const progress=stage&&s.completion.stages[stage];
   const warning=completionFlags(s);
   const studioWriting=isStudioWritingNode(node);
@@ -1317,7 +1338,8 @@ export function createCompletingViews(ctx){
   // Focused IA-writing screens retain the small five-chapter ribbon.
   return '<div class="page narrow completing-page">'+tabletNav()+(node==="C04"?"":chapterRibbon(s))+
     '<div class="completion-topline"><span>'+icon("route")+' '+e(node==="C04"?"Your IA Studio":(JOURNEY_GROUPS.indexOf(currentGroup(s))+1)+'. '+currentGroup(s).name)+'</span>'+
-    '<div class="completion-top-actions"><button type="button" class="advice-mode-toggle" data-action="toggle-advice-mode" aria-pressed="'+isAdviceReduced(s)+'" aria-label="'+(isAdviceReduced(s)?"Show full advice":"Reduce optional advice")+'">'+
+    '<div class="completion-top-actions">'+(writingIntro||node==="C00"?"":'<button type="button" class="chapter-guide-reopen" data-action="writing-intro-open">'+icon("circle-help")+' How writing works</button>')+
+    '<button type="button" class="advice-mode-toggle" data-action="toggle-advice-mode" aria-pressed="'+isAdviceReduced(s)+'" aria-label="'+(isAdviceReduced(s)?"Show full advice":"Reduce optional advice")+'">'+
       icon(isAdviceReduced(s)?"eye":"eye-off")+' '+(isAdviceReduced(s)?"Show full advice":"Reduce advice")+'</button>'+
     (node==="C04"?"":'<button class="btn btn-quiet btn-sm" data-action="completion-open" data-node="C04">'+icon("layers")+' My stages</button>')+'</div></div>'+
     topWarnings+
