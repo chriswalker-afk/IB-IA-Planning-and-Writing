@@ -562,6 +562,7 @@ export function createCompletingViews(ctx){
      '<span class="intro-writing-task-eyebrow">YOUR WRITING TASK</span>'+
      '<h2 id="intro-writing-task-heading">Write your introduction</h2>'+
      '<p>In your actual IA document, write a few focused paragraphs that introduce your aim, your motivation and, if useful, a tentative prediction. You do not need to list every technique you might use.</p></div></div>'+
+    (isAdviceReduced(s)&&currentAim()!=="Still to decide"?'<p class="writing-stage-compact-aim"><strong>Your saved aim</strong> '+e(currentAim())+'</p>':"")+
     criterionMarkedWritingBox(notes,["completing:C10:aim","completing:C10:motivation"])+
     (isAdviceReduced(s)?"":'<p class="intro-writing-task-footnote">Your notes here are private to Pathfinder. The green <strong>A</strong> and <strong>C</strong> bubbles explain assessment opportunities, while the purple book opens a relevant writing example. None of these bubbles marks or grades your draft.</p>')+'</section>';
    return{intro:"",
