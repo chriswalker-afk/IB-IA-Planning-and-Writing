@@ -885,12 +885,12 @@ def resource_diagram_creators(browser,width):
   for creator,selector in (
    ("graph","[data-graph-studio]"),("stat","[data-stat-studio]"),
    ("table","[data-table-studio]"),("trace","[data-image-tracer]"),
-   ("voronoi","[data-voronoi-studio]")
+   ("voronoi","[data-voronoi-studio]"),("geometry","[data-geometry-studio]")
   ):
    page.locator('.chapter-onboarding-plan [data-action="resource-browse"]').click()
    drawer=page.locator(".resource-drawer")
    assert drawer.is_visible()
-   assert drawer.locator('.resource-creator-card').count()==5
+   assert drawer.locator('.resource-creator-card').count()==6
    assert "31 matching guides" in drawer.inner_text()
    assert drawer.evaluate('el=>el.scrollWidth<=el.clientWidth+1')
    if creator=="graph":
