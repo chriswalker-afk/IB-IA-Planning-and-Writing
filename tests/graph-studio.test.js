@@ -439,3 +439,20 @@ test("residual diagnostic axes still include every observation when the main plo
  const analysis=analyseGraph(studio.draft);
  assert.equal(analysis.selectedResidualModel.diagnostics.n,4);
 });
+
+test("switching to a standalone function ignores saved residual controls from scatter mode",()=>{
+ const studio=validData();assert(addGraphModel(studio,"linear").ok);
+ const d=studio.draft;
+ assert(updateGraphField(studio,"residualModelId",d.models[0].id));
+ assert(updateGraphField(studio,"showResidualSegments",true));
+ assert(updateGraphField(studio,"showResidualPlot",true));
+ assert(chooseGraphType(studio,"function"));
+ Object.assign(d,{expression:"x^2-2*x+1",title:"Theoretical function"});
+ assert.equal(analyseGraph(d).ready,true);
+ assert.equal(renderGraphResidualSvg(d),"");
+ assert.equal(analyseGraph(d).models.length,0);
+ assert(!renderGraphStudio({graphStudio:studio},icon,escapeHtml).includes('data-graph-residual-panel'));
+ assert(chooseGraphType(studio,"scatter"));
+ assert.equal(d.showResidualPlot,true);
+ assert.equal(d.residualModelId,d.models[0].id);
+});
