@@ -392,7 +392,7 @@ export function renderWriterFieldGuide(icon,e,guide=null,state=null){
   '<div class="writer-guide-hero"><span class="writer-guide-eyebrow">'+icon("sparkles")+' BEFORE YOU WRITE</span>'+
   '<div class="writer-guide-hero-layout"><div><h2>Make your IA worth reading.</h2>'+
   '<p>Great mathematical writing shows the questions you asked, the choices you made, what you discovered — and what those discoveries mean.</p>'+
-  '<span class="writer-guide-hero-note">14 short tips · 6 essentials · examples you can explore</span></div>'+
+  '<span class="writer-guide-hero-note">14 core writing tips · 26 practical section tips · examples you can explore</span></div>'+
   '<div class="writer-guide-art" aria-hidden="true"><span class="writer-guide-art-sheet sheet-one">'+icon("chart")+'</span>'+
   '<span class="writer-guide-art-sheet sheet-two">'+icon("brain")+'</span><span class="writer-guide-art-star">'+icon("sparkles")+'</span></div></div></div>'+
   '<p class="writer-guide-disclaimer">These are fictional teaching examples, not passages to copy. Your IA must reflect your own genuine thinking and mathematics.</p>'+
