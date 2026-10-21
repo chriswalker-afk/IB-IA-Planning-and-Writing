@@ -208,7 +208,7 @@ def advanced_graph(page,width):
  page.locator('[data-action="graph-model-add"]').click()
  assert page.locator('.graph-model-card').count()==1
  assert "ln(y)" in page.locator('[data-graph-model-summary]').first.inner_text()
- assert "positive" in page.locator('.graph-model-caution').first.inner_text().lower()
+ assert "y > 0" in page.locator('.graph-model-caution').first.inner_text()
  page.locator('[data-graph-model-method]').select_option("original")
  assert saved(page)["graphStudio"]["draft"]["models"][0]["fitMethod"]=="original"
  assert "original-scale" in page.locator('[data-graph-model-summary]').first.inner_text()
