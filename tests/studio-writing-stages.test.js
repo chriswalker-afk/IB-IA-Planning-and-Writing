@@ -107,7 +107,7 @@ test('Mathematical interpretation and a concise honest conclusion keep their sup
  assert(conclusion.includes('Answer · support · qualify'));
  assert(conclusion.includes('four writing tips'));
  assert(conclusion.includes('data-example-topic="conclusion"'));
- assert(conclusion.includes('prediction'));
+ assert(conclusionTips.some(t=>t.detail.includes('prediction')||t.weak.includes('prediction')),'Prediction advice remains in the Field Guide rather than a duplicate page card');
  const conclusionTips=writerStageAdviceBundle(s,'C60').items;
  assert(conclusionTips.some(t=>t.title==='Answer your aim'));
  assert(conclusionTips.some(t=>t.detail.includes('future mathematical question')));
