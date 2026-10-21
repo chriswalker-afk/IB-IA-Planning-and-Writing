@@ -12,11 +12,52 @@ const sum=xs=>xs.reduce((s,v)=>s+v,0);
 const mean=xs=>sum(xs)/xs.length;
 const median=xs=>boxStats(xs).median;
 const unitDefault=()=>({mode:"unsure",unit:""});
+/** Strict, size-bounded representation of a Graph Plotter transfer.
+ * A snapshot is intentionally static; it never silently refits after source edits.
+ */
+export function normalizeTableGraphSnapshot(raw){
+ if(!object(raw)||raw.version!==1||!Array.isArray(raw.rows)||!raw.rows.length||
+  raw.rows.length>TABLE_MAX_ROWS)return null;
+ const rows=[];
+ for(const row of raw.rows){
+  if(!object(row)||typeof row.x!=="string"||typeof row.y!=="string"||
+   row.x.length>120||row.y.length>120||finiteCell(row.x)===null||finiteCell(row.y)===null||
+   typeof row.predicted!=="number"||!Number.isFinite(row.predicted)||
+   typeof row.residual!=="number"||!Number.isFinite(row.residual))return null;
+  rows.push({x:row.x,y:row.y,predicted:row.predicted,residual:row.residual});
+ }
+ const coefficients=Array.isArray(raw.coefficients)&&raw.coefficients.length<=4&&
+  raw.coefficients.every(x=>typeof x==="number"&&Number.isFinite(x))?raw.coefficients.slice():[];
+ const parameters={};
+ if(object(raw.parameters))for(const [key,value] of Object.entries(raw.parameters).slice(0,20)){
+  if(/^[a-zA-Z][a-zA-Z0-9]{0,29}$/.test(key)&&typeof value==="number"&&Number.isFinite(value))
+   parameters[key]=value;
+ }
+ return {version:1,rows,coefficients,parameters,
+  graphTitle:trimmed(raw.graphTitle,110),graphFigureId:trimmed(raw.graphFigureId,55),
+  modelId:trimmed(raw.modelId,55),modelType:trimmed(raw.modelType,35),
+  modelLabel:trimmed(raw.modelLabel,95),equation:trimmed(raw.equation,350),
+  method:trimmed(raw.method,240),modelNote:trimmed(raw.modelNote,300),
+  graphSourceX:trimmed(raw.graphSourceX,100),graphSourceY:trimmed(raw.graphSourceY,100)};
+}
+export function tableGraphSnapshotIssue(d){
+ const snap=d.graphSnapshot;
+ if(!snap)return "";
+ if(d.mode!=="calculated")return "";
+ if(d.columns.length!==2||d.matrix.length!==snap.rows.length||
+  d.calcXIndex!==0||d.calcYIndex!==1)return "The graph snapshot no longer matches the imported source columns or row count. Re-transfer the model from Graph Plotter or switch to manual coefficients.";
+ for(let i=0;i<snap.rows.length;i++){
+  const actual=d.matrix[i],original=snap.rows[i];
+  if(!actual||actual.length!==2||String(actual[0])!==original.x||String(actual[1])!==original.y)
+   return "Source row "+(i+1)+" changed since transfer. Stored model predictions are not recalculated automatically; re-transfer the model or switch to manual coefficients.";
+ }
+ return "";
+}
 export const newTableDraft=()=>({
  mode:"compact",raw:"",headers:"auto",columns:[],matrix:[],pendingPaste:false,
  columnSelectionMode:"all",displayColumns:[],rowSelection:"",selectionReason:"",
  calcXIndex:0,calcYIndex:1,calcModel:"linear",calcA:"",calcB:"",calcC:"",
- calcShowPrediction:true,calcShowResidual:true,calcShowPercent:false,
+ calcShowPrediction:true,calcShowResidual:true,calcShowPercent:false,graphSnapshot:null,
  headings:[],unitDecisions:[],selected:[0],measures:["mean","median"],categoryIndex:0,showPercent:true,
  title:"",number:"1",purpose:"",sourceKind:"unsure",sourceText:"",note:"",
  decimals:"2",numberFormat:"source",quartileRule:"halves",showRowLines:true,
@@ -69,6 +110,7 @@ export function normalizeTableDraft(raw){
  if(typeof r.showPercent==="boolean")d.showPercent=r.showPercent;
  if(typeof r.showRowLines==="boolean")d.showRowLines=r.showRowLines;
  if(typeof r.showColumnLines==="boolean")d.showColumnLines=r.showColumnLines;
+ d.graphSnapshot=normalizeTableGraphSnapshot(r.graphSnapshot);
  if(object(r.columnFormats)){
   d.columnFormats={};
   for(const [key,rawFormat] of Object.entries(r.columnFormats).slice(0,18)){
@@ -104,7 +146,7 @@ export function importTableData(studio,raw){
  d.selected=(d.mode==="summary"?numeric.slice(0,3).map(x=>x.index):columns.map((_,i)=>i).slice(0,4));
  d.categoryIndex=0;d.columnFormats={};
  d.columnSelectionMode="all";d.displayColumns=[];d.rowSelection="";d.selectionReason="";
- d.calcA="";d.calcB="";d.calcC="";
+ d.calcA="";d.calcB="";d.calcC="";d.graphSnapshot=null;
  d.calcXIndex=numeric[0]?.index??0;
  d.calcYIndex=numeric.find(entry=>entry.index!==d.calcXIndex)?.index??Math.min(1,Math.max(0,d.columns.length-1));
  return {rows:matrix.length,columns:columns.length,hasHeaders:parsed.hasHeaders};
@@ -283,10 +325,16 @@ export function analyzeTable(raw){
   if(d.columns.length<2||x===y)fail("calculated-variables","Choose two different numerical source columns: x and observed y.");
   if(!d.calcShowPrediction&&!d.calcShowResidual&&!d.calcShowPercent)
    fail("calculated-output","Choose at least one calculated result to display.");
-  if(!["linear","quadratic"].includes(d.calcModel))fail("calculated-model","Choose a supported model.");
+  const snapshot=d.graphSnapshot;
+  if(snapshot){
+   const issue=tableGraphSnapshotIssue(d);
+   if(issue)fail("graph-snapshot-stale",issue);
+  }else{
+   if(!["linear","quadratic"].includes(d.calcModel))fail("calculated-model","Choose a supported model.");
+  }
   const coefficients=[d.calcA,d.calcB,...(d.calcModel==="quadratic"?[d.calcC]:[])];
-  const numericCoeffs=coefficients.map(c=>finiteCell(c));
-  if(numericCoeffs.some(v=>v===null))
+  const numericCoeffs=snapshot?[]:coefficients.map(c=>finiteCell(c));
+  if(!snapshot&&numericCoeffs.some(v=>v===null))
    fail("calculated-coefficients","Enter finite numerical coefficients for the model. Table Studio does not invent or fit them.");
   if([x,y].some(i=>i<0||i>=d.columns.length))fail("calculated-variables","Select columns that exist in your source data.");
   if([x,y].some(i=>{
@@ -300,8 +348,10 @@ export function analyzeTable(raw){
     fail("calculated-source","Source row "+(index+1)+" has a missing or non-numeric x or y value; do not silently omit it.");continue;
    }
    const [a,b,c=0]=numericCoeffs;
-   const predicted=d.calcModel==="quadratic"?a*xv*xv+b*xv+c:a*xv+b;
-   const residual=yv-predicted;
+   const original=snapshot?.rows[index];
+   const predicted=snapshot?(original?.predicted??NaN):
+    d.calcModel==="quadratic"?a*xv*xv+b*xv+c:a*xv+b;
+   const residual=snapshot?(original?.residual??NaN):yv-predicted;
    if(!Number.isFinite(predicted)||!Number.isFinite(residual)){
     fail("calculated-overflow","Model calculation at source row "+(index+1)+" is not finite. Check coefficients and data.");continue;
    }
@@ -314,22 +364,26 @@ export function analyzeTable(raw){
    if(d.calcShowPercent)row.push(displayValue(100*residual/Math.abs(yv),d,true,row.length,"calculated"));
    rows.push(row);
   }
-  if(!problems.some(p=>["calculated-source","calculated-overflow","calculated-zero","calculated-variables","calculated-coefficients","calculated-units","calculated-output","row-selection","row-count"].includes(p.code))&&rows.length){
+  if(!problems.some(p=>["graph-snapshot-stale","calculated-source","calculated-overflow","calculated-zero","calculated-variables","calculated-coefficients","calculated-units","calculated-output","raw-table-too-long","row-selection","row-count"].includes(p.code))&&rows.length){
    const yUnit=d.unitDecisions[y].mode==="unit"?" ("+d.unitDecisions[y].unit+")":"";
-   const label=d.calcModel==="quadratic"?"ŷ = a x^2 + b x + c":"ŷ = a x + b";
-   const eq=d.calcModel==="quadratic"?"a="+d.calcA+", b="+d.calcB+", c="+d.calcC:
+   const label=snapshot?snapshot.modelLabel:d.calcModel==="quadratic"?"ŷ = a x^2 + b x + c":"ŷ = a x + b";
+   const eq=snapshot?snapshot.equation:d.calcModel==="quadratic"?"a="+d.calcA+", b="+d.calcB+", c="+d.calcC:
     "a="+d.calcA+", b="+d.calcB;
    const headers=[tableHeader(d,x),tableHeader(d,y)];
    if(d.calcShowPrediction)headers.push("Predicted ŷ"+yUnit);
    if(d.calcShowResidual)headers.push("Residual y−ŷ"+yUnit);
    if(d.calcShowPercent)headers.push("Percentage deviation (%)");
    model={headers,rows,numeric:headers.map(()=>true),kind:"calculated",note:d.note||"",
-    metadata:label+" ("+eq+"). Residual = observed − predicted."+
+    metadata:(snapshot?"Graph Plotter snapshot from "+snapshot.graphTitle+": "+label+"; "+eq+". "+snapshot.method+".":
+      label+" ("+eq+").")+" Residual = observed − predicted."+
      (d.calcShowPercent?" Percentage deviation = 100 × residual / |observed|.":"")+
-     " Calculated from unrounded source values."+(provenance?" "+provenance:""),
+     (snapshot?" Predictions were transferred at full precision; this is not a live link.":" Calculated from unrounded source values.")+
+     (provenance?" "+provenance:""),
     sourceRowIndices:chosen.indices,sourceColumnIndices:[x,y]};
   }
-  warn("model-provenance","Coefficients must come from a justified calculation or fitted model elsewhere in your IA. This table does not fit a model.");
+  warn("model-provenance",d.graphSnapshot?
+   "Model results are a copy from Graph Plotter. Changing the graph does not automatically update this table; transfer it again after fitting a new model.":
+   "Coefficients must come from a justified calculation or fitted model elsewhere in your IA. This table does not fit a model.");
  }else if(validSummary){
   if(!d.selected.length)fail("variables","Select at least one numerical column to summarise.");
   if(d.selected.length>4)fail("many-variables","Select at most four comparable variables/groups.");
@@ -424,7 +478,7 @@ export function analyzeTable(raw){
 export const tableSignature=d=>JSON.stringify([d.mode,d.matrix,d.columns,d.headings,d.unitDecisions,
  d.selected,d.measures,d.categoryIndex,d.showPercent,d.decimals,d.numberFormat,d.quartileRule,d.columnFormats,
  d.columnSelectionMode,d.displayColumns,d.rowSelection,d.selectionReason,d.calcXIndex,d.calcYIndex,d.calcModel,
- d.calcA,d.calcB,d.calcC,d.calcShowPrediction,d.calcShowResidual,d.calcShowPercent]);
+ d.calcA,d.calcB,d.calcC,d.calcShowPrediction,d.calcShowResidual,d.calcShowPercent,d.graphSnapshot]);
 export function saveTableFigure(studio,entryId=""){
  const q=analyzeTable(studio.draft);
  if(!q.ready)return {ok:false,error:"Resolve the table size, source, units and mathematical quality checks before saving.",checks:q};
