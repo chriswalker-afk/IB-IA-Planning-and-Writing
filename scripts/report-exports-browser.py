@@ -25,6 +25,7 @@ fixture = json.loads(subprocess.check_output(['node', '--input-type=module', '-e
 import {createProjectState} from './src/core/project-state.js';
 import {applyPlanningField} from './src/planning/engine.js';
 import {newStatDraft,statAnalysis,newStatStudio,saveStatFigure} from './src/diagrams/stat-studio-core.js';
+import {newGeometryStudio,saveGeometryFigure} from './src/diagrams/geometry-core.js';
 const state=createProjectState();
 for(const [key,value] of Object.entries({
  aim:'Fictional export check: how does the radius affect an area?',
@@ -65,6 +66,19 @@ for(const kind of ["ogive","box","bar"]){
   categoryIndex:0,selected:[1,2],barStyle:"stacked100"});
  keep(d);
 }
+// A fourth, geometrical figure must be retained in full PDF/Word/ZIP output.
+const geometry=newGeometryStudio();
+Object.assign(geometry.draft,{mode:"coordinate",title:"QA measured right triangle",figureNumber:"14",
+ unit:"m",showLengths:true,showAngles:true,northAligned:true,showBearings:true,
+ note:"A fictional coordinate model. Values are derived, not directly measured.",edited:true});
+geometry.draft.vertices=[
+ {id:"v-a",label:"A",x:0,y:0,edgeLabel:"",angleLabel:""},
+ {id:"v-b",label:"B",x:3,y:0,edgeLabel:"",angleLabel:""},
+ {id:"v-c",label:"C",x:0,y:4,edgeLabel:"",angleLabel:""}
+];
+const savedGeometry=saveGeometryFigure(geometry);
+if(!savedGeometry.ok)throw new Error("Geometry export fixture invalid: "+savedGeometry.error);
+state.geometryStudio.figures.push(savedGeometry.record);
 console.log(JSON.stringify(state));
 '''], text=True))
 
@@ -126,7 +140,7 @@ with sync_playwright() as p:
                         assert before == project_content(page.evaluate('localStorage.getItem(' + json.dumps(KEY) + ')'))
                         if scenario != 'empty' and fmt == 'pdf':
                             pdf = PdfReader(str(target))
-                            assert sum(len(p.images) for p in pdf.pages) >= 5, 'Full PDF did not embed all three statistical figures alongside equations'
+                            assert sum(len(p.images) for p in pdf.pages)  >= 6, 'Full PDF must embed geometry and statistical figures alongside equations'
                             readable = ' '.join(p.extract_text() or '' for p in pdf.pages)
                             assert 'First I use' in readable and 'then analyse it' in readable, 'Mixed prose disappeared around the equation'
                         if fmt in ['docx', 'zip']:
@@ -141,6 +155,7 @@ with sync_playwright() as p:
                                     if scenario != 'empty':
                                         assert restored['entries'][0]['result'] == 'Existing work must not be overwritten.'
                                         assert sorted(x['draft']['kind'] for x in restored['statStudio']['figures']) == ['bar', 'box', 'ogive'], 'Full ZIP lost saved statistical figures'
+                                        assert len(restored['geometryStudio']['figures'])==1, 'Full ZIP lost the measured triangle'
                                     word_name = next(p for p in archive.namelist() if p.endswith('.docx'))
                                     with zipfile.ZipFile(io.BytesIO(archive.read(word_name))) as word:
                                         xml = word.read('word/document.xml').decode()
@@ -148,7 +163,7 @@ with sync_playwright() as p:
                                     xml = archive.read('word/document.xml').decode()
                                 if scenario != 'empty':
                                     with (zipfile.ZipFile(io.BytesIO(archive.read(word_name))) if fmt == 'zip' else zipfile.ZipFile(target)) as word_check:
-                                        assert len([n for n in word_check.namelist() if n.startswith('word/media/')])>=5, 'Word must embed statistical figures and equations'
+                                        assert len([n for n in word_check.namelist() if n.startswith('word/media/') ])>=6, 'Word must embed geometry, statistical figures and equations'
                                 if scenario != 'empty':
                                     assert 'Original introduction notes must remain unchanged.' in xml
                                     assert 'Existing work must not be overwritten.' in xml
