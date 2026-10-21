@@ -60,3 +60,18 @@
 /* Keep text fields and their maths palette together in two-column studio forms. */
 .diagram-notation-field-wrap{display:flex;flex-direction:column;min-width:0}
 .diagram-notation-field-wrap>.diagram-notation-tools{min-width:0;margin-top:0}
+
+
+/* Pass 3: keyboard focus and inline previews work the same on mobile/desktop. */
+.diagram-notation-tools :is(button,input):focus-visible{outline:3px solid #2a8d78;outline-offset:2px}
+.diagram-notation-value-preview:not([hidden]){display:flex;flex-wrap:wrap;align-items:center;gap:7px}
+.diagram-notation-value-preview>small{color:#51736c;font-size:10px;font-weight:750;white-space:nowrap}
+.diagram-notation-value-preview>span{min-width:0;overflow-wrap:anywhere}
+.diagram-notation-field-wrap{min-width:0}
+.diagram-notation-panel{max-width:100%;box-sizing:border-box;overflow-wrap:anywhere}
+@media(max-width:600px){
+ .diagram-notation-panel{padding:10px}
+ .diagram-notation-palette button{min-width:40px;min-height:40px}
+ .diagram-notation-toggle{min-height:36px}
+}
+@media(prefers-reduced-motion:reduce){.diagram-notation-tools button{transition:none}}

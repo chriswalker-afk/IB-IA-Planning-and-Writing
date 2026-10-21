@@ -76,6 +76,45 @@ export function formatDiagramShorthand(value){
  return mixedMathTokens(value).map(token=>token.type==="text"?shorthandPlain(token.value):token.source).join("");
 }
 export const hasDiagramEquation=value=>mixedMathTokens(value).some(token=>token.type==="math");
+/** Never cut through an authored mathematical expression when shortening labels.
+ * Unlike String.slice, this keeps every \\( ... \\) token complete.
+ */
+export function diagramSafeExcerpt(value,maxChars=100){
+ const input=String(value??"");
+ if(!Number.isInteger(maxChars)||maxChars<4||input.length<=maxChars)return input;
+ let result="",remaining=maxChars-1;
+ for(const token of mixedMathTokens(input)){
+  const piece=token.type==="math"?token.source:token.value;
+  if(piece.length<=remaining){result+=piece;remaining-=piece.length;continue;}
+  if(token.type==="math"){if(!result)return piece;break;}
+  const prefix=piece.slice(0,remaining);
+  const space=prefix.lastIndexOf(" ");
+  result+=(space>=Math.floor(remaining*.58)?prefix.slice(0,space):prefix);
+  break;
+ }
+ return result.trimEnd()+(result.length<input.length?"…":"");
+}
+/** Wrap authored mixed maths without splitting TeX delimiters or fraction syntax.
+ * A long single expression stays whole; SVG maxWidth can scale it as one piece.
+ */
+export function diagramWrapLines(value,maxChars=100){
+ const raw=String(value??"").trim();
+ if(!raw)return [];
+ const words=raw.match(/\\\([\s\S]*?\\\)|\\\[[\s\S]*?\\\]|\S+/g)||[];
+ const lines=[];let line="";
+ for(const word of words){
+  const candidate=line?line+" "+word:word;
+  if(line&&candidate.length>maxChars){lines.push(line);line="";}
+  // A mathematical expression is atomic; plain long text can break normally.
+  if(!hasDiagramEquation(word)&&word.length>maxChars){
+   let rest=word;
+   while(rest.length>maxChars){lines.push(rest.slice(0,maxChars));rest=rest.slice(maxChars);}
+   line=rest;
+  }else line=line?line+" "+word:word;
+ }
+ if(line)lines.push(line);
+ return lines;
+}
 /** Dimensional powers apply to the entire unit; metres per second squared is
  * (m/s)^2, not m/s^2. Raw source measurements are never rewritten. */
 export function diagramUnitPower(value,power){
@@ -97,16 +136,17 @@ export function diagramNotationControls(e,{studio,key="",index=null,part="",site
  const attrs=' data-notation-studio="'+e(studio)+'" data-notation-key="'+e(key)+'"'+
   (tableColumn?' data-notation-col="'+index+'" data-notation-part="'+e(part)+'"':"")+
   (studio==="voronoi"&&Number.isInteger(siteIndex)?' data-notation-site-index="'+siteIndex+'"':"");
+ const id="diagram-notation-"+[studio,key,tableColumn?index:"",part,
+  Number.isInteger(siteIndex)?siteIndex:""].filter(v=>v!=="").join("-").replace(/[^a-zA-Z0-9-]/g,"");
  const tokens=DIAGRAM_NOTATION_SYMBOLS.map(s=>
   '<button type="button" data-action="'+action+'" data-notation-token="'+e(s.token)+'"'+
   (tableColumn?' data-table-col="'+index+'" data-table-part="'+e(part)+'" data-table-token="'+e(s.token)+'"':"")+
   ' title="'+e(s.title)+'" aria-label="'+e(s.title)+'">'+e(s.label)+'</button>').join("");
- return (tableColumn?
-  '<details class="ia-table-math-palette diagram-notation-tools" data-diagram-notation'+attrs+'><summary>∑ Mathematical symbols</summary>':
-  '<div class="diagram-notation-tools" data-diagram-notation'+attrs+'>'+
-  '<button type="button" class="diagram-notation-toggle" data-action="diagram-notation-toggle" aria-expanded="false">'+
-  '<span aria-hidden="true">∑</span> Insert maths</button>')+
-  '<div class="diagram-notation-panel" data-notation-panel'+(tableColumn?'':' hidden')+'>'+
+ return '<div class="diagram-notation-tools'+(tableColumn?' ia-table-math-palette':"")+
+  '" data-diagram-notation'+attrs+'>'+
+  '<button type="button" class="diagram-notation-toggle" data-action="diagram-notation-toggle" aria-expanded="false" aria-controls="'+id+'">'+
+  '<span aria-hidden="true">∑</span> Insert maths</button>'+
+  '<div class="diagram-notation-panel" data-notation-panel id="'+id+'" hidden>'+
   '<div class="diagram-notation-palette" role="group" aria-label="Mathematical symbols">'+tokens+'</div>'+
   '<label class="diagram-notation-expression-label">Or write a mathematical expression (optional LaTeX)'+
   '<input type="text" data-diagram-expression spellcheck="false" autocomplete="off" placeholder="e.g. \\frac{dy}{dx}, \\sqrt{x}, a_{12}"></label>'+
@@ -115,8 +155,8 @@ export function diagramNotationControls(e,{studio,key="",index=null,part="",site
   '<div class="diagram-notation-actions"><button type="button" data-action="diagram-notation-insert" class="btn btn-secondary btn-sm">Insert expression</button>'+
   '<button type="button" data-action="diagram-notation-close" class="btn btn-quiet btn-sm">Close</button></div>'+
   '<small>Shortcuts such as cm^2, x_1 and \\theta work without using the editor. Maths changes labels only, not measured data.</small>'+
-  '</div><div class="diagram-notation-value-preview" data-notation-value-preview hidden></div>'+
-  (tableColumn?'</details>':'</div>');
+  '</div><div class="diagram-notation-value-preview" data-notation-value-preview hidden aria-label="Label preview"></div>'+
+  '</div>';
 }
 export function diagramHtmlMath(value){
  return mixedMathTokens(value).map(token=>{
@@ -152,8 +192,14 @@ export function diagramVisibleLength(value,size=16){
 }
 /** Safe standalone SVG text with inline MathJax path graphics when needed. */
 export function svgDiagramText(value,x,y,attrs="",{maxWidth=Infinity,fontSize=16}={}){
- if(!hasDiagramEquation(value))
-  return '<text x="'+num(x)+'" y="'+num(y)+'" '+attrs+'>'+escapeMixedHtml(formatDiagramShorthand(value))+'</text>';
+ if(!hasDiagramEquation(value)){
+  const formatted=formatDiagramShorthand(value);
+  const plainSize=Number((attrs.match(/\bfont-size="([\d.]+)"/)||[])[1])||fontSize;
+  const widthEstimate=formatted.length*plainSize*.54;
+  const squeeze=Number.isFinite(maxWidth)&&maxWidth>0&&widthEstimate>maxWidth?
+   ' textLength="'+num(maxWidth)+'" lengthAdjust="spacingAndGlyphs"':"";
+  return '<text x="'+num(x)+'" y="'+num(y)+'" '+attrs+squeeze+'>'+escapeMixedHtml(formatted)+'</text>';
+ }
  const size=Number((attrs.match(/\bfont-size="([\d.]+)"/)||[])[1])||fontSize;
  const runs=pieces(value,size),natural=runs.reduce((s,p)=>s+p.width,0);
  const fit=Number.isFinite(maxWidth)&&maxWidth>0?Math.min(1,maxWidth/Math.max(1,natural)):1;

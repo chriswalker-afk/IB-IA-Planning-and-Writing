@@ -1,6 +1,7 @@
 /** Controlled edits and explicit links to student-generated mathematics. */
 import {newStatDraft,normalizeStatDraft,statAnalysis,statSignature,importStatTable,saveStatFigure} from "./stat-studio-core.js";
 import {completeEntry,startFirstRepresentation} from "../completing/engine.js";
+import {splitHeading} from "./graph-core.js";
 
 const TEXT=new Set(["raw","headers","histogramInput","binWidth","binStart","barMode",
  "quartileRule","outlierRule","title","figureNumber","variable","unit","unitMode","sourceKind","sourceText",
@@ -38,12 +39,11 @@ export function setStatField(studio,key,value){
  return false;
 }
 function columnHeading(value){
- const str=String(value||"").trim(),m=/^(.*?)\s*(?:\(([^)]+)\)|\[([^\]]+)\])\s*$/.exec(str);
- return m?{label:m[1],unit:m[2]||m[3]}:{label:str,unit:""};
+ return splitHeading(value);
 }
 export function changeStatKind(studio,kind){
  if(!["histogram","box","dot","bar"].includes(kind))return false;
- const d=studio.draft,old=d.kind;
+ const d=studio.draft,old=d.kind,oldFirst=d.selected?.[0]??0;
  if(old===kind)return true;
  d.kind=kind;d.min="";d.max="";
  if(kind==="bar"){
@@ -58,8 +58,13 @@ export function changeStatKind(studio,kind){
   d.selected=d.selected.slice(0,kind==="histogram"?1:5);
   if(d.columns.length){
    const split=columnHeading(d.columns[d.selected[0]||0]);
-   d.variable=split.label;
-   if(split.unit){d.unit=split.unit;d.unitMode="unit";}
+   // Switching between numerical chart styles must not discard a student's
+   // edited mathematical label or unit for the same selected source variable.
+   const sameMeasurement=old!=="bar"&&oldFirst===(d.selected[0]??0);
+   if(!sameMeasurement||!d.variable.trim()){
+    d.variable=split.label;
+    if(split.unit){d.unit=split.unit;d.unitMode="unit";}
+   }
   }
  }
  return true;

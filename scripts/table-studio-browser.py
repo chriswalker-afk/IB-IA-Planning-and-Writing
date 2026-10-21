@@ -71,12 +71,19 @@ def compact(p,width):
  assert saved(p)["tableStudio"]["draft"]["cellAlignment"]=="center"
  # Mathematical shortcut inserts into the chosen field at the caret, not into observations.
  heading=p.locator('input[data-table-col="1"][data-table-part="heading"]')
- palette=heading.locator("xpath=../following-sibling::details[contains(@class,'ia-table-math-palette')]").first
- palette.evaluate("(el)=>el.open=true")
+ palette=heading.locator("xpath=../following-sibling::div[contains(@class,'ia-table-math-palette')]").first
+ palette.locator('[data-action="diagram-notation-toggle"]').click()
+ assert palette.locator('[data-notation-panel]').is_visible()
+ assert palette.locator('[data-action="diagram-notation-toggle"]').get_attribute("aria-expanded")=="true"
  heading.evaluate("(el)=>{el.focus();el.setSelectionRange(3,3);}")
  palette.locator('[data-action="table-symbol"][data-table-token="x_i"]').click()
  assert heading.input_value()=="Lenx_igth"
  assert "xᵢ" in p.locator('[data-table-preview] svg').text_content()
+ assert "xᵢ" in palette.locator('[data-notation-value-preview]').inner_text()
+ palette.locator('[data-diagram-expression]').focus()
+ p.keyboard.press("Escape")
+ assert palette.locator('[data-action="diagram-notation-toggle"]').get_attribute("aria-expanded")=="false"
+ assert palette.locator('[data-diagram-expression]').is_hidden()
  assert saved(p)["tableStudio"]["draft"]["matrix"][0][1]=="14.0"
  heading.fill("Length")
  assert saved(p)["tableStudio"]["draft"]["headings"][1]=="Length"

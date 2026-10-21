@@ -59,7 +59,7 @@ export function renderNativeDataGrid(state,type,icon,e){
   '<div class="native-data-shelf">'+
    '<div class="native-shelf-heading"><strong>'+icon("layers")+' Reuse the same dataset</strong>'+
     '<small>Local project snapshots · '+shelf.length+'/'+NATIVE_MAX_SHELF+'</small></div>'+
-   '<p>Keep a copy of your original values for different graphs and tables. Changes in one generator never silently overwrite another.</p>'+
+   '<p>Keep a copy of original values, mathematical display labels and unit choices for different graphs and tables. Each copy stays independent; check the presentation in its new context.</p>'+
    '<div class="native-shelf-save"><input type="text" data-native-name="'+type+'" placeholder="Dataset name (optional)" maxlength="75" aria-label="Name for this saved dataset">'+
    '<button type="button" class="btn btn-secondary btn-sm" data-action="native-save-dataset" data-native-type="'+type+'">'+icon("layers")+' Save reusable copy</button></div>'+
    '<div class="native-shelf-send"><span>Use current values in:</span>'+

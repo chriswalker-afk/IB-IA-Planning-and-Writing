@@ -1,7 +1,7 @@
 /** Responsive, white-background, IA-printable statistical diagrams. */
 import {escapeGraph} from "./graph-core.js";
 import {statAnalysis} from "./stat-studio-core.js";
-import {svgDiagramText,diagramUnitPower} from "./diagram-notation.js";
+import {svgDiagramText,diagramUnitPower,diagramSafeExcerpt} from "./diagram-notation.js";
 const W=960,H=630,LEFT=119,RIGHT=47,TOP=102,PH=394,PW=W-LEFT-RIGHT;
 const E=escapeGraph;
 const fmt=(v,d=3)=>Number(v.toFixed(d)).toString();
@@ -16,7 +16,7 @@ function ticks(low,high){
  const result=[];for(let k=0;k<30;k++){const v=start+k*step;if(v>high+step/1e8)break;result.push(Number(v.toPrecision(12)));}
  return result;
 }
-const tag=(text,x,y,options="")=>svgDiagramText(text,x,y,options);
+const tag=(text,x,y,options="",maxWidth=Infinity)=>svgDiagramText(text,x,y,options,{maxWidth});
 const line=(x1,y1,x2,y2,options="")=>'<line x1="'+fmt(x1,2)+'" y1="'+fmt(y1,2)+'" x2="'+fmt(x2,2)+'" y2="'+fmt(y2,2)+'" '+options+'/>';
 const axisLabel=(d,orientation)=>{
  const unit=d.unitMode==="unit"&&d.unit.trim()?" ("+d.unit+")":"";
@@ -25,7 +25,7 @@ const axisLabel=(d,orientation)=>{
 function base(d,subtitle){
  const parts=['<svg xmlns="http://www.w3.org/2000/svg" class="stat-figure-svg" role="img" aria-label="'+E(d.title||"Student statistics diagram")+'" viewBox="0 0 '+W+' '+H+'" width="'+W+'" height="'+H+'">',
   '<rect width="'+W+'" height="'+H+'" fill="#fff"/>',
-  tag(d.title||"Statistical diagram",W/2,38,'font-size="21" font-family="Arial,sans-serif" font-weight="700" text-anchor="middle" fill="#243e49"'),
+  tag(d.title||"Statistical diagram",W/2,38,'font-size="21" font-family="Arial,sans-serif" font-weight="700" text-anchor="middle" fill="#243e49"',870),
   tag(subtitle,W/2,66,'font-size="13" font-family="Arial,sans-serif" text-anchor="middle" fill="#57717b"'),
   '<rect x="'+LEFT+'" y="'+TOP+'" width="'+PW+'" height="'+PH+'" fill="#fcfdfd" stroke="#b8cbd0" stroke-width="1.3"/>'];
  return parts;
@@ -33,8 +33,8 @@ function base(d,subtitle){
 function footer(d,parts,method=""){
  const source=d.sourceKind==="secondary"?"Source: "+(d.sourceText||"not supplied"):d.sourceKind==="primary"?"Source: student's collected data":d.sourceKind==="theoretical"?"Source: theoretical / student-constructed values (not measurements)":"Source not yet confirmed";
  if(method)parts.push(tag(method,W/2,H-64,'font-family="Arial,sans-serif" font-size="12" fill="#536b75" text-anchor="middle"'));
- parts.push(tag(source.slice(0,140),W/2,H-37,'font-family="Arial,sans-serif" font-size="12" fill="#536b75" text-anchor="middle"'));
- if(d.caption.trim())parts.push(tag(d.caption.slice(0,135),W/2,H-17,'font-family="Arial,sans-serif" font-size="11" fill="#697981" text-anchor="middle"'));
+ parts.push(tag(diagramSafeExcerpt(source,140),W/2,H-37,'font-family="Arial,sans-serif" font-size="12" fill="#536b75" text-anchor="middle"',860));
+ if(d.caption.trim())parts.push(tag(diagramSafeExcerpt(d.caption,135),W/2,H-17,'font-family="Arial,sans-serif" font-size="11" fill="#697981" text-anchor="middle"',860));
  parts.push("</svg>");
  return parts.join("");
 }
@@ -46,7 +46,7 @@ function horizontalNumeric(parts,low,high,label,grid=true){
   parts.push(line(px,TOP+PH,px,TOP+PH+6,'stroke="#38535e" stroke-width="1.5"'));
   parts.push(tag(fmt(t,6),px,TOP+PH+26,'font-family="Arial,sans-serif" font-size="12" fill="#36515e" text-anchor="middle"'));
  }
- parts.push(tag(label,LEFT+PW/2,H-86,'font-family="Arial,sans-serif" font-size="17" font-weight="700" fill="#294956" text-anchor="middle"'));
+ parts.push(tag(label,LEFT+PW/2,H-86,'font-family="Arial,sans-serif" font-size="17" font-weight="700" fill="#294956" text-anchor="middle"',PW-40));
  return X;
 }
 function verticalNumeric(parts,max,label,grid=true){
@@ -58,7 +58,7 @@ function verticalNumeric(parts,max,label,grid=true){
   parts.push(line(LEFT-6,py,LEFT,py,'stroke="#38535e" stroke-width="1.5"'));
   parts.push(tag(fmt(t,6),LEFT-12,py+4,'font-family="Arial,sans-serif" font-size="12" fill="#36515e" text-anchor="end"'));
  }
- parts.push(tag(label,37,TOP+PH/2,'transform="rotate(-90 37 '+(TOP+PH/2)+')" font-family="Arial,sans-serif" font-size="17" font-weight="700" fill="#294956" text-anchor="middle"'));
+ parts.push(tag(label,37,TOP+PH/2,'transform="rotate(-90 37 '+(TOP+PH/2)+')" font-family="Arial,sans-serif" font-size="17" font-weight="700" fill="#294956" text-anchor="middle"',PH-30));
  return Y;
 }
 function niceUpper(n){const step=tickStep(n||1);return Math.max(step,Math.ceil(n/step+1e-8)*step);}
@@ -105,7 +105,7 @@ function boxes(q){
   if(d.showOutliers)for(const n of v.outliers){
    parts.push('<circle cx="'+fmt(X(n))+'" cy="'+fmt(y)+'" r="5" fill="#fff" stroke="'+color+'" stroke-width="2.2"/>');
   }
-  const text=s.name.length>24?s.name.slice(0,24)+"…":s.name;
+  const text=s.name.length>24?diagramSafeExcerpt(s.name,25):s.name;
   parts.push(tag(text,LEFT-12,y-3,'font-family="Arial,sans-serif" font-size="13" fill="#294952" font-weight="700" text-anchor="end"'));
   parts.push(tag("n = "+v.n,LEFT-12,y+13,'font-family="Arial,sans-serif" font-size="11" fill="#637983" text-anchor="end"'));
   if(d.showLabels)parts.push(tag("Median "+fmt(v.median,4),LEFT+PW-2,y-height/2-7,
@@ -132,7 +132,7 @@ function dots(q){
     const radius=Math.max(2.8,Math.min(5,space/(2*(n+1))));
     parts.push('<circle cx="'+fmt(X(v))+'" cy="'+fmt(y0-k*radius*2.22)+'" r="'+fmt(radius)+'" stroke="#fff" stroke-width="1" fill="'+color+'"/>');
    }
-  parts.push(tag(s.name.length>24?s.name.slice(0,24)+"…":s.name,LEFT-12,y0-space*.22,
+  parts.push(tag(s.name.length>24?diagramSafeExcerpt(s.name,25):s.name,LEFT-12,y0-space*.22,
    'font-size="12" font-weight="700" text-anchor="end" font-family="Arial,sans-serif" fill="#31515c"'));
   parts.push(tag("n = "+s.values.length,LEFT-12,y0-space*.22+16,
    'font-size="11" text-anchor="end" font-family="Arial,sans-serif" fill="#607984"'));
@@ -159,13 +159,13 @@ function bars(q){
   });
   const label=cat.category;
   if(label.length>21){
-   parts.push(tag(label.slice(0,19)+"…",LEFT+(i+.5)*band,TOP+PH+25,'font-family="Arial,sans-serif" font-size="12" fill="#34505d" text-anchor="middle"'));
+   parts.push(tag(diagramSafeExcerpt(label,20),LEFT+(i+.5)*band,TOP+PH+25,'font-family="Arial,sans-serif" font-size="12" fill="#34505d" text-anchor="middle"'));
   }else parts.push(tag(label,LEFT+(i+.5)*band,TOP+PH+25,'font-family="Arial,sans-serif" font-size="12" fill="#34505d" text-anchor="middle"'));
  });
  groups.forEach((g,i)=>{
   const start=LEFT+(i%2)*PW/2,yy=TOP+PH+61+Math.floor(i/2)*19;
   parts.push('<rect x="'+fmt(start)+'" y="'+fmt(yy-11)+'" width="13" height="13" rx="2" fill="'+colors[i%colors.length]+'"/>');
-  parts.push(tag((g.length>39?g.slice(0,38)+"…":g)+" (n="+totals[i]+")",start+21,yy,
+  parts.push(tag((g.length>39?diagramSafeExcerpt(g,39):g)+" (n="+totals[i]+")",start+21,yy,
    'font-family="Arial,sans-serif" font-size="12" fill="#31505c"'));
  });
  return footer(d,parts,"Categories are discrete; bar lengths begin at zero. "+(d.barMode==="percent"?"Each group totals 100%.":"Group denominators are shown in the legend."));

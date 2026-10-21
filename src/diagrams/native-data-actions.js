@@ -75,7 +75,7 @@ export function handleNativeDataAction(state,action,el,{save,render,toast,confir
  if(action==="native-send"){
   const to=el.dataset.nativeTo,destination=nativeStudio(state,to);
   if(!destination||to===type)return true;
-  const snap=nativeSnapshot(studio.draft);
+  const snap=nativeSnapshot(studio.draft,"",type);
   if(!snap.ok){toast("Finish entering the dataset first",snap.error);return true;}
   if(snap.dataset.columns.length>NATIVE_LIMITS[to]){
    toast("Too many columns","This generator accepts "+NATIVE_LIMITS[to]+" columns; no data have been discarded.");return true;

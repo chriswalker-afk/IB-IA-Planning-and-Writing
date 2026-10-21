@@ -145,6 +145,48 @@ export function pasteNativeRange(studio,type,startRow,startCol,text,{headings=fa
  rows.slice(headings?1:0).forEach((r,i)=>r.forEach((v,j)=>editNativeCell(studio,type,startRow+i,startCol+j,v)));
  return {ok:true,rows:Math.max(0,height),cols:width};
 }
+/**
+ * The worksheet's source columns are independent of display labels. Explicit
+ * dataset copies also carry the author's display labels and unit decisions,
+ * without writing them over the original column headings or measured values.
+ */
+function sourcePresentation(draft,type){
+ const d=draft||{},kind=type||(
+  Array.isArray(d.unitDecisions)?"table":Number.isInteger(d.xIndex)?"graph":"stat");
+ const cols=d.columns||[];
+ const result=cols.map(source=>{
+  const h=splitHeading(source);
+  return {label:h.label,unit:h.unit,mode:h.unit?"unit":"unsure"};
+ });
+ const set=(index,label,unit,mode)=>{
+  if(!Number.isInteger(index)||index<0||index>=result.length)return;
+  const prev=result[index];
+  result[index]={
+   label:clean(label||prev.label,95),
+   unit:clean(unit??prev.unit,120),
+   mode:["unsure","unit","dimensionless"].includes(mode)?mode:prev.mode
+  };
+ };
+ if(kind==="graph"){
+  for(const axis of ["x","y"])
+   set(d[axis+"Index"],d[axis+"Label"],d[axis+"Unit"],d[axis+"UnitMode"]);
+ }else if(kind==="stat"){
+  const selected=d.kind==="bar"?d.categoryIndex:(d.selected?.[0]??0);
+  set(selected,d.variable,d.unit,d.unitMode);
+ }else if(kind==="table"){
+  cols.forEach((_,i)=>set(i,d.headings?.[i],d.unitDecisions?.[i]?.unit,d.unitDecisions?.[i]?.mode));
+ }
+ return result;
+}
+function presentationFor(dataset,columns){
+ const provided=Array.isArray(dataset.presentation)?dataset.presentation:[];
+ return columns.map((source,i)=>{
+  const old=splitHeading(source),raw=provided[i];
+  return {label:clean(raw?.label||old.label,95),
+   unit:clean(raw?.unit??old.unit,120),
+   mode:["unsure","unit","dimensionless"].includes(raw?.mode)?raw.mode:old.unit?"unit":"unsure"};
+ });
+}
 export function normalizeNativeShelf(raw){
  if(!Array.isArray(raw))return[];
  return raw.slice(0,NATIVE_MAX_SHELF).filter(x=>x&&typeof x==="object"&&/^data-[a-z0-9-]+$/i.test(x.id||""))
@@ -153,20 +195,23 @@ export function normalizeNativeShelf(raw){
    matrix:Array.isArray(d.matrix)?d.matrix.slice(0,NATIVE_MAX_ROWS)
     .filter(Array.isArray).map(row=>row.slice(0,10).map(x=>clean(x,110))):[],
    sourceKind:["unsure","primary","secondary","theoretical"].includes(d.sourceKind)?d.sourceKind:"unsure",
-   sourceText:clean(d.sourceText,500)})).filter(d=>d.columns.length>=1&&d.matrix.length>0);
+   sourceText:clean(d.sourceText,500),
+   presentation:presentationFor(d,Array.isArray(d.columns)?d.columns.slice(0,10).map(x=>clean(x,95)):[])
+  })).filter(d=>d.columns.length>=1&&d.matrix.length>0);
 }
-export function nativeSnapshot(draft,name=""){
+export function nativeSnapshot(draft,name="",type=""){
  if(!draft?.columns?.length||!draft.matrix?.length||!countFilled(draft.matrix))
   return {ok:false,error:"Enter at least one real value and give each column a heading before saving or reusing this dataset."};
  if(draft.columns.some(h=>!String(h).trim()))
   return {ok:false,error:"Name every column before saving it for another generator."};
  return {ok:true,dataset:{name:clean(String(name).trim()||draft.title?.trim()||draft.columns.slice(0,2).join(" and "),75),
   columns:copy(draft.columns),matrix:copy(draft.matrix),
+  presentation:sourcePresentation(draft,type),
   sourceKind:draft.sourceKind||"unsure",sourceText:draft.sourceText||""}};
 }
 export function saveNativeDataset(state,type,name){
  if(!validType(type))return {ok:false,error:"Unknown generator."};
- const result=nativeSnapshot(state[type==="graph"?"graphStudio":type==="stat"?"statStudio":"tableStudio"].draft,name);
+ const result=nativeSnapshot(state[type==="graph"?"graphStudio":type==="stat"?"statStudio":"tableStudio"].draft,name,type);
  if(!result.ok)return result;
  const list=state.dataShelf??[];
  if(list.length>=NATIVE_MAX_SHELF)return {ok:false,error:"The dataset shelf holds six copies. Remove an older snapshot before saving another."};
@@ -188,6 +233,9 @@ export function applyNativeDataset(studio,type,dataset){
  if(type==="graph"&&dataset.columns.length<2)return {ok:false,error:"Graph Plotter needs two columns containing paired variables."};
  const columns=dataset.columns.map(x=>clean(x,95)),matrix=dataset.matrix.map(r=>
   Array.from({length:columns.length},(_,i)=>clean(r[i]??"",110)));
+ const presentation=presentationFor(dataset,columns);
+ if(type==="table"&&presentation.some(p=>p.mode==="unit"&&p.unit.length>35))
+  return {ok:false,error:"One transferred unit is too long for Table Studio's unit editor. Use a shorter equivalent notation in the source before transferring; no data have been changed."};
  d.columns=columns;d.matrix=matrix;invalidatePaste(d);
  studio.activeId=""; // Never overwrite a previously linked/saved figure on dataset transfer.
  d.title="";
@@ -198,8 +246,8 @@ export function applyNativeDataset(studio,type,dataset){
   d.kind="scatter"; // A genuine paired dataset should not be hidden behind an old function graph.
   d.xIndex=0;d.yIndex=1;d.xMin="";d.xMax="";d.yMin="";d.yMax="";
   for(const [axis,i] of [["x",0],["y",1]]){
-   const heading=splitHeading(columns[i]);d[axis+"Label"]=heading.label;d[axis+"Unit"]=heading.unit;
-   d[axis+"UnitMode"]=heading.unit?"unit":"unsure";
+   const display=presentation[i];d[axis+"Label"]=display.label;d[axis+"Unit"]=display.unit;
+   d[axis+"UnitMode"]=display.mode;
   }
  }else if(type==="stat"){
   const numeric=columns.map((_,i)=>({i,n:matrix.filter(row=>finiteCell(row[i])!==null).length}))
@@ -208,17 +256,17 @@ export function applyNativeDataset(studio,type,dataset){
    numeric.slice(0,d.kind==="histogram"?1:5).map(r=>r.i);
   if(!d.selected.length)d.selected=[0];d.categoryIndex=0;
   d.lowIndex=0;d.highIndex=1;d.frequencyIndex=Math.min(columns.length-1,2);
-  const {label,unit}=splitHeading(columns[d.selected[0]??0]);
-  d.variable=label;d.unit=unit;d.unitMode=unit?"unit":"unsure";d.min="";d.max="";
+  const display=presentation[d.kind==="bar"?d.categoryIndex:(d.selected[0]??0)];
+  d.variable=display.label;d.unit=display.unit;d.unitMode=display.mode;d.min="";d.max="";
  }else{
-  d.headings=columns.map(h=>splitHeading(h).label);
+  d.headings=presentation.map(p=>p.label);
   // A newly transferred dataset is not the same source variables: reset old formatting.
   d.columnFormats={};
   d.rowSelection="";d.selectionReason="";d.columnSelectionMode="all";d.displayColumns=[];
   d.calcA="";d.calcB="";d.calcC="";d.graphSnapshot=null;
   d.groupOrigin="";d.groupInput="raw";d.groupWidth="";d.groupStart="";d.groupLabel="";
   d.highlightMode="none";d.highlightRows="";d.highlightReason="";
-  d.unitDecisions=columns.map(h=>{const {unit}=splitHeading(h);return{mode:unit?"unit":"unsure",unit};});
+  d.unitDecisions=presentation.map(p=>({mode:p.mode,unit:p.unit}));
   const numeric=columns.map((_,i)=>({i,n:matrix.filter(row=>finiteCell(row[i])!==null).length}))
    .filter(r=>r.n>0).sort((a,b)=>b.n-a.n||a.i-b.i);
   d.selected=d.mode==="summary"?numeric.slice(0,3).map(x=>x.i):columns.map((_,i)=>i).slice(0,4);

@@ -1,4 +1,6 @@
-"""Real report downloads on source hosting, dist, and (with --live) GitHub Pages.
+"""Real report downloads from the built, supported static site and (with --live)
+GitHub Pages. Raw unbundled JavaScript cannot resolve bare package specifiers
+for MathJax and document export and is not a supported export deployment.
 Tests use fictional local fixtures only; no student project is transmitted.
 """
 import argparse
@@ -52,7 +54,7 @@ if args.live:
     sites = [('published', LIVE)]
 else:
     sites = []
-    for name, directory, port in [('source', '.', 8767), ('built', 'dist', 8766)]:
+    for name, directory, port in [('built', 'dist', 8766)]:
         server = ThreadingHTTPServer(('127.0.0.1', port), functools.partial(QuietHandler, directory=directory))
         threading.Thread(target=server.serve_forever, daemon=True).start()
         servers.append(server)
