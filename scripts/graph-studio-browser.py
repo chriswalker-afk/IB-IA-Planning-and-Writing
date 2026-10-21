@@ -279,6 +279,46 @@ def advanced_graph(page,width):
  assert len(state["graphStudio"]["draft"]["matrix"])==8
  assert page.locator('[data-graph-residual-plot] .graph-residual-point').count()==8
  no_overflow(page)
+ assert page.locator('[data-graph-model="model-1"] [data-action="graph-to-table"]').is_visible()
+ before=saved(page)["graphStudio"]["draft"]["matrix"]
+ page.locator('[data-graph-model="model-1"] [data-action="graph-to-table"]').click()
+ assert page.locator('[data-table-studio]').is_visible()
+ assert page.locator('[data-graph-studio]').count()==0
+ table=saved(page)["tableStudio"]["draft"]
+ assert table["mode"]=="calculated"
+ assert table["graphSnapshot"]["modelType"]=="exponential"
+ assert table["graphSnapshot"]["method"].startswith("Nonlinear least squares")
+ assert len(table["graphSnapshot"]["rows"])==8
+ assert len(table["graphSnapshot"]["parameters"])>0
+ assert [row[0] for row in table["matrix"]]==[row[0] for row in before]
+ assert [row[1] for row in table["matrix"]]==[row[1] for row in before]
+ assert page.locator('[data-action="table-svg"]').is_enabled()
+ assert page.locator('[data-table-model-snapshot]').is_visible()
+ assert "Snapshot, not a live link" in page.locator('[data-table-model-snapshot]').inner_text()
+ assert "Residual" in page.locator('[data-table-preview] svg').text_content()
+ assert len(saved(page)["entries"])==1,"Transfer must not create or mark a mathematical stage complete"
+ # Editing a transferred measurement does not silently recalculate predictions.
+ cell=page.locator('[data-native-cell][data-native-type="table"][data-native-row="0"][data-native-col="1"]')
+ cell.fill("999")
+ assert page.locator('[data-action="table-svg"]').is_disabled()
+ assert "Source row 1 changed" in page.locator('[data-table-quality]').inner_text()
+ cell.fill("3.1")
+ assert page.locator('[data-action="table-svg"]').is_enabled()
+ # Return to the underlying graph, refit and explicitly re-transfer.
+ page.locator('[data-action="table-return-to-graph"]').click()
+ assert page.locator('[data-graph-studio]').is_visible()
+ assert saved(page)["graphStudio"]["draft"]["matrix"]==before
+ page.locator('[data-graph-model="model-1"] [data-graph-model-method]').select_option("transformed")
+ page.locator('[data-graph-model="model-1"] [data-action="graph-to-table"]').click()
+ assert page.locator('[data-table-studio]').is_visible()
+ updated=saved(page)["tableStudio"]["draft"]["graphSnapshot"]
+ assert updated["method"].startswith("Least squares on ln(y)")
+ assert len(updated["rows"])==8
+ assert updated["rows"][0]["predicted"]!=table["graphSnapshot"]["rows"][0]["predicted"]
+ assert page.locator('[data-action="table-svg"]').is_enabled()
+ assert saved(page)["graphStudio"]["draft"]["matrix"]==before
+ no_overflow(page)
+ page.screenshot(path=str(OUT/f"graph-model-to-table-{width}.png"),full_page=True,animations="disabled")
 
 results=[]
 with sync_playwright() as pw:
