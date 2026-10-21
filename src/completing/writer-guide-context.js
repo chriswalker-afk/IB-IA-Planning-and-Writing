@@ -4,6 +4,7 @@
  * outcome-specific prompts. No student's words are inserted in an IA document.
  */
 import {FIELD_GUIDE_TIPS,FIELD_GUIDE_CONTEXT} from "./writer-field-guide.js";
+import {writerStageAdviceBundle} from "./writer-stage-advice.js";
  import {actualMathematics,selectedInvestigativeRoute,selectedJourneyOutcome,stageLinkContext} from "./adaptive-journey.js";
 
 const byId=new Map(FIELD_GUIDE_TIPS.map(t=>[t.id,t]));
@@ -192,7 +193,7 @@ export function writingGuideRecommendation(state,node,requestedTip="",spotKey=""
    if(latest.localTakeaway||latest.interpretation)question="A saved finding to consider: "+limited(latest.localTakeaway||latest.interpretation,155);
   }
  }
- return {tip,node,stage:focus?.label||titleOf(state,node),cue:focus?.cue||CUES[node],note,question,spotKey:focus?spotKey:""};
+ return {tip,node,stage:focus?.label||titleOf(state,node),cue:focus?.cue||CUES[node],note,question,spotKey:focus?spotKey:"",stageAdvice:writerStageAdviceBundle(state,node,spotKey)};
 }
 /** ONE compact contextual entrance per writing stage; the global header is the universal entrance. */
 export function renderWriterGuideAccess(state,node,icon,e){
