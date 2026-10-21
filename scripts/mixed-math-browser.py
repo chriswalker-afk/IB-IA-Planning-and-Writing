@@ -64,6 +64,8 @@ try:
    formula.fill(r'\frac{x^{2}}{2}')
    assert group.locator('[data-math-formula-preview] svg').count()>0, 'No live SVG typesetting'
    group.locator('[data-action="math-insert"]').click()
+   page.wait_for_function("""tex => [...document.querySelectorAll('textarea[data-bind="planning.fields.aim"]')]
+    .some(el=>el.offsetWidth>0 && el.value.includes(tex))""",arg=r'\(\frac{x^{2}}{2}\)')
    result=target.input_value()
    assert r'\(\frac{x^{2}}{2}\)' in result,(width,result)
    assert result.startswith('The observed model is ')
@@ -74,6 +76,8 @@ try:
    assert formula.input_value()==r'\frac{x^{2}}{2}'
    formula.fill(r'x^{2}+1')
    group.locator('[data-action="math-insert"]').click()
+   page.wait_for_function("""tex => [...document.querySelectorAll('textarea[data-bind="planning.fields.aim"]')]
+    .some(el=>el.offsetWidth>0 && el.value.includes(tex))""",arg=r'\(x^{2}+1\)')
    assert r'\(x^{2}+1\)' in target.input_value()
    assert r'\frac{' not in target.input_value()
    page.reload(wait_until='networkidle')
