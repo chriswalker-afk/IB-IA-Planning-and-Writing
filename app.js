@@ -83,6 +83,7 @@ import { createProjectState as newState, normalizeProjectState as normalise, per
 import { readRecordValue, updateRecordValue } from "./src/core/record-access.js";
 import { icon, escapeHtml, cleanUrl, button } from "./src/ui/primitives.js";
 import {supportsMathInField,mathFieldTools} from "./src/math/editor-shell.js";
+import {diagramHtmlMath,formatDiagramShorthand,hasDiagramEquation} from "./src/diagrams/diagram-notation.js";
 import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
 /* IA Pathfinder — Phase 4 Completing workflow. Student-authored results only. */
 (() => {
@@ -158,6 +159,17 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     const kind=root.dataset.notationStudio,key=root.dataset.notationKey;
     return root.parentElement?.querySelector('[data-'+kind+'-field="'+key+'"]');
   }
+  function refreshDiagramValuePreview(root){
+    const field=diagramNotationField(root),preview=root?.querySelector("[data-notation-value-preview]");
+    if(!field||!preview)return;
+    const raw=field.value||"",maths=hasDiagramEquation(raw)||formatDiagramShorthand(raw)!==raw;
+    preview.hidden=!maths;
+    if(maths)preview.innerHTML='<small>Label preview</small><span>'+diagramHtmlMath(raw)+'</span>';
+    else preview.textContent="";
+  }
+  function refreshDiagramValuePreviews(scope){
+    scope?.querySelectorAll?.("[data-diagram-notation]")?.forEach(refreshDiagramValuePreview);
+  }
   async function handleDiagramNotation(el){
     const root=el.closest("[data-diagram-notation]");
     if(!root)return;
@@ -170,13 +182,21 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         if(other!==panel){other.hidden=true;other.closest("[data-diagram-notation]")?.querySelector(".diagram-notation-toggle")?.setAttribute("aria-expanded","false");}
       });
       panel.hidden=!show;
-      root.querySelector(".diagram-notation-toggle")?.setAttribute("aria-expanded",String(show));
-      if(show)panel.querySelector("[data-diagram-expression]")?.focus();
+      const toggle=root.querySelector(".diagram-notation-toggle");
+      toggle?.setAttribute("aria-expanded",String(show));
+      if(show){refreshDiagramValuePreview(root);panel.querySelector("[data-diagram-expression]")?.focus();}
+      else toggle?.focus({preventScroll:true});
       return;
     }
     let insert=el.dataset.notationToken||el.dataset.tableToken||"";
     if(action==="diagram-notation-insert"){
       const tex=panel.querySelector("[data-diagram-expression]")?.value.trim()||"";
+      if(!tex){
+        const error=panel.querySelector("[data-diagram-notation-error]");
+        if(error){error.textContent="Enter a mathematical expression first.";error.hidden=false;}
+        panel.querySelector("[data-diagram-expression]")?.focus();
+        return;
+      }
       try{
         const {mathSvg}=await import("./src/math/mixed-math.js");
         mathSvg(tex);
@@ -187,7 +207,9 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       }
       insert="\\("+tex+"\\)";
     }
-    if(!insert)return;
+    if(!insert||root.isConnected===false||field.isConnected===false)return;
+    const error=panel.querySelector("[data-diagram-notation-error]");
+    if(error){error.hidden=true;error.textContent="";}
     const start=field.selectionStart??field.value.length,end=field.selectionEnd??start;
     const draft=field.value.slice(0,start)+insert+field.value.slice(end);
     let changed=false;
@@ -215,6 +237,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       state.tableStudio.draft[root.dataset.notationKey];
     const caret=Math.min(start+insert.length,field.value.length);
     field.focus({preventScroll:true});field.setSelectionRange?.(caret,caret);
+    refreshDiagramValuePreview(root);
     save();
     if(studio==="graph")refreshGraphPreview();
     else if(studio==="stat")refreshStatPreview();
@@ -848,6 +871,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     main.dataset.assessmentFramework=assessmentFramework(state);
     main.innerHTML=previewBanner()+assessmentBanner(state,e)+stuckViews.returnBanner()+map[state.route]();
     refreshMathPreviews(main);
+    refreshDiagramValuePreviews(main);
     detachIdeaMapGraph=attachIdeaMapGraph(main);
     if(preview.active)setSaveStatus("Sample preview only");
     filterMathOptions();
@@ -2605,14 +2629,25 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   document.addEventListener("input",evt=>{
     const target=evt.target;
     if(target.dataset.diagramExpression!==undefined){
-       const box=target.closest("[data-diagram-notation]")?.querySelector("[data-diagram-expression-preview]");
-       if(box)void getMathEditor().then(async()=>{
-         const {mathSvg}=await import("./src/math/mixed-math.js");
-         try{box.innerHTML=target.value.trim()?mathSvg(target.value.trim()).svg:"Your expression preview appears here.";}
-         catch(err){box.textContent=err.message;}
-       });
-       return;
-     }
+      const root=target.closest("[data-diagram-notation]"),box=root?.querySelector("[data-diagram-expression-preview]");
+      const error=root?.querySelector("[data-diagram-notation-error]");
+      if(error){error.textContent="";error.hidden=true;}
+      const candidate=target.value.trim();
+      if(box)void getMathEditor().then(async()=>{
+        const {mathSvg}=await import("./src/math/mixed-math.js");
+        if(!box.isConnected||target.value.trim()!==candidate)return;
+        try{box.innerHTML=candidate?mathSvg(candidate).svg:"Your expression preview appears here.";}
+        catch(err){box.textContent=err.message;}
+      }).catch(err=>{if(box?.isConnected)box.textContent="Maths preview unavailable: "+err.message;});
+      return;
+    }
+    // Show the formatted label beside its source field; never transform cell values.
+    if(target.matches?.('[data-graph-field],[data-stat-field],[data-trace-field],[data-table-field],[data-table-col],[data-voronoi-field],[data-voronoi-site-key="name"]')){
+      const studio=target.closest("[data-graph-studio],[data-stat-studio],[data-image-tracer],[data-table-studio],[data-voronoi-studio]");
+      for(const root of studio?.querySelectorAll?.("[data-diagram-notation]")||[]){
+        if(diagramNotationField(root)===target){refreshDiagramValuePreview(root);break;}
+      }
+    }
      if(target.dataset.mathExpression!==undefined||target.dataset.mathDisplay!==undefined){
       void getMathEditor().then(mod=>mod.refreshMathExpressionPreview(target.closest("[data-math-composer]")));
       return;
@@ -2982,6 +3017,20 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   document.addEventListener("submit",evt=>{if(evt.target.closest(".resource-filter-form"))evt.preventDefault();});
   document.addEventListener("keydown",evt=>{
     const target=evt.target;
+    const notationPanel=target?.closest?.("[data-notation-panel]");
+    if(notationPanel&&evt.key==="Escape"){
+      evt.preventDefault();
+      notationPanel.hidden=true;
+      const toggle=notationPanel.closest("[data-diagram-notation]")?.querySelector(".diagram-notation-toggle");
+      toggle?.setAttribute("aria-expanded","false");
+      toggle?.focus({preventScroll:true});
+      return;
+    }
+    if(notationPanel&&evt.key==="Enter"&&target?.dataset?.diagramExpression!==undefined){
+      evt.preventDefault();
+      notationPanel.querySelector('[data-action="diagram-notation-insert"]')?.click();
+      return;
+    }
     if(target?.dataset?.nativeCell!==undefined&&evt.key==="Enter"){
       const type=target.dataset.nativeType,studio=nativeStudio(state,type);
       if(studio&&type===activeNativeType(state)){
