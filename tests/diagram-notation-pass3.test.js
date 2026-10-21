@@ -40,7 +40,7 @@ test("shortening captions never cuts student mathematics or alters the stored te
  const before=input;
  const cropped=diagramSafeExcerpt(input,45);
  assert.match(cropped,/\\\(\\frac\{dy\}\{dx\}\\\)/);
- assert(!cropped.includes("\\(\\frac{dy}{"));
+ assert.equal((cropped.match(/\\\(/g)||[]).length,(cropped.match(/\\\)/g)||[]).length);
  assert.equal(input,before);
  const longExpression="\\(\\frac{1}{\\sqrt{1+x^2}}\\)";
  assert.equal(diagramSafeExcerpt(longExpression+" after",8),longExpression);
