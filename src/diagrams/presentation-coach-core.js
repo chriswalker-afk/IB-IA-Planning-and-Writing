@@ -54,11 +54,11 @@ function chooseDataset(state){
 }
 export function contextualRepresentationAdvice(state,baseAdvice){
  const data=chooseDataset(state);
- const route=state?.planning?.routeExplorer?.selectedRoute||"";
+ const protectedContext=["method","next","route"].includes(baseAdvice.source);
  let ids=[...baseAdvice.ids],why=[...baseAdvice.why];
- // Only change a selection if no mathematical pathway was chosen; a pair
- // of site coordinates may equally well belong to a Voronoi investigation.
- if(!route&&data){
+ // An old dataset cannot displace the selected method or a confirmed next
+ // step. Only use worksheet-shape heuristics for general fallback suggestions.
+ if(!protectedContext&&data){
   if(data.shape==="one-numeric-variable"||data.shape==="categories")
    ids=["stat","table"];
   else if(data.shape==="categories-and-numbers")ids=["table","stat"];
@@ -74,7 +74,7 @@ export function contextualRepresentationAdvice(state,baseAdvice){
    "Give only a compact, purposeful numerical summary rather than the entire raw dataset."
   ];
  }
- const description=!data?"No editable dataset has been selected yet. Suggestions use your planned pathway, not a pattern detected in observations.":
+ const description=!data?"No editable dataset has been selected yet. Suggestions use your recorded choices, not a pattern detected in observations.":
   data.shape==="paired-numbers"?
    data.paired+" complete numeric pairs are available in "+data.name+". This does not establish any relationship; inspect the data before choosing a model.":
   data.shape==="one-numeric-variable"?
