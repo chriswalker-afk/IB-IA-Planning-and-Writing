@@ -22,7 +22,9 @@ function field(key,label,value,e,options={}){
  const hint=options.hint?'<small>'+e(options.hint)+'</small>':"";
  const control=options.textarea?'<label class="trace-field"><span>'+e(label)+'</span><textarea data-trace-field="'+key+'" rows="'+(options.rows||2)+'" placeholder="'+e(options.placeholder||"")+'">'+e(value)+'</textarea>'+hint+'</label>':
   '<label class="trace-field"><span>'+e(label)+'</span><input data-trace-field="'+key+'" type="text" value="'+e(value)+'" placeholder="'+e(options.placeholder||"")+'" autocomplete="off">'+hint+'</label>';
- return control+(["title","xLabel","yLabel","unit","caption"].includes(key)?diagramNotationControls(e,{studio:"trace",key}):"");
+ const notation=["title","xLabel","yLabel","unit","caption"].includes(key);
+ return notation?'<div class="diagram-notation-field-wrap">'+control+
+  diagramNotationControls(e,{studio:"trace",key})+'</div>':control;
 }
 function select(key,label,value,choices,e){
  return '<label class="trace-field"><span>'+e(label)+'</span><select data-trace-field="'+key+'">'+
