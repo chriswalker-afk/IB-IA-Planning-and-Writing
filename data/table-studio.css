@@ -157,3 +157,26 @@
 .ia-table-snapshot-actions{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0}
 .ia-table-snapshot-actions .btn{max-width:100%;white-space:normal}
 @media(max-width:650px){.ia-table-snapshot-actions{flex-direction:column}.ia-table-snapshot-actions .btn{width:100%}}
+
+
+/* Pass 3: continuous-frequency classes, clear mathematical emphasis and diagram transfer. */
+.ia-table-grouped-controls{display:grid;gap:9px;margin:12px 0;padding:14px;border:1px solid #c8dfd7;border-radius:12px;background:#f4faf7}
+.ia-table-grouped-controls>strong{color:#24564b;font-size:12px}
+.ia-table-grouped-controls>p,.ia-table-grouped-controls>small{margin:0;font-size:11px;line-height:1.65;color:#4e7067}
+.ia-table-grouped-controls .ia-table-form-field{margin:2px 0}
+.ia-table-grouped-controls .ia-table-two-col{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.ia-table-grouped-origin{padding:8px 10px;background:#e6f3ee;border-radius:8px}
+.ia-table-emphasis{margin:14px 0 2px;border:1px solid #d5e4dd;border-radius:10px;padding:11px;background:#fbfdfc}
+.ia-table-emphasis>summary{font-size:11px;font-weight:740;color:#295b4e;cursor:pointer;line-height:1.55}
+.ia-table-emphasis>p{color:#55716a;font-size:11px;line-height:1.65;margin:9px 0}
+.ia-table-emphasis .ia-table-form-field{margin:9px 0}
+.ia-table-emphasis-rows>p{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:6px;padding:6px 0}
+.ia-table-emphasis-rows span{display:block;padding:7px 8px;background:#f1f7f4;border:1px solid #dcebe4;border-radius:7px;font-size:10px;line-height:1.5;overflow-wrap:anywhere}
+.ia-table-emphasis-rows strong{color:#2a705a}
+.ia-table-stat-transfer{margin:12px 0;display:grid;gap:7px;border:1px solid #d2e8dc;padding:12px;border-radius:10px;background:#f1f9f5}
+.ia-table-stat-transfer>.btn{justify-self:start;white-space:normal}
+.ia-table-stat-transfer>small{color:#526f63;line-height:1.6;font-size:11px}
+@media(max-width:650px){
+.ia-table-grouped-controls .ia-table-two-col{grid-template-columns:1fr}
+.ia-table-stat-transfer>.btn{width:100%;justify-self:stretch}
+}
