@@ -5,6 +5,7 @@
 import {finiteCell,splitHeading} from "./graph-core.js";
 import {analyzeTable,newTableDraft,tableGroupedBins} from "./table-studio-core.js";
 import {newStatDraft,statAnalysis} from "./stat-studio-core.js";
+import {diagramSafeExcerpt} from "./diagram-notation.js";
 const heading=(name,unit)=>unit?name+" ("+unit+")":name;
 const sourceMode=v=>["primary","secondary","theoretical"].includes(v)?v:"unsure";
 export function prepareTableHistogram(tableStudio){
@@ -24,7 +25,7 @@ export function prepareTableHistogram(tableStudio){
  s.variable=d.groupLabel.trim()||d.headings[indices[0]]||"Measurement";
  s.unitMode=unit.mode;s.unit=unit.unit||"";
  s.sourceKind=sourceMode(d.sourceKind);s.sourceText=d.sourceText;
- s.title=("Histogram of "+s.variable).slice(0,85);
+ s.title=diagramSafeExcerpt("Histogram of "+s.variable,85);
  s.caption="Prepared using the class intervals of Table "+d.number+". "+
   (d.groupInput==="raw"?"Original measurements were retained in this copy.":"Grouped frequencies are not individual observations.");
  // The histogram uses frequency density, even if the table suppresses that column.
@@ -65,10 +66,10 @@ export function prepareStatFrequencyTable(statStudio){
  s.groupValueIndex=0;s.groupLowIndex=0;s.groupHighIndex=1;s.groupFreqIndex=2;
  s.groupWidth=d.binWidth;s.groupStart=d.binStart;
  s.groupShowDensity=true;s.groupLabel=d.variable||"Measurement";
- s.title=("Grouped frequency distribution of "+s.groupLabel).slice(0,85);
+ s.title=diagramSafeExcerpt("Grouped frequency distribution of "+s.groupLabel,85);
  s.number=/^[1-9]\d{0,2}$/.test(d.figureNumber)?d.figureNumber:"1";
  s.sourceKind=sourceMode(d.sourceKind);s.sourceText=d.sourceText;
- s.groupOrigin=("Statistical Diagram Generator: "+d.title).slice(0,140);
+ s.groupOrigin=diagramSafeExcerpt("Statistical Diagram Generator: "+d.title,140);
  const verified=analyzeTable(s);
  if(!verified.ready)return {ok:false,error:"The transferred table needs a correction: "+
   verified.problems.map(x=>x.message).join(" ")};
