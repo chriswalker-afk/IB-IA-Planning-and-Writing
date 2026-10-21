@@ -132,7 +132,34 @@ test("quadratic predictions, signed residuals and percentage deviations use full
  assert.equal(analyzeTable(d).model.rows[1][3],"0.100");
  assert.equal(d.matrix[1][1],"7.10");
  const snapshot=normalizeTableDraft(JSON.parse(JSON.stringify(d)));
- assert.equal(snapshot.calcModel,"quadratic");assert.equal(snapshot.columnFormats["calculated:3"].mode,"sf");
+ assert.equal(snapshot.calcModel,"quadratic");assert.equal(snapshot.columnFormats["calculated:residual"].mode,"sf");
+});
+test("result precision follows mathematical quantities when columns are toggled",()=>{
+ const s=pairs();
+ setTableField(s,"calcA","3");setTableField(s,"calcB","1");
+ assert(setTableColumnFormat(s,3,"mode","sf"));
+ assert(setTableColumnFormat(s,3,"digits","3"));
+ assert.equal(s.draft.columnFormats["calculated:residual"].mode,"sf");
+ assert(setTableField(s,"calcShowPrediction",false));
+ assert.equal(analyzeTable(s.draft).model.headers[2],"Residual y−ŷ (m)");
+ assert.equal(analyzeTable(s.draft).model.rows[0][2],"0.200");
+ assert(setTableField(s,"calcShowPrediction",true));
+ assert.equal(analyzeTable(s.draft).model.rows[0][3],"0.200");
+ assert(!setTableColumnFormat(s,3,"mode","source"));
+});
+test("precision follows a selected original source variable rather than display column position",()=>{
+ const s=source(),d=s.draft;
+ d.matrix=d.matrix.slice(0,4);
+ setTableField(s,"columnSelectionMode","custom");
+ toggleTableDisplayColumn(s,1,true);toggleTableDisplayColumn(s,2,true);
+ setTableField(s,"selectionReason","Time and height were chosen as the two mathematical quantities of interest.");
+ assert.equal(analyzeTable(d).ready,true,JSON.stringify(analyzeTable(d).problems));
+ assert(setTableColumnFormat(s,1,"mode","dp"));
+ assert(setTableColumnFormat(s,1,"digits","3"));
+ assert.equal(d.columnFormats["compact:2"].digits,"3");
+ toggleTableDisplayColumn(s,0,true);
+ assert.equal(analyzeTable(d).model.rows[0][2],"2.000");
+ assert.equal(analyzeTable(d).model.rows[0][1],"1");
 });
 test("percent deviation cannot divide by zero; non-numeric rows and overflow are rejected",()=>{
  const s=pairs(),d=s.draft;
