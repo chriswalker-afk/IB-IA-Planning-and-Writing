@@ -142,8 +142,7 @@ export function typesetGraphSvgLabels(svg){
   const raw=decoded(escaped);
   const isEquation=/\bclass="graph-model-equation"/.test(attrs);
   const shorthand=formatDiagramShorthand(raw);
-  const autoEquation=isEquation&&raw.length<85&&/^(?:y|f\(x\))\s*=/.test(raw)&&/\^/.test(raw)&&
-   !/[;<>]/.test(raw);
+  const autoEquation=false; // Existing generated model equations remain exact; authored math uses explicit delimiters.
   const value=autoEquation?'\\('+raw.replace(/\*/g,"\\cdot ")+'\\)':raw;
   if(hasDiagramEquation(value)){
    const x=Number((attrs.match(/\bx="([^"]+)"/)||[])[1]),y=Number((attrs.match(/\by="([^"]+)"/)||[])[1]);
