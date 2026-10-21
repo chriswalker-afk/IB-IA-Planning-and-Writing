@@ -315,28 +315,48 @@ export function criterionBadge(key){
   '" title="Why '+escapeHtml(label)+' matter'+(multi?'':'s')+' here">'+
   '<span aria-hidden="true">'+(multi?'A–E':spot.criterion)+'</span></button>';
 }
-/** Optional non-assessment writing craft is a separate sibling of criterion
- * badges. Keeping this slot generic avoids coupling the rubric to writing tips
- * and allows the current and later assessment cohorts to remain independent. */
+/** In IA Studio, all assessment and writing-craft help shares the same
+ * field heading. Keeping the original label (and its for/id association) in
+ * place preserves keyboard input, saved data and equation-editor behaviour.
+ * Planning's established layout is deliberately unchanged.
+ */
+function writingFieldWithHelp(html,criteria,writingHelp){
+ const rubric=criteria.length?
+  '<div class="criterion-writing-bubbles" role="group" aria-label="Relevant IA marking criteria">'+
+   criteria.map(k=>criterionBadge(k)).join("")+'</div>':"";
+ const rail='<div class="criterion-field-help-rail" role="group" aria-label="Help for this writing field">'+
+  rubric+writingHelp+'</div>';
+ // All live IA writing fields are made by field(), whose first child is
+ // a labelled field-group. Put the bubbles after that label, NOT over inputs.
+ const leading=/^(<div class="field-group(?: [^"]*)?"[^>]*>\s*)(<label\b[^>]*>[\s\S]*?<\/label>)/;
+ if(leading.test(html))return html.replace(leading,(_match,start,label)=>
+  start+'<div class="criterion-field-header">'+label+rail+'</div>');
+ // Defensive fallback for older custom fields with no standard label:
+ // help still appears in document flow above the control, never floating.
+ return '<div class="criterion-field-header criterion-field-header-standalone">'+rail+'</div>'+html;
+}
+/** Preserve Planning's existing criterion presentation, but give each marked
+ * IA Studio field (including one without a purple icon) the shared help rail. */
 export function criterionMarkedField(html,key,writingHelp=""){
  if(!html)return html;
  const mark=Object.hasOwn(CRITERION_SPOTS,key);
  if(!mark&&!writingHelp)return html;
- return '<div class="criterion-marked-field'+(writingHelp?' has-writer-guide':'')+
-  (mark?'':' criterion-field-guide-only')+'">'+html+
-  (mark?criterionBadge(key):'')+writingHelp+'</div>';
+ const studio=String(key||"").startsWith("completing:")||Boolean(writingHelp);
+ const classes='criterion-marked-field'+(writingHelp?' has-writer-guide':'')+
+  (mark?'':' criterion-field-guide-only');
+ if(studio)return '<div class="'+classes+' has-field-help-rail">'+
+  writingFieldWithHelp(html,mark?[key]:[],writingHelp)+'</div>';
+ return '<div class="'+classes+'">'+html+(mark?criterionBadge(key):'')+writingHelp+'</div>';
 }
-/** Same contextual criterion bubbles as Planning, with optional additional
- * writing-craft help beside (never inside) the assessment bubble group. */
+/** Shared IA writing-box header; green criterion letters ALWAYS precede the
+ * purple Field Guide icon and neither overlaps the text-entry control. */
 export function criterionMarkedWritingBox(html,keys=[],writingHelp=""){
  const valid=[...new Set(keys)].filter(k=>Object.hasOwn(CRITERION_SPOTS,k));
  if(!html||(!valid.length&&!writingHelp))return html;
- return '<div class="criterion-marked-field criterion-marked-writing-box'+
+ return '<div class="criterion-marked-field criterion-marked-writing-box has-field-help-rail'+
   (writingHelp?' has-writer-guide':'')+
-  (!valid.length?' criterion-field-guide-only':'')+'">'+html+
-  (valid.length?'<div class="criterion-writing-bubbles" role="group" aria-label="Relevant IA marking criteria">'+
-  valid.map(k=>criterionBadge(k)).join("")+'</div>':'')+
-  writingHelp+'</div>';
+  (!valid.length?' criterion-field-guide-only':'')+'">'+
+  writingFieldWithHelp(html,valid,writingHelp)+'</div>';
 }
 export function criterionPageHeading(title,route,node){
  const key=criterionSpotFor(route,node),name=escapeHtml(title);
