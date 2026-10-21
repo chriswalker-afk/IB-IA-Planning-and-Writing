@@ -1311,11 +1311,11 @@ export function createCompletingViews(ctx){
    (activeMath.title&&activeMath.title!=="Mathematical stage "+mathOrdinal?" · "+activeMath.title:""):
    node==="C00"?"Set up: start writing your IA":node==="C20"?"Introducing your first mathematics":
    node==="C31"?"Diagram & table tools":(titleMap.get(node)||"IA Studio");
-  const writingIntro=node==="C00"&&(s.ui.writingIntroOpen===true||s.ui.writingIntroSeen!==true);
+  const writingIntro=s.ui.writingIntroOpen===true||(node==="C00"&&s.ui.writingIntroSeen!==true);
   const screen=writingIntro?writingWelcome():startOptions(node),stage=completionStage(node,s);
   const progress=stage&&s.completion.stages[stage];
   const warning=completionFlags(s);
-  const studioWriting=isStudioWritingNode(node);
+  const studioWriting=!writingIntro&&isStudioWritingNode(node);
   // Criterion title marks move beside their actual written response where practical.
   const fieldBadgeInsteadOfTitle=["C33","C34B","C35P","C40","C50","C40T","C40L","C64"].includes(node);
   const topWarnings=warning.length&&["C00","C02","C03","C04","C20"].includes(node)?
@@ -1330,7 +1330,7 @@ export function createCompletingViews(ctx){
     guides.writingMoment(node,{embedded:true}),guides.mathsHelp(node),guides.limitsHelp(node),
     contextualPrompt(node),resourcePrompt(s)
    ].filter(Boolean).join(""):"";
-  const stagedHtml=studioWriting?renderStudioWritingStage(s,node,{
+  const stagedHtml=writingIntro?screen.html:studioWriting?renderStudioWritingStage(s,node,{
     icon,e,taskIntro:screen.intro,reduced:isAdviceReduced(s),help:optionalStudioHelp,
     taskHtml:screen.html+(screen.extra||"")+(node==="C60"?"":insightCapture(s,node))
    }):screen.html+(screen.extra||"");
@@ -1346,21 +1346,21 @@ export function createCompletingViews(ctx){
     (c.conclusionWarningOpen&&node!=="C60"?conclusionReadiness(s):"")+
     (node!=="C00"&&node!=="C04"&&node!=="C10"&&!studioWriting&&!isStuckNode(node)?'<p class="studio-ia-writing-reminder">'+icon("pencil")+
       ' WRITE IN YOUR IA · Use these prompts to develop your own document; nothing is inserted automatically.</p>':'')+
-    '<div class="task-shell'+(node==="C00"?' chapter-onboarding-shell':'')+'" data-source-node="'+e(node)+'">'+
-    criterionPageHeading(label,"completing",fieldBadgeInsteadOfTitle?"":node)+
+    '<div class="task-shell'+(writingIntro||node==="C00"?' chapter-onboarding-shell':'')+'" data-source-node="'+e(node)+'">'+
+    criterionPageHeading(writingIntro?"Welcome to Writing.":label,"completing",writingIntro?"":(fieldBadgeInsteadOfTitle?"":node))+
     (node==="C10"||studioWriting?"":'<p class="task-intro">'+e(screen.intro)+'</p>')+
-    (node==="C10"||studioWriting?"":insightEcho(s,node))+extra.returnToReview()+
-    (studioWriting||isStuckNode(node)||["C00","C04","C10","C10E"].includes(node)||isAdviceReduced(s)?"":criteriaPanel(s))+
+    (writingIntro||node==="C10"||studioWriting?"":insightEcho(s,node))+(writingIntro?"":extra.returnToReview())+
+    (writingIntro||studioWriting||isStuckNode(node)||["C00","C04","C10","C10E"].includes(node)||isAdviceReduced(s)?"":criteriaPanel(s))+
     stagedHtml+
-    (node==="C00"||node==="C10"||studioWriting?"":insightCapture(s,node))+
-    (node==="C00"||node==="C10"||studioWriting||isAdviceReduced(s)?"":essentialsNudge(s))+
-    (node==="C00"||node==="C10"||studioWriting||isStuckNode(node)||node==="C10E"||isAdviceReduced(s)?"":guides.writingMoment(node,{embedded:node!=="C96"}))+
-    (node==="C00"||node==="C10"||studioWriting||isStuckNode(node)||isAdviceReduced(s)?"":guides.mathsHelp(node)+guides.limitsHelp(node)+
+    (writingIntro||node==="C00"||node==="C10"||studioWriting?"":insightCapture(s,node))+
+    (writingIntro||node==="C00"||node==="C10"||studioWriting||isAdviceReduced(s)?"":essentialsNudge(s))+
+    (writingIntro||node==="C00"||node==="C10"||studioWriting||isStuckNode(node)||node==="C10E"||isAdviceReduced(s)?"":guides.writingMoment(node,{embedded:node!=="C96"}))+
+    (writingIntro||node==="C00"||node==="C10"||studioWriting||isStuckNode(node)||isAdviceReduced(s)?"":guides.mathsHelp(node)+guides.limitsHelp(node)+
     (["C00","C04"].includes(node)?"":contextualPrompt(node)+resourcePrompt(s)))+statusControls+
-    (node==="C00"?"":allButtons(node,primaryByNode[node]||[]))+
-    (["C30","C40","C50"].includes(node)?stageBranchActions():"")+'</div>'+
-    (studioWriting?"":'<p class="small-callout">'+(isAdviceReduced(s)?"Only genuine mathematical results, not plans or predictions, support your conclusion.":"Only actual mathematics supports a mathematical conclusion. Your planning, predictions and teacher questions remain separate from real findings. No compulsory number of calculations or IA grade.")+'</p>')+
-    (studioWriting||["C00","C04"].includes(node)?"":miniList())+'</div>';
+    (writingIntro||node==="C00"?"":allButtons(node,primaryByNode[node]||[]))+
+    (!writingIntro&&["C30","C40","C50"].includes(node)?stageBranchActions():"")+'</div>'+
+    (writingIntro||studioWriting?"":'<p class="small-callout">'+(isAdviceReduced(s)?"Only genuine mathematical results, not plans or predictions, support your conclusion.":"Only actual mathematics supports a mathematical conclusion. Your planning, predictions and teacher questions remain separate from real findings. No compulsory number of calculations or IA grade.")+'</p>')+
+    (writingIntro||studioWriting||["C00","C04"].includes(node)?"":miniList())+'</div>';
  }
  return {viewCompleting:render};
 }
