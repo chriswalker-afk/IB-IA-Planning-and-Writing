@@ -379,46 +379,71 @@ function dots(q){
  return footer(d,parts,d.dotMode==="counted"?"Each distinct value is marked once; counts preserve all observations.":"Each dot represents one observation; no original measurement was removed.",canvasHeight);
 }
 function bars(q){
- const {draft:d,result:r,override}=q,rows=r.categories||[],groups=r.names||[],totals=r.totals||[],
-  maxObserved=Math.max(0,...rows.flatMap(c=>c.values));
- const Ymax=override?override[1]:d.barMode==="percent"?100:niceUpper(maxObserved*1.13);
- const parts=base(d,(d.barMode==="percent"?"Within-group proportions":"Observed group frequencies")+"   ·   "+
-  groups.map((n,i)=>n+" (n="+totals[i]+")").join("   ·   "));
- const Y=verticalNumeric(parts,Ymax,d.barMode==="percent"?"Percentage of group (%)":"Frequency (count)",d.showGrid);
- const colors=["#348d81","#6182be","#b3698d","#b28c42"];
- const nCat=Math.max(1,rows.length),band=PW/nCat,usable=band*.78,groupW=usable/Math.max(1,groups.length);
+ const {draft:d,result:r,override}=q,rows=r.categories||[],groups=r.names||[],totals=r.totals||[];
+ const stacked=d.barStyle!=="grouped",percent100=d.barStyle==="stacked100";
+ const maximum=Math.max(0,...rows.map(c=>stacked?c.values.reduce((a,b)=>a+b,0):Math.max(0,...c.values)));
+ const ymax=override?override[1]:percent100||!stacked&&d.barMode==="percent"?100:niceUpper(maximum*1.13);
+ const plotHeight=PH,canvasHeight=H+62;
+ const caption=percent100?"100%-stacked · percentages within each category":stacked?
+  "Stacked raw counts by category":d.barMode==="percent"?"Grouped percentages within each group":"Observed group counts";
+ const parts=base(d,caption,canvasHeight,plotHeight);
+ const Y=verticalNumeric(parts,ymax,percent100?"Percent of category (%)":
+  !stacked&&d.barMode==="percent"?"Percent of group (%)":"Frequency (count)",d.showGrid);
+ const colors=["#348d81","#6182be","#b3698d","#b28c42"],ncat=Math.max(1,rows.length);
+ const band=PW/ncat,usable=band*.78,groupWidth=usable/Math.max(1,groups.length);
+ const labelMode=d.barLabels==="auto"?(percent100||!stacked&&d.barMode==="percent"?"percent":"count"):d.barLabels;
+ const label=(cat,j)=>{
+  if(labelMode==="none")return "";
+  if(labelMode==="count")return String(cat.counts[j]);
+  const v=percent100?cat.values[j]:stacked?100*cat.counts[j]/Math.max(1,cat.categoryTotal):
+   d.barMode==="percent"?cat.values[j]:100*cat.counts[j]/Math.max(1,totals[j]);
+  return fmt(v,1)+"%";
+ };
  rows.forEach((cat,i)=>{
-  const start=LEFT+i*band+(band-usable)/2;
+  const xStart=LEFT+i*band+(band-usable)/2;
+  let bottom=0;
   cat.values.forEach((v,j)=>{
-   const x=start+j*groupW+.6,w=Math.max(1,groupW-1.2),top=Y(v);
-   parts.push('<rect x="'+fmt(x)+'" y="'+fmt(top)+'" width="'+fmt(w)+'" height="'+fmt(Y(0)-top)+'" fill="'+colors[j%colors.length]+'" fill-opacity=".86" stroke="#fff" stroke-width=".6"/>');
-   if(d.showLabels&&w>=26&&v>0)
-    parts.push(tag(fmt(v,d.barMode==="percent"?1:0),x+w/2,Math.max(TOP+12,top-8),
-     'font-family="Arial,sans-serif" font-size="11" fill="#334f58" text-anchor="middle"'));
+   const x=stacked?xStart:xStart+j*groupWidth+.6;
+   const width=stacked?usable:Math.max(1,groupWidth-1.2);
+   const end=bottom+v,top=stacked?Y(end):Y(v),height=stacked?Y(bottom)-top:Y(0)-top;
+   parts.push('<rect x="'+fmt(x)+'" y="'+fmt(top)+'" width="'+fmt(width)+'" height="'+fmt(Math.max(0,height))+
+    '" fill="'+colors[j%colors.length]+'" fill-opacity=".88" stroke="#fff" stroke-width=".75"><title>'+
+    E(cat.category+" · "+groups[j]+": "+cat.counts[j]+" responses"+(percent100?" ("+fmt(cat.values[j],2)+"% of category)":!stacked&&d.barMode==="percent"?" ("+fmt(v,2)+"% of group)":""))+
+    '</title></rect>');
+   const words=label(cat,j);
+   if(d.showLabels&&v>0&&words&&width>Math.max(23,words.length*6.7)&&height>20){
+    parts.push(tag(words,x+width/2,top+Math.min(height/2+4,17),
+     'font-family="Arial,sans-serif" font-size="10.5" font-weight="700" fill="#183d46" text-anchor="middle"'));
+   }
+   bottom=end;
   });
-  const label=cat.category;
-  if(label.length>21){
-   parts.push(tag(diagramSafeExcerpt(label,20),LEFT+(i+.5)*band,TOP+PH+25,'font-family="Arial,sans-serif" font-size="12" fill="#34505d" text-anchor="middle"'));
-  }else parts.push(tag(label,LEFT+(i+.5)*band,TOP+PH+25,'font-family="Arial,sans-serif" font-size="12" fill="#34505d" text-anchor="middle"'));
+  const maxChars=Math.max(6,Math.min(20,Math.floor(band/6.4)));
+  const shown=cat.category.length>maxChars?diagramSafeExcerpt(cat.category,maxChars):cat.category;
+  parts.push(tag(shown,LEFT+(i+.5)*band,TOP+plotHeight+25,
+   'font-family="Arial,sans-serif" font-size="11.5" fill="#34505d" text-anchor="middle"'));
  });
  groups.forEach((g,i)=>{
-  const start=LEFT+(i%2)*PW/2,yy=TOP+PH+61+Math.floor(i/2)*19;
-  parts.push('<rect x="'+fmt(start)+'" y="'+fmt(yy-11)+'" width="13" height="13" rx="2" fill="'+colors[i%colors.length]+'"/>');
-  parts.push(tag((g.length>39?diagramSafeExcerpt(g,39):g)+" (n="+totals[i]+")",start+21,yy,
+  const x=LEFT+(i%2)*PW/2,yy=TOP+plotHeight+61+Math.floor(i/2)*22;
+  parts.push('<rect x="'+fmt(x)+'" y="'+fmt(yy-11)+'" width="13" height="13" rx="2" fill="'+colors[i%colors.length]+'"/>');
+  parts.push(tag(diagramSafeExcerpt(g,32)+" (n="+totals[i]+")",x+22,yy,
    'font-family="Arial,sans-serif" font-size="12" fill="#31505c"'));
  });
- return footer(d,parts,"Categories are discrete; bar lengths begin at zero. "+(d.barMode==="percent"?"Each group totals 100%.":"Group denominators are shown in the legend."));
+ return footer(d,parts,"Bars start at zero. "+(percent100?
+  "Each category totals 100%, using the category's own responses.":
+  stacked?"Stacked segments show counts; total height gives category count.":
+  d.barMode==="percent"?"Group percentages use each group's total.":"Group denominators are shown in the legend."),canvasHeight);
 }
 export function renderStatSvg(raw){
  const q=statAnalysis(raw);
- const renderer={histogram,box:boxes,dot:dots,bar:bars}[q.draft.kind];
+ const renderer={histogram,ogive,polygon:frequencyPolygons,box:boxes,dot:dots,bar:bars}[q.draft.kind];
  if(!q.ready){
   const parts=base(q.draft,"Working preview — complete the statistical diagram checks to export.");
   parts.push(tag("Add or correct your data and labels to see an IA-ready diagram",W/2,TOP+PH/2,
     'text-anchor="middle" font-family="Arial,sans-serif" font-size="17" fill="#687e85"'));
   // Show a preview when just metadata is missing, but never when mathematical data are invalid.
   if(!q.problems.some(p=>["histogram-data","histogram-empty","histogram-n","invalid-values","dot-stack","observations","series","bar-data",
-    "categories","data","pending","dot-crowded","cropped-classes","cropped-points","cropped-bars"].includes(p.code)))return renderer(q);
+    "categories","data","pending","dot-crowded","cropped-classes","cropped-points","cropped-bars",
+    "ogive-data","polygon-data","percentile","compare-groups","compare-grouped","compare-limit","zero-bar"].includes(p.code)))return renderer(q);
   return footer(q.draft,parts);
  }
  return renderer(q);
