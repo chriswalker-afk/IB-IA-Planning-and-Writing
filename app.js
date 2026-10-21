@@ -58,7 +58,7 @@ import {exportStat} from "./src/diagrams/stat-studio-export.js";
 import {analyzeTable,importTableData,newTableDraft,tableColumnFormat} from "./src/diagrams/table-studio-core.js";
 import {renderTableSvg} from "./src/diagrams/table-studio-render.js";
 import {renderTableStudio,tableDataChoices,tablePreviewHtml,tableA4PreviewHtml,tableQualityHtml,tableOutputHtml} from "./src/diagrams/table-studio-view.js";
-import {setTableField,setTableColumn,setTableColumnFormat,chooseTableMode,toggleTableVariable,toggleTableMeasure,loadTable,freshTable,saveTableDraft,saveAndLinkTable} from "./src/diagrams/table-studio-actions.js";
+import {setTableField,setTableColumn,setTableColumnFormat,toggleTableDisplayColumn,chooseTableMode,toggleTableVariable,toggleTableMeasure,loadTable,freshTable,saveTableDraft,saveAndLinkTable} from "./src/diagrams/table-studio-actions.js";
 import {exportTable} from "./src/diagrams/table-studio-export.js";
 import {nativeGridSummary,editNativeHeading,editNativeCell,pasteNativeRange,NATIVE_MAX_ROWS,NATIVE_PAGE_ROWS} from "./src/diagrams/native-data-core.js";
 import {handleNativeDataAction,nativeStudio,activeNativeType} from "./src/diagrams/native-data-actions.js";
@@ -2659,6 +2659,11 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         }else if(old!==value)refreshVoronoiPreview();
       }
       return;
+    }
+    if(target.dataset.tableDisplayColumn!==undefined){
+      if(!toggleTableDisplayColumn(state.tableStudio,Number(target.dataset.tableDisplayColumn),target.checked))
+        toast("Choose up to five displayed columns","The original source values have not been changed.");
+      save();render();return;
     }
     if(target.dataset.tableVariable!==undefined){
       const ok=toggleTableVariable(state.tableStudio,Number(target.dataset.tableVariable),target.checked);
