@@ -148,7 +148,7 @@ export function renderGraphStudio(state,icon,e){
  const unit=(axis)=>'<div class="graph-units">'+pick(axis+"UnitMode",axis==="x"?"Horizontal quantity":"Vertical quantity",d[axis+"UnitMode"],[
   ["unsure","Choose if units apply"],["unit","Has a unit"],["dimensionless","Dimensionless / no units"]
  ],e)+
- (d[axis+"UnitMode"]==="unit"?field(axis+"Unit",axis==="x"?"Horizontal unit":"Vertical unit",d[axis+"Unit"],e,{placeholder:"e.g. seconds / cm / dollars"}):"")+'</div>';
+ (d[axis+"UnitMode"]==="unit"?field(axis+"Unit",axis==="x"?"Horizontal unit":"Vertical unit",d[axis+"Unit"],e,{placeholder:"e.g. m s^-2, cm^3, kg m^-3" ,hint:"Use ^ for powers: m s^-2 appears as m s⁻². Also accepts m/s^2 and 10^(-3)."}}):"")+'</div>';
  const problems=q.problems.map(x=>'<li>'+icon("x-circle")+'<span>'+e(x.message)+'</span></li>').join("");
  const warnings=q.warnings.map(x=>'<li>'+icon("alert-circle")+'<span>'+e(x.message)+'</span></li>').join("");
  const zero=q.ready&&q.points.length?"Ready to export":"Add the missing details before exporting";
@@ -198,6 +198,9 @@ export function renderGraphStudio(state,icon,e){
   field("xMax","x maximum",d.xMax,e,{placeholder:d.kind==="function"?"10":"Auto"})+
   field("yMin","y minimum",d.yMin,e,{placeholder:"Auto"})+
   field("yMax","y maximum",d.yMax,e,{placeholder:"Auto"})+'</div>'+
+  '<div class="graph-legend-options">'+check("showLegend","Show key / legend (independent of fitted curves)",d.showLegend)+
+  pick("legendPosition","Key location",d.legendPosition,[["below","Below graph (recommended)"],["above","Above graph"],["right","Right of graph"]],e)+
+  '<small>Hide or move the key without removing any regression lines. The exported graph uses this setting.</small></div>'+
   '<div class="graph-checks">'+check("showGrid","Show light grid lines",d.showGrid)+
    (d.kind==="time"?check("showPoints","Show observed points",d.showPoints):"")+
    (d.kind!=="function"?check("includeZeroY","Include zero on vertical axis",d.includeZeroY):"")+'</div>'+
