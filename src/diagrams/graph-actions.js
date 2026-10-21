@@ -4,7 +4,7 @@ import {completeEntry,startFirstRepresentation} from "../completing/engine.js";
 import {GRAPH_MODEL_TYPES,MAX_GRAPH_MODELS,normalizeGraphModels} from "./graph-models.js";
 
 const ALLOWED=new Set(Object.keys(newGraphDraft()));
-const FLAGS=new Set(["showGrid","showPoints","includeZeroY","showResidualSegments","showResidualPlot"]);
+const FLAGS=new Set(["showGrid","showPoints","includeZeroY","showLegend","showResidualSegments","showResidualPlot"]);
 const SELECTORS=new Set(["xIndex","yIndex"]);
 export function updateGraphField(studio,key,value){
  const d=studio?.draft;
