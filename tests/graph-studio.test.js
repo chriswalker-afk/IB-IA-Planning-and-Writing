@@ -599,3 +599,30 @@ test("advanced regression settings reject script-like inputs and use escaped mat
  assert.match(html,/positive, finite period/);
  assert.equal(studio.draft.models[0].period.length<=36,true);
 });
+
+test("graph figure labels scientific units, figure numbers, and separate legend visibility",()=>{
+ const g=validData();
+ g.draft.figureNumber="7";
+ g.draft.xUnit="m s^-2";g.draft.yUnit="cm^3";
+ addGraphModel(g,"linear");
+ let svg=renderGraphSvg(g.draft);
+ assert.match(svg,/Figure 7/);
+ assert.match(svg,/m s⁻²/);
+ assert.match(svg,/cm³/);
+ assert.match(svg,/graph-legend-text/);
+ assert.match(svg,/graph-model-overlay/);
+ const axisMatch=svg.match(/class="graph-legend-text" x="[^"]+" y="([^"]+)"/);
+ assert(Number(axisMatch[1])>analyseGraph(g.draft).bounds.x.length);
+ updateGraphField(g,"showLegend",false);
+ svg=renderGraphSvg(g.draft);
+ assert(!svg.includes('class="graph-legend-text"'));
+ assert(svg.includes('class="graph-model-overlay"'));
+ updateGraphField(g,"showLegend",true);
+ for(const pos of ["above","below","right"]){
+  updateGraphField(g,"legendPosition",pos);
+  assert.match(renderGraphSvg(g.draft),/graph-legend-text/);
+ }
+ const normalized=normalizeGraphStudio({...g,draft:{...g.draft,legendPosition:"invalid"}});
+ assert.equal(normalized.draft.legendPosition,"below");
+ assert.equal(normalized.draft.showLegend,true);
+});
