@@ -1111,6 +1111,7 @@
 /* Reduced advice: put the actual IA writing task first. The optional saved
  * context is still available (and editable) without occupying a full page.
  * Criterion and Writer's Field Guide bubbles remain attached to the fields. */
+.chapter-onboarding-grid-setup.is-reduced{grid-template-columns:minmax(0,1fr)}
 .writing-stage-flow.is-reduced{gap:11px;margin-top:9px}
 .studio-stage-essential-check{font-size:12px;line-height:1.5;font-weight:650;color:#38695d;margin:9px 0 12px;padding:8px 11px;border-left:3px solid #9bc8b7;background:#f7faf8}
 .writing-stage-flow.is-reduced>.writing-stage-task{order:0}
