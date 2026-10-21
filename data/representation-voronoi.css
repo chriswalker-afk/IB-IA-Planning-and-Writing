@@ -213,3 +213,19 @@ body.representation-focus-active .voronoi-layout{grid-template-columns:minmax(29
 @media(prefers-reduced-motion:reduce){.voronoi-tool{transition:none}}
 
 .voronoi-svg [data-voronoi-plane]:focus-visible,.voronoi-svg [data-voronoi-site-index]:focus-visible,.voronoi-svg [data-voronoi-cell-index]:focus-visible{outline:none;stroke:#c06435;stroke-width:3;stroke-dasharray:5 4}
+
+
+/* Keep optional site-name notation in the existing name column. */
+.voronoi-site-name-editor{min-width:0;display:grid;align-content:start;gap:3px;position:relative}
+.voronoi-site-name-editor>label{display:grid;gap:4px;min-width:0}
+.voronoi-site-name-editor>label>span{font-size:9px;color:#5d7679}
+.voronoi-site-name-editor .diagram-notation-tools{margin:0;position:relative}
+.voronoi-site-name-editor .diagram-notation-toggle{font-size:10px;padding:4px 7px;white-space:nowrap}
+.voronoi-site-name-editor .diagram-notation-panel{
+ position:absolute;z-index:25;top:100%;left:0;width:min(355px,calc(100vw - 70px));
+ max-width:none;box-shadow:0 12px 28px #173f3927;
+}
+.voronoi-site-editor:has(.voronoi-site-name-editor .diagram-notation-toggle[aria-expanded="true"]){overflow:visible;max-height:none}
+@media(max-width:700px){
+ .voronoi-site-row>.voronoi-site-name-editor{grid-column:span 2}
+}
