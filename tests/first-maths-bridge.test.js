@@ -116,7 +116,9 @@ test("help remains short, tailored, optional and safely escaped",()=>{
  assert(tips[0].detail.includes("Introduction"));
  assert(tips[2].detail.includes("sampling"));
  html=renderFirstMathsAdvice(s,icon,escapeHtml);
- assert.equal((html.match(/data-first-maths-tip=/g)||[]).length,4);
+ assert.equal((html.match(/data-first-maths-tip=/g)||[]).length,0);
+ assert(html.includes('data-advice-moved-to-guide="first-mathematics"'));
+ assert(html.includes("Four practical first-mathematics writing tips"));
  assert(html.includes("Aim first. Then one useful mathematical step."));
  const reduced=renderFirstMathsAdvice(s,icon,escapeHtml,{reduced:true});
  assert(!reduced.includes("data-first-maths-tip="));
