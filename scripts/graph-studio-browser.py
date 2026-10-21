@@ -177,7 +177,11 @@ def data_graph(page,width):
  png=Path(download.value.path()).read_bytes()
  assert png[:8]==b"\x89PNG\r\n\x1a\n"
  width_px,height_px=struct.unpack(">II",png[16:24])
- assert (width_px,height_px)==(2820,2040),(width_px,height_px)
+ # Dynamic key, caption and equation layouts may require additional SVG height.
+ figure_svg=page.locator('[data-graph-preview] svg.graph-figure-svg')
+ svg_width=int(figure_svg.get_attribute("width"))
+ svg_height=int(figure_svg.get_attribute("height"))
+ assert (width_px,height_px)==(3*svg_width,3*svg_height),(width_px,height_px,svg_width,svg_height)
  page.locator('[data-action="graph-use"]').click()
  assert page.locator('[data-source-node="C30"]').count()==1
  snapshot=saved(page)
