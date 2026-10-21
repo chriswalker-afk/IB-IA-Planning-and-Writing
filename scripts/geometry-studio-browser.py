@@ -72,7 +72,7 @@ def test_one(browser,width,height,touch):
   }""",arg=r'\(\theta\)')
   label=saved(page)["geometryStudio"]["draft"]["vertices"][0]["angleLabel"]
   assert r'\(\theta\)' in label,label
-  assert page.locator("[data-geometry-preview] svg").count()==1
+  assert page.locator("[data-geometry-preview] svg[data-geometry-canvas]").count()==1
   assert "theta" in label
   row.locator('[data-action="diagram-notation-close"]').click()
   # Mouse or native touch pointer drag must change saved Cartesian coordinates.
