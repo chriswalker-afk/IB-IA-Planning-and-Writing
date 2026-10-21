@@ -161,7 +161,7 @@ export function statQualityHtml(studio,icon,e){
 export function statOutputHtml(studio,icon,e){
  const q=statAnalysis(studio.draft),disabled=q.ready?"":' disabled title="Fix the required mathematical and presentation checks first"';
  return '<button type="button" class="btn btn-primary" data-action="stat-use"'+disabled+'>'+icon("check-circle")+' Save and link to my first mathematics</button>'+
- (q.draft.kind==="histogram"?'<div class="stat-table-transfer"><button type="button" class="btn btn-secondary btn-sm" data-action="stat-to-table"'+disabled+
+ (["histogram","ogive","polygon"].includes(q.draft.kind)?'<div class="stat-table-transfer"><button type="button" class="btn btn-secondary btn-sm" data-action="stat-to-table"'+disabled+
  '>'+icon("table")+' Create matching grouped-frequency table</button>'+
  '<small>Copies the original measurements or grouped classes, preserving your exact histogram boundaries. No saved table is overwritten.</small></div>':"")+
  '<div class="stat-output-buttons">'+
@@ -176,11 +176,12 @@ function selectedControls(d,e){
  const options=d.columns.map((name,i)=>[String(i),name]);
  const pick=(key,label,index)=>select(key,label,String(index),options,e);
  const numChoices=d.columns.map((name,i)=>'<label class="stat-column-checkbox"><input type="checkbox" data-stat-series="'+i+'"'+(d.selected.includes(i)?" checked":"")+'><span>'+e(name)+'</span></label>').join("");
- if(d.kind==="histogram"){
+ if(["histogram","ogive","polygon"].includes(d.kind)){
   if(d.histogramInput==="table")
    return '<div class="stat-form-grid">'+pick("lowIndex","Lower boundary column",d.lowIndex)+pick("highIndex","Upper boundary column",d.highIndex)+
     pick("frequencyIndex","Frequency column",d.frequencyIndex)+'</div>';
-  if(d.histogramCompare!=="single")return '<div class="stat-column-list"><strong>Compare two to four measurement columns</strong>'+numChoices+'</div>';
+  if((d.kind==="histogram"?d.histogramCompare!=="single":d.curveCompare==="multiple"))
+   return '<div class="stat-column-list"><strong>Compare two to four measurement columns</strong>'+numChoices+'</div>';
   return pick("singleIndex","Measurements column",d.selected[0]||0);
  }
  if(d.kind==="bar")
@@ -206,7 +207,7 @@ function accuracyEcho(state,e){
 export const statDataChoices=(studio,e)=>selectedControls(studio.draft,e);
 export function renderStatStudio(state,icon,e){
  const studio=state.statStudio,d=studio.draft,q=statAnalysis(d);
- const isHistogram=d.kind==="histogram";
+ const isHistogram=d.kind==="histogram",isContinuous=["histogram","ogive","polygon"].includes(d.kind);
  return '<section class="stat-studio representation-studio" data-stat-studio aria-label="Statistical diagram Studio">'+
  '<header class="stat-studio-head"><div><span class="intro-writing-guide-eyebrow">'+icon("chart")+' STATISTICAL DIAGRAM STUDIO</span>'+
  '<h2>Help your data tell a mathematical story</h2><p>Build clear, honest diagrams from your actual measurements and compare their limitations.</p></div>'+
@@ -220,7 +221,7 @@ export function renderStatStudio(state,icon,e){
   '<details class="native-import-details"><summary>Or paste / import an existing spreadsheet</summary>'+
  field("raw","Paste values from Google Sheets",d.raw,e,{rows:5,placeholder:d.kind==="bar"?
    "Category\\tGroup A\\tGroup B\\nBefore\\t12\\t15\\nAfter\\t18\\t20":
-   d.kind==="histogram"&&d.histogramInput==="table"?
+   isContinuous&&d.histogramInput==="table"?
    "Lower\\tUpper\\tFrequency\\n0\\t10\\t4\\n10\\t25\\t8":
    "Length (cm)\\tGroup B (cm)\\n10.3\\t12.0\\n11.4\\t13.2"})+
  '<div class="stat-data-actions"><button type="button" class="btn btn-secondary btn-sm" data-action="stat-parse">'+icon("clipboard")+' Read pasted table</button>'+
@@ -229,10 +230,12 @@ export function renderStatStudio(state,icon,e){
  (d.matrix.length?'<p class="stat-import-status">'+icon("check-circle")+' '+d.matrix.length+' rows and '+d.columns.length+' columns imported.'+
   (d.pendingPaste?' Your latest edits have not been parsed yet.':'')+'</p>':
   '<p class="native-grid-tip">Start by entering actual measurements or category counts in the worksheet above.</p>')+
- (isHistogram?select("histogramInput","My histogram starts from",d.histogramInput,[["raw","Individual measurements"],["table","Class intervals and frequencies"]],e)+
-  (d.histogramInput==="raw"?select("histogramCompare","Display",d.histogramCompare,[["single","One distribution"],["overlay","Compare with transparent overlays"],["smallmultiples","Compare side by side on shared axes"]],e):""):"")+
+ (isContinuous?select("histogramInput","Data used for classes",d.histogramInput,[["raw","Individual measurements"],["table","Class intervals and frequencies"]],e)+
+  (d.histogramInput==="raw"?(isHistogram?
+   select("histogramCompare","Display",d.histogramCompare,[["single","One distribution"],["overlay","Compare with transparent overlays"],["smallmultiples","Compare in panels on shared axes"]],e):
+   select("curveCompare","Display",d.curveCompare,[["single","One distribution"],["multiple","Compare up to four groups on common axes"]],e)):""):"")+
  '<div data-native-choices="stat">'+statDataChoices(studio,e)+'</div>'+
- (isHistogram&&d.histogramInput==="raw"?'<div class="stat-form-grid">'+
+ (isContinuous&&d.histogramInput==="raw"?'<div class="stat-form-grid">'+
   field("binWidth","Class width (required)",d.binWidth,e,{placeholder:"e.g. 5",hint:"Choose an interpretable interval, not just the prettiest shape."})+
   field("binStart","First boundary (optional)",d.binStart,e,{placeholder:"Automatically aligned"})+'</div>'+
   (statAnalysis(d).result.suggestions?.length?'<div class="stat-bin-suggestions"><strong>Suggested starting widths</strong><p>These are options, not automatic choices. Check the shape and explain your selected intervals.</p>'+
@@ -249,8 +252,30 @@ export function renderStatStudio(state,icon,e){
   '<p class="stat-method-help">The outlier rule only flags possible unusual observations. It never removes measurements. Whisker ends can be chosen independently.</p></div>':"")+
  (d.kind==="histogram"?select("histogramLabels","Labels above bars",d.histogramLabels,[["none","No value labels"],["frequency","Frequency"],["density","Frequency density"],["percentage","Percentage of group"]],e):"")+
  (d.kind==="dot"?select("dotMode","Repeated / nearby observations",d.dotMode,[["individual","One dot per observation"],["counted","One marker per distinct value, with count"]],e):"")+
- (d.kind==="bar"?select("barMode","How do you want to compare groups?",d.barMode,[
-  ["count","Compare actual counts"],["percent","Percent of each group's total"]],e):"")+
+ (d.kind==="ogive"?'<div class="stat-box-options"><h4>Quartiles and cumulative-frequency guides</h4>'+
+  (d.curveCompare==="multiple"?'<p>Group comparisons use cumulative percentages so different sample sizes are comparable.</p>':
+   select("ogiveYMode","Vertical axis",d.ogiveYMode,[["percent","Cumulative percentage"],["count","Cumulative frequency (count)"]],e))+
+  checkbox("curveShowQuartiles","Show Q1, median and Q3 estimates",d.curveShowQuartiles)+
+  checkbox("curveShowPercentile","Show an additional chosen percentile",d.curveShowPercentile)+
+  (d.curveShowPercentile?field("curvePercentile","Percentile between 0 and 100",d.curvePercentile,e,{placeholder:"e.g. 90"}):"")+
+  checkbox("curveGuides","Show construction lines to axes",d.curveGuides)+
+  '<p>Values are estimated by linear interpolation within grouped intervals, not exact quartiles from raw observations.</p></div>':"")+
+ (d.kind==="polygon"?'<div class="stat-box-options"><h4>Frequency polygon</h4>'+
+  (d.curveCompare!=="multiple"?checkbox("polygonShowHistogram","Show a lightly shaded histogram behind the polygon",d.polygonShowHistogram):"")+
+  checkbox("polygonShowPoints","Mark class midpoints",d.polygonShowPoints)+
+  checkbox("polygonShowValues","Label plotted frequency densities",d.polygonShowValues)+
+  '<p>Only observed class midpoints are joined. For unequal class widths, use frequency density, not frequency.</p></div>':"")+
+ (d.kind==="bar"?select("barStyle","Compare categories using",d.barStyle,[
+  ["grouped","Grouped bars"],["stacked","Stacked counts"],["stacked100","100%-stacked: within each category"]],e)+
+  (d.barStyle==="grouped"?select("barMode","Values represented by bar heights",d.barMode,[
+   ["count","Actual counts"],["percent","Percent of each group's total"]],e):"")+
+  select("barSort","Order categories",d.barSort,[
+   ["source","Original data order"],["name","Alphabetical"],["total-desc","Highest total first"],["total-asc","Lowest total first"]],e)+
+  select("barLabels","Value labels inside bars",d.barLabels,[
+   ["auto","Match chart type"],["count","Original count"],["percent","Percentage"],["none","Hide numeric labels"]],e)+
+  '<p class="stat-method-help">'+(d.barStyle==="stacked100"?"Each bar is 100% of that category; percentages do NOT use the group total.":
+   d.barStyle==="stacked"?"Each stacked segment shows observed counts, and the bar total is the category total.":
+   "Group percentages divide by that group's total across all categories.")+'</p>':"")+
  '</section>'+
  '<section class="stat-control-card" data-representation-step="refine"><h3><span>2</span> Labels, provenance and precision</h3>'+
  field("title","Descriptive diagram title",d.title,e,{placeholder:"e.g. Comparison of measured walking speeds"})+
