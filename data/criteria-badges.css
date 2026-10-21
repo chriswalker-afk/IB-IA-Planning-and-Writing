@@ -66,18 +66,6 @@
 }
 @media(prefers-reduced-motion:reduce){.criterion-badge{transition:none}}
 
-/* Reusable two-criterion annotation for a single writing box. Popovers and
-   rubric wording are the same as the existing Planning criterion bubbles. */
-.criterion-marked-writing-box{position:relative}
-.criterion-marked-writing-box>.criterion-writing-bubbles{position:absolute;z-index:2;left:-16px;top:44px;display:flex;flex-direction:column;gap:12px}
-.criterion-marked-writing-box>.criterion-writing-bubbles>.criterion-badge{box-shadow:0 0 0 3px #fff}
-.criterion-marked-writing-box textarea.field{padding-left:35px}
-@media(max-width:620px){
- .criterion-marked-writing-box>.criterion-writing-bubbles{left:auto;right:5px;top:1px;flex-direction:row;gap:8px}
- .criterion-marked-writing-box>.field-group>.field-label{min-height:40px;padding-right:94px}
- .criterion-marked-writing-box textarea.field{padding-left:12px}
-}
-
 /* Pass 3: compact optional mathematical routes; native disclosure stays closed by default. */
 .criterion-popin-alternatives{margin:11px 0 15px;border:1px solid #d7e6dd;border-radius:12px;background:#fcfefd;overflow:hidden}
 .criterion-popin-alternatives>summary{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 13px;color:#215748;font-size:13px;font-weight:750;line-height:1.4;cursor:pointer;list-style:none}
@@ -112,7 +100,6 @@
 .criterion-popin-note{font-size:13px}
 .criterion-opportunities-content li strong{font-size:13px}
 .criterion-opportunities-content li p{font-size:13px}
-.criterion-marked-writing-box>.criterion-writing-bubbles{gap:10px;left:-18px}
 .criterion-popin-close{width:44px;height:44px}
 .assessment-cohort-notice{margin:12px auto 21px;max-width:1050px;padding:15px 18px;border-radius:14px;border:1px solid #bad6d0;background:#f2faf7;color:#254c47}
 .assessment-cohort-notice strong{display:block;font-size:15px}
@@ -136,38 +123,89 @@
  .criterion-badge{--badge-size:44px}
  .criterion-marked-field>.criterion-badge{right:2px;top:0}
  .criterion-marked-field>.field-group>.field-label{padding-right:55px;min-height:45px}
- .criterion-marked-writing-box>.criterion-writing-bubbles{top:0;left:auto;right:2px;gap:6px}
- .criterion-marked-writing-box>.field-group>.field-label{padding-right:112px;min-height:45px}
  .criterion-popin{width:calc(100vw - 12px);max-height:calc(100dvh - 12px)}
  .criterion-popin-body{padding:15px}
  .ess-revised-grid{grid-template-columns:1fr}
  .assessment-cohort-notice{margin:10px 4px 17px;padding:13px}
 }
 
-/* Writer's Field Guide: purple book bubble beside the CURRENT IA writing box,
- * sharing the field-level geometry of rubric bubbles without becoming a rubric.
- * The sibling is intentionally outside .criterion-writing-bubbles so it stays
- * usable when the newer assessment framework hides current-IA criterion badges. */
-.criterion-marked-field.has-writer-guide{position:relative;--writer-bubble-size:38px}
-.writer-guide-field-bubble{position:absolute;right:3px;top:2px;z-index:5;display:grid;place-items:center;width:var(--writer-bubble-size);height:var(--writer-bubble-size);border:2px solid #9b75cc;border-radius:50%;background:#eee4fa;color:#61418c;box-shadow:0 0 0 3px #fff;cursor:pointer;transition:background .15s,border-color .15s,transform .15s}
-.writer-guide-field-bubble>.icon,.writer-guide-field-bubble svg{width:18px;height:18px}
-.writer-guide-field-bubble:hover{background:#dfd0f3;border-color:#7350a4;transform:translateY(-1px)}
-.writer-guide-field-bubble:focus-visible{outline:3px solid #754aa9;outline-offset:4px}
-.criterion-marked-field.has-writer-guide>.criterion-badge{left:auto;right:49px;top:0}
-.criterion-marked-writing-box.has-writer-guide>.criterion-writing-bubbles{left:auto;right:49px;top:0;flex-direction:row;gap:6px}
-.criterion-marked-field.has-writer-guide>.field-group>.field-label{display:block;min-height:45px;padding-right:98px}
-.criterion-marked-writing-box.has-writer-guide>.field-group>.field-label{padding-right:149px}
-.criterion-marked-field.has-writer-guide textarea.field{padding-left:12px}
-.criterion-field-guide-only>.field-group>.field-label{padding-right:45px!important}
-.criterion-field-guide-only:not(:has(>.field-group)){padding-top:44px}
-#main[data-assessment-framework="revised2029"] .criterion-marked-field.has-writer-guide>.field-group>.field-label{padding-right:45px}
-@media(max-width:620px){
- .criterion-marked-field.has-writer-guide{--writer-bubble-size:38px}
- .criterion-marked-field.has-writer-guide>.criterion-badge{right:49px;top:0}
- .criterion-marked-writing-box.has-writer-guide>.criterion-writing-bubbles{left:auto;right:49px;top:0;flex-direction:row;gap:5px}
- .criterion-marked-field.has-writer-guide>.field-group>.field-label{padding-right:102px;min-height:45px}
- .criterion-marked-writing-box.has-writer-guide>.field-group>.field-label{padding-right:150px}
- .criterion-field-guide-only>.field-group>.field-label{padding-right:45px!important}
+/* Pass 3 — ONE field-heading help rail across the full IA writing journey.
+ * All marked writing fields use actual document flow rather than absolute
+ * positions. Labels keep their original for/id links; green assessment buttons
+ * come first and the purple Writer's Field Guide button always comes last.
+ * This does not change Planning, saved IA content or either advice system. */
+.criterion-marked-field.has-field-help-rail{position:relative;min-width:0;--field-help-size:42px}
+.criterion-marked-field.has-field-help-rail>.field-group{min-width:0;margin-bottom:0}
+.criterion-marked-field.has-field-help-rail .criterion-field-header{
+ display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:start;
+ gap:8px 14px;min-width:0;margin:0 0 10px;
 }
-@media(prefers-reduced-motion:reduce){.writer-guide-field-bubble{transition:none}}
-@media print{.writer-guide-field-bubble{display:none!important}}
+.criterion-marked-field.has-field-help-rail .criterion-field-header>.field-label{
+ grid-column:1;grid-row:1;min-width:0;min-height:0!important;
+ margin:0;padding:6px 0 0!important;line-height:1.5;
+ overflow-wrap:break-word;
+}
+.criterion-marked-field.has-field-help-rail .criterion-field-help-rail{
+ grid-column:2;grid-row:1;display:flex;align-items:center;
+ justify-content:flex-end;gap:8px;min-width:0;flex:none;
+}
+.criterion-marked-field.has-field-help-rail .criterion-field-header-standalone{
+ display:flex;justify-content:flex-end;align-items:center;
+}
+.criterion-marked-field.has-field-help-rail .criterion-writing-bubbles{
+ display:flex;flex-direction:row;align-items:center;gap:8px;min-width:0;
+}
+.criterion-marked-field.has-field-help-rail .criterion-badge{
+ --badge-size:var(--field-help-size);position:relative;
+ top:auto;right:auto;bottom:auto;left:auto;margin:0;flex:none;
+}
+.criterion-marked-field.has-field-help-rail .criterion-badge-multi{
+ min-width:49px;width:auto;padding:0 8px;height:var(--field-help-size);border-radius:24px;
+}
+.criterion-marked-field.has-field-help-rail .writer-guide-field-bubble{
+ position:relative;top:auto;right:auto;bottom:auto;left:auto;z-index:1;
+ display:grid;place-items:center;flex:none;
+ width:var(--field-help-size);height:var(--field-help-size);
+ border:2px solid #9b75cc;border-radius:50%;
+ background:#eee4fa;color:#61418c;
+ box-shadow:0 0 0 3px #fff;cursor:pointer;
+ transition:background .15s,border-color .15s,transform .15s;
+}
+.criterion-marked-field.has-field-help-rail .writer-guide-field-bubble>.icon,
+.criterion-marked-field.has-field-help-rail .writer-guide-field-bubble svg{width:20px;height:20px}
+.criterion-marked-field.has-field-help-rail .writer-guide-field-bubble:hover{
+ background:#dfd0f3;border-color:#7350a4;transform:translateY(-1px)
+}
+.criterion-marked-field.has-field-help-rail .writer-guide-field-bubble:focus-visible{
+ outline:3px solid #754aa9;outline-offset:4px
+}
+.criterion-marked-field.has-field-help-rail textarea.field{padding-left:12px}
+.criterion-marked-field.has-field-help-rail .field-group>.field-hint{margin-top:8px}
+/* For a later revised assessment cohort, criteria disappear but writing
+ * guidance stays available. Hide a completely empty rail in that case. */
+#main[data-assessment-framework="revised2029"] .has-field-help-rail:not(.has-writer-guide) .criterion-field-help-rail{display:none}
+#main[data-assessment-framework="revised2029"] .has-field-help-rail:not(.has-writer-guide) .criterion-field-header{grid-template-columns:minmax(0,1fr)}
+@media(max-width:700px){
+ .criterion-marked-field.has-field-help-rail{--field-help-size:44px}
+ .criterion-marked-field.has-field-help-rail .criterion-field-header{
+  grid-template-columns:minmax(0,1fr);gap:9px;margin-bottom:9px
+ }
+ .criterion-marked-field.has-field-help-rail .criterion-field-header>.field-label{
+  grid-column:1;grid-row:1;padding-top:0!important
+ }
+ .criterion-marked-field.has-field-help-rail .criterion-field-help-rail{
+  grid-column:1;grid-row:2;justify-content:flex-end;width:100%
+ }
+ .criterion-marked-field.has-field-help-rail .criterion-field-header-standalone{
+  display:flex
+ }
+ .criterion-marked-field.has-field-help-rail .criterion-field-header-standalone .criterion-field-help-rail{
+  width:auto
+ }
+}
+@media(prefers-reduced-motion:reduce){
+ .criterion-marked-field.has-field-help-rail .writer-guide-field-bubble{transition:none}
+}
+@media print{
+ .criterion-marked-field.has-field-help-rail .criterion-field-help-rail{display:none!important}
+}
