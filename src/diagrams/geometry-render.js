@@ -79,8 +79,11 @@ export function renderGeometrySvg(raw,{interactive=false}={}){
    out.push(text(angleLabel,p.sx+alignX*41*placement,p.sy+alignY*41*placement,
     'font-family="Arial,sans-serif" font-size="13" text-anchor="middle" fill="#855137" stroke="#fff" stroke-width="3" paint-order="stroke"',{width:120}));
   }
-  out.push('<circle cx="'+num(p.sx)+'" cy="'+num(p.sy)+'" r="'+(interactive?8:5.5)+'" fill="'+blue+'" stroke="#fff" stroke-width="2"'+
-   (interactive?' tabindex="0" role="button" aria-label="Move vertex '+(i+1)+'" data-geometry-vertex-index="'+i+'" style="cursor:grab"':"")+'/>');
+  if(interactive)out.push('<g tabindex="0" role="button" aria-label="Move vertex '+(i+1)+
+   ' by dragging or pressing an arrow key" data-geometry-vertex-index="'+i+'" style="cursor:grab;touch-action:none">'+
+   '<circle cx="'+num(p.sx)+'" cy="'+num(p.sy)+'" r="23" fill="transparent" stroke="none" pointer-events="all"/>');
+  out.push('<circle cx="'+num(p.sx)+'" cy="'+num(p.sy)+'" r="6.5" fill="'+blue+'" stroke="#fff" stroke-width="2" pointer-events="none"/>');
+  if(interactive)out.push('</g>');
   const radialX=p.sx-centroid.x,radialY=p.sy-centroid.y,mag=Math.max(1,Math.hypot(radialX,radialY));
   out.push(text(p.label||"?",p.sx+radialX/mag*22,p.sy+radialY/mag*22-2,
    'font-family="Arial,sans-serif" font-size="18" font-weight="700" text-anchor="middle" fill="'+ink+'" stroke="#fff" stroke-width="4" paint-order="stroke"',{width:100}));
