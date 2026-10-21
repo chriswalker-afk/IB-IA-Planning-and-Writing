@@ -99,6 +99,52 @@ def data_graph(page,width):
  assert len(saved(page)["graphStudio"]["draft"]["models"])==3
  no_overflow(page)
  page.screenshot(path=str(OUT/f"graph-studio-models-{width}.png"),full_page=True,animations="disabled")
+ # Every model uses the same complete observations; no automatic ranking.
+ comparison=page.locator('.graph-model-comparison')
+ assert comparison.is_visible()
+ assert comparison.locator('tbody tr:not(.graph-comparison-explainer)').count()==3
+ assert "RMSE (m)" in comparison.inner_text()
+ assert "R²" in comparison.inner_text()
+ assert "not just the largest R²" in comparison.inner_text()
+ # Residuals remain opt-in even when three fits have been added.
+ assert page.locator('.graph-residual-panel').count()==0
+ assert page.locator('.graph-residual-segment').count()==0
+ page.locator('[data-graph-field="residualModelId"]').select_option("model-1")
+ page.locator('[data-graph-field="showResidualSegments"]').check()
+ assert page.locator('[data-graph-preview] .graph-residual-segment').count()==4
+ assert page.locator('[data-graph-preview] svg text').filter(has_text="Residual distances").count()==1
+ page.locator('[data-graph-field="showResidualPlot"]').check()
+ assert page.locator('.graph-residual-panel').is_visible()
+ assert page.locator('[data-graph-residual-plot] .graph-residual-zero').count()==1
+ assert page.locator('[data-graph-residual-plot] .graph-residual-point').count()==4
+ assert 'observed y' in page.locator('.graph-residual-panel').inner_text()
+ page.locator('[data-graph-field="modelReflection"]').fill("The errors appear small but the sample is limited.")
+ assert saved(page)["graphStudio"]["draft"]["modelReflection"]=="The errors appear small but the sample is limited."
+ page.screenshot(path=str(OUT/f"graph-studio-residuals-{width}.png"),full_page=True,animations="disabled")
+ with page.expect_download() as download:
+  page.locator('[data-action="graph-residual-svg"]').click()
+ residual_svg=Path(download.value.path()).read_text(encoding="utf-8")
+ assert '<svg' in residual_svg and "graph-residual-zero" in residual_svg
+ assert "Residual: observed" in residual_svg
+ with page.expect_download() as download:
+  page.locator('[data-action="graph-residual-png"]').click()
+ residual_png=Path(download.value.path()).read_bytes()
+ assert residual_png[:8]==b"\x89PNG\r\n\x1a\n"
+ px,py=struct.unpack(">II",residual_png[16:24])
+ assert (px,py)==(2820,1500),(px,py)
+ # A hidden comparison model should not silently leave visible residuals.
+ page.locator('[data-graph-field="residualModelId"]').select_option("model-2")
+ quadratic=page.locator('[data-graph-model]').nth(1)
+ quadratic.locator('[data-action="graph-model-toggle"]').click()
+ assert page.locator('.graph-residual-segment').count()==0
+ assert page.locator('[data-graph-residual-plot]').count()==0
+ assert "hidden" in page.locator('.graph-residual-panel').inner_text().lower()
+ quadratic=page.locator('[data-graph-model]').nth(1)
+ quadratic.locator('[data-action="graph-model-toggle"]').click()
+ assert page.locator('[data-graph-residual-plot] .graph-residual-point').count()==4
+ assert page.locator('.graph-residual-segment').count()==4
+ assert len(saved(page)["graphStudio"]["draft"]["models"])==3
+ no_overflow(page)
  with page.expect_download() as download:
   page.locator('[data-action="graph-svg"]').click()
  assert download.value.suggested_filename.endswith(".svg")
