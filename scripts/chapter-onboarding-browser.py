@@ -51,6 +51,13 @@ def first_time(browser,width):
   assert stored(page)["planning"]["completed"]==False
   page.locator('[data-nav="completing"]:visible').first.click()
   assert page.locator('[data-source-node="C00"]').count()==1
+  writing=page.locator('[data-writing-welcome="true"]')
+  assert writing.is_visible()
+  for words in ("Welcome to Writing", "mathematical journey adapt", "Voronoi studio", "Reduce advice", "complete JSON project backup"):
+   assert words.lower() in page.locator('[data-source-node="C00"]').inner_text().lower(),words
+  assert stored(page)["ui"]["writingIntroSeen"]==False
+  page.locator('[data-action="writing-intro-continue"]').click()
+  assert stored(page)["ui"]["writingIntroSeen"]==True
   welcome=page.locator(".writer-guide-welcome-drawer")
   assert welcome.is_visible()
   assert welcome.locator(".writer-guide-welcome-essential").count()==6
@@ -150,6 +157,7 @@ def first_time(browser,width):
   page.locator('.living-trail-step.writing').first.click()
   assert page.locator('[data-source-node="C00"]').count()==1
   assert page.locator(".writer-guide-welcome-drawer").count()==0
+  assert page.locator('[data-writing-welcome="true"]').count()==0
   without_overflow(page)
   page.screenshot(path=str(OUT/f"setup-quick-sparks-{width}.png"),full_page=True,animations="disabled")
   # Student can explore the full advice guide without losing their own work.
@@ -277,6 +285,8 @@ def completed_plan(browser,width):
   assert page.locator('[data-source-node="N07"]').count()==1
   page.locator('[data-action="plan-finish-writing"]').click()
   assert page.locator('[data-source-node="C00"]').count()==1
+  assert page.locator('[data-writing-welcome="true"]').is_visible()
+  page.locator('[data-action="writing-intro-continue"]').click()
   intro=page.locator(".writer-guide-welcome-drawer")
   assert intro.is_visible()
   intro.locator('[data-action="writer-guide-welcome-full"]').click()
