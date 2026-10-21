@@ -261,6 +261,58 @@ def category_frequency(p,width):
  assert p.locator('[data-action="table-use"]').is_enabled()
  no_overflow(p)
  p.screenshot(path=str(OUT/f"table-studio-frequencies-{width}.png"),full_page=True,animations="disabled")
+def grouped_frequency(p,width):
+ new_mode(p,"grouped")
+ p.locator('details.native-import-details').evaluate("(el)=>el.open=true")
+ p.locator('[data-table-field="headers"]').select_option("yes")
+ enter(p,"Speed (m/s)\n0\n3\n4\n5\n9\n10")
+ standard(p,"Grouped walking speed measurements")
+ p.locator('[data-table-field="groupWidth"]').fill("5")
+ p.locator('[data-table-field="groupStart"]').fill("0")
+ assert p.locator('[data-action="table-svg"]').is_enabled()
+ assert len(saved(p)["tableStudio"]["draft"]["matrix"])==6
+ assert "Frequency density" in p.locator('[data-table-preview] svg').text_content()
+ p.locator('[data-table-field="groupShowCumulative"]').check()
+ p.locator('[data-table-field="groupShowPercent"]').check()
+ assert "Cumulative frequency" in p.locator('[data-table-preview] svg').text_content()
+ assert "50.00" in p.locator('[data-table-preview] svg').text_content()
+ assert '6' in p.locator('[data-table-preview] svg').text_content()
+ with p.expect_download() as download:
+  p.locator('[data-action="table-svg"]').click()
+ assert "Frequency density" in Path(download.value.path()).read_text(encoding="utf-8")
+ emphasis=p.locator('details.ia-table-emphasis')
+ emphasis.evaluate("(el)=>el.open=true")
+ p.locator('[data-table-field="highlightMode"]').select_option("selected")
+ p.locator('[data-table-field="highlightRows"]').fill("1")
+ assert p.locator('[data-action="table-svg"]').is_disabled()
+ p.locator('[data-table-field="highlightReason"]').fill(
+  "The first interval has the greatest observed frequency in the measured sample.")
+ assert p.locator('[data-action="table-svg"]').is_enabled()
+ assert p.locator('[data-table-preview] [data-table-emphasis-row="1"]').count()==1
+ with p.expect_download() as download:
+  p.locator('[data-action="table-svg"]').click()
+ assert "Emphasis:" in Path(download.value.path()).read_text(encoding="utf-8")
+ old=saved(p)["tableStudio"]["draft"]["matrix"]
+ p.locator('[data-action="table-to-stat"]').click()
+ assert p.locator('[data-stat-studio]').is_visible()
+ assert p.locator('[data-table-studio]').count()==0
+ stat=saved(p)["statStudio"]["draft"]
+ assert stat["kind"]=="histogram" and stat["histogramInput"]=="raw"
+ assert stat["matrix"]==old
+ assert stat["binWidth"]=="5" and stat["binStart"]=="0"
+ assert p.locator('[data-action="stat-svg"]').is_enabled()
+ assert "Frequency density" in p.locator('[data-stat-preview] svg').text_content()
+ p.locator('[data-action="stat-to-table"]').click()
+ assert p.locator('[data-table-studio]').is_visible()
+ new=saved(p)["tableStudio"]["draft"]
+ assert new["mode"]=="grouped" and new["groupInput"]=="raw"
+ assert new["matrix"]==old and new["groupWidth"]=="5"
+ assert new["highlightMode"]=="none","Emphasis must not silently transfer from one figure to another"
+ assert p.locator('[data-action="table-svg"]').is_enabled()
+ assert p.locator('[data-table-preview] svg').text_content().count("Frequency density")>=1
+ no_overflow(p)
+ p.screenshot(path=str(OUT/f"table-studio-grouped-frequency-{width}.png"),full_page=True,animations="disabled")
+
 results=[]
 with sync_playwright() as pw:
  browser=pw.chromium.launch(headless=True,args=["--no-sandbox"])
@@ -274,6 +326,7 @@ with sync_playwright() as pw:
    calculated_results(p,width)
    numerical_summary(p,width)
    category_frequency(p,width)
+   grouped_frequency(p,width)
    assert not errors,errors
    results.append({"viewport":width,"status":"passed"})
   except Exception as exc:
