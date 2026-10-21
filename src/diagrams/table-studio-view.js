@@ -98,7 +98,7 @@ function sourceSelectionControls(d,e){
  const many=d.matrix.length>8||d.columns.length>5;
  return '<details class="ia-table-source-selection"'+(many||d.columnSelectionMode==="custom"||d.rowSelection.trim()?' open':'')+'>'+
  '<summary>Choose the evidence to display · original dataset stays complete</summary>'+
- '<p>The full dataset stays in your working table. There is no automatic first-eight-row selection. Select and justify only rows that help explain a calculation or comparison.</p>'+
+ '<p>The full dataset stays in your working table. There is no automatic first-eight-row selection. Select and justify only rows that help explain a calculation or comparison. Use Summary statistics when the whole sample matters.</p>'+
  (d.mode==="compact"?
   pick("columnSelectionMode","Which source columns?",d.columnSelectionMode,[
     ["all","All source columns (at most five)"],["custom","Choose source columns below"]
