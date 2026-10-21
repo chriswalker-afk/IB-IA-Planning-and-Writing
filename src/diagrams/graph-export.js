@@ -20,7 +20,8 @@ async function asPng(svg){
    picture.src=source;
   });
   const canvas=document.createElement("canvas"),scale=3;
-  canvas.width=940*scale;canvas.height=620*scale;
+  canvas.width=(picture.naturalWidth||940)*scale;
+  canvas.height=(picture.naturalHeight||620)*scale;
   const context=canvas.getContext("2d");
   if(!context)throw new Error("This browser does not provide a 2D canvas.");
   context.fillStyle="#ffffff";context.fillRect(0,0,canvas.width,canvas.height);
