@@ -30,7 +30,7 @@ function base(d,subtitle){
  return parts;
 }
 function footer(d,parts,method=""){
- const source=d.sourceKind==="secondary"?"Source: "+(d.sourceText||"not supplied"):d.sourceKind==="primary"?"Source: student's collected data":"Source not yet confirmed";
+ const source=d.sourceKind==="secondary"?"Source: "+(d.sourceText||"not supplied"):d.sourceKind==="primary"?"Source: student's collected data":d.sourceKind==="theoretical"?"Source: theoretical / student-constructed values (not measurements)":"Source not yet confirmed";
  if(method)parts.push(tag(method,W/2,H-64,'font-family="Arial,sans-serif" font-size="12" fill="#536b75" text-anchor="middle"'));
  parts.push(tag(source.slice(0,140),W/2,H-37,'font-family="Arial,sans-serif" font-size="12" fill="#536b75" text-anchor="middle"'));
  if(d.caption.trim())parts.push(tag(d.caption.slice(0,135),W/2,H-17,'font-family="Arial,sans-serif" font-size="11" fill="#697981" text-anchor="middle"'));
