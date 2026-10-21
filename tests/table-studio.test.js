@@ -69,7 +69,7 @@ test("compact table limits five columns and requires units or an explicit dimens
 test("formatting wraps headings, aligns numeric values and escapes student text",()=>{
  const s=compact(),q=analyzeTable(s.draft),svg=renderTableSvg(s.draft);
  assert.match(svg,/Table 1\./);
- assert.match(svg,/Length \(cm\)/);
+ assert.match(svg,/>Length<\/tspan>/);\n assert.match(svg,/>\(cm\)<\/tspan>/);
  assert.match(svg,/text-anchor="middle"/);
  assert.match(svg,/<tspan/);
  const html=tableToHtml(s.draft);
