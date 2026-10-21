@@ -82,6 +82,7 @@ def run(p,width):
  editor.locator('[data-action="diagram-notation-toggle"]').click()
  editor.locator('[data-diagram-expression]').fill(r'\frac{dy}{dx}')
  editor.locator('[data-action="diagram-notation-insert"]').click()
+ p.wait_for_function("(term)=> (document.querySelector('[data-trace-field=caption]')?.value||'').includes(term)",arg=r'\(\frac{dy}{dx}\)')
  assert r'\(\frac{dy}{dx}\)' in saved(p)["imageTracer"]["draft"]["caption"]
  editor.locator('[data-action="diagram-notation-close"]').click()
  assert p.locator('[data-action="trace-use"]').is_enabled()
