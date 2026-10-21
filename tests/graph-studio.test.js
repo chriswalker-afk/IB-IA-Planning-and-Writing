@@ -425,3 +425,17 @@ test("HTML escapes student reflections and does not claim unsupported fit qualit
  })));
  assert.equal(normalized.graphStudio.draft.modelReflection.length,1200);
 });
+
+test("residual diagnostic axes still include every observation when the main plot is cropped",()=>{
+ const studio=validData();assert(addGraphModel(studio,"linear").ok);
+ const id=studio.draft.models[0].id;
+ assert(updateGraphField(studio,"residualModelId",id));
+ assert(updateGraphField(studio,"showResidualPlot",true));
+ Object.assign(studio.draft,{xMin:"2",xMax:"3"});
+ const svg=renderGraphResidualSvg(studio.draft);
+ const px=[...svg.matchAll(/class="graph-residual-point" cx="([^"]+)"/g)].map(m=>Number(m[1]));
+ assert.equal(px.length,4);
+ assert(px.every(x=>x>110&&x<886),px.join(", "));
+ const analysis=analyseGraph(studio.draft);
+ assert.equal(analysis.selectedResidualModel.diagnostics.n,4);
+});
