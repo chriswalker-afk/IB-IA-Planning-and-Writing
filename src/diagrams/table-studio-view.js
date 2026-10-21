@@ -286,7 +286,7 @@ export function renderTableStudio(state,icon,e){
  input("title","Descriptive table title",d.title,e,"e.g. Median times for two groups")+'</div>'+
  textarea("purpose","Why is this table useful for my aim?",d.purpose,e,
   "Introduce the table BEFORE it appears in your IA. Why does the reader need these values?")+
- pick("sourceKind","Source of the genuine information",d.sourceKind,[["unsure","Choose source"],["primary","My own collected data"],["secondary","Published or other external source"]],e)+
+ pick("sourceKind","Source of the genuine information",d.sourceKind,[["unsure","Choose source"],["primary","My own collected data"],["secondary","Published or other external source"],["theoretical","Theoretical / calculated values (not measurements)"]],e)+
  (d.sourceKind==="secondary"?input("sourceText","Full external source",d.sourceText,e,"Publisher, dataset, link or DOI"):"")+
  (sparks.length?'<aside class="ia-table-accuracy"><strong>Previously planned accuracy:</strong> '+
   sparks.slice(0,2).map(a=>e([a.quantity,a.resolution,a.unit].filter(Boolean).join(" · "))).join("; ")+
