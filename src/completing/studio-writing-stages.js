@@ -73,10 +73,12 @@ export function renderStudioWritingStage(state,node,{icon,e,taskHtml="",taskIntr
  const stageName=first?"Introducing your mathematics":showFirst?"Showing your mathematics":
   laterMaths?"Mathematical stage "+stageNumber:group.name;
  const taskTitle=laterMaths?"Mathematical stage "+stageNumber+": Explore, explain and interpret":CONFIG.titles[node];
+ const reducedAim=state?.planning?.fields?.aim||state?.project?.aim||"";
  const task='<section class="studio-stage-writing-task'+(first?' first-maths-task':showFirst?' show-first-task':node==="C60"?' conclusion-writing-task':'')+'" aria-label="'+e(stageName)+' task">'+
   '<div class="studio-stage-writing-task-head"><span class="intro-writing-task-symbol">'+icon("pencil")+'</span>'+
   '<div><span class="intro-writing-task-eyebrow">YOUR '+e(stageName.toUpperCase())+' TASK</span>'+
   '<h2>'+e(taskTitle)+'</h2><p>'+e(taskIntro)+'</p></div></div>'+
+  (reduced&&(first||showFirst)&&reducedAim?'<p class="writing-stage-compact-aim"><strong>Your saved aim</strong> '+e(reducedAim)+'</p>':"")+
   (reduced&&showFirst?'<p class="studio-stage-essential-check" role="note">Show real mathematics, label figures and units clearly, and avoid long raw-data tables.</p>':"")+
   '<div class="studio-stage-writing-location" role="note" aria-label="Where to write your IA">'+
    icon("pencil")+
