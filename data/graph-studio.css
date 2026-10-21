@@ -124,3 +124,44 @@
 .graph-model-empty{font-size:11px;line-height:1.6;margin:0;color:#5a7472;background:#f6f9f8;border:1px dashed #d2e0dc;padding:11px;border-radius:9px}
 .graph-model-guidance{border-top:1px solid #e3ece6;padding-top:11px;font-size:10px!important;line-height:1.6;color:#5f716b;margin:12px 0 0!important}
 @media(max-width:650px){.graph-model-add{align-items:stretch;flex-direction:column;gap:0}.graph-model-add .graph-form-field{width:100%}.graph-model-add .btn{width:100%;margin-bottom:6px}.graph-model-card{padding:11px}.graph-model-actions{width:100%;justify-content:flex-end}}
+
+/* Pass 2: diagnostic values, student interpretations and residual figures. */
+.graph-model-metrics{font-size:11px;line-height:1.6;color:#195d55;margin:5px 0 6px}
+.graph-model-metrics strong{font-variant-numeric:tabular-nums;color:#163f47}
+.graph-model-diagnostic-unavailable{margin:6px 0;font-size:11px;line-height:1.5;color:#845c30}
+.graph-model-comparison{margin:15px 0;border:1px solid #d7e6e1;border-radius:11px;background:#f6faf8;padding:13px;min-width:0}
+.graph-model-comparison h4{margin:0 0 7px;color:#234f49;font-size:12px}
+.graph-model-comparison>p{margin:6px 0 12px;font-size:11px;line-height:1.6;color:#4b696b}
+.graph-comparison-table-scroll{max-width:100%;overflow-x:auto;background:white;border:1px solid #dce8e5;border-radius:9px}
+.graph-comparison-table{border-collapse:collapse;width:100%;min-width:300px;font-variant-numeric:tabular-nums;font-size:11px;color:#294b50}
+.graph-comparison-table caption{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.graph-comparison-table :is(th,td){padding:10px 9px;text-align:left;vertical-align:middle;border-bottom:1px solid #e5eeeb}
+.graph-comparison-table th{font-weight:720}
+.graph-comparison-table thead{background:#eaf5ef}
+.graph-comparison-table tbody tr:last-child :is(th,td){border-bottom:0}
+.graph-comparison-marker{width:8px;height:8px;display:inline-block;vertical-align:middle;margin-right:7px;border-radius:2px}
+.graph-comparison-explainer td{font-size:10px;line-height:1.5;background:#fff9ef;color:#775b34}
+.graph-model-comparison .graph-comparison-caution{margin:11px 0 9px;line-height:1.6}
+.graph-model-comparison .graph-comparison-question{font-weight:680;color:#1c6b5d;margin-bottom:0}
+.graph-residual-options{border-top:1px solid #dae7e1;padding-top:14px;margin-top:14px;display:grid;gap:7px}
+.graph-residual-options h4{font-size:12px;margin:0 0 2px;line-height:1.5;color:#204d47}
+.graph-residual-options h4 span{font-size:10px;color:#367e6b;padding:3px 6px;border-radius:99px;background:#e2f5ec;margin-left:5px}
+.graph-residual-options .graph-form-field{margin:0 0 4px}
+.graph-residual-options .graph-check{line-height:1.55}
+.graph-residual-options .graph-check input:disabled{opacity:.45}
+.graph-residual-options .graph-residual-state{font-size:10px;line-height:1.6;color:#4e7270;margin:4px 0 0}
+.graph-model-reflection{margin-top:15px;padding:12px;background:#fbfaf5;border:1px solid #ede9d4;border-radius:11px}
+.graph-model-reflection .graph-form-field{margin:0}
+.graph-model-reflection textarea{min-height:92px;font-family:inherit;font-size:11px}
+.graph-residual-panel{background:linear-gradient(150deg,#fff,#f8fbfa)}
+.graph-residual-maths{color:#38595e;font-size:11px;line-height:1.6;margin:0 0 11px}
+.graph-residual-svg-wrap{border-radius:9px}
+.graph-residual-explainer{color:#5c7778;font-size:10px;line-height:1.55;margin:10px 0 6px}
+.graph-residual-export{margin:9px 0 13px}
+.graph-residual-export .btn[disabled]{opacity:.5;cursor:not-allowed}
+.graph-residual-unavailable{border:1px dashed #d8c2a7;border-radius:10px;background:#fffbf3;color:#765835;padding:13px;font-size:11px;line-height:1.6}
+.graph-residual-prompts{border-top:1px solid #dfebe5;padding-top:12px;color:#385c5c;font-size:11px;line-height:1.55}
+.graph-residual-prompts strong{font-size:11px}
+.graph-residual-prompts ul{margin:8px 0 0;padding-left:18px}
+.graph-residual-prompts li{margin:4px 0}
+@media(max-width:650px){.graph-model-comparison{padding:10px}.graph-comparison-table :is(th,td){padding:8px 6px}.graph-residual-options{gap:10px}.graph-residual-panel .graph-buttons .btn{flex:1 1 125px}}
