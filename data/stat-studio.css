@@ -8,7 +8,7 @@
 .stat-studio-head>.btn{flex:none;min-height:40px}
 .stat-context-advice,.stat-accuracy-echo{border:1px solid #d6e6e2;border-radius:12px;background:#f2f9f6;padding:12px 14px;color:#3e6968;font-size:11px;line-height:1.65;margin:0 0 14px}
 .stat-context-advice strong,.stat-accuracy-echo strong{color:#206c5e}
-.stat-type-switch{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:14px 0 19px}
+.stat-type-switch{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:14px 0 19px}
 .stat-type{display:flex;flex-direction:column;text-align:left;gap:7px;background:#fff;border:1px solid #d8e4e1;padding:13px;border-radius:12px;color:var(--stat-ink);min-width:0;min-height:94px;cursor:pointer}
 .stat-type strong{font-size:12px;line-height:1.4}
 .stat-type small{font-size:10px;line-height:1.5;color:#687a7d}
@@ -144,3 +144,11 @@
 .stat-bin-suggestions p{font-size:11px;line-height:1.55;color:#607a7d;margin:0}
 .stat-bin-suggestions .btn{justify-content:flex-start;text-align:left;white-space:normal;max-width:100%}
 .stat-summary-card .stat-analysis-detail>p{font-size:11px;line-height:1.6}
+
+/* Pass 3: six recognisable diagram choices and cumulative-frequency tables. */
+.stat-analysis-group .stat-compare-table{font-variant-numeric:tabular-nums}
+.stat-box-options .stat-form-field{margin-top:8px}
+.stat-box-options .stat-checkbox{align-items:flex-start}
+.stat-type:focus-visible{outline:3px solid #a1d7c6;outline-offset:2px}
+@media(max-width:1100px){.stat-type-switch{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:390px){.stat-type{padding:9px;min-height:104px}.stat-type small{font-size:9.5px}}
