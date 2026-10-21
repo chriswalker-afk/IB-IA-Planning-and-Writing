@@ -68,6 +68,41 @@ def compact(p,width):
  p.locator('[data-table-field="cellAlignment"]').select_option("center")
  assert p.locator('[data-table-preview] svg text[text-anchor="middle"]').count()>0
  assert saved(p)["tableStudio"]["draft"]["cellAlignment"]=="center"
+ # Mathematical shortcut inserts into the chosen field at the caret, not into observations.
+ heading=p.locator('input[data-table-col="1"][data-table-part="heading"]')
+ palette=heading.locator("xpath=../following-sibling::details[contains(@class,'ia-table-math-palette')]")
+ palette.evaluate("(el)=>el.open=true")
+ heading.evaluate("(el)=>{el.focus();el.setSelectionRange(3,3);}")
+ palette.locator('[data-action="table-symbol"][data-table-token="x_i"]').click()
+ assert heading.input_value()=="Lenx_igth"
+ assert "xᵢ" in p.locator('[data-table-preview] svg').inner_text()
+ assert saved(p)["tableStudio"]["draft"]["matrix"][0][1]=="14.0"
+ heading.fill("Length")
+ assert saved(p)["tableStudio"]["draft"]["headings"][1]=="Length"
+ # Per-column precision affects display only, including independent significant figures.
+ precision=p.locator("details.ia-table-precision-options")
+ precision.evaluate("(el)=>el.open=true")
+ p.locator('[data-table-format-index="1"][data-table-format-part="mode"]').select_option("dp")
+ p.locator('[data-table-format-index="1"][data-table-format-part="digits"]').select_option("0")
+ assert saved(p)["tableStudio"]["draft"]["columnFormats"]["compact:1"]["digits"]=="0"
+ assert "14.0" not in p.locator('[data-table-preview] svg').inner_text()
+ assert saved(p)["tableStudio"]["draft"]["matrix"][0][1]=="14.0"
+ p.locator('[data-table-format-index="2"][data-table-format-part="mode"]').select_option("sf")
+ p.locator('[data-table-format-index="2"][data-table-format-part="digits"]').select_option("3")
+ assert "2.30" in p.locator('[data-table-preview] svg').inner_text()
+ p.locator('[data-table-format-index="1"][data-table-format-part="mode"]').select_option("default")
+ p.locator('[data-table-format-index="2"][data-table-format-part="mode"]').select_option("default")
+ # Live paper preview represents portrait A4 without replacing the main editing preview.
+ paper=p.locator('[data-table-a4] details')
+ paper.evaluate("(el)=>el.open=true")
+ assert p.locator('[data-table-a4] .ia-table-paper-page').is_visible()
+ assert "20 mm margins" in p.locator('[data-table-a4]').inner_text()
+ assert p.locator('[data-table-a4] .ia-table-svg').count()==1
+ p.locator('[data-table-field="note"]').fill("Results recorded using the original resolution.")
+ assert p.locator('[data-table-a4] details').get_attribute("open") is not None
+ no_overflow(p)
+ paper.evaluate("(el)=>el.open=false")
+ precision.evaluate("(el)=>el.open=false")
  p.screenshot(path=str(OUT/f"table-studio-compact-{width}.png"),full_page=True,animations="disabled")
  p.evaluate("""() => {
   window.__tableTrace = [];
