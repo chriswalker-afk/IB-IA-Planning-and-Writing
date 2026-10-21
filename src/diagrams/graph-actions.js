@@ -4,7 +4,7 @@ import {completeEntry,startFirstRepresentation} from "../completing/engine.js";
 import {GRAPH_MODEL_TYPES,MAX_GRAPH_MODELS,normalizeGraphModels} from "./graph-models.js";
 
 const ALLOWED=new Set(Object.keys(newGraphDraft()));
-const FLAGS=new Set(["showGrid","showPoints","includeZeroY"]);
+const FLAGS=new Set(["showGrid","showPoints","includeZeroY","showResidualSegments","showResidualPlot"]);
 const SELECTORS=new Set(["xIndex","yIndex"]);
 export function updateGraphField(studio,key,value){
  const d=studio?.draft;
@@ -20,7 +20,8 @@ export function updateGraphField(studio,key,value){
   return true;
  }
  if(typeof value!=="string")return false;
- d[key]=value.slice(0,key==="raw"?85000:key==="expression"?180:500);
+ if(key==="residualModelId"&&value!==""&&!d.models?.some(m=>m.id===value))return false;
+ d[key]=value.slice(0,key==="raw"?85000:key==="modelReflection"?1200:key==="expression"?180:500);
  if(key==="raw")d.pendingPaste=true;
  return true;
 }
@@ -48,6 +49,9 @@ export function removeGraphModel(studio,id){
  const d=studio?.draft;
  if(!d?.models?.some(m=>m.id===id))return false;
  d.models=d.models.filter(m=>m.id!==id);
+ if(d.residualModelId===id){
+  d.residualModelId="";d.showResidualSegments=false;d.showResidualPlot=false;
+ }
  return true;
 }
 export function updateGraphModelExpression(studio,id,expression){
@@ -85,7 +89,7 @@ export function loadSavedGraph(studio,id){
 export function freshGraph(studio){
  studio.activeId="";studio.draft=newGraphDraft();studio.open=true;
 }
-const mathSignature=d=>JSON.stringify([d.kind,d.matrix,d.columns,d.xIndex,d.yIndex,d.expression,d.xMin,d.xMax,d.yMin,d.yMax,normalizeGraphModels(d.models)]);
+const mathSignature=d=>JSON.stringify([d.kind,d.matrix,d.columns,d.xIndex,d.yIndex,d.expression,d.xMin,d.xMax,d.yMin,d.yMax,normalizeGraphModels(d.models),d.residualModelId,d.showResidualSegments,d.showResidualPlot]);
 function flagChangedGraph(state,previous,current){
  if(!previous?.entryId||mathSignature(previous.draft)===mathSignature(current.draft))return false;
  const entry=state.entries.find(x=>x.id===previous.entryId);
