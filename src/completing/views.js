@@ -60,9 +60,8 @@ export function createCompletingViews(ctx){
  // Writing-craft guidance is separate from the current-IA criterion markings.
  const criterionMarkedWritingBox=(html,keys=[])=>baseCriterionMarkedWritingBox(html,keys,guideBubble(keys));
  const criteriaField=(html,key)=>{
-  const state=getState(),node=state.completion.current;
-  const showRubric=isStudioWritingNode(node)||!isAdviceReduced(state);
-  return criterionMarkedField(html,showRubric?key:"",guideBubble(key));
+  // Assessment bubbles are help controls and stay available in both modes.
+  return criterionMarkedField(html,key,guideBubble(key));
  };
  const writerGuideOnly=(html,key)=>criterionMarkedField(html,"",guideBubble(key));
  const entryChoice=(key,options)=>{
@@ -435,7 +434,7 @@ export function createCompletingViews(ctx){
    '<h3>'+e(advice.heading)+'</h3>'+
    choiceHtml+
    '<p class="route-coach-essential">'+e(advice.essential)+'</p>'+
-   (showDepth&&advice.depth?'<div class="route-depth-check"><strong>Mathematical development</strong><p>'+e(advice.depth)+'</p></div>':"")+
+   (!reduced&&showDepth&&advice.depth?'<div class="route-depth-check"><strong>Mathematical development</strong><p>'+e(advice.depth)+'</p></div>':"")+
    (!reduced&&advice.detail?'<p class="route-coach-detail">'+e(advice.detail)+'</p>':"")+
    '</section>';
  };
@@ -564,9 +563,10 @@ export function createCompletingViews(ctx){
      '<h2 id="intro-writing-task-heading">Write your introduction</h2>'+
      '<p>In your actual IA document, write a few focused paragraphs that introduce your aim, your motivation and, if useful, a tentative prediction. You do not need to list every technique you might use.</p></div></div>'+
     criterionMarkedWritingBox(notes,["completing:C10:aim","completing:C10:motivation"])+
-    '<p class="intro-writing-task-footnote">Your notes here are private to Pathfinder. The green <strong>A</strong> and <strong>C</strong> bubbles explain assessment opportunities, while the purple book opens a relevant writing example. None of these bubbles marks or grades your draft.</p></section>';
+    (isAdviceReduced(s)?"":'<p class="intro-writing-task-footnote">Your notes here are private to Pathfinder. The green <strong>A</strong> and <strong>C</strong> bubbles explain assessment opportunities, while the purple book opens a relevant writing example. None of these bubbles marks or grades your draft.</p>')+'</section>';
    return{intro:"",
     html:renderWritingStageFlow({
+     reduced:isAdviceReduced(s),
      advice:renderIntroductionWritingAdvice(icon,e,{reduced:isAdviceReduced(s),state:s}),
      sparks:renderIntroductionSparkPrompt(s,icon,e)+renderSparkShelf(s,"C10",{surface:"studio",libraryOnly:true}),
      task,
@@ -1324,7 +1324,7 @@ export function createCompletingViews(ctx){
     (node!=="C00"&&node!=="C04"&&node!=="C10"&&!studioWriting&&!isStuckNode(node)?'<p class="studio-ia-writing-reminder">'+icon("pencil")+
       ' WRITE IN YOUR IA · Use these prompts to develop your own document; nothing is inserted automatically.</p>':'')+
     '<div class="task-shell'+(node==="C00"?' chapter-onboarding-shell':'')+'" data-source-node="'+e(node)+'">'+
-    criterionPageHeading(label,"completing",isAdviceReduced(s)||fieldBadgeInsteadOfTitle?"":node)+
+    criterionPageHeading(label,"completing",fieldBadgeInsteadOfTitle?"":node)+
     (node==="C10"||studioWriting?"":'<p class="task-intro">'+e(screen.intro)+'</p>')+
     (node==="C10"||studioWriting?"":insightEcho(s,node))+extra.returnToReview()+
     (studioWriting||isStuckNode(node)||["C00","C04","C10","C10E"].includes(node)||isAdviceReduced(s)?"":criteriaPanel(s))+
@@ -1336,7 +1336,7 @@ export function createCompletingViews(ctx){
     (["C00","C04"].includes(node)?"":contextualPrompt(node)+resourcePrompt(s)))+statusControls+
     (node==="C00"?"":allButtons(node,primaryByNode[node]||[]))+
     (["C30","C40","C50"].includes(node)?stageBranchActions():"")+'</div>'+
-    (studioWriting?"":'<p class="small-callout">Only actual mathematics supports a mathematical conclusion. Your planning, predictions and teacher questions remain separate from real findings. No compulsory number of calculations or IA grade.</p>')+
+    (studioWriting?"":'<p class="small-callout">'+(isAdviceReduced(s)?"Only genuine mathematical results, not plans or predictions, support your conclusion.":"Only actual mathematics supports a mathematical conclusion. Your planning, predictions and teacher questions remain separate from real findings. No compulsory number of calculations or IA grade.")+'</p>')+
     (studioWriting||["C00","C04"].includes(node)?"":miniList())+'</div>';
  }
  return {viewCompleting:render};
