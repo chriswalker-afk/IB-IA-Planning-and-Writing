@@ -158,7 +158,8 @@ export function importTableData(studio,raw){
  d.categoryIndex=0;d.columnFormats={};
  d.columnSelectionMode="all";d.displayColumns=[];d.rowSelection="";d.selectionReason="";
  d.calcA="";d.calcB="";d.calcC="";d.graphSnapshot=null;
- d.groupOrigin="";d.highlightMode="none";d.highlightRows="";d.highlightReason="";
+ d.groupOrigin="";d.groupInput="raw";d.groupWidth="";d.groupStart="";d.groupLabel="";
+ d.highlightMode="none";d.highlightRows="";d.highlightReason="";
  d.groupValueIndex=numeric[0]?.index??0;
  d.groupLowIndex=0;d.groupHighIndex=Math.min(1,columns.length-1);d.groupFreqIndex=Math.min(2,columns.length-1);
  d.calcXIndex=numeric[0]?.index??0;
