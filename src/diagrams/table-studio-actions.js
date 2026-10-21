@@ -5,24 +5,33 @@ import {
 import {completeEntry,startFirstRepresentation} from "../completing/engine.js";
 const fields=new Set(["raw","headers","title","number","purpose","sourceKind","sourceText","note",
  "decimals","numberFormat","quartileRule","cellAlignment","rowSelection","selectionReason",
- "columnSelectionMode","calcModel","calcA","calcB","calcC"]);
+ "columnSelectionMode","calcModel","calcA","calcB","calcC","groupInput","groupWidth","groupStart","groupLabel",
+ "highlightMode","highlightRows","highlightReason"]);
 export function setTableField(studio,key,value){
  const d=studio?.draft;if(!d)return false;
  if(fields.has(key)){
   if(typeof value!=="string")return false;
   if(d.graphSnapshot&&["calcModel","calcA","calcB","calcC"].includes(key))return false;
   if(key==="cellAlignment"&&!["center","numeric"].includes(value))return false;
+  if(key==="groupInput"&&!["raw","classes"].includes(value))return false;
+  if(key==="highlightMode"&&!["none","selected"].includes(value))return false;
   if(key==="columnSelectionMode"&&!["all","custom"].includes(value))return false;
   if(key==="calcModel"&&!["linear","quadratic"].includes(value))return false;
   const old=d[key];
   d[key]=value.slice(0,key==="raw"?85000:["purpose","sourceText","note"].includes(key)?500:
-   key==="selectionReason"?360:140);
+   ["selectionReason","highlightReason"].includes(key)?360:140);
   if(key==="columnSelectionMode"&&value==="custom"&&old!=="custom"&&d.displayColumns.length===0&&d.columns.length<=5)
    d.displayColumns=d.columns.map((_,i)=>i);
   if((key==="raw"||key==="headers")&&old!==d[key]&&d.matrix.length)d.pendingPaste=true;
   return true;
  }
- if(["showPercent","showRowLines","showColumnLines","calcShowPrediction","calcShowResidual","calcShowPercent"].includes(key)){d[key]=value===true;return true;}
+ if(["showPercent","showRowLines","showColumnLines","calcShowPrediction","calcShowResidual","calcShowPercent",
+ "groupShowDensity","groupShowCumulative","groupShowPercent"].includes(key)){d[key]=value===true;return true;}
+ if(["groupValueIndex","groupLowIndex","groupHighIndex","groupFreqIndex"].includes(key)){
+  const i=Number(value);
+  if(!Number.isInteger(i)||i<0||i>=d.columns.length)return false;
+  d[key]=i;return true;
+ }
  if(["calcXIndex","calcYIndex"].includes(key)){
   if(d.graphSnapshot)return false;
   const i=Number(value);
@@ -69,7 +78,7 @@ export function setTableColumnFormat(studio,index,part,value){
  return true;
 }
 export function chooseTableMode(studio,mode){
- if(!["compact","summary","frequency","calculated"].includes(mode))return false;
+ if(!["compact","summary","frequency","calculated","grouped"].includes(mode))return false;
  const d=studio.draft;if(d.mode===mode)return true;
  d.mode=mode;
  if(mode==="summary"){
@@ -85,6 +94,12 @@ export function chooseTableMode(studio,mode){
   d.calcXIndex=numeric[0]??Math.max(0,first);
   d.calcYIndex=numeric.find(i=>i!==d.calcXIndex)??Math.min(1,Math.max(0,d.columns.length-1));
  }
+ if(mode==="grouped"){
+  const candidates=d.columns.map((_,i)=>i).filter(i=>d.matrix.some(row=>String(row[i]??"").trim()&&
+   /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:e[+-]?\d+)?$/i.test(String(row[i]).trim())));
+  d.groupValueIndex=candidates[0]??0;
+ }
+ d.highlightMode="none";d.highlightRows="";d.highlightReason="";
  d.categoryIndex=0;
  return true;
 }
