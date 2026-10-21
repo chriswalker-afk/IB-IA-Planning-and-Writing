@@ -56,6 +56,11 @@ import {renderVoronoiSvg,voronoiLayout} from "../src/diagrams/voronoi-render.js"
 import {voronoiPreviewHtml,voronoiResultHtml,voronoiQualityHtml,voronoiOutputHtml} from "../src/diagrams/voronoi-view.js";
 import {setVoronoiField,setVoronoiSite,addVoronoiSite,removeVoronoiSite,clearVoronoiMap,useVoronoiMap,beginVoronoi,loadVoronoi,saveVoronoiDraft,saveAndLinkVoronoi} from "../src/diagrams/voronoi-actions.js";
 import {exportVoronoi} from "../src/diagrams/voronoi-export.js";
+import {geometryAnalysis} from "../src/diagrams/geometry-core.js";
+import {renderGeometrySvg} from "../src/diagrams/geometry-render.js";
+import {geometryPreviewHtml,geometryQualityHtml} from "../src/diagrams/geometry-view.js";
+import {setGeometryField,setGeometryVertex,geometryTemplate,geometryAddVertex,geometryRemoveVertex,geometryFresh,loadGeometry,saveGeometryDraft,saveAndLinkGeometry} from "../src/diagrams/geometry-actions.js";
+import {exportGeometry} from "../src/diagrams/geometry-export.js";
 import {renderRepresentationHub,renderRepresentationSwitcher,representationFocusActive} from "../src/diagrams/representation-hub.js";
 import {REPRESENTATION_TOOLS,representationTool,activeRepresentationTool,closeRepresentationTools,activateRepresentationTool,representationFigureKey,representationReturnNode} from "../src/diagrams/representation-registry.js";
 import {renderPresentationCoach,renderFigureHandover} from "../src/diagrams/presentation-coach-view.js";
@@ -131,6 +136,7 @@ function createHarness(savedValue,{welcome=false}={}){
     voronoiPreviewHtml,voronoiResultHtml,voronoiQualityHtml,voronoiOutputHtml,
     setVoronoiField,setVoronoiSite,addVoronoiSite,removeVoronoiSite,clearVoronoiMap,useVoronoiMap,
     beginVoronoi,loadVoronoi,saveVoronoiDraft,saveAndLinkVoronoi,exportVoronoi,
+    geometryAnalysis,renderGeometrySvg,geometryPreviewHtml,geometryQualityHtml,setGeometryField,setGeometryVertex,geometryTemplate,geometryAddVertex,geometryRemoveVertex,geometryFresh,loadGeometry,saveGeometryDraft,saveAndLinkGeometry,exportGeometry,
     renderRepresentationHub,renderRepresentationSwitcher,representationFocusActive,renderPresentationCoach,renderFigureHandover,figureCaption,
     REPRESENTATION_TOOLS,representationTool,activeRepresentationTool,closeRepresentationTools,activateRepresentationTool,representationFigureKey,representationReturnNode,
     displayVoronoiBounds,coordinateFromCanvas,canvasPosition,voronoiFrame,recordVoronoiHistory,applyVoronoiFrame,undoVoronoi,redoVoronoi,freezeVoronoiWindow,fitVoronoiSites,setVoronoiTool,selectVoronoiSite,moveVoronoiSite,proposeVoronoiComparison,showVoronoiComparison,finishVoronoiComparison,selectNearestBisector,
@@ -1240,7 +1246,7 @@ test("Writing welcome explains available tools, preserves saved work, and can be
 });
 
 test("Tools & tutorials opens every built-in diagram creator and returns to Planning without losing work",()=>{
- const keys={graph:"graphStudio",stat:"statStudio",table:"tableStudio",trace:"imageTracer",voronoi:"voronoiStudio"};
+ const keys={graph:"graphStudio",stat:"statStudio",table:"tableStudio",trace:"imageTracer",voronoi:"voronoiStudio",geometry:"geometryStudio"};
  for(const [type,studio] of Object.entries(keys)){
   const state=createProjectState();
   state.route="planning";state.ui.planningIntroSeen=true;state.planning.current="N01";
