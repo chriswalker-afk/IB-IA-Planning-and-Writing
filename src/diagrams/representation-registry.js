@@ -24,7 +24,7 @@ export const REPRESENTATION_TOOLS=Object.freeze([
   detail:"Plot real site coordinates, construct nearest-site cells and test proposed sites.",
   groups:["geometry","decisions"],studio:"voronoiStudio",entryKey:"voronoiFigureId",
   root:"voronoi-studio",linkedReason:"linked-voronoi"}
-].map(tool=>Object.freeze({...tool,groups:Object.freeze(tool.groups)}))));
+].map(tool=>Object.freeze({...tool,groups:Object.freeze(tool.groups)})));
 export const representationTool=id=>REPRESENTATION_TOOLS.find(tool=>tool.id===id)||null;
 export const activeRepresentationTool=state=>REPRESENTATION_TOOLS.find(tool=>state?.[tool.studio]?.open===true)||null;
 export function closeRepresentationTools(state){
