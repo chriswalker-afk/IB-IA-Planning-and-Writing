@@ -24,7 +24,7 @@
 .geometry-entry svg,.show-first-geometry-figure svg{display:block;width:100%;height:auto;background:#fff;max-width:900px}
 .geometry-studio [data-geometry-vertex-index]:focus-visible{stroke:#e89c32;stroke-width:4;outline:none}
 @media(max-width:900px){.geometry-workspace{grid-template-columns:1fr}.geometry-controls{position:static;max-height:none;overflow:visible}.geometry-main svg{max-height:none}.geometry-vertices{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:560px){.geometry-vertices{grid-template-columns:1fr}.geometry-controls,.geometry-main{padding:12px}.geometry-buttons .btn{font-size:.8rem}.geometry-main svg{min-width:0}}
+@media(max-width:560px){.geometry-vertices{grid-template-columns:1fr}.geometry-controls,.geometry-main{padding:12px}.geometry-buttons .btn{font-size:.8rem}.geometry-main .geometry-preview{overflow-x:auto;overscroll-behavior-inline:contain;-webkit-overflow-scrolling:touch}.geometry-main .geometry-preview svg{width:860px;max-width:none;min-width:860px;height:auto;max-height:none}}
 
 
 /* Extra annotation editors remain collapsed so they do not overwhelm the
