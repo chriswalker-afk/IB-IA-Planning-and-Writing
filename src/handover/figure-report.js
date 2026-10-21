@@ -8,6 +8,7 @@ import {renderStatSvg} from "../diagrams/stat-studio-render.js";
 import {statMethodNote} from "../diagrams/stat-reading-guide.js";
 import {renderTableSvg} from "../diagrams/table-studio-render.js";
 import {renderVoronoiSvg} from "../diagrams/voronoi-render.js";
+import {representationTool} from "../diagrams/representation-registry.js";
 
 const trim=x=>String(x??"").trim();
 const row=(label,value)=>trim(value)?{label,value:trim(value)}:null;
@@ -15,8 +16,13 @@ const joined=rows=>rows.map(r=>Array.isArray(r)?r.join(" | "):String(r)).join("\
 const occupied=d=>!!(trim(d?.raw)||trim(d?.expression)||d?.imageSrc||
  (d?.points?.length||0)||(d?.sites?.length||0)||(d?.matrix||[]).some(r=>r.some(x=>trim(x))));
 const titles={graph:"Graph",trace:"Coordinate tracing",stat:"Statistical diagram",table:"Mathematical table",voronoi:"Voronoi diagram"};
+const registeredFigure=id=>{
+ const tool=representationTool(id);
+ if(!tool)throw new Error("Unregistered diagram kind: "+id);
+ return {kind:tool.id,store:tool.studio,entryKey:tool.entryKey};
+};
 const specs=[
- {kind:"graph",store:"graphStudio",entryKey:"graphFigureId",render:d=>renderGraphSvg(d),
+ {...registeredFigure("graph"),render:d=>renderGraphSvg(d),
   details:d=>[
    row("Horizontal variable",d.xLabel+(d.xUnit?" ("+d.xUnit+")":"")),
    row("Vertical variable",d.yLabel+(d.yUnit?" ("+d.yUnit+")":"")),
@@ -25,7 +31,7 @@ const specs=[
    row("Entered source data",d.raw||joined(d.matrix||[])),
    row("Source or collection note",d.sourceText),row("Figure caption",d.caption)
   ]},
- {kind:"trace",store:"imageTracer",entryKey:"imageTraceId",render:d=>renderPrintableTraceSvg(d,d.view),
+ {...registeredFigure("trace"),render:d=>renderPrintableTraceSvg(d,d.view),
   details:d=>[
    row("Image",d.imageName),row("Axis labels",[d.xLabel,d.yLabel].filter(Boolean).join(" / ")),
    row("Scale reference",d.knownLength?(d.knownLength+" "+(d.unit||"")).trim():""),
@@ -34,21 +40,21 @@ const specs=[
    row("Perspective or accuracy notes",d.limitations),
    row("Image source",d.sourceCredit),row("Figure caption",d.caption)
   ]},
- {kind:"stat",store:"statStudio",entryKey:"statFigureId",render:d=>renderStatSvg(d),
+ {...registeredFigure("stat"),render:d=>renderStatSvg(d),
   details:d=>[
    row("Diagram type",d.kind),row("Statistical method and convention",statMethodNote(d)),
    row("Variable",d.variable+(d.unit?" ("+d.unit+")":"")),
    row("Entered source data",d.raw||joined(d.matrix||[])),
    row("Statistical source",d.sourceText),row("Figure caption",d.caption)
   ]},
- {kind:"table",store:"tableStudio",entryKey:"tableFigureId",render:d=>renderTableSvg(d),
+ {...registeredFigure("table"),render:d=>renderTableSvg(d),
   details:d=>[
    row("Why this table was created",d.purpose),
    row("Displayed columns",(d.headings?.length?d.headings:d.columns||[]).join(" | ")),
    row("Entered source data",d.raw||joined(d.matrix||[])),
    row("Source or provenance",d.sourceText),row("Table note",d.note)
   ]},
- {kind:"voronoi",store:"voronoiStudio",entryKey:"voronoiFigureId",render:d=>renderVoronoiSvg(d),
+ {...registeredFigure("voronoi"),render:d=>renderVoronoiSvg(d),
   details:d=>[
    row("Coordinate system",d.coordSystem),
    row("Axis names",[d.xLabel,d.yLabel].filter(Boolean).join(" / ")),
