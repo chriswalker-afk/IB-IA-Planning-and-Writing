@@ -98,6 +98,43 @@ test('box badges preserve existing labels and use real buttons with accurate acc
  assert.equal(criterionBadge('planning:INVALID'),'');
  assert.equal(criterionMarkedField('original','missing'),'original');
 });
+test('IA writing-field help stays in one labelled heading rail, with green before purple',()=>{
+ const label='<div class="field-group"><label class="field-label" for="field-bridge">My linking sentence from the previous result</label>'+
+  '<textarea id="field-bridge" data-bind="entries.0.bridge" class="field"></textarea>'+
+  '<div class="math-writing-tools">Existing equation control</div></div>';
+ const help='<button type="button" class="writer-guide-field-bubble" data-guide-spot="completing:C40:bridgeA">Book</button>';
+ const html=criterionMarkedWritingBox(label,['completing:C40:bridgeA'],help);
+ assert(html.includes('class="criterion-marked-field criterion-marked-writing-box has-field-help-rail has-writer-guide"'));
+ assert(html.includes('<div class="criterion-field-header"><label class="field-label" for="field-bridge">'));
+ assert.equal((html.match(/class="criterion-field-help-rail"/g)||[]).length,1);
+ assert.equal((html.match(/class="criterion-writing-bubbles"/g)||[]).length,1);
+ assert(html.indexOf('data-criterion-badge="completing:C40:bridgeA"')<html.indexOf('writer-guide-field-bubble'));
+ assert(html.indexOf('writer-guide-field-bubble')<html.indexOf('</div><textarea id="field-bridge"'));
+ assert(html.includes('data-bind="entries.0.bridge"'));
+ assert(html.includes('<div class="math-writing-tools">Existing equation control</div>'));
+ const criteriaOnly=criterionMarkedField(
+  '<div class="field-group"><label class="field-label" for="field-purpose">Why is the chosen approach appropriate here?</label>'+
+  '<textarea id="field-purpose" class="field"></textarea></div>',
+  'completing:C40:title'
+ );
+ assert(criteriaOnly.includes('has-field-help-rail'));
+ assert(criteriaOnly.includes('criterion-field-header'));
+ assert(criteriaOnly.includes('criterion-field-help-rail'));
+ assert(criteriaOnly.includes('data-criterion-badge="completing:C40:title"'));
+ assert(!criteriaOnly.includes('writer-guide-field-bubble'));
+ assert(criteriaOnly.indexOf('data-criterion-badge')<criteriaOnly.indexOf('<textarea id="field-purpose"'));
+ const onlyPurple=criterionMarkedField(label,'','<button class="writer-guide-field-bubble">Book</button>');
+ assert(onlyPurple.includes('criterion-field-guide-only'));
+ assert(onlyPurple.includes('criterion-field-help-rail'));
+ assert(!onlyPurple.includes('criterion-badge'));
+ const legacy=criterionMarkedField(label,'planning:N01V:benefit');
+ assert(!legacy.includes('has-field-help-rail'),'Planning placement is outside this pass');
+ const fallback=criterionMarkedWritingBox('<div class="field-group">Older custom control</div>',
+  ['completing:C40:bridgeA'],help);
+ assert(fallback.includes('criterion-field-header-standalone'));
+ assert(fallback.indexOf('criterion-field-header')<fallback.indexOf('Older custom control'));
+});
+
 test('page title markers render selectively without inserting user text as HTML',()=>{
  for(const [route,node,letter] of [
   ['planning','N02M','E'],['completing','C34B','D'],['completing','C70N','B'],
