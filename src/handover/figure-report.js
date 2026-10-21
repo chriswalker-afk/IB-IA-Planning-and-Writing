@@ -5,6 +5,7 @@
 import {renderGraphSvg} from "../diagrams/graph-core.js";
 import {renderPrintableTraceSvg,traceCoordinates} from "../diagrams/image-tracer-core.js";
 import {renderStatSvg} from "../diagrams/stat-studio-render.js";
+import {statMethodNote} from "../diagrams/stat-reading-guide.js";
 import {renderTableSvg} from "../diagrams/table-studio-render.js";
 import {renderVoronoiSvg} from "../diagrams/voronoi-render.js";
 
@@ -35,7 +36,8 @@ const specs=[
   ]},
  {kind:"stat",store:"statStudio",entryKey:"statFigureId",render:d=>renderStatSvg(d),
   details:d=>[
-   row("Diagram type",d.kind),row("Variable",d.variable+(d.unit?" ("+d.unit+")":"")),
+   row("Diagram type",d.kind),row("Statistical method and convention",statMethodNote(d)),
+   row("Variable",d.variable+(d.unit?" ("+d.unit+")":"")),
    row("Entered source data",d.raw||joined(d.matrix||[])),
    row("Statistical source",d.sourceText),row("Figure caption",d.caption)
   ]},

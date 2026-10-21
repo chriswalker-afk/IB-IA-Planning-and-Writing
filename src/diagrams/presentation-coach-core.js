@@ -7,6 +7,7 @@
  */
 import {finiteCell,splitHeading,analyseGraph} from "./graph-core.js";
 import {statAnalysis} from "./stat-studio-core.js";
+import {statMethodNote} from "./stat-reading-guide.js";
 import {analyzeTable} from "./table-studio-core.js";
 
 const words=(v,n=160)=>String(v??"").trim().slice(0,n);
@@ -112,6 +113,12 @@ export function suggestedDiagramMode(state,type,draft){
   return choose("scatter","Scatter diagram","For paired numerical values, inspect genuine plotted pairs before deciding whether linear or nonlinear modelling is appropriate.","graph-type","graphValue");
  }
  if(type==="stat"){
+  // Class boundaries are continuous measurements, not discrete category labels.
+  if(["histogram","ogive","polygon"].includes(draft?.kind)&&draft?.histogramInput==="table")
+   return choose(draft.kind,{histogram:"Frequency-density histogram",ogive:"Cumulative-frequency curve",
+    polygon:"Frequency polygon"}[draft.kind],
+    "Your supplied lower/upper boundaries and counts describe continuous intervals. Use density, cumulative totals or midpoints rather than categorical bar heights.",
+    "stat-kind","statValue");
   if(counts&&profile.rows>=2&&profile.rows<=12)
    return choose("bar","Comparative bar chart","The worksheet appears to contain discrete labels and whole-number, non-negative counts. Confirm that these are actual category frequencies.","stat-kind","statValue");
   if(groupValues&&!counts)
@@ -216,10 +223,26 @@ export function presentationDiagnostics(state,type,draft){
    if(d.histogramInput==="raw"&&d.binWidth){
     add("hist-width","consider","Bin widths affect the apparent distribution","Explain why the width "+words(d.binWidth,40)+" suits your measurements and recording resolution; try a reasonable alternative to see whether the interpretation changes.");
    }else if(d.histogramInput==="table")add("grouped","consider","Already grouped data","Describe where the intervals and their frequencies came from; the individual measurements cannot be recovered from the table.");
+  }else if(d.kind==="ogive"){
+   add("ogive-estimates","consider","Quartiles are estimates from grouped classes",
+    "Explain how cumulative totals were formed and that interpolation assumes the observations are reasonably distributed within each class. Comparing unequal sample sizes requires cumulative percentages.");
+   if(d.curveShowPercentile)add("percentile-context","consider","Name the percentile's meaning",
+    "Explain what the chosen percentile threshold means for the measured variable, and do not claim an exact raw-data percentile from grouped data.");
+  }else if(d.kind==="polygon"){
+   add("polygon-density","consider","Frequency polygons use midpoint and density",
+    "Every point represents a class midpoint and frequency density, not an observed value. Reconsider smoothing, gaps and class-width choices before interpreting peaks.");
+   if(d.polygonShowHistogram)add("polygon-overlay","consider","Check the overlay scale",
+    "The polygon and its faint histogram use the same frequency-density scale. Explain why both help the reader, rather than duplicating the same visual information.");
   }else if(d.kind==="bar"){
-   add("bar-denominator","consider",d.barMode==="percent"?"Explain percentage denominators":"Check comparable group sizes",
-    d.barMode==="percent"?"Each group's displayed total is its own denominator. Specify this in the writing and check that it is the appropriate population or sample.":
-    "Bars must represent discrete categories with non-negative whole-number counts. If group totals differ, proportions may be fairer than raw counts.");
+   if(d.barStyle==="stacked100")
+    add("bar-denominator","consider","100%-stacked category denominators",
+     "Each bar divides the responses in its own category into percentages. Bar heights are equal by definition; use underlying category n to avoid misleading comparisons.");
+   else if(d.barStyle==="stacked")
+    add("bar-denominator","consider","Stacked counts and group sizes",
+     "Each bar total combines observed counts across groups. Explain the group totals and whether comparison of raw category counts is appropriate.");
+   else add("bar-denominator","consider",d.barMode==="percent"?"Explain group denominators":"Check comparable group sizes",
+    d.barMode==="percent"?"Each group's displayed total is its denominator across categories, not each category's total.": 
+    "Bar heights are raw counts and begin at zero. If group totals differ, within-group percentages may be fairer.");
   }else if(d.kind==="box")add("box-method","consider","Define quartiles and whiskers",
    "Keep the same quartile and whisker conventions across groups, report sample sizes and consider what possible outliers mean in context.");
   else add("dot-precision","consider","Check repeated values and measurement precision",
@@ -280,7 +303,7 @@ export function figureCaption(state,type,draft){
  else if(sourceType(d)==="theoretical")citation="Calculated/theoretical construction; assumptions stated in the IA.";
  else citation="Source: [confirm the actual source before submission]";
  return [prefix+" "+(number||"[number]")+". "+(title||"[add a descriptive title]"),
-  note,citation].filter(Boolean).join("\n");
+  note,type==="stat"?statMethodNote(d):"",citation].filter(Boolean).join("\n");
 }
 export function handoverQuestions(state,type,draft){
  const p=planFields(state),f=confirmedFields(state),aim=currentAim(state),
@@ -288,13 +311,17 @@ export function handoverQuestions(state,type,draft){
  const purpose=f.firstPurpose||f.firstOutputIntroduction||p.figurePurpose||"";
  const method=type==="graph"?draft?.kind==="scatter"?"paired-variable inspection":
   draft?.kind==="time"?"time-series inspection":"the chosen mathematical model":
-  type==="stat"?{histogram:"distribution and class intervals",box:"centre, spread and possible outliers",dot:"distribution of repeated and distinct values",bar:"category counts or proportions"}[draft?.kind]||"statistical display":
+  type==="stat"?{histogram:"distribution and class intervals",ogive:"cumulative frequency and estimated percentiles",
+   polygon:"frequency densities at class midpoints",box:"centre, spread and possible outliers",
+   dot:"distribution of repeated and distinct values",bar:"category counts or proportions"}[draft?.kind]||"statistical display":
   type==="trace"?"calibrated coordinates extracted from an image":
   type==="voronoi"?"nearest-site regions under a straight-line distance assumption":
   {compact:"selected numerical results",summary:"summary statistics",frequency:"observed category frequencies"}[draft?.mode]||"mathematical results";
  const limitation=type==="graph"&&draft?.kind==="function"?"Which assumptions and feasible domain restrict this model?":
   type==="stat"&&draft?.kind==="bar"?"How do group sizes and percentage denominators affect the comparison?":
   type==="stat"&&draft?.kind==="histogram"?"How do class widths and measurement resolution affect the apparent shape?":
+  type==="stat"&&draft?.kind==="ogive"?"How does within-class interpolation limit these estimated quartiles and percentiles?":
+  type==="stat"&&draft?.kind==="polygon"?"How would different class widths change the plotted midpoints or density peaks?":
   type==="trace"?"How might calibration error, resolution or perspective change the traced coordinates?":
   type==="voronoi"?"How would roads, obstacles, distance metrics or the choice of sites change nearest-site regions?":
   type==="table"?"Are these the smallest set of results needed, with justified precision?":

@@ -24,6 +24,7 @@ args = parser.parse_args()
 fixture = json.loads(subprocess.check_output(['node', '--input-type=module', '-e', r'''
 import {createProjectState} from './src/core/project-state.js';
 import {applyPlanningField} from './src/planning/engine.js';
+import {newStatDraft,statAnalysis,newStatStudio,saveStatFigure} from './src/diagrams/stat-studio-core.js';
 const state=createProjectState();
 for(const [key,value] of Object.entries({
  aim:'Fictional export check: how does the radius affect an area?',
@@ -38,6 +39,32 @@ state.scratch.introduction='Original introduction notes must remain unchanged.';
 state.scratch.dataNotes=String.raw`First I use \(A=\pi r^{2}\) inside a normal sentence, then analyse it.`;
 state.completion.fields.mainConclusion=String.raw`When \(r=2\), the area is \(A=4\pi\).`;
 state.entries=[{id:'qa-real-work',status:'completed',result:'Existing work must not be overwritten.',interpretation:String.raw`My own explanation uses \(r^{2}\) for the relationship.`}];
+// Three representative IA statistical figures test end-to-end PDF, Word and ZIP inclusion.
+const source={title:"Fictional statistical export fixture",sourceKind:"primary",unitMode:"unit",unit:"s",variable:"Measured time"};
+function keep(d){
+ const studio=newStatStudio();studio.draft=d;
+ const tested=statAnalysis(d);
+ if(!tested.ready)throw new Error("Statistical export fixture is invalid: "+JSON.stringify(tested.problems));
+ const stored=saveStatFigure(studio);
+ if(!stored.ok)throw new Error("Statistical fixture could not be saved");
+ state.statStudio.figures.push(stored.record);
+}
+for(const kind of ["ogive","box","bar"]){
+ const d=newStatDraft();
+ Object.assign(d,source,{kind,figureNumber:kind==="ogive"?"11":kind==="box"?"12":"13",
+  title:"Pass 4 QA "+kind+" from fictional source values",caption:"A labelled student-created statistic used solely for export QA."});
+ if(kind==="ogive")Object.assign(d,{histogramInput:"table",
+  columns:["Lower (s)","Upper (s)","Frequency"],
+  matrix:[["0","5","7"],["5","15","9"],["15","25","4"]],lowIndex:0,highIndex:1,frequencyIndex:2,
+  curveShowQuartiles:true,curveShowPercentile:true,curvePercentile:"90"});
+ if(kind==="box")Object.assign(d,{columns:["Time (s)"],
+  matrix:[["1"],["2"],["3"],["4"],["5"],["6"],["7"],["8"],["11"],["100"]],
+  selected:[0],showBoxQuartiles:true,showBoxMedian:true,showOutliers:true});
+ if(kind==="bar")Object.assign(d,{columns:["Choice","Group A","Group B"],
+  matrix:[["Walk","10","20"],["Bus","30","10"],["Cycle","5","5"]],
+  categoryIndex:0,selected:[1,2],barStyle:"stacked100"});
+ keep(d);
+}
 console.log(JSON.stringify(state));
 '''], text=True))
 
@@ -99,7 +126,7 @@ with sync_playwright() as p:
                         assert before == project_content(page.evaluate('localStorage.getItem(' + json.dumps(KEY) + ')'))
                         if scenario != 'empty' and fmt == 'pdf':
                             pdf = PdfReader(str(target))
-                            assert sum(len(p.images) for p in pdf.pages) >= 2, 'Full PDF equations were not typeset as images'
+                            assert sum(len(p.images) for p in pdf.pages) >= 5, 'Full PDF did not embed all three statistical figures alongside equations'
                             readable = ' '.join(p.extract_text() or '' for p in pdf.pages)
                             assert 'First I use' in readable and 'then analyse it' in readable, 'Mixed prose disappeared around the equation'
                         if fmt in ['docx', 'zip']:
@@ -113,6 +140,7 @@ with sync_playwright() as p:
                                     assert restored['route'] == 'home'
                                     if scenario != 'empty':
                                         assert restored['entries'][0]['result'] == 'Existing work must not be overwritten.'
+                                        assert sorted(x['draft']['kind'] for x in restored['statStudio']['figures']) == ['bar', 'box', 'ogive'], 'Full ZIP lost saved statistical figures'
                                     word_name = next(p for p in archive.namelist() if p.endswith('.docx'))
                                     with zipfile.ZipFile(io.BytesIO(archive.read(word_name))) as word:
                                         xml = word.read('word/document.xml').decode()
@@ -120,7 +148,7 @@ with sync_playwright() as p:
                                     xml = archive.read('word/document.xml').decode()
                                 if scenario != 'empty':
                                     with (zipfile.ZipFile(io.BytesIO(archive.read(word_name))) if fmt == 'zip' else zipfile.ZipFile(target)) as word_check:
-                                        assert len([n for n in word_check.namelist() if n.startswith('word/media/')])>=2, 'Word equations not embedded'
+                                        assert len([n for n in word_check.namelist() if n.startswith('word/media/')])>=5, 'Word must embed statistical figures and equations'
                                 if scenario != 'empty':
                                     assert 'Original introduction notes must remain unchanged.' in xml
                                     assert 'Existing work must not be overwritten.' in xml

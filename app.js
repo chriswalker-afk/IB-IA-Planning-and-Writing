@@ -52,7 +52,7 @@ import {importTracePhoto,rotateTracePhoto} from "./src/diagrams/image-tracer-upl
 import {exportTraceFigure} from "./src/diagrams/image-tracer-export.js";
 import {statAnalysis,importStatTable,newStatDraft} from "./src/diagrams/stat-studio-core.js";
 import {renderStatSvg} from "./src/diagrams/stat-studio-render.js";
-import {renderStatStudio,statDataChoices,statPreviewHtml,statSummaryHtml,statQualityHtml,statOutputHtml} from "./src/diagrams/stat-studio-view.js";
+import {renderStatStudio,statDataChoices,statPreviewHtml,statSummaryHtml,statQualityHtml,statOutputHtml,statReadingGuideHtml} from "./src/diagrams/stat-studio-view.js";
 import {setStatField,changeStatKind,toggleStatSeries,importStatValues,freshStat,loadStat,saveStatDraft,saveAndLinkStat,chooseHistogramSuggestion} from "./src/diagrams/stat-studio-actions.js";
 import {exportStat} from "./src/diagrams/stat-studio-export.js";
 import {analyzeTable,importTableData,newTableDraft,tableColumnFormat} from "./src/diagrams/table-studio-core.js";
@@ -506,6 +506,8 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     const root=main.querySelector?.("[data-stat-studio]");if(!root)return;
     const preview=root.querySelector("[data-stat-preview]");
     if(preview)preview.outerHTML=statPreviewHtml(state.statStudio,icon,e);
+    const reading=root.querySelector("[data-stat-reading-guide]");
+    if(reading)reading.outerHTML=statReadingGuideHtml(state.statStudio,icon,e);
     const summary=root.querySelector("[data-stat-summary]");
     if(summary)summary.innerHTML='<h3>Compact numerical summary</h3>'+statSummaryHtml(state.statStudio,icon,e);
     const quality=root.querySelector("[data-stat-quality]");
