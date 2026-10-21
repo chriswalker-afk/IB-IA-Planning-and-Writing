@@ -1198,7 +1198,7 @@ test("Reduce advice also trims the IA setup and stage dashboard without hiding t
    assert(h.html.includes('data-action="go-planning"'),"Keep Planning access");
   }else{
    assert(!h.html.includes('writer-guide-overview-card'),"Avoid duplicate Field Guide promotion");
-   assert(h.html.includes("My mathematical path")||h.html.includes("Your mathematical"),"Keep mathematical-stage navigation");
+   assert(h.html.includes('class="journey-stage-group')&&h.html.includes('class="completion-stage-grid'),"Keep the stage navigation dashboard");
   }
   h.action("toggle-advice-mode");
   assert.equal(h.saved.ui.adviceMode,"guided");
