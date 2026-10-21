@@ -70,7 +70,7 @@ import {displayVoronoiBounds,coordinateFromCanvas,canvasPosition,voronoiFrame,re
 import {renderRepresentationHub,renderRepresentationSwitcher,representationFocusActive} from "./src/diagrams/representation-hub.js";
 import {renderPresentationCoach,renderFigureHandover} from "./src/diagrams/presentation-coach-view.js";
 import {figureCaption} from "./src/diagrams/presentation-coach-core.js";
-import {renderWriterFieldGuide,renderWriterGuideWelcome,shouldShowWriterGuideWelcome} from "./src/completing/writer-field-guide.js";
+import {renderWriterFieldGuide,renderWriterGuideWelcome,shouldShowWriterGuideWelcome,renderWriterGuidePopin} from "./src/completing/writer-field-guide.js";
 import {writingGuideRecommendation} from "./src/completing/writer-guide-context.js";
 import {C_MAJOR_STAGES,setCompletionNode,moveCompletionRoute,completionBack,markCompletionStage,setCompletionField,startFirstRepresentation,addMathematicalStage,routesAt,addAccuracyDecision,completionSuggestions,sectionForNode,targetForSection,completionStage,completeEntry,latestRealResult,sourceResultForNext,flagDependentMathematics,acknowledgeMathReview} from "./src/completing/engine.js";
 import {adaptiveNextDirections,flagJourneyRouteDependents} from "./src/completing/adaptive-journey.js";
@@ -110,6 +110,11 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   if(resumedPreview)state=resumedPreview;
   const main = $("#main");
   const layer = $("#drawerLayer");
+  const guidePopinHost = document.createElement("div");
+  guidePopinHost.id="writerGuidePopinLayer";guidePopinHost.hidden=true;
+  document.body.appendChild(guidePopinHost);
+  let guidePopinOrigin=null;
+  let guidePopinRecommendation=null;
   const planTitles = ["Your starting point","Shape your question","Have a clear motivation","Choose a direction","Your data or starting material","Is it feasible?","Plan your mathematics","Make a prediction","Your first mathematical move","Your planning snapshot"];
   const studioSections = [
     {id:"intro",name:"Introduction",sub:"Set out your purpose and motivation",icon:"pencil"},
@@ -697,6 +702,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   }
   let detachIdeaMapGraph=()=>{};
   function render(opts={}) {
+    closeGuidePopin(false);
     detachIdeaMapGraph();
     const map={home:viewHome,planning:viewPlanning,completing:viewCompleting,checking:viewChecking,path:viewPath,report:viewReport};
     document.body.classList.toggle("representation-focus-active",representationFocusActive(state));
@@ -754,6 +760,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     toast("Illustrative investigation opened. Your own project is safe.");
   }
   function openDrawer(panel,guide=null) {
+    closeGuidePopin(false);
     if(layer.hidden){
       const active=document.activeElement;
       if(active?.matches?.('button,input,textarea,select,summary,a'))drawerReturn=captureReturn(active);
@@ -987,26 +994,66 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     }
   }
 
+  function positionGuidePopin(){
+    const popin=guidePopinHost.querySelector(".writer-guide-popin");
+    if(!popin||guidePopinHost.hidden||!guidePopinOrigin)return;
+    if(window.matchMedia("(max-width: 700px)").matches){popin.style.removeProperty("top");popin.style.removeProperty("left");return;}
+    const rect=guidePopinOrigin.getBoundingClientRect();
+    const width=popin.offsetWidth||420,edge=12;
+    const x=rect.right+width+edge<=innerWidth?rect.right+10:rect.left-width-10>=edge?rect.left-width-10:Math.min(innerWidth-width-edge,Math.max(edge,rect.left));
+    const y=Math.max(edge,Math.min(rect.top-18,innerHeight-Math.min(popin.offsetHeight,innerHeight-24)-edge));
+    popin.style.left=x+"px";popin.style.top=y+"px";
+  }
+  function closeGuidePopin(restore=true){
+    if(guidePopinHost.hidden)return;
+    const origin=guidePopinOrigin;
+    guidePopinHost.hidden=true;guidePopinHost.innerHTML="";
+    guidePopinOrigin=null;guidePopinRecommendation=null;
+    if(origin?.isConnected)origin.setAttribute("aria-expanded","false");
+    if(restore&&origin?.isConnected)origin.focus({preventScroll:true});
+  }
+  function openGuidePopin(origin,guide){
+    if(!guide?.tip)return;
+    if(!guidePopinHost.hidden&&guidePopinOrigin===origin){closeGuidePopin();return;}
+    closeGuidePopin(false);
+    guidePopinOrigin=origin;guidePopinRecommendation=guide;
+    origin.setAttribute("aria-expanded","true");
+    guidePopinHost.innerHTML=renderWriterGuidePopin(icon,e,guide);
+    guidePopinHost.hidden=false;
+    positionGuidePopin();
+    guidePopinHost.querySelector(".writer-guide-popin-close")?.focus({preventScroll:true});
+  }
+  function openFullWriterGuide(guide){
+    closeGuidePopin(false);
+    openDrawer("writer-guide",guide);
+    if(guide){
+      const card=layer.querySelector('[data-guide-card="'+guide.tip.id+'"]');
+      if(card){card.open=true;card.scrollIntoView?.({block:"start",behavior:"auto"});card.querySelector("summary")?.focus({preventScroll:true});}
+    }
+  }
+
   function changeNavAction(action,el) {
     if(action==="resume-work")return nav(resumeRoute(state));
     if(action==="go-home")return nav("home");
     if(action==="go-planning")return nav("planning");
     if(action==="go-checking")return nav("checking");
     if(action==="go-studio")return nav("completing"); // Resume the saved C-stage; "Studio overview" remains a separate action.
+    if(action==="writer-guide-popin-close"){closeGuidePopin();return;}
+    if(action==="writer-guide-popin-full"){
+      const guide=guidePopinRecommendation;
+      if(guidePopinOrigin?.isConnected)lastFocus=guidePopinOrigin;
+      openFullWriterGuide(guide);return;
+    }
     if(action==="writer-guide-open"){
-      if(layer.hidden)lastFocus=el;
       const tip=String(el.dataset.guideTip||"").replace(/[^a-z0-9-]/g,"");
       const spot=String(el.dataset.guideSpot||"").replace(/[^A-Za-z0-9:-]/g,"");
       const node=state.route==="completing"?state.completion.current:"";
       const guide=writingGuideRecommendation(state,node,tip,spot);
-      openDrawer("writer-guide",guide);
-      if(guide){
-        const card=layer.querySelector('[data-guide-card="'+guide.tip.id+'"]');
-        if(card){
-          card.open=true;
-          card.scrollIntoView?.({block:"start",behavior:"auto"});
-          card.querySelector?.("summary")?.focus?.({preventScroll:true});
-        }
+      if(guide&&(spot||el.classList.contains("writer-guide-context-badge")||el.closest(".writer-guide-return"))){
+        openGuidePopin(el,guide);
+      }else{
+        if(layer.hidden)lastFocus=el;
+        openFullWriterGuide(guide);
       }
       return;
     }
@@ -2262,6 +2309,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     applyVoronoiFrame(state.voronoiStudio.draft,before);redrawVoronoiAtScroll();
   });
   document.addEventListener("click",evt=>{
+    if(!guidePopinHost.hidden&&!evt.target.closest?.("#writerGuidePopinLayer,[data-action='writer-guide-open']"))closeGuidePopin(false);
     const traceTap=evt.target.closest?.("[data-trace-tap]");
     if(traceTap&&state.imageTracer?.open){
       const svg=traceTap.closest("[data-trace-canvas]");
@@ -2707,6 +2755,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         }
       }
     }
+    if(evt.key==="Escape"&&!guidePopinHost.hidden){evt.preventDefault();closeGuidePopin();return;}
     if(evt.key==="Escape"&&!layer.hidden&&!document.querySelector("dialog[open]")){evt.preventDefault();dismissDrawer();}
     if(evt.key==="Tab"&&!layer.hidden){
       const focusable=[...layer.querySelectorAll('button:not([disabled]),a[href],input:not([disabled]),textarea:not([disabled]),select:not([disabled]),summary')].filter(el=>el.getClientRects().length);
@@ -2830,6 +2879,8 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     const control=main.querySelector('[data-action="journey-toggle-all"]');
     if(control){const all=[...main.querySelectorAll('.journey-chapter')].every(x=>x.open);control.setAttribute('aria-expanded',String(all));control.textContent=all?'Collapse full path':'Show full path';}
   },true);
+  window.addEventListener("resize",positionGuidePopin);
+  window.addEventListener("scroll",()=>{if(!guidePopinHost.hidden)positionGuidePopin();},true);
   // Welcome: current route from a previous session should always remain reachable and understandable.
   render();
 })();
