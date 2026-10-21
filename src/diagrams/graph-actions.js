@@ -20,6 +20,7 @@ export function updateGraphField(studio,key,value){
   return true;
  }
  if(typeof value!=="string")return false;
+ if(key==="equationPlacement"&&!["legend","annotation","hidden"].includes(value))return false;
  if(key==="residualModelId"&&value!==""&&!d.models?.some(m=>m.id===value))return false;
  d[key]=value.slice(0,key==="raw"?85000:key==="modelReflection"?1200:key==="expression"?180:500);
  if(key==="raw")d.pendingPaste=true;
