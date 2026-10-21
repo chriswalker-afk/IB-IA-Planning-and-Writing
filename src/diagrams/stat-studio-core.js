@@ -288,12 +288,15 @@ export function statAnalysis(raw){
    fail("observations",d.kind==="box"?"Each box plot requires at least five usable measurements.":"Each dot plot requires at least two usable measurements.");
   for(const s of series){
    if(s.skipped)fail("invalid-values",s.skipped+" invalid value(s) in '"+s.name+"'. Correct or remove them in the source before graphing.");
-   if(s.values.length>120&&d.kind==="dot")fail("dot-crowded","The dot plot would contain over 120 points in '"+s.name+"'. Use a histogram or box plot.");
+   if(s.values.length>120&&d.kind==="dot"&&d.dotMode!=="counted")
+    fail("dot-crowded","More than 120 separate dots in '"+s.name+"' would be crowded. Choose counted markers, a histogram or box plot.");
    if(d.kind==="dot"){
     const counts=new Map();
     for(const v of s.values)counts.set(v,(counts.get(v)||0)+1);
-    const maxStack=Math.max(1,Math.min(22,Math.floor((394/Math.max(1,series.length))*.75/5.8)));
-    if(Math.max(0,...counts.values())>maxStack)fail("dot-stack","Repeated observations in '"+s.name+"' would overlap at print size. Use fewer groups or a frequency diagram.");
+    if(d.dotMode==="counted"&&counts.size>70)
+     fail("dot-crowded","More than 70 distinct counted markers in '"+s.name+"' would be too dense. Choose a histogram.");
+    if(d.dotMode==="individual"&&Math.max(0,...counts.values())>45)
+     fail("dot-stack","More than 45 repeated dots in '"+s.name+"' would be too tall at IA print size. Choose counted markers or a histogram.");
    }
    if(s.box?.iqr===0)warn("zero-iqr","The group '"+s.name+"' has zero IQR. Quartiles or outliers may be less informative.");
    if(s.box&&!s.box.methodAvailable)fail("outlier-method","The group '"+s.name+"' cannot use this outlier rule: "+s.box.methodNote);
