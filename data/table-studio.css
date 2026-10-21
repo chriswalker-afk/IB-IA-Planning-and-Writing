@@ -180,3 +180,10 @@
 .ia-table-grouped-controls .ia-table-two-col{grid-template-columns:1fr}
 .ia-table-stat-transfer>.btn{width:100%;justify-self:stretch}
 }
+
+
+/* Pass 3: column palettes now use the same explicit toggle as all other studios. */
+.ia-table-math-palette{padding:0;border:0;background:transparent;margin:1px 0 6px}
+.ia-table-math-palette>.diagram-notation-panel{display:grid;flex-wrap:initial;margin:0}
+.ia-table-math-palette>.diagram-notation-value-preview{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:2px 0}
+.ia-table-math-palette .diagram-notation-toggle{min-height:36px;min-width:0;padding:6px 10px;font-size:12px;background:#f0f8f6;color:#176659}
