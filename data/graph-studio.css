@@ -189,3 +189,13 @@
 .graph-model-table-transfer>.btn{justify-self:start;white-space:normal}
 .graph-model-table-transfer>small{font-size:11px;line-height:1.55;color:#59756d}
 @media(max-width:620px){.graph-model-table-transfer>.btn{width:100%;justify-self:stretch}}
+
+/* Graph/model notation: stay compact beside the model chooser on phones. */
+.graph-variable-symbols{margin:14px 0 15px;padding:11px 12px;background:#f3faf6;border:1px solid #d7e8df;border-radius:11px;min-width:0}
+.graph-variable-symbols h4{margin:0 0 5px;font-size:12px;color:#275b4e}
+.graph-variable-symbols p,.graph-variable-symbols>small{display:block;margin:4px 0 8px;font-size:11px;line-height:1.55;color:#526f67}
+.graph-variable-symbols .graph-form-field{margin:6px 0}
+.graph-variable-symbols .graph-form-field input{max-width:100%;font-size:14px;font-weight:700}
+.graph-variable-symbols .graph-form-field small{font-size:10px}
+@media(max-width:650px){.graph-variable-symbols{padding:10px}.graph-variable-symbols .graph-field-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}}
+@media(max-width:375px){.graph-variable-symbols .graph-field-grid{grid-template-columns:1fr;gap:0}}
