@@ -758,6 +758,7 @@ test("student-chosen independent/dependent symbols are consistent across equatio
  assert(svg.includes(a.models[0].equation));
  assert(svg.includes("Linear regression: h ≈"));
  assert.equal(displayGraphEquation("y = exp(x) + max(x, 1)",d),"h = exp(t) + max(t, 1)");
+ assert.equal(displayGraphEquation("y ≈ 4.25x² − 3x + 7",d),"h ≈ 4.25t² − 3t + 7");
  assert.equal(displayGraphEquation("f(x) = ln(x)",d),"f(t) = ln(t)");
  assert.equal(displayGraphEquation("y ≈ 2t + 1, where t = (x − 30) / 4",d),
   "h ≈ 2u + 1, where u = (t − 30) / 4",
