@@ -100,10 +100,21 @@ test("a full local JSON backup retains all seven linked figures, writing notes, 
  state.cueNotes["legacy-intro"]="Earlier student reflection";
  state.cueLocations["legacy-intro"]="After Figure 2";
  for(const tool of REPRESENTATION_TOOLS){
-  const studio=state[tool.studio],id="saved-"+tool.id;
+  const studio=state[tool.studio],prefix={
+   graph:"figure",stat:"stat",table:"table",trace:"trace",
+   voronoi:"voronoi",geometry:"geometry",probability:"probability"
+  }[tool.id];
+  const id=prefix+"-saved-"+tool.id;
+  const draft=JSON.parse(JSON.stringify(studio.draft));
+  if(tool.id==="trace"){
+   // A source image is essential to a valid saved tracer figure; empty
+   // drafts are deliberately discarded by the existing importer.
+   draft.imageSrc="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/b0gAAAAASUVORK5CYII=";
+   draft.width=32;draft.height=32;
+  }
   studio.figures.push({
    id,entryId:"first",savedAt:"2026-10-22T00:00:00.000Z",
-   draft:JSON.parse(JSON.stringify(studio.draft))
+   draft
   });
   state.entries[0][tool.entryKey]=id;
  }
@@ -125,9 +136,10 @@ test("a full local JSON backup retains all seven linked figures, writing notes, 
  assert.equal(assessmentFramework(copy),"revised2029");
  assert(isRevisedAssessment(copy));
  for(const tool of REPRESENTATION_TOOLS){
-  assert.equal(copy.entries[0][tool.entryKey],"saved-"+tool.id,tool.id);
+  const savedId=state.entries[0][tool.entryKey];
+  assert.equal(copy.entries[0][tool.entryKey],savedId,tool.id);
   assert.equal(copy[tool.studio].figures.length,1,tool.id);
-  assert.equal(copy[tool.studio].figures[0].id,"saved-"+tool.id,tool.id);
+  assert.equal(copy[tool.studio].figures[0].id,savedId,tool.id);
  }
  // Changing a displayed rubric view must not erase the previous cohort's notes.
  copy.planning.fields.assessmentFramework="legacy";
