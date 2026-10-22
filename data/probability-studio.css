@@ -30,7 +30,12 @@
 .probability-path-select th:not(:first-child),.probability-path-select td:not(:first-child){text-align:center}
 .probability-path-check{display:inline-flex;align-items:center;justify-content:center;min-width:24px;min-height:24px;cursor:pointer}
 .probability-path-check input{width:18px;height:18px}
-.probability-preview{border:1px solid #d6e4e9;border-radius:12px;overflow:hidden;background:white}
+.probability-preview{border:1px solid #d6e4e9;border-radius:12px;overflow:hidden;background:white;overflow-x:auto;overscroll-behavior-inline:contain;-webkit-overflow-scrolling:touch}
+.probability-preview-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:9px}
+.probability-preview-header h3{margin:11px 0}
+.probability-preview-controls{display:flex;flex-wrap:wrap;gap:7px}
+.probability-preview-controls .btn[aria-pressed="true"]{background:#e4f3ed;color:#175d4c;border-color:#8ac2b0}
+.probability-preview.probability-preview-detail svg{width:1300px;min-width:1300px;max-width:none}
 .probability-preview svg{display:block;width:100%;height:auto;min-width:0}
 .probability-canvas-note,.probability-safeguard{color:var(--text-muted,#566c76)}
 .probability-quality{padding:15px 0;border-top:1px solid #dfe9ea;margin:16px 0}

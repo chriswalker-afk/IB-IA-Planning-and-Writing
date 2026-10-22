@@ -35,6 +35,18 @@ def exercise(browser,width,height,touch):
  try:
   page.goto(URL,wait_until="networkidle")
   assert page.locator("[data-probability-studio]").is_visible()
+  def preview_width():return page.locator("[data-prob-preview]").evaluate(
+   "(el)=>({visible:el.clientWidth,full:el.scrollWidth,left:el.scrollLeft})")
+  fitted=preview_width()
+  assert fitted["full"]<=fitted["visible"]+2,fitted
+  page.locator('[data-action="probability-preview-detail"]').click()
+  enlarged=preview_width()
+  assert enlarged["full"]>enlarged["visible"]+80,enlarged
+  assert saved(page)["probabilityStudio"]["zoomed"] is True
+  page.locator('[data-action="probability-preview-fit"]').click()
+  fitted=preview_width()
+  assert fitted["full"]<=fitted["visible"]+2 and fitted["left"]==0,fitted
+  assert saved(page)["probabilityStudio"]["zoomed"] is False
   assert page.locator('[data-action="probability-save"]').is_disabled()
   assert "Check before saving" in page.locator("[data-prob-quality]").inner_text()
   # Conditional probabilities belong to different histories; no branch is filled automatically.

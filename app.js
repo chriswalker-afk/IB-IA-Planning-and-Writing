@@ -610,7 +610,11 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     const root=main.querySelector?.("[data-probability-studio]");
     if(!root||!state.probabilityStudio?.open)return;
     const preview=root.querySelector("[data-prob-preview]");
-    if(preview)preview.outerHTML=probabilityPreviewHtml(state.probabilityStudio);
+    if(preview){
+      const left=preview.scrollLeft;
+      preview.outerHTML=probabilityPreviewHtml(state.probabilityStudio);
+      root.querySelector("[data-prob-preview]").scrollLeft=left;
+    }
     const quality=root.querySelector("[data-prob-quality]");
     if(quality)quality.outerHTML=probabilityQualityHtml(state.probabilityStudio,e);
     const output=root.querySelector("[data-prob-output]");
@@ -925,6 +929,10 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     refreshPathCount();
     if(state.geometryStudio?.zoomed){
       const zoomPreview=main.querySelector("[data-geometry-preview]");
+      if(zoomPreview)zoomPreview.scrollLeft=(zoomPreview.scrollWidth-zoomPreview.clientWidth)/2;
+    }
+    if(state.probabilityStudio?.zoomed){
+      const zoomPreview=main.querySelector("[data-prob-preview]");
       if(zoomPreview)zoomPreview.scrollLeft=(zoomPreview.scrollWidth-zoomPreview.clientWidth)/2;
     }
     if(opts.top){window.scrollTo({top:0,behavior:"auto"});main.focus({preventScroll:true})}
@@ -1780,6 +1788,19 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         break;
       }
       case "probability-open":navigateProbability();break;
+      case "probability-preview-fit":case "probability-preview-detail":{
+        const zoomed=action==="probability-preview-detail";
+        state.probabilityStudio.zoomed=zoomed;save();
+        const root=main.querySelector("[data-probability-studio]");
+        const preview=root?.querySelector("[data-prob-preview]");
+        if(preview){
+          preview.classList.toggle("probability-preview-detail",zoomed);
+          preview.scrollLeft=zoomed?(preview.scrollWidth-preview.clientWidth)/2:0;
+        }
+        root?.querySelectorAll("[data-action=probability-preview-fit],[data-action=probability-preview-detail]")
+          .forEach(button=>button.setAttribute("aria-pressed",String(button.dataset.action===action)));
+        break;
+      }
       case "probability-new":{
         if(state.probabilityStudio.draft.edited&&!window.confirm("Start a new probability tree? Save the current draft if you need it."))break;
         freshProbability(state.probabilityStudio);save();render();break;

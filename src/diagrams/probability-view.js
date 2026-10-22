@@ -10,7 +10,7 @@ const fmt=n=>n===null?"—":Number(n.toFixed(6)).toString();
 const history=(d,parent)=>parent?parent.split("").map((bit,i)=>
  d.branches[parent.slice(0,i)][Number(bit)].label||"unlabelled outcome").join(" → "):"Starting event";
 export function probabilityPreviewHtml(studio){
- return '<div class="probability-preview" data-prob-preview>'+renderProbabilitySvg(studio.draft)+'</div>';
+ return '<div class="probability-preview'+(studio.zoomed?" probability-preview-detail":"")+'" data-prob-preview>'+renderProbabilitySvg(studio.draft)+'</div>';
 }
 export function probabilityQualityHtml(studio,e){
  const a=probabilityAnalysis(studio.draft),d=a.draft,parts=[];
@@ -107,8 +107,12 @@ export function renderProbabilityStudio(state,icon,e){
  '<option value="'+value+'"'+(d.sourceKind===value?" selected":"")+'>'+label+'</option>').join("")+'</select></label>'+
  field("sourceCredit","Original source reference (if needed)",d.sourceCredit,e)+
  '<label class="probability-field"><span>Justification, dependence and limitations</span><textarea rows="3" data-prob-field="note">'+e(d.note)+'</textarea></label>'+
- '</div></div><div class="probability-main"><h3>Live probability tree</h3>'+probabilityPreviewHtml(studio)+
- '<p class="probability-canvas-note">On smaller screens the complete tree fits the available width. Enlarge with your device zoom if you need to inspect a dense three-stage diagram.</p>'+
+ '</div></div><div class="probability-main"><div class="probability-preview-header"><h3>Live probability tree</h3>'+
+ '<div class="probability-preview-controls" role="group" aria-label="Tree display size">'+
+ '<button type="button" class="btn btn-secondary btn-sm" data-action="probability-preview-fit" aria-pressed="'+(!studio.zoomed)+'">Fit whole tree</button>'+
+ '<button type="button" class="btn btn-secondary btn-sm" data-action="probability-preview-detail" aria-pressed="'+(!!studio.zoomed)+'">Enlarge to read</button></div></div>'+
+ probabilityPreviewHtml(studio)+
+ '<p class="probability-canvas-note">Fit shows the whole model. Enlarge to read and scroll across the branches when working with a three-stage tree.</p>'+
  probabilityQualityHtml(studio,e)+renderPresentationCoach(state,"probability",d,icon,e)+
  '<div data-representation-step="use">'+probabilityOutputHtml(studio,icon)+renderFigureHandover(state,"probability",d,icon,e)+'</div>'+
  (studio.figures.length?'<details class="probability-saved"><summary>Saved probability trees ('+studio.figures.length+')</summary>'+
