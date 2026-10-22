@@ -93,7 +93,7 @@ function renderRouteDetail(route,state,{e,icon}){
  if(probabilityHint&&!creatorIds.includes("probability"))creatorIds.push("probability");
  const supplementary=[geometryHint,probabilityHint].filter(Boolean);
  const creatorShelf='<div class="journey-optional-tool journey-route-creators" data-journey-creators="'+e(route.id)+'">'+
-  '<div class="journey-route-creators-head"><h4>Helpful diagram creators (optional)</h4>'+
+  '<div class="journey-route-creators-head"><h4>Optional diagram creators for this route</h4>'+
   '<p>Start with your own question and evidence. A diagram is not required, and these are choices rather than predetermined next mathematical steps.</p></div>'+
   '<div class="journey-route-creators-grid">'+creatorIds.map((id)=>{
    const tool=representationTool(id);
