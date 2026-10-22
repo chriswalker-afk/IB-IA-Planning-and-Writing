@@ -106,6 +106,10 @@ test("one-way Image Tracer transfer keeps calibrated coordinates and original pr
  assert.equal(imported.points,4);
  assert.equal(imported.draft.mode,"coordinate");
  assert.equal(imported.draft.unit,"cm");
+ assert.equal(imported.draft.vertices[0].pointLabelDx,0);
+ assert.equal(imported.draft.vertices[0].angleMark,"single");
+ assert.deepEqual(imported.draft.auxPoints,[]);
+ assert.deepEqual(imported.draft.guides,[]);
  assert.equal(imported.draft.sourceKind,"secondary");
  assert.equal(imported.draft.sourceCredit,source.sourceCredit);
  assert.equal(imported.draft.provenance.traceFigureId,"trace-original");
