@@ -33,7 +33,7 @@ test("production deployment retains its independent validation, permissions and 
 });
 
 test("all browser workflows share pinned cached setup without duplicating full unit tests",()=>{
- assert.equal(workflows.size,24,"Check the complete known workflow inventory");
+ assert.equal(workflows.size,25,"Check the complete known workflow inventory");
  for(const [name,content] of workflows){
   if(nonBrowser.has(name))continue;
   assert.match(content,/uses: \.\/\.github\/actions\/setup-ci-node/,name);
@@ -75,6 +75,20 @@ test("heavy browser PR checks are relevant-path gated and retain shared action c
  const graph=workflows.get("graph-studio-browser.yml");
  assert.doesNotMatch(graph,/src\/diagrams\/\*\*/, "Graph should not run on any diagram change");
  assert.match(graph,/src\/diagrams\/graph-\*\*/, "Graph suite should still watch its own family");
+});
+
+test("production packaging changes get parallel desktop/phone browser coverage",()=>{
+ const built=workflows.get("pass3-build-browser.yml");
+ assert.match(built,/scripts\/build-styles\.mjs/);
+ assert.match(built,/scripts\/audit-deploy-assets\.mjs/);
+ assert.match(built,/representation-pass5/);
+ assert.match(built,/report-exports/);
+ assert.match(built,/chapter-onboarding/);
+ assert.match(built,/criteria-badges/);
+ assert.match(built,/graph-studio/);
+ assert.match(built,/stat-studio/);
+ assert.match(built,/audit-deploy-assets\.mjs/);
+ assert.match(built,/fail-fast: false/);
 });
 
 test("report checks retain live post-deployment verification",()=>{
