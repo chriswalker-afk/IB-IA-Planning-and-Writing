@@ -9,7 +9,7 @@ KEY="ia-pathfinder-prototype-v1"
 BASE=json.loads(subprocess.check_output(["node","--input-type=module","-e", """
 import {createProjectState} from "./src/core/project-state.js";
 const s=createProjectState();
-s.route="planning";
+s.route="planning";s.ui.planningIntroSeen=true;
 s.planning.current="N03H";
 s.planning.fields.kind="statistics";
 s.project.kind="statistics";
