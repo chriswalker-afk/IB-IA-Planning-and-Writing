@@ -76,6 +76,11 @@ export function geometryAddAuxPoint(studio){
  d.auxPoints.push({id,label,x:(a.x+b.x)/2,y:(a.y+b.y)/2,labelDx:0,labelDy:0});
  d.edited=true;return true;
 }
+export function moveGeometryAuxPoint(studio,index,x,y){
+ const d=studio?.draft,p=d?.auxPoints?.[index];
+ if(!p||!Number.isFinite(x)||!Number.isFinite(y)||Math.abs(x)>1e5||Math.abs(y)>1e5)return false;
+ p.x=x;p.y=y;d.edited=true;return true;
+}
 export function setGeometryAuxPoint(studio,index,key,value){
  const d=studio?.draft,p=d?.auxPoints?.[index];if(!p)return false;
  if(key==="label"){p.label=String(value).slice(0,44);d.edited=true;return true;}
