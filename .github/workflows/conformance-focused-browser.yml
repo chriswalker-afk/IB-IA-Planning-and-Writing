@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'scripts/conformance-browser.py'
+      - 'scripts/stuck-browser.py'
       - 'scripts/conformance-fixtures.mjs'
       - 'src/completing/**'
       - 'src/ui/**'
@@ -14,6 +15,7 @@ on:
     branches: [main]
     paths:
       - 'scripts/conformance-browser.py'
+      - 'scripts/stuck-browser.py'
       - 'scripts/conformance-fixtures.mjs'
       - '.github/workflows/conformance-focused-browser.yml'
 permissions:
@@ -46,7 +48,10 @@ jobs:
           python -m http.server 8765 --directory dist > qa-output/server.log 2>&1 &
           SERVER_PID=$!
           trap 'kill "$SERVER_PID"' EXIT
-          python scripts/conformance-browser.py
+          status=0
+          python scripts/conformance-browser.py || status=1
+          python scripts/stuck-browser.py || status=1
+          exit "$status"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
