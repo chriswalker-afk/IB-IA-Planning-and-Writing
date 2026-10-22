@@ -301,11 +301,6 @@ export function createPlanningViews(ctx){
      ["ready","I have a credible and workable plan"],
      ["unsure","My source, sampling information or precision remains uncertain"]]),
     "<h4>Reporting precision is not instrument accuracy</h4><p>If a table shows two decimal places, you may infer how the published value was rounded. Do not assume the original instrument was accurate to the same degree. Look for documentation; when unknown, record that honestly.</p>");
-   case "N03J":return stepBody("Method justification is now optional.",
-    "You no longer need a separate essay about a method you have not tried yet.",
-    callout("Saved answers preserved","Earlier alternatives, reasons and limitations remain in your Planning report. In IA Studio you can justify your actual approach and evaluate real limitations."),
-    "<h4>Why was this removed?</h4><p>The source and sampling pages already capture the proposed method. Write about limitations when you know which ones genuinely matter.</p>",
-    "Continue to evidence timing");
    case "N03D":return stepBody("Can you get started?",
     "Check what evidence you can access now and whether anything needs arranging before you collect it. You do not need a numerical readiness score.",
     select("dataAvailability","What evidence can you work with now?",[
@@ -346,25 +341,10 @@ export function createPlanningViews(ctx){
     '<div class="button-row">'+route("Reconsider my data route","Reconsider my data route")+'</div>',
     "<h4>Ready enough to begin?</h4><p>A provisional source and a safe first step are enough. You can move on while permission or access is uncertain; this never grants approval to collect affected data. Review the actual method and its limitations in IA Studio.</p>",
     "Next: plan your time");
-   case "N03E":return stepBody("Readiness checks have been combined.",
-    "The two numerical readiness ratings are no longer required.",
-    edit("N03D","Open the combined evidence and safety check"),
-    "<h4>Earlier work is safe</h4><p>Existing ratings and practical notes remain in saved projects and report snapshots.</p>",
-    "Open combined check");
    case "N03R":return stepBody("Improve the data route.","Changing a plan now is a strength if your original data are not accessible.",
     F("readinessImprovement","What might make the data plan more realistic?","Try a pilot, alternative source, smaller scope or a revised method",{type:"textarea",rows:3})+
     '<div class="button-row">'+route("I need teacher advice about access","No accessible data; request teacher guidance")+'</div>',
     "<h4>No dead ends</h4><p>If your source is inaccessible, speak to your teacher and save the rest of your plan. Do not invent data or treat a practical delay as a mathematical limitation.</p>","Return to source choices");
-   case "N03F":return stepBody("The long practical checklist has moved.",
-    "Only the essential consent and access questions remain in the normal Planning journey.",
-    callout("Your earlier answers are safe","Old resource, workload, permission and fallback notes are still saved in your Planning report. Continue from the short readiness check."),
-    "<h4>Keep it manageable</h4><p>You can refine practical arrangements when required, rather than completing a long checklist before starting useful mathematics.</p>",
-    "Continue to manageability");
-   case "N03G":return stepBody("Practical manageability is now part of the evidence check.",
-    "You no longer have to complete a second feasibility rating.",
-    edit("N03D","Review permission and access"),
-    "<h4>Keep earlier details</h4><p>Any old practical ease score or adjustment remains in your saved planning record.</p>",
-    "Open combined check");
    case "N03H":return stepBody("Plan your IA time.","Two quick questions are enough to start. We can suggest milestones for data, mathematics, writing and review.",
     renderTimelineStep(state,{e,icon,F,choice,callout}),
     "<h4>Keep it flexible</h4><p>These are suggestions, not school deadlines. Aim for usable starting material early, mathematical investigation and reflection along the way, then a complete draft with time to check it. The plan can change.</p>");
@@ -440,22 +420,6 @@ export function createPlanningViews(ctx){
       "<h4>A tentative expectation, not a commitment</h4><p>It is fine to explore first. If you change your expected mathematical direction, open Refine the plan here rather than repeating a second mathematics-choice screen.</p>",
       "Next: can I get started?");
    }
-   case "N04R":
-   case "N04M":return stepBody("Mathematical refinement is now optional.",
-    "Return to the prediction screen and open Refine the plan to review techniques and mathematical suitability.",
-    edit("N01P","Review my prediction and mathematical choices"),
-    "<p>Earlier notes about suitability or revised mathematics remain saved.</p>");
-   case "N05V":
-   case "N05":return stepBody("Your first mathematical representation belongs in IA Studio.",
-    "After Planning, choose a meaningful first graph, diagram, numerical example or calculation using real evidence.",
-    callout("What happens to my previous notes?",
-      "Any earlier plans and accuracy conventions remain saved. IA Studio will ask why a representation is useful before you create it, and what the real result means."),
-    "<p>No mathematical result is assumed completed merely because it was planned.</p>");
-   case "N06E":return stepBody("Respond to discoveries as they occur.",
-    "The reflection about changes to your mathematical direction happens in IA Studio after real results.",
-    callout("Your previous notes remain saved",
-      "Earlier contingencies and suggested adaptations are still retained in your project and planning report."),
-    "<p>Unexpected results should guide your next mathematical step, not be pre-scripted in Planning.</p>");
    case "N06T":return stepBody("A brief teacher check-in.","Every student can note one question. If you've already completed a specialist check-in, your answers are kept.",
     (f.teacherQuestion?summary("Existing teacher question",f.teacherQuestion):"")+
     F("universalTeacherQuestion","Anything you would like to discuss with your teacher? (optional)","Aim, mathematical suitability, feasibility or what you'd like to achieve",{type:"textarea",rows:2})+
@@ -562,7 +526,7 @@ export function createPlanningViews(ctx){
    '<div class="task-shell'+(welcome?' chapter-onboarding-shell':'')+(kickoff&&!welcome?' planning-kickoff':'')+(titleStep?' planning-title-step':'')+(n==="N07"?' planning-finish':'')+'" data-source-node="'+e(n)+'"'+(welcome?' data-planning-intro="true"':'')+'>'+
    criterionPageHeading(welcome?screen.title:planningScreenTitle(n,state),"planning",n)+'<p class="task-intro">'+e(screen.intro)+'</p>'+
    (welcome?'':renderSparkShelf(state,n,{surface:'planning'}))+screen.html+
-   (!welcome&&["N01","N01V","N02M","N03P","N03P2","N03S","N03J","N04S","N04R","N04M","N05","N05V"].includes(n)?
+   (!welcome&&["N01","N01V","N02M","N03P","N03P2","N03S","N04S"].includes(n)?
     '<div class="planning-context-examples" aria-label="Examples for this planning decision">'+examplePrompt(state)+'</div>':'')+
    (welcome||kickoff||titleStep?'':insightCapture(state,n))+(welcome||kickoff||titleStep?'':essentialsNudge(state))+
    (welcome||kickoff||titleStep||ideaMapStep?'':'<div class="example-row">'+helpButton("plan-"+n,n==="N01V"?"Why does this matter?":"Help me think")+helpBox("plan-"+n,screen.help)+'</div>')+

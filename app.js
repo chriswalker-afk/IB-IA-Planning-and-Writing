@@ -37,7 +37,7 @@ import { createPlanningViews } from "./src/ui/planning-views.js";
 import {savePlannedAccuracy,editPlannedAccuracy,removePlannedAccuracy} from "./src/planning/data-decisions.js";
 import {updatePrimaryQuantity,editPrimaryQuantity,removePrimaryQuantity,reusePrimaryQuantity} from "./src/planning/primary-quantities.js";
 import {applySuggestedTimeline,localToday,validDate,timelineWeek} from "./src/planning/timeline.js";
-import { createStudioViews } from "./src/ui/studio-views.js";
+import {createLegacyMathHelpers} from "./src/completing/legacy-math-helpers.js";
 import {createCompletingViews} from "./src/completing/views.js";
 import {toggleConclusionResult} from "./src/completing/conclusion-workspace.js";
 import {newGraphDraft,saveGraphFigure,renderGraphSvg,graphData,splitHeading,analyseGraph} from "./src/diagrams/graph-core.js";
@@ -847,7 +847,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     overline, sheetTitle, demoFlag, hasPlan, hasStudio, planTitles, studioSections,
     referenceNodeForPrototypeStep, tabletNav:()=>tabletNav() };
   const {viewPlanning}=createPlanningViews(viewDependencies);
-  const {mathDefault,currentMath,suggestions}=createStudioViews(viewDependencies);
+  const {mathDefault,currentMath,suggestions}=createLegacyMathHelpers(viewDependencies);
   const {viewCompleting}=createCompletingViews(viewDependencies);
   const {viewHome,viewPath,viewReport,tabletNav}=createProjectViews(viewDependencies);
   const {viewChecking}=createCheckingViews(viewDependencies);

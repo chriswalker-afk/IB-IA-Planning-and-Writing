@@ -1208,27 +1208,6 @@ export function createCompletingViews(ctx){
      criterionMarkedWritingBox,currentAim,plannedPrediction,currentBenefit,
      savedLimitations:guides.conclusionLimitations})
   };
-  case "C61":return{intro:"What essential answer have your actual results established? An uncertain or negative finding is still legitimate.",
-   html:actualList()+guides.conclusionLimitations()+
-    criteriaField(F("mainConclusion","The strongest answer I can support","Bring key results together without repeating all calculations",{type:"textarea",rows:4}),"completing:C61:mainConclusion")+
-    F("conclusionEvidence","Which two or three actual results support that answer?","Reference genuine figures/equations or earlier local takeaways",{type:"textarea",rows:3})+
-    criteriaField(F("conclusionUncertainty","What important uncertainty remains?","Only limitations that materially restrict the answer",{type:"textarea",rows:2}),"completing:C61:uncertainty")
-  };
-  case "C62":return{intro:"What do the findings really mean for the person or purpose you identified originally?",
-   html:smallSummary("Earlier intended use",p.intendedUse)+smallSummary("Earlier prediction IF TRUE",p.predictionImplication)+
-    criteriaField(F("conclusionBenefit","What can the actual results tell that audience?","Meaningful, appropriately cautious interpretation",{type:"textarea",rows:3}),"completing:C62:benefit")+
-    F("conclusionAdvice","What could reasonably be recommended or decided, if anything?","Only evidence-supported advice, not a promised positive result",{type:"textarea",rows:3})+
-    info("Inconclusive mathematics is useful too","You can explain that the evidence does NOT justify the advice originally hoped for.")
-  };
-  case "C63":return{intro:"An extension should arise from the mathematics you found, not a generic request for more data.",
-    html:criteriaField(F("conclusionExtension","One mathematical question that might follow, if meaningful","Optional and different from work already done",{type:"textarea",rows:3}),"completing:C63:extension")+
-      info("No extension is also fine","You do not need a speculative future-work paragraph if the investigation has reached a sensible stopping point.")
-  };
-  case "C64":return{intro:"Keep the ending a synthesis. Method critiques and intermediate reflections belong beside earlier work.",
-    html:F("conclusionFocus","What will I remove or relocate from the conclusion?","Repeats, procedural steps, limitations already explained",{type:"textarea",rows:3})+
-      criteriaField(field("scratch.conclusion","My revised concise conclusion notes","My actual mathematical answer, in my own words",{type:"textarea",rows:5}),"completing:C64:title")+
-      smallSummary("Strongest finding",f.mainConclusion)
-  };
   case "C70":return{intro:"Review clarity across the actual document, repairing explanations where they originally appear.",
     html:writerGuideOnly(F("presentationIssue","One issue with labels, graphs, flow or layout","What would make it easier for a mathematical reader?",{type:"textarea",rows:3}),"completing:C70:presentationIssue")+
       F("referencesIssue","Are data sources, technology and borrowed techniques referenced?","What needs checking?",{type:"textarea",rows:2})+

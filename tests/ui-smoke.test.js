@@ -27,7 +27,7 @@ import {icon,escapeHtml,cleanUrl,button} from "../src/ui/primitives.js";
 import {referenceNodeForPrototypeStep} from "../src/core/prototype-bridge.js";
 import {createPlanningViews} from "../src/ui/planning-views.js";
 import {planningMove,planAutoAdvance,planningBack,planningEdit,applyPlanningField,toggleMath,selectedMaths,exploreMathRoute,chooseMathRoute,syncPlanningToProject,setPlanCurrent,planningFlags} from "../src/planning/engine.js";
-import {createStudioViews} from "../src/ui/studio-views.js";
+import {createLegacyMathHelpers} from "../src/completing/legacy-math-helpers.js";
 import {createCompletingViews} from "../src/completing/views.js";
 import {newGraphDraft,saveGraphFigure,renderGraphSvg,graphData,splitHeading,analyseGraph} from "../src/diagrams/graph-core.js";
 import {renderGraphQuality,renderGraphActions,graphSourceChoices,renderGraphModelSummary} from "../src/diagrams/graph-view.js";
@@ -121,7 +121,7 @@ function createHarness(savedValue,{welcome=false}={}){
     newState:createProjectState,normalise:normalizeProjectState,
     KEY:"ia-pathfinder-prototype-v1",
     readRecordValue,updateRecordValue,icon,escapeHtml,cleanUrl,button,
-    referenceNodeForPrototypeStep,createPlanningViews,createStudioViews,createCompletingViews,createCheckingViews,renderWriterFieldGuide,renderWriterGuideWelcome,shouldShowWriterGuideWelcome,renderWriterGuidePopin,writingGuideRecommendation,createProjectViews,
+    referenceNodeForPrototypeStep,createPlanningViews,createLegacyMathHelpers,createCompletingViews,createCheckingViews,renderWriterFieldGuide,renderWriterGuideWelcome,shouldShowWriterGuideWelcome,renderWriterGuidePopin,writingGuideRecommendation,createProjectViews,
     newGraphDraft,saveGraphFigure,renderGraphSvg,graphData,splitHeading,analyseGraph,renderGraphModelSummary,renderModelComparison,renderResidualPanelContents,addGraphModel,toggleGraphModel,removeGraphModel,updateGraphModelExpression,updateGraphModelOption,renderGraphQuality,renderGraphActions,graphSourceChoices,
     updateGraphField,chooseGraphType,importGraphTable,loadSavedGraph,freshGraph,saveAndLinkGraph,saveGraphDraft,exportGraphFigure,
     imageTraceChecks,renderTraceOverlaySvg,renderCleanTraceSvg,traceCoordinates,traceCalibration,renderImageTracer,

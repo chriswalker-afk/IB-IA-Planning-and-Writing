@@ -428,12 +428,8 @@ export function planAutoAdvance(state){
   case "N03P":return go("Continue to sampling");
   case "N03P2":return go("Continue to prediction");
   case "N03S":return go("Continue to prediction");
-  case "N03J":return go("Method justification or 'not sure'");
   case "N03D":return go("Continue after evidence checks");
-  case "N03E":return go("Continue after evidence checks");
   case "N03R":return go("Retry");
-  case "N03F":return go("Feasibility questions answered");
-  case "N03G":return go("Practical plan is workable");
   case "N03H":return go("Continue to review");
   case "N04":if(!f.course)return{ok:false,error:"Choose your course, or select Another course / unsure."};return go(["AI SL","AA SL"].includes(f.course)?"AI SL / AA SL":"Other / AA HL");
   case "N04T":return go("Record tentative maths and teacher question");
@@ -443,11 +439,6 @@ export function planAutoAdvance(state){
    if(f.predictionId==="X01"&&!f.prediction.trim())
     return{ok:false,error:"Describe your different prediction, or choose to explore without one."};
    return go("Continue to evidence checks");
-  case "N04R":return go("Keep / add / remove maths or remain unsure");
-  case "N04M":return go("Continue");
-  case "N05V":return go("Representation planned or uncertain");
-  case "N05":return go("Continue");
-  case "N06E":return go("Possible changes considered or unsure");
   case "N06T":return go("Record question or skip");
   case "N08":return go("Review answers and export provisional plan");
   case "N06":return go("Student reviews plan and chooses to generate");
