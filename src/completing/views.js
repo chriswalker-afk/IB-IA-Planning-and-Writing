@@ -683,7 +683,9 @@ export function createCompletingViews(ctx){
    const routeChecks='<div class="first-maths-route-help"><strong>Optional targeted preparation</strong>'+
     '<p>Use only the checks that matter for your actual source and mathematics. You may return after your first figure or calculation.</p>'+
     '<div class="button-row">'+
-    (dataKind==="theoretical"?sourceAction("Theoretical or no-data exploration","Check mathematical definitions"):
+    (dataKind==="theoretical"?
+     (p.kind==="modelling"?sourceAction("Empirical modelling or measured model inputs","Check model assumptions"):"")+
+      sourceAction("Theoretical or no-data exploration","Check mathematical definitions"):
      dataKind==="undecided"?
       sourceAction("Statistics with sampled or secondary data","Check sampling")+
       sourceAction("Empirical modelling or measured model inputs","Check model assumptions")+

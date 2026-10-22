@@ -20,10 +20,12 @@ export function linkRepresentationFigure(state,kind,record,entry){
  const studio=state[tool.studio];
  const figures=studio?.figures||[];
  if(!figures.some(f=>f.id===record.id))throw new Error("The figure must be saved before linking it.");
- const key=tool.entryKey,previous=entry[key];
- if(previous&&previous!==record.id){
+ const key=tool.entryKey,previous=entry[key],ref=kind+':'+record.id;
+ const alreadyGrouped=entry.figureRefs?.includes(ref);
+ if(previous&&previous!==record.id&&!alreadyGrouped){
   const old=figures.find(f=>f.id===previous);
   if(old?.entryId===entry.id)old.entryId="";
+  if(entry.figureRefs)entry.figureRefs=entry.figureRefs.filter(item=>item!==kind+':'+previous);
   needsRecheck(state,entry,tool.figureTitle.toLowerCase());
  }
  for(const other of state.entries){
@@ -32,11 +34,15 @@ export function linkRepresentationFigure(state,kind,record,entry){
    other[key]="";
    needsRecheck(state,other,tool.figureTitle.toLowerCase());
   }
+  if(other.figureRefs?.includes(ref)){
+   other.figureRefs=other.figureRefs.filter(item=>item!==ref);
+   needsRecheck(state,other,tool.figureTitle.toLowerCase());
+  }
   if(other.id===record.entryId&&other[key]!==record.id)
    needsRecheck(state,other,tool.figureTitle.toLowerCase());
  }
  record.entryId=entry.id;
- entry[key]=record.id;
+ if(!alreadyGrouped||!entry[key])entry[key]=record.id;
  return true;
 }
 /** Stable association for both legacy figure records and imported project links.
@@ -45,9 +51,11 @@ export function linkRepresentationFigure(state,kind,record,entry){
 export function linkedRepresentationEntry(entries,key,figure){
  if(!Array.isArray(entries)||!figure?.id)return {entryIndex:-1,linked:null};
  const direct=entries.findIndex(e=>e?.id===figure.entryId);
- const referenced=entries.findIndex(e=>e?.[key]===figure.id);
+ const kind=['graph','trace','stat','table','voronoi','geometry','probability'].find(id=>representationTool(id)?.entryKey===key);
+ const matches=entry=>entry?.[key]===figure.id||entry?.figureRefs?.includes(kind+':'+figure.id);
+ const referenced=entries.findIndex(matches);
  let index=referenced;
- if(direct>=0&&entries[direct][key]===figure.id)index=direct;
+ if(direct>=0&&matches(entries[direct]))index=direct;
  else if(index<0&&direct>=0&&!entries[direct][key])index=direct;
  return {entryIndex:index,linked:index>=0?entries[index]:null};
 }

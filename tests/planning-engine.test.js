@@ -22,7 +22,7 @@ test("all 61 source-sheet routes are preserved alongside explicit later UX route
  const source=PLANNING_ROUTES.filter(r=>Number.isInteger(r.sourceRow));
  const extra=PLANNING_ROUTES.filter(r=>r.sourceRow===null);
  assert.equal(source.length,61);
- assert.equal(extra.length,23);
+ assert.equal(extra.length,24);
  for(const route of PLANNING_ROUTES){
   assert(PLANNING_NODE_IDS.includes(route.from));
   if(route.to.startsWith("N"))assert(PLANNING_NODE_IDS.includes(route.to));

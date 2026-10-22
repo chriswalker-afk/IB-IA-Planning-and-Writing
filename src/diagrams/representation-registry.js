@@ -56,7 +56,7 @@ export function switchRepresentationEditor(state,id){
   return {ok:false,detached:false};
  const studio=state[tool.studio],record=studio.figures?.find(f=>f.id===studio.activeId);
  const active=state.entries?.[state.completion?.activeEntryIndex];
- const owners=record?(state.entries||[]).filter(entry=>entry?.[tool.entryKey]===record.id):[];
+ const owners=record?(state.entries||[]).filter(entry=>entry?.[tool.entryKey]===record.id||entry?.figureRefs?.includes(tool.id+':'+record.id)):[];
  const belongsElsewhere=!!record&&(
   owners.some(entry=>entry.id!==active?.id)||
   (!owners.length&&!!record.entryId&&record.entryId!==active?.id)

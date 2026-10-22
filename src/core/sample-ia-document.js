@@ -3,18 +3,20 @@
  * The normal full-project export includes all Planning and Checking notes, so
  * its page count is not a meaningful proxy for the length of an IA.
  *
- * This optional teaching PDF assembles only IA-style mathematical paragraphs
- * and verified-by-the-factory graph/table data, clearly labelled as fabricated.
- * It is not a completed IB exemplar, a mathematical mark prediction or a
- * replacement for an IA students write themselves.
+ * Authored samples share one ordered model between the reader, PDF and Word.
+ * Legacy preview backups remain readable through their original adapter.
  */
 import {createPlanningEnvelope} from '../handover/schema.js';
 import {createPdfPlanningReport} from '../handover/formats/pdf.js';
 import {collectProjectFigures,figureForEntry,prepareReportFigures} from '../handover/figure-report.js';
+import {referenceSampleSpec} from './sample-library.js';
+import {referenceIAPagesModel} from './sample-document-model.js';
+export {renderIllustrativeIAReading} from './sample-document-model.js';
 
 const val=x=>String(x??'').trim();
 const row=(label,value)=>({label,value:val(value)});
 export function illustrativeIAPagesModel(s){
+ if(referenceSampleSpec(s?.demo))return referenceIAPagesModel(s);
  if(!s?.demo||!['linear','curved','unclear','unexpected','theory'].includes(s.demo))
   throw new Error('The illustrated IA-style example is available only inside a fictional sample preview.');
  const title=s.planning?.fields?.provisionalTitle?.replace(/^ILLUSTRATIVE ONLY\s*[·-]\s*/,'')||'A mathematical exploration';
@@ -56,9 +58,15 @@ export function illustrativeIAPagesModel(s){
   footnote:'This document is a fictional teaching example. Neither the values nor the text represent a student submission. Actual IAs must contain a student’s original mathematical decisions, appropriate sources, and teacher-approved scope. This PDF is for reading the mathematical journey, not a source of authentic empirical evidence.'
  };
 }
-export async function createIllustrativeIAExport(state){
+export async function createIllustrativeIAExport(state,format='pdf'){
  const model=illustrativeIAPagesModel(state);
  await prepareReportFigures(model);
+ if(format==='docx'){
+  const {createDocxPlanningReport}=await import('../handover/formats/docx.js');
+  const bytes=await createDocxPlanningReport(createPlanningEnvelope(state),model);
+  return{bytes,name:'IA-Pathfinder-Complete-Example-'+state.demo+'.docx',mime:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'};
+ }
+ if(format!=='pdf')throw new Error('Unsupported illustrative document format.');
  const bytes=await createPdfPlanningReport(createPlanningEnvelope(state),model);
- return{bytes,name:'IA-Pathfinder-Fictional-IA-Writing-Example-'+state.demo+'.pdf',mime:'application/pdf'};
+ return{bytes,name:'IA-Pathfinder-Complete-Example-'+state.demo+'.pdf',mime:'application/pdf'};
 }

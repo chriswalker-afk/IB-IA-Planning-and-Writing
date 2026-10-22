@@ -8,8 +8,12 @@ import {ENTRY_BASE} from "../completing/entry-record.js";
 import {applyPlanningField} from "../planning/engine.js";
 import {applySuggestedTimeline,localToday} from "../planning/timeline.js";
 import {enrichCurrentIllustrativeSample} from "./sample-current-workflow.js";
+import {REFERENCE_SAMPLE_CHOICES,referenceSampleSpec,createReferenceSample} from './sample-library.js';
 
-export const SAMPLE_CHOICES=Object.freeze([
+export const SAMPLE_CHOICES=REFERENCE_SAMPLE_CHOICES;
+// Historical sample IDs remain loadable for existing backups and preview tabs.
+// Only completed, newly authored investigations appear in the public chooser.
+export const LEGACY_SAMPLE_CHOICES=Object.freeze([
  {id:"linear",title:"A nearly straight pattern",description:"Scatter plot → Pearson's r → line of best fit and residuals."},
  {id:"curved",title:"A curved pattern",description:"Why a strong correlation does not make a straight-line model appropriate."},
  {id:"unclear",title:"No convincing linear relationship",description:"Analyse an inconclusive result without forcing another calculation."},
@@ -302,7 +306,8 @@ function setPlan(s,values){
  for(const [key,value] of Object.entries(values))applyPlanningField(s,key,value);
 }
 export function createIllustrativeSample(kind,{today}={}){
- if(!SAMPLE_CHOICES.some(x=>x.id===kind))throw new Error("Unknown sample illustration.");
+ if(referenceSampleSpec(kind))return createReferenceSample(kind);
+ if(!LEGACY_SAMPLE_CHOICES.some(x=>x.id===kind))throw new Error("Unknown sample illustration.");
  const isTheory=kind==="theory",sample=createProjectState();
  const course=isTheory?"AA HL":"AA SL",aim=isTheory?
   "Why does the sum of the first n cubes equal the square of the nth triangular number, and how can the result be extended?":

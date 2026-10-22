@@ -26,9 +26,13 @@ const sourceInfo={
 export function firstMathsContext(state){
  const p=state?.planning?.fields||{},c=state?.completion?.fields||{};
  const kind=p.kind||state?.project?.kind||"unsure";
- const sourceKey=kind==="theoretical"?"theoretical":
+ const modellingAssumptions=kind==="modelling"&&p.dataSource==="theoretical";
+ const sourceKey=kind==="theoretical"||modellingAssumptions?"theoretical":
   ["primary","secondary","both"].includes(p.dataSource)?p.dataSource:"undecided";
- const source=sourceInfo[sourceKey];
+ const source=modellingAssumptions?{
+  title:"Defined model assumptions",icon:"sigma",intro:"Your model begins with defined quantities and constraints, without a collected dataset.",
+  guidance:"Define the variables, units, assumed values and feasible domain before using them. Explain which conclusions follow within those assumptions and distinguish mathematical checks from empirical validation."
+ }:sourceInfo[sourceKey];
  const route=routeById(state?.planning?.routeExplorer?.selectedRoute);
  const mismatched=Boolean(route&&kind&&!["unsure","theoretical"].includes(kind)&&!route.kinds.includes(kind)||
   route&&kind==="theoretical"&&!route.kinds.includes("theoretical"));
@@ -224,7 +228,7 @@ export function renderFirstMathsSparks(state,icon,e){
      '<strong>'+e(ctx.source.title)+' · planned starting material</strong>'+
      '<p>'+e(ctx.source.intro)+'</p>'+
      (ctx.sourceDetails?'<p class="first-maths-plan-specific">'+e(ctx.sourceDetails)+'</p>':'')+
-    '</div>'+planningLink(icon,'Review source choices',ctx.sourceKey==="theoretical"?'N02M':'N03')+'</div>'+
+    '</div>'+planningLink(icon,'Review source choices',ctx.kind==="theoretical"?'N02M':'N03')+'</div>'+
   (topicHtml?'<div class="first-maths-planned-techniques"><strong>Mathematics you considered in Planning</strong>'+topicHtml+
     '<p>These are possibilities, not a checklist or evidence of mathematics already done.</p></div>':'')+
   renderSelectedMathematicsAdvice(state,icon,e)+

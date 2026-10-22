@@ -7,6 +7,14 @@ on:
       - 'src/core/illustrative-samples.js'
       - 'src/core/sample-current-workflow.js'
       - 'src/core/sample-ia-document.js'
+      - 'src/core/sample-library.js'
+      - 'src/core/sample-document-model.js'
+      - 'src/core/samples/**'
+      - 'src/completing/entry-record.js'
+      - 'src/diagrams/figure-linking.js'
+      - 'src/handover/formats/docx.js'
+      - 'data/sample-reader.css'
+      - 'index.html'
       - 'src/handover/formats/pdf.js'
       - 'src/handover/figure-report.js'
       - 'scripts/illustrative-samples-browser.py'
@@ -20,6 +28,14 @@ on:
       - 'src/core/illustrative-samples.js'
       - 'src/core/sample-current-workflow.js'
       - 'src/core/sample-ia-document.js'
+      - 'src/core/sample-library.js'
+      - 'src/core/sample-document-model.js'
+      - 'src/core/samples/**'
+      - 'src/completing/entry-record.js'
+      - 'src/diagrams/figure-linking.js'
+      - 'src/handover/formats/docx.js'
+      - 'data/sample-reader.css'
+      - 'index.html'
       - 'src/handover/formats/pdf.js'
       - 'src/handover/figure-report.js'
       - 'scripts/illustrative-samples-browser.py'
@@ -44,7 +60,7 @@ jobs:
         run: |
           npm run build
       - uses: ./.github/actions/setup-ci-browser
-      - name: Check all five safe samples, IA-scale PDFs, and figures
+      - name: Check complete student examples, reader, exports and safe preview
         run: |
           mkdir -p qa-output
           python -m http.server 8765 --directory dist > qa-output/illustrative-server.log 2>&1 &

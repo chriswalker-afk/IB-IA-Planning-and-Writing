@@ -117,15 +117,16 @@ export function selectedMaths(state){
 }
 export function syncPlanningToProject(state) {
  const f=state.planning.fields,p=state.project;
+ const withoutDataset=f.kind==="theoretical"||(f.kind==="modelling"&&f.dataSource==="theoretical");
  for(const [key,to] of Object.entries(refFields)) if(typeof f[key]==="string")p[to]=f[key];
  p.readiness=Number(f.dataReadiness)||0;
  p.ease=Number(f.practicalEase)||0;
- p.dataStatus=f.kind==="theoretical"?"theoretical":f.dataAvailability==="in-hand"?"ready":f.dataAvailability==="some"?"partial":"not-started";
+ p.dataStatus=withoutDataset?"theoretical":f.dataAvailability==="in-hand"?"ready":f.dataAvailability==="some"?"partial":"not-started";
  p.permissions=f.permissionNeed==="no"?"clear":f.permissionNeed==="yes"?"pending":"unknown";
  const parts=[];
  if(f.kind!=="theoretical"&&["primary","both"].includes(f.dataSource))parts.push("Primary: "+(f.primaryWhat||"To confirm")+"; "+(f.primaryHow||"method not confirmed"));
  if(f.kind!=="theoretical"&&["secondary","both"].includes(f.dataSource))parts.push("Secondary: "+(f.secondaryPublisher||f.secondaryUrl||"Source to confirm")+"; "+(f.secondaryVariables||"variables to confirm"));
- if(f.kind==="theoretical")parts.push(f.theoreticalCase||"Mathematical conjecture or examples still being planned");
+ if(withoutDataset)parts.push(f.theoreticalCase||f.theoreticalAim||(f.kind==="modelling"?"Model quantities and assumptions still being defined":"Mathematical conjecture or examples still being planned"));
  p.dataDetails=parts.join("\n");
  const selected=selectedMaths(state);
  p.mathsCustom=selected.map(x=>x.label).join("; ")+(f.otherMaths?(selected.length?"; ":"")+f.otherMaths:"");
@@ -188,7 +189,7 @@ export function applyPlanningField(state,key,value){
     ["C10","C40","C60"]:
    /^(course|kind|mathsOutside|otherMaths|otherCourseMaths|courseSuitability|mathsRevisedWhy)$/.test(key)?
     ["C20","C30","C40","C60"]:
-   /^(dataSource|primary|secondary|source|method|firstAccuracy|permissionNeed|permissionDetails|practicalBlocker|unsecured|sourceRights)/.test(key)?
+   /^(dataSource|primary|secondary|source|method|firstAccuracy|permissionNeed|permissionDetails|practicalBlocker|unsecured|sourceRights|theoreticalAim|theoreticalCase)/.test(key)?
     ["C20","C30","C40","C60"]:[];
   for(const stage of groups)if(state.completion.stages[stage]==="complete")
     state.completion.stages[stage]="needs-review";
@@ -329,6 +330,12 @@ export function planningMove(state,condition) {
  // but continuing the old one-page primary form enters the new 3-step flow.
  if(from==="N03P"&&condition==="Complete")return planningMove(state,"Continue to sampling");
  const to=route.to,f=state.planning.fields;
+ if(from==="N03"&&to==="N01P"){
+  if(f.kind!=="modelling"||f.dataSource!=="theoretical")
+   return{ok:false,error:"Defined mathematical assumptions are a starting-material option for modelling investigations."};
+  if(!f.theoreticalAim.trim()&&!f.theoreticalCase.trim())
+   return{ok:false,error:"Describe your model question or its starting quantities and assumptions before continuing."};
+ }
  if(from==="N03B"&&["N03J","N03D","N01P"].includes(to)&&!(state.planning.sourceBranches.primary&&state.planning.sourceBranches.secondary))
   return{ok:false,error:"Answer both primary and secondary source questions first."};
  if(from==="N03P"&&!f.primaryHow.trim()&&!f.primaryWhat.trim()&&!state.planning.primaryQuantities.length)
@@ -422,7 +429,11 @@ export function planAutoAdvance(state){
    return go(f.kind==="theoretical"?"Discuss theoretical maths with teacher":"Proceed to evidence planning");
   case "N02U":return go("Return");
   case "N02T":return go("Continue with provisional plan");
-  case "N03":if(!f.dataSource)return{ok:false,error:"Choose primary, secondary or both data sources."};return go(f.dataSource==="secondary"?"Secondary":f.dataSource==="both"?"Both":"Primary");
+  case "N03":
+   if(f.dataSource==="theoretical")return go("Defined mathematical assumptions");
+   if(!["primary","secondary","both"].includes(f.dataSource))
+    return{ok:false,error:f.kind==="modelling"?"Choose a data source or defined mathematical assumptions.":"Choose primary, secondary or both data sources."};
+   return go(f.dataSource==="secondary"?"Secondary":f.dataSource==="both"?"Both":"Primary");
   case "N03B":return go(state.planning.sourceBranches.primary&&state.planning.sourceBranches.secondary?"Continue to prediction":
    !state.planning.sourceBranches.primary?"Primary questions":"Secondary questions");
   case "N03P":return go("Continue to sampling");

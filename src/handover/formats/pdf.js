@@ -199,7 +199,9 @@ export async function createPdfPlanningReport(envelope,fullProjectModel=null){
  page.drawRectangle({x:MARGIN,y:y-24,width:PAPER_WIDTH,height:31,color:model.flags.length?GOLD:LIGHT});
  write(model.status,{x:MARGIN+10,maxWidth:PAPER_WIDTH-20,size:9,font:bold,color:INK,lineHeight:12,after:17});
  write("Course: "+model.course+"    |    Exported: "+(model.exportedAt?model.exportedAt.slice(0,10):"Date to confirm"),{size:9,color:MUTED,after:15});
- if(model.isDemonstration){
+ if(model.isCompleteIllustrativeIA&&model.provenance){
+  await writeMixed(model.provenance,{size:10,color:MUTED,lineHeight:15,after:16});
+ }else if(model.isDemonstration){
   write("DEMONSTRATION PROJECT - Do not submit illustrative examples as your own results.",{size:10,font:bold,color:TEAL,after:13});
  }
  if(model.flags.length){
@@ -214,15 +216,26 @@ export async function createPdfPlanningReport(envelope,fullProjectModel=null){
   heading(group.title);
   if(group.description)write(group.description,{size:9,color:MUTED,lineHeight:12,after:12});
   const figures=group.figures||[];
-  const drawFigures=async()=>{
-  for(const figure of figures){
-   if(!figure.pngBytes)continue;
+  const drawFigure=async figure=>{
+   if(!figure.pngBytes)return;
    const embedded=await doc.embedPng(figure.pngBytes);
    const dim=embedded.scale(Math.min(PAPER_WIDTH/embedded.width,410/embedded.height));
    requireSpace(dim.height+20);
    page.drawImage(embedded,{x:MARGIN+(PAPER_WIDTH-dim.width)/2,y:y-dim.height,width:dim.width,height:dim.height});
    y-=dim.height+19;
+  };
+  // A complete investigation uses the authored narrative order, including each
+  // figure at the point where the student discusses it.
+  if(group.blocks){
+   for(const block of group.blocks){
+    if(block.type==='figure')await drawFigure(block.figure);
+    else if(block.type==='text')await writeMixed(block.value,{font:regular,size:12,
+     lineHeight:21,after:15});
+   }
+   continue;
   }
+  const drawFigures=async()=>{
+   for(const figure of figures)await drawFigure(figure);
   };
   if(!iaReading)await drawFigures();
   for(const [rowIndex,row] of group.rows.entries()){
@@ -245,7 +258,7 @@ export async function createPdfPlanningReport(envelope,fullProjectModel=null){
    }
   }
  }
- heading(iaReading?"Why this is only a teaching illustration":fullProjectModel?"About this full working record":"What this document is — and is not");
+ heading(model.isCompleteIllustrativeIA?"About this fictional example":iaReading?"Why this is only a teaching illustration":fullProjectModel?"About this full working record":"What this document is — and is not");
  write(model.footnote,{font:regular,size:9,color:MUTED,lineHeight:13});
  const json=JSON.stringify(payload);
  if(new TextEncoder().encode(json).length>REPORT_MAX_BYTES)throw new Error("Planning snapshot exceeds export size limit.");

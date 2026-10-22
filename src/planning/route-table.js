@@ -449,5 +449,6 @@ export const PLANNING_ROUTES = Object.freeze([
   {"from":"N03B","answer":"Continue to prediction","to":"N01P","sourceRow":null,"editorial":"UX 2026-10-18: include both primary and secondary source branches before the optional hypothesis"},
   {"from":"N01P","answer":"Continue to evidence checks","to":"N03D","sourceRow":null,"editorial":"UX 2026-10-18: replace compulsory repeat of mathematics choices with an inline optional plan refinement"},
   {"from":"N03H","answer":"Continue to review","to":"N06T","sourceRow":null,"editorial":"UX 2026-10-18: first actual representation/action and adaptive reflection happen in IA Studio, not Planning"},
-  {"from":"N01P","answer":"Outside-course maths or unclear mathematical depth","to":"N08","sourceRow":null,"editorial":"UX 2026-10-18: preserve specialist teacher support from optional in-screen maths check"}
+  {"from":"N01P","answer":"Outside-course maths or unclear mathematical depth","to":"N08","sourceRow":null,"editorial":"UX 2026-10-18: preserve specialist teacher support from optional in-screen maths check"},
+  {"from":"N03","answer":"Defined mathematical assumptions","to":"N01P","sourceRow":null,"editorial":"UX 2026-10-22: let a modelling investigation define starting quantities and assumptions without claiming primary or secondary data"}
 ]);
