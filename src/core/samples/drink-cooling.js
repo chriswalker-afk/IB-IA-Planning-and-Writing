@@ -146,7 +146,7 @@ const STUDY={
   ],
   "figures": [
     {
-      "id": "p3-cool-time",
+      "id": "figure-p3-cool-time",
       "tool": "graph",
       "stage": 0,
       "after": "purpose",
@@ -244,7 +244,7 @@ const STUDY={
       "caption": "All sixteen invented values are shown in order. The constant line marks the assumed ambient, not a temperature record."
     },
     {
-      "id": "p3-cool-log",
+      "id": "figure-p3-cool-log",
       "tool": "graph",
       "stage": 1,
       "after": "purpose",
@@ -303,7 +303,7 @@ const STUDY={
       "xLabel": "Time",
       "yLabel": "ln excess",
       "xSymbol": "t",
-      "ySymbol": "lnE",
+      "ySymbol": "E",
       "xUnit": "min",
       "yUnit": "",
       "xMin": 0,
@@ -321,7 +321,7 @@ const STUDY={
       "calculated": true
     },
     {
-      "id": "p3-cool-curve",
+      "id": "figure-p3-cool-curve",
       "tool": "graph",
       "stage": 1,
       "after": "result",
@@ -419,7 +419,7 @@ const STUDY={
       "caption": "The curve was fitted only on 0–20 min and then plotted without refitting over the reserved 22–30 min portion."
     },
     {
-      "id": "p3-cool-residual",
+      "id": "figure-p3-cool-residual",
       "tool": "graph",
       "stage": 2,
       "after": "result",
@@ -517,7 +517,7 @@ const STUDY={
       "calculated": true
     },
     {
-      "id": "p3-cool-sensitivity",
+      "id": "table-p3-cool-sensitivity",
       "tool": "table",
       "stage": 3,
       "after": "result",
