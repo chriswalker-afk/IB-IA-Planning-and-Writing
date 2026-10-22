@@ -73,6 +73,17 @@ const specs=[
    row("Scale",d.mode==="coordinate"?"Coordinate-based":"Schematic; not necessarily to scale"),
    row("Student-entered vertices and labels",(d.vertices||[]).map(p=>p.label+" ("+p.x+", "+p.y+")"+
     (p.edgeLabel?" | side: "+p.edgeLabel:"")+(p.angleLabel?" | angle: "+p.angleLabel:"")).join("\n")),
+   row("Construction points",(d.auxPoints||[]).map(p=>
+     p.label+" ("+p.x+", "+p.y+")").join("\n")),
+   row("Auxiliary constructions",(d.guides||[]).map(g=>
+     [g.kind,g.from,g.kind==="height"?"to baseline "+g.baseStart+"–"+g.baseEnd:g.kind==="north"?"north":g.to,
+      g.label?"label: "+g.label:"",
+      g.showLength?"calculated length displayed":""].filter(Boolean).join(" | ")).join("\n")),
+   row("Annotation settings",[
+      "Side labels: "+(d.dimensionStyle==="dimension"?"dimension arrows":"adjacent"),
+      "Length format: "+(d.lengthFormat==="sf"?"significant figures":"decimal places")+" ("+d.lengthDigits+")",
+      "Angle decimals: "+d.angleDigits
+    ].join("; ")),
    row("Construction requirements",(d.vertices||[]).map((p,i)=>[
      p.edgeConstraint&&p.edgeConstraint!=="free"?"Side "+p.label+": "+p.edgeConstraint:"",
      p.rightAngle?"Angle at "+p.label+": 90 degrees required":"",
