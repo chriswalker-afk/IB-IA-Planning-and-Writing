@@ -1,3 +1,4 @@
+import {normalizeAuxPoints,normalizeGeometryGuides,geometryAnnotationIssues} from "./geometry-annotations.js";
 /**
  * Geometry & Measurement Studio. Diagrams are student-authored constructions:
  * schematic vertices never imply accurate scale, distance or angle. Derived
@@ -7,7 +8,12 @@ export const MAX_GEOMETRY_VERTICES=8,MAX_GEOMETRY_FIGURES=8;
 const object=x=>x&&typeof x==="object"&&!Array.isArray(x);
 const text=(s,n=220)=>typeof s==="string"?s.slice(0,n):"";
 const valid=n=>typeof n==="number"&&Number.isFinite(n)&&Math.abs(n)<=1e5;
-const vertex=(id,label,x,y)=>({id,label,x,y,edgeLabel:"",angleLabel:"",edgeConstraint:"free",rightAngle:false,locked:false});
+const shift=n=>typeof n==="number"&&Number.isFinite(n)&&Math.abs(n)<=90?n:0;
+const digit=(n,defaultValue,max=5)=>Number.isInteger(n)&&n>=0&&n<=max?n:defaultValue;
+const vertex=(id,label,x,y)=>({id,label,x,y,edgeLabel:"",angleLabel:"",
+ edgeLabelDx:0,edgeLabelDy:0,angleLabelDx:0,angleLabelDy:0,
+ pointLabelDx:0,pointLabelDy:0,angleMark:"single",
+ edgeConstraint:"free",rightAngle:false,locked:false});
 const templates={
  triangle:[vertex("v-a","A",0,0),vertex("v-b","B",7,0),vertex("v-c","C",2.3,4.8)],
  rectangle:[vertex("v-a","A",0,0),vertex("v-b","B",8,0),vertex("v-c","C",8,4),vertex("v-d","D",0,4)],
@@ -40,8 +46,9 @@ export function newGeometryDraft(kind="triangle"){
   figureNumber:"1",caption:"",showTitle:true,showCaption:false,mode:"schematic",unit:"",sourceKind:"theoretical",sourceCredit:"",
   northAligned:false,showLengths:false,showAngles:false,showBearings:false,
   showGrid:false,showCoordinates:false,showDecomposition:false,showSensitivity:false,
+  dimensionStyle:"inline",dimensionOffset:36,lengthFormat:"dp",lengthDigits:2,angleDigits:1,
   sensitivityStep:"",filled:false,note:"",edited:false,provenance:null,
-  vertices:templates[k].map(v=>({...v}))};
+  vertices:templates[k].map(v=>({...v})),auxPoints:[],guides:[]};
 }
 export function normalizeGeometryDraft(raw){
  const r=object(raw)?raw:{},d=newGeometryDraft(r.kind);
@@ -49,6 +56,12 @@ export function normalizeGeometryDraft(raw){
   if(typeof r[key]==="string")d[key]=text(r[key],["sourceCredit","note"].includes(key)?800:180);
  }
  if(["schematic","coordinate"].includes(r.mode))d.mode=r.mode;
+ if(["inline","dimension"].includes(r.dimensionStyle))d.dimensionStyle=r.dimensionStyle;
+ if(["dp","sf"].includes(r.lengthFormat))d.lengthFormat=r.lengthFormat;
+ d.lengthDigits=digit(r.lengthDigits,2);
+ d.angleDigits=digit(r.angleDigits,1,3);
+ if(Number.isInteger(r.dimensionOffset)&&r.dimensionOffset>=24&&r.dimensionOffset<=85)
+  d.dimensionOffset=r.dimensionOffset;
  if(["primary","secondary","theoretical","unsure"].includes(r.sourceKind))d.sourceKind=r.sourceKind;
  for(const key of ["showTitle","showCaption","northAligned","showLengths","showAngles","showBearings","showGrid",
   "showCoordinates","showDecomposition","showSensitivity","filled","edited"])if(typeof r[key]==="boolean")d[key]=r[key];
@@ -58,10 +71,16 @@ export function normalizeGeometryDraft(raw){
    id:/^v-[a-z0-9-]{1,38}$/i.test(v?.id)?v.id:"v-"+i,
    label:text(v?.label,44),x:valid(v?.x)?v.x:null,y:valid(v?.y)?v.y:null,
    edgeLabel:text(v?.edgeLabel,100),angleLabel:text(v?.angleLabel,100),
+   edgeLabelDx:shift(v?.edgeLabelDx),edgeLabelDy:shift(v?.edgeLabelDy),
+   angleLabelDx:shift(v?.angleLabelDx),angleLabelDy:shift(v?.angleLabelDy),
+   pointLabelDx:shift(v?.pointLabelDx),pointLabelDy:shift(v?.pointLabelDy),
+   angleMark:["single","double","triple"].includes(v?.angleMark)?v.angleMark:"single",
    edgeConstraint:["free","horizontal","vertical"].includes(v?.edgeConstraint)?v.edgeConstraint:"free",
    rightAngle:v?.rightAngle===true,locked:v?.locked===true
   }));
  }
+ d.auxPoints=normalizeAuxPoints(r.auxPoints);
+ d.guides=normalizeGeometryGuides(r.guides);
  if(d.mode!=="coordinate")d.showBearings=false;
  if(object(r.provenance)&&r.provenance.kind==="image-tracer"){
   const p=r.provenance;
@@ -152,12 +171,17 @@ export function geometryAnalysis(raw){
   notes.push("Student-entered side and angle annotations are not verified against coordinate calculations.");
  if(d.mode==="schematic"&&(d.showLengths||d.showAngles))
   notes.push("Automatic length and angle measurements are hidden for schematic diagrams; enter the labels you can justify.");
+ issues.push(...geometryAnnotationIssues(d));
+ if(d.guides.length||d.auxPoints.length)
+  notes.push("Auxiliary lines and points are separate from the closed boundary. Heights are exact perpendicular projections on the chosen baseline; schematic labels are not measured values.");
  return {draft:d,ready:issues.length===0,issues,notes,area,
   lengths:distances,angles,bearings};
 }
 export const geometrySignature=d=>JSON.stringify([
  d.title,d.figureNumber,d.caption,d.showTitle,d.showCaption,
- d.kind,d.mode,d.unit,d.vertices,d.northAligned,d.showLengths,d.showAngles,d.showBearings,
+ d.kind,d.mode,d.unit,d.vertices,d.auxPoints,d.guides,
+ d.dimensionStyle,d.dimensionOffset,d.lengthFormat,d.lengthDigits,d.angleDigits,
+ d.northAligned,d.showLengths,d.showAngles,d.showBearings,d.showGrid,d.filled,
  d.showCoordinates,d.showDecomposition,d.showSensitivity,d.sensitivityStep,d.sourceKind,d.sourceCredit,d.provenance
 ]);
 export function saveGeometryFigure(studio,entryId=""){
@@ -171,6 +195,6 @@ export function saveGeometryFigure(studio,entryId=""){
   draft:{...q.draft,edited:true}};
  const at=studio.figures.findIndex(f=>f.id===id);
  if(at<0)studio.figures.push(record);else studio.figures[at]=record;
- studio.activeId=id;studio.draft={...record.draft,vertices:record.draft.vertices.map(p=>({...p}))};
+ studio.activeId=id;studio.draft=normalizeGeometryDraft(record.draft);
  return{ok:true,record};
 }
