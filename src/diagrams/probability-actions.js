@@ -16,8 +16,9 @@ export function setProbabilityField(studio,key,value){
    d.conditionLeaves=d.conditionLeaves.filter(x=>allowed.has(x));
   }else return false;
  }else if(key==="layoutStyle"&&["compact","spacious"].includes(value))d.layoutStyle=value;
+ else if(key==="printStyle"&&["colour","mono"].includes(value))d.printStyle=value;
  else if(key==="sourceKind"&&["theoretical","primary","secondary","unsure"].includes(value))d.sourceKind=value;
- else if(["showProducts","showEventCalculation","showTitle","showCaption","showStageLabels"].includes(key)&&typeof value==="boolean")d[key]=value;
+ else if(["showProducts","showEventCalculation","showTitle","showCaption","showStageLabels","showPathLegend"].includes(key)&&typeof value==="boolean")d[key]=value;
  else return false;
  d.edited=true;return true;
 }
@@ -29,7 +30,8 @@ export function setProbabilityBranch(studio,parent,index,key,value){
  if(!probabilityParentPaths(studio.draft).includes(parent)||
   !Number.isInteger(index)||index<0||index>=studio.draft.branches[parent].length||
   !["label","probability"].includes(key))return false;
- studio.draft.branches[parent][index][key]=String(value).slice(0,key==="label"?80:60);
+ studio.draft.branches[parent][index][key]=String(value).slice(0,key==="label"?
+  (studio.draft.treeMode==="flexible"?160:80):60);
  studio.draft.edited=true;return true;
 }
 export function toggleProbabilityLeaf(studio,membership,path,checked){

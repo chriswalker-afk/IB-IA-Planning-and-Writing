@@ -1,5 +1,6 @@
 import {probabilityAnalysis,activeParents,leafKeys,probabilityLeafPaths,MAX_PROBABILITY_FIGURES} from "./probability-core.js";
 import {renderProbabilitySvg} from "./probability-render.js";
+import {probabilityFigureDiagnostics} from "./probability-flexible-render.js";
 import {probabilityPresetChooser,probabilityFlexibleEditors} from "./probability-flexible-view.js";
 import {renderPresentationCoach,renderFigureHandover} from "./presentation-coach-view.js";
 const field=(key,name,value,e,placeholder="")=>
@@ -11,7 +12,11 @@ const fmt=n=>n===null?"—":Number(n.toFixed(6)).toString();
 const history=(d,parent)=>parent?parent.split("").map((bit,i)=>
  d.branches[parent.slice(0,i)][Number(bit)].label||"unlabelled outcome").join(" → "):"Starting event";
 export function probabilityPreviewHtml(studio){
- return '<div class="probability-preview'+(studio.zoomed?" probability-preview-detail":"")+'" data-prob-preview>'+renderProbabilitySvg(studio.draft)+'</div>';
+ const svg=renderProbabilitySvg(studio.draft),flex=studio.draft.treeMode==="flexible";
+ const match=flex?/viewBox="0 0 ([0-9]+) ([0-9]+)"/.exec(svg):null;
+ const naturalWidth=match?Math.min(10000,Number(match[1])):1300;
+ return '<div class="probability-preview'+(studio.zoomed?" probability-preview-detail":"")+
+ '" data-prob-preview'+(flex?' style="--prob-natural-width:'+naturalWidth+'px"':"")+'>'+svg+'</div>';
 }
 export function probabilityQualityHtml(studio,e){
  const a=probabilityAnalysis(studio.draft),d=a.draft,parts=[];
@@ -45,6 +50,16 @@ export function probabilityQualityHtml(studio,e){
    if(!d.eventLeaves.length||!d.conditionLeaves.length)
     parts.push('<p>Select the terminal outcomes belonging to each event to calculate its probability. Overlap is allowed and required when events intersect.</p>');
   }
+ }
+ if(d.treeMode==="flexible"){
+  const visual=probabilityFigureDiagnostics(a);
+  parts.push('<details class="probability-visual-review" data-prob-visual-review>'+
+   '<summary>IA figure readability check'+(visual.notes.length?' · '+visual.notes.length+' suggestion'+(visual.notes.length===1?'':'s'):' · ready for visual review')+'</summary>'+
+   '<p>Figure dimensions: '+visual.width+' SVG units across, '+visual.terminalPaths+
+   ' terminal outcome'+(visual.terminalPaths===1?'':'s')+'. This checks readability, not the truth of the model.</p>'+
+   (visual.notes.length?'<ul>'+visual.notes.map(note=>'<li>'+e(note)+'</li>').join("")+'</ul>':
+    '<p>Labels fit the selected layout. Inspect the enlarged preview and SVG at the size you will use in your IA.</p>')+
+   '<p>For dense diagrams, prefer SVG (vector), a landscape layout or a smaller explanatory subtree alongside the full model.</p></details>');
  }
  parts.push('<p class="probability-safeguard">Each later branch is conditional on the exact preceding path. A tree alone does not prove independence, validate a sampling model, or establish a real-world probability.</p>');
  if(d.note.trim())parts.push('<p><strong>Your limitations:</strong> '+e(d.note)+'</p>');
@@ -112,7 +127,11 @@ export function renderProbabilityStudio(state,icon,e){
  (d.treeMode==="flexible"?'<label class="probability-field"><span>Spacing for readability</span><select data-prob-field="layoutStyle">'+
   [['spacious','Spacious — best for a final IA figure'],['compact','Compact — smaller figure']].map(([id,label])=>
    '<option value="'+id+'"'+(d.layoutStyle===id?' selected':'')+'>'+label+'</option>').join("")+
- '</select></label>':"")+
+ '</select></label>'+
+ '<label class="probability-field"><span>Printing and highlighted outcomes</span><select data-prob-field="printStyle">'+
+  [['colour','Colour — distinguish selected event paths'],['mono','Monochrome — distinguish paths with line patterns']].map(([id,label])=>
+   '<option value="'+id+'"'+(d.printStyle===id?' selected':'')+'>'+label+'</option>').join("")+
+ '</select></label>'+tick("showPathLegend","Show a key for highlighted event paths",d.showPathLegend):"")+
  field("caption","Caption (optional)",d.caption,e,"A concise mathematical description")+
  '<p>Guidance and validation remain in the editor, not in the downloaded figure. The caption uses your figure number and the text above.</p></details>'+
  '<div class="probability-buttons"><button type="button" class="btn btn-quiet btn-sm" data-action="probability-new">+ Start new tree</button></div>'+

@@ -147,6 +147,38 @@ def flexible_exercise(browser,width,height,touch):
   page.locator('.probability-studio details.ia-figure-presentation-settings').evaluate("(el)=>el.open=true")
   page.locator('[data-prob-field="layoutStyle"]').select_option("compact")
   assert saved(page)["probabilityStudio"]["draft"]["layoutStyle"]=="compact"
+  # Branch labels stay complete and wrap when they are too long for one line.
+  long_name="A long conditional outcome following a detailed investigation of recorded rainfall"
+  set_branch(page,"0",0,"1/4",long_name)
+  label_panel=page.locator('[data-prob-preview] [data-branch="00"] .probability-label-panel')
+  assert float(label_panel.get_attribute("width"))>140
+  assert float(label_panel.get_attribute("height"))>47
+  # Print in monochrome with distinct terminal event/condition line patterns.
+  page.locator('.probability-studio details.ia-figure-presentation-settings').evaluate("(el)=>el.open=true")
+  page.locator('[data-prob-field="printStyle"]').select_option("mono")
+  assert saved(page)["probabilityStudio"]["draft"]["printStyle"]=="mono"
+  assert page.locator('[data-prob-preview] [data-prob-legend="event"]').count()==1
+  assert page.locator('[data-prob-preview] [data-prob-legend="condition"]').count()==1
+  # Fine-tune a label and reorder branches, retaining its event membership and offset.
+  nudge=page.locator('[data-prob-offset-path="2"][data-prob-offset-axis="x"]')
+  nudge.evaluate("(el)=>el.closest('details').open=true")
+  nudge.fill("12")
+  assert saved(page)["probabilityStudio"]["draft"]["labelOffsets"]["2"]["x"]==12
+  page.locator('[data-action="probability-outcome-move"][data-prob-parent=""][data-prob-index="2"][data-prob-direction="-1"]').click()
+  moved=saved(page)["probabilityStudio"]["draft"]
+  assert moved["eventLeaves"]==["1"] and moved["conditionLeaves"]==["2"]
+  assert moved["labelOffsets"]["1"]["x"]==12
+  page.locator('[data-action="probability-outcome-move"][data-prob-parent=""][data-prob-index="1"][data-prob-direction="1"]').click()
+  reordered=saved(page)["probabilityStudio"]["draft"]
+  assert reordered["eventLeaves"]==["2"] and reordered["conditionLeaves"]==["1"]
+  assert reordered["labelOffsets"]["2"]["x"]==12
+  # Enlarge to true SVG-native size instead of stretching every tree to 1300 px.
+  page.locator('[data-action="probability-preview-detail"]').click()
+  native=page.locator('[data-prob-preview] svg').evaluate("(el)=>el.viewBox.baseVal.width")
+  onscreen=page.locator('[data-prob-preview] svg').evaluate("(el)=>el.getBoundingClientRect().width")
+  assert abs(native-onscreen)<2,(native,onscreen)
+  page.locator('[data-action="probability-preview-fit"]').click()
+  assert page.locator('[data-prob-visual-review]').count()==1
   # Probabilities appear in separate white bands above the branch tails.
   assert page.locator('[data-prob-preview] .probability-label-panel').count()==5
   assert page.locator('[data-prob-preview] path[data-prob-segment]').count()==5
@@ -171,7 +203,12 @@ def flexible_exercise(browser,width,height,touch):
    page.locator('[data-action="probability-svg"]').click()
   svg=Path(downloaded.value.path()).read_text(encoding="utf-8")
   assert "probability-label-panel" in svg and "data-prob-segment" in svg
+  assert "A long conditional outcome" in svg and 'data-prob-legend="event"' in svg
   assert "Probability tree SVG downloaded" not in svg
+  with page.expect_download(timeout=35000) as png_job:
+   page.locator('[data-action="probability-png"]').click()
+  png=Path(png_job.value.path()).read_bytes()
+  assert png.startswith(bytes([137,80,78,71,13,10,26,10]))
   page.locator('[data-action="probability-use"]').click()
   assert saved(page)["entries"][0]["probabilityFigureId"]
   page.reload(wait_until="networkidle")

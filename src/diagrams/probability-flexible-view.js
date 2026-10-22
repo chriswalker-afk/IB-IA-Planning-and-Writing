@@ -25,12 +25,27 @@ function parentEditor(d,parent,leaves,e){
     '" data-prob-branch-index="'+index+'" data-prob-branch-key="probability" value="'+e(child.probability)+
     '" placeholder="e.g. 1/3 or 0.4"></label></div>'+
     '<div class="probability-flex-branch-actions">'+
+     '<span class="probability-order-actions" role="group" aria-label="Order of outcomes">'+
+     '<button type="button" class="btn btn-quiet btn-sm" data-action="probability-outcome-move" data-prob-parent="'+e(id)+
+      '" data-prob-index="'+index+'" data-prob-direction="-1" aria-label="Move outcome '+(index+1)+' up"'+
+      (index===0?' disabled':'')+'>↑ Move up</button>'+
+     '<button type="button" class="btn btn-quiet btn-sm" data-action="probability-outcome-move" data-prob-parent="'+e(id)+
+      '" data-prob-index="'+index+'" data-prob-direction="1" aria-label="Move outcome '+(index+1)+' down"'+
+      (index===children.length-1?' disabled':'')+'>↓ Move down</button></span>'+
      (canExtend?'<button type="button" class="btn btn-quiet btn-sm" data-action="probability-path-continuation" data-prob-path="'+
       e(path)+'" data-prob-continue="'+(isLeaf?"true":"false")+'">'+(isLeaf?'+ Add next split':'Finish this path here')+'</button>':
       '<span class="probability-final-note">Final stage</span>')+
      (children.length>2?'<button type="button" class="btn btn-quiet btn-sm probability-remove-choice" data-action="probability-outcome-remove" data-prob-parent="'+
        e(id)+'" data-prob-index="'+index+'">Remove outcome</button>':"")+
-    '</div></div>';
+    '</div>'+
+    '<details class="probability-label-nudge"><summary>Adjust label placement</summary>'+
+     '<p>Move the outcome/probability label together. The branch probabilities do not change.</p>'+
+     '<div class="probability-label-nudge-grid">'+
+     [['x','Horizontal (−48 to 48 px)',-48,48],['y','Vertical (−28 to 8 px)',-28,8]].map(([axis,label,min,max])=>
+      '<label>'+label+'<input type="number" step="1" min="'+min+'" max="'+max+
+      '" data-prob-offset-path="'+e(path)+'" data-prob-offset-axis="'+axis+
+      '" value="'+(d.labelOffsets?.[path]?.[axis]||0)+'"></label>').join("")+
+     '</div></details></div>';
  }).join("")+
  '<button type="button" class="btn btn-secondary btn-sm" data-action="probability-outcome-add" data-prob-parent="'+e(id)+'"'+
  (children.length>=MAX_TREE_OUTCOMES?' disabled':'')+'>+ Add outcome to this split</button>'+
@@ -50,6 +65,6 @@ export function probabilityFlexibleEditors(studio,e){
     parents.map(parent=>parentEditor(d,parent,leaves,e)).join("")+
     '</div></details>';
  }).join("")+
- '<p class="probability-limit-note">Maximum '+MAX_TREE_STAGES+' stages, '+MAX_TREE_OUTCOMES+
+ '<p class="probability-limit-note">Move outcomes up or down without losing their conditional subtrees or selected event paths. Maximum '+MAX_TREE_STAGES+' stages, '+MAX_TREE_OUTCOMES+
  ' outcomes per split and 32 complete paths. An early terminal path still contributes to the total probability.</p>';
 }

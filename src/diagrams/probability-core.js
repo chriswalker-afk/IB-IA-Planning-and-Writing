@@ -1,5 +1,5 @@
 import {normaliseFlexibleBranches,normaliseTerminalNodes,flexibleTreeStructure,flexibleLeaves,flexibleParents,
- analyseFlexibleProbability,MAX_TREE_STAGES} from "./probability-flexible-core.js";
+ analyseFlexibleProbability,normaliseFlexibleLabelOffsets,MAX_TREE_STAGES} from "./probability-flexible-core.js";
 /**
  * Probability Tree Studio. Each split is a conditional distribution given
  * its exact history. Never infer independence or silently normalise values.
@@ -19,7 +19,7 @@ export function newProbabilityDraft(){
  for(const id of PARENTS)branches[id]=[branch(id?"Yes":"Event A"),branch(id?"No":"Not A")];
  return {title:"Successive and conditional outcomes",figureNumber:"1",caption:"",showTitle:true,showCaption:false,showStageLabels:true,stages:2,
   stageLabels:["First event","Second event","Third event","Fourth event"],branches,
-  treeMode:"standard",terminalNodes:[],layoutStyle:"spacious",
+  treeMode:"standard",terminalNodes:[],layoutStyle:"spacious",printStyle:"colour",showPathLegend:true,labelOffsets:{},
   showProducts:false,showEventCalculation:false,eventName:"Event E",conditionName:"Condition C",
   eventLeaves:[],conditionLeaves:[],sourceKind:"theoretical",sourceCredit:"",note:"",edited:false};
 }
@@ -31,6 +31,8 @@ export function normalizeProbabilityDraft(raw){
  blank.stages=blank.treeMode==="flexible"&&Number.isInteger(r.stages)&&r.stages>=1&&r.stages<=MAX_TREE_STAGES?
    r.stages:r.stages===3?3:2;
  blank.layoutStyle=r.layoutStyle==="compact"?"compact":"spacious";
+ blank.printStyle=r.printStyle==="mono"?"mono":"colour";
+ blank.showPathLegend=r.showPathLegend!==false;
  for(const flag of ["showProducts","showEventCalculation","showTitle","showCaption","showStageLabels","edited"])
   if(typeof r[flag]==="boolean")blank[flag]=r[flag];
  if(["primary","secondary","theoretical","unsure"].includes(r.sourceKind))
@@ -48,6 +50,7 @@ export function normalizeProbabilityDraft(raw){
  if(blank.treeMode==="flexible"){
   blank.branches=normaliseFlexibleBranches(r.branches);
   blank.terminalNodes=normaliseTerminalNodes(r.terminalNodes);
+  blank.labelOffsets=normaliseFlexibleLabelOffsets(r.labelOffsets);
  }
  const valid=new Set(blank.treeMode==="flexible"?flexibleLeaves(blank):leafKeys(blank.stages));
  for(const key of ["eventLeaves","conditionLeaves"])
@@ -126,7 +129,8 @@ export function probabilityAnalysis(raw){
 }
 export const probabilitySignature=d=>JSON.stringify([
  d.title,d.figureNumber,d.caption,d.showTitle,d.showCaption,d.showStageLabels,
- d.treeMode,d.terminalNodes,d.layoutStyle,d.stages,d.stageLabels,d.branches,d.eventLeaves,d.conditionLeaves,
+ d.treeMode,d.terminalNodes,d.layoutStyle,d.printStyle,d.showPathLegend,d.labelOffsets,
+ d.stages,d.stageLabels,d.branches,d.eventLeaves,d.conditionLeaves,
  d.showProducts,d.showEventCalculation,d.sourceKind,d.sourceCredit,d.note,d.eventName,d.conditionName
 ]);
 export function saveProbabilityFigure(studio,entryId=""){

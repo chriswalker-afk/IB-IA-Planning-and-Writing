@@ -22,18 +22,30 @@ export function normaliseFlexibleBranches(raw){
  for(const [key,values] of Object.entries(input)){
   if(!idAllowed(key)||!Array.isArray(values))continue;
   branches[key]=values.slice(0,MAX_TREE_OUTCOMES).map(v=>({
-   label:clean(v?.label,80),probability:clean(v?.probability,60)
+   label:clean(v?.label,160),probability:clean(v?.probability,60)
   }));
   if(Object.keys(branches).length>=MAX_TREE_SPLITS)break;
  }
  if(!Object.hasOwn(branches,""))branches[""]=[];
  return branches;
 }
+/** A nudge is attached to a stable outcome-history key, never a numerical value. */
+export function normaliseFlexibleLabelOffsets(raw){
+ const offsets={};if(!record(raw))return offsets;
+ for(const [path,offset] of Object.entries(raw).slice(0,96)){
+  if(!pathAllowed(path)||!record(offset))continue;
+  const x=typeof offset.x==="number"&&Number.isFinite(offset.x)&&Math.abs(offset.x)<=48?offset.x:0;
+  const y=typeof offset.y==="number"&&Number.isFinite(offset.y)&&offset.y>=-28&&offset.y<=8?offset.y:0;
+  if(x!==0||y!==0)offsets[path]={x,y};
+ }
+ return offsets;
+}
 export function normaliseTerminalNodes(raw){
  return [...new Set((Array.isArray(raw)?raw:[]).filter(pathAllowed))].slice(0,MAX_TREE_LEAVES*2);
 }
 export function createFlexiblePreset(kind,previous){
  const d={...previous,treeMode:"flexible",layoutStyle:"spacious",
+  printStyle:"colour",showPathLegend:true,labelOffsets:{},
   branches:{},terminalNodes:[],eventLeaves:[],conditionLeaves:[],edited:true};
  if(kind==="binary-two"||kind==="binary-three"){
   d.stages=kind==="binary-three"?3:2;

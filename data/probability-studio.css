@@ -78,3 +78,28 @@
 .probability-preview .probability-label-panel{pointer-events:none}
 .probability-preview svg{background:#fff}
 @media(max-width:560px){.probability-presets-grid{grid-template-columns:1fr}.probability-flex-branch-actions{align-items:flex-start}.probability-flex-outcome{padding:7px}}
+
+/* Pass 4: legible large-tree previews, unobtrusive print review and fine edits. */
+.probability-preview.probability-preview-detail svg[data-prob-flexible="true"]{
+ width:var(--prob-natural-width,1300px);min-width:var(--prob-natural-width,1300px);max-width:none
+}
+.probability-order-actions{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.probability-order-actions .btn{font-weight:600;min-height:32px}
+.probability-flex-branch-actions{justify-content:flex-start;align-items:center}
+.probability-flex-branch-actions>.probability-remove-choice{margin-left:auto}
+.probability-label-nudge{margin:9px 0 0;border-top:1px solid #dbe6ea;padding-top:6px}
+.probability-label-nudge>summary{cursor:pointer;font-size:.76rem;font-weight:650;color:#375e72;min-height:27px}
+.probability-label-nudge p{font-size:.75rem;margin:4px 0;color:var(--text-muted,#576e76)}
+.probability-label-nudge-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:7px}
+.probability-label-nudge-grid label{font-size:.75rem;font-weight:600;display:grid;gap:4px;min-width:0}
+.probability-label-nudge-grid input{width:100%;min-width:0;border:1px solid #bcced3;border-radius:7px;background:#fff;color:#234050;padding:7px;font:inherit}
+.probability-visual-review{margin:13px 0;border:1px solid #d4e4e7;border-radius:10px;padding:9px 12px;background:#f8fbfc}
+.probability-visual-review>summary{cursor:pointer;color:#315e6b;font-weight:700;font-size:.87rem}
+.probability-visual-review p,.probability-visual-review li{font-size:.81rem;line-height:1.55}
+.probability-visual-review ul{margin:9px 0 9px 2px;padding-left:21px}
+.probability-visual-review li{margin:6px 0}
+@media(max-width:560px){
+ .probability-order-actions{width:100%}
+ .probability-order-actions .btn{font-size:.76rem}
+ .probability-label-nudge-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}

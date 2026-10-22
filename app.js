@@ -77,7 +77,7 @@ import {setGeometryField,setGeometryVertex,geometryTemplate,geometryAddVertex,ge
 import {exportGeometry} from "./src/diagrams/geometry-export.js";
 import {probabilityPreviewHtml,probabilityQualityHtml,probabilityOutputHtml} from "./src/diagrams/probability-view.js";
 import {setProbabilityField,setProbabilityStage,setProbabilityBranch,toggleProbabilityLeaf,freshProbability,loadProbability,saveProbabilityDraft,saveAndLinkProbability} from "./src/diagrams/probability-actions.js";
-import {chooseProbabilityPreset,enableFlexibleProbability,addProbabilityOutcome,removeProbabilityOutcome,changeProbabilityContinuation} from "./src/diagrams/probability-flexible-actions.js";
+import {chooseProbabilityPreset,enableFlexibleProbability,addProbabilityOutcome,removeProbabilityOutcome,moveProbabilityOutcome,setProbabilityLabelOffset,changeProbabilityContinuation} from "./src/diagrams/probability-flexible-actions.js";
 import {exportProbability} from "./src/diagrams/probability-export.js";
 import {displayVoronoiBounds,coordinateFromCanvas,canvasPosition,voronoiFrame,recordVoronoiHistory,applyVoronoiFrame,undoVoronoi,redoVoronoi,freezeVoronoiWindow,fitVoronoiSites,setVoronoiTool,selectVoronoiSite,moveVoronoiSite,proposeVoronoiComparison,showVoronoiComparison,finishVoronoiComparison,selectNearestBisector} from "./src/diagrams/voronoi-interactions.js";
 import {renderRepresentationHub,renderRepresentationSwitcher,representationFocusActive} from "./src/diagrams/representation-hub.js";
@@ -1836,6 +1836,12 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         if(!result.ok){toast("Cannot add outcome",result.error);break;}
         studio.editLevel=parent.length;save();render();break;
       }
+      case "probability-outcome-move":{
+        const studio=state.probabilityStudio,parent=el.dataset.probParent||"";
+        const result=moveProbabilityOutcome(studio,parent,Number(el.dataset.probIndex),Number(el.dataset.probDirection));
+        if(!result.ok){toast("Cannot reorder outcomes",result.error);break;}
+        studio.editLevel=parent.length;save();render();break;
+      }
       case "probability-outcome-remove":{
         const studio=state.probabilityStudio,parent=el.dataset.probParent||"";
         if(!window.confirm("Remove this outcome and its dependent branches? Remaining outcome paths and event selections will be renumbered. Save your current tree first if needed."))break;
@@ -2950,7 +2956,13 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         save();refreshProbabilityPreview();
       }return;
     }
-    if(target.dataset.probStage!==undefined){
+    if(target.dataset.probOffsetPath!==undefined){
+       if(setProbabilityLabelOffset(state.probabilityStudio,target.dataset.probOffsetPath,
+         target.dataset.probOffsetAxis,target.value)){
+         save();refreshProbabilityPreview();
+       }return;
+     }
+     if(target.dataset.probStage!==undefined){
       if(setProbabilityStage(state.probabilityStudio,Number(target.dataset.probStage),target.value)){
         save();refreshProbabilityPreview();
       }return;
