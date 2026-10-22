@@ -1,5 +1,11 @@
 import {probabilityAnalysis} from "./probability-core.js";
 import {renderProbabilitySvg} from "./probability-render.js";
+/** Keep large flexible trees below browser canvas memory/dimension limits. */
+export function probabilityPngScale(width,height){
+ const w=Number(width),h=Number(height);
+ if(!Number.isFinite(w)||!Number.isFinite(h)||w<=0||h<=0)return 0;
+ return Math.min(2,8192/Math.max(w,h),Math.sqrt(24000000/(w*h)));
+}
 const fileName=x=>(String(x||"probability-tree").trim().toLowerCase().replace(/[^a-z0-9-]+/g,"-").slice(0,58)||"probability-tree");
 function download(blob,name){
  const url=URL.createObjectURL(blob),anchor=document.createElement("a");
@@ -21,10 +27,18 @@ export async function exportProbability(raw,format){
   await new Promise((resolve,reject)=>{image.onload=resolve;image.onerror=()=>reject(new Error("Could not render probability tree as PNG."));image.src=url;});
   const dimensions=/viewBox="0 0 (\d+) (\d+)"/.exec(svg);
   if(!dimensions)throw new Error("Missing probability figure dimensions.");
-  const canvas=document.createElement("canvas");canvas.width=2*Number(dimensions[1]);canvas.height=2*Number(dimensions[2]);
+  const width=Number(dimensions[1]),height=Number(dimensions[2]);
+  const scale=probabilityPngScale(width,height);
+  if(scale<=0)throw new Error("Invalid probability-tree dimensions.");
+  const canvas=document.createElement("canvas");
+  canvas.width=Math.max(1,Math.floor(width*scale));
+  canvas.height=Math.max(1,Math.floor(height*scale));
   const context=canvas.getContext("2d");if(!context)throw new Error("Canvas is unavailable.");
-  context.fillStyle="#fff";context.fillRect(0,0,canvas.width,canvas.height);context.drawImage(image,0,0,canvas.width,canvas.height);
+  context.fillStyle="#fff";context.fillRect(0,0,canvas.width,canvas.height);
+  context.drawImage(image,0,0,canvas.width,canvas.height);
   const blob=await new Promise((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(new Error("Could not generate PNG.")),"image/png"));
-  download(blob,name+".png");return "High-resolution probability tree PNG downloaded.";
+  download(blob,name+".png");
+  return scale>=1.99?"High-resolution probability tree PNG downloaded.":
+   "Large tree PNG downloaded at an adaptive resolution. Use SVG for maximum print quality.";
  }finally{URL.revokeObjectURL(url);}
 }
