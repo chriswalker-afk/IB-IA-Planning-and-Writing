@@ -75,6 +75,9 @@ import {renderGeometrySvg,geometryLayout} from "./src/diagrams/geometry-render.j
 import {geometryPreviewHtml,geometryQualityHtml,geometryOutputHtml} from "./src/diagrams/geometry-view.js";
 import {setGeometryField,setGeometryVertex,geometryTemplate,geometryAddVertex,geometryRemoveVertex,geometryFresh,loadGeometry,saveGeometryDraft,saveAndLinkGeometry,importGeometryFromTrace} from "./src/diagrams/geometry-actions.js";
 import {exportGeometry} from "./src/diagrams/geometry-export.js";
+import {probabilityPreviewHtml,probabilityQualityHtml,probabilityOutputHtml} from "./src/diagrams/probability-view.js";
+import {setProbabilityField,setProbabilityStage,setProbabilityBranch,toggleProbabilityLeaf,freshProbability,loadProbability,saveProbabilityDraft,saveAndLinkProbability} from "./src/diagrams/probability-actions.js";
+import {exportProbability} from "./src/diagrams/probability-export.js";
 import {displayVoronoiBounds,coordinateFromCanvas,canvasPosition,voronoiFrame,recordVoronoiHistory,applyVoronoiFrame,undoVoronoi,redoVoronoi,freezeVoronoiWindow,fitVoronoiSites,setVoronoiTool,selectVoronoiSite,moveVoronoiSite,proposeVoronoiComparison,showVoronoiComparison,finishVoronoiComparison,selectNearestBisector} from "./src/diagrams/voronoi-interactions.js";
 import {renderRepresentationHub,renderRepresentationSwitcher,representationFocusActive} from "./src/diagrams/representation-hub.js";
 import {REPRESENTATION_TOOLS,representationTool,activeRepresentationTool,closeRepresentationTools,activateRepresentationTool,representationFigureKey,representationReturnNode} from "./src/diagrams/representation-registry.js";
@@ -603,6 +606,29 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     const output=root.querySelector(".geometry-output");if(output)output.outerHTML=geometryOutputHtml(state.geometryStudio,icon);
     refreshPresentation("geometry");
   }
+  function refreshProbabilityPreview(){
+    const root=main.querySelector?.("[data-probability-studio]");
+    if(!root||!state.probabilityStudio?.open)return;
+    const preview=root.querySelector("[data-prob-preview]");
+    if(preview)preview.outerHTML=probabilityPreviewHtml(state.probabilityStudio);
+    const quality=root.querySelector("[data-prob-quality]");
+    if(quality)quality.outerHTML=probabilityQualityHtml(state.probabilityStudio,e);
+    const output=root.querySelector("[data-prob-output]");
+    if(output)output.outerHTML=probabilityOutputHtml(state.probabilityStudio,icon);
+    refreshPresentation("probability");
+  }
+  function navigateProbability(figureId=""){
+    rememberMathEditorOrigin();
+    if(state.completion.current!=="C31")setCompletionNode(state,"C31",{reason:"probability-editor"});
+    activateRepresentationTool(state,"probability");
+    const entry=completeEntry(state);
+    if(!figureId)avoidEditingUnrelatedStageFigure(state.probabilityStudio,entry,freshProbability);
+    const id=figureId||entry?.probabilityFigureId;
+    if(id&&state.probabilityStudio.figures.some(f=>f.id===id))
+      loadProbability(state.probabilityStudio,id);
+    save();render();
+    document.querySelector?.("[data-probability-studio]")?.scrollIntoView?.({block:"start",behavior:"auto"});
+  }
   function navigateGeometry(id=""){
     rememberMathEditorOrigin();if(state.completion.current!=="C31")setCompletionNode(state,"C31",{reason:"geometry-editor"});
     activateRepresentationTool(state,"geometry");
@@ -627,7 +653,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   // Checking or a later mathematical stage.
   const diagramNavigators=Object.freeze({
     graph:navigateGraph,stat:navigateStat,table:navigateTable,
-    trace:navigateTrace,voronoi:navigateVoronoi,geometry:navigateGeometry
+    trace:navigateTrace,voronoi:navigateVoronoi,geometry:navigateGeometry,probability:navigateProbability
   });
   function activeResourceCreator(){
     return activeRepresentationTool(state)?.id||"";
@@ -1753,6 +1779,33 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         returnToShowingFirstMaths("representation-return");
         break;
       }
+      case "probability-open":navigateProbability();break;
+      case "probability-new":{
+        if(state.probabilityStudio.draft.edited&&!window.confirm("Start a new probability tree? Save the current draft if you need it."))break;
+        freshProbability(state.probabilityStudio);save();render();break;
+      }
+      case "probability-load":{
+        if(!loadProbability(state.probabilityStudio,el.dataset.probId)){toast("Saved tree not found.");break;}
+        save();render();break;
+      }
+      case "probability-save":{
+        const result=saveProbabilityDraft(state);
+        if(!result.ok){toast("Check the probability tree",result.error);break;}
+        save();render();toast("Editable probability tree saved",
+         result.reviewNeeded?"Recheck your earlier linked mathematical conclusions.":"Included in your project backup.");
+        break;
+      }
+      case "probability-use":{
+        const result=saveAndLinkProbability(state);
+        if(!result.ok){toast("Check the probability tree",result.error);break;}
+        returnToShowingFirstMaths("linked-probability");
+        toast("Probability tree linked to this mathematical stage");break;
+      }
+      case "probability-svg":case "probability-png":{
+        exportProbability(state.probabilityStudio.draft,action.slice("probability-".length))
+          .then(message=>toast(message)).catch(err=>toast("Probability tree export unavailable",err.message));
+        break;
+      }
       case "geometry-open":navigateGeometry();break;
       case "geometry-close":state.geometryStudio.open=false;save();render();break;
       case "geometry-preview-fit":case "geometry-preview-detail":{
@@ -2794,6 +2847,31 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   });
   document.addEventListener("input",evt=>{
     const target=evt.target;
+    if(target.dataset.probBranchParent!==undefined){
+      if(setProbabilityBranch(state.probabilityStudio,target.dataset.probBranchParent,
+         Number(target.dataset.probBranchIndex),target.dataset.probBranchKey,target.value)){
+        save();refreshProbabilityPreview();
+      }return;
+    }
+    if(target.dataset.probStage!==undefined){
+      if(setProbabilityStage(state.probabilityStudio,Number(target.dataset.probStage),target.value)){
+        save();refreshProbabilityPreview();
+      }return;
+    }
+    if(target.dataset.probLeaf!==undefined){
+      if(toggleProbabilityLeaf(state.probabilityStudio,target.dataset.probMembership,target.dataset.probLeaf,target.checked)){
+        save();refreshProbabilityPreview();
+      }return;
+    }
+    if(target.dataset.probField!==undefined){
+      const value=target.type==="checkbox"?target.checked:target.value;
+      if(setProbabilityField(state.probabilityStudio,target.dataset.probField,value)){
+        save();
+        if(target.tagName==="SELECT"||target.type==="checkbox")render();
+        else refreshProbabilityPreview();
+      }return;
+    }
+
     if(target.dataset.diagramExpression!==undefined){
       const root=target.closest("[data-diagram-notation]"),box=root?.querySelector("[data-diagram-expression-preview]");
       const error=root?.querySelector("[data-diagram-notation-error]");
@@ -2981,6 +3059,12 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   });
   document.addEventListener("change",evt=>{
     const target=evt.target;
+    if(target.dataset.probBranchParent!==undefined||target.dataset.probStage!==undefined||
+       target.dataset.probLeaf!==undefined||target.dataset.probField!==undefined){
+      // Already saved on input; a change after blur must not detach an action button.
+      return;
+    }
+
     if(target.dataset.geometryVertex!==undefined){
       const index=Number(target.dataset.geometryVertex),key=target.dataset.geometryVertexKey;
       const point=state.geometryStudio.draft.vertices[index],value=target.type==="checkbox"?target.checked:target.value;
