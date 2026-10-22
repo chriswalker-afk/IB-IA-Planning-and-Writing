@@ -1,4 +1,5 @@
 import {geometryAnalysis,MAX_GEOMETRY_FIGURES} from "./geometry-core.js";
+import {MAX_GEOMETRY_AUX_POINTS,MAX_GEOMETRY_GUIDES} from "./geometry-annotations.js";
 import {renderGeometrySvg} from "./geometry-render.js";
 import {orthogonalDecomposition,geometrySensitivity} from "./geometry-advanced.js";
 import {diagramNotationControls,diagramHtmlMath} from "./diagram-notation.js";
@@ -66,6 +67,53 @@ export function geometryOutputHtml(studio,icon){
   '<button type="button" class="btn btn-secondary" data-action="geometry-png"'+disabled+'>Download PNG</button></div>'+
   '<p class="geometry-note">'+remaining+' available saved-figure slot(s). '+(ready?'Save your diagram before moving it into the IA.':'Complete the highlighted checks before saving, linking or downloading.')+' Saved figures remain editable; they are not independent evidence of mathematical correctness.</p></div>';
 }
+/** Optional controls stay collapsed so the main vertex editor is approachable. */
+function geometryAnnotationControls(d,e){
+ const choicesForPoints=[...d.vertices,...d.auxPoints];
+ const endpoint=(index,key,current,label)=>'<label>'+e(label)+
+  '<select data-geometry-guide="'+index+'" data-geometry-guide-key="'+key+'">'+
+  choicesForPoints.map(p=>'<option value="'+e(p.id)+'"'+(p.id===current?' selected':'')+'>'+e(p.label)+'</option>').join('')+
+  '</select></label>';
+ const aux=d.auxPoints.map((p,i)=>'<div class="geometry-construction-card geometry-aux-editor">'+
+  '<strong>Extra point '+(i+1)+'</strong>'+
+  '<label>Point name <input type="text" data-geometry-aux="'+i+'" data-geometry-aux-key="label" value="'+e(p.label)+'"></label>'+
+  '<label>x <input type="number" step="any" data-geometry-aux="'+i+'" data-geometry-aux-key="x" value="'+(p.x??'')+'"></label>'+
+  '<label>y <input type="number" step="any" data-geometry-aux="'+i+'" data-geometry-aux-key="y" value="'+(p.y??'')+'"></label>'+
+  '<details><summary>Move label</summary><div class="geometry-nudge-grid">'+
+  '<label>Horizontal (px)<input type="number" min="-90" max="90" data-geometry-aux="'+i+'" data-geometry-aux-key="labelDx" value="'+p.labelDx+'"></label>'+
+  '<label>Vertical (px)<input type="number" min="-90" max="90" data-geometry-aux="'+i+'" data-geometry-aux-key="labelDy" value="'+p.labelDy+'"></label>'+
+  '</div></details>'+
+  '<button type="button" class="btn btn-quiet btn-sm" data-action="geometry-aux-remove" data-geometry-index="'+i+'">Remove point</button></div>').join('');
+ const guides=d.guides.map((g,i)=>'<div class="geometry-construction-card geometry-guide-editor">'+
+  '<strong>Construction '+(i+1)+'</strong>'+
+  '<label>Type <select data-geometry-guide="'+i+'" data-geometry-guide-key="kind">'+
+  [['solid','Line segment'],['dashed','Dashed construction'],['height','Perpendicular height'],['north','North reference']].map(([kind,name])=>
+   '<option value="'+kind+'"'+(g.kind===kind?' selected':'')+'>'+name+'</option>').join('')+'</select></label>'+
+  endpoint(i,'from',g.from,g.kind==='north'?'North line at':'Line begins at')+
+  (g.kind==='height'?endpoint(i,'baseStart',g.baseStart,'Baseline from')+
+   endpoint(i,'baseEnd',g.baseEnd,'Baseline to'):
+   g.kind==='north'?'':endpoint(i,'to',g.to,'Line ends at'))+
+  (g.kind==='north'?'':(
+   '<label>Annotation <input type="text" data-geometry-guide="'+i+'" data-geometry-guide-key="label" value="'+e(g.label)+'" placeholder="e.g. h, median, altitude"></label>'+
+   (d.mode==='coordinate'?'<label class="geometry-inline-check"><input type="checkbox" data-geometry-guide="'+i+
+    '" data-geometry-guide-key="showLength"'+(g.showLength?' checked':'')+'> Show calculated length</label>':'')+
+   '<details><summary>Move annotation</summary><div class="geometry-nudge-grid">'+
+    '<label>Horizontal (px)<input type="number" min="-90" max="90" data-geometry-guide="'+i+'" data-geometry-guide-key="labelDx" value="'+g.labelDx+'"></label>'+
+    '<label>Vertical (px)<input type="number" min="-90" max="90" data-geometry-guide="'+i+'" data-geometry-guide-key="labelDy" value="'+g.labelDy+'"></label>'+
+   '</div></details>'))+
+  '<button type="button" class="btn btn-quiet btn-sm" data-action="geometry-guide-remove" data-geometry-index="'+i+'">Remove line</button></div>').join('');
+ return '<details class="geometry-constructions"'+(d.auxPoints.length||d.guides.length?' open':'')+'><summary>Additional points, diagonals and construction lines ('+
+  (d.auxPoints.length+d.guides.length)+')</summary>'+
+  '<p>These annotations do not change the closed polygon or its calculated area. Add points to position measurements, create diagonals, or construct a perpendicular height to a chosen baseline.</p>'+
+  '<div class="geometry-buttons"><button type="button" class="btn btn-secondary btn-sm" data-action="geometry-aux-add"'+
+   (d.auxPoints.length>=MAX_GEOMETRY_AUX_POINTS?' disabled':'')+'>+ Extra point</button>'+
+  [['solid','Solid line'],['dashed','Dashed line'],['height','Height'],['north','North reference']].map(([kind,name])=>
+   '<button type="button" class="btn btn-secondary btn-sm" data-action="geometry-guide-add" data-geometry-guide-kind="'+kind+'"'+
+   (d.guides.length>=MAX_GEOMETRY_GUIDES?' disabled':'')+'>+ '+name+'</button>').join('')+'</div>'+
+  (d.auxPoints.length?'<h4>Independent points</h4>'+aux:'')+
+  (d.guides.length?'<h4>Construction lines</h4>'+guides:'')+
+  '<p>Heights are perpendicular projections. If the foot lies beyond the side, a dashed baseline extension is included. North references require confirmed coordinates with north at positive y.</p></details>';
+}
 export function renderGeometryStudio(state,icon,e){
  const studio=state.geometryStudio,d=studio.draft,q=geometryAnalysis(d);
  return '<section class="geometry-studio representation-studio" data-geometry-studio aria-label="Geometry and Measurement Studio">'+
@@ -110,11 +158,32 @@ export function renderGeometryStudio(state,icon,e){
      (p.rightAngle?"":" disabled")+'>Construct perpendicular side</button>'+
    '<label><input type="checkbox" data-geometry-vertex="'+i+'" data-geometry-vertex-key="locked"'+(p.locked?" checked":"")+'> Lock these point coordinates</label>'+
    '<p>Requirements are checked before saving. Alignment buttons adjust the <em>next</em> point; a locked point cannot be moved.</p>'+
-   '</details></div>').join("")+'</div>'+
-  '<button type="button" class="btn btn-secondary btn-sm" data-action="geometry-add"'+(d.vertices.length>=8?" disabled":"")+'>+ Add point</button>'+
+   '</details>'+
+   '<details class="geometry-vertex-positions"><summary>Angle marker and label positions</summary>'+
+   '<label>Angle marking <select data-geometry-vertex="'+i+'" data-geometry-vertex-key="angleMark">'+
+    [['single','Single arc'],['double','Double arc'],['triple','Triple arc']].map(([id,label])=>
+     '<option value="'+id+'"'+(p.angleMark===id?' selected':'')+'>'+label+'</option>').join('')+'</select></label>'+
+   '<p>Ordinary and reflex angles use arcs; verified 90° angles use a square marker.</p>'+
+   '<div class="geometry-nudge-grid">'+
+    [['pointLabelDx','Point x'],['pointLabelDy','Point y'],['edgeLabelDx','Side x'],
+     ['edgeLabelDy','Side y'],['angleLabelDx','Angle x'],['angleLabelDy','Angle y']].map(([key,label])=>
+     '<label>'+label+' offset (px)<input type="number" min="-90" max="90" step="1" data-geometry-vertex="'+i+
+      '" data-geometry-vertex-key="'+key+'" value="'+p[key]+'"></label>').join('')+
+   '</div></details></div>').join("")+'</div>'+
+  '<button type="button" class="btn btn-secondary btn-sm" data-action="geometry-add"'+(d.vertices.length>=8?" disabled":"")+'>+ Add polygon vertex</button>'+
+  geometryAnnotationControls(d,e)+
   '<h3>3. Show appropriate information</h3>'+
   geometryImportHtml(state,icon,e)+
   tick("filled","Soft fill",d.filled)+tick("showGrid","Cartesian guide grid",d.showGrid)+
+  choices("dimensionStyle","Side label presentation",d.dimensionStyle,
+   [["inline","Beside each side"],["dimension","Dimension arrows and extension lines"]],e)+
+  (d.dimensionStyle==="dimension"?field("dimensionOffset","Dimension line distance (24–85 px)",String(d.dimensionOffset),e):"")+
+  (d.mode==="coordinate"?'<div class="geometry-precision-settings"><h4>Display precision</h4>'+
+   '<p>Choose an appropriate precision for the measurements that justify your model. Display rounding never changes the underlying calculations.</p>'+
+   choices("lengthFormat","Length format",d.lengthFormat,
+    [["dp","Decimal places"],["sf","Significant figures"]],e)+
+   field("lengthDigits",d.lengthFormat==="sf"?"Length significant figures (1–5)":"Length decimal places (0–5)",String(d.lengthDigits),e)+
+   field("angleDigits","Angle decimal places (0–3)",String(d.angleDigits),e)+'</div>':"")+
   (d.mode==="coordinate"?tick("showLengths","Calculate and show side lengths",d.showLengths)+
    tick("showAngles","Calculate and show interior angles",d.showAngles)+
    tick("showCoordinates","Show point coordinates",d.showCoordinates)+

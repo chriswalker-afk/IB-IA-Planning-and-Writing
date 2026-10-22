@@ -68,3 +68,31 @@
 .ia-figure-presentation-settings{margin:12px 0;padding:10px 12px;background:#f5f9fa;border:1px solid #d2e4e8;border-radius:10px}
 .ia-figure-presentation-settings>summary{cursor:pointer;font-size:.85rem;font-weight:700;color:#285968}
 .ia-figure-presentation-settings p{font-size:.8rem;color:var(--text-muted,#566c76);line-height:1.5}
+
+
+/* Pass 2: independent, collapsible IA-quality annotations and legible mobile editors. */
+.geometry-constructions,.geometry-precision-settings{margin:13px 0;padding:11px 12px;border:1px solid #cbdde5;background:#f4f9fa;border-radius:11px}
+.geometry-constructions>summary,.geometry-vertex-positions>summary{cursor:pointer;color:#2b6079;font-size:.85rem;font-weight:700}
+.geometry-constructions p,.geometry-precision-settings p,.geometry-vertex-positions p{font-size:.82rem;color:var(--text-muted,#566c76);line-height:1.45;margin:8px 0}
+.geometry-constructions h4,.geometry-precision-settings h4{font-size:.88rem;margin:13px 0 7px}
+.geometry-construction-card{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:9px 0;padding:11px;background:#fff;border:1px solid #dce6ea;border-radius:10px}
+.geometry-construction-card>strong,.geometry-construction-card>details,.geometry-construction-card>button{grid-column:1/-1}
+.geometry-construction-card label{display:grid;gap:4px;min-width:0;font-size:.81rem;font-weight:600}
+.geometry-construction-card input,.geometry-construction-card select,.geometry-nudge-grid input,.geometry-vertex-positions select{width:100%;min-width:0;max-width:100%;border:1px solid #bccbd4;border-radius:8px;padding:7px 9px;background:white;color:#1c3341;font:inherit}
+.geometry-construction-card .geometry-inline-check{grid-column:1/-1;display:flex;align-items:center;gap:8px;font-weight:500}
+.geometry-construction-card .geometry-inline-check input{width:auto}
+.geometry-construction-card details>summary{cursor:pointer;color:#2b6079;font-size:.82rem;font-weight:600}
+.geometry-construction-card>button{justify-self:start}
+.geometry-vertex-positions{grid-column:1/-1;margin-top:2px;border-top:1px solid #d8e3e8;padding-top:8px}
+.geometry-vertex-positions>label{display:grid;gap:5px;margin-top:8px;font-size:.82rem}
+.geometry-nudge-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:8px}
+.geometry-nudge-grid label{display:grid;gap:4px;font-size:.78rem;font-weight:600}
+.geometry-constructions .geometry-buttons{gap:6px}
+.geometry-precision-settings .geometry-field{margin:7px 0}
+.geometry-preview [data-geometry-aux-index]{touch-action:none;cursor:grab}
+.geometry-preview [data-geometry-aux-index]:focus-visible{outline:none;filter:drop-shadow(0 0 2px #e89c32)}
+@media(max-width:560px){
+ .geometry-construction-card{grid-template-columns:1fr}
+ .geometry-constructions,.geometry-precision-settings{padding:10px}
+ .geometry-nudge-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}

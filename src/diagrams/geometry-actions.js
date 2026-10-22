@@ -1,12 +1,32 @@
 import {newGeometryDraft,normalizeGeometryDraft,geometryAnalysis,geometrySignature,saveGeometryFigure,MAX_GEOMETRY_VERTICES} from "./geometry-core.js";
+import {MAX_GEOMETRY_AUX_POINTS,MAX_GEOMETRY_GUIDES} from "./geometry-annotations.js";
 import {completeEntry,startFirstRepresentation} from "../completing/engine.js";
 import {linkRepresentationFigure} from "./figure-linking.js";
 import {geometryFromTrace} from "./geometry-advanced.js";
+const nudge=value=>{
+ const raw=String(value).trim(),n=raw===""?0:Number(raw);
+ return Number.isFinite(n)&&Math.abs(n)<=90?n:null;
+};
+const coordinate=value=>{
+ const raw=String(value).trim(),n=Number(raw);
+ return raw!==""&&Number.isFinite(n)&&Math.abs(n)<=1e5?n:null;
+};
 export function setGeometryField(studio,key,value){
  const d=studio.draft;
  if(["title","figureNumber","caption","unit","sourceCredit","note","sensitivityStep"].includes(key)){d[key]=String(value).slice(0,key==="note"||key==="sourceCredit"?800:180);d.edited=true;return true;}
  if(key==="mode"&&["schematic","coordinate"].includes(value)){d.mode=value;d.showBearings=false;d.edited=true;return true;}
- if(key==="sourceKind"&&["theoretical","primary","secondary","unsure"].includes(value)){d.sourceKind=value;return true;}
+ if(key==="sourceKind"&&["theoretical","primary","secondary","unsure"].includes(value)){d.sourceKind=value;d.edited=true;return true;}
+ if(key==="dimensionStyle"&&["inline","dimension"].includes(value)){d.dimensionStyle=value;d.edited=true;return true;}
+ if(key==="lengthFormat"&&["dp","sf"].includes(value)){d.lengthFormat=value;d.edited=true;return true;}
+ if(["lengthDigits","angleDigits","dimensionOffset"].includes(key)){
+  const n=Number(value),maximum=key==="angleDigits"?3:5;
+  if(key==="dimensionOffset"&&Number.isInteger(n)&&n>=24&&n<=85){d[key]=n;d.edited=true;return true;}
+  if(key!=="dimensionOffset"&&Number.isInteger(n)&&String(value).trim()!==""&&n>=0&&n<=maximum&&
+    !(key==="lengthDigits"&&d.lengthFormat==="sf"&&n===0)){
+   d[key]=n;d.edited=true;return true;
+  }
+  return false;
+ }
  if(["showTitle","showCaption","northAligned","showLengths","showAngles","showBearings","showGrid","showCoordinates","showDecomposition","showSensitivity","filled"].includes(key)){
   d[key]=value===true;d.edited=true;return true;
  }
@@ -16,6 +36,11 @@ export function setGeometryVertex(studio,index,key,value){
  const v=studio.draft.vertices[index];if(!v)return false;
  if(["edgeConstraint"].includes(key)&&["free","horizontal","vertical"].includes(value)){v.edgeConstraint=value;studio.draft.edited=true;return true;}
  if(["rightAngle","locked"].includes(key)&&typeof value==="boolean"){v[key]=value;studio.draft.edited=true;return true;}
+ if(key==="angleMark"&&["single","double","triple"].includes(value)){v.angleMark=value;studio.draft.edited=true;return true;}
+ if(["edgeLabelDx","edgeLabelDy","angleLabelDx","angleLabelDy","pointLabelDx","pointLabelDy"].includes(key)){
+  const n=nudge(value);if(n===null)return false;
+  v[key]=n;studio.draft.edited=true;return true;
+ }
  if(["label","edgeLabel","angleLabel"].includes(key)){v[key]=String(value).slice(0,key==="label"?44:100);studio.draft.edited=true;return true;}
  if(key==="x"||key==="y"){
   if(v.locked)return false;
@@ -31,13 +56,74 @@ export function geometryTemplate(studio,kind){
 export function geometryAddVertex(studio){
  const d=studio.draft;if(d.vertices.length>=MAX_GEOMETRY_VERTICES)return false;
  const n=d.vertices.length,a=d.vertices[n-1],b=d.vertices[0];
- d.vertices.push({id:"v-"+n,label:String.fromCharCode(65+n),x:(a.x+b.x)/2,y:(a.y+b.y)/2+1,
-  edgeLabel:"",angleLabel:"",edgeConstraint:"free",rightAngle:false,locked:false});
+ const defaults=newGeometryDraft().vertices[0];
+ let key="v-"+n;while(d.vertices.some(v=>v.id===key))key+="-x";
+ d.vertices.push({...defaults,id:key,label:String.fromCharCode(65+n),
+  x:(a.x+b.x)/2,y:(a.y+b.y)/2+1});
  a.edgeConstraint="free";d.edited=true;return true;
 }
 export function geometryRemoveVertex(studio,index){
  const d=studio.draft;if(d.vertices.length<=3||index<0||index>=d.vertices.length)return false;
  d.vertices.splice(index,1);d.edited=true;return true;
+}
+/** Independent point and construction lines never affect the polygon area. */
+export function geometryAddAuxPoint(studio){
+ const d=studio?.draft;if(!d||d.auxPoints.length>=MAX_GEOMETRY_AUX_POINTS)return false;
+ const a=d.vertices[0],b=d.vertices[1];
+ let i=1,id="p-"+i;while(d.auxPoints.some(p=>p.id===id)){i++;id="p-"+i;}
+ const used=new Set([...d.vertices,...d.auxPoints].map(p=>p.label.toLowerCase()));
+ let label="P";for(let k=1;used.has(label.toLowerCase());k++)label="P"+k;
+ d.auxPoints.push({id,label,x:(a.x+b.x)/2,y:(a.y+b.y)/2,labelDx:0,labelDy:0});
+ d.edited=true;return true;
+}
+export function moveGeometryAuxPoint(studio,index,x,y){
+ const d=studio?.draft,p=d?.auxPoints?.[index];
+ if(!p||!Number.isFinite(x)||!Number.isFinite(y)||Math.abs(x)>1e5||Math.abs(y)>1e5)return false;
+ p.x=x;p.y=y;d.edited=true;return true;
+}
+export function setGeometryAuxPoint(studio,index,key,value){
+ const d=studio?.draft,p=d?.auxPoints?.[index];if(!p)return false;
+ if(key==="label"){p.label=String(value).slice(0,44);d.edited=true;return true;}
+ if(["x","y"].includes(key)){p[key]=coordinate(value);d.edited=true;return true;}
+ if(["labelDx","labelDy"].includes(key)){
+  const v=nudge(value);if(v===null)return false;
+  p[key]=v;d.edited=true;return true;
+ }return false;
+}
+export function geometryRemoveAuxPoint(studio,index){
+ const d=studio?.draft,p=d?.auxPoints?.[index];
+ if(!p)return {ok:false,error:"Construction point not found."};
+ if(d.guides.some(g=>[g.from,g.to,g.baseStart,g.baseEnd].includes(p.id)))
+  return {ok:false,error:"Remove or redirect lines that use this point before deleting it."};
+ d.auxPoints.splice(index,1);d.edited=true;return {ok:true};
+}
+export function geometryAddGuide(studio,kind="dashed"){
+ const d=studio?.draft;if(!d||d.guides.length>=MAX_GEOMETRY_GUIDES||
+  !["solid","dashed","height","north"].includes(kind))return false;
+ let i=1,id="guide-"+i;while(d.guides.some(g=>g.id===id)){i++;id="guide-"+i;}
+ const vertices=d.vertices,points=[...vertices,...d.auxPoints];
+ d.guides.push({id,kind,from:vertices[0].id,
+  to:points[2]?.id||vertices[1].id,baseStart:vertices[1].id,
+  baseEnd:vertices[2].id,label:kind==="height"?"h":"",
+  showLength:false,labelDx:0,labelDy:0});
+ d.edited=true;return true;
+}
+export function setGeometryGuide(studio,index,key,value){
+ const d=studio?.draft,g=d?.guides?.[index];if(!g)return false;
+ if(key==="kind"&&["solid","dashed","height","north"].includes(value)){g.kind=value;d.edited=true;return true;}
+ if(["from","to","baseStart","baseEnd"].includes(key)){
+  if(![...d.vertices,...d.auxPoints].some(p=>p.id===value))return false;
+  g[key]=value;d.edited=true;return true;
+ }
+ if(key==="label"){g.label=String(value).slice(0,100);d.edited=true;return true;}
+ if(key==="showLength"&&typeof value==="boolean"){g.showLength=value;d.edited=true;return true;}
+ if(["labelDx","labelDy"].includes(key)){
+  const n=nudge(value);if(n===null)return false;g[key]=n;d.edited=true;return true;
+ }return false;
+}
+export function geometryRemoveGuide(studio,index){
+ const d=studio?.draft;if(!d||index<0||index>=d.guides.length)return false;
+ d.guides.splice(index,1);d.edited=true;return true;
 }
 export function geometryFresh(studio){studio.activeId="";studio.draft=newGeometryDraft();studio.open=true;}
 export function loadGeometry(studio,id){

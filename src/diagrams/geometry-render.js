@@ -2,12 +2,16 @@
 import {geometryAnalysis} from "./geometry-core.js";
 import {orthogonalDecomposition} from "./geometry-advanced.js";
 import {svgDiagramText,diagramWrapLines} from "./diagram-notation.js";
+import {resolvedConstructionGuides} from "./geometry-annotations.js";
+import {geometryDimensionSvg,formatGeometryMeasure,renderGeometryGuideLines,renderGeometryAuxPoints} from "./geometry-overlay.js";
 const W=1080;
 const num=n=>Number(n).toFixed(2).replace(/\.?0+$/,"");
 const text=(label,x,y,attrs="",options={})=>svgDiagramText(label,x,y,attrs,{maxWidth:options.width||300,fontSize:options.size||15});
 const fmt=n=>Number.isFinite(n)?Number(n).toFixed(2).replace(/\.?0+$/,""):"?";
 export function geometryLayout(raw){
- const d=geometryAnalysis(raw).draft,points=d.vertices.filter(p=>Number.isFinite(p.x)&&Number.isFinite(p.y));
+ const d=geometryAnalysis(raw).draft;
+ const feet=resolvedConstructionGuides(d).filter(x=>x.height).map(x=>x.height);
+ const points=[...d.vertices,...d.auxPoints,...feet].filter(p=>Number.isFinite(p.x)&&Number.isFinite(p.y));
  const xs=points.map(p=>p.x),ys=points.map(p=>p.y);
  let minX=Math.min(...xs,0),maxX=Math.max(...xs,1),minY=Math.min(...ys,0),maxY=Math.max(...ys,1);
  if(!points.length){minX=0;maxX=8;minY=0;maxY=6;}
@@ -25,7 +29,7 @@ export function renderGeometrySvg(raw,{interactive=false}={}){
  const a=geometryAnalysis(raw),d=a.draft,L=geometryLayout(d),P=d.vertices.map(p=>({...p,sx:L.x(p.x),sy:L.y(p.y)}));
  const figureTop=d.showTitle?96:48;
  const captionLines=d.showCaption?diagramWrapLines((d.figureNumber.trim()?"Figure "+d.figureNumber.trim()+". ":"")+(d.caption.trim()||d.title.trim()),105).slice(0,4):[];
- const H=figureTop+510+captionLines.length*23+(captionLines.length?18:0);
+ const H=figureTop+585+captionLines.length*23+(captionLines.length?18:0);
  const out=[],white='#fff',ink='#29495b',blue='#326e9e',grey='#6a7e89',teal='#d7eced';
  const path=P.map((p,i)=>(i?"L":"M")+num(p.sx)+" "+num(p.sy)).join(" ")+" Z";
  out.push('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Student-authored '+(d.mode==="schematic"?"schematic":"coordinate")+' geometric construction with '+P.length+' vertices"'+
@@ -67,16 +71,25 @@ export function renderGeometrySvg(raw,{interactive=false}={}){
    });
   }
  }
+ // A construction line may cross the polygon. Draw it before vertex labels so
+ // students can read the full mathematical construction without losing labels.
+ out.push(renderGeometryGuideLines(d,L));
  const centroid={x:P.reduce((v,p)=>v+p.sx,0)/P.length,y:P.reduce((v,p)=>v+p.sy,0)/P.length};
  for(let i=0;i<P.length;i++){
   const p=P[i],q=P[(i+1)%P.length],r=P[(i+P.length-1)%P.length];
   const vx=q.sx-p.sx,vy=q.sy-p.sy,len=Math.max(1,Math.hypot(vx,vy)),mx=(p.sx+q.sx)/2,my=(p.sy+q.sy)/2;
-  const nx=-vy/len,ny=vx/len,sign=(mx-centroid.x)*nx+(my-centroid.y)*ny>=0?1:-1;
+  const nx=-vy/len,ny=vx/len,sign=a.area>=0?1:-1;
   const label=p.edgeLabel.trim()||(d.mode==="coordinate"&&d.showLengths&&a.ready?
-   "≈ "+fmt(a.lengths[i])+(d.unit?" "+d.unit:""):"");
-  if(label)out.push(text(label,mx+nx*sign*19,my+ny*sign*19,
-   'font-family="Arial,sans-serif" font-size="15" font-weight="600" text-anchor="middle" fill="'+ink+'" stroke="#fff" stroke-width="4" paint-order="stroke"',
-   {width:190}));
+   "≈ "+formatGeometryMeasure(a.lengths[i],d)+(d.unit?" "+d.unit:""):"");
+  if(label){
+   if(d.dimensionStyle==="dimension")out.push(geometryDimensionSvg(
+    p.sx,p.sy,q.sx,q.sy,nx*sign,ny*sign,d.dimensionOffset));
+   const labelDistance=d.dimensionStyle==="dimension"?d.dimensionOffset+17:22;
+   out.push(text(label,mx+nx*sign*labelDistance+p.edgeLabelDx,
+    my+ny*sign*labelDistance+p.edgeLabelDy,
+    'font-family="Arial,sans-serif" font-size="15" font-weight="600" text-anchor="middle" fill="'+ink+'" stroke="#fff" stroke-width="4" paint-order="stroke"',
+    {width:190}));
+  }
   if(d.mode==="coordinate"&&d.showBearings&&d.northAligned&&a.ready){
    out.push(text(fmt(a.bearings[i]).padStart(3,"0")+"°",mx-nx*sign*21,my-ny*sign*21,
     'font-family="Arial,sans-serif" font-size="12" text-anchor="middle" fill="#7b5927" stroke="#fff" stroke-width="3" paint-order="stroke"',{width:115}));
@@ -86,21 +99,28 @@ export function renderGeometrySvg(raw,{interactive=false}={}){
     la=Math.max(1,Math.hypot(aX,aY)),lb=Math.max(1,Math.hypot(bX,bY));
    const uX=aX/la+bX/lb,uY=aY/la+bY/lb,div=Math.max(.05,Math.hypot(uX,uY));
    const alignX=uX/div,alignY=uY/div;
-   const angleLabel=p.angleLabel.trim()||(a.ready?"≈ "+fmt(a.angles[i])+"°":"");
+   const angleLabel=p.angleLabel.trim()||(d.mode==="coordinate"&&a.ready?
+    "≈ "+formatGeometryMeasure(a.angles[i],d,"angle")+"°":"");
    const placement=a.ready&&a.angles[i]>180?-1:1;
-   // The angle arc follows the actual interior angle, including reflex corners.
-   // Use the polygon winding to determine the correct sweep in SVG's y-down space.
-   const rawAngle=a.angles[i],radius=22;
-   const cross=aX*bY-aY*bX;
-   const sweep=rawAngle>180?(cross>0?0:1):(cross>0?1:0);
-   const startX=p.sx+aX/la*radius,startY=p.sy+aY/la*radius;
-   const endX=p.sx+bX/lb*radius,endY=p.sy+bY/lb*radius;
-   if(!p.rightAngle&&Number.isFinite(rawAngle)&&rawAngle>1e-5&&rawAngle<359.999){
-    out.push('<path class="geometry-angle-arc" d="M'+num(startX)+' '+num(startY)+
+   // Positive mathematical winding maps to clockwise SVG sweep because the
+   // SVG y-axis points down. Long arcs represent actual reflex interiors.
+   const rawAngle=a.angles[i],sweep=a.area>=0?1:0;
+   const markedRight=a.ready&&Math.abs(rawAngle-90)<0.05&&
+    (p.rightAngle||(d.mode==="coordinate"&&d.showAngles));
+   const marks=p.angleMark==="triple"?3:p.angleMark==="double"?2:1;
+   if(!markedRight&&Number.isFinite(rawAngle)&&rawAngle>1e-5&&rawAngle<359.999){
+    for(let k=0;k<marks;k++){
+     const radius=19+k*7,startX=p.sx+aX/la*radius,startY=p.sy+aY/la*radius;
+     const endX=p.sx+bX/lb*radius,endY=p.sy+bY/lb*radius;
+     out.push('<path class="geometry-angle-arc" data-angle-vertex="'+i+
+      '" d="M'+num(startX)+' '+num(startY)+
       ' A'+radius+' '+radius+' 0 '+(rawAngle>180?1:0)+' '+sweep+' '+num(endX)+' '+num(endY)+
       '" stroke="#a06f37" stroke-width="2" fill="none"/>');
+    }
    }
-   out.push(text(angleLabel,p.sx+alignX*43*placement,p.sy+alignY*43*placement,
+   const labelRadius=marks>1?57:45;
+   out.push(text(angleLabel,p.sx+alignX*labelRadius*placement+p.angleLabelDx,
+    p.sy+alignY*labelRadius*placement+p.angleLabelDy,
     'font-family="Arial,sans-serif" font-size="13" text-anchor="middle" fill="#855137" stroke="#fff" stroke-width="3" paint-order="stroke"',{width:120}));
   }
   if(p.edgeConstraint!=="free"&&a.ready){
@@ -108,7 +128,8 @@ export function renderGeometrySvg(raw,{interactive=false}={}){
       mx+nx*sign*37,my+ny*sign*37,
       'font-family="Arial,sans-serif" font-size="10" text-anchor="middle" fill="#765637"',{width:135}));
   }
-  if(p.rightAngle&&a.ready&&Math.abs(a.angles[i]-90)<0.05){
+  if(a.ready&&Math.abs(a.angles[i]-90)<0.05&&
+   (p.rightAngle||(d.mode==="coordinate"&&d.showAngles))){
     const ax=r.sx-p.sx,ay=r.sy-p.sy,bx=q.sx-p.sx,by=q.sy-p.sy;
     const al=Math.max(1,Math.hypot(ax,ay)),bl=Math.max(1,Math.hypot(bx,by)),size=17;
     const ux=ax/al*size,uy=ay/al*size,vx=bx/bl*size,vy=by/bl*size;
@@ -123,19 +144,21 @@ export function renderGeometrySvg(raw,{interactive=false}={}){
   if(p.locked)out.push('<circle cx="'+num(p.sx)+'" cy="'+num(p.sy)+
     '" r="11" stroke="#9c612f" stroke-width="2" fill="none" stroke-dasharray="3 2" pointer-events="none"/>');
   const radialX=p.sx-centroid.x,radialY=p.sy-centroid.y,mag=Math.max(1,Math.hypot(radialX,radialY));
-  out.push(text(p.label||"?",p.sx+radialX/mag*22,p.sy+radialY/mag*22-2,
+  out.push(text(p.label||"?",p.sx+radialX/mag*22+p.pointLabelDx,
+   p.sy+radialY/mag*22-2+p.pointLabelDy,
    'font-family="Arial,sans-serif" font-size="18" font-weight="700" text-anchor="middle" fill="'+ink+'" stroke="#fff" stroke-width="4" paint-order="stroke"',{width:100}));
-  if(d.mode==="coordinate"&&d.showCoordinates)out.push(text("("+fmt(p.x)+", "+fmt(p.y)+")",
+  if(d.mode==="coordinate"&&d.showCoordinates)out.push(text("("+formatGeometryMeasure(p.x,d)+", "+formatGeometryMeasure(p.y,d)+")",
    p.sx+radialX/mag*42,p.sy+radialY/mag*42+18,
    'font-family="Arial,sans-serif" font-size="11" text-anchor="middle" fill="'+grey+'"',{width:145}));
  }
+ out.push(renderGeometryAuxPoints(d,L,{interactive}));
  if(d.northAligned&&d.mode==="coordinate"){
   out.push('<path d="M 988 183 v -56 l -9 15 M 988 127 l 9 15" fill="none" stroke="'+ink+'" stroke-width="2.5"/>');
   out.push(text("N",988,116,'font-family="Arial,sans-serif" text-anchor="middle" font-weight="700" font-size="16" fill="'+ink+'"'));
  }
- if(d.mode==="schematic")out.push(text("Not to scale",W/2,figureTop+468,
+ if(d.mode==="schematic")out.push(text("Not to scale",W/2,figureTop+529,
   'font-family="Arial,sans-serif" font-style="italic" font-size="12" fill="'+grey+'" text-anchor="middle"',{width:700}));
- captionLines.forEach((line,i)=>out.push(text(line,W/2,figureTop+492+i*23,
+ captionLines.forEach((line,i)=>out.push(text(line,W/2,figureTop+551+i*23,
   'font-family="Arial,sans-serif" font-size="15" fill="'+ink+'" text-anchor="middle"',{width:1000})));
  out.push('</svg>');return out.join("");
 }

@@ -73,7 +73,7 @@ import {geometryAnalysis} from "./src/diagrams/geometry-core.js";
 import {snapGeometryEdge,snapGeometryRightAngle,moveGeometryVertex} from "./src/diagrams/geometry-advanced.js";
 import {renderGeometrySvg,geometryLayout} from "./src/diagrams/geometry-render.js";
 import {geometryPreviewHtml,geometryQualityHtml,geometryOutputHtml} from "./src/diagrams/geometry-view.js";
-import {setGeometryField,setGeometryVertex,geometryTemplate,geometryAddVertex,geometryRemoveVertex,geometryFresh,loadGeometry,saveGeometryDraft,saveAndLinkGeometry,importGeometryFromTrace} from "./src/diagrams/geometry-actions.js";
+import {setGeometryField,setGeometryVertex,geometryTemplate,geometryAddVertex,geometryRemoveVertex,geometryFresh,loadGeometry,saveGeometryDraft,saveAndLinkGeometry,importGeometryFromTrace, geometryAddAuxPoint,geometryRemoveAuxPoint,setGeometryAuxPoint,geometryAddGuide,geometryRemoveGuide,setGeometryGuide,moveGeometryAuxPoint} from "./src/diagrams/geometry-actions.js";
 import {exportGeometry} from "./src/diagrams/geometry-export.js";
 import {probabilityPreviewHtml,probabilityQualityHtml,probabilityOutputHtml} from "./src/diagrams/probability-view.js";
 import {setProbabilityField,setProbabilityStage,setProbabilityBranch,toggleProbabilityLeaf,freshProbability,loadProbability,saveProbabilityDraft,saveAndLinkProbability} from "./src/diagrams/probability-actions.js";
@@ -1868,6 +1868,25 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         if(!geometryRemoveVertex(state.geometryStudio,Number(el.dataset.geometryIndex)))break;
         save();render();break;
       }
+      case "geometry-aux-add":{
+        if(!geometryAddAuxPoint(state.geometryStudio)){toast("The construction already has ten extra points.");break;}
+        save();render();break;
+      }
+      case "geometry-aux-remove":{
+        const result=geometryRemoveAuxPoint(state.geometryStudio,Number(el.dataset.geometryIndex));
+        if(!result.ok){toast("Point could not be removed",result.error);break;}
+        save();render();break;
+      }
+      case "geometry-guide-add":{
+        if(!geometryAddGuide(state.geometryStudio,el.dataset.geometryGuideKind)){
+          toast("The construction already has twelve lines.");break;
+        }
+        save();render();break;
+      }
+      case "geometry-guide-remove":{
+        if(!geometryRemoveGuide(state.geometryStudio,Number(el.dataset.geometryIndex)))break;
+        save();render();break;
+      }
       case "geometry-new":{
         if(state.geometryStudio.draft.edited&&!window.confirm("Start a new figure? Save your current version first if you want to keep it."))break;
         geometryFresh(state.geometryStudio);save();render();break;
@@ -2691,7 +2710,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   let geometryPointer=null;
   document.addEventListener("pointerdown",evt=>{
     if(!state.geometryStudio?.open||state.completion.current!=="C31"||evt.button>0)return;
-    const point=evt.target.closest?.("[data-geometry-vertex-index]"),
+    const point=evt.target.closest?.("[data-geometry-vertex-index],[data-geometry-aux-index]"),
       svg=point?.closest?.("[data-geometry-canvas]");
     if(!point||!svg){
       // A pointerup can be lost when a draggable SVG is refreshed. Never
@@ -2699,10 +2718,11 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       if(geometryPointer){geometryPointer=null;save();}
       return;
     }
-    const index=Number(point.dataset.geometryVertexIndex),transform=svg.getScreenCTM?.();
+    const aux=point.dataset.geometryAuxIndex!==undefined;
+    const index=Number(aux?point.dataset.geometryAuxIndex:point.dataset.geometryVertexIndex),transform=svg.getScreenCTM?.();
     if(!transform||!Number.isInteger(index))return;
     let inverse;try{inverse=transform.inverse();}catch{return;}
-    geometryPointer={id:evt.pointerId,svg,inverse,index,layout:geometryLayout(state.geometryStudio.draft)};
+    geometryPointer={id:evt.pointerId,svg,inverse,index,aux,layout:geometryLayout(state.geometryStudio.draft)};
     evt.preventDefault();
   });
   document.addEventListener("pointermove",evt=>{
@@ -2715,8 +2735,9 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     const svgPoint=drag.svg.createSVGPoint();svgPoint.x=evt.clientX;svgPoint.y=evt.clientY;
     const pt=svgPoint.matrixTransform(drag.inverse),coord=drag.layout.from(pt.x,pt.y);
     if(!Number.isFinite(coord.x)||!Number.isFinite(coord.y))return;
-    const p=state.geometryStudio.draft.vertices[drag.index];if(!p)return;
-    if(!moveGeometryVertex(state.geometryStudio,drag.index,
+    const p=drag.aux?state.geometryStudio.draft.auxPoints[drag.index]:
+     state.geometryStudio.draft.vertices[drag.index];if(!p)return;
+    if(!(drag.aux?moveGeometryAuxPoint:moveGeometryVertex)(state.geometryStudio,drag.index,
       Math.round(coord.x*100)/100,Math.round(coord.y*100)/100))return;
     refreshGeometryPreview();
   });
@@ -2728,28 +2749,33 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     // pointerdown and click, silently swallowing the student's Save action.
     const root=main.querySelector?.("[data-geometry-studio]");
     for(const axis of ["x","y"]){
-      const input=root?.querySelector('[data-geometry-vertex="'+drag.index+'"][data-geometry-vertex-key="'+axis+'"]');
+      const input=root?.querySelector(drag.aux?
+       '[data-geometry-aux="'+drag.index+'"][data-geometry-aux-key="'+axis+'"]':
+       '[data-geometry-vertex="'+drag.index+'"][data-geometry-vertex-key="'+axis+'"]');
       if(input&&document.activeElement!==input)
-        input.value=state.geometryStudio.draft.vertices[drag.index]?.[axis]??"";
+        input.value=(drag.aux?state.geometryStudio.draft.auxPoints[drag.index]:
+         state.geometryStudio.draft.vertices[drag.index])?.[axis]??"";
     }
   });
   document.addEventListener("pointercancel",evt=>{
     if(geometryPointer?.id===evt.pointerId){geometryPointer=null;save();}
   });
   document.addEventListener("keydown",evt=>{
-    const target=evt.target?.closest?.("[data-geometry-vertex-index]");
+    const target=evt.target?.closest?.("[data-geometry-vertex-index],[data-geometry-aux-index]");
     if(!target||!state.geometryStudio?.open||!["ArrowLeft","ArrowRight","ArrowUp","ArrowDown"].includes(evt.key))return;
-    const index=Number(target.dataset.geometryVertexIndex),p=state.geometryStudio.draft.vertices[index];
+    const aux=target.dataset.geometryAuxIndex!==undefined;
+    const index=Number(aux?target.dataset.geometryAuxIndex:target.dataset.geometryVertexIndex);
+    const p=aux?state.geometryStudio.draft.auxPoints[index]:state.geometryStudio.draft.vertices[index];
     if(!p||p.locked)return;evt.preventDefault();geometryPointer=null;
     const step=evt.shiftKey?1:.1;
     if(evt.key==="ArrowLeft")p.x-=step;
     if(evt.key==="ArrowRight")p.x+=step;
     if(evt.key==="ArrowUp")p.y+=step;
     if(evt.key==="ArrowDown")p.y-=step;
-    if(!moveGeometryVertex(state.geometryStudio,index,
+    if(!(aux?moveGeometryAuxPoint:moveGeometryVertex)(state.geometryStudio,index,
        Number(p.x.toFixed(3)),Number(p.y.toFixed(3))))return;
     save();render();
-    main.querySelector?.('[data-geometry-vertex-index="'+index+'"]')?.focus?.();
+    main.querySelector?.('['+(aux?'data-geometry-aux-index':'data-geometry-vertex-index')+'="'+index+'"]')?.focus?.();
   });
   document.addEventListener("pointerdown",evt=>{
     if(!state.voronoiStudio?.open||state.completion.current!=="C31"||state.voronoiStudio.scenario?.showOriginal)return;
@@ -2922,7 +2948,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       return;
     }
     // Show the formatted label beside its source field; never transform cell values.
-    if(target.matches?.('[data-graph-field],[data-stat-field],[data-trace-field],[data-table-field],[data-table-col],[data-voronoi-field],[data-voronoi-site-key="name"],[data-geometry-field],[data-geometry-vertex]')){
+    if(target.matches?.('[data-graph-field],[data-stat-field],[data-trace-field],[data-table-field],[data-table-col],[data-voronoi-field],[data-voronoi-site-key="name"],[data-geometry-field],[data-geometry-vertex],[data-geometry-aux],[data-geometry-guide]')){
       const studio=target.closest("[data-graph-studio],[data-stat-studio],[data-image-tracer],[data-table-studio],[data-voronoi-studio],[data-geometry-studio]");
       for(const root of studio?.querySelectorAll?.("[data-diagram-notation]")||[]){
         if(diagramNotationField(root)===target){refreshDiagramValuePreview(root);break;}
@@ -2941,6 +2967,19 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
        editNativeCell(studio,type,Number(target.dataset.nativeRow),col,target.value);
       if(ok){save();refreshNativeWorksheet(type);}
       return;
+    }
+    if(target.dataset.geometryAux!==undefined){
+      const index=Number(target.dataset.geometryAux),key=target.dataset.geometryAuxKey;
+      if(setGeometryAuxPoint(state.geometryStudio,index,key,target.value)){
+        save();refreshGeometryPreview();
+      }return;
+    }
+    if(target.dataset.geometryGuide!==undefined){
+      const index=Number(target.dataset.geometryGuide),key=target.dataset.geometryGuideKey;
+      const value=target.type==="checkbox"?target.checked:target.value;
+      if(setGeometryGuide(state.geometryStudio,index,key,value)){
+        save();if(target.tagName==="SELECT")render();else refreshGeometryPreview();
+      }return;
     }
     if(target.dataset.geometryVertex!==undefined){
       const index=Number(target.dataset.geometryVertex),key=target.dataset.geometryVertexKey,
