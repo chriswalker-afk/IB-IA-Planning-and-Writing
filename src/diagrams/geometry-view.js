@@ -141,7 +141,10 @@ export function renderGeometryStudio(state,icon,e){
    '<label>y <input type="number" step="any" data-geometry-vertex="'+i+'" data-geometry-vertex-key="y" value="'+(p.y??"")+'"></label>'+
    '<label>Side to next vertex <input type="text" data-geometry-vertex="'+i+'" data-geometry-vertex-key="edgeLabel" value="'+e(p.edgeLabel)+'" placeholder="e.g. 5.2 cm"></label>'+
    '<label>Angle at vertex <input type="text" data-geometry-vertex="'+i+'" data-geometry-vertex-key="angleLabel" value="'+e(p.angleLabel)+'" placeholder="e.g. 35°"></label>'+
-   (d.vertices.length>3?'<button type="button" class="btn btn-quiet btn-sm" data-action="geometry-remove" data-geometry-index="'+i+'">Remove</button>':"")+
+   (d.vertices.length>3?'<button type="button" class="btn btn-quiet btn-sm" data-action="geometry-remove" data-geometry-index="'+i+'"'+
+     (d.guides.some(g=>[g.from,g.to,g.baseStart,g.baseEnd].includes(p.id))?
+       ' disabled title="Remove or redirect construction lines using this point first"':'')+
+     '>Remove</button>':"")+
    '<details class="geometry-vertex-notation"><summary>Maths in point or side labels</summary>'+
     [["label","Point label"],["edgeLabel","Side label"],["angleLabel","Angle label"]].map(([key,name])=>
       '<div class="geometry-notation-row"><span>'+name+'</span>'+diagramNotationControls(e,{studio:"geometry",key,vertexIndex:i})+'</div>').join("")+

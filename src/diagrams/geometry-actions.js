@@ -64,6 +64,8 @@ export function geometryAddVertex(studio){
 }
 export function geometryRemoveVertex(studio,index){
  const d=studio.draft;if(d.vertices.length<=3||index<0||index>=d.vertices.length)return false;
+ const id=d.vertices[index].id;
+ if(d.guides.some(g=>[g.from,g.to,g.baseStart,g.baseEnd].includes(id)))return false;
  d.vertices.splice(index,1);d.edited=true;return true;
 }
 /** Independent point and construction lines never affect the polygon area. */

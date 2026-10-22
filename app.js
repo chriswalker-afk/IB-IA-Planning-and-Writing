@@ -1906,7 +1906,9 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         save();render();break;
       }
       case "geometry-remove":{
-        if(!geometryRemoveVertex(state.geometryStudio,Number(el.dataset.geometryIndex)))break;
+        if(!geometryRemoveVertex(state.geometryStudio,Number(el.dataset.geometryIndex))){
+          toast("Point cannot be removed","Remove or redirect its construction lines first.");break;
+         }
         save();render();break;
       }
       case "geometry-aux-add":{
