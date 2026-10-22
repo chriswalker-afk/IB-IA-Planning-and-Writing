@@ -1,0 +1,205 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import {newProbabilityDraft,newProbabilityStudio,normalizeProbabilityDraft,probabilityAnalysis,
+ probabilityLeafPaths,probabilitySignature,saveProbabilityFigure} from "../src/diagrams/probability-core.js";
+import {chooseProbabilityPreset,enableFlexibleProbability,addProbabilityOutcome,
+ removeProbabilityOutcome,changeProbabilityContinuation,changeProbabilityStages} from "../src/diagrams/probability-flexible-actions.js";
+import {setProbabilityBranch,toggleProbabilityLeaf,saveAndLinkProbability} from "../src/diagrams/probability-actions.js";
+import {renderProbabilitySvg} from "../src/diagrams/probability-render.js";
+import {renderProbabilityStudio} from "../src/diagrams/probability-view.js";
+import {createProjectState,normalizeProjectState} from "../src/core/project-state.js";
+import {collectProjectFigures} from "../src/handover/figure-report.js";
+const e=s=>String(s??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll('"',"&quot;");
+const icon=()=>"<svg></svg>";
+const near=(a,b)=>assert(Math.abs(a-b)<1e-10,a+" versus "+b);
+function set(studio,parent,probabilities){
+ probabilities.forEach((value,index)=>assert(setProbabilityBranch(studio,parent,index,"probability",value)));
+}
+test("previously saved two- and three-stage binary trees retain IDs, outcomes and event mathematics",()=>{
+ const d=newProbabilityDraft();
+ for(const key of ["","0","1","00","01","10","11"]){
+  d.branches[key][0].probability="3/5";d.branches[key][1].probability="2/5";
+ }
+ d.eventLeaves=["00"];d.conditionLeaves=["00","01"];
+ d.showEventCalculation=true;
+ const saved=JSON.parse(JSON.stringify(d));
+ const normal=normalizeProbabilityDraft(saved);
+ assert.equal(normal.treeMode,"standard");
+ assert.deepEqual(normal.branches,d.branches);
+ assert.deepEqual(normal.eventLeaves,["00"]);
+ const result=probabilityAnalysis(normal);
+ assert(result.ready,result.issues.join("; "));
+ near(result.total,1);near(result.event,.36);near(result.condition,.6);near(result.conditional,.6);
+ assert.equal(probabilityLeafPaths(normal).length,4);
+ const svg=renderProbabilitySvg(normal);
+ assert.match(svg,/data-prob-segment="00"/);
+ assert.doesNotMatch(svg,/probability-label-panel/);
+});
+test("three-way template calculates six distinct conditional outcomes without independence assumptions",()=>{
+ const studio=newProbabilityStudio();
+ assert(chooseProbabilityPreset(studio,"three-way"));
+ assert.equal(studio.draft.treeMode,"flexible");
+ set(studio,"",["0.2","0.3","0.5"]);
+ for(const key of ["0","1","2"])set(studio,key,["1/4","3/4"]);
+ const a=probabilityAnalysis(studio.draft);
+ assert(a.ready,a.issues.join(" | "));
+ assert.deepEqual(a.paths.map(p=>p.key),["00","01","10","11","20","21"]);
+ assert.deepEqual(a.paths.map(p=>Number(p.probability.toFixed(4))),[.05,.15,.075,.225,.125,.375]);
+ near(a.total,1);
+ assert.equal(a.tree.parents.length,4);
+ const svg=renderProbabilitySvg(studio.draft);
+ assert.match(svg,/data-prob-segment="20"/);
+ assert.match(svg,/probability-label-panel/);
+ assert.match(svg,/probability-branch-annotation/);
+ assert.doesNotMatch(svg,/Every split gives probabilities conditional/);
+});
+test("asymmetric tree stops at different depths and selected terminal events are mathematically correct",()=>{
+ const studio=newProbabilityStudio();assert(chooseProbabilityPreset(studio,"asymmetric"));
+ set(studio,"",["0.7","0.3"]);set(studio,"0",["0.2","0.3","0.5"]);
+ studio.draft.showEventCalculation=true;
+ assert(toggleProbabilityLeaf(studio,"eventLeaves","02",true));
+ assert(toggleProbabilityLeaf(studio,"eventLeaves","1",true));
+ assert(toggleProbabilityLeaf(studio,"conditionLeaves","01",true));
+ assert(toggleProbabilityLeaf(studio,"conditionLeaves","1",true));
+ const result=probabilityAnalysis(studio.draft);
+ assert(result.ready,result.issues.join("; "));
+ assert.deepEqual(result.paths.map(p=>p.key),["00","01","02","1"]);
+ assert.deepEqual(result.paths.map(p=>Number(p.probability.toFixed(3))),[.14,.21,.35,.3]);
+ near(result.event,.65);near(result.condition,.51);near(result.intersection,.3);
+ near(result.conditional,.3/.51);
+ assert.match(renderProbabilitySvg(studio.draft),/P\(Event E \| Condition C\)/);
+});
+test("students expand a terminal path deliberately without inventing child probabilities",()=>{
+ const studio=newProbabilityStudio();assert(chooseProbabilityPreset(studio,"custom"));
+ set(studio,"",["3/5","2/5"]);
+ assert(probabilityAnalysis(studio.draft).ready);
+ assert.deepEqual(probabilityLeafPaths(studio.draft),["0","1"]);
+ let res=changeProbabilityContinuation(studio,"0",true);
+ assert(res.ok,res.error);
+ assert.deepEqual(probabilityLeafPaths(studio.draft),["00","01","1"]);
+ assert(!probabilityAnalysis(studio.draft).ready);
+ set(studio,"0",["0.25","0.75"]);
+ assert(probabilityAnalysis(studio.draft).ready);
+ assert(changeProbabilityContinuation(studio,"00",true).ok);
+ assert.deepEqual(probabilityLeafPaths(studio.draft),["000","001","01","1"]);
+ assert(!probabilityAnalysis(studio.draft).ready);
+ set(studio,"00",["0.1","0.9"]);
+ const q=probabilityAnalysis(studio.draft);
+ assert(q.ready,q.issues.join("; "));near(q.total,1);
+ assert(changeProbabilityContinuation(studio,"0",false).ok);
+ assert.deepEqual(probabilityLeafPaths(studio.draft),["0","1"]);
+ assert(probabilityAnalysis(studio.draft).ready);
+ assert(changeProbabilityContinuation(studio,"0",true).ok);
+ assert.deepEqual(studio.draft.branches["00"].map(x=>x.probability),["0.1","0.9"]);
+ assert(probabilityAnalysis(studio.draft).ready);
+});
+test("adding/removing a variable outcome shifts descendant keys and event selections accurately",()=>{
+ const studio=newProbabilityStudio();assert(chooseProbabilityPreset(studio,"three-way"));
+ set(studio,"",["0.2","0.3","0.5"]);
+ for(const key of ["0","1","2"])set(studio,key,["0.4","0.6"]);
+ assert(toggleProbabilityLeaf(studio,"eventLeaves","20",true));
+ assert(toggleProbabilityLeaf(studio,"conditionLeaves","11",true));
+ const removed=removeProbabilityOutcome(studio,"",1);
+ assert(removed.ok,removed.error);
+ assert.deepEqual(studio.draft.eventLeaves,["10"]);
+ assert.deepEqual(studio.draft.conditionLeaves,[]);
+ assert.deepEqual(studio.draft.branches["1"],[{label:"Yes",probability:"0.4"},{label:"No",probability:"0.6"}]);
+ assert.equal(studio.draft.branches["2"],undefined);
+ assert.equal(probabilityAnalysis(studio.draft).ready,false,"Remaining probabilities cannot silently be renormalised");
+ assert.equal(removeProbabilityOutcome(studio,"",1).ok,false,"Every split retains at least two outcomes");
+ const added=addProbabilityOutcome(studio,"");
+ assert(added.ok,added.error);
+ assert(studio.draft.terminalNodes.includes("2"));
+ assert.equal(studio.draft.branches[""].length,3);
+ assert.equal(probabilityAnalysis(studio.draft).ready,false);
+ assert.equal(addProbabilityOutcome(studio,"missing").ok,false);
+});
+test("increasing the stage limit preserves a valid model and leaves further branching optional",()=>{
+ const studio=newProbabilityStudio();assert(chooseProbabilityPreset(studio,"three-way"));
+ set(studio,"",[".2",".3",".5"]);
+ for(const k of ["0","1","2"])set(studio,k,["1/2","1/2"]);
+ const original=probabilityAnalysis(studio.draft);
+ assert(original.ready);
+ assert(changeProbabilityStages(studio,"4"));
+ assert.deepEqual(probabilityLeafPaths(studio.draft),original.paths.map(p=>p.key));
+ assert(probabilityAnalysis(studio.draft).ready);
+ assert.equal(changeProbabilityStages(studio,"5"),false);
+ assert(changeProbabilityContinuation(studio,"00",true).ok);
+ assert(!probabilityAnalysis(studio.draft).ready);
+});
+test("flexible tree validates every split and never repairs missing values, duplicates or bad sums",()=>{
+ const studio=newProbabilityStudio();assert(chooseProbabilityPreset(studio,"three-way"));
+ assert(probabilityAnalysis(studio.draft).issues.some(s=>/valid probability/.test(s)));
+ set(studio,"",["1/2","1/4","1/4"]);
+ for(const k of ["0","1","2"])set(studio,k,["0.6","0.4"]);
+ assert(probabilityAnalysis(studio.draft).ready);
+ studio.draft.branches["2"][1].probability=".5";
+ assert(probabilityAnalysis(studio.draft).issues.some(s=>/sum to 1/.test(s)));
+ studio.draft.branches["2"][1].probability=".4";
+ studio.draft.branches["2"][0].label=studio.draft.branches["2"][1].label;
+ assert(probabilityAnalysis(studio.draft).issues.some(s=>/different/.test(s)));
+ const a=addProbabilityOutcome(studio,"0");
+ assert(a.ok);
+ assert(!probabilityAnalysis(studio.draft).ready);
+});
+test("branch count/path limits and malformed imports do not crash tree traversal",()=>{
+ const studio=newProbabilityStudio();assert(chooseProbabilityPreset(studio,"custom"));
+ for(let i=0;i<3;i++)assert(addProbabilityOutcome(studio,"").ok);
+ assert.equal(studio.draft.branches[""].length,5);
+ assert.equal(addProbabilityOutcome(studio,"").ok,false);
+ const raw=JSON.parse(JSON.stringify(studio.draft));
+ raw.branches["0"]=[{label:"A",probability:"1"},{label:"B",probability:"0"}];
+ raw.terminalNodes=raw.terminalNodes.filter(k=>k!=="0");
+ raw.branches["x"]=[{label:"invalid",probability:"1"}];
+ raw.eventLeaves=["x","0","9999"];
+ const restored=normalizeProbabilityDraft(raw),a=probabilityAnalysis(restored);
+ assert.equal(restored.branches.x,undefined);
+ assert(a.issues.some(s=>/split|probability/.test(s)));
+ assert(!a.ready);
+ assert(!restored.eventLeaves.includes("x"));
+});
+test("SVG label panels sit above horizontal branch tails, away from their probability lines",()=>{
+ const studio=newProbabilityStudio();assert(chooseProbabilityPreset(studio,"asymmetric"));
+ set(studio,"",["0.4","0.6"]);set(studio,"0",[".1",".2",".7"]);
+ const svg=renderProbabilitySvg(studio.draft);
+ assert.equal((svg.match(/class="probability-branch-annotation"/g)||[]).length,5);
+ assert.equal((svg.match(/class="probability-label-panel"/g)||[]).length,5);
+ assert(svg.includes('data-prob-segment="02"'));
+ assert(svg.includes('data-prob-segment="1"'));
+ const panels=[...svg.matchAll(/class="probability-label-panel" x="([\d.]+)" y="([\d.]+)" width="140" height="47"/g)];
+ assert.equal(panels.length,5);
+ const lines=[...svg.matchAll(/data-prob-segment="([0-4]+)" d="M[\d.]+ [\d.]+ L[\d.]+ ([\d.]+) L[\d.]+ ([\d.]+)"/g)];
+ assert.equal(lines.length,5);
+ for(let i=0;i<panels.length;i++)assert(Number(panels[i][2])+47<Number(lines[i][3]),
+  "Probability text panel should end above its own horizontal branch line");
+});
+test("flexible tree controls, saved figures and IA report survive a full project backup",()=>{
+ const state=createProjectState();state.route="completing";state.completion.current="C31";
+ state.entries=[{id:"stage-pass-three",phase:"first",status:"planned",title:"",technique:"",result:""}];
+ state.completion.activeEntryIndex=0;
+ const studio=state.probabilityStudio;assert(chooseProbabilityPreset(studio,"asymmetric"));
+ set(studio,"",["2/3","1/3"]);set(studio,"0",[".2",".3",".5"]);
+ studio.draft.title="Three outcomes versus one early conclusion";
+ studio.draft.layoutStyle="compact";studio.draft.showProducts=true;
+ const html=renderProbabilityStudio(state,icon,e);
+ for(const action of ["probability-preset","probability-outcome-add","probability-outcome-remove",
+  "probability-path-continuation","probability-save","probability-svg","probability-use"])
+  assert(html.includes('data-action="'+action+'"'),action);
+ assert(html.includes('data-prob-branch-index="2"'));
+ assert(html.includes('data-prob-field="layoutStyle"'));
+ const linked=saveAndLinkProbability(state);assert(linked.ok,linked.error);
+ const copy=normalizeProjectState(JSON.parse(JSON.stringify(state)));
+ assert.equal(copy.probabilityStudio.figures[0].draft.treeMode,"flexible");
+ assert.deepEqual(copy.probabilityStudio.figures[0].draft.terminalNodes,["1"]);
+ assert.equal(copy.probabilityStudio.figures[0].draft.layoutStyle,"compact");
+ assert.equal(copy.entries[0].probabilityFigureId,linked.record.id);
+ const fig=collectProjectFigures(copy).find(x=>x.kind==="probability");
+ assert(fig.svg.includes("probability-label-panel"));
+ assert(fig.rows.some(x=>x.label==="Terminal paths"&&x.value.includes("ends early")));
+ assert(fig.rows.some(x=>x.label==="Entered outcomes and branch probabilities"));
+ const edit=copy.probabilityStudio.draft;
+ const saved=JSON.stringify(edit.branches);
+ assert.equal(saveProbabilityFigure(copy.probabilityStudio).ok,true);
+ assert.equal(JSON.stringify(copy.probabilityStudio.draft.branches),saved);
+ assert(probabilitySignature(edit).includes("flexible"));
+});
