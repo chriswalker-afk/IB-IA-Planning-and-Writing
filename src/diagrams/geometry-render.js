@@ -129,8 +129,7 @@ export function renderGeometrySvg(raw,{interactive=false}={}){
       'font-family="Arial,sans-serif" font-size="10" text-anchor="middle" fill="#765637"',{width:135}));
   }
   if(a.ready&&Math.abs(a.angles[i]-90)<0.05&&
-   (p.rightAngle||(d.mode==="coordinate"&&d.showAngles))&&
-   (p.angleLabel.trim()||d.mode==="coordinate"&&d.showAngles)){
+   (p.rightAngle||(d.mode==="coordinate"&&d.showAngles))){
     const ax=r.sx-p.sx,ay=r.sy-p.sy,bx=q.sx-p.sx,by=q.sy-p.sy;
     const al=Math.max(1,Math.hypot(ax,ay)),bl=Math.max(1,Math.hypot(bx,by)),size=17;
     const ux=ax/al*size,uy=ay/al*size,vx=bx/bl*size,vy=by/bl*size;

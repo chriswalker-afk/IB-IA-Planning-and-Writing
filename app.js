@@ -73,8 +73,7 @@ import {geometryAnalysis} from "./src/diagrams/geometry-core.js";
 import {snapGeometryEdge,snapGeometryRightAngle,moveGeometryVertex} from "./src/diagrams/geometry-advanced.js";
 import {renderGeometrySvg,geometryLayout} from "./src/diagrams/geometry-render.js";
 import {geometryPreviewHtml,geometryQualityHtml,geometryOutputHtml} from "./src/diagrams/geometry-view.js";
-import {setGeometryField,setGeometryVertex,geometryTemplate,geometryAddVertex,geometryRemoveVertex,geometryFresh,loadGeometry,saveGeometryDraft,saveAndLinkGeometry,importGeometryFromTrace,
- geometryAddAuxPoint,geometryRemoveAuxPoint,setGeometryAuxPoint,geometryAddGuide,geometryRemoveGuide,setGeometryGuide,moveGeometryAuxPoint} from "./src/diagrams/geometry-actions.js";
+import {setGeometryField,setGeometryVertex,geometryTemplate,geometryAddVertex,geometryRemoveVertex,geometryFresh,loadGeometry,saveGeometryDraft,saveAndLinkGeometry,importGeometryFromTrace, geometryAddAuxPoint,geometryRemoveAuxPoint,setGeometryAuxPoint,geometryAddGuide,geometryRemoveGuide,setGeometryGuide,moveGeometryAuxPoint} from "./src/diagrams/geometry-actions.js";
 import {exportGeometry} from "./src/diagrams/geometry-export.js";
 import {probabilityPreviewHtml,probabilityQualityHtml,probabilityOutputHtml} from "./src/diagrams/probability-view.js";
 import {setProbabilityField,setProbabilityStage,setProbabilityBranch,toggleProbabilityLeaf,freshProbability,loadProbability,saveProbabilityDraft,saveAndLinkProbability} from "./src/diagrams/probability-actions.js";
