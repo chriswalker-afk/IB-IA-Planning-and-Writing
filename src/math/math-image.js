@@ -32,10 +32,23 @@ export async function mathPng(tex,{display=false}={}){
   if(!context)throw new Error("Your browser does not support mathematical image export.");
   context.clearRect(0,0,width,height);
   context.drawImage(image,0,0,width,height);
-  const blob=await new Promise((resolve,reject)=>canvas.toBlob(
-   x=>x?resolve(x):reject(new Error("Could not save the mathematical rendering.")),"image/png"
-  ));
-  const result={...m,bytes:new Uint8Array(await blob.arrayBuffer()),pixelWidth:width,pixelHeight:height};
+  // Chromium can defer each toBlob callback by about a second. Hundreds of
+  // small equations then spend minutes waiting for idle encoders. Encode
+  // canvases up to one megapixel directly; keep unusually large user formulas
+  // asynchronous to avoid a large temporary base64 string on the main thread.
+  let bytes;
+  if(width*height<=1_000_000){
+   const data=canvas.toDataURL("image/png"),prefix="data:image/png;base64,";
+   if(!data.startsWith(prefix)||data.length===prefix.length)
+    throw new Error("Could not save the mathematical rendering.");
+   const binary=atob(data.slice(prefix.length));
+   bytes=Uint8Array.from(binary,character=>character.charCodeAt(0));
+  }else{
+   const blob=await new Promise((resolve,reject)=>canvas.toBlob(
+    x=>x?resolve(x):reject(new Error("Could not save the mathematical rendering.")),"image/png"));
+   bytes=new Uint8Array(await blob.arrayBuffer());
+  }
+  const result={...m,bytes,pixelWidth:width,pixelHeight:height};
   if(cache.size>=MAX_IMAGES)cache.delete(cache.keys().next().value);
   cache.set(key,result);
   return result;

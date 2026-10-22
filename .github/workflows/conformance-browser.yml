@@ -57,7 +57,7 @@ jobs:
   browser:
     name: ${{ matrix.group }}
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: ${{ matrix.timeout || 15 }}
     strategy:
       fail-fast: false
       matrix:
@@ -72,6 +72,7 @@ jobs:
             suites: math-routes extended-routes living-journey
           - group: Complete illustrative samples
             suites: illustrative-samples
+            timeout: 30
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-ci-node

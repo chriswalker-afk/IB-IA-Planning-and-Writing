@@ -65,6 +65,19 @@ test("raw histogram never mistakes frequencies for heights and includes endpoint
  assert.ok(svg.includes('<rect'));
  assert.ok(!svg.includes("<script>"));
 });
+test("saved statistical figure numbers remain visible in standalone, reader and export SVGs",()=>{
+ const draft=rawHistogram().draft;
+ draft.figureNumber=" Figure 7 ";
+ const svg=renderStatSvg(draft);
+ assert.match(svg,/<text[^>]*class="stat-figure-number"[^>]*>Figure 7<\/text>/);
+ assert(!svg.includes("Figure Figure"));
+ draft.figureNumber="";
+ assert(!renderStatSvg(draft).includes('class="stat-figure-number"'));
+ draft.figureNumber='<script>8</script>';
+ const escaped=renderStatSvg(draft);
+ assert(!escaped.includes('<script>'));
+ assert(escaped.includes('&lt;script&gt;'));
+});
 test("grouped histogram handles unequal intervals using frequency density, not misleading counts",()=>{
  const q=statAnalysis(freqHistogram().draft);
  assert.equal(q.ready,true,JSON.stringify(q.problems));
@@ -109,7 +122,7 @@ test("dot plots stack repeated observations instead of replacing them with a fit
  changeStatKind(s,"dot");
  assert.equal(statAnalysis(s.draft).ready,true);
  const svg=renderStatSvg(s.draft);
- assert.match(svg,/Each dot represents one observation/);
+ assert.match(svg,/Each dot represents one supplied value/);
  assert.match(svg,/<circle/);
  const p=newStatStudio();f(p.draft,{kind:"dot",unitMode:"dimensionless",unit:""});
  importStatTable(p,"Count\n100\n100\n101\n102\n103\n104");

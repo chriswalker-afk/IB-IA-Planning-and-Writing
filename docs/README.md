@@ -8,6 +8,7 @@ The root [README](../README.md) describes the current student-facing website. Th
 - [Sixteen investigative pathways](expanded-applied-mathematical-routes-2026-10-16.md) and [adaptive mathematics journeys](adaptive-mathematical-journeys-2026-10-20.md).
 - [Representation and all seven figure studios](representation-integration-pass5-2026-10-22.md); advanced notes for [Geometry](geometry-studio-pass3-2026-10-22.md) and [Probability Tree](probability-tree-visual-pass4-2026-10-22.md).
 - [Writer's Field Guide](writers-field-guide-2026-10-18.md), [writing stage layout](writing-stage-layout-2026-10-19.md), [criteria badges](criteria-bubbles-pass3-2026-10-20.md), and [contextual Phase 5 guidance](phase-5.md).
+- Complete illustrative student investigations: [Pass 1 and the 16 briefs](illustrative-samples-pass1-2026-10-22.md), [Pass 2 statistics investigations](illustrative-samples-pass2-2026-10-22.md), and the [current field contract](illustrative-sample-field-contract.md).
 - [Full-project export](full-project-export-2026-10-15.md), [report repair](report-export-fix-2026-10-15.md), and [source coverage register](coverage.md).
 
 ## Cleanup and production maintenance

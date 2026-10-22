@@ -33,6 +33,17 @@ test("pastes Google Sheets multi-column TSV, preserves source and extracts label
  assert.match(renderGraphSvg(d),/Elapsed time|Time \(s\)/);
  assert.match(renderGraphSvg(d),/Distance \(m\)/);
 });
+test("graph legends distinguish constructed or calculated points from observed data",()=>{
+ const g=validData();
+ assert(addGraphModel(g,"linear").ok);
+ assert.match(renderGraphSvg(g.draft),/Observed points<\/text>/);
+ g.draft.sourceKind="theoretical";
+ const theoretical=renderGraphSvg(g.draft);
+ assert.match(theoretical,/Calculated \/ constructed points<\/text>/);
+ assert(!theoretical.includes('Observed points</text>'));
+ g.draft.sourceKind="secondary";g.draft.sourceText="Published observations";
+ assert.match(renderGraphSvg(g.draft),/Observed points<\/text>/);
+});
 test("accepts quoted CSV fields and numbers without headings, rejecting malformed rows",()=>{
  const csv='Elapsed time (s),"distance, measured (m)"\n0,0.2\n1,2.3\n2,3.0';
  const parsed=readPastedGraphData(csv);

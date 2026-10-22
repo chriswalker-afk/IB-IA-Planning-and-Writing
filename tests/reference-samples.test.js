@@ -5,7 +5,8 @@ import {referenceSampleSpec,sampleLibraryCoverage} from '../src/core/sample-libr
 import {createProjectState,normalizeProjectState,STORAGE_KEY} from '../src/core/project-state.js';
 import {createSamplePreview} from '../src/core/sample-preview.js';
 import {illustrativeIAPagesModel,renderIllustrativeIAReading} from '../src/core/sample-ia-document.js';
-import {inspectSampleFieldCoverage} from '../src/core/samples/field-contract.js';
+import {inspectSampleFieldCoverage,SAMPLE_FIELD_CONTRACT} from '../src/core/samples/field-contract.js';
+import {SOURCE_FIELDS} from '../src/completing/evidence-links.js';
 import {collectProjectFigures,figureForEntry} from '../src/handover/figure-report.js';
 import {REPRESENTATION_TOOLS} from '../src/diagrams/representation-registry.js';
 import {linkRepresentationFigure,linkedRepresentationEntry} from '../src/diagrams/figure-linking.js';
@@ -14,11 +15,11 @@ import {selectedJourneyOutcome,needsJourneyLinkReview} from '../src/completing/a
 import {mixedMathTokens,mathSvg} from '../src/math/mixed-math.js';
 import {renderGraphSvg} from '../src/diagrams/graph-core.js';
 
-const ids=['standing-reach','tray-optimisation'];
+const ids=['standing-reach','helicopter-groups','revision-formats','grinder-reliability','tray-optimisation'];
 const body=model=>model.sections.flatMap(section=>section.rows.map(row=>row.value)).join('\n');
 const saved=state=>REPRESENTATION_TOOLS.flatMap(tool=>state[tool.studio].figures.map(figure=>({tool,figure})));
 
-test('the chooser exposes the two authored investigations and the catalogue covers all 16 pathways',()=>{
+test('the chooser exposes the five authored investigations and the catalogue covers all 16 pathways',()=>{
  assert.deepEqual(SAMPLE_CHOICES.map(item=>item.id),ids);
  const coverage=sampleLibraryCoverage();
  assert.equal(coverage.length,16);
@@ -38,6 +39,8 @@ test('authored fields survive assembly and reimport without truncation or generi
   assert.equal(restored.entries.length,spec.stages.length);
   for(const [index,stage] of spec.stages.entries()){
    const entry=restored.entries[index];
+   for(const [key,value] of Object.entries(stage))if(Object.hasOwn(entry,key)&&typeof value==='string')
+    assert.equal(entry[key],value,id+' stage '+index+' '+key+' changed on normalization');
    for(const key of ['bridge','purpose','result','interpretation','limitations','localTakeaway','nextQuestion','nextWhy'])
     assert.equal(entry[key],stage[key],id+' stage '+index+' '+key);
    assert(selectedJourneyOutcome(restored,entry),id+' invalid outcome');
@@ -53,8 +56,9 @@ test('authored fields survive assembly and reimport without truncation or generi
  }
 });
 
-test('both samples cover the shared live writing contract with supported selector values',()=>{
- const paths=['planning.fields.provisionalTitle','planning.fields.aim','planning.fields.beneficiary',
+test('all authored samples cover the shared live writing contract with supported selector values',()=>{
+ const paths=[...SAMPLE_FIELD_CONTRACT.filter(field=>field.category==='authored'&&['all','stage'].includes(field.appliesTo)).map(field=>field.path),
+  'planning.fields.provisionalTitle','planning.fields.aim','planning.fields.beneficiary',
   'completion.fields.dataAimLink','completion.fields.firstDefinitions','completion.fields.methodReason',
   'completion.fields.firstMethodEvaluation','completion.fields.mainConclusion',
   'completion.fields.conclusionBenefit','completion.fields.conclusionExtension',
@@ -68,7 +72,21 @@ test('both samples cover the shared live writing contract with supported selecto
   assert(['me','others','both','unsure'].includes(state.planning.fields.beneficiaryType));
   assert(['syllabus','outside','unsure'].includes(state.planning.fields.mathsOutside));
   assert(['pending','unsure','confirmed','not-needed'].includes(state.completion.fields.permissionStatus));
+  assert.equal(state.completion.fields.draftComplete,'ready',id+' completed working draft status');
+  assert(Number(state.planning.fields.timelineWeeks)>0,id+' provisional time budget');
+  assert(['yes','no'].includes(state.planning.fields.timelineEarly),id+' provisional early-finish decision');
+  assert(['scatter','model','theory','other'].includes(state.entries[0].kind),id+' unsupported first-result selector');
   if(id==='standing-reach')assert.equal(state.planning.fields.dataAvailability,'in-hand');
+ }
+});
+
+test('saved sample sources preserve every applicable answer shown in the active source editor',()=>{
+ for(const id of ids){
+  const state=createIllustrativeSample(id),restored=normalizeProjectState(JSON.parse(JSON.stringify(state)));
+  assert.equal(restored.completion.sourceRecords.length,1,id+' source scope needs an explicit test decision');
+  const source=restored.completion.sourceRecords[0];
+  assert.equal(restored.completion.activeSourceId,source.id);
+  for(const key of SOURCE_FIELDS)assert.equal(source.fields[key],restored.completion.fields[key],id+' source/editor mismatch: '+key);
  }
 });
 

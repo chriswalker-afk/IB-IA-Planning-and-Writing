@@ -258,6 +258,7 @@ I keep full calculator precision for comparisons and use approximation signs whe
   notationIssue:'I used c only for the actual cut, n for the nominal setting and δ for the error bound. I kept cm and cm³ distinct and used ≈ for rounded values.',
   presentationIssue:'I placed the fold diagram with the volume derivation and the short comparison tables with the decisions they support. Each graph has a defined domain and labelled quantities.',
   referencesIssue:'All starting values are disclosed as design assumptions. The numerical output is calculated from the displayed model, so I have not supplied invented measurement dates or source URLs.',
+  draftComplete:'ready',
  },
  stages,
  figures:[

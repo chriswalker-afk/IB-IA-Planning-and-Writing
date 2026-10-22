@@ -184,7 +184,9 @@ export async function createPdfPlanningReport(envelope,fullProjectModel=null){
  };
 
  const heading=(label)=>{
-  requireSpace(57);
+  // Keep the heading with at least two following prose lines. Its own band
+  // consumes 57 points; reserving only that height can orphan it at a page end.
+  requireSpace(57+(iaReading?2*21:2*14)+3);
   y-=12;
   page.drawRectangle({x:MARGIN,y:y-28,width:PAPER_WIDTH,height:33,color:LIGHT});
   page.drawText(pdfText(label,bold).slice(0,90),{x:MARGIN+12,y:y-15,size:12,font:bold,color:TEAL});
