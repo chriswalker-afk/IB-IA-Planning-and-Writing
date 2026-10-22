@@ -16,31 +16,42 @@ on:
       - 'tests/ui-smoke.test.js'
       - 'scripts/table-studio-browser.py'
       - '.github/workflows/table-studio-browser.yml'
+      - '.github/actions/setup-ci-node/action.yml'
+      - '.github/actions/setup-ci-browser/action.yml'
   pull_request:
     branches: [main]
+    paths:
+      - 'src/diagrams/table-studio-**'
+      - 'src/core/project-state.js'
+      - 'src/completing/entry-record.js'
+      - 'src/completing/views.js'
+      - 'app.js'
+      - 'index.html'
+      - 'data/table-studio.css'
+      - 'data/representation-workspace.css'
+      - 'tests/table-studio.test.js'
+      - 'tests/ui-smoke.test.js'
+      - 'scripts/table-studio-browser.py'
+      - '.github/workflows/table-studio-browser.yml'
+      - '.github/actions/setup-ci-node/action.yml'
+      - '.github/actions/setup-ci-browser/action.yml'
 permissions:
   contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 jobs:
   browser:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
+      - uses: ./.github/actions/setup-ci-node
       - name: Test mathematical formats and build website
         run: |
-          npm install --no-audit --no-fund
-          npm test
           npm run build
-      - name: Install Chromium
-        run: |
-          pip install playwright==1.57.0
-          python -m playwright install --with-deps chromium
+      - uses: ./.github/actions/setup-ci-browser
       - name: Validate automatically sized tables on desktop and phone
         run: |
           mkdir -p qa-output

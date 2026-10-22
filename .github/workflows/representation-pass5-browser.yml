@@ -14,6 +14,8 @@ on:
       - 'scripts/representation-pass5-browser.py'
       - 'tests/representation-pass5.test.js'
       - '.github/workflows/representation-pass5-browser.yml'
+      - '.github/actions/setup-ci-node/action.yml'
+      - '.github/actions/setup-ci-browser/action.yml'
   push:
     branches: [main]
     paths:
@@ -23,29 +25,25 @@ on:
       - 'data/representation-*.css'
       - 'app.js'
       - 'scripts/representation-pass5-browser.py'
+      - '.github/actions/setup-ci-node/action.yml'
+      - '.github/actions/setup-ci-browser/action.yml'
 permissions:
   contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 jobs:
   browser:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Test and build
+      - uses: ./.github/actions/setup-ci-node
+      - name: Build browser distribution
         run: |
-          npm install --no-audit --no-fund
-          npm test
           npm run build
-      - name: Install Chromium
-        run: |
-          pip install playwright==1.57.0
-          python -m playwright install --with-deps chromium
+      - uses: ./.github/actions/setup-ci-browser
       - name: Browse sixteen-route integration on desktop and mobile
         run: |
           mkdir -p qa-output/representation-pass5

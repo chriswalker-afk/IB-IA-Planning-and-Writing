@@ -2,6 +2,20 @@ name: Native data entry browser acceptance
 on:
   pull_request:
     branches: [main]
+    paths:
+      - 'src/diagrams/native-data-**'
+      - 'src/diagrams/graph-**'
+      - 'src/diagrams/stat-studio-**'
+      - 'src/diagrams/table-studio-**'
+      - 'app.js'
+      - 'index.html'
+      - 'data/native-data-workspace.css'
+      - 'src/core/project-state.js'
+      - 'scripts/native-data-browser.py'
+      - 'tests/native-data-workspace.test.js'
+      - '.github/workflows/native-data-browser.yml'
+      - '.github/actions/setup-ci-node/action.yml'
+      - '.github/actions/setup-ci-browser/action.yml'
   push:
     branches: [main]
     paths:
@@ -16,30 +30,26 @@ on:
       - 'scripts/native-data-browser.py'
       - 'tests/native-data-workspace.test.js'
       - '.github/workflows/native-data-browser.yml'
+      - '.github/actions/setup-ci-node/action.yml'
+      - '.github/actions/setup-ci-browser/action.yml'
   workflow_dispatch:
 permissions:
   contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 jobs:
   native-journey:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
+      - uses: ./.github/actions/setup-ci-node
       - name: Node unit regressions and production build
         run: |
-          npm install --no-audit --no-fund
-          npm test
           npm run build
-      - name: Install Chromium
-        run: |
-          pip install playwright==1.57.0
-          python -m playwright install --with-deps chromium
+      - uses: ./.github/actions/setup-ci-browser
       - name: Test mouse, keyboard, local saving and mobile layout
         run: |
           mkdir -p qa-output

@@ -15,31 +15,41 @@ on:
       - 'tests/ui-smoke.test.js'
       - 'scripts/image-tracer-browser.py'
       - '.github/workflows/image-tracer-browser.yml'
+      - '.github/actions/setup-ci-node/action.yml'
+      - '.github/actions/setup-ci-browser/action.yml'
   pull_request:
     branches: [main]
+    paths:
+      - 'src/diagrams/image-tracer-**'
+      - 'src/completing/views.js'
+      - 'src/completing/entry-record.js'
+      - 'src/core/project-state.js'
+      - 'app.js'
+      - 'index.html'
+      - 'data/image-tracer.css'
+      - 'tests/image-tracer.test.js'
+      - 'tests/ui-smoke.test.js'
+      - 'scripts/image-tracer-browser.py'
+      - '.github/workflows/image-tracer-browser.yml'
+      - '.github/actions/setup-ci-node/action.yml'
+      - '.github/actions/setup-ci-browser/action.yml'
 permissions:
   contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 jobs:
   browser:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Test and build Pathfinder
+      - uses: ./.github/actions/setup-ci-node
+      - name: Build browser distribution
         run: |
-          npm install --no-audit --no-fund
-          npm test
           npm run build
-      - name: Install Chromium
-        run: |
-          pip install playwright==1.57.0
-          python -m playwright install --with-deps chromium
+      - uses: ./.github/actions/setup-ci-browser
       - name: Check image tracing on desktop and phone
         run: |
           mkdir -p qa-output

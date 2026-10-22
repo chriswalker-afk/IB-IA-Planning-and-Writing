@@ -1,0 +1,21 @@
+name: Prepare cached Chromium
+description: Install pinned Playwright and pypdf, reusing Python wheels and browser binaries.
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+    - name: Cache Python wheels and Chromium
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cache/pip
+          ~/.cache/ms-playwright
+        key: ${{ runner.os }}-py312-playwright1.57.0-pypdf5.9.0-chromium-v1
+    - name: Install pinned browser QA packages
+      shell: bash
+      run: python -m pip install playwright==1.57.0 pypdf==5.9.0
+    - name: Ensure Chromium and system dependencies are available
+      shell: bash
+      run: python -m playwright install --with-deps chromium

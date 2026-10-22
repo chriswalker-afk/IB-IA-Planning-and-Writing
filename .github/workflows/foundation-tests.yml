@@ -7,16 +7,16 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 jobs:
   foundation-tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-      - name: Install pinned dependencies
-        run: npm install --no-audit --no-fund
+      - uses: ./.github/actions/setup-ci-node
       - name: Test project and document round trips
         run: npm test
       - name: Build browser distribution

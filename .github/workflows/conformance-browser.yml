@@ -3,29 +3,41 @@ on:
   workflow_dispatch:
   pull_request:
     branches: [main]
+    paths:
+      - 'app.js'
+      - 'index.html'
+      - 'src/completing/**'
+      - 'src/ui/**'
+      - 'src/planning/**'
+      - 'src/ideas/**'
+      - 'src/resources/**'
+      - 'src/essentials/**'
+      - 'src/core/project-state.js'
+      - 'src/core/illustrative-samples.js'
+      - 'src/handover/**'
+      - 'data/experience.css'
+      - 'data/representation-workspace.css'
+      - 'scripts/*-browser.py'
+      - '.github/workflows/conformance-browser.yml'
+      - '.github/actions/setup-ci-node/action.yml'
+      - '.github/actions/setup-ci-browser/action.yml'
 permissions:
   contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 jobs:
   browser:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - run: npm install --no-audit --no-fund
-      - name: Unit and regression tests
-        run: |
-          set -o pipefail
-          mkdir -p qa-output
-          npm test | tee qa-output/unit-tests.log
+      - uses: ./.github/actions/setup-ci-node
+      - name: Prepare browser artifact directory
+        run: mkdir -p qa-output
       - run: npm run build
-      - run: pip install playwright==1.57.0
-      - run: python -m playwright install --with-deps chromium
+      - uses: ./.github/actions/setup-ci-browser
       - name: Desktop and phone acceptance journeys
         run: |
           node scripts/conformance-fixtures.mjs
