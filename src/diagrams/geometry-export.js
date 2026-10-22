@@ -19,7 +19,9 @@ export async function exportGeometry(raw,format){
  try{
   const image=new Image();
   await new Promise((resolve,reject)=>{image.onload=resolve;image.onerror=()=>reject(new Error("Could not render geometry to PNG."));image.src=url;});
-  const canvas=document.createElement("canvas");canvas.width=2160;canvas.height=1460;
+  const dimensions=/viewBox="0 0 (\d+) (\d+)"/.exec(svg);
+  if(!dimensions)throw new Error("Missing geometry figure dimensions.");
+  const canvas=document.createElement("canvas");canvas.width=2*Number(dimensions[1]);canvas.height=2*Number(dimensions[2]);
   const ctx=canvas.getContext("2d");if(!ctx)throw new Error("Canvas is unavailable.");
   ctx.fillStyle="#fff";ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(image,0,0,canvas.width,canvas.height);
   const blob=await new Promise((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(new Error("PNG creation failed.")),"image/png"));

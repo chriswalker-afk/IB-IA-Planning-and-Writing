@@ -63,3 +63,8 @@
 .trace-to-geometry{margin:13px 0 0;padding:12px;border-radius:10px;background:#f2f8f9;border:1px solid #cae0e9}
 .trace-to-geometry p{font-size:.86rem;line-height:1.5;margin:0 0 8px}
 @media(max-width:560px){.geometry-import-choice{align-items:stretch}.geometry-import-choice .btn{width:100%}}
+
+/* IA figure presentation controls are optional, not competing with the mathematics editor. */
+.ia-figure-presentation-settings{margin:12px 0;padding:10px 12px;background:#f5f9fa;border:1px solid #d2e4e8;border-radius:10px}
+.ia-figure-presentation-settings>summary{cursor:pointer;font-size:.85rem;font-weight:700;color:#285968}
+.ia-figure-presentation-settings p{font-size:.8rem;color:var(--text-muted,#566c76);line-height:1.5}

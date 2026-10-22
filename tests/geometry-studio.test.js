@@ -13,7 +13,7 @@ test("schematic geometry cannot imply measured side lengths or angles",()=>{
  const d=newGeometryDraft();d.showLengths=true;d.showAngles=true;d.vertices[0].edgeLabel="Known length \\(a\\)";
  const analysis=geometryAnalysis(d),svg=renderGeometrySvg(d);
  assert.equal(analysis.ready,true);
- assert.match(svg,/NOT NECESSARILY TO SCALE/);
+ assert.match(svg,/Not to scale/);
  assert.match(svg,/Known length/);
  assert(!svg.includes("≈ 7"),"No inferred lengths in schematic mode");
 });
@@ -30,7 +30,7 @@ test("coordinate triangle derives lengths, angles, enclosed area and bearings",(
  assert.equal(Math.abs(q.area),6);
  assert.equal(q.bearings[0],90);
  assert(q.angles.every(x=>x>0&&x<180));
- assert.match(renderGeometrySvg(d),/Coordinate length unit: m/);
+ assert.doesNotMatch(renderGeometrySvg(d),/Coordinate length unit:/);
 });
 test("reject crossing polygons, missing labels, degenerate edges and unconfirmed bearings",()=>{
  const d=newGeometryDraft("rectangle");
