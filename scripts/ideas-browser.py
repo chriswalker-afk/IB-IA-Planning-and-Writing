@@ -138,6 +138,7 @@ with sync_playwright() as pw:
   do(p,'remove','[data-id="'+item['id']+'"]')
   assert len(saved(p)['ideaExplorer']['shortlist'])==0
   assert len(saved(p)['ideaExplorer']['rejected'])==1
+  p.locator('.idea-rejected summary').click()
   assert 'Restore idea' in p.locator('.idea-rejected').inner_text()
   do(p,'restore','[data-id="'+item['id']+'"]')
   assert saved(p)['ideaExplorer']['shortlist'][0]['quickStart']==5
