@@ -393,8 +393,7 @@ const STUDY={
         "Supplied s",
         "Linear",
         "Quadratic",
-        "L residual",
-        "Q residual"
+        "Residuals L/Q"
       ],
       "rows": [
         [
@@ -402,24 +401,21 @@ const STUDY={
           71.65,
           67.34,
           71.22,
-          4.309,
-          0.425
+          "4.309 / 0.425"
         ],
         [
           80,
           77.9,
           72.54,
           78.36,
-          5.364,
-          -0.461
+          "5.364 / -0.461"
         ],
         [
           85,
           86.05,
           77.73,
           85.8,
-          8.318,
-          0.254
+          "8.318 / 0.254"
         ]
       ],
       "units": [
@@ -427,10 +423,9 @@ const STUDY={
         "m",
         "m",
         "m",
-        "m",
         "m"
       ],
-      "note": "Rounded for display. Model coefficients and RMSE use full precision.",
+      "note": "Signed supplied−predicted residuals in last column are shown as linear / constrained quadratic. All predictions use the fitted coefficients without the held-out speeds.",
       "calculated": true
     }
   ],
