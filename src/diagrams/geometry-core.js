@@ -59,6 +59,7 @@ export function normalizeGeometryDraft(raw){
  if(["inline","dimension"].includes(r.dimensionStyle))d.dimensionStyle=r.dimensionStyle;
  if(["dp","sf"].includes(r.lengthFormat))d.lengthFormat=r.lengthFormat;
  d.lengthDigits=digit(r.lengthDigits,2);
+ if(d.lengthFormat==="sf"&&d.lengthDigits===0)d.lengthDigits=1;
  d.angleDigits=digit(r.angleDigits,1,3);
  if(Number.isInteger(r.dimensionOffset)&&r.dimensionOffset>=24&&r.dimensionOffset<=85)
   d.dimensionOffset=r.dimensionOffset;

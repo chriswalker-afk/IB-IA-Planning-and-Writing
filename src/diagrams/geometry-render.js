@@ -78,7 +78,7 @@ export function renderGeometrySvg(raw,{interactive=false}={}){
  for(let i=0;i<P.length;i++){
   const p=P[i],q=P[(i+1)%P.length],r=P[(i+P.length-1)%P.length];
   const vx=q.sx-p.sx,vy=q.sy-p.sy,len=Math.max(1,Math.hypot(vx,vy)),mx=(p.sx+q.sx)/2,my=(p.sy+q.sy)/2;
-  const nx=-vy/len,ny=vx/len,sign=(mx-centroid.x)*nx+(my-centroid.y)*ny>=0?1:-1;
+  const nx=-vy/len,ny=vx/len,sign=a.area>=0?1:-1;
   const label=p.edgeLabel.trim()||(d.mode==="coordinate"&&d.showLengths&&a.ready?
    "≈ "+formatGeometryMeasure(a.lengths[i],d)+(d.unit?" "+d.unit:""):"");
   if(label){
