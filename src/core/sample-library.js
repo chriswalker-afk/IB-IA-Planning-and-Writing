@@ -12,12 +12,17 @@ import {HELICOPTER_GROUPS_SPEC} from './samples/helicopter-groups.js';
 import {REVISION_FORMATS_SPEC} from './samples/revision-formats.js';
 import {GRINDER_RELIABILITY_SPEC} from './samples/grinder-reliability.js';
 import {TRAY_OPTIMISATION_SPEC} from './samples/tray-optimisation.js';
+import {STOPPING_DISTANCE_SPEC} from './samples/stopping-distance.js';
+import {DRINK_COOLING_SPEC} from './samples/drink-cooling.js';
+import {TIDE_CYCLES_SPEC} from './samples/tide-cycles.js';
+import {BALL_CLEARANCE_SPEC} from './samples/ball-clearance.js';
 import {SAMPLE_BRIEFS} from './samples/briefs.js';
 
 const copy=value=>structuredClone(value);
 const SPECS=Object.freeze([
  STANDING_REACH_SPEC,HELICOPTER_GROUPS_SPEC,REVISION_FORMATS_SPEC,
- GRINDER_RELIABILITY_SPEC,TRAY_OPTIMISATION_SPEC
+ GRINDER_RELIABILITY_SPEC,STOPPING_DISTANCE_SPEC,DRINK_COOLING_SPEC,
+ TIDE_CYCLES_SPEC,BALL_CLEARANCE_SPEC,TRAY_OPTIMISATION_SPEC
 ]);
 export const referenceSampleSpec=id=>SPECS.find(spec=>spec.id===id)||null;
 export const REFERENCE_SAMPLE_CHOICES=Object.freeze(SPECS.map(spec=>Object.freeze({

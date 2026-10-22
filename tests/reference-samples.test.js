@@ -15,11 +15,11 @@ import {selectedJourneyOutcome,needsJourneyLinkReview} from '../src/completing/a
 import {mixedMathTokens,mathSvg} from '../src/math/mixed-math.js';
 import {renderGraphSvg} from '../src/diagrams/graph-core.js';
 
-const ids=['standing-reach','helicopter-groups','revision-formats','grinder-reliability','tray-optimisation'];
+const ids=['standing-reach','helicopter-groups','revision-formats','grinder-reliability','stopping-distance','drink-cooling','tide-cycles','ball-clearance','tray-optimisation'];
 const body=model=>model.sections.flatMap(section=>section.rows.map(row=>row.value)).join('\n');
 const saved=state=>REPRESENTATION_TOOLS.flatMap(tool=>state[tool.studio].figures.map(figure=>({tool,figure})));
 
-test('the chooser exposes the five authored investigations and the catalogue covers all 16 pathways',()=>{
+test('the chooser exposes the nine authored investigations and the catalogue covers all 16 pathways',()=>{
  assert.deepEqual(SAMPLE_CHOICES.map(item=>item.id),ids);
  const coverage=sampleLibraryCoverage();
  assert.equal(coverage.length,16);

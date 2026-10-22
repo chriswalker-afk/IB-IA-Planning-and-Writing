@@ -51,7 +51,18 @@ concurrency:
   cancel-in-progress: true
 jobs:
   sample-browser:
+    name: ${{ matrix.group }}
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - group: Data comparisons
+            samples: standing-reach,helicopter-groups,revision-formats
+          - group: Modelling I
+            samples: grinder-reliability,stopping-distance,drink-cooling
+          - group: Modelling II
+            samples: tide-cycles,ball-clearance,tray-optimisation
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
@@ -67,10 +78,10 @@ jobs:
           SERVER_PID=$!
           trap 'kill "$SERVER_PID"' EXIT
           curl --fail --silent --show-error --retry 10 --retry-connrefused --retry-delay 1 --max-time 2 --retry-max-time 15 http://127.0.0.1:8765/ -o /dev/null
-          python scripts/illustrative-samples-browser.py
+          IA_QA_SAMPLES="${{ matrix.samples }}" python scripts/illustrative-samples-browser.py
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: illustrative-samples-browser-results
+          name: illustrative-samples-browser-${{ strategy.job-index }}
           path: qa-output
           retention-days: 7
