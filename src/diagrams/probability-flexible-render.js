@@ -32,7 +32,7 @@ function labelMetrics(node){
   height:47+Math.max(0,lines.length-1)*19,veryLong:length>34||longest>34};
 }
 function diagramLayout(check){
- const d=check.draft,tree=check.tree,leafKeys=tree.leaves,rootX=96,top=210;
+ const d=check.draft,tree=check.tree,leafKeys=tree.leaves,rootX=96;
  const metrics=new Map(),columnWidths=Array(5).fill(140);
  let maxHeight=47,longLabels=0;
  for(const parent of tree.parents){
@@ -47,6 +47,8 @@ function diagramLayout(check){
  const offsets=d.labelOffsets||{};
  const maxUp=Math.max(0,...Object.values(offsets).map(value=>Math.max(0,-(value?.y||0))));
  const spacing=Math.max(d.layoutStyle==="compact"?124:159,maxHeight+45+maxUp);
+ // Keep long annotations below the title and stage headings.
+ const top=Math.max(210,maxHeight+166+maxUp);
  const depth=tree.maxDepth||d.stages;
  const stageX=[rootX];
  for(let i=1;i<=depth;i++)stageX.push(stageX[i-1]+Math.max(365,columnWidths[i]+148));
@@ -102,7 +104,9 @@ export function renderFlexibleProbabilitySvg(check){
  const d=check.draft,L=diagramLayout(check),legend=legendRows(d),sum=summary(check);
  const captionLines=d.showCaption?diagramWrapLines((d.figureNumber.trim()?"Figure "+d.figureNumber.trim()+". ":"")+
   (d.caption.trim()||d.title.trim()),100).slice(0,4):[];
- const legendY=L.last+62,summaryY=L.last+(legend.length?112:88);
+ const legendColumns=Math.max(1,Math.floor((L.width-100)/255));
+ const legendLines=legend.length?Math.ceil(legend.length/legendColumns):0;
+ const legendY=L.last+62,summaryY=L.last+(legend.length?112+Math.max(0,legendLines-1)*29:88);
  const captionY=summaryY+sum.length*27+(sum.length?15:0);
  const H=Math.ceil(captionY+captionLines.length*24+(captionLines.length?36:8));
  const out=['<svg xmlns="http://www.w3.org/2000/svg" role="img" data-prob-flexible="true" aria-label="Student-authored conditional probability tree with '+
@@ -110,7 +114,7 @@ export function renderFlexibleProbabilitySvg(check){
   '<rect width="'+L.width+'" height="'+H+'" fill="#fff"/>'];
  if(d.showTitle)out.push(svgText(d.title||"Probability tree",L.width/2,48,24,"middle","#23475a",700,L.width-80));
  if(d.showStageLabels)for(let level=0;level<L.depth;level++){
-  const at=L.stageX[level+1]-15-L.metrics.size*(0);
+  const at=L.stageX[level+1]-15;
   out.push(svgText(d.stageLabels[level]||"Stage "+(level+1),
    (L.stageX[level]+at)/2,122,15,"middle","#2b6a70",700,L.stageX[level+1]-L.stageX[level]-38));
  }
@@ -146,9 +150,11 @@ export function renderFlexibleProbabilitySvg(check){
  out.push('<circle cx="'+xy(root.x)+'" cy="'+xy(root.y)+'" r="6" fill="#23475a"/>');
  if(legend.length){
   out.push('<g class="probability-event-legend" aria-label="Highlighted event path styles">');
-  const startX=Math.max(70,(L.width-legend.length*255)/2);
   legend.forEach((row,index)=>{
-   const x=startX+index*255,y=legendY;
+   const rowNumber=Math.floor(index/legendColumns),col=index%legendColumns;
+   const rowCount=Math.min(legendColumns,legend.length-rowNumber*legendColumns);
+   const startX=Math.max(48,(L.width-rowCount*255)/2);
+   const x=startX+col*255,y=legendY+rowNumber*29;
    out.push('<line data-prob-legend="'+row.type+'" x1="'+xy(x)+'" y1="'+xy(y)+
     '" x2="'+xy(x+38)+'" y2="'+xy(y)+'" stroke="'+row.color+'" stroke-width="3"'+
     (d.printStyle==="mono"?' stroke-dasharray="'+row.dash+'"':"")+'/>');
