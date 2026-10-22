@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {createProjectState,normalizeProjectState} from "../src/core/project-state.js";
 import {INVESTIGATIVE_ROUTES} from "../src/planning/investigative-routes.js";
+import {renderInvestigativeRoutes} from "../src/ui/investigative-routes-view.js";
 import {REPRESENTATION_TOOLS,representationTool,representationReturnNode} from "../src/diagrams/representation-registry.js";
 import {REPRESENTATION_ROUTE_GUIDANCE,representationAdvice,representationVisibleTools,renderRepresentationHub} from "../src/diagrams/representation-hub.js";
 import {resourceCreatorHub} from "../src/resources/views.js";
@@ -146,4 +147,24 @@ test("stage return targets include the first and both later writing stages",()=>
  s.completion.activeEntryIndex=1;assert.equal(representationReturnNode(s),"C40");
  s.completion.activeEntryIndex=2;assert.equal(representationReturnNode(s),"C50");
  s.completion.editorReturnNode="C40";assert.equal(representationReturnNode(s),"C40");
+});
+
+test("planning offers one directly usable launch per recommended creator in every one of 16 journeys",()=>{
+ for(const route of INVESTIGATIVE_ROUTES){
+  const state=createProjectState();state.planning.routeExplorer.mode="routes";
+  state.planning.routeExplorer.openRoute=route.id;
+  const markup=renderInvestigativeRoutes(state,{icon,e:esc,catalogue:()=>""});
+  const section=markup.split('data-journey-creators="'+route.id+'"')[1];
+  assert(section,"Missing creator shelf on "+route.id);
+  const shelf=section.split('</div><div class="journey-detail-actions">')[0];
+  const expected=REPRESENTATION_ROUTE_GUIDANCE[route.id].ids;
+  for(const id of expected){
+   assert(shelf.includes('data-resource-creator="'+id+'"'),route.id+" "+id);
+   assert.equal(shelf.split('data-resource-creator="'+id+'"').length-1,1,route.id+" "+id+" duplicated");
+  }
+  const linkIds=[...shelf.matchAll(/data-resource-creator="([^"]+)"/g)].map(x=>x[1]);
+  assert.equal(new Set(linkIds).size,linkIds.length,route.id);
+  assert(linkIds.every(id=>keys.includes(id)),route.id);
+  assert(shelf.includes("diagram is not required"),route.id);
+ }
 });
