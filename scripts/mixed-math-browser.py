@@ -39,7 +39,12 @@ try:
    context=browser.new_context(accept_downloads=True,viewport={
     'width':width,'height':900 if width>500 else 840
    })
-   context.add_init_script('localStorage.setItem('+json.dumps(KEY)+','+json.dumps(json.dumps(fixture))+');')
+   # The init script runs again on reload. Seed a fresh test context only once:
+   # unconditional setItem would overwrite the saved equation before testing it.
+   context.add_init_script(
+    'if(!localStorage.getItem('+json.dumps(KEY)+'))localStorage.setItem('+
+    json.dumps(KEY)+','+json.dumps(json.dumps(fixture))+');'
+   )
    page=context.new_page()
    errors=[]
    page.on('pageerror',lambda err: errors.append(str(err)))
@@ -83,8 +88,17 @@ try:
     .some(el=>el.offsetWidth>0 && el.value.includes(tex))""",arg=r'\(x^{2}+1\)')
    assert r'\(x^{2}+1\)' in target.input_value()
    assert r'\frac{' not in target.input_value()
+   # Verify persistence independently of the visible textarea, then reload.
+   # The expected result must survive in the project state, not only in the DOM.
+   saved_before_reload=json.loads(page.evaluate('localStorage.getItem('+json.dumps(KEY)+')'))
+   assert saved_before_reload['planning']['fields']['aim']==target.input_value(),(
+    'Edited equation was not saved to project storage',width)
+   assert r'\(x^{2}+1\)' in saved_before_reload['planning']['fields']['aim']
    page.reload(wait_until='networkidle')
    target=page.locator('textarea[data-bind="planning.fields.aim"]:visible').first
+   saved_after_reload=json.loads(page.evaluate('localStorage.getItem('+json.dumps(KEY)+')'))
+   assert saved_after_reload['planning']['fields']['aim']==saved_before_reload['planning']['fields']['aim'],(
+    'Project storage changed unexpectedly during reload',width)
    assert r'\(x^{2}+1\)' in target.input_value(),'Saved formula was not restored'
    assert page.locator('[data-math-preview-content] svg').first.is_visible()
    before=json.loads(page.evaluate('localStorage.getItem('+json.dumps(KEY)+')'))
