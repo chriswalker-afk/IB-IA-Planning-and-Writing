@@ -146,7 +146,7 @@ const STUDY={
   ],
   "figures": [
     {
-      "id": "p3-stop-linear",
+      "id": "figure-p3-stop-linear",
       "tool": "graph",
       "stage": 0,
       "after": "result",
@@ -222,7 +222,7 @@ const STUDY={
       "caption": "Eleven constructed fitting pairs only. The least-squares line is a baseline, not a real stopping-distance rule."
     },
     {
-      "id": "p3-stop-residual",
+      "id": "figure-p3-stop-residual",
       "tool": "graph",
       "stage": 1,
       "after": "result",
@@ -300,7 +300,7 @@ const STUDY={
       "calculated": true
     },
     {
-      "id": "p3-stop-overlay",
+      "id": "figure-p3-stop-overlay",
       "tool": "graph",
       "stage": 2,
       "after": "result",
@@ -382,7 +382,7 @@ const STUDY={
       "caption": "The custom quadratic is the explicitly constrained s=av+bv² fit, not an unconstrained quadratic regression. The baseline and candidate share the same 11 fitting cases."
     },
     {
-      "id": "p3-stop-held",
+      "id": "table-p3-stop-held",
       "tool": "table",
       "stage": 3,
       "after": "result",
