@@ -8,7 +8,7 @@ KEY="ia-pathfinder-prototype-v1"
 URL=os.environ.get("IA_QA_URL","http://127.0.0.1:8765/")
 BASE=json.loads(subprocess.check_output(["node","--input-type=module","-e", """
 import {createProjectState} from './src/core/project-state.js';
-const s=createProjectState();s.route='completing';
+const s=createProjectState();s.route='completing';s.ui.writingIntroSeen=true;s.ui.writerGuideIntroSeen=true;
 s.planning.fields.aim='What does this mathematical relationship tell me?';
 s.planning.fields.kind='statistics';s.planning.fields.course='AA SL';
 console.log(JSON.stringify(s));
