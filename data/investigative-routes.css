@@ -143,3 +143,22 @@
 .journey-optional-tool{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;padding:14px 16px;margin:12px 0 18px;border:1px solid #d7e4eb;background:var(--surface,#f8fafb);border-radius:12px}
 .journey-optional-tool p{flex:1 1 310px;margin:0;font-size:.91rem;line-height:1.5}
 .journey-optional-tool .btn{white-space:normal;text-align:left}
+
+/* Pass 5: two contextual, optional creator links for every investigative route. */
+.journey-route-creators{display:block;min-width:0}
+.journey-route-creators-head h4{margin:0 0 5px;color:#265865;font-size:14px}
+.journey-route-creators-head p{font-size:12px;margin:0 0 12px;line-height:1.6;color:#60797e}
+.journey-route-creators-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.journey-route-creator{display:flex;align-items:center;gap:10px;min-height:84px;min-width:0;text-align:left;font:inherit;background:white;border:1px solid #d5e4e7;border-radius:11px;padding:11px;cursor:pointer;color:#28545f}
+.journey-route-creator:hover{border-color:#479b8a;background:#f6fcf9}
+.journey-route-creator:focus-visible,.journey-route-creators-context>summary:focus-visible{outline:3px solid #71bba8;outline-offset:2px}
+.journey-route-creator-icon{width:34px;height:34px;display:grid;place-items:center;border-radius:9px;background:#e9f5ef;color:#217966;flex:none}
+.journey-route-creator-icon .icon{width:19px;height:19px}
+.journey-route-creator-text{display:grid;gap:5px;min-width:0;flex:1}
+.journey-route-creator-text strong{font-size:12px;line-height:1.4}
+.journey-route-creator-text small{font-size:11px;line-height:1.55;color:#597479;overflow-wrap:anywhere}
+.journey-route-creator>.icon{flex:none;width:16px;height:16px}
+.journey-route-creators-context{margin-top:11px;font-size:12px;color:#546f72}
+.journey-route-creators-context>summary{cursor:pointer;font-weight:700;min-height:35px;padding:8px 0}
+.journey-route-creators-context p{font-size:12px;line-height:1.6;margin:5px 0}
+@media(max-width:700px){.journey-route-creators-grid{grid-template-columns:1fr}.journey-route-creator{min-height:74px}}

@@ -1,6 +1,8 @@
 /** The three mathematics discovery experiences share one saved selection state.
  * Browse branches freely; neither opening nor selecting a journey records work. */
 import {INVESTIGATIVE_ROUTES,ROUTE_FAMILIES,matchingInvestigativeRoutes,routeById,routeCourseMath} from '../planning/investigative-routes.js';
+import {REPRESENTATION_ROUTE_GUIDANCE} from '../diagrams/representation-hub.js';
+import {representationTool} from '../diagrams/representation-registry.js';
 const modes=[
  {id:'aim',label:'Based on my aim',icon:'target'},
  {id:'routes',label:'Typical investigative routes',icon:'route'},
@@ -82,6 +84,30 @@ function renderRouteDetail(route,state,{e,icon}){
   "Use a probability tree when the mathematics involves successive or conditional outcomes. For simulated observations, a statistical diagram may fit better.":
   route.id==="finance"?
   "If a financial decision has successive dependent risks, a tree can compare their conditional outcomes. Otherwise use a clear table or graph for costs, payoffs and expected values.":null;
+ const suggested=REPRESENTATION_ROUTE_GUIDANCE[route.id];
+ // One consistent contextual creator shelf across all sixteen routes.
+ // Keep the earlier geometry/probability-specific advice without printing
+ // duplicate launch controls for a tool already in the core recommendation.
+ const creatorIds=[...(suggested?.ids||[])];
+ if(geometryHint&&!creatorIds.includes("geometry"))creatorIds.push("geometry");
+ if(probabilityHint&&!creatorIds.includes("probability"))creatorIds.push("probability");
+ const supplementary=[geometryHint,probabilityHint].filter(Boolean);
+ const creatorShelf='<div class="journey-optional-tool journey-route-creators" data-journey-creators="'+e(route.id)+'">'+
+  '<div class="journey-route-creators-head"><h4>Helpful diagram creators (optional)</h4>'+
+  '<p>Start with your own question and evidence. A diagram is not required, and these are choices rather than predetermined next mathematical steps.</p></div>'+
+  '<div class="journey-route-creators-grid">'+creatorIds.map((id)=>{
+   const tool=representationTool(id);
+   if(!tool)return "";
+   const index=suggested?.ids?.indexOf(id)??-1;
+   const reason=index>=0?suggested.why[index]:id==="geometry"?geometryHint:probabilityHint;
+   return '<button type="button" class="journey-route-creator" data-action="resource-creator-open" data-resource-creator="'+e(id)+'">'+
+    '<span class="journey-route-creator-icon">'+icon(tool.icon)+'</span>'+
+    '<span class="journey-route-creator-text"><strong>Open '+e(tool.title)+'</strong><small>'+e(reason)+'</small></span>'+
+    icon("arrow-right")+'</button>';
+  }).join("")+'</div>'+
+  (supplementary.length?'<details class="journey-route-creators-context"><summary>Route-specific diagram advice</summary>'+
+   supplementary.map(hint=>'<p>'+e(hint)+'</p>').join("")+'</details>':"")+
+  '</div>';
  const saved=state.planning.routeExplorer?.selectedRoute===route.id;
  const family=ROUTE_FAMILIES.find(f=>f.id===route.family);
  return '<section class="journey-detail" id="journey-detail" aria-label="Investigative journey for '+e(route.title)+'">'+
@@ -107,12 +133,7 @@ function renderRouteDetail(route,state,{e,icon}){
    (route.caution?'<p class="journey-route-warning">'+icon('info')+' '+e(route.caution)+'</p>':'')+
    (route.teacher?'<p class="journey-route-warning">'+icon('message-square')+
     ' Speak with your teacher before relying on a theoretical or advanced route. A pattern-heavy investigation can become an EE-style topic.</p>':'')+
-   (geometryHint?'<div class="journey-optional-tool"><p><strong>Optional diagram creator:</strong> '+e(geometryHint)+'</p>'+
-    '<button type="button" class="btn btn-secondary btn-sm" data-action="resource-creator-open" data-resource-creator="geometry">'+
-    icon('ruler')+' Open Geometry &amp; Measurement Studio</button></div>':'')+
-   (probabilityHint?'<div class="journey-optional-tool"><p><strong>Optional diagram creator:</strong> '+e(probabilityHint)+'</p>'+
-    '<button type="button" class="btn btn-secondary btn-sm" data-action="resource-creator-open" data-resource-creator="probability">'+
-    icon('git-branch')+' Open Probability Tree Studio</button></div>':'')+
+   creatorShelf+
    '<div class="journey-detail-actions">'+
     '<button type="button" class="btn '+(saved?'btn-secondary':'btn-primary')+'" data-action="'+(saved?'math-remove-route':'math-select-route')+'" data-route-id="'+e(route.id)+'">'+
       icon(saved?'check-circle':'bookmark')+' '+(saved?'Saved · Remove route':'Save this as my provisional route')+'</button>'+
