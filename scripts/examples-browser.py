@@ -7,7 +7,7 @@ BASE=json.loads((OUT/'examples-fixture.json').read_text());KEY='ia-pathfinder-pr
 URL=os.environ.get('IA_QA_URL','http://127.0.0.1:8765/');results=[]
 def saved(p):return p.evaluate('(k)=>localStorage.getItem(k)',KEY)
 def fixture(kind='modelling',node='C10'):
- s=copy.deepcopy(BASE);s['planning']['fields']['kind']=s['project']['kind']=kind;s['completion']['current']=node;return s
+ s=copy.deepcopy(BASE);s['ui']['writingIntroSeen']=True;s['ui']['writerGuideIntroSeen']=True;s['planning']['fields']['kind']=s['project']['kind']=kind;s['completion']['current']=node;return s
 def button(p):return p.locator('#main .criteria-actions [data-action="example-open"], #main .ex-prompt [data-action="example-open"]').first
 def open_example(p):button(p).click();assert p.locator('#exampleDialog').is_visible()
 def close(p):p.locator('#exampleDialog [data-example-close]').click();assert not p.locator('#exampleDialog').is_visible()
