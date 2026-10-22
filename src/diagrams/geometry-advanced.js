@@ -134,5 +134,5 @@ export function geometryFromTrace(source,{traceFigureId=""}={}){
  shape.edited=true;
  const ready=geometryAnalysis(shape);
  if(!ready.ready)return{ok:false,error:"The traced polygon needs checking: "+ready.issues[0]};
- return{ok:true,draft:shape,points:shape.vertices.length,source:traceFigureId||"working tracer draft"};
+ return{ok:true,draft:normalizeGeometryDraft(shape),points:shape.vertices.length,source:traceFigureId||"working tracer draft"};
 }
