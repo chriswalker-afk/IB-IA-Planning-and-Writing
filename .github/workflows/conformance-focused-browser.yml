@@ -1,0 +1,55 @@
+name: Focused conformance writing journeys
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/conformance-browser.py'
+      - 'scripts/conformance-fixtures.mjs'
+      - 'src/completing/**'
+      - 'src/ui/**'
+      - 'app.js'
+      - '.github/workflows/conformance-focused-browser.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/conformance-browser.py'
+      - 'scripts/conformance-fixtures.mjs'
+      - '.github/workflows/conformance-focused-browser.yml'
+permissions:
+  contents: read
+jobs:
+  conformance-writing:
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Unit tests and production build
+        run: |
+          npm install --no-audit --no-fund
+          npm test
+          npm run build
+      - name: Install Chromium
+        run: |
+          pip install playwright==1.57.0
+          python -m playwright install --with-deps chromium
+      - name: Exercise focused IA conformance journeys on desktop and phone
+        run: |
+          mkdir -p qa-output
+          node scripts/conformance-fixtures.mjs
+          python -m http.server 8765 --directory dist > qa-output/server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID"' EXIT
+          python scripts/conformance-browser.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: focused-conformance-artifacts
+          path: qa-output
+          retention-days: 7
