@@ -73,7 +73,8 @@ import {geometryAnalysis} from "./src/diagrams/geometry-core.js";
 import {snapGeometryEdge,snapGeometryRightAngle,moveGeometryVertex} from "./src/diagrams/geometry-advanced.js";
 import {renderGeometrySvg,geometryLayout} from "./src/diagrams/geometry-render.js";
 import {geometryPreviewHtml,geometryQualityHtml,geometryOutputHtml} from "./src/diagrams/geometry-view.js";
-import {setGeometryField,setGeometryVertex,geometryTemplate,geometryAddVertex,geometryRemoveVertex,geometryFresh,loadGeometry,saveGeometryDraft,saveAndLinkGeometry,importGeometryFromTrace} from "./src/diagrams/geometry-actions.js";
+import {setGeometryField,setGeometryVertex,geometryTemplate,geometryAddVertex,geometryRemoveVertex,geometryFresh,loadGeometry,saveGeometryDraft,saveAndLinkGeometry,importGeometryFromTrace,
+ geometryAddAuxPoint,geometryRemoveAuxPoint,setGeometryAuxPoint,geometryAddGuide,geometryRemoveGuide,setGeometryGuide,moveGeometryAuxPoint} from "./src/diagrams/geometry-actions.js";
 import {exportGeometry} from "./src/diagrams/geometry-export.js";
 import {probabilityPreviewHtml,probabilityQualityHtml,probabilityOutputHtml} from "./src/diagrams/probability-view.js";
 import {setProbabilityField,setProbabilityStage,setProbabilityBranch,toggleProbabilityLeaf,freshProbability,loadProbability,saveProbabilityDraft,saveAndLinkProbability} from "./src/diagrams/probability-actions.js";
@@ -1866,6 +1867,25 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       }
       case "geometry-remove":{
         if(!geometryRemoveVertex(state.geometryStudio,Number(el.dataset.geometryIndex)))break;
+        save();render();break;
+      }
+      case "geometry-aux-add":{
+        if(!geometryAddAuxPoint(state.geometryStudio)){toast("The construction already has ten extra points.");break;}
+        save();render();break;
+      }
+      case "geometry-aux-remove":{
+        const result=geometryRemoveAuxPoint(state.geometryStudio,Number(el.dataset.geometryIndex));
+        if(!result.ok){toast("Point could not be removed",result.error);break;}
+        save();render();break;
+      }
+      case "geometry-guide-add":{
+        if(!geometryAddGuide(state.geometryStudio,el.dataset.geometryGuideKind)){
+          toast("The construction already has twelve lines.");break;
+        }
+        save();render();break;
+      }
+      case "geometry-guide-remove":{
+        if(!geometryRemoveGuide(state.geometryStudio,Number(el.dataset.geometryIndex)))break;
         save();render();break;
       }
       case "geometry-new":{
