@@ -29,31 +29,48 @@ concurrency:
   cancel-in-progress: true
 jobs:
   browser:
+    name: ${{ matrix.group }}
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        group: [writing-help, idea-resources, mathematics, criteria, experience]
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-ci-node
-      - name: Prepare browser artifact directory
-        run: mkdir -p qa-output
-      - run: npm run build
+      - name: Build student website
+        run: npm run build
       - uses: ./.github/actions/setup-ci-browser
-      - name: Desktop and phone acceptance journeys
+      - name: Execute complete conformance suite group on desktop and phone
+        shell: bash
         run: |
+          set -u
+          mkdir -p qa-output
           node scripts/conformance-fixtures.mjs
           node scripts/examples-fixtures.mjs
           node scripts/experience-fixtures.mjs
           python -m http.server 8765 --directory dist > qa-output/server.log 2>&1 &
           SERVER_PID=$!
-          trap 'kill "$SERVER_PID"' EXIT
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+          case "${{ matrix.group }}" in
+            writing-help) suites="conformance stuck" ;;
+            idea-resources) suites="resources ideas examples" ;;
+            mathematics) suites="timeline math-routes extended-routes" ;;
+            criteria) suites="essentials criterion-level" ;;
+            experience) suites="experience illustrative-samples living-journey" ;;
+            *) echo "Unknown conformance group" >&2; exit 2 ;;
+          esac
           status=0
-          for suite in conformance stuck resources ideas examples essentials experience timeline criterion-level illustrative-samples math-routes extended-routes living-journey; do
-            python "scripts/$suite-browser.py" || status=1
+          for suite in $suites; do
+            echo "::group::Browser acceptance: $suite"
+            IA_QA_OUTPUT="qa-output" python "scripts/$suite-browser.py" || status=1
+            echo "::endgroup::"
           done
           exit "$status"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: conformance-browser-results
+          name: conformance-${{ matrix.group }}-browser-results
           path: qa-output
           retention-days: 7
