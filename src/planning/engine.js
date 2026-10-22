@@ -17,7 +17,7 @@ export const PROGRESS_GROUPS = Object.freeze([
  {id:"review",label:"Review your idea",nodes:["N06T","N08","N06","N07"]}
 ]);
 // Preserve original workbook routes for provenance without reopening superseded UX screens.
-const LEGACY_DESTINATION = Object.freeze({
+export const LEGACY_DESTINATION = Object.freeze({
  N03P3:"N03P",N03J:"N03D",N03F:"N03D",N03E:"N03D",N03G:"N03D",
  N04R:"N01P",N04M:"N01P",N05V:"N06T",N05:"N06T",N06E:"N06T"
 });
