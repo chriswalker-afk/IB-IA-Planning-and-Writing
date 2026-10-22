@@ -33,7 +33,7 @@ test("production deployment retains its independent validation, permissions and 
 });
 
 test("all browser workflows share pinned cached setup without duplicating full unit tests",()=>{
- assert.equal(workflows.size,25,"Check the complete known workflow inventory");
+ assert.equal(workflows.size,26,"Check the complete known workflow inventory");
  for(const [name,content] of workflows){
   if(nonBrowser.has(name))continue;
   assert.match(content,/uses: \.\/\.github\/actions\/setup-ci-node/,name);
@@ -66,7 +66,7 @@ test("superseded checks are cancelled within their own workflow, event and PR or
 test("heavy browser PR checks are relevant-path gated and retain shared action change coverage",()=>{
  for(const name of ["conformance-browser","graph-studio-browser","image-tracer-browser",
   "native-data-browser","presentation-coach-browser","stat-studio-browser",
-  "table-studio-browser","voronoi-interactive-browser","report-exports"]){
+  "table-studio-browser","voronoi-interactive-browser","report-exports","cleanup-pass5-browser"]){
   const content=workflows.get(name+".yml");
   assert.match(content,/pull_request:\n    branches: \[main\]\n    paths:/,name);
   assert.match(content,/\.github\/actions\/setup-ci-node\/action\.yml/,name);
@@ -97,4 +97,19 @@ test("report checks retain live post-deployment verification",()=>{
  assert.match(report,/workflow_run\.conclusion == 'success'/);
  assert.match(report,/workflow_run\.head_sha \|\| github\.sha/);
  assert.match(report,/scripts\/report-exports-browser\.py --live/);
+});
+
+test("final cleanup acceptance is split by capability and preserves real browser evidence",()=>{
+ const content=workflows.get("cleanup-pass5-browser.yml");
+ assert(content,"Pass 5 workflow required");
+ assert.match(content,/group: \[journeys, data-diagrams, geometry-probability, cohorts, exports\]/);
+ assert.match(content,/fail-fast: false/);
+ assert.match(content,/upload-artifact@v4/);
+ assert.match(content,/scripts\/cleanup-pass5-browser\.py/);
+ assert.match(content,/scripts\/report-exports-browser\.py/);
+ assert.match(content,/scripts\/criteria-badges-browser\.py/);
+ assert.match(content,/scripts\/probability-tree-browser\.py/);
+ assert.match(content,/scripts\/mixed-math-browser\.py/);
+ assert.match(content,/status=0/);
+ assert.match(content,/\|\| status=1/);
 });
