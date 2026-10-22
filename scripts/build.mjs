@@ -1,18 +1,44 @@
 import {buildBrowserVendor} from "./build-browser-vendor.mjs";
+import {buildSiteStyles} from "./build-styles.mjs";
+import {auditPublishedAssets} from "./audit-deploy-assets.mjs";
 import {build} from "esbuild";
-import {copyFile,cp,mkdir,rm,stat} from "node:fs/promises";
+import {copyFile,cp,mkdir,rm,stat,readFile,writeFile} from "node:fs/promises";
 import path from "node:path";
 
 const cwd=process.cwd(),out=path.join(cwd,"dist");
+// The pinned vendor files and import map remain in the repository for browsing
+// index.html directly or hosting the source without esbuild.
 await buildBrowserVendor(cwd);
 await rm(out,{recursive:true,force:true});
 await mkdir(out,{recursive:true});
-await Promise.all([
- copyFile(path.join(cwd,"index.html"),path.join(out,"index.html")),
- copyFile(path.join(cwd,"styles.css"),path.join(out,"styles.css")),
- cp(path.join(cwd,"data"),path.join(out,"data"),{recursive:true}),
- cp(path.join(cwd,"vendor"),path.join(out,"vendor"),{recursive:true})
-]);
+
+const sourceHtml=await readFile(path.join(cwd,"index.html"),"utf8");
+const stylesheet=await buildSiteStyles({root:cwd,out,html:sourceHtml});
+// esbuild resolves the npm imports inside app/chunks. The source-only import
+// map points to fallback vendor files, which we deliberately don't publish
+// twice in dist. Keep the worker: PDF fallback import still needs it.
+const importMap=/<script type="importmap">[\s\S]*?<\/script>\s*/;
+if(!importMap.test(stylesheet.html))
+ throw new Error("The source-hosting import map changed; review the bundled HTML.");
+const publishedHtml=stylesheet.html.replace(
+ /^[ \t]*<!-- Also support static\/source hosting:[^\n]* -->\r?\n/m,""
+).replace(importMap,"");
+await writeFile(path.join(out,"index.html"),publishedHtml);
+
+// data/catalog and data/sheets are original source-workbook audit records,
+// not a browser database. They remain fully intact in GitHub, npm tests and
+// source hosting; exclude them from the published site's payload.
+// Retain the small route graph for historical deep links and source consumers.
+await mkdir(path.join(out,"data"),{recursive:true});
+await cp(path.join(cwd,"data/flow"),path.join(out,"data/flow"),{recursive:true});
+
+// Preserve third-party license notices with the bundled distribution.
+await mkdir(path.join(out,"licenses"),{recursive:true});
+await Promise.all(["pdf-lib","docx","jszip","pdfjs-dist"].map(name=>
+ copyFile(path.join(cwd,"vendor",name+"-LICENSE.txt"),
+  path.join(out,"licenses",name+"-LICENSE.txt"))
+));
+
 await build({
  entryPoints:[path.join(cwd,"app.js")],
  outdir:out,bundle:true,splitting:true,format:"esm",platform:"browser",
@@ -26,4 +52,10 @@ await copyFile(
 );
 const app=await stat(path.join(out,"app.js"));
 if(!app.size)throw new Error("Bundled website is empty.");
-process.stdout.write("IA Pathfinder static build created: dist/ ("+app.size+"-byte entry)\n");
+const summary=await auditPublishedAssets({root:cwd,out});
+process.stdout.write(
+ "IA Pathfinder static build created: dist/ ("+app.size+"-byte entry; "+
+ stylesheet.files.length+" ordered source CSS files -> 1, "+
+ stylesheet.originalBytes+" -> "+stylesheet.publishedBytes+" bytes; "+
+ summary.totalFiles+" published files, "+summary.totalBytes+" bytes)\n"
+);
