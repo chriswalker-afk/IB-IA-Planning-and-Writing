@@ -97,6 +97,12 @@ export function renderProbabilityStudio(state,icon,e){
  '<h3>1. Set up your tree</h3>'+
  '<label class="probability-field"><span>Number of stages</span><select data-prob-field="stages"><option value="2"'+(d.stages===2?" selected":"")+'>Two stages (4 outcomes)</option><option value="3"'+(d.stages===3?" selected":"")+'>Three stages (8 outcomes)</option></select></label>'+
  field("title","Figure title",d.title,e)+field("figureNumber","Figure number",d.figureNumber,e)+
+ '<details class="ia-figure-presentation-settings"><summary>IA figure presentation</summary>'+
+ tick("showTitle","Include title in figure",d.showTitle)+
+ tick("showCaption","Include figure caption in figure",d.showCaption)+
+ tick("showStageLabels","Show event headings",d.showStageLabels)+
+ field("caption","Caption (optional)",d.caption,e,"A concise mathematical description")+
+ '<p>Guidance and validation remain in the editor, not in the downloaded figure. The caption uses your figure number and the text above.</p></details>'+
  '<div class="probability-buttons"><button type="button" class="btn btn-quiet btn-sm" data-action="probability-new">+ Start new tree</button></div>'+
  '<h3>2. Enter conditional branches</h3><p>Each panel describes an event after its exact preceding outcome history. Use decimals, fractions or percentages; values are never completed or normalised automatically.</p>'+
  Array.from({length:d.stages},(_,i)=>stageEditor(d,i,e)).join("")+
@@ -112,7 +118,7 @@ export function renderProbabilityStudio(state,icon,e){
  '<button type="button" class="btn btn-secondary btn-sm" data-action="probability-preview-fit" aria-pressed="'+(!studio.zoomed)+'">Fit whole tree</button>'+
  '<button type="button" class="btn btn-secondary btn-sm" data-action="probability-preview-detail" aria-pressed="'+(!!studio.zoomed)+'">Enlarge to read</button></div></div>'+
  probabilityPreviewHtml(studio)+
- '<p class="probability-canvas-note">Fit shows the whole model. Enlarge to read and scroll across the branches when working with a three-stage tree.</p>'+
+ '<p class="probability-canvas-note">Preview matches the IA export. Errors and modelling advice appear separately below the diagram. Enlarge if the text is small.</p>'+
  probabilityQualityHtml(studio,e)+renderPresentationCoach(state,"probability",d,icon,e)+
  '<div data-representation-step="use">'+probabilityOutputHtml(studio,icon)+renderFigureHandover(state,"probability",d,icon,e)+'</div>'+
  (studio.figures.length?'<details class="probability-saved"><summary>Saved probability trees ('+studio.figures.length+')</summary>'+

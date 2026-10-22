@@ -37,7 +37,7 @@ export function newGeometryDraft(kind="triangle"){
  const k=allowedKinds.includes(kind)?kind:"triangle";
  return {kind:k,title:k==="triangle"?"Labelled triangle":k==="rectangle"?"Dimensioned rectangle":
   k==="l-shape"?"L-shaped composite region":k==="t-shape"?"T-shaped composite region":"Geometric construction",
-  figureNumber:"1",mode:"schematic",unit:"",sourceKind:"theoretical",sourceCredit:"",
+  figureNumber:"1",caption:"",showTitle:true,showCaption:false,mode:"schematic",unit:"",sourceKind:"theoretical",sourceCredit:"",
   northAligned:false,showLengths:false,showAngles:false,showBearings:false,
   showGrid:false,showCoordinates:false,showDecomposition:false,showSensitivity:false,
   sensitivityStep:"",filled:false,note:"",edited:false,provenance:null,
@@ -45,12 +45,12 @@ export function newGeometryDraft(kind="triangle"){
 }
 export function normalizeGeometryDraft(raw){
  const r=object(raw)?raw:{},d=newGeometryDraft(r.kind);
- for(const key of ["title","figureNumber","unit","sourceCredit","note","sensitivityStep"]){
+ for(const key of ["title","figureNumber","caption","unit","sourceCredit","note","sensitivityStep"]){
   if(typeof r[key]==="string")d[key]=text(r[key],["sourceCredit","note"].includes(key)?800:180);
  }
  if(["schematic","coordinate"].includes(r.mode))d.mode=r.mode;
  if(["primary","secondary","theoretical","unsure"].includes(r.sourceKind))d.sourceKind=r.sourceKind;
- for(const key of ["northAligned","showLengths","showAngles","showBearings","showGrid",
+ for(const key of ["showTitle","showCaption","northAligned","showLengths","showAngles","showBearings","showGrid",
   "showCoordinates","showDecomposition","showSensitivity","filled","edited"])if(typeof r[key]==="boolean")d[key]=r[key];
  const supplied=Array.isArray(r.vertices)?r.vertices:[];
  if(supplied.length>=3&&supplied.length<=MAX_GEOMETRY_VERTICES){
@@ -156,6 +156,7 @@ export function geometryAnalysis(raw){
   lengths:distances,angles,bearings};
 }
 export const geometrySignature=d=>JSON.stringify([
+ d.title,d.figureNumber,d.caption,d.showTitle,d.showCaption,
  d.kind,d.mode,d.unit,d.vertices,d.northAligned,d.showLengths,d.showAngles,d.showBearings,
  d.showCoordinates,d.showDecomposition,d.showSensitivity,d.sensitivityStep,d.sourceKind,d.sourceCredit,d.provenance
 ]);

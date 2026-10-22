@@ -15,17 +15,17 @@ export const leafKeys=stages=>Array.from({length:2**(stages===3?3:2)},(_,i)=>i.t
 export function newProbabilityDraft(){
  const branches={};
  for(const id of PARENTS)branches[id]=[branch(id?"Yes":"Event A"),branch(id?"No":"Not A")];
- return {title:"Successive and conditional outcomes",figureNumber:"1",stages:2,
+ return {title:"Successive and conditional outcomes",figureNumber:"1",caption:"",showTitle:true,showCaption:false,showStageLabels:true,stages:2,
   stageLabels:["First event","Second event","Third event"],branches,
   showProducts:false,showEventCalculation:false,eventName:"Event E",conditionName:"Condition C",
   eventLeaves:[],conditionLeaves:[],sourceKind:"theoretical",sourceCredit:"",note:"",edited:false};
 }
 export function normalizeProbabilityDraft(raw){
  const blank=newProbabilityDraft(),r=plain(raw)?raw:{};
- for(const field of ["title","figureNumber","eventName","conditionName","sourceCredit","note"])
+ for(const field of ["title","figureNumber","caption","eventName","conditionName","sourceCredit","note"])
   if(typeof r[field]==="string")blank[field]=clean(r[field],["sourceCredit","note"].includes(field)?800:180);
  blank.stages=r.stages===3?3:2;
- for(const flag of ["showProducts","showEventCalculation","edited"])
+ for(const flag of ["showProducts","showEventCalculation","showTitle","showCaption","showStageLabels","edited"])
   if(typeof r[flag]==="boolean")blank[flag]=r[flag];
  if(["primary","secondary","theoretical","unsure"].includes(r.sourceKind))
   blank.sourceKind=r.sourceKind;
@@ -110,6 +110,7 @@ export function probabilityAnalysis(raw){
  return {draft:d,ready,issues,notes,values,paths,total,event,condition,intersection,conditional};
 }
 export const probabilitySignature=d=>JSON.stringify([
+ d.title,d.figureNumber,d.caption,d.showTitle,d.showCaption,d.showStageLabels,
  d.stages,d.stageLabels,d.branches,d.eventLeaves,d.conditionLeaves,
  d.showProducts,d.showEventCalculation,d.sourceKind,d.sourceCredit,d.note,d.eventName,d.conditionName
 ]);

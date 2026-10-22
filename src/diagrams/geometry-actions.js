@@ -4,10 +4,10 @@ import {linkRepresentationFigure} from "./figure-linking.js";
 import {geometryFromTrace} from "./geometry-advanced.js";
 export function setGeometryField(studio,key,value){
  const d=studio.draft;
- if(["title","figureNumber","unit","sourceCredit","note","sensitivityStep"].includes(key)){d[key]=String(value).slice(0,key==="note"||key==="sourceCredit"?800:180);d.edited=true;return true;}
+ if(["title","figureNumber","caption","unit","sourceCredit","note","sensitivityStep"].includes(key)){d[key]=String(value).slice(0,key==="note"||key==="sourceCredit"?800:180);d.edited=true;return true;}
  if(key==="mode"&&["schematic","coordinate"].includes(value)){d.mode=value;d.showBearings=false;d.edited=true;return true;}
  if(key==="sourceKind"&&["theoretical","primary","secondary","unsure"].includes(value)){d.sourceKind=value;return true;}
- if(["northAligned","showLengths","showAngles","showBearings","showGrid","showCoordinates","showDecomposition","showSensitivity","filled"].includes(key)){
+ if(["showTitle","showCaption","northAligned","showLengths","showAngles","showBearings","showGrid","showCoordinates","showDecomposition","showSensitivity","filled"].includes(key)){
   d[key]=value===true;d.edited=true;return true;
  }
  return false;

@@ -4,14 +4,14 @@ import {linkRepresentationFigure} from "./figure-linking.js";
 
 export function setProbabilityField(studio,key,value){
  const d=studio.draft;
- if(["title","figureNumber","sourceCredit","note","eventName","conditionName"].includes(key)){
+ if(["title","figureNumber","caption","sourceCredit","note","eventName","conditionName"].includes(key)){
   d[key]=String(value).slice(0,["note","sourceCredit"].includes(key)?800:180);
  }else if(key==="stages"&&[2,3,"2","3"].includes(value)){
   d.stages=Number(value);const allowed=new Set(leafKeys(d.stages));
   d.eventLeaves=d.eventLeaves.filter(x=>allowed.has(x));
   d.conditionLeaves=d.conditionLeaves.filter(x=>allowed.has(x));
  }else if(key==="sourceKind"&&["theoretical","primary","secondary","unsure"].includes(value))d.sourceKind=value;
- else if(["showProducts","showEventCalculation"].includes(key)&&typeof value==="boolean")d[key]=value;
+ else if(["showProducts","showEventCalculation","showTitle","showCaption","showStageLabels"].includes(key)&&typeof value==="boolean")d[key]=value;
  else return false;
  d.edited=true;return true;
 }

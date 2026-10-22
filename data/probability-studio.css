@@ -51,3 +51,8 @@
 .probability-entry svg,.show-first-probability-figure svg{display:block;width:100%;height:auto;background:white;max-width:1000px}
 @media(max-width:950px){.probability-workspace{grid-template-columns:1fr}.probability-controls{position:static;overflow:visible;max-height:none}}
 @media(max-width:560px){.probability-controls,.probability-main{padding:11px}.probability-buttons .btn{font-size:.78rem}.probability-branch-fields{grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr);gap:6px}.probability-event-fields{grid-template-columns:1fr}.probability-preview svg{width:100%;max-width:100%}}
+
+/* IA figure presentation controls are optional, not competing with the mathematics editor. */
+.ia-figure-presentation-settings{margin:12px 0;padding:10px 12px;background:#f5f9fa;border:1px solid #d2e4e8;border-radius:10px}
+.ia-figure-presentation-settings>summary{cursor:pointer;font-size:.85rem;font-weight:700;color:#285968}
+.ia-figure-presentation-settings p{font-size:.8rem;color:var(--text-muted,#566c76);line-height:1.5}

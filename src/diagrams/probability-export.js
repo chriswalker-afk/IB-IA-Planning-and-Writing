@@ -19,7 +19,9 @@ export async function exportProbability(raw,format){
  try{
   const image=new Image();
   await new Promise((resolve,reject)=>{image.onload=resolve;image.onerror=()=>reject(new Error("Could not render probability tree as PNG."));image.src=url;});
-  const canvas=document.createElement("canvas");canvas.width=2600;canvas.height=1712;
+  const dimensions=/viewBox="0 0 (\d+) (\d+)"/.exec(svg);
+  if(!dimensions)throw new Error("Missing probability figure dimensions.");
+  const canvas=document.createElement("canvas");canvas.width=2*Number(dimensions[1]);canvas.height=2*Number(dimensions[2]);
   const context=canvas.getContext("2d");if(!context)throw new Error("Canvas is unavailable.");
   context.fillStyle="#fff";context.fillRect(0,0,canvas.width,canvas.height);context.drawImage(image,0,0,canvas.width,canvas.height);
   const blob=await new Promise((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(new Error("Could not generate PNG.")),"image/png"));

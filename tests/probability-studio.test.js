@@ -40,7 +40,7 @@ test("two-stage conditional tree calculates four joint outcomes and all event op
  assert(Math.abs(a.intersection-.48)<1e-12);
  assert(Math.abs(a.conditional-.8)<1e-12);
  const svg=renderProbabilitySvg(d);
- assert.match(svg,/Every split gives probabilities conditional/);
+ assert.doesNotMatch(svg,/Every split gives probabilities conditional/);
  assert.match(svg,/P\(path\)/);
  assert.match(svg,/P\(Event E \| Condition C\)/);
 });
@@ -150,4 +150,22 @@ test("unsaved edits are retained as an in-progress project draft but not an esta
  assert.equal(figures.length,1);
  assert.match(figures[0].status,/not yet saved/);
  assert.equal(probabilityOutputHtml(s.probabilityStudio,icon).includes('data-action="probability-save" disabled'),true);
+});
+
+test("IA tree presentation settings hide editor guidance but preserve source evidence",()=>{
+ const d=validDraft(2);
+ d.sourceKind="secondary";d.sourceCredit="Published study";
+ d.caption="Estimated conditional probabilities";d.figureNumber="7";
+ d.showCaption=true;d.showTitle=false;d.showStageLabels=false;
+ const svg=renderProbabilitySvg(d);
+ assert.match(svg,/Figure 7\. Estimated conditional probabilities/);
+ assert.doesNotMatch(svg,/Successive and conditional outcomes|Every split gives probabilities|Published study|First event/);
+ assert.match(svg,/probability-branch-annotation/);
+ assert.match(svg,/data-prob-segment="00"/);
+ const store=newProbabilityStudio();store.draft=d;
+ assert.equal(saveProbabilityFigure(store).ok,true);
+ const normalized=normalizeProbabilityDraft(store.figures[0].draft);
+ assert.equal(normalized.caption,"Estimated conditional probabilities");
+ assert.equal(normalized.showTitle,false);
+ assert.equal(normalized.showStageLabels,false);
 });

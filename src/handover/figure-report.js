@@ -103,7 +103,7 @@ const specs=[
      "Transferred pixel vertices: "+(d.provenance.pixelPoints||[]).map(p=>"("+p.x+", "+p.y+")").join(", ")
     ].filter(Boolean).join("\n"):""),
    row("Unit",d.unit),row("North orientation",d.northAligned?"x east / y north":""),
-   row("Source type",d.sourceKind),row("Original source",d.sourceCredit),row("Limitations",d.note)]},
+   row("Source type",d.sourceKind),row("Original source",d.sourceCredit),row("Figure caption",d.caption),row("Limitations",d.note)]},
   {...registeredFigure("probability"),render:d=>renderProbabilitySvg(d),details:d=>{
     const a=probabilityAnalysis(d);
     return [
@@ -121,7 +121,7 @@ const specs=[
      row("Conditional calculations",d.showEventCalculation&&a.ready?
        ["P(E)="+a.event,"P(C)="+a.condition,"P(E∩C)="+a.intersection,
         "P(E|C)="+(a.conditional===null?"undefined or unselected":a.conditional)].join("; "):""),
-     row("Source type",d.sourceKind),row("Original probability source",d.sourceCredit),
+     row("Source type",d.sourceKind),row("Original probability source",d.sourceCredit),row("Figure caption",d.caption),
      row("Dependence, estimates and limitations",d.note)
     ];
   }}

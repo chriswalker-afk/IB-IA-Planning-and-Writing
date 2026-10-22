@@ -30,7 +30,7 @@ def test_one(browser,width,height,touch):
   page.goto(URL,wait_until="networkidle")
   studio=page.locator("[data-geometry-studio]")
   assert studio.is_visible(),("Geometry editor not visible",page.locator("body").inner_text()[:700])
-  assert "NOT NECESSARILY TO SCALE" in page.locator("[data-geometry-preview]").inner_text()
+  assert "Not to scale" in page.locator("[data-geometry-preview]").inner_text()
   assert page.locator("[data-geometry-vertex-index]").count()==3
   overflow(page)
   page.locator('[data-geometry-field="title"]').fill("QA labelled right triangle")

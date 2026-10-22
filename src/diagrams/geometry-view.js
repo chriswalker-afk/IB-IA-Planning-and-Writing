@@ -79,6 +79,11 @@ export function renderGeometryStudio(state,icon,e){
   '<button type="button" class="btn btn-quiet btn-sm" data-action="geometry-new">+ Start a new figure</button>'+ 
   choices("mode","Representation",d.mode,[["schematic","Schematic — labels only"],["coordinate","Coordinate-scaled construction"]],e)+
   field("title","Diagram title",d.title,e)+field("figureNumber","Figure number",d.figureNumber,e)+
+  '<details class="ia-figure-presentation-settings"><summary>IA figure presentation</summary>'+
+  tick("showTitle","Include title in figure",d.showTitle)+
+  tick("showCaption","Include figure caption in figure",d.showCaption)+
+  field("caption","Caption (optional)",d.caption,e,"What does this construction show?")+
+  '<p>Sources and mathematical cautions remain in your working record. The export contains only the selected figure annotations.</p></details>'+
   field("unit","Length unit (if known)",d.unit,e,"e.g. cm or \\(\\mathrm{m}\\)")+
   '<h3>2. Edit vertices</h3><p>Drag points on the diagram or edit their coordinates. The vertex order determines the sides; use a simple non-crossing polygon.</p>'+
   '<div class="geometry-vertices">'+d.vertices.map((p,i)=>

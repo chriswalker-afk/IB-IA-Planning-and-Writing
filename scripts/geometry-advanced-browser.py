@@ -117,7 +117,8 @@ def exercise(page,width,errors):
  with page.expect_download(timeout=25000) as download:
   page.locator('[data-action="geometry-svg"]').click()
  data=Path(download.value.path()).read_bytes()
- assert data.startswith(b"<svg") and b"Image Tracer snapshot" in data
+ assert data.startswith(b"<svg") and b"Image Tracer snapshot" not in data
+ assert saved_after["geometryStudio"]["figures"][0]["draft"]["provenance"]["kind"]=="image-tracer"
  page.locator('[data-action="geometry-use"]').click()
  linked=saved(page)
  assert linked["entries"][0]["geometryFigureId"]
