@@ -122,7 +122,7 @@ const STUDY={
       "nextWhy": "The comparison matters only if improved training fit translates into meaningfully better independent numerical predictions.",
       "mathsInsight": "Constraining the intercept changes both the fitted coefficients and the interpretation; it is not the same as ordinary unconstrained quadratic regression.",
       "methodChangeReason": "I froze the two models before checking the reserved records and changed the objective from description to prediction.",
-      "outcomeId": "competing"
+      "outcomeId": "model-fit"
     },
     {
       "key": "reserved-check",
