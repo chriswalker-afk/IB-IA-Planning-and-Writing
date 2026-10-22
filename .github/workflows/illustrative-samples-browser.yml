@@ -11,6 +11,8 @@ on:
       - 'src/handover/figure-report.js'
       - 'scripts/illustrative-samples-browser.py'
       - '.github/workflows/illustrative-samples-browser.yml'
+      - '.github/actions/setup-ci-node/action.yml'
+      - '.github/actions/setup-ci-browser/action.yml'
   pull_request:
     branches: [main]
     paths:
@@ -22,30 +24,26 @@ on:
       - 'src/handover/figure-report.js'
       - 'scripts/illustrative-samples-browser.py'
       - '.github/workflows/illustrative-samples-browser.yml'
+      - '.github/actions/setup-ci-node/action.yml'
+      - '.github/actions/setup-ci-browser/action.yml'
   workflow_dispatch:
 permissions:
   contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 jobs:
   sample-browser:
     runs-on: ubuntu-latest
     timeout-minutes: 18
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Test and build
+      - uses: ./.github/actions/setup-ci-node
+      - name: Build browser distribution
         run: |
-          npm install --no-audit --no-fund
-          npm test
           npm run build
-      - name: Install browser and PDF reader
-        run: |
-          pip install playwright==1.57.0 pypdf==5.9.0
-          python -m playwright install --with-deps chromium
+      - uses: ./.github/actions/setup-ci-browser
       - name: Check all five safe samples, IA-scale PDFs, and figures
         run: |
           mkdir -p qa-output
