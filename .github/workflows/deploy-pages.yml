@@ -7,6 +7,7 @@ on:
 permissions:
   contents: read
   pages: write
+  actions: read
   id-token: write
 
 concurrency:
@@ -36,6 +37,14 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: dist
+      # If the repository still publishes Pages from the main branch, its
+      # automatic "pages build and deployment" may finish after our bundled
+      # deployment and replace dist/ with raw, unbundled source. Wait until
+      # that competing deployment is finished before publishing the bundle.
+      - name: Ensure bundled website wins over legacy Pages source
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node scripts/wait-for-legacy-pages-build.mjs
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
