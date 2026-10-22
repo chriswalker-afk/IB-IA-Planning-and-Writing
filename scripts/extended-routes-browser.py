@@ -7,7 +7,7 @@ URL=os.environ.get("IA_QA_URL","http://127.0.0.1:8765/")
 KEY="ia-pathfinder-prototype-v1"
 BASE=json.loads(subprocess.check_output(["node","--input-type=module","-e",
  """import {createProjectState} from "./src/core/project-state.js";
-const s=createProjectState();s.route="completing";s.planning.fields.course="AI SL";
+const s=createProjectState();s.route="completing";s.ui.writingIntroSeen=true;s.ui.writerGuideIntroSeen=true;s.planning.fields.course="AI SL";
 s.planning.fields.aim="Which mathematical decision is supported by the result?";
 console.log(JSON.stringify(s));"""],text=True))
 CASES=[
