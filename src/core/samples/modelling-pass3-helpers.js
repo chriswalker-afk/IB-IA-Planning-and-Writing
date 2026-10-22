@@ -104,7 +104,6 @@ export function buildModellingPass3(d){
   secondaryPublisher:'No publisher. This is an original constructed example, not published observational data.',
   secondaryVariables:d.inputs,secondaryScope:d.domain,secondaryStatus:'ready',secondaryVerified:'yes',
   secondarySamplingOrigin:'The cases were generated or fixed deliberately for an illustrative model comparison; there is no random sampling frame.',
-  secondarySourceType:'other',
   alternativeMethod:d.alternative,readinessImprovement:d.readinessImprovement,
   permissionNeed:'no',permissionDetails:'Only constructed teaching material and derived calculations are used.',
   practicalBlocker:'no',course:d.course||'AI SL',courseSuitability:'yes',mathsOutside:'syllabus',
