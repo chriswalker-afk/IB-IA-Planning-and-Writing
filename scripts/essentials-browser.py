@@ -37,14 +37,25 @@ with sync_playwright() as pw:
   assert p.evaluate('document.activeElement.dataset.action')=='essentials-open'
  run('essentials-reference-is-readonly',fixture(),readonly)
  def placement(p):
-  panel=p.locator('#main .criteria-panel');assert panel.count()==1;assert panel.locator('.criteria-row').count()==2;assert not panel.locator('.criteria-content').is_visible()
-  assert panel.locator('.support-actions button').count()==4
-  assert panel.bounding_box()['y']<p.locator('[data-bind="scratch.introduction"]').bounding_box()['y'];assert p.locator('#main .guidance-writing').count()==1
-  before=stored(p);panel.locator('[data-action="criteria-toggle"]').click();assert panel.locator('.criteria-content').is_visible()
-  assert 'Show good presentation here by' in panel.inner_text();assert 'Show good personal engagement here by' in panel.inner_text()
+  # The current IA introduces the A/C criteria as contextual bubbles beside
+  # student writing fields, rather than the retired global two-row panel.
+  assert p.locator('[data-source-node="C10"]').count()==1
+  assert p.locator('[data-criterion-badge="completing:C10:aim"]').is_visible()
+  assert p.locator('[data-criterion-badge="completing:C10:motivation"]').is_visible()
+  assert p.locator('[data-bind="scratch.introduction"]').is_visible()
+  before=stored(p)
+  badge=p.locator('[data-criterion-badge="completing:C10:aim"]')
+  assert badge.bounding_box()['y']<p.locator('[data-bind="scratch.introduction"]').bounding_box()['y']
+  badge.click()
+  dialog=p.locator('#criterionBadgeDialog')
+  assert dialog.is_visible()
+  assert 'Criterion A' in dialog.inner_text()
+  assert 'mathematical aim' in dialog.inner_text().lower()
   p.screenshot(path=str(OUT/'essentials-introduction-desktop.png'),full_page=True)
-  panel.locator('[data-action="criteria-toggle"]').click();assert not panel.locator('.criteria-content').is_visible();assert panel.locator('.criteria-actions [data-action="example-open"]').is_visible();assert stored(p)==before
-  panel.locator('[data-action="criteria-toggle"]').click();panel.locator('.criteria-content [data-action="essentials-open"]').click();assert p.locator('[data-rubric-criterion="A"]').count()==1;close_ess(p);assert stored(p)==before
+  dialog.locator('[data-criterion-badge-rubric="A"]').click()
+  assert p.locator('#essentialsDialog [data-rubric-criterion="A"]').count()==1
+  close_ess(p)
+  assert stored(p)==before
  run('criteria-visible-and-optional',fixture(),placement)
  def unknown(p):
   open_ess(p);tab(p,'rubric');p.locator('[data-essentials-criterion="E"]').click();assert 'Choose SL or HL' in p.locator('#ess-body').inner_text();assert p.locator('.ess-rubric-table').count()==0
@@ -74,16 +85,39 @@ with sync_playwright() as pw:
   open_ess(p);overflow(p);p.screenshot(path=str(OUT/'essentials-format-phone.png'),full_page=True);tab(p,'submission');overflow(p);assert p.locator('[data-evidence-criterion]').count()==5;close_ess(p)
  run('essentials-format-and-review-small-phone',fixture(),phones,360,740)
  def theory(p):
-  p.locator('[data-action="criteria-toggle"]').click()
-  text=p.locator('.criteria-content').inner_text().lower();assert 'domain' in text;assert 'sampling' not in text;assert 'human error' not in text
+  badge=p.locator('[data-criterion-badge="completing:C20:methodSuitability"]')
+  assert badge.is_visible()
+  before=stored(p)
+  badge.click()
+  guidance=p.locator('#criterionBadgeDialog').inner_text().lower()
+  assert 'assumptions' in guidance or 'domain' in guidance
+  assert 'sampling errors' not in guidance
+  p.locator('#criterionBadgeDialog [data-criterion-badge-close]').first.click()
+  assert stored(p)==before
  run('criteria-theoretical-context',fixture('C20',kind='theoretical'),theory,390,844)
  def pending(p):
-  p.locator('[data-action="criteria-toggle"]').click()
-  text=p.locator('.criteria-content').inner_text();assert 'genuine result' in text;assert 'this actual result means' not in text
- s=fixture('C34B');s['entries'][0]['status']='planned'
+  badge=p.locator('[data-criterion-badge="completing:C34B:title"]')
+  assert badge.is_visible()
+  before=stored(p)
+  badge.click()
+  guidance=p.locator('#criterionBadgeDialog').inner_text().lower()
+  assert 'planned' in guidance or 'actual' in guidance
+  assert 'this actual result means' not in guidance
+  p.locator('#criterionBadgeDialog [data-criterion-badge-close]').first.click()
+  assert stored(p)==before
  run('criteria-never-invents-results',s,pending)
  def writing(p):
-  tools=p.locator('.criteria-writing-tools');tools.locator('summary').first.click();p.locator('[data-guidance-event="write-now"]').first.click();field=p.locator('[data-bind="completion.guidanceUi.noteDraft"]');assert field.is_visible();field.fill('My own meaningful thought');p.locator('[data-guidance-event="save-note"]').click();assert p.locator('.criteria-panel').count()==1
+  # Writing advice is in the live Writer's Field Guide and the student's
+  # own introduction field, not the retired criteria-writing-tools disclosure.
+  guide=p.locator('.writer-guide-header-button')
+  assert guide.is_visible()
+  guide.click()
+  assert p.locator('.writer-guide-drawer [data-guide-card]').count()==14
+  p.locator('.writer-guide-drawer [data-action="close-drawer"]').first.click()
+  before=saved(p)
+  p.locator('[data-bind="scratch.introduction"]').fill('My own meaningful thought')
+  assert saved(p)['scratch']['introduction']=='My own meaningful thought'
+  assert saved(p)['entries']==before['entries']
  run('criteria-retains-private-writing-tools',fixture(),writing)
  def planning(p):
   assert p.locator('#main .criteria-panel').count()==0
