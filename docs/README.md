@@ -16,6 +16,7 @@ The root [README](../README.md) describes the current student-facing website. Th
 2. [Pass 2: removed only superseded rendering code](pass2-cleanup-implementation-2026-10-22.md).
 3. [Pass 3: production CSS/asset consolidation](pass3-styles-deployment-2026-10-22.md).
 4. [Pass 4: repository maintenance and branch audit](pass4-repository-maintenance-2026-10-22.md).
+5. [Pass 5: final end-to-end integration acceptance](pass5-final-integration-audit-2026-10-22.md).
 5. [GitHub Actions performance and test safeguards](github-actions-optimisation-2026-10-22.md).
 
 ## Original design chronology (historical, retained)
