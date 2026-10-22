@@ -2,7 +2,8 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
  newGraphDraft,newGraphStudio,normalizeGraphStudio,readPastedGraphData,applyPastedGraphData,
- graphData,analyseGraph,compileGraphFunction,renderGraphSvg,renderGraphResidualSvg,saveGraphFigure
+ graphData,analyseGraph,compileGraphFunction,renderGraphSvg,renderGraphResidualSvg,saveGraphFigure,
+ graphAxisNeedsBreak,graphAxisBreakSvg,displayGraphEquation
 } from "../src/diagrams/graph-core.js";
 import {updateGraphField,chooseGraphType,saveAndLinkGraph,saveGraphDraft,loadSavedGraph,freshGraph} from "../src/diagrams/graph-actions.js";
 import {renderGraphStudio} from "../src/diagrams/graph-view.js";
@@ -707,4 +708,108 @@ test("equation annotation reserves space, wraps long equations, and survives rel
  const legacy={...studio.draft};delete legacy.equationPlacement;
  assert.equal(normalizeGraphStudio({draft:legacy}).draft.equationPlacement,"legend");
  assert.equal(normalizeGraphStudio({draft:{...studio.draft,equationPlacement:"bad"}}).draft.equationPlacement,"legend");
+});
+
+
+test("graph axis breaks appear only where the displayed scale omits zero",()=>{
+ const d=validData().draft;
+ const count=(svg,axis)=>(svg.match(new RegExp('data-graph-axis-break="'+axis+'"',"g"))||[]).length;
+ assert.equal(count(renderGraphSvg(d),"x"),0,"x auto bounds with zero included have no break");
+ assert.equal(count(renderGraphSvg(d),"y"),0,"y auto bounds with zero included have no break");
+ Object.assign(d,{xMin:"1",xMax:"4",yMin:"2",yMax:"9"});
+ let svg=renderGraphSvg(d);
+ assert.equal(count(svg,"x"),1);assert.equal(count(svg,"y"),1);
+ assert.match(svg,/horizontal scale omits zero/);
+ assert.match(svg,/vertical scale omits zero/);
+ d.showGrid=false;
+ assert.equal(count(renderGraphSvg(d),"x"),1,"break marks are independent of the grid");
+ assert.equal(count(renderGraphSvg(d),"y"),1);
+ d.xMin="0";d.yMin="0";
+ svg=renderGraphSvg(d);
+ assert.equal(count(svg,"x"),0);assert.equal(count(svg,"y"),0);
+ d.xMin="-2";d.yMin="-10";
+ svg=renderGraphSvg(d);
+ assert.equal(count(svg,"x"),0,"a negative-to-positive scale includes zero");
+ assert.equal(count(svg,"y"),0);
+ assert.equal(graphAxisNeedsBreak([-6,-2]),true,"zero is omitted by a negative-only scale");
+ assert.equal(graphAxisNeedsBreak([-6,2]),false);
+ assert.equal(graphAxisNeedsBreak([0,3]),false);
+ assert.equal(graphAxisNeedsBreak([3,8]),true);
+ assert.equal(graphAxisBreakSvg("invalid",0,0),"");
+ const f={...newGraphDraft(),kind:"function",expression:"x^2",title:"Restricted curve",
+  xLabel:"x",yLabel:"f(x)",xUnitMode:"dimensionless",yUnitMode:"dimensionless",
+  xMin:"3",xMax:"6",yMin:"4",yMax:"38"};
+ assert.equal(count(renderGraphSvg(f),"x"),1,"function graphs use the same axis-break logic");
+ assert.equal(count(renderGraphSvg(f),"y"),1);
+});
+test("student-chosen independent/dependent symbols are consistent across equations, axes and JSON",()=>{
+ const g=validData();
+ assert(addGraphModel(g,"linear").ok);
+ assert(addGraphModel(g,"quadratic").ok);
+ assert(updateGraphField(g,"xSymbol","t"));
+ assert(updateGraphField(g,"ySymbol","h"));
+ const d=g.draft,a=analyseGraph(d);
+ assert(a.ready);
+ assert(a.models.every(m=>m.equation.startsWith("h ≈ ")));
+ assert.match(a.models[0].equation,/t/);
+ const svg=renderGraphSvg(d);
+ assert.match(svg,/Time, t \(s\)/);
+ assert.match(svg,/Distance, h \(m\)/);
+ assert(svg.includes(a.models[0].equation));
+ assert(svg.includes("Linear regression: h ≈"));
+ assert.equal(displayGraphEquation("y = exp(x) + max(x, 1)",d),"h = exp(t) + max(t, 1)");
+ assert.equal(displayGraphEquation("f(x) = ln(x)",d),"f(t) = ln(t)");
+ assert.equal(displayGraphEquation("y ≈ 2t + 1, where t = (x − 30) / 4",d),
+  "h ≈ 2u + 1, where u = (t − 30) / 4",
+  "a centred-regression auxiliary cannot share the chosen t variable");
+ assert.equal(displayGraphEquation("y ≈ 2t + 1, t = (x − 30) / 4",{xSymbol:"r",ySymbol:"t"}),
+  "t ≈ 2u + 1, u = (r − 30) / 4");
+ const saved=saveGraphFigure(g);
+ assert(saved.ok);
+ const restored=normalizeGraphStudio(JSON.parse(JSON.stringify(g)));
+ assert.equal(restored.draft.xSymbol,"t");assert.equal(restored.draft.ySymbol,"h");
+ assert.equal(restored.figures[0].draft.ySymbol,"h");
+ assert(restoreRegressionCoefficientsEqual(restored));
+ const previous=normalizeGraphStudio({draft:{...d,xSymbol:undefined,ySymbol:undefined}});
+ assert.equal(previous.draft.xSymbol,"x");assert.equal(previous.draft.ySymbol,"y");
+ assert.equal(updateGraphField(g,"xSymbol","h"),true);
+ assert(analyseGraph(g.draft).problems.some(problem=>problem.code==="symbols-distinct"));
+ assert.equal(updateGraphField(g,"xSymbol","height"),true);
+ assert(analyseGraph(g.draft).problems.some(problem=>problem.code==="xsymbol"));
+ assert.equal(updateGraphField(g,"xSymbol","θ"),true);
+ assert(analyseGraph(g.draft).ready);
+ assert.match(analyseGraph(g.draft).models[0].equation,/θ/);
+});
+function restoreRegressionCoefficientsEqual(studio){
+ const a=analyseGraph(studio.draft).models;
+ return a.length===2&&a.every(m=>m.valid)&&a.every(m=>Number.isFinite(m.predict(2)));
+}
+test("custom, advanced and residual graph equations inherit chosen symbols without altering fitting",()=>{
+ const g=validData();
+ assert(addGraphModel(g,"linear").ok);
+ const original=analyseGraph(g.draft).models[0].predict(2);
+ assert(updateGraphField(g,"xSymbol","t"));assert(updateGraphField(g,"ySymbol","s"));
+ const changed=analyseGraph(g.draft).models[0];
+ assert.equal(changed.predict(2),original,"variable display must not change any prediction");
+ assert(addGraphModel(g,"custom").ok);
+ assert(updateGraphModelExpression(g,"model-2","y = 2*x + sin(x)"));
+ assert.equal(analyseGraph(g.draft).models[1].equation,"s = 2*t + sin(t)");
+ assert(updateGraphField(g,"residualModelId","model-1"));
+ g.draft.showResidualPlot=true;
+ const residual=renderGraphResidualSvg(g.draft);
+ assert.match(residual,/observed s − predicted s/);
+ assert.match(residual,/Time, t \(s\)/);
+ const other=newGraphStudio();
+ applyPastedGraphData(other,"Elapsed time (s)\tHeight (m)\n10\t20\n11\t23\n12\t27\n13\t31");
+ Object.assign(other.draft,{title:"Positive data",sourceKind:"primary",xSymbol:"t",ySymbol:"h"});
+ assert(addGraphModel(other,"exponential").ok);
+ assert(addGraphModel(other,"power").ok);
+ assert(addGraphModel(other,"logarithmic").ok);
+ const fits=analyseGraph(other.draft).models;
+ assert(fits.every(m=>m.valid),fits.map(m=>m.error||"ok").join("; "));
+ assert(fits.every(m=>m.equation.startsWith("h ≈ ")));
+ assert(fits.some(m=>m.equation.includes("ln(t)")));
+ assert(fits.some(m=>m.equation.includes("e^(")&&m.equation.includes("t")));
+ const oldPredictions=assessGraphModels(other.draft.models,graphData(other.draft).points,compileGraphFunction);
+ for(let i=0;i<fits.length;i++)assert.equal(fits[i].predict(12),oldPredictions[i].predict(12));
 });
