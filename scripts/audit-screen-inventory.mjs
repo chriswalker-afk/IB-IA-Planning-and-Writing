@@ -49,7 +49,9 @@ function possibleRouteGraph(){
  return visited;
 }
 const routeGraph=possibleRouteGraph();
-const planning=PLANNING_NODE_IDS.slice().sort().map(id=>({
+// N03P3 is an old import alias without a surviving source-route row.
+ // Include every supported legacy identifier, not only route-table nodes.
+const planning=[...new Set([...PLANNING_NODE_IDS,...Object.keys(LEGACY_DESTINATION)])].sort().map(id=>({
  id,status:Object.hasOwn(LEGACY_DESTINATION,id)?"redirected-legacy":
   planningCases.has(id)?"implemented-screen":"review-no-direct-case",
  destination:LEGACY_DESTINATION[id]||null,
