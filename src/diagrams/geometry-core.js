@@ -7,11 +7,16 @@ export const MAX_GEOMETRY_VERTICES=8,MAX_GEOMETRY_FIGURES=8;
 const object=x=>x&&typeof x==="object"&&!Array.isArray(x);
 const text=(s,n=220)=>typeof s==="string"?s.slice(0,n):"";
 const valid=n=>typeof n==="number"&&Number.isFinite(n)&&Math.abs(n)<=1e5;
-const vertex=(id,label,x,y)=>({id,label,x,y,edgeLabel:"",angleLabel:""});
+const vertex=(id,label,x,y)=>({id,label,x,y,edgeLabel:"",angleLabel:"",edgeConstraint:"free",rightAngle:false,locked:false});
 const templates={
  triangle:[vertex("v-a","A",0,0),vertex("v-b","B",7,0),vertex("v-c","C",2.3,4.8)],
  rectangle:[vertex("v-a","A",0,0),vertex("v-b","B",8,0),vertex("v-c","C",8,4),vertex("v-d","D",0,4)],
- polygon:[vertex("v-a","A",0,0),vertex("v-b","B",7,0),vertex("v-c","C",8,4),vertex("v-d","D",3.5,6),vertex("v-e","E",-1,3)]
+ polygon:[vertex("v-a","A",0,0),vertex("v-b","B",7,0),vertex("v-c","C",8,4),vertex("v-d","D",3.5,6),vertex("v-e","E",-1,3)],
+ "l-shape":[vertex("v-a","A",0,0),vertex("v-b","B",8,0),vertex("v-c","C",8,3),
+  vertex("v-d","D",3,3),vertex("v-e","E",3,7),vertex("v-f","F",0,7)],
+ "t-shape":[vertex("v-a","A",0,5),vertex("v-b","B",2,5),vertex("v-c","C",2,0),
+  vertex("v-d","D",6,0),vertex("v-e","E",6,5),vertex("v-f","F",8,5),
+  vertex("v-g","G",8,7),vertex("v-h","H",0,7)]
 };
 const allowedKinds=Object.keys(templates);
 const signedArea=points=>points.reduce((sum,p,i)=>{
@@ -30,40 +35,57 @@ function crossing(a,b,c,d){
 }
 export function newGeometryDraft(kind="triangle"){
  const k=allowedKinds.includes(kind)?kind:"triangle";
- return {kind:k,title:k==="triangle"?"Labelled triangle":k==="rectangle"?"Dimensioned rectangle":"Geometric construction",
+ return {kind:k,title:k==="triangle"?"Labelled triangle":k==="rectangle"?"Dimensioned rectangle":
+  k==="l-shape"?"L-shaped composite region":k==="t-shape"?"T-shaped composite region":"Geometric construction",
   figureNumber:"1",mode:"schematic",unit:"",sourceKind:"theoretical",sourceCredit:"",
   northAligned:false,showLengths:false,showAngles:false,showBearings:false,
-  showGrid:false,showCoordinates:false,filled:false,note:"",edited:false,
+  showGrid:false,showCoordinates:false,showDecomposition:false,showSensitivity:false,
+  sensitivityStep:"",filled:false,note:"",edited:false,provenance:null,
   vertices:templates[k].map(v=>({...v}))};
 }
 export function normalizeGeometryDraft(raw){
  const r=object(raw)?raw:{},d=newGeometryDraft(r.kind);
- for(const key of ["title","figureNumber","unit","sourceCredit","note"]){
+ for(const key of ["title","figureNumber","unit","sourceCredit","note","sensitivityStep"]){
   if(typeof r[key]==="string")d[key]=text(r[key],["sourceCredit","note"].includes(key)?800:180);
  }
  if(["schematic","coordinate"].includes(r.mode))d.mode=r.mode;
  if(["primary","secondary","theoretical","unsure"].includes(r.sourceKind))d.sourceKind=r.sourceKind;
  for(const key of ["northAligned","showLengths","showAngles","showBearings","showGrid",
-  "showCoordinates","filled","edited"])if(typeof r[key]==="boolean")d[key]=r[key];
+  "showCoordinates","showDecomposition","showSensitivity","filled","edited"])if(typeof r[key]==="boolean")d[key]=r[key];
  const supplied=Array.isArray(r.vertices)?r.vertices:[];
  if(supplied.length>=3&&supplied.length<=MAX_GEOMETRY_VERTICES){
   d.vertices=supplied.map((v,i)=>({
    id:/^v-[a-z0-9-]{1,38}$/i.test(v?.id)?v.id:"v-"+i,
    label:text(v?.label,44),x:valid(v?.x)?v.x:null,y:valid(v?.y)?v.y:null,
-   edgeLabel:text(v?.edgeLabel,100),angleLabel:text(v?.angleLabel,100)
+   edgeLabel:text(v?.edgeLabel,100),angleLabel:text(v?.angleLabel,100),
+   edgeConstraint:["free","horizontal","vertical"].includes(v?.edgeConstraint)?v.edgeConstraint:"free",
+   rightAngle:v?.rightAngle===true,locked:v?.locked===true
   }));
  }
  if(d.mode!=="coordinate")d.showBearings=false;
+ if(object(r.provenance)&&r.provenance.kind==="image-tracer"){
+  const p=r.provenance;
+  d.provenance={kind:"image-tracer",traceFigureId:text(p.traceFigureId,65),
+   traceTitle:text(p.traceTitle,160),imageName:text(p.imageName,160),
+   sourceKind:["primary","secondary"].includes(p.sourceKind)?p.sourceKind:"unsure",
+   sourceCredit:text(p.sourceCredit,500),perspective:text(p.perspective,30),
+   displayPrecision:text(p.displayPrecision,12),knownLength:text(p.knownLength,80),
+   referencePixels:valid(p.referencePixels)?p.referencePixels:null,
+   unitsPerPixel:valid(p.unitsPerPixel)?p.unitsPerPixel:null,
+   limitations:text(p.limitations,500),pixelPoints:(Array.isArray(p.pixelPoints)?p.pixelPoints:[])
+     .slice(0,MAX_GEOMETRY_VERTICES).filter(x=>valid(x?.x)&&valid(x?.y))
+     .map(x=>({x:x.x,y:x.y}))};
+ }
  return d;
 }
-export const newGeometryStudio=()=>({open:false,draft:newGeometryDraft(),figures:[],activeId:""});
+export const newGeometryStudio=()=>({open:false,zoomed:false,draft:newGeometryDraft(),figures:[],activeId:""});
 export function normalizeGeometryStudio(raw){
  const r=object(raw)?raw:{};
  const figures=(Array.isArray(r.figures)?r.figures:[]).slice(0,MAX_GEOMETRY_FIGURES)
   .filter(object).map(f=>({id:text(f.id,65),entryId:text(f.entryId,80),
    savedAt:text(f.savedAt,42),draft:normalizeGeometryDraft(f.draft)}))
   .filter(f=>/^geometry-[a-z0-9-]+$/i.test(f.id));
- return {open:r.open===true,draft:normalizeGeometryDraft(r.draft),figures,
+ return {open:r.open===true,zoomed:r.zoomed===true,draft:normalizeGeometryDraft(r.draft),figures,
   activeId:figures.some(f=>f.id===r.activeId)?r.activeId:""};
 }
 export function geometryAnalysis(raw){
@@ -103,6 +125,29 @@ export function geometryAnalysis(raw){
  if(d.sourceKind==="secondary"&&!d.sourceCredit.trim())
   issues.push("Give the source of secondary measurements or the underlying drawing.");
  if(d.sourceKind==="unsure")notes.push("Explain whether this construction uses hypothetical, measured or published values.");
+ for(let i=0;i<n;i++){
+  const p=points[i],next=points[(i+1)%n],previous=points[(i+n-1)%n];
+  if(!valid(p.x)||!valid(p.y)||!valid(next.x)||!valid(next.y)||!valid(previous.x)||!valid(previous.y))continue;
+  const tol=1e-7*Math.max(1,Math.abs(p.x),Math.abs(p.y),Math.abs(next.x),Math.abs(next.y));
+  if(p.edgeConstraint==="horizontal"&&Math.abs(next.y-p.y)>tol)
+   issues.push("Side "+p.label+" to "+next.label+" is marked horizontal but its endpoint heights differ.");
+  if(p.edgeConstraint==="vertical"&&Math.abs(next.x-p.x)>tol)
+   issues.push("Side "+p.label+" to "+next.label+" is marked vertical but its endpoint x-values differ.");
+  if(p.rightAngle){
+   const ux=previous.x-p.x,uy=previous.y-p.y,vx=next.x-p.x,vy=next.y-p.y;
+   const lengthProduct=Math.hypot(ux,uy)*Math.hypot(vx,vy);
+   if(lengthProduct<=1e-9||Math.abs(ux*vx+uy*vy)/lengthProduct>0.0001||
+    (angles.length&&Math.abs(angles[i]-90)>0.05))
+    issues.push("Angle at "+p.label+" is marked as a right angle but its sides are not perpendicular.");
+  }
+ }
+ if(d.showSensitivity&&d.mode==="coordinate"){
+  const delta=Number(d.sensitivityStep);
+  if(!d.sensitivityStep.trim()||!Number.isFinite(delta)||delta<=0||delta>1e4)
+   issues.push("Enter a positive coordinate perturbation for the sensitivity check.");
+ }
+ if(d.provenance?.kind==="image-tracer")
+  notes.push("Imported coordinates are a snapshot of Image Tracer. Later edits or recalibrations in the original image do not automatically update this construction.");
  if(d.vertices.some(v=>v.edgeLabel||v.angleLabel)&&d.mode==="coordinate")
   notes.push("Student-entered side and angle annotations are not verified against coordinate calculations.");
  if(d.mode==="schematic"&&(d.showLengths||d.showAngles))
@@ -112,7 +157,7 @@ export function geometryAnalysis(raw){
 }
 export const geometrySignature=d=>JSON.stringify([
  d.kind,d.mode,d.unit,d.vertices,d.northAligned,d.showLengths,d.showAngles,d.showBearings,
- d.showCoordinates,d.sourceKind,d.sourceCredit
+ d.showCoordinates,d.showDecomposition,d.showSensitivity,d.sensitivityStep,d.sourceKind,d.sourceCredit,d.provenance
 ]);
 export function saveGeometryFigure(studio,entryId=""){
  const q=geometryAnalysis(studio?.draft);

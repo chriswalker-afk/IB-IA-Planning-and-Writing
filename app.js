@@ -70,9 +70,10 @@ import {voronoiPreviewHtml,voronoiResultHtml,voronoiQualityHtml,voronoiOutputHtm
 import {setVoronoiField,setVoronoiSite,addVoronoiSite,removeVoronoiSite,clearVoronoiMap,useVoronoiMap,beginVoronoi,loadVoronoi,saveVoronoiDraft,saveAndLinkVoronoi} from "./src/diagrams/voronoi-actions.js";
 import {exportVoronoi} from "./src/diagrams/voronoi-export.js";
 import {geometryAnalysis} from "./src/diagrams/geometry-core.js";
+import {snapGeometryEdge,snapGeometryRightAngle,moveGeometryVertex} from "./src/diagrams/geometry-advanced.js";
 import {renderGeometrySvg,geometryLayout} from "./src/diagrams/geometry-render.js";
 import {geometryPreviewHtml,geometryQualityHtml,geometryOutputHtml} from "./src/diagrams/geometry-view.js";
-import {setGeometryField,setGeometryVertex,geometryTemplate,geometryAddVertex,geometryRemoveVertex,geometryFresh,loadGeometry,saveGeometryDraft,saveAndLinkGeometry} from "./src/diagrams/geometry-actions.js";
+import {setGeometryField,setGeometryVertex,geometryTemplate,geometryAddVertex,geometryRemoveVertex,geometryFresh,loadGeometry,saveGeometryDraft,saveAndLinkGeometry,importGeometryFromTrace} from "./src/diagrams/geometry-actions.js";
 import {exportGeometry} from "./src/diagrams/geometry-export.js";
 import {displayVoronoiBounds,coordinateFromCanvas,canvasPosition,voronoiFrame,recordVoronoiHistory,applyVoronoiFrame,undoVoronoi,redoVoronoi,freezeVoronoiWindow,fitVoronoiSites,setVoronoiTool,selectVoronoiSite,moveVoronoiSite,proposeVoronoiComparison,showVoronoiComparison,finishVoronoiComparison,selectNearestBisector} from "./src/diagrams/voronoi-interactions.js";
 import {renderRepresentationHub,renderRepresentationSwitcher,representationFocusActive} from "./src/diagrams/representation-hub.js";
@@ -593,7 +594,11 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   }
   function refreshGeometryPreview(){
     const root=main.querySelector?.("[data-geometry-studio]");if(!root||!state.geometryStudio?.open)return;
-    const preview=root.querySelector("[data-geometry-preview]");if(preview)preview.outerHTML=geometryPreviewHtml(state.geometryStudio);
+    const preview=root.querySelector("[data-geometry-preview]");if(preview){
+      const left=preview.scrollLeft;
+      preview.outerHTML=geometryPreviewHtml(state.geometryStudio);
+      root.querySelector("[data-geometry-preview]").scrollLeft=left;
+    }
     const quality=root.querySelector("[data-geometry-quality]");if(quality)quality.outerHTML=geometryQualityHtml(state.geometryStudio,icon,e);
     const output=root.querySelector(".geometry-output");if(output)output.outerHTML=geometryOutputHtml(state.geometryStudio,icon);
     refreshPresentation("geometry");
@@ -892,6 +897,10 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     filterMathOptions();
     document.querySelectorAll("[data-nav]").forEach(b=>b.classList.toggle("active",b.dataset.nav===state.route));
     refreshPathCount();
+    if(state.geometryStudio?.zoomed){
+      const zoomPreview=main.querySelector("[data-geometry-preview]");
+      if(zoomPreview)zoomPreview.scrollLeft=(zoomPreview.scrollWidth-zoomPreview.clientWidth)/2;
+    }
     if(opts.top){window.scrollTo({top:0,behavior:"auto"});main.focus({preventScroll:true})}
     // Show only at the first entry to C00; never for example previews or other stages.
     if(state.ui.writingIntroSeen===true&&!state.ui.writingIntroOpen&&shouldShowWriterGuideWelcome(state,preview.active)&&layer.hidden&&!document.querySelector("dialog[open]"))
@@ -1746,6 +1755,18 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       }
       case "geometry-open":navigateGeometry();break;
       case "geometry-close":state.geometryStudio.open=false;save();render();break;
+      case "geometry-preview-fit":case "geometry-preview-detail":{
+        const zoomed=action==="geometry-preview-detail";
+        state.geometryStudio.zoomed=zoomed;save();
+        const root=main.querySelector("[data-geometry-studio]"),preview=root?.querySelector("[data-geometry-preview]");
+        if(preview){
+          preview.classList.toggle("geometry-preview-detail",zoomed);
+          preview.scrollLeft=zoomed?(preview.scrollWidth-preview.clientWidth)/2:0;
+        }
+        root?.querySelectorAll("[data-action=geometry-preview-fit],[data-action=geometry-preview-detail]")
+          .forEach(button=>button.setAttribute("aria-pressed",String(button.dataset.action===action)));
+        break;
+      }
       case "geometry-template":{
         if(state.geometryStudio.draft.edited&&!window.confirm("Switch template? Save your current figure first if needed."))break;
         geometryTemplate(state.geometryStudio,el.dataset.geometryTemplate);save();render();break;
@@ -1765,6 +1786,24 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       case "geometry-load":{
         if(!loadGeometry(state.geometryStudio,el.dataset.geometryId)){toast("Saved figure not found.");break;}
         save();render();break;
+      }
+      case "geometry-align-edge":case "geometry-snap-right":{
+        const index=Number(el.dataset.geometryIndex);
+        const outcome=action==="geometry-align-edge"?
+         snapGeometryEdge(state.geometryStudio,index):snapGeometryRightAngle(state.geometryStudio,index);
+        if(!outcome.ok){toast("Cannot apply this construction",outcome.error);break;}
+        save();render();toast("Construction updated","Recheck any related side lengths, angles and calculations.");
+        break;
+      }
+      case "geometry-import-trace":{
+        if(state.geometryStudio.draft.edited&&!window.confirm(
+         "Replace the current unsaved construction with a new outline from Image Tracer? Saved figures and the original tracing will remain unchanged."))break;
+        const result=importGeometryFromTrace(state,el.dataset.geometryTraceId||"");
+        if(!result.ok){toast("Outline could not be transferred",result.error);break;}
+        activateRepresentationTool(state,"geometry");save();render();
+        toast("Traced coordinates transferred","A new independent construction was created from "+
+         result.points+" points. The original photograph and calibration remain in Image Tracer.");
+        break;
       }
       case "geometry-save":{
         const result=saveGeometryDraft(state);if(!result.ok){toast(result.error);break;}
@@ -2588,7 +2627,8 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     const pt=svgPoint.matrixTransform(drag.inverse),coord=drag.layout.from(pt.x,pt.y);
     if(!Number.isFinite(coord.x)||!Number.isFinite(coord.y))return;
     const p=state.geometryStudio.draft.vertices[drag.index];if(!p)return;
-    p.x=Math.round(coord.x*100)/100;p.y=Math.round(coord.y*100)/100;state.geometryStudio.draft.edited=true;
+    if(!moveGeometryVertex(state.geometryStudio,drag.index,
+      Math.round(coord.x*100)/100,Math.round(coord.y*100)/100))return;
     refreshGeometryPreview();
   });
   document.addEventListener("pointerup",evt=>{
@@ -2611,14 +2651,15 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     const target=evt.target?.closest?.("[data-geometry-vertex-index]");
     if(!target||!state.geometryStudio?.open||!["ArrowLeft","ArrowRight","ArrowUp","ArrowDown"].includes(evt.key))return;
     const index=Number(target.dataset.geometryVertexIndex),p=state.geometryStudio.draft.vertices[index];
-    if(!p)return;evt.preventDefault();geometryPointer=null;
+    if(!p||p.locked)return;evt.preventDefault();geometryPointer=null;
     const step=evt.shiftKey?1:.1;
     if(evt.key==="ArrowLeft")p.x-=step;
     if(evt.key==="ArrowRight")p.x+=step;
     if(evt.key==="ArrowUp")p.y+=step;
     if(evt.key==="ArrowDown")p.y-=step;
-    p.x=Number(p.x.toFixed(3));p.y=Number(p.y.toFixed(3));
-    state.geometryStudio.draft.edited=true;save();render();
+    if(!moveGeometryVertex(state.geometryStudio,index,
+       Number(p.x.toFixed(3)),Number(p.y.toFixed(3))))return;
+    save();render();
     main.querySelector?.('[data-geometry-vertex-index="'+index+'"]')?.focus?.();
   });
   document.addEventListener("pointerdown",evt=>{
@@ -2788,8 +2829,20 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       return;
     }
     if(target.dataset.geometryVertex!==undefined){
-      if(setGeometryVertex(state.geometryStudio,Number(target.dataset.geometryVertex),target.dataset.geometryVertexKey,target.value)){save();refreshGeometryPreview();}
-      return;
+      const index=Number(target.dataset.geometryVertex),key=target.dataset.geometryVertexKey,
+        value=target.type==="checkbox"?target.checked:target.value;
+      if(setGeometryVertex(state.geometryStudio,index,key,value)){
+        save();refreshGeometryPreview();
+        if(["edgeConstraint","rightAngle","locked"].includes(key)){
+         const controls=target.closest(".geometry-vertex"),point=state.geometryStudio.draft.vertices[index];
+         const align=controls?.querySelector('[data-action="geometry-align-edge"]');
+         const square=controls?.querySelector('[data-action="geometry-snap-right"]');
+         if(align)align.disabled=point.edgeConstraint==="free";
+         if(square)square.disabled=!point.rightAngle;
+         if(key==="locked")controls?.querySelectorAll('[data-geometry-vertex-key="x"],[data-geometry-vertex-key="y"]')
+          .forEach(input=>input.disabled=point.locked);
+        }
+      }return;
     }
     if(target.dataset.geometryField!==undefined){
       if(setGeometryField(state.geometryStudio,target.dataset.geometryField,target.type==="checkbox"?target.checked:target.value)){
@@ -2929,15 +2982,12 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   document.addEventListener("change",evt=>{
     const target=evt.target;
     if(target.dataset.geometryVertex!==undefined){
-      const point=state.geometryStudio.draft.vertices[Number(target.dataset.geometryVertex)];
-      const key=target.dataset.geometryVertexKey,prior=point?.[key];
-      // Input events already persisted the value and refreshed the preview.
-      // Replacing the output on blur detaches Save between mouse-down and
-      // mouse-up, swallowing the click before any save action can run.
-      if(String(prior??"")===target.value)return;
-      if(setGeometryVertex(state.geometryStudio,Number(target.dataset.geometryVertex),key,target.value)){
-        save();refreshGeometryPreview();
-      }
+      const index=Number(target.dataset.geometryVertex),key=target.dataset.geometryVertexKey;
+      const point=state.geometryStudio.draft.vertices[index],value=target.type==="checkbox"?target.checked:target.value;
+      // Input has already saved this selection; do not detach the
+      // editor between a button mouse-down and click.
+      if(point&&String(point[key]??"")===String(value))return;
+      if(setGeometryVertex(state.geometryStudio,index,key,value)){save();refreshGeometryPreview();}
       return;
     }
     if(target.dataset.geometryField!==undefined){

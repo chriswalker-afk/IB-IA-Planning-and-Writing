@@ -15,6 +15,10 @@
 .geometry-buttons{display:flex;flex-wrap:wrap;gap:7px;margin:9px 0}
 .geometry-toggle{display:flex;align-items:center;gap:8px;margin:8px 0;font-size:.88rem}
 .geometry-main .geometry-preview{background:#fff;border:1px solid #d9e4ea;border-radius:12px;overflow:hidden}
+.geometry-preview-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.geometry-preview-header h3{margin:10px 0}
+.geometry-preview-zoom{display:none;flex-wrap:wrap;gap:6px}
+.geometry-preview-zoom .btn[aria-pressed="true"]{background:#e7f5f1;border-color:#78b3a5;color:#145d50}
 .geometry-main svg{display:block;width:100%;height:auto;max-height:68vh}
 .geometry-drag-note,.geometry-note{font-size:.83rem;color:var(--text-muted,#566c76);line-height:1.5}
 .geometry-quality{border-top:1px solid #dfebf0;margin:18px 0;padding:12px 0}
@@ -24,7 +28,7 @@
 .geometry-entry svg,.show-first-geometry-figure svg{display:block;width:100%;height:auto;background:#fff;max-width:900px}
 .geometry-studio [data-geometry-vertex-index]:focus-visible{stroke:#e89c32;stroke-width:4;outline:none}
 @media(max-width:900px){.geometry-workspace{grid-template-columns:1fr}.geometry-controls{position:static;max-height:none;overflow:visible}.geometry-main svg{max-height:none}.geometry-vertices{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:560px){.geometry-vertices{grid-template-columns:1fr}.geometry-controls,.geometry-main{padding:12px}.geometry-buttons .btn{font-size:.8rem}.geometry-main .geometry-preview{overflow-x:auto;overscroll-behavior-inline:contain;-webkit-overflow-scrolling:touch}.geometry-main .geometry-preview svg{width:860px;max-width:none;min-width:860px;height:auto;max-height:none}}
+@media(max-width:560px){.geometry-vertices{grid-template-columns:1fr}.geometry-controls,.geometry-main{padding:12px}.geometry-buttons .btn{font-size:.8rem}.geometry-preview-zoom{display:flex}.geometry-preview-zoom .btn{min-height:34px;padding:5px 9px;font-size:.78rem}.geometry-main .geometry-preview{overflow-x:auto;overscroll-behavior-inline:contain;-webkit-overflow-scrolling:touch}.geometry-main .geometry-preview svg{width:100%;min-width:0;max-width:100%;height:auto;max-height:none}.geometry-main .geometry-preview.geometry-preview-detail svg{width:860px;min-width:860px;max-width:none}}
 
 
 /* Extra annotation editors remain collapsed so they do not overwhelm the
@@ -38,3 +42,24 @@
 .geometry-preview [data-geometry-vertex-index]{touch-action:none;cursor:grab}
 .geometry-preview [data-geometry-vertex-index]:active{cursor:grabbing}
 .geometry-studio .geometry-output button:disabled{opacity:.52;cursor:not-allowed}
+
+
+/* Pass 3: advanced construction tools remain optional and collapsed by default. */
+.geometry-vertex-constraints,.geometry-import{min-width:0;border-top:1px solid #d8e3e8;padding-top:9px;margin-top:7px}
+.geometry-vertex-constraints{grid-column:1/-1}
+.geometry-vertex-constraints>summary,.geometry-import>summary{cursor:pointer;color:#2e637e;font-size:.85rem;font-weight:700;line-height:1.45}
+.geometry-vertex-constraints>label{display:flex;align-items:center;flex-wrap:wrap;gap:7px;margin:10px 0;font-size:.82rem}
+.geometry-vertex-constraints>label select{flex:1 1 112px;max-width:180px}
+.geometry-vertex-constraints input[type=checkbox]{width:auto;min-width:auto;flex-shrink:0}
+.geometry-vertex-constraints button{margin:2px 6px 7px 0}
+.geometry-vertex-constraints p,.geometry-import p,.geometry-sensitivity-options p{color:var(--text-muted,#566c76);font-size:.81rem;line-height:1.5;margin:7px 0}
+.geometry-import{background:#f4f8fb;border:1px solid #cddfe9;border-radius:9px;padding:12px;margin:10px 0 14px}
+.geometry-import-choice{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:9px;border-top:1px solid #d5e6ec;padding:8px 0}
+.geometry-import-choice span{font-size:.82rem;overflow-wrap:anywhere;flex:1 1 125px}
+.geometry-quality .geometry-provenance{padding:10px;background:#f2f7f8;border-left:3px solid #427c91;border-radius:5px}
+.geometry-quality .geometry-caution{color:#85532a}
+.geometry-sensitivity-options{margin:8px 0;padding:8px 10px;border:1px dashed #cfdde4;border-radius:9px}
+.geometry-vertex input:disabled{background:#eff2f5;color:#617580}
+.trace-to-geometry{margin:13px 0 0;padding:12px;border-radius:10px;background:#f2f8f9;border:1px solid #cae0e9}
+.trace-to-geometry p{font-size:.86rem;line-height:1.5;margin:0 0 8px}
+@media(max-width:560px){.geometry-import-choice{align-items:stretch}.geometry-import-choice .btn{width:100%}}

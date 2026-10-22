@@ -72,7 +72,11 @@ export function traceOutputHtml(tracer,icon,e){
   '<button type="button" class="btn btn-secondary btn-sm" data-action="trace-copy"'+disabled+'>'+icon("copy")+' Copy PNG</button>'+
   '<button type="button" class="btn btn-secondary btn-sm" data-action="trace-png"'+disabled+'>'+icon("download")+' PNG</button>'+
   '<button type="button" class="btn btn-secondary btn-sm" data-action="trace-svg"'+disabled+'>'+icon("download")+' SVG</button>'+
-  '<button type="button" class="btn btn-secondary btn-sm" data-action="trace-csv"'+disabled+'>'+icon("table")+' Coordinates CSV</button></div>';
+  '<button type="button" class="btn btn-secondary btn-sm" data-action="trace-csv"'+disabled+'>'+icon("table")+' Coordinates CSV</button></div>'+
+  (q.ready&&q.draft.closeShape&&q.draft.perspective==="front-on"&&q.draft.points.length>=3&&q.draft.points.length<=8?
+   '<div class="trace-to-geometry"><p><strong>Next mathematical step:</strong> Reuse these calibrated outline coordinates in Geometry Studio to label dimensions, construct a composite shape or test sensitivity. The original traced photograph is preserved.</p>'+
+   '<button type="button" class="btn btn-secondary" data-action="geometry-import-trace">'+icon("ruler")+' Continue in Geometry Studio</button></div>':
+   q.ready?'<p class="trace-fine-print">Geometry Studio transfer is available for a closed, front-on outline of 3–8 traced points. This does not change your current tracing.</p>':"");
 }
 export function tracePreviewHtml(tracer,icon,e){
  const d=tracer.draft,q=imageTraceChecks(d),c=q.calibration;

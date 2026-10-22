@@ -1,5 +1,6 @@
 /** Print-quality SVG for Geometry & Measurement Studio. No automatic claims of scale in schematic mode. */
 import {geometryAnalysis} from "./geometry-core.js";
+import {orthogonalDecomposition} from "./geometry-advanced.js";
 import {svgDiagramText,diagramSafeExcerpt,diagramWrapLines} from "./diagram-notation.js";
 const W=1080,H=730;
 const num=n=>Number(n).toFixed(2).replace(/\.?0+$/,"");
@@ -55,6 +56,18 @@ export function renderGeometrySvg(raw,{interactive=false}={}){
   out.push('</svg>');return out.join("");
  }
  out.push('<path d="'+path+'" fill="'+(d.filled?teal:"none")+'" stroke="'+blue+'" stroke-width="3.5" stroke-linejoin="round"/>');
+ if(d.mode==="coordinate"&&d.showDecomposition&&a.ready){
+  const partition=orthogonalDecomposition(d);
+  if(partition.ok){
+   partition.rectangles.forEach((r,i)=>{
+    const x=L.x(r.x0),y=L.y(r.y1),width=(r.x1-r.x0)*L.scale,height=(r.y1-r.y0)*L.scale;
+    out.push('<rect x="'+num(x)+'" y="'+num(y)+'" width="'+num(width)+'" height="'+num(height)+
+      '" fill="none" stroke="#aa7b3b" stroke-width="1.8" stroke-dasharray="9 6"/>');
+    out.push(text('R'+(i+1)+': '+fmt(r.area)+(d.unit?' '+d.unit+'²':""),
+     x+width/2,y+height/2,'font-family="Arial,sans-serif" font-size="12" fill="#805a2b" text-anchor="middle" stroke="#fff" stroke-width="3" paint-order="stroke"',{width:180}));
+   });
+  }
+ }
  const centroid={x:P.reduce((v,p)=>v+p.sx,0)/P.length,y:P.reduce((v,p)=>v+p.sy,0)/P.length};
  for(let i=0;i<P.length;i++){
   const p=P[i],q=P[(i+1)%P.length],r=P[(i+P.length-1)%P.length];
@@ -79,11 +92,25 @@ export function renderGeometrySvg(raw,{interactive=false}={}){
    out.push(text(angleLabel,p.sx+alignX*41*placement,p.sy+alignY*41*placement,
     'font-family="Arial,sans-serif" font-size="13" text-anchor="middle" fill="#855137" stroke="#fff" stroke-width="3" paint-order="stroke"',{width:120}));
   }
-  if(interactive)out.push('<g tabindex="0" role="button" aria-label="Move vertex '+(i+1)+
+  if(p.edgeConstraint!=="free"&&a.ready){
+    out.push(text(p.edgeConstraint==="horizontal"?"horizontal":"vertical",
+      mx+nx*sign*37,my+ny*sign*37,
+      'font-family="Arial,sans-serif" font-size="10" text-anchor="middle" fill="#765637"',{width:135}));
+  }
+  if(p.rightAngle&&a.ready&&Math.abs(a.angles[i]-90)<0.05){
+    const ax=r.sx-p.sx,ay=r.sy-p.sy,bx=q.sx-p.sx,by=q.sy-p.sy;
+    const al=Math.max(1,Math.hypot(ax,ay)),bl=Math.max(1,Math.hypot(bx,by)),size=17;
+    const ux=ax/al*size,uy=ay/al*size,vx=bx/bl*size,vy=by/bl*size;
+    out.push('<path d="M'+num(p.sx+ux)+' '+num(p.sy+uy)+' L'+num(p.sx+ux+vx)+' '+num(p.sy+uy+vy)+
+     ' L'+num(p.sx+vx)+' '+num(p.sy+vy)+'" fill="none" stroke="#89602a" stroke-width="2"/>');
+  }
+  if(interactive&&!p.locked)out.push('<g tabindex="0" role="button" aria-label="Move vertex '+(i+1)+
    ' by dragging or pressing an arrow key" data-geometry-vertex-index="'+i+'" style="cursor:grab;touch-action:none">'+
    '<circle cx="'+num(p.sx)+'" cy="'+num(p.sy)+'" r="23" fill="transparent" stroke="none" pointer-events="all"/>');
   out.push('<circle cx="'+num(p.sx)+'" cy="'+num(p.sy)+'" r="6.5" fill="'+blue+'" stroke="#fff" stroke-width="2" pointer-events="none"/>');
-  if(interactive)out.push('</g>');
+  if(interactive&&!p.locked)out.push('</g>');
+  if(p.locked)out.push('<circle cx="'+num(p.sx)+'" cy="'+num(p.sy)+
+    '" r="11" stroke="#9c612f" stroke-width="2" fill="none" stroke-dasharray="3 2" pointer-events="none"/>');
   const radialX=p.sx-centroid.x,radialY=p.sy-centroid.y,mag=Math.max(1,Math.hypot(radialX,radialY));
   out.push(text(p.label||"?",p.sx+radialX/mag*22,p.sy+radialY/mag*22-2,
    'font-family="Arial,sans-serif" font-size="18" font-weight="700" text-anchor="middle" fill="'+ink+'" stroke="#fff" stroke-width="4" paint-order="stroke"',{width:100}));
@@ -103,7 +130,10 @@ export function renderGeometrySvg(raw,{interactive=false}={}){
   'font-family="Arial,sans-serif" font-size="12" fill="'+grey+'" text-anchor="middle"',{width:900}));
  diagramWrapLines(d.note,120).slice(0,2).forEach((line,i)=>out.push(text(line,W/2,654+i*20,
   'font-family="Arial,sans-serif" font-size="12" fill="'+grey+'" text-anchor="middle"',{width:985})));
- const source=d.sourceKind==="theoretical"?"Theoretical/schematic construction; not observations":
+ const source=d.provenance?.kind==="image-tracer"?
+  "Image Tracer snapshot: "+(d.provenance.traceTitle||d.provenance.imageName||"traced outline")+
+   " · original "+(d.sourceCredit||d.provenance.sourceKind):
+  d.sourceKind==="theoretical"?"Theoretical/schematic construction; not observations":
   d.sourceKind==="primary"?"Based on student-entered measurements":d.sourceKind==="secondary"?
   "Source: "+d.sourceCredit:"Confirm the source or assumptions before use";
  out.push(text(diagramSafeExcerpt(source,125),W/2,704,

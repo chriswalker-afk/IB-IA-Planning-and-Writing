@@ -9,6 +9,7 @@ import {statMethodNote} from "../diagrams/stat-reading-guide.js";
 import {renderTableSvg} from "../diagrams/table-studio-render.js";
 import {renderVoronoiSvg} from "../diagrams/voronoi-render.js";
 import {renderGeometrySvg} from "../diagrams/geometry-render.js";
+import {orthogonalDecomposition,geometrySensitivity} from "../diagrams/geometry-advanced.js";
 import {representationTool} from "../diagrams/representation-registry.js";
 
 const trim=x=>String(x??"").trim();
@@ -69,6 +70,35 @@ const specs=[
    row("Scale",d.mode==="coordinate"?"Coordinate-based":"Schematic; not necessarily to scale"),
    row("Student-entered vertices and labels",(d.vertices||[]).map(p=>p.label+" ("+p.x+", "+p.y+")"+
     (p.edgeLabel?" | side: "+p.edgeLabel:"")+(p.angleLabel?" | angle: "+p.angleLabel:"")).join("\n")),
+   row("Construction requirements",(d.vertices||[]).map((p,i)=>[
+     p.edgeConstraint&&p.edgeConstraint!=="free"?"Side "+p.label+": "+p.edgeConstraint:"",
+     p.rightAngle?"Angle at "+p.label+": 90 degrees required":"",
+     p.locked?"Point "+p.label+": coordinates locked":""
+    ].filter(Boolean).join("; ")).filter(Boolean).join("\n")),
+   row("Rectangular decomposition",d.showDecomposition?(()=>{
+    const result=orthogonalDecomposition(d);
+    return result.ok?result.rectangles.map((r,i)=>
+      "R"+(i+1)+": "+r.width+" x "+r.height+" = "+r.area).join("; ")+"; total="+result.area:
+     result.reason;
+   })():""),
+   row("Local sensitivity check",d.showSensitivity?(()=>{
+    const result=geometrySensitivity(d);
+    return result.ok?"One-coordinate-at-a-time ±"+result.delta+
+     "; max observed area change="+result.maxAreaChange+
+     "; max observed perimeter change="+result.maxPerimeterChange+
+     ". Not a joint uncertainty bound or confidence interval.":result.reason;
+   })():""),
+   row("Image Tracer provenance",d.provenance?.kind==="image-tracer"?
+    [
+     "Original figure: "+(d.provenance.traceFigureId||"unsaved tracer draft"),
+     "Photograph: "+d.provenance.imageName,"Perspective: "+d.provenance.perspective,
+     "Known reference: "+d.provenance.knownLength+" "+d.unit,
+     "Reference pixels: "+d.provenance.referencePixels,
+     "Unit per pixel: "+d.provenance.unitsPerPixel,
+     "Display decimals: "+d.provenance.displayPrecision,
+     "Original limitations: "+d.provenance.limitations,
+     "Transferred pixel vertices: "+(d.provenance.pixelPoints||[]).map(p=>"("+p.x+", "+p.y+")").join(", ")
+    ].filter(Boolean).join("\n"):""),
    row("Unit",d.unit),row("North orientation",d.northAligned?"x east / y north":""),
    row("Source type",d.sourceKind),row("Original source",d.sourceCredit),row("Limitations",d.note)]}
 ];
