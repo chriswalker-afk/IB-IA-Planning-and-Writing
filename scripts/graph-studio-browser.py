@@ -62,8 +62,18 @@ def data_graph(page,width):
   page.locator('[data-graph-field="'+key+'"]').fill(value)
  assert page.locator('[data-graph-preview] [data-graph-axis-break="x"]').count()==1
  assert page.locator('[data-graph-preview] [data-graph-axis-break="y"]').count()==1
- with page.expect_download() as broken:
-  page.locator('[data-action="graph-svg"]').click()
+ assert page.locator('[data-action="graph-svg"]').is_enabled(),page.locator('[data-graph-quality]').inner_text()
+ try:
+  with page.expect_download(timeout=5000) as broken:
+   page.locator('[data-action="graph-svg"]').click()
+ except Exception:
+  print("AXIS SVG EXPORT DIAGNOSTIC:",json.dumps({
+   "toast":page.locator("#toast").inner_text(),
+   "quality":page.locator('[data-graph-quality]').inner_text(),
+   "draftBounds":{k:saved(page)["graphStudio"]["draft"][k] for k in ["xMin","xMax","yMin","yMax"]},
+   "previewBreaks":page.locator('[data-graph-preview] [data-graph-axis-break]').count()
+  }),flush=True)
+  raise
  broken_svg=Path(broken.value.path()).read_text(encoding="utf-8")
  assert 'data-graph-axis-break="x"' in broken_svg
  assert 'data-graph-axis-break="y"' in broken_svg
