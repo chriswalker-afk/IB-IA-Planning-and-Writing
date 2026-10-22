@@ -2711,7 +2711,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   let geometryPointer=null;
   document.addEventListener("pointerdown",evt=>{
     if(!state.geometryStudio?.open||state.completion.current!=="C31"||evt.button>0)return;
-    const point=evt.target.closest?.("[data-geometry-vertex-index]"),
+    const point=evt.target.closest?.("[data-geometry-vertex-index],[data-geometry-aux-index]"),
       svg=point?.closest?.("[data-geometry-canvas]");
     if(!point||!svg){
       // A pointerup can be lost when a draggable SVG is refreshed. Never
@@ -2719,10 +2719,11 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       if(geometryPointer){geometryPointer=null;save();}
       return;
     }
-    const index=Number(point.dataset.geometryVertexIndex),transform=svg.getScreenCTM?.();
+    const aux=point.dataset.geometryAuxIndex!==undefined;
+    const index=Number(aux?point.dataset.geometryAuxIndex:point.dataset.geometryVertexIndex),transform=svg.getScreenCTM?.();
     if(!transform||!Number.isInteger(index))return;
     let inverse;try{inverse=transform.inverse();}catch{return;}
-    geometryPointer={id:evt.pointerId,svg,inverse,index,layout:geometryLayout(state.geometryStudio.draft)};
+    geometryPointer={id:evt.pointerId,svg,inverse,index,aux,layout:geometryLayout(state.geometryStudio.draft)};
     evt.preventDefault();
   });
   document.addEventListener("pointermove",evt=>{
@@ -2735,8 +2736,9 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     const svgPoint=drag.svg.createSVGPoint();svgPoint.x=evt.clientX;svgPoint.y=evt.clientY;
     const pt=svgPoint.matrixTransform(drag.inverse),coord=drag.layout.from(pt.x,pt.y);
     if(!Number.isFinite(coord.x)||!Number.isFinite(coord.y))return;
-    const p=state.geometryStudio.draft.vertices[drag.index];if(!p)return;
-    if(!moveGeometryVertex(state.geometryStudio,drag.index,
+    const p=drag.aux?state.geometryStudio.draft.auxPoints[drag.index]:
+     state.geometryStudio.draft.vertices[drag.index];if(!p)return;
+    if(!(drag.aux?moveGeometryAuxPoint:moveGeometryVertex)(state.geometryStudio,drag.index,
       Math.round(coord.x*100)/100,Math.round(coord.y*100)/100))return;
     refreshGeometryPreview();
   });
@@ -2748,28 +2750,33 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     // pointerdown and click, silently swallowing the student's Save action.
     const root=main.querySelector?.("[data-geometry-studio]");
     for(const axis of ["x","y"]){
-      const input=root?.querySelector('[data-geometry-vertex="'+drag.index+'"][data-geometry-vertex-key="'+axis+'"]');
+      const input=root?.querySelector(drag.aux?
+       '[data-geometry-aux="'+drag.index+'"][data-geometry-aux-key="'+axis+'"]':
+       '[data-geometry-vertex="'+drag.index+'"][data-geometry-vertex-key="'+axis+'"]');
       if(input&&document.activeElement!==input)
-        input.value=state.geometryStudio.draft.vertices[drag.index]?.[axis]??"";
+        input.value=(drag.aux?state.geometryStudio.draft.auxPoints[drag.index]:
+         state.geometryStudio.draft.vertices[drag.index])?.[axis]??"";
     }
   });
   document.addEventListener("pointercancel",evt=>{
     if(geometryPointer?.id===evt.pointerId){geometryPointer=null;save();}
   });
   document.addEventListener("keydown",evt=>{
-    const target=evt.target?.closest?.("[data-geometry-vertex-index]");
+    const target=evt.target?.closest?.("[data-geometry-vertex-index],[data-geometry-aux-index]");
     if(!target||!state.geometryStudio?.open||!["ArrowLeft","ArrowRight","ArrowUp","ArrowDown"].includes(evt.key))return;
-    const index=Number(target.dataset.geometryVertexIndex),p=state.geometryStudio.draft.vertices[index];
+    const aux=target.dataset.geometryAuxIndex!==undefined;
+    const index=Number(aux?target.dataset.geometryAuxIndex:target.dataset.geometryVertexIndex);
+    const p=aux?state.geometryStudio.draft.auxPoints[index]:state.geometryStudio.draft.vertices[index];
     if(!p||p.locked)return;evt.preventDefault();geometryPointer=null;
     const step=evt.shiftKey?1:.1;
     if(evt.key==="ArrowLeft")p.x-=step;
     if(evt.key==="ArrowRight")p.x+=step;
     if(evt.key==="ArrowUp")p.y+=step;
     if(evt.key==="ArrowDown")p.y-=step;
-    if(!moveGeometryVertex(state.geometryStudio,index,
+    if(!(aux?moveGeometryAuxPoint:moveGeometryVertex)(state.geometryStudio,index,
        Number(p.x.toFixed(3)),Number(p.y.toFixed(3))))return;
     save();render();
-    main.querySelector?.('[data-geometry-vertex-index="'+index+'"]')?.focus?.();
+    main.querySelector?.('['+(aux?'data-geometry-aux-index':'data-geometry-vertex-index')+'="'+index+'"]')?.focus?.();
   });
   document.addEventListener("pointerdown",evt=>{
     if(!state.voronoiStudio?.open||state.completion.current!=="C31"||state.voronoiStudio.scenario?.showOriginal)return;
