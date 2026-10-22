@@ -36,7 +36,7 @@ test("Pass 3 compiles every original stylesheet in DOM order into one minified f
   }
   assert((await stat(path.join(root,"data/catalog/records.json"))).size>100000,
    "Original source data must remain intact in GitHub");
-  assert((await stat(path.join(root,"data/sheets/nodes.json")).size>0,
+  assert((await stat(path.join(root,"data/sheets/nodes.json"))).size>0,
    "Original source worksheets must remain intact in GitHub");
  }finally{await rm(scratch,{recursive:true,force:true});}
 });
