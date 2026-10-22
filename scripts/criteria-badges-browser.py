@@ -107,16 +107,22 @@ with sync_playwright() as pw:
     # The saved-spark editor may mirror the answer elsewhere on the screen.
     # Ensure the marked response itself contains one editable textarea.
     assert badge.locator('..').locator('textarea[data-bind="planning.fields.beneficiary"]').count()==1
-   elif spot.endswith(':title'):
-    # Some formerly page-level badges now annotate a real writing field.
-    parent=badge.locator('..')
-    css=parent.get_attribute('class') or ''
-    assert css.startswith('criterion-title-row') or css.startswith('criterion-marked-field')
-    if css.startswith('criterion-marked-field'):
-     assert parent.locator('textarea').count()==1
    else:
-    assert badge.locator('..').get_attribute('class')=='criterion-marked-field'
-    assert badge.locator('..').locator('textarea').count()==1
+    # Writing-field badges now live inside a labelled field-help rail, not
+    # directly inside the outer marked wrapper. Walk to the nearest owning
+    # field to test the actual student-facing location, while still accepting
+    # genuinely page-level title badges.
+    marked=badge.locator('xpath=ancestor::*[contains(concat(" ",normalize-space(@class)," ")," criterion-marked-field ")][1]')
+    if marked.count():
+     assert marked.count()==1,spot
+     assert marked.locator('textarea').count()==1,spot
+     rail=marked.locator('.criterion-field-help-rail')
+     assert rail.count()==1,spot
+     assert rail.locator('[data-criterion-badge="'+spot+'"]').count()==1,spot
+     assert marked.locator('.criterion-field-header label').count()==1,spot
+    else:
+     assert spot.endswith(':title'),spot
+     assert badge.locator('..').get_attribute('class').startswith('criterion-title-row'),spot
    box=badge.bounding_box()
    assert box and box['x']>=-0.5 and box['x']+box['width']<=width+0.5,box
    before=stored(p)
@@ -277,7 +283,12 @@ with sync_playwright() as pw:
    page.goto(URL,wait_until='networkidle')
    badge=page.locator('[data-criterion-badge="completing:'+node+':title"]')
    assert badge.count()==1
-   assert 'Why is the chosen approach appropriate here?' in badge.locator('..').inner_text()
+   owner=page.locator('.criterion-marked-field.has-field-help-rail').filter(
+    has=badge)
+   assert owner.count()==1,node
+   assert 'Why is the chosen approach appropriate here?' in owner.inner_text()
+   assert owner.locator('textarea[data-bind="entries.1.purpose"]').count()==1,node
+   assert owner.locator('.criterion-field-help-rail [data-criterion-badge="completing:'+node+':title"]').count()==1,node
    result.append({'case':'method-suitability-'+node,'status':'passed'})
   except Exception as err:
    result.append({'case':'method-suitability-'+node,'status':'FAILED','reason':str(err)})
