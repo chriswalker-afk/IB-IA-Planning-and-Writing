@@ -27,7 +27,7 @@ s.completion.review.records["draft-D02"].location="p. 3 older A-E note";
 s.scratch.introduction="My original, student-written introduction";
 s.completion.fields.mainConclusion="A carefully limited original conclusion";
 for(const t of REPRESENTATION_TOOLS){
- const id="pass5-"+t.id,draft=JSON.parse(JSON.stringify(s[t.studio].draft));
+ const id=(t.id==="graph"?"figure":t.id)+"-pass5-"+t.id,draft=JSON.parse(JSON.stringify(s[t.studio].draft));
  if(t.id==="trace"){
   draft.imageSrc="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/b0gAAAAASUVORK5CYII=";
   draft.width=32;draft.height=32;
@@ -63,8 +63,8 @@ def restored_data(p):
  assert st["completion"]["fields"]["mainConclusion"]==FULL["completion"]["fields"]["mainConclusion"]
  assert st["completion"]["review"]["records"]["draft-D02"]["location"]=="p. 3 older A-E note"
  for tool in TOOLS:
-  assert st["entries"][0][tool["key"]]=="pass5-"+tool["id"],tool
-  assert st[tool["studio"]]["figures"][0]["id"]=="pass5-"+tool["id"],tool
+  assert st["entries"][0][tool["key"]]==("figure" if tool["id"]=="graph" else tool["id"])+"-pass5-"+tool["id"],tool
+  assert st[tool["studio"]]["figures"][0]["id"]==("figure" if tool["id"]=="graph" else tool["id"])+"-pass5-"+tool["id"],tool
   assert st[tool["studio"]]["figures"][0]["entryId"]=="actual-first",tool
  return st
 def move_to(p,route,node,mode=None):
