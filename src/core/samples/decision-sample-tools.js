@@ -58,7 +58,6 @@ export function finishDecisionSpec(d){
  return {...d,planning,completion,accuracy,figures,
   sources:[{id:sourceId,fields:Object.fromEntries(SOURCE_FIELDS.map(key=>[key,completion[key]||'']))}],
   reviews:d.reviews.map(review=>({status:'checked',...review})),
-  references:d.references||[{label:'[D1] Defined starting material',value:d.provenance},
-   {label:'Mathematics',value:'The derivations and calculated comparisons are displayed in this investigation. The editable project retains the defining input records; no external observations or independent experiment are claimed.'}]
+  references:d.references||[{label:'[D1] Defined starting material',value:d.provenance}]
  };
 }
