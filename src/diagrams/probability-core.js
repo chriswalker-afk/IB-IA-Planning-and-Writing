@@ -1,3 +1,5 @@
+import {normaliseFlexibleBranches,normaliseTerminalNodes,flexibleTreeStructure,flexibleLeaves,flexibleParents,
+ analyseFlexibleProbability,MAX_TREE_STAGES} from "./probability-flexible-core.js";
 /**
  * Probability Tree Studio. Each split is a conditional distribution given
  * its exact history. Never infer independence or silently normalise values.
@@ -16,7 +18,8 @@ export function newProbabilityDraft(){
  const branches={};
  for(const id of PARENTS)branches[id]=[branch(id?"Yes":"Event A"),branch(id?"No":"Not A")];
  return {title:"Successive and conditional outcomes",figureNumber:"1",caption:"",showTitle:true,showCaption:false,showStageLabels:true,stages:2,
-  stageLabels:["First event","Second event","Third event"],branches,
+  stageLabels:["First event","Second event","Third event","Fourth event"],branches,
+  treeMode:"standard",terminalNodes:[],layoutStyle:"spacious",
   showProducts:false,showEventCalculation:false,eventName:"Event E",conditionName:"Condition C",
   eventLeaves:[],conditionLeaves:[],sourceKind:"theoretical",sourceCredit:"",note:"",edited:false};
 }
@@ -24,7 +27,10 @@ export function normalizeProbabilityDraft(raw){
  const blank=newProbabilityDraft(),r=plain(raw)?raw:{};
  for(const field of ["title","figureNumber","caption","eventName","conditionName","sourceCredit","note"])
   if(typeof r[field]==="string")blank[field]=clean(r[field],["sourceCredit","note"].includes(field)?800:180);
- blank.stages=r.stages===3?3:2;
+ blank.treeMode=r.treeMode==="flexible"?"flexible":"standard";
+ blank.stages=blank.treeMode==="flexible"&&Number.isInteger(r.stages)&&r.stages>=1&&r.stages<=MAX_TREE_STAGES?
+   r.stages:r.stages===3?3:2;
+ blank.layoutStyle=r.layoutStyle==="compact"?"compact":"spacious";
  for(const flag of ["showProducts","showEventCalculation","showTitle","showCaption","showStageLabels","edited"])
   if(typeof r[flag]==="boolean")blank[flag]=r[flag];
  if(["primary","secondary","theoretical","unsure"].includes(r.sourceKind))
@@ -39,11 +45,18 @@ export function normalizeProbabilityDraft(raw){
    });
   }
  }
- const valid=new Set(leafKeys(blank.stages));
+ if(blank.treeMode==="flexible"){
+  blank.branches=normaliseFlexibleBranches(r.branches);
+  blank.terminalNodes=normaliseTerminalNodes(r.terminalNodes);
+ }
+ const valid=new Set(blank.treeMode==="flexible"?flexibleLeaves(blank):leafKeys(blank.stages));
  for(const key of ["eventLeaves","conditionLeaves"])
   if(Array.isArray(r[key]))blank[key]=[...new Set(r[key].filter(x=>typeof x==="string"&&valid.has(x)))];
  return blank;
 }
+export const probabilityLeafPaths=d=>d?.treeMode==="flexible"?flexibleLeaves(d):leafKeys(d?.stages);
+export const probabilityParentPaths=d=>d?.treeMode==="flexible"?flexibleParents(d):activeParents(d?.stages);
+export const probabilityStructure=d=>d?.treeMode==="flexible"?flexibleTreeStructure(d):null;
 export const newProbabilityStudio=()=>({open:false,zoomed:false,draft:newProbabilityDraft(),figures:[],activeId:""});
 export function normalizeProbabilityStudio(raw){
  const r=plain(raw)?raw:{};
@@ -68,6 +81,7 @@ export function probabilityValue(input){
 }
 export function probabilityAnalysis(raw){
  const d=normalizeProbabilityDraft(raw),issues=[],notes=[],values={};
+ if(d.treeMode==="flexible")return analyseFlexibleProbability(d,probabilityValue);
  for(const id of activeParents(d.stages)){
   const pair=d.branches[id],probabilities=pair.map(b=>probabilityValue(b.probability));
   const source=id.length?("after "+id.split("").map((bit,i)=>d.branches[id.slice(0,i)][Number(bit)].label||"?").join(" → ")):"at the first split";
@@ -111,7 +125,7 @@ export function probabilityAnalysis(raw){
 }
 export const probabilitySignature=d=>JSON.stringify([
  d.title,d.figureNumber,d.caption,d.showTitle,d.showCaption,d.showStageLabels,
- d.stages,d.stageLabels,d.branches,d.eventLeaves,d.conditionLeaves,
+ d.treeMode,d.terminalNodes,d.layoutStyle,d.stages,d.stageLabels,d.branches,d.eventLeaves,d.conditionLeaves,
  d.showProducts,d.showEventCalculation,d.sourceKind,d.sourceCredit,d.note,d.eventName,d.conditionName
 ]);
 export function saveProbabilityFigure(studio,entryId=""){
