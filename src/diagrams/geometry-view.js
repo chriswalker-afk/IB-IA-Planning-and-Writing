@@ -102,7 +102,7 @@ function geometryAnnotationControls(d,e){
     '<label>Vertical (px)<input type="number" min="-90" max="90" data-geometry-guide="'+i+'" data-geometry-guide-key="labelDy" value="'+g.labelDy+'"></label>'+
    '</div></details>'))+
   '<button type="button" class="btn btn-quiet btn-sm" data-action="geometry-guide-remove" data-geometry-index="'+i+'">Remove line</button></div>').join('');
- return '<details class="geometry-constructions"><summary>Additional points, diagonals and construction lines ('+
+ return '<details class="geometry-constructions"'+(d.auxPoints.length||d.guides.length?' open':'')+'><summary>Additional points, diagonals and construction lines ('+
   (d.auxPoints.length+d.guides.length)+')</summary>'+
   '<p>These annotations do not change the closed polygon or its calculated area. Add points to position measurements, create diagonals, or construct a perpendicular height to a chosen baseline.</p>'+
   '<div class="geometry-buttons"><button type="button" class="btn btn-secondary btn-sm" data-action="geometry-aux-add"'+
