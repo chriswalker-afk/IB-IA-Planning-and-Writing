@@ -11,6 +11,8 @@ on:
       - 'src/ui/**'
       - 'app.js'
       - '.github/workflows/conformance-focused-browser.yml'
+      - '.github/actions/setup-ci-node/action.yml'
+      - '.github/actions/setup-ci-browser/action.yml'
   push:
     branches: [main]
     paths:
@@ -18,29 +20,25 @@ on:
       - 'scripts/stuck-browser.py'
       - 'scripts/conformance-fixtures.mjs'
       - '.github/workflows/conformance-focused-browser.yml'
+      - '.github/actions/setup-ci-node/action.yml'
+      - '.github/actions/setup-ci-browser/action.yml'
 permissions:
   contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 jobs:
   conformance-writing:
     runs-on: ubuntu-latest
     timeout-minutes: 16
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
+      - uses: ./.github/actions/setup-ci-node
       - name: Unit tests and production build
         run: |
-          npm install --no-audit --no-fund
-          npm test
           npm run build
-      - name: Install Chromium
-        run: |
-          pip install playwright==1.57.0
-          python -m playwright install --with-deps chromium
+      - uses: ./.github/actions/setup-ci-browser
       - name: Exercise focused IA conformance journeys on desktop and phone
         run: |
           mkdir -p qa-output
