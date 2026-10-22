@@ -1,4 +1,5 @@
-import {newProbabilityDraft,normalizeProbabilityDraft,probabilityAnalysis,probabilitySignature,saveProbabilityFigure,activeParents,leafKeys} from "./probability-core.js";
+import {newProbabilityDraft,normalizeProbabilityDraft,probabilityAnalysis,probabilitySignature,saveProbabilityFigure,activeParents,leafKeys,probabilityParentPaths,probabilityLeafPaths} from "./probability-core.js";
+import {changeProbabilityStages} from "./probability-flexible-actions.js";
 import {completeEntry,startFirstRepresentation} from "../completing/engine.js";
 import {linkRepresentationFigure} from "./figure-linking.js";
 
@@ -6,27 +7,33 @@ export function setProbabilityField(studio,key,value){
  const d=studio.draft;
  if(["title","figureNumber","caption","sourceCredit","note","eventName","conditionName"].includes(key)){
   d[key]=String(value).slice(0,["note","sourceCredit"].includes(key)?800:180);
- }else if(key==="stages"&&[2,3,"2","3"].includes(value)){
-  d.stages=Number(value);const allowed=new Set(leafKeys(d.stages));
-  d.eventLeaves=d.eventLeaves.filter(x=>allowed.has(x));
-  d.conditionLeaves=d.conditionLeaves.filter(x=>allowed.has(x));
- }else if(key==="sourceKind"&&["theoretical","primary","secondary","unsure"].includes(value))d.sourceKind=value;
+ }else if(key==="stages"){
+  if(d.treeMode==="flexible"){
+   if(!changeProbabilityStages(studio,value))return false;
+  }else if([2,3,"2","3"].includes(value)){
+   d.stages=Number(value);const allowed=new Set(leafKeys(d.stages));
+   d.eventLeaves=d.eventLeaves.filter(x=>allowed.has(x));
+   d.conditionLeaves=d.conditionLeaves.filter(x=>allowed.has(x));
+  }else return false;
+ }else if(key==="layoutStyle"&&["compact","spacious"].includes(value))d.layoutStyle=value;
+ else if(key==="sourceKind"&&["theoretical","primary","secondary","unsure"].includes(value))d.sourceKind=value;
  else if(["showProducts","showEventCalculation","showTitle","showCaption","showStageLabels"].includes(key)&&typeof value==="boolean")d[key]=value;
  else return false;
  d.edited=true;return true;
 }
 export function setProbabilityStage(studio,index,value){
- if(!Number.isInteger(index)||index<0||index>2)return false;
+ if(!Number.isInteger(index)||index<0||index>=(studio.draft.treeMode==="flexible"?4:3))return false;
  studio.draft.stageLabels[index]=String(value).slice(0,80);studio.draft.edited=true;return true;
 }
 export function setProbabilityBranch(studio,parent,index,key,value){
- if(!activeParents(studio.draft.stages).includes(parent)||![0,1].includes(index)||
+ if(!probabilityParentPaths(studio.draft).includes(parent)||
+  !Number.isInteger(index)||index<0||index>=studio.draft.branches[parent].length||
   !["label","probability"].includes(key))return false;
  studio.draft.branches[parent][index][key]=String(value).slice(0,key==="label"?80:60);
  studio.draft.edited=true;return true;
 }
 export function toggleProbabilityLeaf(studio,membership,path,checked){
- if(!["eventLeaves","conditionLeaves"].includes(membership)||!leafKeys(studio.draft.stages).includes(path))return false;
+ if(!["eventLeaves","conditionLeaves"].includes(membership)||!probabilityLeafPaths(studio.draft).includes(path))return false;
  const values=new Set(studio.draft[membership]);
  if(checked)values.add(path);else values.delete(path);
  studio.draft[membership]=[...values];studio.draft.edited=true;return true;

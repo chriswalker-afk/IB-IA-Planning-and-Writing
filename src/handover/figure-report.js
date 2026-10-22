@@ -11,7 +11,7 @@ import {renderVoronoiSvg} from "../diagrams/voronoi-render.js";
 import {renderGeometrySvg} from "../diagrams/geometry-render.js";
 import {orthogonalDecomposition,geometrySensitivity} from "../diagrams/geometry-advanced.js";
 import {renderProbabilitySvg} from "../diagrams/probability-render.js";
-import {probabilityAnalysis} from "../diagrams/probability-core.js";
+import {probabilityAnalysis,probabilityParentPaths} from "../diagrams/probability-core.js";
 import {representationTool} from "../diagrams/representation-registry.js";
 import {linkedRepresentationEntry} from "../diagrams/figure-linking.js";
 
@@ -118,11 +118,15 @@ const specs=[
   {...registeredFigure("probability"),render:d=>renderProbabilitySvg(d),details:d=>{
     const a=probabilityAnalysis(d);
     return [
-     row("Model",d.stages+" successive binary stages; each later split conditional on its complete history"),
+     row("Model",d.treeMode==="flexible"?
+       "Flexible tree, up to "+d.stages+" stages, "+a.paths.length+" terminal paths; each active split conditional on its exact history":
+       d.stages+" successive binary stages; each later split conditional on its complete history"),
      row("Stage labels",(d.stageLabels||[]).slice(0,d.stages).join(" → ")),
      row("Entered outcomes and branch probabilities",Object.entries(d.branches||{})
-       .filter(([key])=>key.length<d.stages).map(([parent,branches])=>
+       .filter(([key])=>probabilityParentPaths(a.draft).includes(key)).map(([parent,branches])=>
        (parent||"start")+": "+(branches||[]).map(x=>x.label+" = "+x.probability).join(" / ")).join("\n")),
+     row("Terminal paths",a.paths.map(p=>p.labels.join(" → ")+(p.key.length<d.stages?" (ends early)":"")).join("\n")),
+     row("Diagram spacing",d.treeMode==="flexible"?d.layoutStyle:"Legacy binary layout"),
      row("Validity",a.ready?"Each active split sums to 1; total path probability = "+a.total:a.issues.join("; ")),
      row("Path products",d.showProducts&&a.ready?a.paths.map(x=>x.labels.join(" → ")+
        ": "+x.steps.join(" × ")+" = "+x.probability).join("\n"):""),

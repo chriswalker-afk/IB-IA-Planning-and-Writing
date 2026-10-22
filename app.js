@@ -77,6 +77,7 @@ import {setGeometryField,setGeometryVertex,geometryTemplate,geometryAddVertex,ge
 import {exportGeometry} from "./src/diagrams/geometry-export.js";
 import {probabilityPreviewHtml,probabilityQualityHtml,probabilityOutputHtml} from "./src/diagrams/probability-view.js";
 import {setProbabilityField,setProbabilityStage,setProbabilityBranch,toggleProbabilityLeaf,freshProbability,loadProbability,saveProbabilityDraft,saveAndLinkProbability} from "./src/diagrams/probability-actions.js";
+import {chooseProbabilityPreset,enableFlexibleProbability,addProbabilityOutcome,removeProbabilityOutcome,changeProbabilityContinuation} from "./src/diagrams/probability-flexible-actions.js";
 import {exportProbability} from "./src/diagrams/probability-export.js";
 import {displayVoronoiBounds,coordinateFromCanvas,canvasPosition,voronoiFrame,recordVoronoiHistory,applyVoronoiFrame,undoVoronoi,redoVoronoi,freezeVoronoiWindow,fitVoronoiSites,setVoronoiTool,selectVoronoiSite,moveVoronoiSite,proposeVoronoiComparison,showVoronoiComparison,finishVoronoiComparison,selectNearestBisector} from "./src/diagrams/voronoi-interactions.js";
 import {renderRepresentationHub,renderRepresentationSwitcher,representationFocusActive} from "./src/diagrams/representation-hub.js";
@@ -1815,6 +1816,40 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         root?.querySelectorAll("[data-action=probability-preview-fit],[data-action=probability-preview-detail]")
           .forEach(button=>button.setAttribute("aria-pressed",String(button.dataset.action===action)));
         break;
+      }
+      case "probability-preset":{
+        const studio=state.probabilityStudio;
+        if((studio.draft.edited||studio.activeId)&&!window.confirm(
+         "Choose a new starting layout? This replaces the current working tree and its outcome probabilities. Previously saved figures are kept."))break;
+        if(!chooseProbabilityPreset(studio,el.dataset.probPreset)){toast("Unknown tree layout.");break;}
+        save();render();toast("Starting layout ready","Enter and justify the probabilities for each active split.");
+        break;
+      }
+      case "probability-flexibilise":{
+        if(!enableFlexibleProbability(state.probabilityStudio))break;
+        save();render();toast("Flexible branching enabled","Your existing outcomes and entered probabilities are preserved.");
+        break;
+      }
+      case "probability-outcome-add":{
+        const studio=state.probabilityStudio,parent=el.dataset.probParent||"";
+        const result=addProbabilityOutcome(studio,parent);
+        if(!result.ok){toast("Cannot add outcome",result.error);break;}
+        studio.editLevel=parent.length;save();render();break;
+      }
+      case "probability-outcome-remove":{
+        const studio=state.probabilityStudio,parent=el.dataset.probParent||"";
+        if(!window.confirm("Remove this outcome and its dependent branches? Remaining outcome paths and event selections will be renumbered. Save your current tree first if needed."))break;
+        const result=removeProbabilityOutcome(studio,parent,Number(el.dataset.probIndex));
+        if(!result.ok){toast("Cannot remove outcome",result.error);break;}
+        studio.editLevel=parent.length;save();render();break;
+      }
+      case "probability-path-continuation":{
+        const studio=state.probabilityStudio,path=el.dataset.probPath||"";
+        const more=el.dataset.probContinue==="true";
+        if(!more&&!window.confirm("Finish this path here? Descendant splits will be kept for later but excluded from calculations, and affected event selections will be cleared."))break;
+        const result=changeProbabilityContinuation(studio,path,more);
+        if(!result.ok){toast("Cannot change this path",result.error);break;}
+        studio.editLevel=more?path.length:path.length-1;save();render();break;
       }
       case "probability-new":{
         if(state.probabilityStudio.draft.edited&&!window.confirm("Start a new probability tree? Save the current draft if you need it."))break;

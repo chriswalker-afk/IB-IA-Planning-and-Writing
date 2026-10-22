@@ -1,5 +1,6 @@
-import {probabilityAnalysis,activeParents,leafKeys,MAX_PROBABILITY_FIGURES} from "./probability-core.js";
+import {probabilityAnalysis,activeParents,leafKeys,probabilityLeafPaths,MAX_PROBABILITY_FIGURES} from "./probability-core.js";
 import {renderProbabilitySvg} from "./probability-render.js";
+import {probabilityPresetChooser,probabilityFlexibleEditors} from "./probability-flexible-view.js";
 import {renderPresentationCoach,renderFigureHandover} from "./presentation-coach-view.js";
 const field=(key,name,value,e,placeholder="")=>
  '<label class="probability-field"><span>'+e(name)+'</span><input type="text" data-prob-field="'+key+
@@ -18,8 +19,10 @@ export function probabilityQualityHtml(studio,e){
   parts.push('<h3>Check before saving</h3><ul>'+a.issues.slice(0,9).map(x=>'<li>'+e(x)+'</li>').join("")+'</ul>'+
     (a.issues.length>9?'<p>There are '+(a.issues.length-9)+' other checks.</p>':""));
  }else{
-  parts.push('<h3>All branch pairs sum to 1</h3><p>The '+d.stages+'-stage tree has '+a.paths.length+
-   ' terminal paths. Their total probability is '+fmt(a.total)+
+  parts.push((d.treeMode==="flexible"?'<h3>All active splits sum to 1</h3><p>The flexible tree has '+a.paths.length+
+   ' terminal paths across up to '+d.stages+' stages. Their total probability is ':
+   '<h3>All branch pairs sum to 1</h3><p>The '+d.stages+'-stage tree has '+a.paths.length+
+   ' terminal paths. Their total probability is ')+fmt(a.total)+
    '. This verifies arithmetic consistency, not that your underlying probabilities are justified.</p>');
  }
  if(d.showProducts){
@@ -83,7 +86,7 @@ function eventEditor(studio,e){
  '<div class="probability-event-fields">'+field("eventName","Event name",d.eventName,e,"E")+
  field("conditionName","Given event",d.conditionName,e,"C")+'</div>'+
  '<div class="probability-path-select"><table><thead><tr><th>Complete outcome path</th><th data-prob-event-heading="eventLeaves">'+e(d.eventName)+'</th><th data-prob-event-heading="conditionLeaves">'+e(d.conditionName)+'</th></tr></thead><tbody>'+
- leafKeys(d.stages).map(id=>'<tr><td data-prob-path-label="'+id+'">'+e(history(d,id))+'</td>'+
+ probabilityLeafPaths(d).map(id=>'<tr><td data-prob-path-label="'+id+'">'+e(history(d,id))+'</td>'+
  ["eventLeaves","conditionLeaves"].map(key=>'<td><label class="probability-path-check"><input type="checkbox" data-prob-leaf="'+id+
  '" data-prob-membership="'+key+'"'+(d[key].includes(id)?" checked":"")+'> <span class="visually-hidden">Include path in '+e(key==="eventLeaves"?d.eventName:d.conditionName)+'</span></label></td>').join("")+'</tr>').join("")+
  '</tbody></table></div>':"")+'</section>';
@@ -92,20 +95,30 @@ export function renderProbabilityStudio(state,icon,e){
  const studio=state.probabilityStudio,d=studio.draft;
  return '<section class="probability-studio representation-studio" data-probability-studio aria-label="Probability Tree Studio">'+
  '<div class="representation-studio-intro"><span class="intro-writing-guide-eyebrow">PROBABILITY TREE STUDIO</span>'+
- '<h2>Build a conditional probability story</h2><p>Enter your own outcomes and branch probabilities. Each pair must sum to one, and later branches describe probabilities <strong>given the earlier outcomes</strong>—not necessarily independent events.</p></div>'+
+ '<h2>Build a conditional probability story</h2><p>Enter your own outcomes and branch probabilities. Every split must sum to one, and later branches describe probabilities <strong>given the earlier outcomes</strong>—not necessarily independent events.</p></div>'+
  '<div class="probability-workspace"><div class="probability-controls" data-representation-step="create">'+
  '<h3>1. Set up your tree</h3>'+
- '<label class="probability-field"><span>Number of stages</span><select data-prob-field="stages"><option value="2"'+(d.stages===2?" selected":"")+'>Two stages (4 outcomes)</option><option value="3"'+(d.stages===3?" selected":"")+'>Three stages (8 outcomes)</option></select></label>'+
+ probabilityPresetChooser(d,e)+
+ (d.treeMode==="flexible"?
+ '<label class="probability-field"><span>Maximum stages in this investigation</span><select data-prob-field="stages">'+
+  [1,2,3,4].map(n=>'<option value="'+n+'"'+(d.stages===n?' selected':'')+'>'+n+' stage'+(n===1?'':'s')+'</option>').join("")+
+ '</select></label>':
+ '<label class="probability-field"><span>Number of stages</span><select data-prob-field="stages"><option value="2"'+(d.stages===2?" selected":"")+'>Two stages (4 outcomes)</option><option value="3"'+(d.stages===3?" selected":"")+'>Three stages (8 outcomes)</option></select></label>')+
  field("title","Figure title",d.title,e)+field("figureNumber","Figure number",d.figureNumber,e)+
  '<details class="ia-figure-presentation-settings"><summary>IA figure presentation</summary>'+
  tick("showTitle","Include title in figure",d.showTitle)+
  tick("showCaption","Include figure caption in figure",d.showCaption)+
  tick("showStageLabels","Show event headings",d.showStageLabels)+
+ (d.treeMode==="flexible"?'<label class="probability-field"><span>Spacing for readability</span><select data-prob-field="layoutStyle">'+
+  [['spacious','Spacious — best for a final IA figure'],['compact','Compact — smaller figure']].map(([id,label])=>
+   '<option value="'+id+'"'+(d.layoutStyle===id?' selected':'')+'>'+label+'</option>').join("")+
+ '</select></label>':"")+
  field("caption","Caption (optional)",d.caption,e,"A concise mathematical description")+
  '<p>Guidance and validation remain in the editor, not in the downloaded figure. The caption uses your figure number and the text above.</p></details>'+
  '<div class="probability-buttons"><button type="button" class="btn btn-quiet btn-sm" data-action="probability-new">+ Start new tree</button></div>'+
  '<h3>2. Enter conditional branches</h3><p>Each panel describes an event after its exact preceding outcome history. Use decimals, fractions or percentages; values are never completed or normalised automatically.</p>'+
- Array.from({length:d.stages},(_,i)=>stageEditor(d,i,e)).join("")+
+ (d.treeMode==="flexible"?probabilityFlexibleEditors(studio,e):
+  Array.from({length:d.stages},(_,i)=>stageEditor(d,i,e)).join(""))+
  '<div data-representation-step="refine">'+eventEditor(studio,e)+
  '<h3>3. Source and assumptions</h3>'+
  '<label class="probability-field"><span>Probability source</span><select data-prob-field="sourceKind">'+

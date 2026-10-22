@@ -1,5 +1,6 @@
 /** An IA figure contains mathematical content, not the editor's instructions or warnings. */
 import {probabilityAnalysis} from "./probability-core.js";
+import {renderFlexibleProbabilitySvg} from "./probability-flexible-render.js";
 import {svgDiagramText,diagramSafeExcerpt,diagramWrapLines} from "./diagram-notation.js";
 
 const X=[80,365,700,1030];
@@ -30,6 +31,7 @@ function mathematicalSummary(check){
 }
 export function renderProbabilitySvg(raw){
  const check=probabilityAnalysis(raw),d=check.draft,depth=d.stages;
+ if(d.treeMode==="flexible")return renderFlexibleProbabilitySvg(check);
  const showProducts=d.showProducts&&check.ready,showCaption=d.showCaption;
  const W=depth===3?(showProducts?1350:1145):(showProducts?1020:800);
  const last=positions(depth,2**depth-1,depth);
