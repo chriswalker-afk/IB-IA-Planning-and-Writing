@@ -22,6 +22,12 @@ export function table({id,stage,number,title,columns,rows,units=[],note,after='r
   sourceKind:'theoretical',sourceText:'My calculations from the explicitly stated case inputs.',
   purpose:note,note,numberFormat:'source',cellAlignment:'numeric',showRowLines:true})};
 }
+const sourceCredits={
+ 'leaf-area':'[D1] Leaf Outline v1. Original constructed reference image, 2 cm calibration and sixteen ordered vertices supplied in the editable project. The complete defining ordinates and image coordinates are stated in Starting material and mathematical approach.',
+ 'inaccessible-height':'[D1] Two Sight Lines v1. Original constructed angles, baseline, instrument height and bounded input alternatives. Their complete definitions and the status of the third-angle consistency check are stated in Starting material and mathematical approach.',
+ 'water-stations':'[D1] Water Station Site v1. Original defined rectangle, station coordinates, six check points, three feasible candidates and hypothetical demand weights. The complete coordinates, metric and objective are stated in Starting material and mathematical approach.',
+ 'repayment-plans':'[D1] Repayment Offers v1. Original fictional rates, payment timing, upfront fee, cent-rounding and settlement rules, defined in Starting material and mathematical approach. Complete ledgers and settlement calculations remain in the editable project.'
+};
 export function finishDecisionSpec(d){
  const sourceId='source-'+d.id;
  const planning={planIdentifier:d.id,provisionalTitle:d.title,ideaStatus:'yes',kind:'modelling',
@@ -58,6 +64,6 @@ export function finishDecisionSpec(d){
  return {...d,planning,completion,accuracy,figures,
   sources:[{id:sourceId,fields:Object.fromEntries(SOURCE_FIELDS.map(key=>[key,completion[key]||'']))}],
   reviews:d.reviews.map(review=>({status:'checked',...review})),
-  references:d.references||[{label:'[D1] Defined starting material',value:d.provenance}]
+  references:d.references||[{label:'Defined starting material',value:sourceCredits[d.id]||d.provenance}]
  };
 }
