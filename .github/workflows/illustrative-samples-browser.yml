@@ -63,6 +63,10 @@ jobs:
             samples: grinder-reliability,stopping-distance,drink-cooling
           - group: Modelling II
             samples: tide-cycles,ball-clearance,tray-optimisation
+          - group: Geometry
+            samples: leaf-area,inaccessible-height
+          - group: Decisions
+            samples: water-stations,repayment-plans
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4

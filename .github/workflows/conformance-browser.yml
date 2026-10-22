@@ -82,6 +82,14 @@ jobs:
             suites: illustrative-samples
             samples: tide-cycles,ball-clearance,tray-optimisation
             timeout: 30
+          - group: Complete illustrative samples - D
+            suites: illustrative-samples
+            samples: leaf-area,inaccessible-height
+            timeout: 30
+          - group: Complete illustrative samples - E
+            suites: illustrative-samples
+            samples: water-stations,repayment-plans
+            timeout: 30
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-ci-node
