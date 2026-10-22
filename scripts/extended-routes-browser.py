@@ -65,7 +65,7 @@ def scenario(p,method,signal,word,width):
  assert saved(p)["entries"][0]["result"]==before
  assert p.locator(".route-coach").is_visible()
  assert "Your confirmed mathematical finding" in p.locator(".route-coach").inner_text()
- assert p.locator('[data-journey-outcome-meaning]').count()>=0
+ assert p.locator(".journey-outcome-meaning").is_visible()
  p.locator('[data-action="toggle-advice-mode"]').first.click()
  assert saved(p)["ui"]["adviceMode"]=="reduced"
  assert p.locator(".route-coach-compact").is_visible()
