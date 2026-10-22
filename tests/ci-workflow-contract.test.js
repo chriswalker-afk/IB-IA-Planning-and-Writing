@@ -102,7 +102,7 @@ test("report checks retain live post-deployment verification",()=>{
 test("final cleanup acceptance is split by capability and preserves real browser evidence",()=>{
  const content=workflows.get("cleanup-pass5-browser.yml");
  assert(content,"Pass 5 workflow required");
- assert.match(content,/group: \[journeys, data-diagrams, geometry-probability, cohorts, exports\]/);
+ assert.match(content,/group: \[restore, journeys, data-diagrams, geometry-probability, cohorts, exports\]/);
  assert.match(content,/fail-fast: false/);
  assert.match(content,/upload-artifact@v4/);
  assert.match(content,/scripts\/cleanup-pass5-browser\.py/);
