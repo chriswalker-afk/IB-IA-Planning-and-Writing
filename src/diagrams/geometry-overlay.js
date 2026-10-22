@@ -80,7 +80,7 @@ export function renderGeometryAuxPoints(d,L,{interactive=false}={}){
  for(let i=0;i<(d.auxPoints||[]).length;i++){
   const p=d.auxPoints[i];if(!Number.isFinite(p.x)||!Number.isFinite(p.y))continue;
   const x=L.x(p.x),y=L.y(p.y);
-  if(interactive)out.push('<g data-geometry-aux-index="'+i+'" tabindex="0" role="button" aria-label="Move construction point '+p.label+
+  if(interactive)out.push('<g data-geometry-aux-index="'+i+'" tabindex="0" role="button" aria-label="Move construction point '+(i+1)+
     ' using drag or arrow keys" style="cursor:grab;touch-action:none">'+
     '<circle cx="'+num(x)+'" cy="'+num(y)+'" r="19" fill="transparent" stroke="none" pointer-events="all"/>');
   out.push('<circle class="geometry-aux-point" cx="'+num(x)+'" cy="'+num(y)+
