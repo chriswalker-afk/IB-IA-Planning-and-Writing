@@ -15,6 +15,7 @@ RESULTS=[]
 
 def state(node='N00C',previous=False):
  s=copy.deepcopy(BASE)
+ s['ui']['planningIntroSeen']=True
  s['route']='planning'
  s['planning']['current']=node
  s['journey']['currentNodeId']=node
