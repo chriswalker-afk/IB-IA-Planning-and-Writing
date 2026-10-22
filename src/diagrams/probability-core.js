@@ -57,14 +57,15 @@ export function normalizeProbabilityDraft(raw){
 export const probabilityLeafPaths=d=>d?.treeMode==="flexible"?flexibleLeaves(d):leafKeys(d?.stages);
 export const probabilityParentPaths=d=>d?.treeMode==="flexible"?flexibleParents(d):activeParents(d?.stages);
 export const probabilityStructure=d=>d?.treeMode==="flexible"?flexibleTreeStructure(d):null;
-export const newProbabilityStudio=()=>({open:false,zoomed:false,draft:newProbabilityDraft(),figures:[],activeId:""});
+export const newProbabilityStudio=()=>({open:false,zoomed:false,editLevel:0,draft:newProbabilityDraft(),figures:[],activeId:""});
 export function normalizeProbabilityStudio(raw){
  const r=plain(raw)?raw:{};
  const figures=(Array.isArray(r.figures)?r.figures:[]).slice(0,MAX_PROBABILITY_FIGURES)
   .filter(plain).map(f=>({id:clean(f.id,65),entryId:clean(f.entryId,80),
    savedAt:clean(f.savedAt,42),draft:normalizeProbabilityDraft(f.draft)}))
   .filter(f=>/^probability-[a-z0-9-]+$/i.test(f.id));
- return {open:r.open===true,zoomed:r.zoomed===true,draft:normalizeProbabilityDraft(r.draft),figures,
+ return {open:r.open===true,zoomed:r.zoomed===true,editLevel:Number.isInteger(r.editLevel)&&r.editLevel>=0&&r.editLevel<=3?r.editLevel:0,
+  draft:normalizeProbabilityDraft(r.draft),figures,
   activeId:figures.some(f=>f.id===r.activeId)?r.activeId:""};
 }
 export function probabilityValue(input){
