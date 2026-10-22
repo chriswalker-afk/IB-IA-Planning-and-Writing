@@ -1,6 +1,14 @@
 name: Criteria badge pop-in acceptance
 on:
   workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/criteria-badges-browser.py'
+      - '.github/workflows/criteria-badges-browser.yml'
+      - 'src/essentials/**'
+      - 'src/completing/views.js'
+      - 'src/ui/planning-views.js'
   push:
     branches: [main]
     paths:
