@@ -13,7 +13,7 @@ const history=(d,parent)=>parent?parent.split("").map((bit,i)=>
  d.branches[parent.slice(0,i)][Number(bit)].label||"unlabelled outcome").join(" → "):"Starting event";
 export function probabilityPreviewHtml(studio){
  const svg=renderProbabilitySvg(studio.draft),flex=studio.draft.treeMode==="flexible";
- const match=flex?/viewBox="0 0 (\\d+) (\\d+)"/.exec(svg):null;
+ const match=flex?/viewBox="0 0 ([0-9]+) ([0-9]+)"/.exec(svg):null;
  const naturalWidth=match?Math.min(10000,Number(match[1])):1300;
  return '<div class="probability-preview'+(studio.zoomed?" probability-preview-detail":"")+
  '" data-prob-preview'+(flex?' style="--prob-natural-width:'+naturalWidth+'px"':"")+'>'+svg+'</div>';
