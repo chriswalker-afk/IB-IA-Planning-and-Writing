@@ -116,6 +116,13 @@ def later(browser,width,node,index):
                {"id":"later-two","phase":"substantial","fromEntryId":"later-one","status":"planned",
                 "methodId":"probability","kind":"other","title":"Third stage","result":""}]
  st["completion"]["activeEntryIndex"]=index
+ st["entries"][0]["geometryFigureId"]="geometry-earlier"
+ original_geometry=copy.deepcopy(st["geometryStudio"]["draft"])
+ original_geometry["title"]="Older stage geometry"
+ st["geometryStudio"]["figures"]=[{"id":"geometry-earlier","entryId":"first",
+    "savedAt":"2026-10-22","draft":original_geometry}]
+ st["geometryStudio"]["activeId"]="geometry-earlier"
+ st["geometryStudio"]["draft"]["title"]="Separate unsaved geometry draft"
  c,p,errors=context(browser,width,st)
  try:
   assert p.locator('[data-source-node="'+node+'"]').count()==1
@@ -127,6 +134,12 @@ def later(browser,width,node,index):
   assert hub.locator("[data-representation-recommended] [data-action='trace-open']").count()==0
   picker.locator('[data-action="probability-open"]').first.click()
   assert p.locator("[data-probability-studio]").is_visible()
+  p.locator('[data-representation-tool="geometry"]').click()
+  separate=saved(p)
+  assert separate["geometryStudio"]["activeId"]==""
+  assert separate["geometryStudio"]["draft"]["title"]=="Separate unsaved geometry draft"
+  assert separate["geometryStudio"]["figures"][0]["draft"]["title"]=="Older stage geometry"
+  assert separate["entries"][0]["geometryFigureId"]=="geometry-earlier"
   p.locator('[data-representation-tool="table"]').click()
   assert p.locator("[data-table-studio]").is_visible()
   assert saved(p)["completion"]["editorReturnNode"]==node
