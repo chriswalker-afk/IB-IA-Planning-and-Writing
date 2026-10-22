@@ -7,6 +7,7 @@ import {renderGeometrySvg} from "../diagrams/geometry-render.js";
 import {renderProbabilitySvg} from "../diagrams/probability-render.js";
 import {renderFigureHandover} from "../diagrams/presentation-coach-view.js";
 import {REPRESENTATION_TOOLS} from "../diagrams/representation-registry.js";
+import {linkedRepresentationEntry} from "../diagrams/figure-linking.js";
 
 /** Saved figures are mathematical working files, not verified conclusions. */
 export const FIRST_FIGURE_TYPES=Object.freeze(REPRESENTATION_TOOLS.map(tool=>Object.freeze({
@@ -19,8 +20,7 @@ export function firstSavedFigures(state,{scope="first"}={}){
   const figures=state?.[type.studio]?.figures||[];
   for(const figure of figures){
    if(!figure?.id||!figure.draft)continue;
-   const entryIndex=entries.findIndex(x=>x?.id===figure.entryId);
-   const linked=entryIndex>=0?entries[entryIndex]:null;
+   const {entryIndex,linked}=linkedRepresentationEntry(entries,type.entryKey,figure);
    const active=entries[state.completion?.activeEntryIndex];
    // New mathematical stages show only diagrams linked to this stage; earlier
    // or unrelated figures stay on their own pages.
@@ -59,7 +59,7 @@ export function renderFirstFigureGallery(state,icon,e,panels={},options={}){
  if(!entries.length)return '<p class="show-first-no-figure">No diagrams are linked to this mathematical stage yet. A calculation or a theoretical example can also be shown without a diagram.</p>';
  const hide=(x)=>'<button class="btn btn-quiet btn-sm" type="button" data-action="first-figure-hide" data-figure-key="'+e(x.kindKey)+'">'+icon("eye-off")+' Hide preview</button>';
  const figureCard=(x)=>{
-  const label=x.linked?"Linked to mathematical stage":"Saved tool draft";
+  const label=x.linked?"Linked to mathematical stage":"Saved figure · not linked";
   return '<article class="show-first-figure-extra" data-first-figure-key="'+e(x.kindKey)+'">'+
    '<div class="show-first-figure-extra-head"><span>'+icon(x.icon)+' <strong>'+e(x.figure.draft.title||x.title)+'</strong></span>'+
    '<small>'+e(label)+'</small></div>'+

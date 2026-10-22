@@ -238,8 +238,10 @@ test("the chooser preserves access to all seven available tools without duplicat
  state.ui.representationFilter="data";
  const filtered=renderRepresentationHub(state,icon,escapeHtml);
  assert.ok(filtered.includes("data-representation-filter=\"data\""));
- assert.ok(filtered.includes('data-action="voronoi-open"')); // current pathway remains recommended.
- assert.ok(filtered.includes('data-action="stat-open"')); // available data option.
+ assert.ok(!filtered.includes('data-action="voronoi-open"')); // Geometry-only suggestions obey the data filter.
+ assert.ok(filtered.includes('data-action="stat-open"')); // Available data option.
+ assert.equal(filtered.split('data-action="table-open"').length-1,1);
+ assert.equal(filtered.split('data-action="graph-open"').length-1,1);
 });
 test("representation chooser uses fallback first type when no route is selected, not invented findings",()=>{
  const s=createProjectState();

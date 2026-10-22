@@ -2,6 +2,7 @@
 import {newVoronoiDraft,normalizeVoronoiDraft,analyzeVoronoi,importVoronoiSites,
  saveVoronoiFigure,voronoiSignature,MAX_VORONOI_SITES} from "./voronoi-core.js";
 import {completeEntry,startFirstRepresentation} from "../completing/engine.js";
+import {linkRepresentationFigure} from "./figure-linking.js";
 import {voronoiFrame,recordVoronoiHistory,setVoronoiTool} from "./voronoi-interactions.js";
 const strings=new Set(["raw","headers","title","figureNumber","xLabel","yLabel","unitMode","unit",
  "coordSystem","sourceKind","sourceCredit","regionMode","xMin","xMax","yMin","yMax",
@@ -138,7 +139,7 @@ export function saveAndLinkVoronoi(state){
  const saved=saveVoronoiFigure(studio,entry.id);
  if(!saved.ok)return saved;
  const reviewNeeded=noteVoronoiChange(state,previous,saved.record);
- entry.voronoiFigureId=saved.record.id;
+ linkRepresentationFigure(state,"voronoi",saved.record,entry);
  if(entry.phase==="first"&&(!entry.title.trim()||["First purposeful representation","diagram","other","table"].includes(entry.title)))
   entry.title=saved.record.draft.title;
  if(!entry.technique.trim())entry.technique="Euclidean Voronoi regions and perpendicular bisectors";

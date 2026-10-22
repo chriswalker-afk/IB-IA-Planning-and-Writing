@@ -3,6 +3,7 @@ import {
  newTableDraft,normalizeTableDraft,importTableData,analyzeTable,saveTableFigure,tableSignature,tableFormatKey
 } from "./table-studio-core.js";
 import {completeEntry,startFirstRepresentation} from "../completing/engine.js";
+import {linkRepresentationFigure} from "./figure-linking.js";
 const fields=new Set(["raw","headers","title","number","purpose","sourceKind","sourceText","note",
  "decimals","numberFormat","quartileRule","cellAlignment","rowSelection","selectionReason",
  "columnSelectionMode","calcModel","calcA","calcB","calcC","groupInput","groupWidth","groupStart","groupLabel",
@@ -185,7 +186,7 @@ export function saveAndLinkTable(state){
  const saved=saveTableFigure(studio,entry.id);
  if(!saved.ok)return saved;
  const reviewNeeded=markChanged(state,prior,saved.record);
- entry.tableFigureId=saved.record.id;
+ linkRepresentationFigure(state,"table",saved.record,entry);
  if(entry.phase==="first"&&(!entry.title.trim()||["First purposeful representation","table","other"].includes(entry.title)))
   entry.title=saved.record.draft.title;
  if(!entry.technique.trim())

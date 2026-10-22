@@ -649,7 +649,9 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   function navigateGeometry(id=""){
     rememberMathEditorOrigin();if(state.completion.current!=="C31")setCompletionNode(state,"C31",{reason:"geometry-editor"});
     activateRepresentationTool(state,"geometry");
-    const entry=completeEntry(state),saved=id||entry?.geometryFigureId;
+    const entry=completeEntry(state);
+    if(!id)avoidEditingUnrelatedStageFigure(state.geometryStudio,entry,geometryFresh);
+    const saved=id||entry?.geometryFigureId;
     if(saved)loadGeometry(state.geometryStudio,saved);
     save();render();document.querySelector?.("[data-geometry-studio]")?.scrollIntoView?.({block:"start",behavior:"auto"});
   }

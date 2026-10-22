@@ -1,6 +1,7 @@
 /** Student-authorised graph edits and explicit links to the mathematical journey. */
 import {analyseGraph,applyPastedGraphData,newGraphDraft,normalizeGraphDraft,saveGraphFigure,splitHeading} from "./graph-core.js";
 import {completeEntry,startFirstRepresentation} from "../completing/engine.js";
+import {linkRepresentationFigure} from "./figure-linking.js";
 import {GRAPH_MODEL_TYPES,MAX_GRAPH_MODELS,normalizeGraphModels} from "./graph-models.js";
 
 const ALLOWED=new Set(Object.keys(newGraphDraft()));
@@ -143,7 +144,7 @@ export function saveAndLinkGraph(state){
  const saved=saveGraphFigure(studio,entry.id);
  if(!saved.ok)return saved;
  const reviewNeeded=flagChangedGraph(state,prior,saved.record);
- entry.graphFigureId=saved.record.id;
+ linkRepresentationFigure(state,"graph",saved.record,entry);
  if(entry.phase==="first"&&(!entry.title.trim()||["First purposeful representation","scatter","diagram","table","calculation","other"].includes(entry.title)))
   entry.title=saved.record.draft.title;
  if(!entry.technique.trim())

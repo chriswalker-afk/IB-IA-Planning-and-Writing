@@ -1,5 +1,6 @@
 import {newGeometryDraft,normalizeGeometryDraft,geometryAnalysis,geometrySignature,saveGeometryFigure,MAX_GEOMETRY_VERTICES} from "./geometry-core.js";
 import {completeEntry,startFirstRepresentation} from "../completing/engine.js";
+import {linkRepresentationFigure} from "./figure-linking.js";
 import {geometryFromTrace} from "./geometry-advanced.js";
 export function setGeometryField(studio,key,value){
  const d=studio.draft;
@@ -70,7 +71,7 @@ export function saveAndLinkGeometry(state){
  const entry=state.entries[index],saved=saveGeometryFigure(studio,entry.id);
  if(!saved.ok)return saved;
  const reviewNeeded=flagGeometryReview(state,previous,saved.record);
- entry.geometryFigureId=saved.record.id;
+ linkRepresentationFigure(state,"geometry",saved.record,entry);
  if(!entry.title?.trim())entry.title=saved.record.draft.title;
  if(!entry.technique?.trim())entry.technique="Geometric construction and measurement";
  // The diagram itself does not determine the student’s mathematical method.
