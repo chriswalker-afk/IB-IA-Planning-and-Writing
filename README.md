@@ -34,7 +34,7 @@ The site retains the published **current A–E IA assessment guidance**, includi
 ## Documentation map
 
 - [Documentation index and archive policy](docs/README.md): current guides, historical design and completed pass notes, with original files and paths retained.
-- [Cleanup Passes 1–3](docs/pass1-cleanup-audit-2026-10-22.md), [Pass 2](docs/pass2-cleanup-implementation-2026-10-22.md), [Pass 3](docs/pass3-styles-deployment-2026-10-22.md); [Pass 4 maintenance](docs/pass4-repository-maintenance-2026-10-22.md).
+- [Cleanup audit Passes 1–5](docs/README.md): [Pass 1](docs/pass1-cleanup-audit-2026-10-22.md), [Pass 2](docs/pass2-cleanup-implementation-2026-10-22.md), [Pass 3](docs/pass3-styles-deployment-2026-10-22.md), [Pass 4](docs/pass4-repository-maintenance-2026-10-22.md) and [Pass 5 final integration and regression checks](docs/pass5-final-integration-audit-2026-10-22.md).
 - [Representation integration and all seven studios](docs/representation-integration-pass5-2026-10-22.md), [16 investigative pathways](docs/expanded-applied-mathematical-routes-2026-10-16.md), [Writer's Field Guide](docs/writers-field-guide-2026-10-18.md) and [assessment criteria](docs/essentials-and-criteria-2026-10-15.md).
 - [Original source-workbook coverage](docs/coverage.md), [coverage register](docs/coverage.csv), [historical phases](docs/phase-2.md).
 
