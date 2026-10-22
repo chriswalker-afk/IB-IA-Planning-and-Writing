@@ -3110,6 +3110,8 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       return;
     }
     if(target.dataset.graphModelPeriod!==undefined){
+      const model=state.graphStudio.draft.models.find(m=>m.id===target.dataset.graphModelPeriod);
+      if(model?.period===target.value)return; // Already handled on input; don't detach the next button on blur.
       if(updateGraphModelOption(state.graphStudio,target.dataset.graphModelPeriod,"period",target.value)){
         save();refreshGraphPreview();
       }
@@ -3122,6 +3124,8 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       return;
     }
     if(target.dataset.graphModelExpression!==undefined){
+      const model=state.graphStudio.draft.models.find(m=>m.id===target.dataset.graphModelExpression);
+      if(model?.expression===target.value)return;
       if(updateGraphModelExpression(state.graphStudio,target.dataset.graphModelExpression,target.value)){
         save();refreshGraphPreview();
       }
@@ -3358,9 +3362,15 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       return;
     }
     if(target.dataset.graphField!==undefined){
-      if(updateGraphField(state.graphStudio,target.dataset.graphField,target.type==="checkbox"?target.checked:target.value)){
+      const key=target.dataset.graphField,value=target.type==="checkbox"?target.checked:target.value;
+      // Text controls have already saved and refreshed on input. A redundant
+      // change event on blur used to replace a download button during its click.
+      // Keep select/toggle change renders, which reveal conditional editors.
+      if(target.tagName!=="SELECT"&&target.type!=="checkbox"&&
+         String(state.graphStudio.draft[key]??"")===String(value))return;
+      if(updateGraphField(state.graphStudio,key,value)){
         save();
-        if(target.dataset.graphField==="modelReflection")return;
+        if(key==="modelReflection")return;
         if(target.tagName==="SELECT"||target.type==="checkbox"){
           const position=captureReturn(target);
           render();restoreReturn(position);

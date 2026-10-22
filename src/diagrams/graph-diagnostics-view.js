@@ -2,7 +2,7 @@
  * Advice asks students to interpret genuine results: it never chooses a winner
  * or asserts a residual pattern based on a small, possibly noisy sample.
  */
-import {renderGraphResidualSvg} from "./graph-core.js";
+import {renderGraphResidualSvg,validGraphSymbol} from "./graph-core.js";
 
 export const metricText=(value,digits=4)=>{
  if(value===null||value===undefined||!Number.isFinite(value))return "Undefined";
@@ -11,6 +11,7 @@ export const metricText=(value,digits=4)=>{
  return (a<0.0001||a>=1e7)?value.toExponential(digits-1):String(Number(value.toPrecision(digits)));
 };
 const unitLabel=d=>d.yUnitMode==="unit"&&d.yUnit.trim()?d.yUnit.trim():"";
+const axisVariable=(d,key)=>validGraphSymbol(d[key+"Symbol"])?d[key+"Symbol"].trim():key;
 const validModel=m=>m&&m.visible&&m.valid&&m.diagnostics?.ok;
 
 export function renderModelComparison(d,analysis,e){
@@ -51,7 +52,8 @@ export function renderResidualOptions(d,analysis,e){
   !selected.valid?"Correct its equation or choose another model.":
   !selected.diagnostics?.ok?selected.diagnostics?.reason||"Residuals unavailable for this dataset.":
   selected.diagnostics.r2===null?"The residual plot is available, but R² is undefined because every y-value is identical.":
-  "Each residual is the observed y minus that model's predicted y; the zero line means no error.";
+  "Each residual is the observed "+axisVariable(d,"y")+" minus that model's predicted "+
+   axisVariable(d,"y")+"; the zero line means no error.";
  return '<div class="graph-residual-options" aria-label="Residual diagram choices">'+
   '<h4>Examine the errors <span>Optional</span></h4>'+
   '<label class="graph-form-field"><span>Which model should I check?</span><select data-graph-field="residualModelId">'+options+'</select></label>'+
@@ -66,8 +68,8 @@ export function renderResidualPanelContents(d,analysis,icon,e){
   e(!m?"Select a model to see residuals.":!m.visible?
    "The selected model is hidden. Show it again to see the signed residuals.":
    m.diagnostics?.reason||m.error||"The selected model cannot predict every observed value.")+'</p>';
- const stats=m.diagnostics,unit=unitLabel(d);
- return '<p class="graph-residual-maths"><strong>'+e(m.label)+'</strong> · e = observed y − predicted y. Positive values mean the model under-predicted; negative values mean it over-predicted.</p>'+
+ const stats=m.diagnostics,unit=unitLabel(d),dependent=axisVariable(d,"y"),independent=axisVariable(d,"x");
+ return '<p class="graph-residual-maths"><strong>'+e(m.label)+'</strong> · e = observed '+e(dependent)+' − predicted '+e(dependent)+'. Positive values mean the model under-predicted; negative values mean it over-predicted.</p>'+
   '<div class="graph-svg-wrap graph-residual-svg-wrap" data-graph-residual-plot>'+renderGraphResidualSvg(d)+'</div>'+
   '<p class="graph-residual-explainer">The zero reference line is not a regression fit. '+e(String(stats.n))+
    ' residuals correspond to '+e(String(stats.n))+' original paired measurements.'+
@@ -77,7 +79,7 @@ export function renderResidualPanelContents(d,analysis,icon,e){
    '<button type="button" class="btn btn-secondary btn-sm" data-action="graph-residual-svg"'+(ready?"":' disabled title="Complete the required data and figure checks first"')+'>'+icon("download")+' Residual SVG</button></div>'+
   '<div class="graph-residual-prompts"><strong>Before describing your model, ask:</strong>'+
    '<ul><li>Are the residuals scattered around zero, or is there a systematic curve?</li>'+
-   '<li>Do the errors grow as x changes, or do particular observations stand out?</li>'+
+   '<li>Do the errors grow as '+e(independent)+' changes, or do particular observations stand out?</li>'+
    '<li>What do the size and pattern of these errors mean for your aim and predictions?</li></ul></div>';
 }
 export function renderResidualPanel(d,analysis,icon,e){

@@ -131,6 +131,14 @@ export function renderGraphModelControls(d,analysis,icon,e){
  return '<section class="graph-control-card graph-model-explorer" data-graph-section="models" aria-label="Optional regression and model overlays">'+
   '<h3><span>2</span> Explore a model <small>Optional</small></h3>'+
   '<p>Inspect your observations before choosing an appropriate model. All fitting is optional, and not every regression minimises the same kind of error. The mathematical method and its restrictions appear beside each model.</p>'+
+  '<div class="graph-variable-symbols" aria-label="Symbols to use in regression equations">'+
+  '<h4>Variables in your model equations</h4>'+
+  '<p>Use a meaningful single letter for each quantity, such as <strong>t</strong> for time and <strong>h</strong> for height. Your axis names and units remain separate.</p>'+
+  '<div class="graph-field-grid">'+
+  field("xSymbol","Horizontal variable",d.xSymbol,e,{placeholder:"x",hint:"Independent variable, e.g. t, r or θ."})+
+  field("ySymbol","Vertical variable",d.ySymbol,e,{placeholder:"y",hint:"Dependent variable, e.g. h, A or v."})+
+  '</div><small>The equations, key and exported figures use these letters. When typing your own model, still use x in the calculator; only the displayed notation changes.</small>'+
+  '</div>'+
   '<div class="graph-model-add">'+graphModelOptions(choice,e)+
     '<button type="button" class="btn btn-secondary btn-sm" data-action="graph-model-add"'+(full?' disabled title="Remove a model before adding another."':'')+'>'+
     icon("plus-circle")+' Add model</button></div>'+
@@ -196,7 +204,7 @@ export function renderGraphStudio(state,icon,e){
   (d.sourceKind==="secondary"?field("sourceText","Original data source (required)",d.sourceText,e,{placeholder:"Publisher, dataset name, or source URL"}):""):"")+
   '</section>'+
   '<section class="graph-control-card" data-graph-section="scale"><h3><span>'+(d.kind==="function"?"3":"4")+'</span> Review your scales</h3>'+
-  '<p>Start with automatically chosen bounds. Override them only for a mathematical reason. Both ends must be given for a manual range.</p>'+
+  '<p>Start with automatically chosen bounds. Override them only for a mathematical reason. Both ends must be given for a manual range. If zero is outside an axis range, a small break mark is added automatically to the figure; no mark is shown when zero is included.</p>'+
   '<div class="graph-field-grid">'+field("xMin","x minimum",d.xMin,e,{placeholder:d.kind==="function"?"-10":"Auto"})+
   field("xMax","x maximum",d.xMax,e,{placeholder:d.kind==="function"?"10":"Auto"})+
   field("yMin","y minimum",d.yMin,e,{placeholder:"Auto"})+

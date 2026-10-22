@@ -54,6 +54,35 @@ def data_graph(page,width):
  assert page.locator('[data-graph-preview] circle').count()==4
  assert page.locator('[data-graph-preview] path[stroke="#137d75"]').count()==0
  assert page.locator('[data-graph-preview] svg text').count()>5
+ # A zero-inclusive automatic viewport must not suggest a truncated axis.
+ assert page.locator('[data-graph-preview] [data-graph-axis-break]').count()==0
+ # Cropping a positive range adds a visible break to each affected axis,
+ # including the actual SVG download and independent of grid visibility.
+ for key,value in (("xMin","1"),("xMax","4"),("yMin","1"),("yMax","9")):
+  page.locator('[data-graph-field="'+key+'"]').fill(value)
+ assert page.locator('[data-graph-preview] [data-graph-axis-break="x"]').count()==1
+ assert page.locator('[data-graph-preview] [data-graph-axis-break="y"]').count()==1
+ assert page.locator('[data-action="graph-svg"]').is_enabled(),page.locator('[data-graph-quality]').inner_text()
+ try:
+  with page.expect_download(timeout=5000) as broken:
+   page.locator('[data-action="graph-svg"]').click()
+ except Exception:
+  print("AXIS SVG EXPORT DIAGNOSTIC:",json.dumps({
+   "toast":page.locator("#toast").inner_text(),
+   "quality":page.locator('[data-graph-quality]').inner_text(),
+   "draftBounds":{k:saved(page)["graphStudio"]["draft"][k] for k in ["xMin","xMax","yMin","yMax"]},
+   "previewBreaks":page.locator('[data-graph-preview] [data-graph-axis-break]').count()
+  }),flush=True)
+  raise
+ broken_svg=Path(broken.value.path()).read_text(encoding="utf-8")
+ assert 'data-graph-axis-break="x"' in broken_svg
+ assert 'data-graph-axis-break="y"' in broken_svg
+ page.locator('[data-graph-field="xMin"]').fill("0")
+ page.locator('[data-graph-field="yMin"]').fill("0")
+ assert page.locator('[data-graph-preview] [data-graph-axis-break]').count()==0
+ page.locator('[data-action="graph-clear-scale"]').click()
+ assert saved(page)["graphStudio"]["draft"]["xMin"]==""
+ no_overflow(page)
  with page.expect_download() as download:
   page.locator('[data-action="graph-svg"]').click()
  assert download.value.suggested_filename.endswith(".svg")
@@ -68,6 +97,25 @@ def data_graph(page,width):
  page.locator('[data-action="graph-model-add"]').click()
  assert page.locator('[data-graph-preview] .graph-model-overlay').count()==1
  assert "Linear regression" in page.locator('[data-graph-model]').first.inner_text()
+ assert "y ≈" in page.locator('[data-graph-model-summary]').first.inner_text()
+ page.locator('[data-graph-field="xSymbol"]').fill("t")
+ page.locator('[data-graph-field="ySymbol"]').fill("h")
+ assert "h ≈" in page.locator('[data-graph-model-summary]').first.inner_text()
+ assert "t" in page.locator('[data-graph-model-summary] .graph-model-equation').inner_text()
+ visible_labels=page.locator('[data-graph-preview] svg text').all_text_contents()
+ assert "Time, t (s)" in visible_labels,visible_labels
+ assert "Distance, h (m)" in visible_labels,visible_labels
+ assert any("Linear regression: h ≈" in line for line in page.locator('[data-graph-preview] .graph-legend-text').all_text_contents())
+ with page.expect_download() as fitted:
+  page.locator('[data-action="graph-svg"]').click()
+ displayed_svg=Path(fitted.value.path()).read_text(encoding="utf-8")
+ assert "Linear regression: h ≈" in displayed_svg
+ assert "Time, t (s)" in displayed_svg
+ page.reload(wait_until="networkidle")
+ assert saved(page)["graphStudio"]["draft"]["xSymbol"]=="t"
+ assert saved(page)["graphStudio"]["draft"]["ySymbol"]=="h"
+ page.locator('[data-graph-field="xSymbol"]').fill("x")
+ page.locator('[data-graph-field="ySymbol"]').fill("y")
  assert "y ≈" in page.locator('[data-graph-model-summary]').first.inner_text()
  page.locator('[data-graph-field="modelChoice"]').select_option("quadratic")
  page.locator('[data-action="graph-model-add"]').click()
@@ -182,6 +230,8 @@ def data_graph(page,width):
  svg_width=int(figure_svg.get_attribute("width"))
  svg_height=int(figure_svg.get_attribute("height"))
  assert (width_px,height_px)==(3*svg_width,3*svg_height),(width_px,height_px,svg_width,svg_height)
+ page.locator('[data-graph-field="xSymbol"]').fill("t")
+ page.locator('[data-graph-field="ySymbol"]').fill("h")
  page.locator('[data-action="graph-use"]').click()
  assert page.locator('[data-source-node="C30"]').count()==1
  snapshot=saved(page)
@@ -190,6 +240,9 @@ def data_graph(page,width):
  assert snapshot["entries"][0]["status"]=="planned"
  assert snapshot["entries"][0]["result"]==""
  assert snapshot["entries"][0]["graphFigureId"]==snapshot["graphStudio"]["figures"][0]["id"]
+ assert snapshot["graphStudio"]["figures"][0]["draft"]["xSymbol"]=="t"
+ assert snapshot["graphStudio"]["figures"][0]["draft"]["ySymbol"]=="h"
+ assert any("Linear regression: h ≈" in line for line in page.locator('.graph-entry-preview svg text').all_text_contents())
  assert page.locator(".graph-entry-preview svg.graph-figure-svg").count()==1
  # The embedded tool catalogue also offers graph-open; reopen the saved figure itself.
  assert page.locator('.graph-entry-preview [data-action="graph-open"]').count()==1
