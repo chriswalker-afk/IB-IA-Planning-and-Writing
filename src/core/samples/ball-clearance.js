@@ -103,7 +103,7 @@ const STUDY={
       "nextWhy": "The purpose is clearance at X=450 rather than simply finding the highest point.",
       "mathsInsight": "A low fitting RMSE does not say whether a seven-pixel clearance is robust to choosing positions from an image.",
       "methodChangeReason": "I evaluated the fixed curve at the obstacle rather than fitting extra terms to reduce its residual further.",
-      "outcomeId": "fits"
+      "outcomeId": "model-fit"
     },
     {
       "key": "nominal-clearance",
