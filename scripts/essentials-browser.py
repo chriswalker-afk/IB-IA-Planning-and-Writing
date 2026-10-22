@@ -124,16 +124,20 @@ with sync_playwright() as pw:
   assert stored(p)==before
  run('criteria-theoretical-context',fixture('C20',kind='theoretical'),theory,390,844)
  def pending(p):
-  badge=p.locator('[data-criterion-badge="completing:C34B:title"]')
-  assert badge.is_visible()
-  before=stored(p)
-  badge.click()
-  guidance=p.locator('#criterionBadgeDialog').inner_text().lower()
-  assert 'planned' in guidance or 'actual' in guidance
-  assert 'this actual result means' not in guidance
-  p.locator('#criterionBadgeDialog [data-criterion-badge-close]').first.click()
-  assert stored(p)==before
- s=fixture('C34B');s['entries'][0]['status']='planned'
+  # Current four-part First Mathematics writing separates a proposed step from
+  # genuine completed calculations. C34B's retired standalone title view is
+  # intentionally not a visible navigation target.
+  assert p.locator('[data-source-node="C30"]').count()==1
+  assert p.locator('.show-first-draft-note').count()>=1
+  assert p.locator('.show-first-result-anchor').count()==0
+  body=p.locator('#main').inner_text().lower()
+  assert 'actual' in body or 'real' in body
+  assert 'not automatically treated as established findings' in body or 'not a finding' in body
+  assert saved(p)['entries'][0]['result']==""
+  assert saved(p)['entries'][0]['status']=="planned"
+ s=fixture('C30')
+ s['entries']=[{'id':'fictional-first','phase':'first','status':'planned','result':'','title':'A proposed graph'}]
+ s['completion']['activeEntryIndex']=0
  run('criteria-never-invents-results',s,pending)
  def writing(p):
   # Writing advice is in the live Writer's Field Guide and the student's
