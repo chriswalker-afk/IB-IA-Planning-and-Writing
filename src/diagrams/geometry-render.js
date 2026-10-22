@@ -95,7 +95,7 @@ export function renderGeometrySvg(raw,{interactive=false}={}){
    const sweep=rawAngle>180?(cross>0?0:1):(cross>0?1:0);
    const startX=p.sx+aX/la*radius,startY=p.sy+aY/la*radius;
    const endX=p.sx+bX/lb*radius,endY=p.sy+bY/lb*radius;
-   if(Number.isFinite(rawAngle)&&rawAngle>1e-5&&rawAngle<359.999){
+   if(!p.rightAngle&&Number.isFinite(rawAngle)&&rawAngle>1e-5&&rawAngle<359.999){
     out.push('<path class="geometry-angle-arc" d="M'+num(startX)+' '+num(startY)+
       ' A'+radius+' '+radius+' 0 '+(rawAngle>180?1:0)+' '+sweep+' '+num(endX)+' '+num(endY)+
       '" stroke="#a06f37" stroke-width="2" fill="none"/>');

@@ -119,3 +119,20 @@ test("all geometry text labels expose optional shared mathematical notation cont
  assert(markup.includes('data-notation-studio="geometry" data-notation-key="unit"'));
  assert(markup.includes('data-action="geometry-new"'));
 });
+
+test("angle arcs, captions and display-only guidance obey IA figure settings",()=>{
+ const d=newGeometryDraft("triangle");
+ d.mode="coordinate";d.showAngles=true;d.caption="Survey triangle";d.figureNumber="4";
+ d.showCaption=true;d.showTitle=false;
+ const svg=renderGeometrySvg(d);
+ assert.match(svg,/geometry-angle-arc/);
+ assert.match(svg,/Figure 4\. Survey triangle/);
+ assert.doesNotMatch(svg,/Labelled triangle|Coordinate length unit:|Student-entered side and angle labels/);
+ d.vertices[0].rightAngle=true;d.vertices[2].x=0;
+ assert.equal(geometryAnalysis(d).ready,true);
+ const rightSvg=renderGeometrySvg(d);
+ assert.equal((rightSvg.match(/class="geometry-angle-arc"/g)||[]).length,2,"A right-angle square replaces the arc");
+ const restored=normalizeGeometryStudio({draft:d,figures:[],open:true});
+ assert.equal(restored.draft.caption,"Survey triangle");
+ assert.equal(restored.draft.showTitle,false);
+});
