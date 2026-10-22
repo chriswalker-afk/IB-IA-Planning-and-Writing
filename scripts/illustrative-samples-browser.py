@@ -140,15 +140,16 @@ def check_exports(page,kind,sample,figure_count):
  assert "Conclusion" in text
  assert "My method and why I chose it" not in text,"field labels leaked into the IA"
  assert sum(len(part.images) for part in pdf.pages)>=figure_count
+ # Normalize punctuation in extracted PDF text as well as narrative probes.
+ def comparable(value):
+  return " ".join(value.translate(str.maketrans({"–":"-","—":"-","−":"-","‘":"'","’":"'","“":'"',"”":'"',"…":"..."})).split())
  # Check the full conclusion, without padding the narrative to a page quota.
  prose=re.split(r'\\\([\s\S]*?\\\)|\\\[[\s\S]*?\\\]',sample["completion"]["fields"]["mainConclusion"])
  concluding_words=max(prose,key=len).strip()[:70]
- assert " ".join(concluding_words.split()) in " ".join(text.split())
+ assert comparable(concluding_words) in comparable(text)
  assert all((part.extract_text() or "").strip() for part in pdf.pages),"empty PDF page"
  # The section heading must share its page with following content. The PDF
  # renderer normalizes typographic punctuation for its standard body font.
- def comparable(value):
-  return " ".join(value.translate(str.maketrans({"–":"-","—":"-","−":"-","‘":"'","’":"'","“":'"',"”":'"',"…":"..."})).split())
  pages=[comparable(part.extract_text() or "") for part in pdf.pages]
  for title in EXPECTED[kind]["sectionTitles"]:
   needle=comparable(title)
@@ -165,7 +166,7 @@ def check_exports(page,kind,sample,figure_count):
   assert "Starting material and mathematical approach" in text
   assert "About this fictional example" in text
   assert "About this full working record" not in text
-  assert " ".join(concluding_words.split()) in " ".join(text.split())
+  assert comparable(concluding_words) in comparable(text)
   assert len([name for name in archive.namelist() if name.startswith("word/media/")])>=figure_count
   assert "customXml/iaPathfinderPlan.xml" in archive.namelist()
  return {"pdfPages":len(pdf.pages),"pdfBytes":pdf_path.stat().st_size,"wordBytes":word_path.stat().st_size}
