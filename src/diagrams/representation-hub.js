@@ -157,7 +157,7 @@ export function renderRepresentationHub(state,icon,e){
  '<strong>'+e(advice.reason)+'</strong>'+
  (reduced?"":'<p>Suggestions reflect your current method, a confirmed next question or a provisional plan. They do not identify a pattern in your data or require a particular generator.</p>')+'</div>'+
  '<span class="representation-context-count">'+total+' matching tool'+(total===1?"":"s")+'</span></div>'+
- (reduced?'<details class="representation-optional-context"><summary>'+icon("circle-help")+
+ (reduced?'<details class="representation-optional-context"><summary>'+icon("info")+
   ' Why these tools? (optional)</summary><p>'+e(suggestions.note)+'</p>'+
    renderHubDatasetEvidence(state,advice,icon,e)+'</details>':
   renderHubDatasetEvidence(state,advice,icon,e))+
