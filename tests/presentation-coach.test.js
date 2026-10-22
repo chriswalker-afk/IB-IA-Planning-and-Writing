@@ -92,17 +92,17 @@ test("a new mathematical stage is not forced to repeat the earlier planning meth
  assert.match(advice.why[0],/current question/);
  assert.deepEqual(contextualRepresentationAdvice(s,advice).ids,["graph","table"]);
 });
-test("current probability methods recommend actual available tools without pretending the future tree studio exists",()=>{
+test("current probability methods recommend the operational probability tree with suitable alternatives",()=>{
  const s=paired();
  s.route="completing";s.completion.current="C40";
  s.planning.routeExplorer.selectedRoute="fitted-models";
  s.entries=[{id:"chance",phase:"substantial",methodId:"probability",status:"planned",result:""}];
  s.completion.activeEntryIndex=0;
  const a=contextualRepresentationAdvice(s,representationAdvice(s));
- assert.deepEqual(a.ids,["table","stat"]);
+ assert.deepEqual(a.ids,["probability","table"]);
  assert.match(renderRepresentationHub(s,icon,esc),/Conditional probability or expected value/);
  assert(renderRepresentationHub(s,icon,esc).includes('data-action="geometry-open"'),"Other optional creators remain discoverable");
- assert(!renderRepresentationHub(s,icon,esc).includes('data-action="probability-open"'));
+ assert(renderRepresentationHub(s,icon,esc).includes('data-action="probability-open"'));
 });
 test("one numerical column recommends a distribution when no route is selected",()=>{
  const s=createProjectState();

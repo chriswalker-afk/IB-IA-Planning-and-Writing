@@ -12,7 +12,7 @@ const e=x=>String(x).replaceAll("&","&amp;").replaceAll("<","&lt;");
 test("generator icon references resolve to local SVG definitions",()=>{
  const names=new Set([...read("index.html").matchAll(/<symbol\s+id="i-([^"]+)"/g)].map(m=>m[1]));
  const files=["src/completing/views.js","src/diagrams/representation-hub.js",...[
-  "graph-view","stat-studio-view","table-studio-view","image-tracer-view","voronoi-view","geometry-view"
+  "graph-view","stat-studio-view","table-studio-view","image-tracer-view","voronoi-view","geometry-view","probability-view"
  ].map(x=>"src/diagrams/"+x+".js")];
  const missing=[];
  for(const file of files)for(const match of read(file).matchAll(/\bicon\(\s*["']([^"']+)["']/g))
@@ -56,7 +56,7 @@ test("focus CSS requires activation and does not remove the IA writing content",
 });
 
 test("one registry supplies all creator stores, figure link keys, and gallery metadata",()=>{
- assert.equal(REPRESENTATION_TOOLS.length,6,"Only implemented generators should be listed");
+ assert.equal(REPRESENTATION_TOOLS.length,7,"Every implemented generator should be registered exactly once");
  assert.deepEqual(new Set(REPRESENTATION_TOOLS.map(t=>t.id)).size,REPRESENTATION_TOOLS.length);
  const gallery=new Map(FIRST_FIGURE_TYPES.map(t=>[t.kind,t]));
  for(const tool of REPRESENTATION_TOOLS){
@@ -67,7 +67,7 @@ test("one registry supplies all creator stores, figure link keys, and gallery me
   assert.equal(representationFigureKey(tool.id+":abc-12").tool.id,tool.id);
  }
  assert.ok(representationTool("geometry"),"Pass 2 Geometry Studio is implemented");
- assert.equal(representationTool("probability"),null,"Probability editor is not implemented in Pass 1");
+ assert.ok(representationTool("probability"),"Pass 4 Probability Tree Studio is implemented");
  assert.equal(representationFigureKey("geometry:abc-12").id,"abc-12");
 });
 test("registry switching keeps exactly one editor open and preserves saved figure data",()=>{
@@ -79,8 +79,9 @@ test("registry switching keeps exactly one editor open and preserves saved figur
  assert.equal(activeRepresentationTool(state).id,"trace");
  assert.equal(state.graphStudio.open,false);
  assert.equal(state.graphStudio.draft.title,"My existing graph");
- assert.equal(activateRepresentationTool(state,"probability"),false);
- assert.equal(activeRepresentationTool(state).id,"trace");
+ assert.equal(activateRepresentationTool(state,"probability"),true);
+ assert.equal(activeRepresentationTool(state).id,"probability");
+ assert.equal(state.imageTracer.open,false);
  closeRepresentationTools(state);
  assert.equal(activeRepresentationTool(state),null);
  const restored=normalizeProjectState(state);

@@ -61,6 +61,9 @@ import {renderGeometrySvg,geometryLayout} from "../src/diagrams/geometry-render.
 import {geometryPreviewHtml,geometryQualityHtml} from "../src/diagrams/geometry-view.js";
 import {setGeometryField,setGeometryVertex,geometryTemplate,geometryAddVertex,geometryRemoveVertex,geometryFresh,loadGeometry,saveGeometryDraft,saveAndLinkGeometry} from "../src/diagrams/geometry-actions.js";
 import {exportGeometry} from "../src/diagrams/geometry-export.js";
+import {probabilityPreviewHtml,probabilityQualityHtml,probabilityOutputHtml} from "../src/diagrams/probability-view.js";
+ import {setProbabilityField,setProbabilityStage,setProbabilityBranch,toggleProbabilityLeaf,freshProbability,loadProbability,saveProbabilityDraft,saveAndLinkProbability} from "../src/diagrams/probability-actions.js";
+ import {exportProbability} from "../src/diagrams/probability-export.js";
 import {renderRepresentationHub,renderRepresentationSwitcher,representationFocusActive} from "../src/diagrams/representation-hub.js";
 import {REPRESENTATION_TOOLS,representationTool,activeRepresentationTool,closeRepresentationTools,activateRepresentationTool,representationFigureKey,representationReturnNode} from "../src/diagrams/representation-registry.js";
 import {renderPresentationCoach,renderFigureHandover} from "../src/diagrams/presentation-coach-view.js";
@@ -137,6 +140,8 @@ function createHarness(savedValue,{welcome=false}={}){
     setVoronoiField,setVoronoiSite,addVoronoiSite,removeVoronoiSite,clearVoronoiMap,useVoronoiMap,
     beginVoronoi,loadVoronoi,saveVoronoiDraft,saveAndLinkVoronoi,exportVoronoi,
     geometryAnalysis,renderGeometrySvg,geometryLayout,geometryPreviewHtml,geometryQualityHtml,setGeometryField,setGeometryVertex,geometryTemplate,geometryAddVertex,geometryRemoveVertex,geometryFresh,loadGeometry,saveGeometryDraft,saveAndLinkGeometry,exportGeometry,
+    probabilityPreviewHtml,probabilityQualityHtml,probabilityOutputHtml,
+    setProbabilityField,setProbabilityStage,setProbabilityBranch,toggleProbabilityLeaf,freshProbability,loadProbability,saveProbabilityDraft,saveAndLinkProbability,exportProbability,
     renderRepresentationHub,renderRepresentationSwitcher,representationFocusActive,renderPresentationCoach,renderFigureHandover,figureCaption,
     REPRESENTATION_TOOLS,representationTool,activeRepresentationTool,closeRepresentationTools,activateRepresentationTool,representationFigureKey,representationReturnNode,
     displayVoronoiBounds,coordinateFromCanvas,canvasPosition,voronoiFrame,recordVoronoiHistory,applyVoronoiFrame,undoVoronoi,redoVoronoi,freezeVoronoiWindow,fitVoronoiSites,setVoronoiTool,selectVoronoiSite,moveVoronoiSite,proposeVoronoiComparison,showVoronoiComparison,finishVoronoiComparison,selectNearestBisector,
@@ -1246,7 +1251,7 @@ test("Writing welcome explains available tools, preserves saved work, and can be
 });
 
 test("Tools & tutorials opens every built-in diagram creator and returns to Planning without losing work",()=>{
- const keys={graph:"graphStudio",stat:"statStudio",table:"tableStudio",trace:"imageTracer",voronoi:"voronoiStudio",geometry:"geometryStudio"};
+ const keys={graph:"graphStudio",stat:"statStudio",table:"tableStudio",trace:"imageTracer",voronoi:"voronoiStudio",geometry:"geometryStudio",probability:"probabilityStudio"};
  for(const [type,studio] of Object.entries(keys)){
   const state=createProjectState();
   state.route="planning";state.ui.planningIntroSeen=true;state.planning.current="N01";
