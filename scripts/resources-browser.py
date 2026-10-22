@@ -26,6 +26,44 @@ def open_library(p):
  assert visible.count(),'No visible Tools & tutorials control'
  visible.first.click()
  assert p.locator('.resource-drawer').is_visible()
+def reveal_control(p,target):
+ # Optional tool suggestions may be inside collapsed, student-controlled
+ # mathematical-stage sections. Open the actual outermost disclosure(s).
+ for _ in range(6):
+  if target.is_visible():return
+  closed=target.locator('xpath=ancestor::details[not(@open)]')
+  assert closed.count(),'Requested help is not visible and has no expandable ancestor'
+  outer=closed.first
+  summary=outer.locator('xpath=./summary')
+  assert summary.count() and summary.first.is_visible(),'Help disclosure inaccessible'
+  summary.first.click()
+ assert target.is_visible(),'Help control remained hidden after expanding its sections'
+def click_context_resource(p,id):
+ options=p.locator('[data-action="resource-open"][data-resource-id="'+id+'"]')
+ visible=p.locator('[data-action="resource-open"][data-resource-id="'+id+'"]:visible')
+ if visible.count():visible.first.click();return
+ assert options.count(),'Expected contextual resource is absent: '+id
+ target=options.first
+ reveal_control(p,target)
+ target.click()
+def click_context_hide(p):
+ target=p.locator('[data-action="resource-hide"]:visible')
+ if target.count():target.first.click();return
+ raw=p.locator('[data-action="resource-hide"]')
+ assert raw.count(),'The stage should offer a dismissible resource suggestion'
+ reveal_control(p,raw.first)
+ raw.first.click()
+def open_help_stuck(p):
+ visible=p.locator('[data-action="open-stuck"]:visible')
+ if visible.count():visible.first.click();return
+ help=p.locator('[data-action="open-panel"][data-panel="help"]:visible')
+ assert help.count(),'Help must remain available to students'
+ help.first.click()
+ target=p.locator('.drawer [data-action="open-stuck"]')
+ assert target.is_visible()
+ target.click()
+ assert p.locator('.drawer .stuck-topics').count()>=1
+
 def detail(p,id):p.locator('.resource-library [data-action="resource-open"][data-resource-id="'+id+'"]:visible').first.click()
 def choice(p,key,value):
  p.locator('.resource-preferences > summary').click() if p.locator('.resource-preferences').get_attribute('open') is None else None
@@ -58,11 +96,11 @@ with sync_playwright() as pw:
  run('resources-planning-preservation',state(route='planning'),planning)
  def pmcc(p):
   assert p.locator('[data-resource-suggestion="sheets-pmcc"]').count()==1;before=unchanged_fields(saved(p));open_library(p);choice(p,'tool','desmos');close(p)
-  assert p.locator('[data-resource-suggestion="desmos-pmcc"]').count()==1;p.locator('[data-resource-id="desmos-pmcc"]').first.click();assert 'corr(x_1,y_1)' in overlay(p).inner_text();assert unchanged_fields(saved(p))==before
+  assert p.locator('[data-resource-suggestion="desmos-pmcc"]').count()==1;click_context_resource(p,'desmos-pmcc');assert 'corr(x_1,y_1)' in overlay(p).inner_text();assert unchanged_fields(saved(p))==before
   overlay(p).screenshot(path=str(OUT/'resources-pmcc-phone.png'),animations='disabled')
  run('resources-selected-tool-pmcc',state(),pmcc)
  def interpret(p):
-  assert p.locator('[data-resource-suggestion="pmcc-meaning"]').count()==1;p.locator('[data-resource-id="pmcc-meaning"]').first.click();assert 'Understand and check' in overlay(p).inner_text()
+  assert p.locator('[data-resource-suggestion="pmcc-meaning"]').count()==1;click_context_resource(p,'pmcc-meaning');assert 'Understand and check' in overlay(p).inner_text()
   assert 'does not establish' in overlay(p).inner_text();assert p.locator('[data-source-node="C35"]').count()==1
  run('resources-real-result-interpretation',state(node='C35',status='completed'),interpret)
  def filtering(p):
@@ -75,7 +113,7 @@ with sync_playwright() as pw:
  run('resources-filter-pagination-and-back',state(),filtering,1440,1000)
  def image(p):
   before=unchanged_fields(saved(p));open_library(p);choice(p,'image','import');close(p);assert p.locator('[data-resource-suggestion="image-import"]').count()==1
-  p.locator('[data-resource-id="image-import"]').first.click();p.locator('.resource-related > summary').click();detail(p,'image-scale');assert '25' in overlay(p).inner_text()
+  click_context_resource(p,'image-import');p.locator('.resource-related > summary').click();detail(p,'image-scale');assert '25' in overlay(p).inner_text()
   p.locator('.resource-related > summary').click();detail(p,'image-route');p.locator('.resource-related > summary').click();detail(p,'image-visual');assert 'visual' in overlay(p).inner_text().lower()
   choice(p,'image','points');close(p);assert p.locator('[data-resource-suggestion="image-points"]').count()==1;assert unchanged_fields(saved(p))==before
  run('resources-image-paths-do-not-change-method',state(method='other'),image)
@@ -85,19 +123,19 @@ with sync_playwright() as pw:
   p.evaluate('([k,s])=>localStorage.setItem(k,JSON.stringify(s))',[KEY,data]);p.reload(wait_until='networkidle');assert p.locator('[data-resource-suggestion="image-scale"]').count()==1
  run('resources-scale-recheck-after-change',state(node='C35',method='quadratic-fit',status='completed'),review)
  def stuck(p):
-  p.locator('[data-action="open-stuck"]').first.click();p.locator('.drawer [data-topic="calculation"]').click()
+  open_help_stuck(p);p.locator('.drawer [data-topic="calculation"]').click()
   p.locator('.drawer [data-action="resource-browse"]').first.click();p.locator('#resource-search').fill('PMCC');detail(p,'sheets-pmcc')
   p.locator('.resource-videos > summary').click();assert 'not been watched end to end' in overlay(p).inner_text();close(p)
   assert p.locator('.drawer .stuck-heading').inner_text()=='My calculation or software is not working'
  run('resources-return-to-stuck-topic',state(),stuck)
  def writer(p):
-  p.locator('[data-action="open-stuck"]').first.click();topic=p.locator('.drawer [data-action="stuck-topic"][data-topic="writing"]')
+  open_help_stuck(p);topic=p.locator('.drawer [data-action="stuck-topic"][data-topic="writing"]')
   if not topic.is_visible():p.locator('.drawer .stuck-browse > summary').click()
   topic.click();p.locator('.drawer [data-action="stuck-work"]').click();assert p.locator('[data-resource-suggestion="pmcc-meaning"]').count()==1
-  p.locator('[data-resource-id="pmcc-meaning"]').first.click();close(p);assert p.locator('[data-source-node="C96"]').count()==1
+  click_context_resource(p,'pmcc-meaning');close(p);assert p.locator('[data-source-node="C96"]').count()==1
  run('resources-writing-helper-origin',state(node='C34B',status='completed'),writer)
  def hide(p):
-  p.locator('[data-action="resource-hide"]').first.click();assert p.locator('[data-resource-suggestion]').count()==0;p.reload(wait_until='networkidle');assert p.locator('[data-resource-suggestion]').count()==0
+  click_context_hide(p);assert p.locator('[data-resource-suggestion]').count()==0;p.reload(wait_until='networkidle');assert p.locator('[data-resource-suggestion]').count()==0
   open_library(p);p.locator('#resource-search').fill('PMCC');detail(p,'sheets-pmcc');assert 'Read the steps' in overlay(p).inner_text()
  run('resources-dismissal-and-manual-access',state(),hide)
  def no_network(p):
@@ -108,7 +146,7 @@ with sync_playwright() as pw:
   overlay(p).screenshot(path=str(OUT/'resources-video-fallback-phone.png'),animations='disabled')
  run('resources-no-automatic-external-request',state(),no_network)
  def practice(p):
-  before=unchanged_fields(saved(p));p.locator('[data-resource-id="sheets-pmcc"]').first.click();p.locator('.resource-practice > summary').click();p.locator('[data-action="resource-copy"]').click()
+  before=unchanged_fields(saved(p));click_context_resource(p,'sheets-pmcc');p.locator('.resource-practice > summary').click();p.locator('[data-action="resource-copy"]').click()
   p.wait_for_function('document.querySelector("#resource-copy-status").textContent.length>0');assert 'practice' in p.locator('#resource-practice-data').input_value();assert unchanged_fields(saved(p))==before
  run('resources-practice-never-becomes-evidence',state(),practice)
  def backup(p):
