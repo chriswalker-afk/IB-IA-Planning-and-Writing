@@ -92,8 +92,9 @@ def data_graph(page,width):
  page.locator('[data-graph-field="ySymbol"]').fill("h")
  assert "h ≈" in page.locator('[data-graph-model-summary]').first.inner_text()
  assert "t" in page.locator('[data-graph-model-summary] .graph-model-equation').inner_text()
- assert "Time, t (s)" in page.locator('[data-graph-preview]').inner_text()
- assert "Distance, h (m)" in page.locator('[data-graph-preview]').inner_text()
+ visible_labels=page.locator('[data-graph-preview] svg text').all_text_contents()
+ assert "Time, t (s)" in visible_labels,visible_labels
+ assert "Distance, h (m)" in visible_labels,visible_labels
  assert any("Linear regression: h ≈" in line for line in page.locator('[data-graph-preview] .graph-legend-text').all_text_contents())
  with page.expect_download() as fitted:
   page.locator('[data-action="graph-svg"]').click()
@@ -231,7 +232,7 @@ def data_graph(page,width):
  assert snapshot["entries"][0]["graphFigureId"]==snapshot["graphStudio"]["figures"][0]["id"]
  assert snapshot["graphStudio"]["figures"][0]["draft"]["xSymbol"]=="t"
  assert snapshot["graphStudio"]["figures"][0]["draft"]["ySymbol"]=="h"
- assert "Linear regression: h ≈" in page.locator('.graph-entry-preview').inner_text()
+ assert any("Linear regression: h ≈" in line for line in page.locator('.graph-entry-preview svg text').all_text_contents())
  assert page.locator(".graph-entry-preview svg.graph-figure-svg").count()==1
  # The embedded tool catalogue also offers graph-open; reopen the saved figure itself.
  assert page.locator('.graph-entry-preview [data-action="graph-open"]').count()==1
