@@ -99,6 +99,11 @@ with sync_playwright() as pw:
   p.locator('#source-manager > summary').click()
   a=BASE['completion']['sourceRecords'][0]['id']
   action(p,'conformance-source-select','[data-id="'+a+'"]')
+  # Selecting a different source refreshes the page and intentionally closes
+  # optional disclosure panels. Reopen the relevant section before editing.
+  outer=p.locator('[data-first-maths-source-details]')
+  if outer.get_attribute('open') is None:outer.locator('summary').first.click()
+  assert p.locator('[data-bind="completion.fields.actualMethod"]').is_visible()
   fill(p,'completion.fields.actualMethod','Corrected measured distance definition')
   s=saved(p);assert s['entries'][0]['reviewNeeded']=='yes';assert s['entries'][2]['reviewNeeded']=='yes';assert s['entries'][1].get('reviewNeeded')!='yes';assert s['entries'][3].get('reviewNeeded')!='yes'
   assert s['entries'][0]['interpretation']=='The changing rate matters to the aim'
