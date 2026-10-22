@@ -69,7 +69,11 @@ def scenario(p,method,signal,word,width):
  p.locator('[data-action="toggle-advice-mode"]').first.click()
  assert saved(p)["ui"]["adviceMode"]=="reduced"
  assert p.locator(".route-coach-compact").is_visible()
- assert p.locator(".route-depth-check").is_visible()
+ # A confirmed outcome replaces the generic mathematical-development note
+ # with an explicit consequence and validity check, even in reduced mode.
+ assert p.locator(".journey-outcome-meaning").is_visible()
+ assert "Before claiming this:" in p.locator(".journey-outcome-meaning").inner_text()
+ assert p.locator(".route-coach-essential").is_visible()
  assert not p.locator(".route-coach-detail").count()
  assert p.locator('[data-bind="entries.0.journeyOutcome"]').input_value()==expected
  p.reload(wait_until="networkidle")
@@ -82,13 +86,21 @@ def scenario(p,method,signal,word,width):
  assert p.evaluate("document.documentElement.scrollWidth <= innerWidth+1")
  p.screenshot(path=str(OUT/("extended-route-"+method+"-"+str(width)+".png")),full_page=True)
 def planned_scenario(p,method):
+ # Current writing keeps method preflight help inside an optional details
+ # disclosure, not in the main student-writing column.
+ optional=p.locator(".math-stage-optional-method")
+ assert optional.count()==1
+ optional.locator('summary').click()
  assert p.locator(".route-preflight").is_visible()
  assert p.locator(".route-preflight").inner_text().strip()
  assert not p.locator(".route-coach").count()
  assert p.locator('[data-journey-outcome-waiting]').count()==1
  p.locator('[data-action="toggle-advice-mode"]').first.click()
- assert p.locator(".route-preflight").is_visible()
  assert saved(p)["ui"]["adviceMode"]=="reduced"
+ optional=p.locator(".math-stage-optional-method")
+ if not optional.get_attribute('open'):
+  optional.locator('summary').click()
+ assert p.locator(".route-preflight").is_visible()
  assert p.locator(".route-preflight").inner_text().count("Before applying")>0
  # An actual result is required before outcome options or meaningful advice.
  status=p.locator('[data-bind="entries.0.status"]')
