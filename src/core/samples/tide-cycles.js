@@ -146,7 +146,7 @@ const STUDY={
   ],
   "figures": [
     {
-      "id": "p3-tide-all",
+      "id": "figure-p3-tide-all",
       "tool": "graph",
       "stage": 0,
       "after": "purpose",
@@ -368,7 +368,7 @@ const STUDY={
       "caption": "Values at every integer hour. The model fitting range ends at t=35; the complete fourth cycle from t=36 is reserved."
     },
     {
-      "id": "p3-tide-fit",
+      "id": "figure-p3-tide-fit",
       "tool": "graph",
       "stage": 1,
       "after": "result",
@@ -546,7 +546,7 @@ const STUDY={
       "caption": "The single sinusoid has a fixed twelve-hour period. Only the first 36 values determined its coefficients."
     },
     {
-      "id": "p3-tide-residuals",
+      "id": "figure-p3-tide-residuals",
       "tool": "graph",
       "stage": 2,
       "after": "result",
@@ -777,7 +777,7 @@ const STUDY={
       "caption": "Residual = constructed height − fixed fitted model. The last 13 values are out-of-fit checking cases; patterns reflect the omitted 24-hour component."
     },
     {
-      "id": "p3-tide-threshold",
+      "id": "figure-p3-tide-threshold",
       "tool": "graph",
       "stage": 3,
       "after": "purpose",
@@ -863,7 +863,7 @@ const STUDY={
       "caption": "The horizontal line is the invented decision threshold, not a measured datum. The continuous modelled crossings are calculated separately."
     },
     {
-      "id": "p3-tide-windows",
+      "id": "table-p3-tide-windows",
       "tool": "table",
       "stage": 3,
       "after": "result",
