@@ -183,30 +183,37 @@ export function representationFocusActive(state){
 }
 export function renderRepresentationSwitcher(state,icon,e){
  const active=activeRepresentationTool(state);
- const steps=[["create","1 · Create"],["refine","2 · Refine"],["use","3 · Use in IA"]];
  const fromLibrary=state.ui?.resourceCreatorReturnRoute||"";
  const originLabel={
   home:"Back to Home",planning:"Back to Planning",completing:"Back to IA Studio",
   checking:"Back to Checking",path:"Back to My path",report:"Back to my report"
  };
- const backButton=fromLibrary?
-  '<button type="button" class="btn btn-quiet btn-sm" data-action="resource-creator-return">'+
-   icon("arrow-left")+' '+e(originLabel[fromLibrary]||"Back to my work")+'</button>':
-  '<button type="button" class="btn btn-quiet btn-sm" data-action="representation-return" data-node="'+
-   representationReturnNode(state)+'">'+icon("arrow-left")+' Back to my mathematical stage</button>';
-
+ const backLabel=fromLibrary?originLabel[fromLibrary]||"Back to my work":"Back to my mathematical stage";
+ const backAction=fromLibrary?"resource-creator-return":"representation-return";
+ const backTarget=fromLibrary?"":' data-node="'+representationReturnNode(state)+'"';
+ const back='<button type="button" class="representation-workspace-tool representation-workspace-tool-back"'+
+  ' data-action="'+backAction+'"'+backTarget+' aria-label="'+e(backLabel)+'" title="'+e(backLabel)+'">'+
+  '<span class="representation-workspace-tool-icon" aria-hidden="true">'+icon("arrow-left")+'</span>'+
+  '<span class="representation-workspace-tool-label">Back</span></button>';
+ const tools=REPRESENTATION_TOOLS.map(tool=>{
+  const selected=active?.id===tool.id;
+  return '<button type="button" class="representation-workspace-tool'+(selected?' is-active':'')+'"'+
+   ' data-action="representation-switch" data-representation-tool="'+e(tool.id)+'"'+
+   (selected?' aria-current="page"':'')+
+   ' aria-label="'+e(selected?"Current tool: "+tool.title:"Open "+tool.title)+'" title="'+e(tool.title)+'">'+
+   '<span class="representation-workspace-tool-icon" aria-hidden="true">'+icon(tool.icon)+'</span>'+
+   '<span class="representation-workspace-tool-label">'+e(tool.navLabel||tool.title)+'</span></button>';
+ }).join("");
  return '<div class="representation-workspace-header" data-representation-workspace data-representation-switcher>'+
-  '<nav class="representation-workspace-bar" aria-label="Mathematical tool navigation">'+
+  '<div class="representation-workspace-bar">'+
   '<div class="representation-workspace-identity"><span class="representation-workspace-mark">'+
     icon(active?.icon||"layers")+'</span><span><small>IA Studio / Explore &amp; explain</small>'+
     '<strong>'+e(active?.title||"Mathematical workspace")+'</strong></span></div>'+
   '<div class="representation-workspace-actions">'+
-   backButton+
    '<button type="button" class="btn btn-secondary btn-sm" data-action="representation-back">'+
-    icon("grid-2x2")+' All tools</button></div></nav>'+
-  '<nav class="representation-workspace-steps" aria-label="Jump within this generator">'+
-   steps.map(([id,label])=>'<button type="button" data-action="representation-jump" data-representation-step="'+id+
-    '" aria-label="'+e("Go to "+label.replace(/^[0-9] · /,""))+'">'+e(label)+'</button>').join("")+
-  '</nav><p class="representation-workspace-guidance">'+icon("info")+
+    icon("grid-2x2")+' All tools</button></div></div>'+
+  '<nav class="representation-workspace-tools" aria-label="Diagram creators and return navigation">'+
+   back+tools+'</nav>'+
+  '<p class="representation-workspace-guidance">'+icon("info")+
    ' Explore with genuine or clearly identified hypothetical information. Refine the presentation, then save and use it in your own IA when ready.</p></div>';
 }
