@@ -103,7 +103,7 @@ const STUDY={
       "nextWhy": "The 50 °C decision requires a time, and the reserved later cases allow a check without refitting.",
       "mathsInsight": "A transformed model retains the physical offset when returning from logarithms.",
       "methodChangeReason": "I fixed the fitted parameters and evaluated errors in °C instead of choosing a curve by visual overlap.",
-      "outcomeId": "multiplicative"
+      "outcomeId": "model-fit"
     },
     {
       "key": "reserved-threshold",
@@ -122,7 +122,7 @@ const STUDY={
       "nextWhy": "Room temperature is an assumption in the logarithm and both fitted parameters depend on it.",
       "mathsInsight": "A threshold above the ambient permits a meaningful logarithmic inverse; targets at or below ambient cannot be reached by this ideal decay from above in finite time.",
       "methodChangeReason": "I checked parameter sensitivity by refitting the same values under new ambient assumptions.",
-      "outcomeId": "different"
+      "outcomeId": "model-fit"
     },
     {
       "key": "ambient-sensitivity",
