@@ -1,6 +1,5 @@
 import {createSamplePreview} from "./src/core/sample-preview.js";
 import {createIllustrativeSample,SAMPLE_CHOICES} from "./src/core/illustrative-samples.js";
-import {sampleIAWritingWords} from "./src/core/sample-current-workflow.js";
 import {captureReturn,restoreReturn} from "./src/ui/return-context.js";
 import {STATUS_LABELS,resumeRoute,rememberCheckpoint} from "./src/ui/journey.js";
 import {insightCapture} from "./src/ui/insight-threads.js";
@@ -113,6 +112,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   let lastFocus = null;
   let lastDrawer = "";
   let drawerReturn=null;
+  let sampleReadingHtml="";
   let pendingImport = null;
   let importSelected = new Set();
   let exportBusy = false;
@@ -781,9 +781,11 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     clearTimeout(toastHandle);toastHandle=setTimeout(()=>el.classList.remove("show"),detail?6500:3500);
   }
   function previewBanner(){
-    const figureCount=(state.graphStudio?.figures?.length||0)+(state.tableStudio?.figures?.length||0);
-    const wordCount=preview.active?sampleIAWritingWords(state):0;
-    return preview.active?'<aside class="sample-preview-banner" aria-label="Sample preview"><div><strong>'+icon("sparkles")+' Fully worked fictional sample</strong><p>Three linked mathematical stages with editable Pathfinder graphs/tables, a developed IA-style mathematical narrative, Planning and A–E checking notes. Fictional teaching material only; your own investigation is unchanged.</p><p class="sample-preview-metrics">'+wordCount.toLocaleString()+' IA-facing words · '+figureCount+' editable saved figures · not a finished submission</p></div><div class="button-row">'+button("See the sample journey","sample-journey","btn-secondary btn-sm")+button("Read IA-style sample PDF","export-sample-ia-pdf","btn-secondary btn-sm")+button("Return to my investigation","leave-preview","btn-primary")+button("Another sample","open-demos","btn-quiet btn-sm")+'</div></aside>':"";
+    const figureCount=REPRESENTATION_TOOLS.reduce((total,tool)=>total+(state[tool.studio]?.figures?.length||0),0);
+    const completeSample=SAMPLE_CHOICES.some(choice=>choice.id===state.demo);
+    const title=completeSample?'Complete fictional investigation':'Earlier illustrative sample';
+    const detail=completeSample?'Read a student’s mathematical argument, explore the answers in each field, or edit its saved diagrams. Your own investigation is kept separately.':'This earlier sample is preserved from your preview or backup. Choose Another sample to explore the new complete investigations.';
+    return preview.active?'<aside class="sample-preview-banner" aria-label="Sample preview"><div><strong>'+icon("sparkles")+' '+title+'</strong><p>'+detail+'</p><p class="sample-preview-metrics">'+state.entries.length+' connected mathematical stages · '+figureCount+' editable saved figures</p></div><div class="button-row">'+(completeSample?button("Read complete IA","sample-read-ia","btn-secondary btn-sm"):"")+button(completeSample?"Download IA PDF":"Download earlier sample PDF","export-sample-ia-pdf","btn-secondary btn-sm")+button("See the sample journey","sample-journey","btn-secondary btn-sm")+button("Return to my investigation","leave-preview","btn-primary")+button("Another sample","open-demos","btn-quiet btn-sm")+'</div></aside>':"";
   }
   function leavePreview(){
     if(!preview.active)return;
@@ -1060,19 +1062,21 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       body=handoverViews.manual(pendingImport?.reason);
     }else if(panel==="handover"){
       body=handoverViews.confirmation();
+    }else if(panel==="sample-reading"){
+      body=sampleReadingHtml;
     }else if(panel==="demos"){
       const choices=SAMPLE_CHOICES;
-      body='<section><p>Browse five substantial fictional investigations with a current Planning route, three connected mathematical stages, actual editable graph/table-generator figures, worked calculations, interpretation, a concise conclusion and A–E checking prompts. <strong>These are invented teaching examples, not real IA submissions or evidence of a real dataset.</strong></p>'+
-        '<div class="panel-list">'+choices.map(({id:key,title:label,description:desc})=>
-        '<button type="button" class="panel-link" data-action="load-demo" data-demo="'+key+'"><span><strong>'+e(label)+'</strong><br><span class="text-muted" style="font-weight:400">'+e(desc)+'</span></span>'+icon("arrow-right")+'</button>').join("")+'</div></section>'+
-        note("Each sample stays in a separate preview. Its length and mathematical figures illustrate an IA-scale journey; it is not a real student IA, contains no genuine empirical measurements, teacher approval or IB mark. Return to your own investigation unchanged, or choose another scenario.");
+      body='<section><p>Explore a complete fictional student investigation. Each sample connects its Planning answers, mathematical work, editable diagrams, conclusion and review evidence. You can read it continuously or inspect the answers field by field.</p>'+
+        '<div class="panel-list">'+choices.map(({id:key,title:label,description:desc,pathway,course})=>
+        '<button type="button" class="panel-link" data-action="load-demo" data-demo="'+key+'"><span><strong>'+e(label)+'</strong><br><span class="text-muted" style="font-weight:400">'+e(course+' · '+pathway)+'</span><br><span class="text-muted" style="font-weight:400">'+e(desc)+'</span></span>'+icon("arrow-right")+'</button>').join("")+'</div></section>'+
+        note("These are authored examples with explicitly stated data and assumptions, not assessed student submissions. Each opens in a separate preview; return to your own investigation whenever you are ready.");
     }else if(panel==="stuck"){
       body=stuckViews.render();
     }
-    const titles={resources:"Tools & tutorials",project:"My project",files:"Save & export",help:"Here to help","writer-guide":"The IA Writer's Field Guide","writer-guide-intro":"Your Writer's Field Guide",demos:"Choose a sample",stuck:"Find a way forward", "import-preview":"Review planning import","import-manual":"Recover a plan",handover:"Confirm your starting plan"};
+    const titles={resources:"Tools & tutorials",project:"My project",files:"Save & export",help:"Here to help","writer-guide":"The IA Writer's Field Guide","writer-guide-intro":"Your Writer's Field Guide",demos:"Choose a sample","sample-reading":"Complete illustrative IA",stuck:"Find a way forward", "import-preview":"Review planning import","import-manual":"Recover a plan",handover:"Confirm your starting plan"};
     layer.hidden=false;document.body.classList.add("dialog-open");
     document.querySelectorAll(".topbar,.app-grid,.mobile-nav").forEach(el=>el.inert=true);
-    layer.innerHTML='<aside class="drawer'+(panel==="resources"?" resource-drawer":"")+(panel==="writer-guide"?" writer-guide-drawer":panel==="writer-guide-intro"?" writer-guide-drawer writer-guide-welcome-drawer":"")+'" role="dialog" aria-modal="true" aria-labelledby="drawerTitle" tabindex="-1"><div class="drawer-header"><h2 id="drawerTitle">'+titles[panel]+'</h2>'+
+    layer.innerHTML='<aside class="drawer'+(panel==="resources"?" resource-drawer":"")+(panel==="sample-reading"?" sample-reader-drawer":"")+(panel==="writer-guide"?" writer-guide-drawer":panel==="writer-guide-intro"?" writer-guide-drawer writer-guide-welcome-drawer":"")+'" role="dialog" aria-modal="true" aria-labelledby="drawerTitle" tabindex="-1"><div class="drawer-header"><h2 id="drawerTitle">'+titles[panel]+'</h2>'+
       '<button class="btn btn-secondary btn-sm" type="button" data-action="close-drawer">'+(panel==="resources"&&resourceSession.parent==="stuck"?"Back to I am stuck":"Return to my work")+' '+icon("x")+'</button></div>'+body+'</aside>';
     refreshMathPreviews(layer);
     $(".drawer",layer).focus();
@@ -1117,20 +1121,32 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     }finally{exportBusy=false;}
   }
 
-  async function exportIllustrativeIAPdf(){
+  async function readIllustrativeIA(){
+    if(!preview.active||!state.demo)return;
+    try{
+      const {illustrativeIAPagesModel,renderIllustrativeIAReading}=await import("./src/core/sample-ia-document.js");
+      sampleReadingHtml=renderIllustrativeIAReading(illustrativeIAPagesModel(state));
+      openDrawer("sample-reading");
+    }catch(error){
+      console.error("Illustrative IA reader failed",error);
+      toast("The reading view could not be opened. The sample fields are still available.");
+    }
+  }
+
+  async function exportIllustrativeIA(format="pdf"){
     if(!preview.active||!state.demo){toast("Open a fictional illustrative sample first.");return;}
     if(exportBusy){toast("Please wait for the current export.");return;}
-    exportBusy=true;setSaveStatus("Preparing illustrated IA-style example…");
+    exportBusy=true;setSaveStatus("Preparing complete illustrated example…");
     try{
       const {createIllustrativeIAExport}=await import("./src/core/sample-ia-document.js");
-      const result=await createIllustrativeIAExport(state);
+      const result=await createIllustrativeIAExport(state,format);
       downloadFile(result.bytes,result.name,result.mime);
       setSaveStatus("Saved on this device");
-      toast("Fictional IA-style writing example downloaded with its mathematical figures.");
+      toast("Complete fictional investigation downloaded with its mathematical figures.");
     }catch(error){
-      console.error("Illustrative IA PDF export failed",error);
-      setSaveStatus("Illustrative PDF could not be created",true);
-      toast("That example PDF could not be generated; your original project is safe.");
+      console.error("Illustrative IA export failed",error);
+      setSaveStatus("Illustrative document could not be created",true);
+      toast("That example document could not be generated; your original project is safe.");
     }finally{exportBusy=false;}
   }
 
@@ -1488,6 +1504,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       }
       case "leave-preview":leavePreview();break;
       case "sample-journey":nav("path");break;
+      case "sample-read-ia":void readIllustrativeIA();break;
       case "insight-focus":{
         const trail=el.closest(".living-trail"),id=el.dataset.threadId;
         if(!trail)break;
@@ -2729,7 +2746,8 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       case "export-json":exportJson();break;
       case "export-plan-pdf":void exportPlanningDocument("pdf");break;
       case "export-plan-docx":void exportPlanningDocument("docx");break;
-      case "export-sample-ia-pdf":void exportIllustrativeIAPdf();break;
+      case "export-sample-ia-pdf":void exportIllustrativeIA("pdf");break;
+      case "export-sample-ia-docx":void exportIllustrativeIA("docx");break;
       case "export-full-pdf":void exportFullProjectDocument("pdf");break;
       case "export-full-docx":void exportFullProjectDocument("docx");break;
       case "export-full-zip":void exportFullProjectDocument("zip");break;

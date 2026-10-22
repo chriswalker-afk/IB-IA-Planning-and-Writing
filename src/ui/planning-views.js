@@ -172,6 +172,7 @@ export function createPlanningViews(ctx){
  }
  function nodePage(state){
   const p=state.planning,f=p.fields,n=p.current;
+  const modellingAssumptions=f.kind==="modelling"&&f.dataSource==="theoretical";
   switch(n){
    case "N00":return stepBody("Where are you starting?","You don't need a perfect idea yet. Just choose where you are on your journey.",
     choice("ideaStatus",[
@@ -262,9 +263,15 @@ export function createPlanningViews(ctx){
     choice("dataSource",[
      {value:"primary",title:"Primary data",desc:"Observations or measurements I collect through a permitted method.",icon:"pencil"},
      {value:"secondary",title:"Secondary data",desc:"An existing dataset or reliable published source.",icon:"book"},
-     {value:"both",title:"Both",desc:"I need to plan each source and explain how they work together.",icon:"layers"}],{stack:true})+
-    callout("Permissions matter","If you may collect personal or sensitive information, check school requirements before any affected activity."),
-    "<h4>Planning a source is not collecting data</h4><p>Record what you intend to do here. In IA Studio you will confirm what you actually obtained and used.</p>");
+     {value:"both",title:"Both",desc:"I need to plan each source and explain how they work together.",icon:"layers"},
+     ...(f.kind==="modelling"?[{value:"theoretical",title:"Defined mathematical assumptions",desc:"No collected data: I will define quantities, constraints and assumptions for a mathematical model.",icon:"sigma"}]:[])],{stack:true})+
+    (modellingAssumptions?
+      F("theoreticalAim","What mathematical question will the model investigate?","A precise design, optimisation or modelling question",{type:"textarea",rows:3})+
+      F("theoreticalCase","Which starting quantities, assumptions and constraints will define the model?","State dimensions, units and restrictions; distinguish assumed values from observations",{type:"textarea",rows:3})+
+      callout("Define the starting material","Assumed dimensions or tolerances can define a useful model. Identify them as assumptions and check what the conclusions depend on."):
+      callout("Permissions matter","If you may collect personal or sensitive information, check school requirements before any affected activity.")),
+    "<h4>Planning your starting material</h4><p>Record what you intend to use here. In IA Studio you will explain what you actually obtained or defined and how it supports the mathematics.</p>",
+    modellingAssumptions?"Continue to prediction":"Continue");
    case "N03B":return stepBody("Plan both evidence sources.","Answer each question set. They can be provisional, but both must be addressed before they join.",
     '<div class="plan-source-grid">'+
      '<div class="content-card"><strong>Primary data</strong><p class="text-small text-muted">Two short steps: collection & accuracy, then sampling</p>'+statusValue(p.sourceBranches.primary)+
@@ -302,9 +309,10 @@ export function createPlanningViews(ctx){
      ["unsure","My source, sampling information or precision remains uncertain"]]),
     "<h4>Reporting precision is not instrument accuracy</h4><p>If a table shows two decimal places, you may infer how the published value was rounded. Do not assume the original instrument was accurate to the same degree. Look for documentation; when unknown, record that honestly.</p>");
    case "N03D":return stepBody("Can you get started?",
-    "Check what evidence you can access now and whether anything needs arranging before you collect it. You do not need a numerical readiness score.",
+    modellingAssumptions?"Check that you can work with the model's starting quantities and assumptions, and whether any essential resources need arranging.":
+      "Check what evidence you can access now and whether anything needs arranging before you collect it. You do not need a numerical readiness score.",
     select("dataAvailability","What evidence can you work with now?",[
-      ["in-hand","I already have usable evidence"],
+      ["in-hand",modellingAssumptions?"I have defined usable starting quantities and assumptions":"I already have usable evidence"],
       ["some","I have enough for a small first test"],
       ["soon","I have a realistic way to get it"],
       ["inaccessible","Getting evidence looks difficult"],
@@ -336,7 +344,7 @@ export function createPlanningViews(ctx){
     '<details class="primary-step-extra" data-evidence-timing><summary>'+icon("calendar")+
       ' Set evidence target dates (optional) '+icon("chevron-down")+'</summary>'+
       '<div class="primary-step-extra-content">'+
-      dates([["sourceFirstDate","Target for first usable evidence"],["sourceFullDate","Target for a complete dataset"]])+
+      dates([["sourceFirstDate","Target for first usable evidence"],["sourceFullDate",modellingAssumptions?"Target for complete starting material":"Target for a complete dataset"]])+
       timelineFlags(state)+'</div></details>'+
     '<div class="button-row">'+route("Reconsider my data route","Reconsider my data route")+'</div>',
     "<h4>Ready enough to begin?</h4><p>A provisional source and a safe first step are enough. You can move on while permission or access is uncertain; this never grants approval to collect affected data. Review the actual method and its limitations in IA Studio.</p>",
@@ -449,7 +457,8 @@ export function createPlanningViews(ctx){
     summary("Investigation aim",f.aim)+edit("N01","Edit aim")+
     summary("My motivation — why the answer matters",f.beneficiary+(f.intendedUse?" — "+f.intendedUse:""))+edit("N01V","Edit motivation")+
     summary("Course and mathematical direction",(f.course||"Not confirmed")+" · "+(selectedMaths(state).map(x=>x.label).join("; ")||f.otherMaths||f.otherCourseMaths||"Still to decide"))+edit("N02M","Edit maths")+
-    summary("Evidence plan",f.kind==="theoretical"?(f.theoreticalCase||"Theoretical cases to confirm"):
+    summary("Evidence plan",modellingAssumptions?"Defined mathematical assumptions · "+(f.theoreticalCase||f.theoreticalAim||"Starting assumptions to confirm"):
+      f.kind==="theoretical"?(f.theoreticalCase||"Theoretical cases to confirm"):
       (f.dataSource||"No source chosen")+" · "+(f.primaryWhat||f.secondaryPublisher||"source details to confirm"))+
     summary("Prediction (optional)",f.prediction||(f.predictionId==="X02"?"Exploring first":"No prediction recorded"))+
     (f.predictionWhy?summary("Why I predicted it",f.predictionWhy):"")+

@@ -56,21 +56,21 @@ with sync_playwright() as pw:
   topic.click();p.locator('.drawer [data-action="resource-browse"]').first.click();p.keyboard.press('Escape');assert p.locator('.drawer').is_visible();assert 'My calculation or software' in p.locator('.drawer').inner_text();p.keyboard.press('Escape');assert not p.locator('.drawer').count();assert p.evaluate('document.activeElement.dataset.action')=='open-stuck'
  run('consistent-support-return-and-nested-escape',OWN,support,390,844)
  def preview(p):
-  nav(p,'home');before=raw(p);action(p,'open-demos');p.locator('[data-demo="curved"]').click();assert p.locator('.sample-preview-banner').is_visible();assert raw(p)==before
+  nav(p,'home');before=raw(p);action(p,'open-demos');p.locator('[data-demo="standing-reach"]').click();assert p.locator('.sample-preview-banner').is_visible();assert raw(p)==before
   p.locator('[data-action="completion-open"][data-node="C04"]').click();p.locator('.completion-stage-card[data-node="C10"]').click();p.locator('[data-bind="scratch.introduction"]').fill('Changed sample only');p.locator('[data-action="completion-mark"][data-status="complete"]').click();assert raw(p)==before
   p.reload(wait_until='networkidle');assert p.locator('.sample-preview-banner').is_visible();assert p.locator('[data-bind="scratch.introduction"]').input_value()=='Changed sample only';assert raw(p)==before
-  action(p,'open-demos');p.locator('[data-demo="theory"]').click();assert raw(p)==before;shot(p,'safe-sample-'+str(p.viewport_size['width']));action(p,'leave-preview');assert raw(p)==before;assert p.evaluate('(k)=>sessionStorage.getItem(k)',PREVIEW) is None;action(p,'resume-work');assert p.locator('[data-bind="scratch.introduction"]').input_value()==OWN['scratch']['introduction']
+  action(p,'open-demos');p.locator('[data-demo="tray-optimisation"]').click();assert raw(p)==before;shot(p,'safe-sample-'+str(p.viewport_size['width']));action(p,'leave-preview');assert raw(p)==before;assert p.evaluate('(k)=>sessionStorage.getItem(k)',PREVIEW) is None;action(p,'resume-work');assert p.locator('[data-bind="scratch.introduction"]').input_value()==OWN['scratch']['introduction']
  for w,h in [(390,844),(1440,1000)]:run('preview-edit-switch-reload-return-'+str(w),OWN,preview,w,h)
  def no_project(p):
-  assert raw(p) is None;action(p,'open-demos');p.locator('[data-demo="linear"]').click();assert raw(p) is None;action(p,'leave-preview');assert raw(p) is None;assert p.locator('[data-action="start-planning"]').is_visible()
+  assert raw(p) is None;action(p,'open-demos');p.locator('[data-demo="standing-reach"]').click();assert raw(p) is None;action(p,'leave-preview');assert raw(p) is None;assert p.locator('[data-action="start-planning"]').is_visible()
  run('preview-without-creating-a-personal-project',None,no_project,360,740)
  def newer(p):
-  nav(p,'home');action(p,'open-demos');p.locator('[data-demo="unclear"]').click();newer=copy.deepcopy(OWN);newer['project']['aim']=newer['planning']['fields']['aim']='Updated in my other tab';text=json.dumps(newer);p.evaluate('([k,v])=>localStorage.setItem(k,v)',[KEY,text]);action(p,'leave-preview');assert raw(p)==text;assert 'Updated in my other tab' in p.locator('#main').inner_text()
+  nav(p,'home');action(p,'open-demos');p.locator('[data-demo="tray-optimisation"]').click();newer=copy.deepcopy(OWN);newer['project']['aim']=newer['planning']['fields']['aim']='Updated in my other tab';text=json.dumps(newer);p.evaluate('([k,v])=>localStorage.setItem(k,v)',[KEY,text]);action(p,'leave-preview');assert raw(p)==text;assert 'Updated in my other tab' in p.locator('#main').inner_text()
  run('preview-return-keeps-newer-personal-work',OWN,newer)
  def export_preview(p):
-  nav(p,'home');before=raw(p);action(p,'open-demos');p.locator('[data-demo="unexpected"]').click();p.locator('[data-action="open-panel"][data-panel="files"]').first.click();action(p,'import-json');assert 'Return to your investigation' in p.locator('#toast').inner_text()
+  nav(p,'home');before=raw(p);action(p,'open-demos');p.locator('[data-demo="standing-reach"]').click();p.locator('[data-action="open-panel"][data-panel="files"]').first.click();action(p,'import-json');assert 'Return to your investigation' in p.locator('#toast').inner_text()
   with p.expect_download() as download:action(p,'export-json')
-  assert download.value.suggested_filename=='ia-pathfinder-sample.json';file=OUT/'sample-preview.json';download.value.save_as(str(file));assert json.loads(file.read_text())['demo']=='unexpected';assert raw(p)==before;p.keyboard.press('Escape');action(p,'leave-preview');assert raw(p)==before
+  assert download.value.suggested_filename=='ia-pathfinder-sample.json';file=OUT/'sample-preview.json';download.value.save_as(str(file));assert json.loads(file.read_text())['demo']=='standing-reach';assert raw(p)==before;p.keyboard.press('Escape');action(p,'leave-preview');assert raw(p)==before
  run('preview-backup-label-and-import-guard',OWN,export_preview)
  def backup(p):
   p.locator('[data-action="completion-mark"][data-status="complete"]').click();p.locator('[data-action="open-panel"][data-panel="files"]').first.click()

@@ -185,6 +185,7 @@ export function collectProjectFigures(state){
 }
 export function figureForEntry(figure,entry){
  if(!figure||!entry)return false;
+ if(entry.figureRefs?.includes(figure.kind+':'+figure.id))return true;
  const explicit=entry[figure.entryKey];
  if(explicit&&explicit!==figure.id)return false;
  return !!(explicit===figure.id||(figure.entryId&&figure.entryId===entry.id));

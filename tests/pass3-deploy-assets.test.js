@@ -13,8 +13,8 @@ test("Pass 3 compiles every original stylesheet in DOM order into one minified f
  const original=await read("index.html");
  const paths=stylePaths(original);
  assert.equal(paths[0],"styles.css");
- assert.equal(paths.at(-1),"data/math-writing.css");
- assert.equal(paths.length,29);
+ assert.equal(paths.at(-1),"data/sample-reader.css");
+ assert.equal(paths.length,30);
  const scratch=await mkdtemp(path.join(tmpdir(),"ia-pass3-css-"));
  try{
   const compiled=await buildSiteStyles({root,out:scratch,html:original});
@@ -27,7 +27,7 @@ test("Pass 3 compiles every original stylesheet in DOM order into one minified f
   assert(output.includes("fonts.googleapis.com"),"Keep source font loading and typography");
   for(const css of ["data/graph-studio.css","data/stat-studio.css",
    "data/table-studio.css","data/geometry-studio.css","data/probability-studio.css",
-   "data/image-tracer.css","data/representation-voronoi.css"]){
+   "data/image-tracer.css","data/representation-voronoi.css","data/sample-reader.css"]){
    const source=await read(css);
    const selector=source.match(/\.([a-zA-Z][a-zA-Z0-9-]+)/);
    assert(selector,"Expected named selector in "+css);

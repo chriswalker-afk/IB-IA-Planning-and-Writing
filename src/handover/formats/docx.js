@@ -141,7 +141,10 @@ export async function createDocxPlanningReport(envelope,fullProjectModel=null){
    para([run("Course: "+model.course+"    |    Exported: "+(model.exportedAt?.slice(0,10)||"To confirm"),
     {color:MUTED,size:18})],{spacing:{after:280}})
  ];
- if(model.isDemonstration)paragraphs.push(
+ if(model.isCompleteIllustrativeIA&&model.provenance)paragraphs.push(
+   ...await mathParagraphs(model.provenance,{size:20,color:MUTED,spacing:{after:210,line:320}})
+ );
+ else if(model.isDemonstration)paragraphs.push(
    para([run("DEMONSTRATION PROJECT — not real student data.",{bold:true,color:AMBER})],{spacing:{after:180}})
  );
  if(model.flags.length){
@@ -154,25 +157,35 @@ export async function createDocxPlanningReport(envelope,fullProjectModel=null){
   paragraphs.push(headline(sec.title));
   if(sec.description)paragraphs.push(para([run(sec.description,{italics:true,color:MUTED,size:18})],{
    spacing:{after:210,line:280}}));
-  for(const figure of sec.figures||[]){
-   if(!figure.pngBytes)continue;
-   const width=450,height=Math.max(70,Math.round(width*figure.pixelHeight/figure.pixelWidth));
-   paragraphs.push(para([new ImageRun({data:figure.pngBytes,type:'png',transformation:{width,height},altText:{title:figure.title,description:figure.title,name:figure.title}})],{spacing:{after:175}}));
+  const addFigure=figure=>{
+   if(!figure.pngBytes)return;
+   const maxWidth=model.isCompleteIllustrativeIA?640:450,maxHeight=model.isCompleteIllustrativeIA?620:480;
+   const scale=Math.min(maxWidth/figure.pixelWidth,maxHeight/figure.pixelHeight);
+   const width=Math.round(figure.pixelWidth*scale),height=Math.round(figure.pixelHeight*scale);
+   paragraphs.push(para([new ImageRun({data:figure.pngBytes,type:'png',transformation:{width,height},altText:{title:figure.title,description:figure.title,name:figure.title}})],{alignment:AlignmentType.CENTER,spacing:{after:175}}));
+  };
+  if(sec.blocks){
+   for(const block of sec.blocks){
+    if(block.type==='figure')addFigure(block.figure);
+    else if(block.type==='text')paragraphs.push(...await mathParagraphs(block.value,{size:24,spacing:{after:180,line:400}}));
+   }
+   continue;
   }
+  for(const figure of sec.figures||[])addFigure(figure);
   for(const item of sec.rows)paragraphs.push(...await field(item.label,item.value,item.link));
  }
- paragraphs.push(headline(fullProjectModel?"About this full working record":"About this planning document"));
+ paragraphs.push(headline(model.isCompleteIllustrativeIA?"About this fictional example":fullProjectModel?"About this full working record":"About this planning document"));
  paragraphs.push(para([run(model.footnote,{size:18,color:MUTED})],{spacing:{after:150}}));
  const doc=new Document({
   creator:"IA Pathfinder",title:model.title,
-  description:fullProjectModel?"Student-entered full working record with a Planning-only reimport snapshot.":"Provisional student IB Mathematics planning record with importable snapshot.",
+  description:model.isCompleteIllustrativeIA?"Complete fictional mathematical investigation with a Planning-only reimport snapshot.":fullProjectModel?"Student-entered full working record with a Planning-only reimport snapshot.":"Provisional student IB Mathematics planning record with importable snapshot.",
   sections:[{
    properties:{page:{
     size:{width:12240,height:15840},
     margin:{top:920,right:1000,bottom:900,left:1000}
    }},
    footers:{default:new Footer({children:[
-    para([run(fullProjectModel?"IA PATHFINDER / WORKING RECORD — NOT AN IA SUBMISSION":"IA PATHFINDER  /  PROVISIONAL — NOT TEACHER APPROVAL",{size:15,color:MUTED})],{
+    para([run(model.isCompleteIllustrativeIA?"IA PATHFINDER / COMPLETE FICTIONAL EXAMPLE":fullProjectModel?"IA PATHFINDER / WORKING RECORD — NOT AN IA SUBMISSION":"IA PATHFINDER  /  PROVISIONAL — NOT TEACHER APPROVAL",{size:15,color:MUTED})],{
       alignment:AlignmentType.RIGHT,spacing:{before:90,after:0}
     })
    ]})},

@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
 import {createProjectState,normalizeProjectState,STORAGE_KEY} from "../src/core/project-state.js";
 import {createSamplePreview} from "../src/core/sample-preview.js";
-import {createIllustrativeSample,SAMPLE_CHOICES,lineSummary,exponentialSummary} from "../src/core/illustrative-samples.js";
+import {createIllustrativeSample,LEGACY_SAMPLE_CHOICES as SAMPLE_CHOICES,lineSummary,exponentialSummary} from "../src/core/illustrative-samples.js";
 import {sampleIAWritingWords} from "../src/core/sample-current-workflow.js";
 import {analyseGraph} from "../src/diagrams/graph-core.js";
 import {analyzeTable} from "../src/diagrams/table-studio-core.js";

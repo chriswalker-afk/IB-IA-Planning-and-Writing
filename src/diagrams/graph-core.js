@@ -533,7 +533,8 @@ export function renderGraphSvg(draft){
   });
  }
  captionLines.forEach((caption,i)=>parts.push('<text class="graph-figure-caption" x="'+W/2+'" y="'+(captionY+18*i)+'" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="13" fill="#405e66">'+escapeGraph(caption)+'</text>'));
- const source=d.kind==="function"?"Function: "+d.expression:d.sourceKind==="secondary"?"Source: "+(d.sourceText||"not yet supplied"):d.sourceKind==="primary"?"Source: student's observations":"Source: not yet confirmed";
+ const functionEquation=/^\s*(?:y|f\(x\))\s*=/.test(d.expression)?d.expression:'y = '+d.expression;
+ const source=d.kind==="function"?"Function: "+displayGraphEquation(functionEquation,d):d.sourceKind==="secondary"||d.sourceKind==="theoretical"?"Source: "+(d.sourceText||"not yet supplied"):d.sourceKind==="primary"?"Source: student's observations":"Source: not yet confirmed";
  parts.push('<text x="'+W/2+'" y="'+sourceY+'" text-anchor="middle" fill="#5b6f76" font-family="Arial,Helvetica,sans-serif" font-size="12">'+escapeGraph(source.slice(0,145))+'</text>',
   '</svg>');
  return typesetGraphSvgLabels(parts.join(""));
