@@ -67,9 +67,37 @@ with sync_playwright() as pw:
  def nested(p):
   before=stored(p);open_ess(p);tab(p,'rubric');p.locator('.ess-example-links [data-action="example-open"]').first.click();assert p.locator('#exampleDialog').is_visible();p.keyboard.press('Shift+Tab');assert p.locator('#exampleDialog').evaluate('(n)=>n.contains(document.activeElement)');p.keyboard.press('Escape');assert not p.locator('#exampleDialog').is_visible();assert p.locator('#essentialsDialog').is_visible();p.keyboard.press('Escape');assert not p.locator('#essentialsDialog').is_visible();assert stored(p)==before
  run('essentials-to-examples-nested-return',fixture(),nested,390,844)
+ def open_planning_example(p):
+  # N01's contextual example link moved into the optional trail-help area.
+  # Open the real disclosure, not a legacy hidden support-action button.
+  option=p.locator('#main [data-action="example-open"]:visible')
+  if not option.count():
+   toggle=p.locator('.planning-trail-help-toggle:visible')
+   assert toggle.count(),'Planning must offer accessible contextual help'
+   toggle.first.click()
+   option=p.locator('#main [data-action="example-open"]:visible')
+  assert option.count(),'No visible contextual example on the title step'
+  option.first.click()
+  assert p.locator('#exampleDialog').is_visible()
+ def planning_title_fixture():
+  x=fixture()
+  x['route']='planning';x['planning']['current']='N01'
+  x['journey']['currentNodeId']='N01'
+  return x
  def reverse(p):
-  before=stored(p);p.locator('.criteria-actions [data-action="example-open"]').click();p.locator('#exampleDialog .ex-criteria [data-action="essentials-open"]').first.click();assert p.locator('#essentialsDialog').is_visible();p.keyboard.press('Shift+Tab');assert p.locator('#essentialsDialog').evaluate('(n)=>n.contains(document.activeElement)');p.keyboard.press('Escape');assert not p.locator('#essentialsDialog').is_visible();assert p.locator('#exampleDialog').is_visible();p.keyboard.press('Escape');assert not p.locator('#exampleDialog').is_visible();assert stored(p)==before
- run('examples-to-rubric-nested-return',fixture(),reverse)
+  before=stored(p)
+  open_planning_example(p)
+  p.locator('#exampleDialog .ex-criteria [data-action="essentials-open"]').first.click()
+  assert p.locator('#essentialsDialog').is_visible()
+  p.keyboard.press('Shift+Tab')
+  assert p.locator('#essentialsDialog').evaluate('(n)=>n.contains(document.activeElement)')
+  p.keyboard.press('Escape')
+  assert not p.locator('#essentialsDialog').is_visible()
+  assert p.locator('#exampleDialog').is_visible()
+  p.keyboard.press('Escape')
+  assert not p.locator('#exampleDialog').is_visible()
+  assert stored(p)==before
+ run('examples-to-rubric-nested-return',planning_title_fixture(),reverse)
  def review(p):
   before=saved(p);p.locator('.ess-review-access [data-essentials-mode="draft"]').click()
   p.locator('#ess-draft-A-location').fill('Pages 2 and 4');p.locator('#ess-draft-A-note').fill('My aim connects to the conclusion');p.locator('#ess-draft-A-action').fill('Remove repeated working');p.locator('#ess-draft-A-mark').select_option('0');p.locator('#ess-draft-E-mark').select_option('5')
@@ -105,6 +133,7 @@ with sync_playwright() as pw:
   assert 'this actual result means' not in guidance
   p.locator('#criterionBadgeDialog [data-criterion-badge-close]').first.click()
   assert stored(p)==before
+ s=fixture('C34B');s['entries'][0]['status']='planned'
  run('criteria-never-invents-results',s,pending)
  def writing(p):
   # Writing advice is in the live Writer's Field Guide and the student's
@@ -144,9 +173,16 @@ with sync_playwright() as pw:
   p.keyboard.press('Escape');assert not p.locator('#essentialsDialog').is_visible();assert stored(p)==before
  run('essentials-repeat-reference-without-hidden-dialog',fixture(),repeated_reference,390,844)
  def repeated_example(p):
-  before=stored(p);p.locator('.criteria-actions [data-action="example-open"]').click();p.locator('#exampleDialog .ex-criteria [data-action="essentials-open"]').first.click()
-  p.locator('.ess-example-links [data-action="example-open"]').first.click();assert not p.locator('#essentialsDialog').is_visible();assert p.locator('#exampleDialog').evaluate('(n)=>n.contains(document.activeElement)')
-  p.keyboard.press('Escape');assert not p.locator('#exampleDialog').is_visible();assert stored(p)==before
- run('examples-repeat-reference-without-hidden-dialog',fixture(),repeated_example)
+  before=stored(p)
+  open_planning_example(p)
+  p.locator('#exampleDialog .ex-criteria [data-action="essentials-open"]').first.click()
+  assert p.locator('#essentialsDialog').is_visible()
+  p.locator('.ess-example-links [data-action="example-open"]').first.click()
+  assert not p.locator('#essentialsDialog').is_visible()
+  assert p.locator('#exampleDialog').evaluate('(n)=>n.contains(document.activeElement)')
+  p.keyboard.press('Escape')
+  assert not p.locator('#exampleDialog').is_visible()
+  assert stored(p)==before
+ run('examples-repeat-reference-without-hidden-dialog',planning_title_fixture(),repeated_example)
  browser.close()
 (OUT/'essentials-results.json').write_text(json.dumps(results,indent=2));print(json.dumps(results,indent=2));assert all(r['status']=='passed' for r in results)
