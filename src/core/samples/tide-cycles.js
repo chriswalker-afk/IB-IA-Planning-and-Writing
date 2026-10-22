@@ -103,7 +103,7 @@ const STUDY={
       "nextWhy": "A fitted curve's own training residuals do not test its description of an unseen cycle.",
       "mathsInsight": "Harmonic regression is linear in its coefficients when the period is fixed in advance.",
       "methodChangeReason": "I froze the three harmonic coefficients before examining the t=36–48 values.",
-      "outcomeId": "repeating"
+      "outcomeId": "model-fit"
     },
     {
       "key": "reserved-cycle",
@@ -122,7 +122,7 @@ const STUDY={
       "nextWhy": "The user's decision concerns above-threshold time, not average vertical fitting error.",
       "mathsInsight": "A sampled residual maximum is not automatically a bound for every instant between readings.",
       "methodChangeReason": "I used the exact constructed recipe to bound mismatch continuously rather than treating sampled residuals as a confidence interval.",
-      "outcomeId": "irregular"
+      "outcomeId": "residual-structure"
     },
     {
       "key": "threshold-window",
@@ -141,7 +141,7 @@ const STUDY={
       "nextWhy": "No confidence for a real water level follows from the constructed harmonic decomposition alone.",
       "mathsInsight": "A bounded height error maps nonlinearly to time error through the inverse cosine, especially near a flat crest.",
       "methodChangeReason": "I reported both the exact sinusoidal crossings and the conditional restricted window rather than claiming a single sure forecast.",
-      "outcomeId": "irregular"
+      "outcomeId": "residual-structure"
     }
   ],
   "figures": [
