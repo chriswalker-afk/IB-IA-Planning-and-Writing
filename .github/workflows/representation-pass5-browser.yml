@@ -1,0 +1,61 @@
+name: Pass 5 cross-site representation acceptance
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/diagrams/representation-*'
+      - 'src/diagrams/figure-linking.js'
+      - 'src/completing/first-figure-gallery.js'
+      - 'src/handover/figure-report.js'
+      - 'src/diagrams/*-actions.js'
+      - 'data/representation-*.css'
+      - 'app.js'
+      - 'scripts/representation-pass5-browser.py'
+      - 'tests/representation-pass5.test.js'
+      - '.github/workflows/representation-pass5-browser.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'src/diagrams/representation-*'
+      - 'src/diagrams/figure-linking.js'
+      - 'src/completing/first-figure-gallery.js'
+      - 'data/representation-*.css'
+      - 'app.js'
+      - 'scripts/representation-pass5-browser.py'
+permissions:
+  contents: read
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test and build
+        run: |
+          npm install --no-audit --no-fund
+          npm test
+          npm run build
+      - name: Install Chromium
+        run: |
+          pip install playwright==1.57.0
+          python -m playwright install --with-deps chromium
+      - name: Browse sixteen-route integration on desktop and mobile
+        run: |
+          mkdir -p qa-output/representation-pass5
+          python -m http.server 8765 --directory dist > qa-output/representation-pass5/server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID"' EXIT
+          IA_QA_OUTPUT=qa-output/representation-pass5 python scripts/representation-pass5-browser.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: representation-pass5-browser-results
+          path: qa-output/representation-pass5
+          retention-days: 7
