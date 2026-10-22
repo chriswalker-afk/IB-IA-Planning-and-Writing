@@ -229,3 +229,22 @@ body.representation-focus-active .voronoi-layout{grid-template-columns:minmax(29
 @media(max-width:700px){
  .voronoi-site-row>.voronoi-site-name-editor{grid-column:span 2}
 }
+
+/* Pass 5: readable, non-duplicated filtered choices in guided and reduced modes. */
+.representation-optional-context{border:1px solid #d9e7e4;border-radius:11px;background:#f9fcfb;margin:9px 0 13px;color:#496e69}
+.representation-optional-context>summary{display:flex;align-items:center;gap:8px;cursor:pointer;min-height:43px;padding:10px 13px;font-size:13px;font-weight:700}
+.representation-optional-context>summary .icon{width:17px;height:17px;flex:none}
+.representation-optional-context>summary:focus-visible{outline:3px solid #83c7b4;outline-offset:2px}
+.representation-optional-context>p{font-size:12px;line-height:1.6;padding:0 13px;margin:0 0 9px}
+.representation-optional-context .representation-dataset-note{margin:8px}
+.representation-filter-note{font-size:12px;line-height:1.6;color:#566f72;padding:12px 14px;background:#f8fbfa;border:1px dashed #cbded8;border-radius:9px}
+.representation-hub[data-advice-mode="reduced"] .representation-header{margin-bottom:8px}
+.representation-hub[data-advice-mode="reduced"] .representation-context{padding:10px 13px;margin:8px 0 12px}
+.representation-hub[data-advice-mode="reduced"] .representation-browse-head{margin-top:16px}
+@media(max-width:700px){
+ .representation-hub .representation-filter{min-height:40px;font-size:12px}
+ .representation-hub .representation-context-count{white-space:normal}
+ .representation-hub .representation-card-featured>small{font-size:12px}
+ .representation-hub .representation-card-details small{font-size:11px}
+ .representation-feature-grid,.representation-catalog,.representation-context{min-width:0}
+}

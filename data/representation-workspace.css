@@ -58,3 +58,14 @@ body.representation-focus-active .page{animation:none}
  .representation-studio [data-representation-step]{scroll-margin-top:72px}
 }
 @media print{.representation-workspace-header{display:none!important}.representation-prelude>summary{display:none!important}.representation-prelude-body{display:block}}
+
+/* Pass 5: keep the shared workspace navigation usable with 320px and 390px screens. */
+.representation-workspace-identity strong{overflow-wrap:anywhere}
+.representation-workspace-actions .btn{white-space:normal}
+.representation-workspace-steps{scrollbar-width:thin}
+@media(max-width:430px){
+ .representation-workspace-actions{grid-template-columns:1fr}
+ .representation-workspace-steps button{font-size:12px;padding:9px 8px}
+ .representation-studio,.representation-hub{max-width:100%;min-width:0}
+ .representation-preview,.representation-main{min-width:0}
+}

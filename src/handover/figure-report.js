@@ -13,6 +13,7 @@ import {orthogonalDecomposition,geometrySensitivity} from "../diagrams/geometry-
 import {renderProbabilitySvg} from "../diagrams/probability-render.js";
 import {probabilityAnalysis} from "../diagrams/probability-core.js";
 import {representationTool} from "../diagrams/representation-registry.js";
+import {linkedRepresentationEntry} from "../diagrams/figure-linking.js";
 
 const trim=x=>String(x??"").trim();
 const row=(label,value)=>trim(value)?{label,value:trim(value)}:null;
@@ -141,7 +142,13 @@ export function collectProjectFigures(state){
  for(const spec of specs){
   const studio=state?.[spec.store]||{},figures=Array.isArray(studio.figures)?studio.figures:[];
   for(const item of figures){
-   if(item?.draft)output.push(buildFigure(spec,item));
+   if(item?.draft){
+    const {linked}=linkedRepresentationEntry(state?.entries||[],spec.entryKey,item);
+    const figure=buildFigure(spec,item);
+    // Restore placement from the explicit entry field on older JSON backups.
+    figure.entryId=linked?.id||"";
+    output.push(figure);
+   }
   }
   // Saving a project can retain edits to a diagram that have not been saved
   // as a named figure. Never silently lose these in a working-record export.
@@ -155,8 +162,10 @@ export function collectProjectFigures(state){
  return output;
 }
 export function figureForEntry(figure,entry){
- return !!(figure.entryId&&figure.entryId===entry.id ||
-  entry[figure.entryKey]&&entry[figure.entryKey]===figure.id);
+ if(!figure||!entry)return false;
+ const explicit=entry[figure.entryKey];
+ if(explicit&&explicit!==figure.id)return false;
+ return !!(explicit===figure.id||(figure.entryId&&figure.entryId===entry.id));
 }
 export function sectionForSavedDataset(dataset,i){
  const rows=[
