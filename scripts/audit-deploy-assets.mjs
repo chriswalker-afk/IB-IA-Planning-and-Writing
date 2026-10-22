@@ -51,11 +51,11 @@ export async function auditPublishedAssets({root=ROOT,out=path.join(root,"dist")
   "Do not reference unpublished source-only vendor files from a bundled page");
  const css=await readFile(path.join(out,"site.css"),"utf8");
  assert(css.includes(":root")&&css.includes("@media"),"Base and responsive styles must be included");
+ const original=await Promise.all(sourceLinks.map(f=>readFile(path.join(root,f),"utf8")));
  for(const selector of [".criterion-field-help-rail",".conclusion-workspace",
   ".graph-studio",".stat-studio",".table-studio"]){
   // Some studios use more specifically named descendant selectors. Preserve
   // the source CSS and catch accidental omission of their entire stylesheets.
-  const original=await Promise.all(sourceLinks.map(f=>readFile(path.join(root,f),"utf8")));
   const declared=original.some(s=>s.includes(selector));
   if(declared)assert(css.includes(selector),"Dropped live component styling: "+selector);
  }
@@ -64,7 +64,7 @@ export async function auditPublishedAssets({root=ROOT,out=path.join(root,"dist")
  return {totalFiles:listing.length,totalBytes,sourceCssCount:sourceLinks.length};
 }
 
-if(process.argv[1]&&fileURLToPath(new URL("file://"+path.resolve(process.argv[1])))===fileURLToPath(import.meta.url)){
+if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){
  const result=await auditPublishedAssets();
  process.stdout.write(JSON.stringify(result,null,2)+"\n");
 }
