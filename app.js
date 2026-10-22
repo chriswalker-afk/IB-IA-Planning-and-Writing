@@ -594,7 +594,11 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   }
   function refreshGeometryPreview(){
     const root=main.querySelector?.("[data-geometry-studio]");if(!root||!state.geometryStudio?.open)return;
-    const preview=root.querySelector("[data-geometry-preview]");if(preview)preview.outerHTML=geometryPreviewHtml(state.geometryStudio);
+    const preview=root.querySelector("[data-geometry-preview]");if(preview){
+      const left=preview.scrollLeft;
+      preview.outerHTML=geometryPreviewHtml(state.geometryStudio);
+      root.querySelector("[data-geometry-preview]").scrollLeft=left;
+    }
     const quality=root.querySelector("[data-geometry-quality]");if(quality)quality.outerHTML=geometryQualityHtml(state.geometryStudio,icon,e);
     const output=root.querySelector(".geometry-output");if(output)output.outerHTML=geometryOutputHtml(state.geometryStudio,icon);
     refreshPresentation("geometry");
@@ -893,6 +897,10 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     filterMathOptions();
     document.querySelectorAll("[data-nav]").forEach(b=>b.classList.toggle("active",b.dataset.nav===state.route));
     refreshPathCount();
+    if(state.geometryStudio?.zoomed){
+      const zoomPreview=main.querySelector("[data-geometry-preview]");
+      if(zoomPreview)zoomPreview.scrollLeft=(zoomPreview.scrollWidth-zoomPreview.clientWidth)/2;
+    }
     if(opts.top){window.scrollTo({top:0,behavior:"auto"});main.focus({preventScroll:true})}
     // Show only at the first entry to C00; never for example previews or other stages.
     if(state.ui.writingIntroSeen===true&&!state.ui.writingIntroOpen&&shouldShowWriterGuideWelcome(state,preview.active)&&layer.hidden&&!document.querySelector("dialog[open]"))
@@ -1747,6 +1755,18 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       }
       case "geometry-open":navigateGeometry();break;
       case "geometry-close":state.geometryStudio.open=false;save();render();break;
+      case "geometry-preview-fit":case "geometry-preview-detail":{
+        const zoomed=action==="geometry-preview-detail";
+        state.geometryStudio.zoomed=zoomed;save();
+        const root=main.querySelector("[data-geometry-studio]"),preview=root?.querySelector("[data-geometry-preview]");
+        if(preview){
+          preview.classList.toggle("geometry-preview-detail",zoomed);
+          preview.scrollLeft=zoomed?(preview.scrollWidth-preview.clientWidth)/2:0;
+        }
+        root?.querySelectorAll("[data-action=geometry-preview-fit],[data-action=geometry-preview-detail]")
+          .forEach(button=>button.setAttribute("aria-pressed",String(button.dataset.action===action)));
+        break;
+      }
       case "geometry-template":{
         if(state.geometryStudio.draft.edited&&!window.confirm("Switch template? Save your current figure first if needed."))break;
         geometryTemplate(state.geometryStudio,el.dataset.geometryTemplate);save();render();break;

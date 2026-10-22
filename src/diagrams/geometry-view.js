@@ -7,7 +7,7 @@ const choices=(key,label,value,opts,e)=>'<label class="geometry-field"><span>'+e
 const field=(key,label,value,e,placeholder="")=>'<label class="geometry-field"><span>'+e(label)+'</span><input type="text" data-geometry-field="'+key+'" value="'+e(value)+'" placeholder="'+e(placeholder)+'"></label>';
 const tick=(key,label,checked)=>'<label class="geometry-toggle"><input type="checkbox" data-geometry-field="'+key+'"'+(checked?" checked":"")+'><span>'+label+'</span></label>';
 export function geometryPreviewHtml(studio){
- return '<div data-geometry-preview class="geometry-preview">'+renderGeometrySvg(studio.draft,{interactive:true})+'</div>';
+ return '<div data-geometry-preview class="geometry-preview'+(studio.zoomed?" geometry-preview-detail":"")+'">'+renderGeometrySvg(studio.draft,{interactive:true})+'</div>';
 }
 export function geometryQualityHtml(studio,icon,e){
  const a=geometryAnalysis(studio.draft);
@@ -124,9 +124,12 @@ export function renderGeometryStudio(state,icon,e){
   field("sourceCredit","Source reference (where needed)",d.sourceCredit,e)+
   '<label class="geometry-field"><span>Assumptions, precision or limitations</span><textarea data-geometry-field="note" rows="3">'+e(d.note)+'</textarea></label>'+
   diagramNotationControls(e,{studio:"geometry",key:"unit"})+
-  '</div><div class="geometry-main"><h3>Live construction</h3>'+
+  '</div><div class="geometry-main"><div class="geometry-preview-header"><h3>Live construction</h3>'+
+  '<div class="geometry-preview-zoom" role="group" aria-label="Diagram viewing size">'+
+  '<button type="button" class="btn btn-secondary btn-sm" data-action="geometry-preview-fit" aria-pressed="'+(!studio.zoomed)+'">Fit whole diagram</button>'+
+  '<button type="button" class="btn btn-secondary btn-sm" data-action="geometry-preview-detail" aria-pressed="'+(!!studio.zoomed)+'">Enlarge to edit</button></div></div>'+
   geometryPreviewHtml(studio)+
-  '<p class="geometry-drag-note">Drag any vertex to reposition it. A schematic does not prove a measurement. The coordinate model assumes a flat, Euclidean plane.</p>'+
+  '<p class="geometry-drag-note">On a phone, fit the whole diagram to review it or enlarge and scroll for precise editing. Drag a vertex to reposition it. A schematic does not prove a measurement. The coordinate model assumes a flat, Euclidean plane.</p>'+
   '<div data-representation-step="refine">'+geometryQualityHtml(studio,icon,e)+renderPresentationCoach(state,"geometry",d,icon,e)+'</div>'+
   '<div data-representation-step="use"><div data-geometry-output>'+geometryOutputHtml(studio,icon)+'</div>'+renderFigureHandover(state,"geometry",d,icon,e)+'</div>'+
   (studio.figures.length?'<details><summary>Saved geometry figures ('+studio.figures.length+')</summary>'+

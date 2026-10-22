@@ -46,6 +46,20 @@ def prep(browser,width,height,touch):
 
 def exercise(page,width,errors):
  assert page.locator("[data-geometry-studio]").is_visible()
+ # Phone view starts fitted, then can be enlarged for accurate touch editing.
+ if width<=560:
+  def metrics():return page.locator("[data-geometry-preview]").evaluate(
+   "(el)=>({frame:el.clientWidth,content:el.scrollWidth,svg:el.querySelector('svg').getBoundingClientRect().width,left:el.scrollLeft})")
+  fitted=metrics()
+  assert fitted["content"]<=fitted["frame"]+2 and fitted["svg"]<=fitted["frame"]+2,fitted
+  page.locator('[data-action="geometry-preview-detail"]').click()
+  enlarged=metrics()
+  assert enlarged["content"]>enlarged["frame"]+100 and enlarged["left"]>0,enlarged
+  assert saved(page)["geometryStudio"]["zoomed"] is True
+  page.locator('[data-action="geometry-preview-fit"]').click()
+  fitted=metrics()
+  assert fitted["content"]<=fitted["frame"]+2 and fitted["left"]==0,fitted
+  assert saved(page)["geometryStudio"]["zoomed"] is False
  page.locator('[data-action="geometry-template"][data-geometry-template="l-shape"]').click()
  assert len(saved(page)["geometryStudio"]["draft"]["vertices"])==6
  page.locator('[data-geometry-field="mode"]').select_option("coordinate")

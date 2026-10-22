@@ -78,14 +78,14 @@ export function normalizeGeometryDraft(raw){
  }
  return d;
 }
-export const newGeometryStudio=()=>({open:false,draft:newGeometryDraft(),figures:[],activeId:""});
+export const newGeometryStudio=()=>({open:false,zoomed:false,draft:newGeometryDraft(),figures:[],activeId:""});
 export function normalizeGeometryStudio(raw){
  const r=object(raw)?raw:{};
  const figures=(Array.isArray(r.figures)?r.figures:[]).slice(0,MAX_GEOMETRY_FIGURES)
   .filter(object).map(f=>({id:text(f.id,65),entryId:text(f.entryId,80),
    savedAt:text(f.savedAt,42),draft:normalizeGeometryDraft(f.draft)}))
   .filter(f=>/^geometry-[a-z0-9-]+$/i.test(f.id));
- return {open:r.open===true,draft:normalizeGeometryDraft(r.draft),figures,
+ return {open:r.open===true,zoomed:r.zoomed===true,draft:normalizeGeometryDraft(r.draft),figures,
   activeId:figures.some(f=>f.id===r.activeId)?r.activeId:""};
 }
 export function geometryAnalysis(raw){
