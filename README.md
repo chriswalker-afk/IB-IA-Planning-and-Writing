@@ -13,6 +13,12 @@ IA Pathfinder supports students through the **planning, mathematics, writing and
 5. **Create figures:** Seven integrated generators—**Graph & Model Explorer**, **Statistical Diagram Studio**, **Table Studio**, **Image & Coordinate Tracer**, **Voronoi Studio**, **Geometry & Measurement Studio**, and **Probability Tree Studio**—support editing, saving and relevant insertion into mathematical stages. Supported SVG/PNG figure downloads and full-project reports preserve figure provenance and appropriate mathematical labels.
 6. **Review and export:** The Checking journey supports honest evidence-based reflection. **Backups & reports** provides full-project JSON backup/restore, readable working-project PDF, editable Word and a ZIP containing reports plus JSON. These documents are working records, **not a finished or assessed IA**.
 
+### Complete illustrative investigations
+
+The sample picker contains **five complete fictional student investigations**: standing reach, paper-helicopter groups, revision-format preferences, coffee-grinder reliability and tray optimisation. Each uses connected first-person writing, checked mathematics, stated constructed data or assumptions, and editable native figures. The same answers appear in the Planning, Writing and Checking fields and in a continuous IA reader with separate PDF and Word downloads. Samples open in an isolated preview; exploring or editing them does not replace the student's own project.
+
+The [sample field contract](docs/illustrative-sample-field-contract.md) and 16 editorial briefs define the remaining authoring work. [Pass 1](docs/illustrative-samples-pass1-2026-10-22.md) established the first two complete examples and shared architecture; [Pass 2](docs/illustrative-samples-pass2-2026-10-22.md) adds the other three statistics pathways. The remaining **11 briefs are not presented as completed IAs**.
+
 ### Save and restore are not the same as report reimport
 
 - **Full-project JSON** is the portable source of truth for complete planning, writing, stage records, diagrams, decisions and review flags, including migration of older saved projects.
@@ -29,7 +35,7 @@ The site retains the published **current A–E IA assessment guidance**, includi
 - **Production:** `npm run build` creates `dist/` with a bundled app and ordered/minified stylesheet. Historical `data/catalog/` and `data/sheets/` stay in GitHub but are deliberately **not deployed**. The original `data/flow/` is retained in the deployed site. Source-hosting dependencies remain in the repository for development.
 - **Tests:** Node.js 22+, `npm install`, `npm test`, `npm run build`, and `npm run audit:screens` for the screen/dependency register. Browser test scripts under `scripts/` and relevant GitHub Actions verify live journeys, desktop/phone behaviour, mathematical figures, backups and report downloads.
 - **CI policy:** The always-on validation checks `npm test` and the production build. Deployment retains an independent release gate. Focused browser suites run for relevant changes; post-deployment report verification is separately retained. Do not make suites disappear merely to improve check times.
-- **Known conformance issue:** [#65](https://github.com/chriswalker-afk/IB-IA-Planning-and-Writing/issues/65) tracks older broad-browser assertions that still require attention; their checks remain intact.
+- **Browser conformance:** [PR #71](https://github.com/chriswalker-afk/IB-IA-Planning-and-Writing/pull/71) updated older assertions to the current welcome screens, optional panels and mathematical journeys. All 13 broad browser suites run in five independent CI groups; failures retain their artifacts and do not cancel unrelated groups.
 
 ## Documentation map
 

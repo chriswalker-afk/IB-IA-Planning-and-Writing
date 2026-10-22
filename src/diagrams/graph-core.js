@@ -390,7 +390,7 @@ export function renderGraphSvg(draft){
  const showKey=d.showLegend&&visibleModels.length>0;
  const showEquationPanel=d.equationPlacement==="annotation"&&visibleModels.length>0;
  const rightKey=showKey&&d.legendPosition==="right",aboveKey=showKey&&d.legendPosition==="above",belowKey=showKey&&d.legendPosition==="below";
- const legendEntries=showKey?[{name:"Observed points",color:"#147e75",observed:true},
+ const legendEntries=showKey?[{name:d.sourceKind==="theoretical"?"Calculated / constructed points":"Observed points",color:"#147e75",observed:true},
   ...visibleModels.map(m=>({name:d.equationPlacement==="legend"?m.label+": "+m.equation:m.label,color:m.color,dash:m.dash}))]:[];
  if(showKey&&d.showResidualSegments&&analysis.selectedResidualModel?.visible&&analysis.selectedResidualModel.diagnostics?.ok)
   legendEntries.push({name:"Residual distances (observed − predicted)",color:analysis.selectedResidualModel.color,dash:"4 3"});

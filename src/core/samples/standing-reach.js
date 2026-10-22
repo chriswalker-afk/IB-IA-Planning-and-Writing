@@ -113,6 +113,7 @@ const completionFields={
   notationIssue:"I used upper-case R for reach and lower-case r for correlation throughout. I distinguished exact definitions from rounded outputs with an approximation sign.",
   presentationIssue:"I placed the scatter beside its interpretation, the residual graph beside the diagnostic discussion, and the two six-row decision tables beside their calculations. The complete case table remains in the editable dataset.",
   referencesIssue:"I identified the constructed case table in the source record and figure source notes. I used no external participant data or borrowed images.",
+  draftComplete:"ready",
 };
 
 export const STANDING_REACH_SPEC={
@@ -172,7 +173,9 @@ I defined success in advance as \(\lvert R-\widehat R\rvert\le5\text{ cm}\), whe
    key:"inspect-pairs",title:"Inspect the height–reach relationship",
    bridge:"My target decision needs a prediction of reach from height. I first examined whether the development pairs supported a useful numerical relationship.",
    purpose:String.raw`I plotted the 18 development cases as Figure 1. I used height \(H\) on the horizontal axis because height is the information available when the target is first chosen. I did not include the reserved reaches in this initial assessment.`,
-   technique:"Paired scatter and contextual comparison",methodId:"other",kind:"representation",knowledge:"syllabus",
+   technique:"Paired scatter and contextual comparison",methodId:"other",kind:"scatter",knowledge:"syllabus",
+   observation:"linear",
+   observationText:"I see an approximately straight rising band across the 18 development pairs, with no separated group. The nearby heights 162 and 164 cm have reaches 209 and 218 cm, so the general trend still leaves individual variation relevant to my five-centimetre target tolerance.",
    result:String.raw`The development heights run from \(154\) to \(192\text{ cm}\), and reaches from \(202\) to \(252\text{ cm}\). Figure 1 shows a clear rising band without a visible bend or separated group. A straight line therefore seems a reasonable first model over my proposed domain.
 
 The points do not lie exactly on a line. For example, cases 13 and 17 have \((H,R)=(162,209)\) and \((164,218)\). Their heights differ by \(2\text{ cm}\), but their reaches differ by \(9\text{ cm}\). I cannot interpret that pair as a local growth rate: these are different constructed cases. It does show why an overall trend cannot determine every individual reach.

@@ -8,11 +8,17 @@ import {representationTool} from '../diagrams/representation-registry.js';
 import {normalizeNativeShelf} from '../diagrams/native-data-core.js';
 import {normalizeSources} from '../completing/evidence-links.js';
 import {STANDING_REACH_SPEC} from './samples/standing-reach.js';
+import {HELICOPTER_GROUPS_SPEC} from './samples/helicopter-groups.js';
+import {REVISION_FORMATS_SPEC} from './samples/revision-formats.js';
+import {GRINDER_RELIABILITY_SPEC} from './samples/grinder-reliability.js';
 import {TRAY_OPTIMISATION_SPEC} from './samples/tray-optimisation.js';
 import {SAMPLE_BRIEFS} from './samples/briefs.js';
 
 const copy=value=>structuredClone(value);
-const SPECS=Object.freeze([STANDING_REACH_SPEC,TRAY_OPTIMISATION_SPEC]);
+const SPECS=Object.freeze([
+ STANDING_REACH_SPEC,HELICOPTER_GROUPS_SPEC,REVISION_FORMATS_SPEC,
+ GRINDER_RELIABILITY_SPEC,TRAY_OPTIMISATION_SPEC
+]);
 export const referenceSampleSpec=id=>SPECS.find(spec=>spec.id===id)||null;
 export const REFERENCE_SAMPLE_CHOICES=Object.freeze(SPECS.map(spec=>Object.freeze({
  id:spec.id,title:spec.title,description:spec.description,routeId:spec.routeId,

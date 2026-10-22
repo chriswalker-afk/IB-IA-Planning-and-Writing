@@ -27,12 +27,14 @@ const axisLabel=(d,orientation)=>{
  return orientation==="x"?(d.variable||"Value")+unit:"Group";
 };
 function base(d,subtitle,canvasHeight=H,plotHeight=PH){
+ const figureNumber=d.figureNumber.trim().replace(/^figure\s*/i,"").slice(0,24);
  const parts=['<svg xmlns="http://www.w3.org/2000/svg" class="stat-figure-svg" role="img" aria-label="'+E(d.title||"Student statistics diagram")+'" viewBox="0 0 '+W+' '+canvasHeight+'" width="'+W+'" height="'+canvasHeight+'">',
   '<title>'+E(d.title||"Statistical diagram")+'</title>',
   '<desc>'+E(subtitle)+'. Scale, sample sizes and source are shown; data-driven figures require statistical interpretation by the student.</desc>',
   '<rect width="'+W+'" height="'+canvasHeight+'" fill="#fff"/>',
-  tag(d.title||"Statistical diagram",W/2,38,'font-size="21" font-family="Arial,sans-serif" font-weight="700" text-anchor="middle" fill="#243e49"',870),
-  tag(subtitle,W/2,66,'font-size="13" font-family="Arial,sans-serif" text-anchor="middle" fill="#57717b"'),
+  ...(figureNumber?[tag('Figure '+figureNumber,W/2,20,'class="stat-figure-number" font-size="12" font-family="Arial,sans-serif" font-weight="600" text-anchor="middle" fill="#526c71"',870)]:[]),
+  tag(d.title||"Statistical diagram",W/2,figureNumber?45:38,'font-size="21" font-family="Arial,sans-serif" font-weight="700" text-anchor="middle" fill="#243e49"',870),
+  tag(subtitle,W/2,figureNumber?72:66,'font-size="13" font-family="Arial,sans-serif" text-anchor="middle" fill="#57717b"'),
   '<rect x="'+LEFT+'" y="'+TOP+'" width="'+PW+'" height="'+plotHeight+'" fill="#fcfdfd" stroke="#b8cbd0" stroke-width="1.3"/>'];
  return parts;
 }
@@ -372,7 +374,7 @@ function dots(q){
  const placements=series.map(group=>dotPlacement(group.values,range[0],range[1],PW,d.dotMode,11));
  const rowHeight=Math.max(112,...placements.map(p=>60+p.levels*12));
  const plotHeight=Math.max(PH,rowHeight*series.length),canvasHeight=H+plotHeight-PH;
- const parts=base(d,d.dotMode==="counted"?"Counted dot plot: number beside each dot gives repetitions":"Dot plot shows individual measured observations, without joining points",canvasHeight,plotHeight);
+ const parts=base(d,d.dotMode==="counted"?"Counted dot plot: number beside each dot gives repetitions":"Dot plot shows individual values, without joining points",canvasHeight,plotHeight);
  const X=horizontalNumeric(parts,...range,axisLabel(d,"x"),d.showGrid,plotHeight,canvasHeight);
  const space=plotHeight/Math.max(1,series.length),colors=["#208879","#5074b1","#a35e91","#b28c34","#6f7bb2"];
  series.forEach((group,i)=>{
@@ -402,7 +404,7 @@ function dots(q){
     'font-size="11" font-weight="700" font-family="Arial,sans-serif" fill="#354d5a"',PW/2-42));
   }
  });
- return footer(d,parts,d.dotMode==="counted"?"Each distinct value is marked once; counts preserve all observations.":"Each dot represents one observation; no original measurement was removed.",canvasHeight);
+ return footer(d,parts,d.dotMode==="counted"?"Each distinct value is marked once; counts preserve all supplied values.":"Each dot represents one supplied value; no original value was removed.",canvasHeight);
 }
 function bars(q){
  const {draft:d,result:r,override}=q,rows=r.categories||[],groups=r.names||[],totals=r.totals||[];
