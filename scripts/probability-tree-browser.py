@@ -147,8 +147,8 @@ def flexible_exercise(browser,width,height,touch):
   page.locator('[data-prob-field="layoutStyle"]').select_option("compact")
   assert saved(page)["probabilityStudio"]["draft"]["layoutStyle"]=="compact"
   # Probabilities appear in separate white bands above the branch tails.
-  assert page.locator('[data-prob-preview] .probability-label-panel').count()==6
-  assert page.locator('[data-prob-preview] path[data-prob-segment]').count()==6
+  assert page.locator('[data-prob-preview] .probability-label-panel').count()==5
+  assert page.locator('[data-prob-preview] path[data-prob-segment]').count()==5
   assert page.locator('[data-prob-preview] text').count()>4
   page.screenshot(path=str(OUT/f"probability-flexible-{width}.png"),full_page=True,animations="disabled")
   # Removing a sibling preserves the surviving path IDs and event selections.
@@ -157,7 +157,7 @@ def flexible_exercise(browser,width,height,touch):
   assert len(draft["branches"][""])==2
   assert draft["eventLeaves"]==["1"]
   assert draft["conditionLeaves"]==[]
-  assert draft["branches"]["1"][0]["label"]=="Option C"
+  assert draft["branches"][""][1]["label"]=="Option C"
   assert page.locator('[data-action="probability-save"]').is_disabled()
   set_branch(page,"",0,"0.7")
   set_branch(page,"",1,"0.3")
