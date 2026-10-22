@@ -51,6 +51,13 @@ jobs:
       - uses: ./.github/actions/setup-ci-browser
       - name: Test PDF, Word and ZIP downloads from the production bundle
         run: python scripts/report-exports-browser.py
+      - name: Test the release chooser check against this build
+        run: |
+          python -m http.server 8767 --directory dist > qa-output/reports/chooser-server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID"' EXIT
+          curl --fail --silent --show-error --retry 10 --retry-connrefused --retry-delay 1 --max-time 2 --retry-max-time 15 http://127.0.0.1:8767/ -o /dev/null
+          IA_RELEASE_URL=http://127.0.0.1:8767/ python scripts/sample-release-browser.py
       - name: Verify published reports after deployment
         if: github.event_name == 'workflow_run'
         run: python scripts/report-exports-browser.py --live
