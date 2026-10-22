@@ -24,7 +24,7 @@ def context(browser,width,state):
  c=browser.new_context(viewport={"width":width,"height":900},is_mobile=width<600,has_touch=width<600)
  p=c.new_page();p.set_default_timeout(16000)
  errors=[];p.on("pageerror",lambda error:errors.append(str(error)))
- p.add_init_script("localStorage.setItem("+json.dumps(KEY)+","+json.dumps(json.dumps(state))+");")
+ p.add_init_script("if(!localStorage.getItem("+json.dumps(KEY)+"))localStorage.setItem("+json.dumps(KEY)+","+json.dumps(json.dumps(state))+");")
  p.goto(URL,wait_until="networkidle")
  return c,p,errors
 def chooser(browser,width):
