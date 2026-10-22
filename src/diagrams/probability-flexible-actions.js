@@ -14,7 +14,7 @@ export function enableFlexibleProbability(studio){
  if(!d)return false;
  if(d.treeMode==="flexible")return true;
  d.treeMode="flexible";d.terminalNodes=[];
- d.layoutStyle="spacious";d.edited=true;
+ d.layoutStyle="spacious";d.labelOffsets=d.labelOffsets||{};d.edited=true;
  return true;
 }
 export function addProbabilityOutcome(studio,parent){
@@ -52,9 +52,58 @@ export function removeProbabilityOutcome(studio,parent,index){
  }
  d.branches=branches;
  d.terminalNodes=[...new Set(d.terminalNodes.map(remap).filter(x=>x!==null))];
+ d.labelOffsets=Object.fromEntries(Object.entries(d.labelOffsets||{}).map(([key,value])=>[remap(key),value]).filter(([key])=>key!==null));
  for(const field of ["eventLeaves","conditionLeaves"])
   d[field]=[...new Set(d[field].map(remap).filter(x=>x!==null))];
  pruneFlexibleSelections(d);d.edited=true;return {ok:true};
+}
+/**
+ * Swap adjacent outcomes and all their descendants as a single permutation.
+ * Preserve conditional probabilities, early terminals, event selections and
+ * manual label nudges with the outcomes they describe.
+ */
+export function moveProbabilityOutcome(studio,parent,index,direction){
+ const d=studio?.draft;
+ if(d?.treeMode!=="flexible"||!probabilityParentPaths(d).includes(parent)||![-1,1].includes(direction))
+  return {ok:false,error:"Select an active split."};
+ const siblings=d.branches[parent],target=index+direction;
+ if(!Number.isInteger(index)||index<0||target<0||target>=siblings.length)
+  return {ok:false,error:"That outcome cannot move further."};
+ const mapPath=path=>{
+  if(!path.startsWith(parent)||path.length<=parent.length)return path;
+  const digit=Number(path[parent.length]);
+  const changed=digit===index?target:digit===target?index:digit;
+  return parent+String(changed)+path.slice(parent.length+1);
+ };
+ const nextBranches={};
+ for(const [path,children] of Object.entries(d.branches)){
+  if(path===parent){
+   const items=[...children];[items[index],items[target]]=[items[target],items[index]];
+   nextBranches[path]=items;
+  }else nextBranches[mapPath(path)]=children;
+ }
+ d.branches=nextBranches;
+ d.terminalNodes=d.terminalNodes.map(mapPath);
+ for(const field of ["eventLeaves","conditionLeaves"])d[field]=d[field].map(mapPath);
+ d.labelOffsets=Object.fromEntries(Object.entries(d.labelOffsets||{}).map(([path,offset])=>[mapPath(path),offset]));
+ pruneFlexibleSelections(d);d.edited=true;
+ return {ok:true,path:parent+target};
+}
+/** This changes only the annotation's location, not the branch's probability. */
+export function setProbabilityLabelOffset(studio,path,axis,value){
+ const d=studio?.draft;
+ if(d?.treeMode!=="flexible"||!["x","y"].includes(axis)||
+  typeof path!=="string"||!/^[0-4]{1,4}$/.test(path))return false;
+ const parent=path.slice(0,-1),index=Number(path.at(-1));
+ if(!probabilityParentPaths(d).includes(parent)||index>=d.branches[parent].length)return false;
+ const input=String(value).trim(),n=input===""?0:Number(input);
+ if(!Number.isFinite(n)||!Number.isInteger(n)||axis==="x"&&Math.abs(n)>48||
+   axis==="y"&&(n< -28||n>8))return false;
+ const previous=d.labelOffsets?.[path]||{x:0,y:0};
+ const next={...previous,[axis]:n};
+ if(!d.labelOffsets)d.labelOffsets={};
+ if(next.x===0&&next.y===0)delete d.labelOffsets[path];else d.labelOffsets[path]=next;
+ d.edited=true;return true;
 }
 export function changeProbabilityContinuation(studio,path,continueBranch){
  const d=studio?.draft;
