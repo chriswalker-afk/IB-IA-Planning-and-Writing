@@ -9,7 +9,9 @@ import {SOURCE_FIELDS} from '../../completing/evidence-links.js';
 const rawTable=(columns,rows)=>[columns.join('\t'),...rows.map(row=>row.join('\t'))].join('\n');
 const formattedRows=rows=>rows.map(row=>row.map(value=>String(value)));
 function draftFor(item,study){
- const sourceText=item.calculated?'Calculated from the supplied constructed values.':study.provenance;
+ const sourceText=item.calculated?
+  'Calculated from declared constructed teaching cases; not observed measurements.':
+  'Original constructed teaching cases, not measurements. Full generation recipe and units in the investigation.';
  if(item.tool==='graph'){
   const columns=item.columns||[item.xLabel,item.yLabel],rows=formattedRows(item.rows);
   return {...newGraphDraft(),kind:item.kind||'scatter',title:item.title,
@@ -19,7 +21,7 @@ function draftFor(item,study){
    yUnitMode:item.yUnit?'unit':'dimensionless',
    xMin:String(item.xMin),xMax:String(item.xMax),yMin:String(item.yMin),yMax:String(item.yMax),
    models:item.models||[],showGrid:true,showPoints:true,showLegend:!!(item.models||[]).length,
-   includeZeroY:!!item.includeZeroY,sourceKind:item.calculated?'theoretical':'secondary',
+   includeZeroY:!!item.includeZeroY,sourceKind:'theoretical',
    sourceText,caption:item.caption,equationPlacement:'legend'};
  }
  if(item.tool==='table'){
