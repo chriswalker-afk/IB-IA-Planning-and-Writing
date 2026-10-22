@@ -10,17 +10,43 @@ def state(node,index=2):
 def saved(p):return p.evaluate('(k)=>JSON.parse(localStorage.getItem(k))',KEY)
 def fill(p,path,value):p.locator('[data-bind="'+path+'"]').fill(value)
 def choose(p,path,value):p.locator('[data-choice="'+path+'"][data-value="'+value+'"]').click()
-def action(p,name,extra=''):p.locator('[data-action="'+name+'"]'+extra).first.click()
+def action(p,name,extra=''):
+ # A stale duplicate action can exist inside collapsed help; use the actual
+ # interactive control and fail explicitly if the student cannot reach it.
+ button=p.locator('[data-action="'+name+'"]'+extra+':visible')
+ assert button.count()>0,('No visible action',name,extra)
+ button.first.click()
+def open_stuck(p):
+ # The Help menu is the reliable entry on both desktop and phones.
+ # Do not click the first hidden "I am stuck" inside optional tips.
+ direct=p.locator('[data-action="open-stuck"]:visible')
+ if direct.count():
+  direct.first.click()
+ else:
+  action(p,'open-panel','[data-panel="help"]')
+  action(p,'open-stuck')
+ assert p.locator('.drawer [data-action="stuck-topic"]').count()>0,'Problem-first help drawer did not open'
 def writing_help(p):
- # Use the shared problem-first help route, rather than the removed duplicate shortcut.
- if not p.locator('[data-action="stuck-topic"]').count():action(p,'open-stuck')
- topic=p.locator('[data-action="stuck-topic"][data-topic="writing"]').first
- if not topic.is_visible():p.locator('.stuck-browse > summary').first.click()
- topic.click();action(p,'stuck-work')
+ open_stuck(p)
+ topic=p.locator('.drawer [data-action="stuck-topic"][data-topic="writing"]').first
+ if not topic.is_visible():
+  browse=p.locator('.drawer .stuck-browse')
+  assert browse.count(),'Writing help topic is unavailable'
+  if browse.first.get_attribute('open') is None:browse.first.locator('summary').first.click()
+ topic.click()
+ action(p,'stuck-work')
 def route(p,origin,target):
+ # Four-part writing pages now have their own branch buttons. C96 is reached
+ # using the student-facing Help -> Writing route, not the old route footer.
+ if origin in ('C40','C50') and target=='C96':
+  writing_help(p);return
  cond=next(x['condition'] for x in ROUTES if x['from']==origin and x['to']==target)
  button=p.locator('[data-action="completion-route"][data-condition='+json.dumps(cond)+']').first
- if not button.is_visible():p.locator('.completion-options > summary').click()
+ assert button.count(),('The intended navigation is no longer rendered',origin,target,cond)
+ if not button.is_visible():
+  for details in reversed(button.locator('xpath=ancestor::details[not(@open)]').all()):
+   details.locator('summary').first.click()
+ assert button.is_visible(),('Route remains hidden',origin,target)
  button.click()
 def assert_node(p,node):assert p.locator('[data-source-node="'+node+'"]').count()==1,(node,p.locator('#main').inner_text()[:300])
 def no_overflow(p):assert p.evaluate('document.documentElement.scrollWidth <= innerWidth+1'),p.evaluate('({width:innerWidth,scroll:document.documentElement.scrollWidth})')
@@ -65,7 +91,19 @@ with sync_playwright() as pw:
   p.screenshot(path=str(OUT/'mathematics-phone.png'),full_page=True)
  run('multi-input-links',state('C40'),inputs,True)
  def source_edit(p):
-  p.locator('#source-manager > summary').click();a=BASE['completion']['sourceRecords'][0]['id'];action(p,'conformance-source-select','[data-id="'+a+'"]')
+  # Source manager is now intentionally inside the optional source/accuracy
+  # panel on the first-mathematics introduction screen.
+  outer=p.locator('[data-first-maths-source-details]')
+  assert outer.count()==1,'Optional source details are missing'
+  outer.locator('summary').first.click()
+  p.locator('#source-manager > summary').click()
+  a=BASE['completion']['sourceRecords'][0]['id']
+  action(p,'conformance-source-select','[data-id="'+a+'"]')
+  # Selecting a different source refreshes the page and intentionally closes
+  # optional disclosure panels. Reopen the relevant section before editing.
+  outer=p.locator('[data-first-maths-source-details]')
+  if outer.get_attribute('open') is None:outer.locator('summary').first.click()
+  assert p.locator('[data-bind="completion.fields.actualMethod"]').is_visible()
   fill(p,'completion.fields.actualMethod','Corrected measured distance definition')
   s=saved(p);assert s['entries'][0]['reviewNeeded']=='yes';assert s['entries'][2]['reviewNeeded']=='yes';assert s['entries'][1].get('reviewNeeded')!='yes';assert s['entries'][3].get('reviewNeeded')!='yes'
   assert s['entries'][0]['interpretation']=='The changing rate matters to the aim'
@@ -97,7 +135,12 @@ with sync_playwright() as pw:
   action(p,'conformance-review-status','[data-mode="draft"][data-id="D05"][data-status="needs-work"]')
   action(p,'conformance-review-repair','[data-id="D05"]');assert_node(p,'C34B')
   assert saved(p)['completion']['activeEntryIndex']==0
-  fill(p,'entries.0.interpretation','The changing rate helps answer my aim but not establish causation.')
+  # The first-stage interpretation is already present and is intentionally
+  # shown as read-only here; edit its local takeaway instead of a hidden field.
+  assert 'The changing rate matters to the aim' in p.locator('#main').inner_text()
+  fill(p,'entries.0.localTakeaway','The changing rate helps answer my aim but not establish causation.')
+  assert saved(p)['entries'][0]['localTakeaway'].startswith('The changing rate helps')
+  assert saved(p)['entries'][0]['interpretation']=='The changing rate matters to the aim'
   action(p,'conformance-review-return');assert_node(p,'C80D')
   p.locator('#review-checklist-draft > summary').click();p.locator('#review-draft-D05 > summary').click()
   action(p,'conformance-review-status','[data-mode="draft"][data-id="D05"][data-status="checked"]')

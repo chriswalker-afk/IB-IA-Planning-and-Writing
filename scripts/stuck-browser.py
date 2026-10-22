@@ -14,8 +14,20 @@ def project(route='planning',node='N01'):
  s['completion']['fields']['permissionStatus']='not-needed';s['planning']['fields']['permissionNeed']='no';s['teacher']['pendingApproval']=False
  s['planning']['fields']['aim']='How does the shape affect the model?';return s
 def saved(p):return p.evaluate('(k)=>JSON.parse(localStorage.getItem(k))',KEY)
-def action(p,a,extra=''):p.locator('[data-action="'+a+'"]'+extra).first.click()
-def open_help(p):action(p,'open-stuck');assert p.get_by_role('dialog').is_visible()
+def action(p,a,extra=''):
+ # Do not click a matching but hidden control inside optional advice.
+ locator=p.locator('[data-action="'+a+'"]'+extra+':visible')
+ assert locator.count()>0,('Student action is not visibly available',a,extra)
+ locator.first.click()
+def open_help(p):
+ # The current IA UI exposes "I am stuck" from the Help menu on both
+ # desktop and phone, while other copies sit in collapsed writing examples.
+ if p.locator('[data-action="open-stuck"]:visible').count():
+  action(p,'open-stuck')
+ else:
+  action(p,'open-panel','[data-panel="help"]')
+  action(p,'open-stuck')
+ assert p.get_by_role('dialog').is_visible()
 def topic(p,t):
  el=p.locator('.drawer [data-action="stuck-topic"][data-topic="'+t+'"]')
  if not el.is_visible():p.locator('.drawer .stuck-browse > summary').click()
@@ -37,13 +49,15 @@ with sync_playwright() as pw:
    results.append({'test':name,'status':'FAILED','error':str(e),'page_errors':errors});traceback.print_exc();p.screenshot(animations='disabled',path=str(OUT/(name+'-failure.png')),full_page=True)
   c.close()
  def planning(p):
-  before=p.locator('[data-bind="planning.fields.aim"]').input_value();open_help(p);node(p,'N01')
+  # N01 now captures the provisional idea/title; the earlier saved aim is
+  # represented in project state and must not be changed by asking for help.
+  before=saved(p)['planning']['fields']['aim'];open_help(p);node(p,'N01')
   assert p.locator('.drawer .stuck-topics').first.locator('button').count()<=5
   assert p.locator('.drawer .stuck-topics').first.locator('button').first.get_attribute('data-topic')=='aim'
   p.screenshot(animations='disabled',path=str(OUT/'stuck-planning-phone.png'))
   topic(p,'aim');assert not p.locator('.stuck-example p').first.is_visible();assert p.locator('.drawer .btn-primary').count()==1
   p.locator('.stuck-example > summary').click();assert p.locator('.stuck-example p').first.is_visible()
-  action(p,'stuck-return');node(p,'N01');assert p.locator('[data-bind="planning.fields.aim"]').input_value()==before
+  action(p,'stuck-return');node(p,'N01');assert saved(p)['planning']['fields']['aim']==before
  run('help-stays-in-planning',project(),planning)
  def help_menu(p):
   action(p,'open-panel','[data-panel="help"]');p.locator('.drawer [data-action="open-stuck"]').click();node(p,'N01');assert p.locator('.drawer .stuck-topic').count()>5
