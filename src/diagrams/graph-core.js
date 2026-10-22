@@ -16,6 +16,8 @@ export const validGraphSymbol=value=>typeof value==="string"&&/^\p{L}$/u.test(va
 const effectiveSymbol=(value,fallback)=>validGraphSymbol(value)?value.trim():fallback;
 /** Presentation only: never change the regression coefficients or its evaluator.
  * Replace mathematical x/y tokens without touching names such as exp or max.
+ * Digits and superscripts count as coefficient/power neighbours (3x², 2t),
+ * not as parts of a variable name.
  * Centred fits sometimes use t as an auxiliary. If the student's own variable
  * is t, rename that auxiliary to a distinct letter to avoid ambiguous formulae.
  */
@@ -24,9 +26,9 @@ export function displayGraphEquation(equation,draft){
  let displayed=String(equation??"");
  if(/,\s*(?:where\s+)?t\s*=/.test(displayed)&&(x==="t"||y==="t")){
   const auxiliary=["u","v","z","w"].find(letter=>letter!==x&&letter!==y)||"u";
-  displayed=displayed.replace(/(^|[^\p{L}\p{N}_])t(?=$|[^\p{L}\p{N}_])/gu,(_m,prefix)=>prefix+auxiliary);
+  displayed=displayed.replace(/(^|[^\p{L}_])t(?=$|[^\p{L}_])/gu,(_m,prefix)=>prefix+auxiliary);
  }
- return displayed.replace(/(^|[^\p{L}\p{N}_])([xy])(?=$|[^\p{L}\p{N}_])/gu,
+ return displayed.replace(/(^|[^\p{L}_])([xy])(?=$|[^\p{L}_])/gu,
   (_m,prefix,variable)=>prefix+(variable==="x"?x:y));
 }
 
