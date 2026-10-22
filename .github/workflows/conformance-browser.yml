@@ -1,6 +1,29 @@
 name: Conformance browser acceptance
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'app.js'
+      - 'index.html'
+      - 'src/completing/**'
+      - 'src/ui/**'
+      - 'src/planning/**'
+      - 'src/ideas/**'
+      - 'src/resources/**'
+      - 'src/examples/**'
+      - 'src/essentials/**'
+      - 'src/core/project-state.js'
+      - 'src/core/illustrative-samples.js'
+      - 'src/core/sample-*.js'
+      - 'src/core/samples/**'
+      - 'src/handover/**'
+      - 'data/*.css'
+      - 'scripts/*-browser.py'
+      - 'scripts/*-fixtures.mjs'
+      - '.github/workflows/conformance-browser.yml'
+      - '.github/actions/setup-ci-node/action.yml'
+      - '.github/actions/setup-ci-browser/action.yml'
   pull_request:
     branches: [main]
     paths:
@@ -11,13 +34,16 @@ on:
       - 'src/planning/**'
       - 'src/ideas/**'
       - 'src/resources/**'
+      - 'src/examples/**'
       - 'src/essentials/**'
       - 'src/core/project-state.js'
       - 'src/core/illustrative-samples.js'
+      - 'src/core/sample-*.js'
+      - 'src/core/samples/**'
       - 'src/handover/**'
-      - 'data/experience.css'
-      - 'data/representation-workspace.css'
+      - 'data/*.css'
       - 'scripts/*-browser.py'
+      - 'scripts/*-fixtures.mjs'
       - '.github/workflows/conformance-browser.yml'
       - '.github/actions/setup-ci-node/action.yml'
       - '.github/actions/setup-ci-browser/action.yml'
@@ -29,8 +55,23 @@ concurrency:
   cancel-in-progress: true
 jobs:
   browser:
+    name: ${{ matrix.group }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - group: Writing and help
+            suites: conformance stuck resources examples
+          - group: Planning and progress
+            suites: ideas experience timeline
+          - group: Assessment guidance
+            suites: essentials criterion-level
+          - group: Mathematical decisions
+            suites: math-routes extended-routes living-journey
+          - group: Complete illustrative samples
+            suites: illustrative-samples
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-ci-node
@@ -46,14 +87,17 @@ jobs:
           python -m http.server 8765 --directory dist > qa-output/server.log 2>&1 &
           SERVER_PID=$!
           trap 'kill "$SERVER_PID"' EXIT
+          curl --fail --silent --show-error --retry 10 --retry-connrefused --retry-delay 1 --max-time 2 --retry-max-time 15 http://127.0.0.1:8765/ -o /dev/null
           status=0
-          for suite in conformance stuck resources ideas examples essentials experience timeline criterion-level illustrative-samples math-routes extended-routes living-journey; do
+          for suite in ${{ matrix.suites }}; do
+            echo "::group::$suite browser checks"
             python "scripts/$suite-browser.py" || status=1
+            echo "::endgroup::"
           done
           exit "$status"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: conformance-browser-results
+          name: conformance-browser-${{ strategy.job-index }}
           path: qa-output
           retention-days: 7
