@@ -68,6 +68,35 @@ def chooser(browser,width):
   assert p.locator("[data-probability-studio]").is_visible()
   assert p.locator('[data-action="representation-return"]').count()==1
   assert p.locator("[data-prob-quality]").count()==1
+  nav=p.locator("[data-representation-switcher]")
+  tabs=nav.locator('[data-action="representation-switch"]')
+  assert set(tabs.evaluate_all("(nodes)=>nodes.map(x=>x.dataset.representationTool)"))==ALL
+  assert tabs.count()==7
+  assert nav.locator('[data-action="representation-jump"]').count()==0
+  assert nav.locator('[aria-current="page"]').count()==1
+  assert nav.locator('[data-representation-tool="probability"][aria-current="page"]').count()==1
+  # Direct switching retains unsaved drafts, not an old linked snapshot.
+  p.locator('[data-prob-field="title"]').fill("QA unsaved probability tree")
+  roots={"graph":"graph-studio","stat":"stat-studio","table":"table-studio",
+         "trace":"image-tracer","voronoi":"voronoi-studio",
+         "geometry":"geometry-studio","probability":"probability-studio"}
+  for tool in ("geometry","stat","table","trace","voronoi","graph","probability"):
+   p.locator('[data-representation-tool="'+tool+'"]').click()
+   assert p.locator('[data-'+roots[tool]+']').is_visible(),tool
+   assert p.locator('[data-representation-switcher] [aria-current="page"]').count()==1
+   assert p.locator('[data-representation-tool="'+tool+'"][aria-current="page"]').count()==1
+   assert p.locator('[data-action="representation-return"]').count()==1
+   width_ok(p)
+   if tool=="geometry":
+    p.locator('[data-geometry-field="title"]').fill("QA edited geometry construction")
+  assert p.locator('[data-prob-field="title"]').input_value()=="QA unsaved probability tree"
+  p.locator('[data-representation-tool="geometry"]').click()
+  assert p.locator('[data-geometry-field="title"]').input_value()=="QA edited geometry construction"
+  p.locator('[data-representation-tool="probability"]').click()
+  p.reload(wait_until="networkidle")
+  assert saved(p)["geometryStudio"]["draft"]["title"]=="QA edited geometry construction"
+  assert saved(p)["probabilityStudio"]["draft"]["title"]=="QA unsaved probability tree"
+  assert saved(p)["probabilityStudio"]["open"] is True
   width_ok(p)
   p.screenshot(path=str(OUT/f"reduced-probability-{width}.png"),full_page=True,animations="disabled")
   p.locator('[data-action="representation-return"]').first.click()
@@ -98,6 +127,9 @@ def later(browser,width,node,index):
   assert hub.locator("[data-representation-recommended] [data-action='trace-open']").count()==0
   picker.locator('[data-action="probability-open"]').first.click()
   assert p.locator("[data-probability-studio]").is_visible()
+  p.locator('[data-representation-tool="table"]').click()
+  assert p.locator("[data-table-studio]").is_visible()
+  assert saved(p)["completion"]["editorReturnNode"]==node
   p.locator('[data-action="representation-return"]').first.click()
   assert p.locator('[data-source-node="'+node+'"]').count()==1
   assert saved(p)["completion"]["activeEntryIndex"]==index
@@ -119,6 +151,10 @@ def planning_to_creator(browser,width):
   drawer.locator('[data-resource-creator="geometry"]').click()
   assert p.locator("[data-geometry-studio]").is_visible()
   assert saved(p)["scratch"]["introduction"]=="Preserve this note"
+  p.locator('[data-representation-tool="probability"]').click()
+  assert p.locator("[data-probability-studio]").is_visible()
+  assert saved(p)["ui"]["resourceCreatorReturnRoute"]=="planning"
+  assert p.locator('[data-representation-switcher] [aria-label="Back to Planning"]').count()==1
   p.locator('[data-action="resource-creator-return"]').first.click()
   assert saved(p)["route"]=="planning"
   assert saved(p)["scratch"]["introduction"]=="Preserve this note"
@@ -135,4 +171,5 @@ if __name__=="__main__":
    chooser(browser,width)
    for node,index in (("C40",1),("C50",2)):later(browser,width,node,index)
    planning_to_creator(browser,width)
+  chooser(browser,320)
   browser.close()
