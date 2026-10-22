@@ -1,0 +1,20 @@
+name: Pass 4 authoring workspace
+on:
+  push:
+    branches: [illustrative-samples-pass4]
+    paths: ['.github/workflows/pass4-authoring-workspace.yml']
+permissions:
+  contents: read
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-ci-node
+      - name: Package source and installed public dependencies
+        run: tar -czf /tmp/pass4-workspace.tar.gz src scripts tests .github package.json package-lock.json node_modules index.html app.js data assets vendor styles.css pdf.worker.min.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pass4-authoring-workspace
+          path: /tmp/pass4-workspace.tar.gz
+          retention-days: 1
