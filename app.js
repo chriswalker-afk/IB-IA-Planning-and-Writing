@@ -1797,6 +1797,21 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         closeRepresentationTools(state);
         save();render();break;
       }
+      case "representation-switch":{
+        const next=el.dataset.representationTool;
+        const previous=activeRepresentationTool(state);
+        if(state.route!=="completing"||state.completion.current!=="C31"||
+           !previous||!representationTool(next)||previous.id===next)break;
+        // Swap the visible editor, never re-load a linked figure here: doing so
+        // would overwrite unsaved drafts when a student revisits another tab.
+        // Keep the original Writing/Planning return target across every switch.
+        activateRepresentationTool(state,next);
+        save();render();
+        main.querySelector("[data-representation-switcher]")?.scrollIntoView({block:"start",behavior:"auto"});
+        main.querySelector('[data-action="representation-switch"][data-representation-tool="'+next+'"]')
+          ?.focus({preventScroll:true});
+        break;
+      }
       case "representation-return":{
         // A tool is not an extra writing stage. Return to the same first
         // or later four-part mathematics page the student came from.
