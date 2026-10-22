@@ -619,6 +619,19 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     if(quality)quality.outerHTML=probabilityQualityHtml(state.probabilityStudio,e);
     const output=root.querySelector("[data-prob-output]");
     if(output)output.outerHTML=probabilityOutputHtml(state.probabilityStudio,icon);
+    // Keep conditional history legends and selected-path labels accurate while
+    // a student edits outcome text, without detaching the focused input.
+    const d=state.probabilityStudio.draft;
+    const pathLabel=id=>id?[...id].map((bit,i)=>
+      d.branches[id.slice(0,i)]?.[Number(bit)]?.label||"unlabelled outcome").join(" → "):"Starting event";
+    root.querySelectorAll("[data-prob-history]").forEach(node=>
+      node.textContent=pathLabel(node.dataset.probHistory));
+    root.querySelectorAll("[data-prob-path-label]").forEach(node=>
+      node.textContent=pathLabel(node.dataset.probPathLabel));
+    root.querySelectorAll("[data-prob-stage-label]").forEach(node=>
+      node.textContent=d.stageLabels[Number(node.dataset.probStageLabel)]||"Stage");
+    root.querySelectorAll("[data-prob-event-heading]").forEach(node=>
+      node.textContent=node.dataset.probEventHeading==="eventLeaves"?d.eventName:d.conditionName);
     refreshPresentation("probability");
   }
   function navigateProbability(figureId=""){

@@ -62,10 +62,10 @@ export function probabilityOutputHtml(studio,icon){
 function stageEditor(d,level,e){
  const ids=activeParents(d.stages).filter(x=>x.length===level),open=level===0;
  return '<details class="probability-stage"'+(open?" open":"")+'><summary><strong>Stage '+(level+1)+
- '</strong><span>'+e(d.stageLabels[level])+'</span></summary><div class="probability-stage-body">'+
+ '</strong><span data-prob-stage-label="'+level+'">'+e(d.stageLabels[level])+'</span></summary><div class="probability-stage-body">'+
  '<label class="probability-field"><span>Stage '+(level+1)+' label</span><input type="text" data-prob-stage="'+level+
  '" value="'+e(d.stageLabels[level])+'"></label>'+
- ids.map(id=>'<fieldset class="probability-split"><legend>'+e(history(d,id))+'</legend>'+
+ ids.map(id=>'<fieldset class="probability-split"><legend data-prob-history="'+e(id)+'">'+e(history(d,id))+'</legend>'+
  '<p>These two conditional probabilities must sum to 1.</p>'+
  [0,1].map(bit=>'<div class="probability-branch-fields"><label><span>Outcome '+(bit+1)+'</span>'+
  '<input type="text" data-prob-branch-parent="'+e(id)+'" data-prob-branch-index="'+bit+
@@ -82,8 +82,8 @@ function eventEditor(studio,e){
  (d.showEventCalculation?'<p>Select the <strong>complete paths</strong> that belong to each event. P(E | C) means the chance of E given C; overlapping paths contribute to the intersection.</p>'+
  '<div class="probability-event-fields">'+field("eventName","Event name",d.eventName,e,"E")+
  field("conditionName","Given event",d.conditionName,e,"C")+'</div>'+
- '<div class="probability-path-select"><table><thead><tr><th>Complete outcome path</th><th>'+e(d.eventName)+'</th><th>'+e(d.conditionName)+'</th></tr></thead><tbody>'+
- leafKeys(d.stages).map(id=>'<tr><td>'+e(history(d,id))+'</td>'+
+ '<div class="probability-path-select"><table><thead><tr><th>Complete outcome path</th><th data-prob-event-heading="eventLeaves">'+e(d.eventName)+'</th><th data-prob-event-heading="conditionLeaves">'+e(d.conditionName)+'</th></tr></thead><tbody>'+
+ leafKeys(d.stages).map(id=>'<tr><td data-prob-path-label="'+id+'">'+e(history(d,id))+'</td>'+
  ["eventLeaves","conditionLeaves"].map(key=>'<td><label class="probability-path-check"><input type="checkbox" data-prob-leaf="'+id+
  '" data-prob-membership="'+key+'"'+(d[key].includes(id)?" checked":"")+'> <span class="visually-hidden">Include path in '+e(key==="eventLeaves"?d.eventName:d.conditionName)+'</span></label></td>').join("")+'</tr>').join("")+
  '</tbody></table></div>':"")+'</section>';

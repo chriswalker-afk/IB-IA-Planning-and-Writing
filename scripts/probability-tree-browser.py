@@ -51,6 +51,7 @@ def exercise(browser,width,height,touch):
   assert "Check before saving" in page.locator("[data-prob-quality]").inner_text()
   # Conditional probabilities belong to different histories; no branch is filled automatically.
   set_branch(page,"",0,"3/5","Success")
+  assert "Success" in page.locator(".probability-stage").nth(1).locator("fieldset legend").first.inner_text()
   set_branch(page,"",1,"2/5","Failure")
   set_branch(page,"0",0,"80%","Continues")
   set_branch(page,"0",1,"0.2","Stops")
@@ -61,6 +62,7 @@ def exercise(browser,width,height,touch):
   page.locator('[data-prob-field="showProducts"]').check()
   assert "0.48" in page.locator("[data-prob-quality]").inner_text()
   page.locator('[data-prob-field="showEventCalculation"]').check()
+  assert "Success" in page.locator('[data-prob-path-label="00"]').inner_text()
   page.locator('[data-prob-membership="eventLeaves"][data-prob-leaf="00"]').check()
   page.locator('[data-prob-membership="eventLeaves"][data-prob-leaf="10"]').check()
   page.locator('[data-prob-membership="conditionLeaves"][data-prob-leaf="00"]').check()
