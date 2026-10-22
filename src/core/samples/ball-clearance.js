@@ -146,7 +146,7 @@ const STUDY={
   ],
   "figures": [
     {
-      "id": "p3-ball-pixels",
+      "id": "figure-p3-ball-pixels",
       "tool": "graph",
       "stage": 0,
       "after": "purpose",
@@ -199,7 +199,7 @@ const STUDY={
       "caption": "The vertical coordinate increases upwards from the defined floor origin. All seven centres are constructed, not traced from real footage."
     },
     {
-      "id": "p3-ball-calibration",
+      "id": "table-p3-ball-calibration",
       "tool": "table",
       "stage": 0,
       "after": "result",
@@ -241,7 +241,7 @@ const STUDY={
       "note": "X and Y use a common origin and the same nominal scale. Barrier top is a height level at X=450."
     },
     {
-      "id": "p3-ball-fit",
+      "id": "figure-p3-ball-fit",
       "tool": "graph",
       "stage": 1,
       "after": "result",
@@ -301,7 +301,7 @@ const STUDY={
       "caption": "Quadratic regression uses all seven original centres. The x variable in the fitted equation refers to horizontal pixel X, not elapsed time."
     },
     {
-      "id": "p3-ball-near",
+      "id": "figure-p3-ball-near",
       "tool": "graph",
       "stage": 2,
       "after": "result",
@@ -379,7 +379,7 @@ const STUDY={
       "calculated": true
     },
     {
-      "id": "p3-ball-sensitivity",
+      "id": "table-p3-ball-sensitivity",
       "tool": "table",
       "stage": 3,
       "after": "result",
