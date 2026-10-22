@@ -139,8 +139,10 @@ const specs=[
        "E ("+d.eventName+"): "+(d.eventLeaves||[]).join(", ")+
        "; C ("+d.conditionName+"): "+(d.conditionLeaves||[]).join(", "):""),
      row("Conditional calculations",d.showEventCalculation&&a.ready?
-       ["P(E)="+a.event,"P(C)="+a.condition,"P(E∩C)="+a.intersection,
-        "P(E|C)="+(a.conditional===null?"undefined or unselected":a.conditional)].join("; "):""),
+       [a.event!==null?"P(E)="+a.event:"",a.condition!==null?"P(C)="+a.condition:"",
+        a.intersection!==null?"P(E∩C)="+a.intersection:"",
+        a.intersection!==null&&a.condition===0?"P(E|C) undefined (P(C)=0)":
+         a.conditional!==null?"P(E|C)="+a.conditional:""].filter(Boolean).join("; "):""),
      row("Source type",d.sourceKind),row("Original probability source",d.sourceCredit),row("Figure caption",d.caption),
      row("Dependence, estimates and limitations",d.note)
     ];
