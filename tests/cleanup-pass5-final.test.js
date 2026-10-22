@@ -56,7 +56,7 @@ test("cleanup final release gate: full JSON preserves all seven figure links and
  s.scratch.introduction="The student's wording";
  s.completion.fields.mainConclusion="A cautious original conclusion";
  for(const tool of REPRESENTATION_TOOLS){
-  const id="pass5-"+tool.id,studio=s[tool.studio],draft=copy(studio.draft);
+  const id=(tool.id==="graph"?"figure":tool.id)+"-pass5-"+tool.id,studio=s[tool.studio],draft=copy(studio.draft);
   if(tool.id==="trace"){draft.imageSrc=svgPixel;draft.width=32;draft.height=32;}
   studio.figures=[{id,entryId:"one",savedAt:"2026-10-22T00:00:00.000Z",draft}];
   s.entries[0][tool.entryKey]=id;
@@ -75,7 +75,7 @@ test("cleanup final release gate: full JSON preserves all seven figure links and
  restored.planning.fields.assessmentFramework="revised2029";
  restored=normalizeProjectState(copy(restored));
  for(const tool of REPRESENTATION_TOOLS){
-  const id="pass5-"+tool.id;
+  const id=(tool.id==="graph"?"figure":tool.id)+"-pass5-"+tool.id;
   assert.equal(restored.entries[0][tool.entryKey],id,tool.id);
   assert.equal(restored[tool.studio].figures[0]?.id,id,tool.id);
   assert.equal(restored[tool.studio].figures[0]?.entryId,"one",tool.id);
@@ -91,10 +91,10 @@ test("cleanup final release gate preserves every formerly monolithic conformance
  assert.match(wf,/fail-fast: false/);
  assert.match(wf,/workflow_dispatch:/);
  assert.match(wf,/npm run build/);
- for(const suite of suites){
-  assert.equal((wf.match(new RegExp(" "+suite+"(?= |\\n)", "g"))||[]).length,1,
-   suite+" must be executed once, not silently removed or duplicated");
- }
+ const groupCases=wf.split("\n").filter(line=>line.includes(') suites="')).map(line=>line.match(/suites="([^"]+)"/)?.[1]).filter(Boolean);
+ const executed=groupCases.flatMap(value=>value.split(" "));
+ assert.equal(executed.length,suites.length,"Every legacy suite must run exactly once");
+ assert.deepEqual(new Set(executed),new Set(suites),"No legacy suite may be omitted");
  assert.match(wf,/conformance-fixtures\.mjs/);
  assert.match(wf,/examples-fixtures\.mjs/);
  assert.match(wf,/experience-fixtures\.mjs/);
