@@ -207,14 +207,14 @@ const STUDY={
       "number": 1,
       "columns": [
         "Reference",
-        "Pixel value",
-        "Nominal metres"
+        "Pixels",
+        "Metres"
       ],
       "rows": [
         [
-          "Scale",
+          "Scale reference",
           100,
-          "1 m"
+          1
         ],
         [
           "Barrier X",
@@ -225,20 +225,15 @@ const STUDY={
           "Barrier top Y",
           248,
           2.48
-        ],
-        [
-          "Ball centres",
-          7,
-          "fixed pairs"
         ]
       ],
       "units": [
         "",
-        "",
-        ""
+        "px",
+        "m"
       ],
       "calculated": true,
-      "note": "X and Y use a common origin and the same nominal scale. Barrier top is a height level at X=450."
+      "note": "The common hypothetical scale is 100 px/m. X and Y use the same datum and plane; seven source ball-centre pairs remain in the editable working data."
     },
     {
       "id": "figure-p3-ball-fit",
