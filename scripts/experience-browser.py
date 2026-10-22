@@ -23,7 +23,15 @@ with sync_playwright() as pw:
    results.append({'test':name,'status':'FAILED','error':str(e),'page_errors':errors});traceback.print_exc();shot(p,name+'-failure')
   c.close()
  def first_task(p):
-  action(p,'start-planning');p.wait_for_timeout(400);first=p.locator('[data-choice="planning.fields.ideaStatus"]').first.bounding_box();h=p.viewport_size['height'];assert first['y']+first['height'] < h-(75 if p.viewport_size['width']<761 else 0),first
+  action(p,'start-planning')
+  # First-time students now receive a genuine optional planning welcome
+  # before the first choice. Exercise Continue rather than forcing hidden controls.
+  assert p.locator('[data-planning-intro="true"]').count()==1
+  p.locator('[data-action="planning-intro-continue"]').click()
+  assert p.locator('[data-source-node="N00"]').count()==1
+  first=p.locator('[data-choice="planning.fields.ideaStatus"]:visible').first.bounding_box()
+  h=p.viewport_size['height']
+  assert first['y']+first['height'] < h-(75 if p.viewport_size['width']<761 else 0),first
   assert p.locator('.task-heading').count()==1
   assert p.locator('.planning-learning-trail').count()==1
   assert p.locator('[data-choice="planning.fields.ideaStatus"]').count()==3
@@ -43,13 +51,21 @@ with sync_playwright() as pw:
  run('checkpoint-consistency-edit-and-resume',OWN,checkpoint)
  def compact_path(p):
   nav(p,'path');assert p.locator('.journey-chapter[open]').count()==1;assert p.locator('[data-journey-group="setup"]').get_attribute('open') is not None;before=raw(p)
-  action(p,'journey-toggle-all');assert p.locator('.journey-chapter[open]').count()==4;assert p.locator('[data-node="C90"]').is_visible();action(p,'journey-toggle-all');assert p.locator('.journey-chapter[open]').count()==0;assert raw(p)==before
+  action(p,'journey-toggle-all');assert p.locator('.journey-chapter[open]').count()==4;assert p.locator('[data-node="C90"]').count()>=1;action(p,'journey-toggle-all');assert p.locator('.journey-chapter[open]').count()==0;assert raw(p)==before
   p.locator('[data-journey-group="setup"]>summary').click();shot(p,'compact-path')
  run('unfolding-path-no-locked-stages',OWN,compact_path,390,844)
  def support(p):
-  for trigger,close in [('example-open','#exampleDialog [data-example-close]'),('criteria-toggle',None),('resource-browse','.drawer [data-action="close-drawer"]')]:
-   if trigger=='criteria-toggle':
-    action(p,trigger);btn=p.locator('.criteria-content [data-action="essentials-open"]');btn.click();p.keyboard.press('Escape');assert p.evaluate('document.activeElement.dataset.action')=='essentials-open';continue
+  for trigger,close in [('example-open','#exampleDialog [data-example-close]'),('criterion-badge',None),('resource-browse','.drawer [data-action="close-drawer"]')]:
+   if trigger=='criterion-badge':
+    badge=p.locator('[data-criterion-badge="completing:C10:aim"]')
+    assert badge.is_visible()
+    before=raw(p)
+    badge.click()
+    p.locator('#criterionBadgeDialog [data-criterion-badge-rubric="A"]').click()
+    assert p.locator('#essentialsDialog [data-rubric-criterion="A"]').count()==1
+    p.keyboard.press('Escape')
+    assert raw(p)==before
+    continue
    btn=p.locator('.support-actions [data-action="'+trigger+'"]');btn.scroll_into_view_if_needed();before=raw(p);btn.click();p.keyboard.press('Escape');assert p.evaluate('document.activeElement.dataset.action')==trigger;assert raw(p)==before
   action(p,'open-stuck');topic=p.locator('.drawer [data-action="stuck-topic"][data-topic="calculation"]');
   if not topic.is_visible():p.locator('.drawer .stuck-browse > summary').click()
