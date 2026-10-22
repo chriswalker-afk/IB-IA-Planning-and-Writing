@@ -92,7 +92,12 @@ def run(browser,width):
   p.goto(URL,wait_until="networkidle")
   assert p.locator('[data-source-node="C60"]').count()==1,"Old C63 conclusion did not reopen C60"
   assert p.locator("#main").get_attribute("data-assessment-framework")=="legacy"
-  assert "Earlier conclusion" in p.locator("#main").inner_text()
+  # Old conclusion paragraphs now live in a deliberately optional archived
+  # notes disclosure. Open it, then verify the original editable student text.
+  legacy=p.locator('[data-conclusion-legacy]')
+  assert legacy.count()==1,'A former C63 conclusion must be recoverable in C60'
+  legacy.locator('summary').click()
+  assert 'Earlier conclusion' in p.locator('[data-bind="completion.fields.mainConclusion"]').input_value()
   # A real full-project file import must preserve student work, not just its
   # JSON shape. Normalization and redraw happen in the application.
   p.on("dialog",lambda dialog:dialog.accept())
