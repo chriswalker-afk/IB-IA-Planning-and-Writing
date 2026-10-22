@@ -10,6 +10,8 @@ BASE=json.loads(subprocess.check_output(["node","--input-type=module","-e",
 def fixture():
  s=copy.deepcopy(BASE)
  s["route"]="completing"
+ s["ui"]["writingIntroSeen"]=True
+ s["ui"]["writerGuideIntroSeen"]=True
  s["ui"]["lastWorkRoute"]="completing"
  s["completion"]["current"]="C40"
  s["completion"]["activeEntryIndex"]=0
