@@ -16,8 +16,9 @@ export function setProbabilityField(studio,key,value){
    d.conditionLeaves=d.conditionLeaves.filter(x=>allowed.has(x));
   }else return false;
  }else if(key==="layoutStyle"&&["compact","spacious"].includes(value))d.layoutStyle=value;
+ else if(key==="printStyle"&&["colour","mono"].includes(value))d.printStyle=value;
  else if(key==="sourceKind"&&["theoretical","primary","secondary","unsure"].includes(value))d.sourceKind=value;
- else if(["showProducts","showEventCalculation","showTitle","showCaption","showStageLabels"].includes(key)&&typeof value==="boolean")d[key]=value;
+ else if(["showProducts","showEventCalculation","showTitle","showCaption","showStageLabels","showPathLegend"].includes(key)&&typeof value==="boolean")d[key]=value;
  else return false;
  d.edited=true;return true;
 }
