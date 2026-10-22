@@ -27,14 +27,38 @@ test("focus is limited to C31 when a studio is open",()=>{
  assert.equal(representationFocusActive({...s,route:"planning"}),false);
  assert.equal(representationFocusActive({...s,graphStudio:{open:false}}),false);
 });
-test("shared toolbar offers IA return, all tools, and three stages",()=>{
- const html=renderRepresentationSwitcher({route:"completing",completion:{current:"C31"},voronoiStudio:{open:true}},icon,e);
- assert.match(html,/data-node="C30"/);
- assert.match(html,/data-action="representation-return"/);
+test("studio toolbar has one Back control and all seven distinct diagram tools",()=>{
+ const state=createProjectState();
+ state.route="completing";state.completion.current="C31";
+ state.completion.editorReturnNode="C40";
+ assert(activateRepresentationTool(state,"voronoi"));
+ const html=renderRepresentationSwitcher(state,icon,e);
+ assert.match(html,/data-action="representation-return" data-node="C40"/);
  assert.match(html,/data-action="representation-back"/);
- for(const stage of ["create","refine","use"])assert.ok(html.includes('data-representation-step="'+stage+'"'));
- assert.match(html,/Voronoi Studio/);
+ assert(!html.includes('data-action="representation-jump"'),"Obsolete Create/Refine/Use strip should be removed");
+ assert.equal((html.match(/data-action="representation-switch"/g)||[]).length,7);
+ for(const tool of REPRESENTATION_TOOLS){
+  assert.equal((html.match(new RegExp('data-representation-tool="'+tool.id+'"','g'))||[]).length,1);
+  assert.match(html,new RegExp('data-icon="'+tool.icon+'"'));
+  assert(html.includes(tool.navLabel),"The toolbar shows a short text label for "+tool.id);
+ }
+ assert.match(html,/data-representation-tool="voronoi" aria-current="page"/);
+ assert.equal((html.match(/aria-current="page"/g)||[]).length,1);
+ assert.match(html,/aria-label="Diagram creators and return navigation"/);
 });
+test("toolbar Back uses the original library origin without duplicate return controls",()=>{
+ const state=createProjectState();
+ state.route="completing";state.completion.current="C31";
+ state.ui.resourceCreatorReturnRoute="planning";
+ assert(activateRepresentationTool(state,"geometry"));
+ const html=renderRepresentationSwitcher(state,icon,e);
+ assert.match(html,/data-action="resource-creator-return"/);
+ assert.match(html,/aria-label="Back to Planning"/);
+ assert.equal((html.match(/data-action="resource-creator-return"/g)||[]).length,1);
+ assert.doesNotMatch(html,/data-action="representation-return"/);
+ assert.match(html,/data-representation-tool="geometry" aria-current="page"/);
+});
+
 test("studios provide consistent empty states and a completion anchor",()=>{
  for(const name of ["graph-view","stat-studio-view","table-studio-view","image-tracer-view","voronoi-view"]){
   const source=read("src/diagrams/"+name+".js");
