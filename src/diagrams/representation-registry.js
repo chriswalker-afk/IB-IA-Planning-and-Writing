@@ -43,6 +43,28 @@ export function activateRepresentationTool(state,id){
  for(const tool of REPRESENTATION_TOOLS)if(state[tool.studio])state[tool.studio].open=tool.id===id;
  return true;
 }
+/**
+ * A toolbar switch is not "open the linked figure again": it must preserve
+ * current unsaved drafts. If the target editor points to a figure already
+ * owned by another mathematical stage, retain its draft as a separate copy
+ * rather than allowing the current stage to overwrite the older saved record.
+ * Explicit stage links take precedence over stale legacy record.entryId data.
+ */
+export function switchRepresentationEditor(state,id){
+ const tool=representationTool(id),current=activeRepresentationTool(state);
+ if(!tool||!current||current.id===id||!state?.[tool.studio])
+  return {ok:false,detached:false};
+ const studio=state[tool.studio],record=studio.figures?.find(f=>f.id===studio.activeId);
+ const active=state.entries?.[state.completion?.activeEntryIndex];
+ const owners=record?(state.entries||[]).filter(entry=>entry?.[tool.entryKey]===record.id):[];
+ const belongsElsewhere=!!record&&(
+  owners.some(entry=>entry.id!==active?.id)||
+  (!owners.length&&!!record.entryId&&record.entryId!==active?.id)
+ );
+ if(belongsElsewhere)studio.activeId=""; // Keep draft; never mutate the saved older figure.
+ activateRepresentationTool(state,id);
+ return {ok:true,detached:belongsElsewhere};
+}
 export function representationFigureKey(key){
  const match=/^([a-z][a-z0-9-]*):([a-z0-9-]+)$/i.exec(String(key??""));
  const tool=match?representationTool(match[1]):null;
