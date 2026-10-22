@@ -65,7 +65,7 @@ def exercise(browser,width,height,touch):
   with page.expect_download(timeout=25000) as job:
    page.locator('[data-action="probability-svg"]').click()
   data=Path(job.value.path()).read_bytes()
-  assert data.startswith(b"<svg") and b"Conditional" in data
+  assert data.startswith(b"<svg") and b"conditional" in data.lower()
   # Edit, extend to three stages, and preserve the earlier branches.
   page.locator('[data-prob-field="stages"]').select_option("3")
   assert saved(page)["probabilityStudio"]["draft"]["branches"]["0"][0]["probability"]=="80%"

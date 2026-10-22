@@ -100,7 +100,7 @@ test("current probability methods recommend the operational probability tree wit
  s.completion.activeEntryIndex=0;
  const a=contextualRepresentationAdvice(s,representationAdvice(s));
  assert.deepEqual(a.ids,["probability","table"]);
- assert.match(renderRepresentationHub(s,icon,esc),/Conditional probability or expected value/);
+ assert.match(renderRepresentationHub(s,icon,esc),/Successive or conditional probability/);
  assert(renderRepresentationHub(s,icon,esc).includes('data-action="geometry-open"'),"Other optional creators remain discoverable");
  assert(renderRepresentationHub(s,icon,esc).includes('data-action="probability-open"'));
 });
