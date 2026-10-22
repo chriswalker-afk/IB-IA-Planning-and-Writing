@@ -8,7 +8,7 @@ OUT=Path(os.environ.get('IA_QA_OUTPUT','qa-output'));OUT.mkdir(exist_ok=True,par
 BASE=json.loads((OUT/'project.json').read_text());KEY='ia-pathfinder-prototype-v1'
 URL=os.environ.get('IA_QA_URL','http://127.0.0.1:8765/');results=[]
 def state(node='C40',method='pmcc',status='planned',route='completing'):
- s=copy.deepcopy(BASE);s['route']=route;s['completion']['current']=node;s['completion']['activeEntryIndex']=0;s['completion']['nextFromEntryId']='graph';s['planning']['current']='N01'
+ s=copy.deepcopy(BASE);s['ui']['writingIntroSeen']=True;s['ui']['writerGuideIntroSeen']=True;s['ui']['planningIntroSeen']=True;s['route']=route;s['completion']['current']=node;s['completion']['activeEntryIndex']=0;s['completion']['nextFromEntryId']='graph';s['planning']['current']='N01'
  s['entries'][0].update(methodId=method,status=status,result='r = 0.4' if status=='completed' else '',kind='calculation',phase='substantial',knowledge='syllabus')
  # Compare against a normalized project, not the deliberately sparse legacy
  # fixtures: adding missing default fields on first save is not a tutorial edit.
@@ -16,7 +16,16 @@ def state(node='C40',method='pmcc',status='planned',route='completing'):
  return json.loads(subprocess.check_output(['node','--input-type=module','-e',code],input=json.dumps(s).encode()))
 def saved(p):return p.evaluate('(key)=>JSON.parse(localStorage.getItem(key))',KEY)
 def unchanged_fields(s):return json.dumps([s['entries'],s['planning'],s['project'],s['teacher'],s['completion']['stages'],s['scratch']],sort_keys=True)
-def open_library(p):p.locator('[data-action="resource-browse"]').first.click()
+def open_library(p):
+ visible=p.locator('[data-action="resource-browse"]:visible')
+ if not visible.count():
+  help_button=p.locator('[data-action="open-panel"][data-panel="help"]:visible')
+  assert help_button.count(),'Tools & tutorials must be available from Help'
+  help_button.first.click()
+  visible=p.locator('[data-action="resource-browse"]:visible')
+ assert visible.count(),'No visible Tools & tutorials control'
+ visible.first.click()
+ assert p.locator('.resource-drawer').is_visible()
 def detail(p,id):p.locator('.resource-library [data-action="resource-open"][data-resource-id="'+id+'"]:visible').first.click()
 def choice(p,key,value):
  p.locator('.resource-preferences > summary').click() if p.locator('.resource-preferences').get_attribute('open') is None else None
