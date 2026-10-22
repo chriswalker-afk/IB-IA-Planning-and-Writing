@@ -144,6 +144,7 @@ def flexible_exercise(browser,width,height,touch):
   page.locator('[data-prob-field="showEventCalculation"]').check()
   page.locator('[data-prob-membership="eventLeaves"][data-prob-leaf="2"]').check()
   page.locator('[data-prob-membership="conditionLeaves"][data-prob-leaf="1"]').check()
+  page.locator('.probability-studio details.ia-figure-presentation-settings').evaluate("(el)=>el.open=true")
   page.locator('[data-prob-field="layoutStyle"]').select_option("compact")
   assert saved(page)["probabilityStudio"]["draft"]["layoutStyle"]=="compact"
   # Probabilities appear in separate white bands above the branch tails.
