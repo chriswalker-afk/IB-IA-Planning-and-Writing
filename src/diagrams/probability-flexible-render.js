@@ -48,7 +48,7 @@ function diagramLayout(check){
  const maxUp=Math.max(0,...Object.values(offsets).map(value=>Math.max(0,-(value?.y||0))));
  const spacing=Math.max(d.layoutStyle==="compact"?124:159,maxHeight+45+maxUp);
  // Keep long annotations below the title and stage headings.
- const top=Math.max(210,maxHeight+166+maxUp);
+ const top=Math.max(228,maxHeight+185);
  const depth=tree.maxDepth||d.stages;
  const stageX=[rootX];
  for(let i=1;i<=depth;i++)stageX.push(stageX[i-1]+Math.max(365,columnWidths[i]+148));

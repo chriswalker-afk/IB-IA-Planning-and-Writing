@@ -30,7 +30,8 @@ export function setProbabilityBranch(studio,parent,index,key,value){
  if(!probabilityParentPaths(studio.draft).includes(parent)||
   !Number.isInteger(index)||index<0||index>=studio.draft.branches[parent].length||
   !["label","probability"].includes(key))return false;
- studio.draft.branches[parent][index][key]=String(value).slice(0,key==="label"?80:60);
+ studio.draft.branches[parent][index][key]=String(value).slice(0,key==="label"?
+  (studio.draft.treeMode==="flexible"?160:80):60);
  studio.draft.edited=true;return true;
 }
 export function toggleProbabilityLeaf(studio,membership,path,checked){

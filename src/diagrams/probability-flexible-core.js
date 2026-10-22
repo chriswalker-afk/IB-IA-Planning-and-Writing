@@ -22,7 +22,7 @@ export function normaliseFlexibleBranches(raw){
  for(const [key,values] of Object.entries(input)){
   if(!idAllowed(key)||!Array.isArray(values))continue;
   branches[key]=values.slice(0,MAX_TREE_OUTCOMES).map(v=>({
-   label:clean(v?.label,80),probability:clean(v?.probability,60)
+   label:clean(v?.label,160),probability:clean(v?.probability,60)
   }));
   if(Object.keys(branches).length>=MAX_TREE_SPLITS)break;
  }
