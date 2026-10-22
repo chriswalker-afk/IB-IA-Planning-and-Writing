@@ -9,6 +9,27 @@ const number=x=>typeof x==="number"&&Number.isFinite(x);
 import {typesetGraphSvgLabels,diagramWrapLines,hasDiagramEquation} from "./diagram-notation.js";
 export const escapeGraph=x=>String(x??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const NUM=/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:e[+-]?\d+)?$/i;
+/** Single letters, including Greek, are valid IB variable symbols. Expressions
+ * are not accepted here: the safe numerical evaluator still uses x internally.
+ */
+export const validGraphSymbol=value=>typeof value==="string"&&/^\p{L}$/u.test(value.trim());
+const effectiveSymbol=(value,fallback)=>validGraphSymbol(value)?value.trim():fallback;
+/** Presentation only: never change the regression coefficients or its evaluator.
+ * Replace mathematical x/y tokens without touching names such as exp or max.
+ * Centred fits sometimes use t as an auxiliary. If the student's own variable
+ * is t, rename that auxiliary to a distinct letter to avoid ambiguous formulae.
+ */
+export function displayGraphEquation(equation,draft){
+ const x=effectiveSymbol(draft?.xSymbol,"x"),y=effectiveSymbol(draft?.ySymbol,"y");
+ let displayed=String(equation??"");
+ if(/,\s*(?:where\s+)?t\s*=/.test(displayed)&&(x==="t"||y==="t")){
+  const auxiliary=["u","v","z","w"].find(letter=>letter!==x&&letter!==y)||"u";
+  displayed=displayed.replace(/(^|[^\p{L}\p{N}_])t(?=$|[^\p{L}\p{N}_])/gu,(_m,prefix)=>prefix+auxiliary);
+ }
+ return displayed.replace(/(^|[^\p{L}\p{N}_])([xy])(?=$|[^\p{L}\p{N}_])/gu,
+  (_m,prefix,variable)=>prefix+(variable==="x"?x:y));
+}
+
 export const finiteCell=x=>{
  const v=String(x??"").trim().replace(/\u2212/g,"-");
  return NUM.test(v)&&Number.isFinite(Number(v))?Number(v):null;
@@ -16,7 +37,7 @@ export const finiteCell=x=>{
 const cleanRows=rows=>Array.isArray(rows)?rows.slice(0,MAX_ROWS).filter(Array.isArray).map(r=>r.slice(0,MAX_COLS).map(x=>text(x,110))):[];
 export const newGraphDraft=()=>({
  kind:"scatter",raw:"",columns:[],matrix:[],pendingPaste:false,xIndex:0,yIndex:1,
- title:"",figureNumber:"1",xLabel:"",yLabel:"",xUnit:"",yUnit:"",xUnitMode:"unsure",yUnitMode:"unsure",
+ title:"",figureNumber:"1",xLabel:"",yLabel:"",xSymbol:"x",ySymbol:"y",xUnit:"",yUnit:"",xUnitMode:"unsure",yUnitMode:"unsure",
  expression:"",sourceKind:"unsure",sourceText:"",caption:"",models:[],modelChoice:"linear",
  residualModelId:"",showResidualSegments:false,showResidualPlot:false,modelReflection:"",
  xMin:"",xMax:"",yMin:"",yMax:"",showGrid:true,showPoints:true,includeZeroY:false,showLegend:true,legendPosition:"below",equationPlacement:"legend"
@@ -28,6 +49,9 @@ export function normalizeGraphDraft(raw){
   else if(typeof value==="boolean")o[k]=typeof v[k]==="boolean"?v[k]:value;
  }
  o.kind=["scatter","time","function"].includes(v.kind)?v.kind:o.kind;
+ // Old project backups have no symbol fields. Keep the previous x/y display.
+ o.xSymbol=typeof v.xSymbol==="string"?v.xSymbol.trim().slice(0,12):"x";
+ o.ySymbol=typeof v.ySymbol==="string"?v.ySymbol.trim().slice(0,12):"y";
  o.modelChoice=Object.hasOwn(GRAPH_MODEL_TYPES,v.modelChoice)?v.modelChoice:"linear";
  o.models=normalizeGraphModels(v.models);
  if(!o.models.some(m=>m.id===o.residualModelId))o.residualModelId="";
@@ -209,6 +233,10 @@ export function analyseGraph(draft){
  if(!d.title.trim())fail("title","Give this figure a descriptive title.");
  if(!d.xLabel.trim())fail("xlabel","Name the horizontal variable or mathematical quantity.");
  if(!d.yLabel.trim())fail("ylabel","Name the vertical variable or mathematical quantity.");
+ if(!validGraphSymbol(d.xSymbol))fail("xsymbol","Choose one letter for the horizontal model variable (for example t).");
+ if(!validGraphSymbol(d.ySymbol))fail("ysymbol","Choose one letter for the vertical model variable (for example h).");
+ if(validGraphSymbol(d.xSymbol)&&validGraphSymbol(d.ySymbol)&&d.xSymbol===d.ySymbol)
+  fail("symbols-distinct","Use different symbols for your horizontal and vertical variables.");
  for(const k of ["x","y"]){
   if(d[k+"UnitMode"]==="unsure")fail(k+"unit-status","Confirm whether the "+(k==="x"?"horizontal":"vertical")+" quantity has units.");
   if(d[k+"UnitMode"]==="unit"&&!d[k+"Unit"].trim())fail(k+"unit","Enter the "+(k==="x"?"horizontal":"vertical")+" axis unit.");
@@ -264,7 +292,8 @@ export function analyseGraph(draft){
   if(!inside)warn("empty-viewport","The chosen axis ranges hide all the mathematical values.");
   else if(inside<points.length*.85)warn("clipped","The chosen axis limits hide some values. Make sure this is intentional and does not mislead.");
  }
- const models=d.kind==="function"?[]:assessGraphModels(d.models,points,compileGraphFunction);
+ const models=d.kind==="function"?[]:assessGraphModels(d.models,points,compileGraphFunction)
+  .map(model=>({...model,equation:model.equation?displayGraphEquation(model.equation,d):model.equation}));
  for(const model of models){
   if(model.visible&&!model.valid)
    fail("model-"+model.id,model.label+": "+model.error+" Hide or remove this overlay if you want to export the observations alone.");
@@ -308,7 +337,33 @@ const SUPERSCRIPTS=Object.freeze({"0":"⁰","1":"¹","2":"²","3":"³","4":"⁴"
 /** Typeset typed unit powers such as m s^-2, cm^3 and 10^(-3). */
 export const formatGraphMath=value=>String(value??"").replace(/\^(?:\{([+\-−]?\d+)\}|\(([+\-−]?\d+)\)|([+\-−]?\d+))/g,
  (_match,a,b,c)=>[...(a??b??c)].map(x=>SUPERSCRIPTS[x==="−"?"-":x]||x).join(""));
-const axisTitle=(label,unit,mode)=>formatGraphMath(label)+(mode==="unit"&&unit?" ("+formatGraphMath(unit)+")":"");
+const axisTitle=(label,unit,mode,symbol="")=>{
+ const text=formatGraphMath(label);
+ const named=validGraphSymbol(symbol)&&symbol!==label.trim()&&
+  !text.endsWith(", "+symbol)&&!text.includes("("+symbol+")")?
+   text+", "+symbol:text;
+ return named+(mode==="unit"&&unit?" ("+formatGraphMath(unit)+")":"");
+};
+/** A break is necessary only when zero is omitted from the displayed interval.
+ * In particular, negative-to-positive scales already show zero and need no
+ * misleading break mark, even though their lower tick is negative.
+ */
+export const graphAxisNeedsBreak=bounds=>Array.isArray(bounds)&&bounds.length===2&&
+ Number.isFinite(bounds[0])&&Number.isFinite(bounds[1])&&
+ (bounds[0]>0||bounds[1]<0);
+export function graphAxisBreakSvg(axis,x,y){
+ if(axis!=="x"&&axis!=="y")return "";
+ const horizontal=axis==="x";
+ const cover=horizontal?
+  "M"+(x-13)+" "+y+"h26":"M"+x+" "+(y-13)+"v26";
+ const slashes=horizontal?
+  "M"+(x-8)+" "+(y+5)+"l6 -10 M"+(x+2)+" "+(y+5)+"l6 -10":
+  "M"+(x-5)+" "+(y+8)+"l10 -6 M"+(x-5)+" "+(y-2)+"l10 -6";
+ return '<g class="graph-axis-break" data-graph-axis-break="'+axis+'" aria-hidden="true">'+
+  '<path d="'+cover+'" fill="none" stroke="#fff" stroke-width="6"/>'+
+  '<path d="'+slashes+'" fill="none" stroke="#375963" stroke-width="2.4" stroke-linecap="round"/></g>';
+}
+
 const polarised=(str,n)=>hasDiagramEquation(str)?diagramWrapLines(str,n):String(str||"").length<=n?[str]:[String(str).slice(0,n).replace(/\s+\S*$/,""),String(str).slice(n).trim()];
 /** Split long model equations without dropping terms or silently rounding them. */
 const graphTextLines=(value,maxChars=100)=>{
@@ -356,10 +411,15 @@ export function renderGraphSvg(draft){
  const sourceY=captionLines.length?captionY+(captionLines.length-1)*18+31:contentAfterAnnotation+35;
  const svgHeight=Math.max(H,sourceY+25);
  const title=escapeGraph(d.title.trim()||"Graph preview — add a descriptive title");
- const xLabel=escapeGraph(axisTitle(d.xLabel||"Horizontal variable",d.xUnit,d.xUnitMode));
- const yLabel=escapeGraph(axisTitle(d.yLabel||"Vertical variable",d.yUnit,d.yUnitMode));
+ const xLabel=escapeGraph(axisTitle(d.xLabel||"Horizontal variable",d.xUnit,d.xUnitMode,
+  d.kind==="function"?"":d.xSymbol!=="x"?d.xSymbol:""));
+ const yLabel=escapeGraph(axisTitle(d.yLabel||"Vertical variable",d.yUnit,d.yUnitMode,
+  d.kind==="function"?"":d.ySymbol!=="y"?d.ySymbol:""));
  const parts=['<svg class="graph-figure-svg" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="'+title+'" viewBox="0 0 '+svgWidth+' '+svgHeight+'" width="'+svgWidth+'" height="'+svgHeight+'">',
-  '<title>'+title+'</title><desc>Student-generated '+escapeGraph(d.kind)+' graph with '+points.length+' valid points. Axis values and scale are listed in the labels.</desc>',
+  '<title>'+title+'</title><desc>Student-generated '+escapeGraph(d.kind)+' graph with '+points.length+' valid points. Axis values and scale are listed in the labels.'+
+   (bounds.x&&graphAxisNeedsBreak(bounds.x)?" The horizontal scale omits zero and has an axis-break mark.":"")+
+   (bounds.y&&graphAxisNeedsBreak(bounds.y)?" The vertical scale omits zero and has an axis-break mark.":"")+
+   '</desc>',
   '<rect width="'+svgWidth+'" height="'+svgHeight+'" fill="#ffffff"/>'];
  const figureNumber=d.figureNumber.trim().replace(/^figure\s*/i,"").slice(0,24);
  if(figureNumber)parts.push('<text class="graph-figure-number" x="'+W/2+'" y="23" font-family="Arial,Helvetica,sans-serif" font-size="14" font-weight="600" text-anchor="middle" fill="#526c71">Figure '+escapeGraph(figureNumber)+'</text>');
@@ -434,6 +494,10 @@ export function renderGraphSvg(draft){
    sorted.forEach(p=>parts.push('<circle cx="'+X(p.x).toFixed(2)+'" cy="'+Y(p.y).toFixed(2)+'" r="'+(sorted.length>220?"3.0":"4.5")+'" fill="#147e75" stroke="#fff" stroke-width="1"/>'));
   }
   parts.push('</g>');
+  // Place scale-break slashes over the boundary, outside the clipped data.
+  // Both marks are included in SVG, PNG, project-report and gallery exports.
+  if(graphAxisNeedsBreak(bounds.x))parts.push(graphAxisBreakSvg("x",LEFT+24,axisY));
+  if(graphAxisNeedsBreak(bounds.y))parts.push(graphAxisBreakSvg("y",LEFT,axisY-24));
   if(showKey){
    let y=keyStart;
    legendRows.forEach(item=>{
@@ -490,7 +554,7 @@ export function renderGraphResidualSvg(draft){
  const magnitude=Math.max(0,...rows.map(r=>Math.abs(r.residual)));
  const limit=magnitude>0?magnitude*1.18:1;
  const Y=y=>top+height-(y+limit)/(2*limit)*height;
- const title=escapeGraph("Residual plot — "+m.label),xLabel=escapeGraph(axisTitle(d.xLabel||"x",d.xUnit,d.xUnitMode));
+ const title=escapeGraph("Residual plot — "+m.label),xLabel=escapeGraph(axisTitle(d.xLabel||"x",d.xUnit,d.xUnitMode,d.xSymbol!=="x"?d.xSymbol:""));
  const yLabel=escapeGraph(axisTitle("Residual: observed − predicted",d.yUnit,d.yUnitMode));
  const parts=['<svg class="graph-figure-svg graph-residual-svg" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="'+title+
   '" viewBox="0 0 '+W+' '+H+'" width="'+W+'" height="'+H+'">',
@@ -498,7 +562,7 @@ export function renderGraphResidualSvg(draft){
   '<rect width="'+W+'" height="'+H+'" fill="#fff"/>',
   '<text x="'+(W/2)+'" y="37" font-family="Arial,Helvetica,sans-serif" font-size="20" font-weight="700" text-anchor="middle" fill="#203d43">'+title+'</text>',
   '<text x="'+(W/2)+'" y="66" font-family="Arial,Helvetica,sans-serif" font-size="13" text-anchor="middle" fill="#526c71">'+
-   escapeGraph("e = observed y − predicted y · "+rows.length+" genuine pairs")+'</text>',
+   escapeGraph("e = observed "+effectiveSymbol(d.ySymbol,"y")+" − predicted "+effectiveSymbol(d.ySymbol,"y")+" · "+rows.length+" genuine pairs")+'</text>',
   '<rect x="'+left+'" y="'+top+'" width="'+width+'" height="'+height+'" fill="#fafcfd" stroke="#ccd8dc" stroke-width="1.2"/>'];
  const xTicks=ticks(lower,upper);
  for(const value of xTicks.values){
@@ -525,8 +589,9 @@ export function renderGraphResidualSvg(draft){
    escapeGraph("x: "+r.x+" | observed: "+r.y+" | predicted: "+Number(r.predicted.toPrecision(8))+
     " | residual: "+Number(r.residual.toPrecision(8)))+'</title></circle>');
  }
- parts.push('</g>',
-  '<text x="'+(left+width/2)+'" y="'+(H-62)+'" text-anchor="middle" fill="#263f47" font-family="Arial,Helvetica,sans-serif" font-size="17" font-weight="600">'+xLabel+'</text>',
+ parts.push('</g>');
+ if(graphAxisNeedsBreak([lower,upper]))parts.push(graphAxisBreakSvg("x",left+24,base));
+ parts.push('<text x="'+(left+width/2)+'" y="'+(H-62)+'" text-anchor="middle" fill="#263f47" font-family="Arial,Helvetica,sans-serif" font-size="17" font-weight="600">'+xLabel+'</text>',
   '<text x="34" y="'+(top+height/2)+'" transform="rotate(-90 34 '+(top+height/2)+')" text-anchor="middle" fill="#263f47" font-family="Arial,Helvetica,sans-serif" font-size="16" font-weight="600">'+yLabel+'</text>',
   '<text x="'+(W/2)+'" y="'+(H-19)+'" text-anchor="middle" fill="#60747a" font-family="Arial,Helvetica,sans-serif" font-size="12">'+
   escapeGraph("Measured range only · "+(d.sourceKind==="secondary"?"Data source: "+(d.sourceText||"not specified"):
