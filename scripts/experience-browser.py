@@ -51,25 +51,42 @@ with sync_playwright() as pw:
  run('checkpoint-consistency-edit-and-resume',OWN,checkpoint)
  def compact_path(p):
   nav(p,'path');assert p.locator('.journey-chapter[open]').count()==1;assert p.locator('[data-journey-group="setup"]').get_attribute('open') is not None;before=raw(p)
-  action(p,'journey-toggle-all');assert p.locator('.journey-chapter[open]').count()==4;assert p.locator('[data-node="C90"]').count()>=1;action(p,'journey-toggle-all');assert p.locator('.journey-chapter[open]').count()==0;assert raw(p)==before
+  action(p,'journey-toggle-all');assert p.locator('.journey-chapter[open]').count()==5,'All five current chapters should unfold';assert p.locator('[data-node="C90"]').count()>=1;action(p,'journey-toggle-all');assert p.locator('.journey-chapter[open]').count()==0;assert raw(p)==before
   p.locator('[data-journey-group="setup"]>summary').click();shot(p,'compact-path')
  run('unfolding-path-no-locked-stages',OWN,compact_path,390,844)
  def support(p):
-  for trigger,close in [('example-open','#exampleDialog [data-example-close]'),('criterion-badge',None),('resource-browse','.drawer [data-action="close-drawer"]')]:
-   if trigger=='criterion-badge':
-    badge=p.locator('[data-criterion-badge="completing:C10:aim"]')
-    assert badge.is_visible()
-    before=raw(p)
-    badge.click()
-    p.locator('#criterionBadgeDialog [data-criterion-badge-rubric="A"]').click()
-    assert p.locator('#essentialsDialog [data-rubric-criterion="A"]').count()==1
-    p.keyboard.press('Escape')
-    assert raw(p)==before
-    continue
-   btn=p.locator('.support-actions [data-action="'+trigger+'"]');btn.scroll_into_view_if_needed();before=raw(p);btn.click();p.keyboard.press('Escape');assert p.evaluate('document.activeElement.dataset.action')==trigger;assert raw(p)==before
-  action(p,'open-stuck');topic=p.locator('.drawer [data-action="stuck-topic"][data-topic="calculation"]');
-  if not topic.is_visible():p.locator('.drawer .stuck-browse > summary').click()
-  topic.click();p.locator('.drawer [data-action="resource-browse"]').first.click();p.keyboard.press('Escape');assert p.locator('.drawer').is_visible();assert 'My calculation or software' in p.locator('.drawer').inner_text();p.keyboard.press('Escape');assert not p.locator('.drawer').count();assert p.evaluate('document.activeElement.dataset.action')=='open-stuck'
+  before=raw(p)
+  # Current contextual criteria live beside the writing fields rather
+  # than in the removed one-size-fits-all support panel.
+  badge=p.locator('[data-criterion-badge="completing:C10:aim"]')
+  assert badge.is_visible()
+  badge.click()
+  assert p.locator('#criterionBadgeDialog').is_visible()
+  p.locator('#criterionBadgeDialog [data-criterion-badge-rubric="A"]').click()
+  assert p.locator('#essentialsDialog [data-rubric-criterion="A"]').count()==1
+  # Follow the real assessment -> example -> assessment chain.
+  p.locator('#essentialsDialog .ess-example-links [data-action="example-open"]').first.click()
+  assert p.locator('#exampleDialog').is_visible()
+  p.keyboard.press('Escape')
+  assert p.locator('#essentialsDialog').is_visible()
+  p.keyboard.press('Escape')
+  assert not p.locator('#essentialsDialog').is_visible()
+  assert raw(p)==before
+  # The global Help drawer is now the reliable entry point for tutorials
+  # and 'I am stuck' when local general advice has been streamlined.
+  help_button=p.locator('[data-action="open-panel"][data-panel="help"]:visible')
+  assert help_button.count(),'Help drawer must remain reachable'
+  help_button.first.click()
+  assert p.locator('.drawer').is_visible()
+  link=p.locator('.drawer [data-action="resource-browse"]')
+  assert link.is_visible()
+  link.click()
+  assert p.locator('.drawer').is_visible()
+  p.keyboard.press('Escape')
+  assert p.locator('.drawer').is_visible()
+  p.keyboard.press('Escape')
+  assert not p.locator('.drawer').count()
+  assert raw(p)==before
  run('consistent-support-return-and-nested-escape',OWN,support,390,844)
  def preview(p):
   nav(p,'home');before=raw(p);action(p,'open-demos');p.locator('[data-demo="curved"]').click();assert p.locator('.sample-preview-banner').is_visible();assert raw(p)==before
