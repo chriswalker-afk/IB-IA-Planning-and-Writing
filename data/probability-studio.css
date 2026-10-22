@@ -56,3 +56,25 @@
 .ia-figure-presentation-settings{margin:12px 0;padding:10px 12px;background:#f5f9fa;border:1px solid #d2e4e8;border-radius:10px}
 .ia-figure-presentation-settings>summary{cursor:pointer;font-size:.85rem;font-weight:700;color:#285968}
 .ia-figure-presentation-settings p{font-size:.8rem;color:var(--text-muted,#566c76);line-height:1.5}
+
+/* Pass 3: variable-arity branching, with presets and compact but accessible controls. */
+.probability-presets{background:#f3f8f9;border:1px solid #cadfe3;border-radius:11px;padding:12px;margin:11px 0 15px}
+.probability-presets h4{font-size:.86rem;color:#23586a;margin:0 0 7px}
+.probability-presets p,.probability-flex-intro p,.probability-limit-note{color:var(--text-muted,#566c76);line-height:1.48;font-size:.81rem;margin:7px 0 9px}
+.probability-presets-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:9px 0}
+.probability-presets-grid button{min-width:0;font-size:.8rem;line-height:1.35;white-space:normal;padding:7px}
+.probability-presets>.btn{margin-top:7px;white-space:normal;text-align:left;line-height:1.45}
+.probability-flex-intro{border-left:3px solid #75a8ac;padding:5px 10px;background:#f6fafb;margin:10px 0}
+.probability-flex-stage>summary small{margin-left:auto;font-size:.74rem;color:#5b7680}
+.probability-flex-split{padding:10px}
+.probability-flex-split>p{margin-bottom:8px}
+.probability-flex-outcome{background:#f9fbfb;border:1px solid #e2e9eb;border-radius:9px;margin-bottom:9px;padding:8px}
+.probability-flex-outcome .probability-branch-fields{margin:0 0 6px}
+.probability-flex-branch-actions{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.probability-flex-branch-actions .btn{font-size:.75rem;line-height:1.4;min-height:32px;padding:5px 7px;white-space:normal}
+.probability-flex-branch-actions .probability-remove-choice{color:#87453b}
+.probability-final-note{font-size:.75rem;color:var(--text-muted,#566c76)}
+.probability-limit-note{font-style:italic}
+.probability-preview .probability-label-panel{pointer-events:none}
+.probability-preview svg{background:#fff}
+@media(max-width:560px){.probability-presets-grid{grid-template-columns:1fr}.probability-flex-branch-actions{align-items:flex-start}.probability-flex-outcome{padding:7px}}
