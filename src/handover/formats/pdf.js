@@ -202,7 +202,11 @@ export async function createPdfPlanningReport(envelope,fullProjectModel=null){
  write(model.status,{x:MARGIN+10,maxWidth:PAPER_WIDTH-20,size:9,font:bold,color:INK,lineHeight:12,after:17});
  write("Course: "+model.course+"    |    Exported: "+(model.exportedAt?model.exportedAt.slice(0,10):"Date to confirm"),{size:9,color:MUTED,after:15});
  if(model.isCompleteIllustrativeIA&&model.provenance){
-  await writeMixed(model.provenance,{size:10,color:MUTED,lineHeight:15,after:16});
+  await writeMixed(model.provenance,{size:10,color:MUTED,lineHeight:15,after:12});
+  // Keep the short disclosure with the front matter. At the very end of a
+  // complete IA it can otherwise become a mostly empty, extra PDF page.
+  heading("About this fictional example");
+  write(model.footnote,{font:regular,size:9,color:MUTED,lineHeight:13,after:13});
  }else if(model.isDemonstration){
   write("DEMONSTRATION PROJECT - Do not submit illustrative examples as your own results.",{size:10,font:bold,color:TEAL,after:13});
  }
@@ -260,8 +264,10 @@ export async function createPdfPlanningReport(envelope,fullProjectModel=null){
    }
   }
  }
- heading(model.isCompleteIllustrativeIA?"About this fictional example":iaReading?"Why this is only a teaching illustration":fullProjectModel?"About this full working record":"What this document is — and is not");
- write(model.footnote,{font:regular,size:9,color:MUTED,lineHeight:13});
+ if(!model.isCompleteIllustrativeIA){
+  heading(iaReading?"Why this is only a teaching illustration":fullProjectModel?"About this full working record":"What this document is — and is not");
+  write(model.footnote,{font:regular,size:9,color:MUTED,lineHeight:13});
+ }
  const json=JSON.stringify(payload);
  if(new TextEncoder().encode(json).length>REPORT_MAX_BYTES)throw new Error("Planning snapshot exceeds export size limit.");
  await doc.attach(new TextEncoder().encode(json),REPORT_ATTACHMENT,{
