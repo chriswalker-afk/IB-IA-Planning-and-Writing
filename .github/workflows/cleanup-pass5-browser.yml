@@ -1,0 +1,76 @@
+name: Cleanup Pass 5 full-site acceptance
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'app.js'
+      - 'index.html'
+      - 'src/core/project-state.js'
+      - 'src/planning/investigative-routes.js'
+      - 'src/planning/engine.js'
+      - 'src/diagrams/representation-*.js'
+      - 'src/diagrams/figure-linking.js'
+      - 'src/essentials/assessment-cohorts.js'
+      - 'src/handover/**'
+      - 'src/ui/journey-views.js'
+      - 'src/ui/planning-views.js'
+      - 'src/completing/views.js'
+      - 'src/resources/views.js'
+      - 'scripts/cleanup-pass5-browser.py'
+      - 'tests/cleanup-pass5-final.test.js'
+      - '.github/workflows/cleanup-pass5-browser.yml'
+      - '.github/actions/setup-ci-node/action.yml'
+      - '.github/actions/setup-ci-browser/action.yml'
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  browser:
+    name: ${{ matrix.group }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        group: [journeys, data-diagrams, geometry-probability, cohorts, exports]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-ci-node
+      - name: Build and audit production assets
+        run: npm run build
+      - uses: ./.github/actions/setup-ci-browser
+      - name: Run end-to-end acceptance with actual desktop and phone browser
+        shell: bash
+        run: |
+          set -u
+          mkdir -p qa-output
+          python -m http.server 8765 --directory dist > qa-output/pass5-server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+          case "${{ matrix.group }}" in
+            journeys) suites="scripts/cleanup-pass5-browser.py scripts/representation-pass5-browser.py scripts/investigative-routes-browser.py scripts/chapter-onboarding-browser.py" ;;
+            data-diagrams) suites="scripts/graph-studio-browser.py scripts/stat-studio-browser.py scripts/table-studio-browser.py" ;;
+            geometry-probability) suites="scripts/image-tracer-browser.py scripts/voronoi-interactive-browser.py scripts/geometry-studio-browser.py scripts/probability-tree-browser.py" ;;
+            cohorts) suites="scripts/criteria-badges-browser.py" ;;
+            exports) suites="scripts/mixed-math-browser.py scripts/report-exports-browser.py" ;;
+            *) echo "Unknown acceptance group" >&2; exit 2 ;;
+          esac
+          status=0
+          for suite in $suites; do
+            output="qa-output/${{ matrix.group }}/$(basename "$suite" .py)"
+            mkdir -p "$output"
+            echo "::group::Pass 5 acceptance: $suite"
+            IA_QA_OUTPUT="$output" python "$suite" || status=1
+            echo "::endgroup::"
+          done
+          exit "$status"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cleanup-pass5-${{ matrix.group }}-artifacts
+          path: qa-output
+          retention-days: 7
