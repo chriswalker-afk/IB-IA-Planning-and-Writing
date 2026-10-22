@@ -23,7 +23,7 @@ This cleanup pass is **not** the earlier “Pass 5” of the diagram-generator i
 
 **Conformance suite improvement:** `.github/workflows/conformance-browser.yml` now runs all 13 previously sequential acceptance scripts as **five** independent browser jobs: writing/help, idea/resources/examples, mathematics, criteria, and experience. The source scripts are not silently removed, force-clicked or converted into no-op checks. Where user-facing pages had changed since the old scripts were written, their starting fixtures and assertions were updated to use the real onboarding, adaptive result outcomes, criterion badge rails and contextual Help locations.
 
-The intended acceptance standard is green unit/build, all five final browser groups, all five conformance browser groups, and the focused investigative-mathematics acceptance. A green build alone is insufficient to call the site fully regression-verified.
+The intended acceptance standard is green unit/build, all six final browser groups, all five conformance browser groups, and the focused investigative-mathematics acceptance. A green build alone is insufficient to call the site fully regression-verified.
 
 ## Correctness boundaries
 
