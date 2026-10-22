@@ -1,0 +1,53 @@
+/* Probability Tree Studio: optional mathematical tool with a visible, readable preview. */
+.probability-studio{width:100%;min-width:0}
+.probability-workspace{display:grid;grid-template-columns:minmax(300px,365px) minmax(0,1fr);gap:18px;align-items:start}
+.probability-controls,.probability-main{min-width:0;border:1px solid var(--border,#dce7eb);border-radius:14px;background:var(--surface,#fff);padding:16px}
+.probability-controls{max-height:min(86vh,980px);overflow-y:auto;position:sticky;top:8px}
+.probability-controls h3,.probability-main h3{font-size:1.02rem;margin:17px 0 10px}
+.probability-controls p,.probability-main p{font-size:.85rem;line-height:1.6}
+.probability-field{display:grid;gap:6px;margin:11px 0;font-size:.84rem;font-weight:650;min-width:0}
+.probability-field>span,.probability-branch-fields label>span{display:block}
+.probability-field input,.probability-field select,.probability-field textarea,.probability-branch-fields input{min-width:0;width:100%;font:inherit;border:1px solid #b6cbd3;color:#1c3341;background:#fff;border-radius:8px;padding:9px}
+.probability-buttons{display:flex;gap:8px;flex-wrap:wrap;margin:11px 0}
+.probability-buttons .btn{min-height:39px}
+.probability-stage{border:1px solid #d0e2e7;border-radius:11px;margin:9px 0;background:#f8fbfc;min-width:0}
+.probability-stage>summary{cursor:pointer;padding:10px 12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;color:#29576a}
+.probability-stage>summary strong{font-size:.86rem}
+.probability-stage>summary span{font-size:.8rem}
+.probability-stage-body{padding:8px 10px 14px}
+.probability-split{min-width:0;border:1px solid #dae7eb;border-radius:10px;padding:11px;margin:10px 0;background:#fff}
+.probability-split legend{font-weight:700;font-size:.83rem;padding:0 6px;overflow-wrap:anywhere}
+.probability-split p{margin:0 0 8px;color:#637983}
+.probability-branch-fields{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr);gap:8px;margin:8px 0}
+.probability-branch-fields label{min-width:0;font-size:.78rem;font-weight:600;display:grid;gap:5px}
+.probability-tick{display:flex;align-items:flex-start;gap:9px;margin:11px 0;font-size:.86rem;cursor:pointer}
+.probability-tick input{margin-top:3px;flex:none}
+.probability-events{border-top:1px solid #dce8e8;margin:12px 0;padding-top:6px}
+.probability-event-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.probability-path-select,.probability-path-table{max-width:100%;overflow-x:auto;margin:12px 0;overscroll-behavior-inline:contain}
+.probability-path-select table,.probability-path-table table{border-collapse:collapse;width:100%;font-size:.78rem;line-height:1.35}
+.probability-path-select td,.probability-path-select th,.probability-path-table td,.probability-path-table th{padding:8px 6px;border-bottom:1px solid #d7e4e8;vertical-align:top;text-align:left}
+.probability-path-select th:not(:first-child),.probability-path-select td:not(:first-child){text-align:center}
+.probability-path-check{display:inline-flex;align-items:center;justify-content:center;min-width:24px;min-height:24px;cursor:pointer}
+.probability-path-check input{width:18px;height:18px}
+.probability-preview{border:1px solid #d6e4e9;border-radius:12px;overflow:hidden;background:white;overflow-x:auto;overscroll-behavior-inline:contain;-webkit-overflow-scrolling:touch}
+.probability-preview-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:9px}
+.probability-preview-header h3{margin:11px 0}
+.probability-preview-controls{display:flex;flex-wrap:wrap;gap:7px}
+.probability-preview-controls .btn[aria-pressed="true"]{background:#e4f3ed;color:#175d4c;border-color:#8ac2b0}
+.probability-preview.probability-preview-detail svg{width:1300px;min-width:1300px;max-width:none}
+.probability-preview svg{display:block;width:100%;height:auto;min-width:0}
+.probability-canvas-note,.probability-safeguard{color:var(--text-muted,#566c76)}
+.probability-quality{padding:15px 0;border-top:1px solid #dfe9ea;margin:16px 0}
+.probability-quality h3{color:#2d6566}
+.probability-quality ul{margin:8px 0;padding-left:21px}
+.probability-quality li{margin:5px 0;font-size:.87rem}
+.probability-quality h4{font-size:.88rem;margin:18px 0 8px}
+.probability-alert{color:#974338;font-weight:650}
+.probability-output{border-top:1px solid #d8e7eb;margin-top:14px;padding-top:14px}
+.probability-output .btn:disabled{opacity:.52;cursor:not-allowed}
+.probability-saved-row{display:flex;align-items:center;justify-content:space-between;gap:9px;border-top:1px solid #e3ecee;padding:9px 0}
+.probability-saved-row strong{font-size:.84rem;overflow-wrap:anywhere}
+.probability-entry svg,.show-first-probability-figure svg{display:block;width:100%;height:auto;background:white;max-width:1000px}
+@media(max-width:950px){.probability-workspace{grid-template-columns:1fr}.probability-controls{position:static;overflow:visible;max-height:none}}
+@media(max-width:560px){.probability-controls,.probability-main{padding:11px}.probability-buttons .btn{font-size:.78rem}.probability-branch-fields{grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr);gap:6px}.probability-event-fields{grid-template-columns:1fr}.probability-preview svg{width:100%;max-width:100%}}

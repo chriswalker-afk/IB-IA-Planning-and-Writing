@@ -4,6 +4,7 @@ import {renderTableSvg} from "../diagrams/table-studio-render.js";
 import {renderTraceOverlaySvg,renderCleanTraceSvg} from "../diagrams/image-tracer-core.js";
 import {renderVoronoiSvg} from "../diagrams/voronoi-render.js";
 import {renderGeometrySvg} from "../diagrams/geometry-render.js";
+import {renderProbabilitySvg} from "../diagrams/probability-render.js";
 import {renderFigureHandover} from "../diagrams/presentation-coach-view.js";
 import {REPRESENTATION_TOOLS} from "../diagrams/representation-registry.js";
 
@@ -41,6 +42,7 @@ function preview(item){
   case "trace":return '<div class="trace-entry-photo">'+(d.view==="math"?renderCleanTraceSvg(d):renderTraceOverlaySvg(d))+'</div>';
   case "voronoi":return '<div class="show-first-voronoi-figure">'+renderVoronoiSvg(d)+'</div>';
   case "geometry":return '<div class="show-first-geometry-figure">'+renderGeometrySvg(d)+'</div>';
+  case "probability":return '<div class="show-first-probability-figure">'+renderProbabilitySvg(d)+'</div>';
   default:return "";
  }
 }

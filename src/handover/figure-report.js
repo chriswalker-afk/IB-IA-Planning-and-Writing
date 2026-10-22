@@ -10,14 +10,16 @@ import {renderTableSvg} from "../diagrams/table-studio-render.js";
 import {renderVoronoiSvg} from "../diagrams/voronoi-render.js";
 import {renderGeometrySvg} from "../diagrams/geometry-render.js";
 import {orthogonalDecomposition,geometrySensitivity} from "../diagrams/geometry-advanced.js";
+import {renderProbabilitySvg} from "../diagrams/probability-render.js";
+import {probabilityAnalysis} from "../diagrams/probability-core.js";
 import {representationTool} from "../diagrams/representation-registry.js";
 
 const trim=x=>String(x??"").trim();
 const row=(label,value)=>trim(value)?{label,value:trim(value)}:null;
 const joined=rows=>rows.map(r=>Array.isArray(r)?r.join(" | "):String(r)).join("\n");
 const occupied=d=>!!(trim(d?.raw)||trim(d?.expression)||d?.imageSrc||
- (d?.points?.length||0)||(d?.sites?.length||0)||(d?.edited&&d?.vertices?.length||0)||(d?.matrix||[]).some(r=>r.some(x=>trim(x))));
-const titles={graph:"Graph",trace:"Coordinate tracing",stat:"Statistical diagram",table:"Mathematical table",voronoi:"Voronoi diagram",geometry:"Geometric construction"};
+ (d?.points?.length||0)||(d?.sites?.length||0)||(d?.edited&&d?.vertices?.length||0)||(d?.edited&&d?.branches)||(d?.matrix||[]).some(r=>r.some(x=>trim(x))));
+const titles={graph:"Graph",trace:"Coordinate tracing",stat:"Statistical diagram",table:"Mathematical table",voronoi:"Voronoi diagram",geometry:"Geometric construction",probability:"Probability tree"};
 const registeredFigure=id=>{
  const tool=representationTool(id);
  if(!tool)throw new Error("Unregistered diagram kind: "+id);
@@ -100,7 +102,28 @@ const specs=[
      "Transferred pixel vertices: "+(d.provenance.pixelPoints||[]).map(p=>"("+p.x+", "+p.y+")").join(", ")
     ].filter(Boolean).join("\n"):""),
    row("Unit",d.unit),row("North orientation",d.northAligned?"x east / y north":""),
-   row("Source type",d.sourceKind),row("Original source",d.sourceCredit),row("Limitations",d.note)]}
+   row("Source type",d.sourceKind),row("Original source",d.sourceCredit),row("Limitations",d.note)]},
+  {...registeredFigure("probability"),render:d=>renderProbabilitySvg(d),details:d=>{
+    const a=probabilityAnalysis(d);
+    return [
+     row("Model",d.stages+" successive binary stages; each later split conditional on its complete history"),
+     row("Stage labels",(d.stageLabels||[]).slice(0,d.stages).join(" → ")),
+     row("Entered outcomes and branch probabilities",Object.entries(d.branches||{})
+       .filter(([key])=>key.length<d.stages).map(([parent,branches])=>
+       (parent||"start")+": "+(branches||[]).map(x=>x.label+" = "+x.probability).join(" / ")).join("\n")),
+     row("Validity",a.ready?"Each active split sums to 1; total path probability = "+a.total:a.issues.join("; ")),
+     row("Path products",d.showProducts&&a.ready?a.paths.map(x=>x.labels.join(" → ")+
+       ": "+x.steps.join(" × ")+" = "+x.probability).join("\n"):""),
+     row("Selected event outcomes",d.showEventCalculation?
+       "E ("+d.eventName+"): "+(d.eventLeaves||[]).join(", ")+
+       "; C ("+d.conditionName+"): "+(d.conditionLeaves||[]).join(", "):""),
+     row("Conditional calculations",d.showEventCalculation&&a.ready?
+       ["P(E)="+a.event,"P(C)="+a.condition,"P(E∩C)="+a.intersection,
+        "P(E|C)="+(a.conditional===null?"undefined or unselected":a.conditional)].join("; "):""),
+     row("Source type",d.sourceKind),row("Original probability source",d.sourceCredit),
+     row("Dependence, estimates and limitations",d.note)
+    ];
+  }}
 ];
 function buildFigure(spec,record,{draft=false}={}){
  const d=record.draft||{},title=trim(d.title)||titles[spec.kind];

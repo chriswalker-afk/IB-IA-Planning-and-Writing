@@ -9,6 +9,7 @@ import {finiteCell,splitHeading,analyseGraph} from "./graph-core.js";
 import {statAnalysis} from "./stat-studio-core.js";
 import {statMethodNote} from "./stat-reading-guide.js";
 import {analyzeTable} from "./table-studio-core.js";
+import {probabilityAnalysis} from "./probability-core.js";
 
 const words=(v,n=160)=>String(v??"").trim().slice(0,n);
 const label=v=>words(splitHeading(v).label,100).toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
@@ -258,6 +259,12 @@ export function presentationDiagnostics(state,type,draft){
  }else if(type==="geometry"){
   add("geometry-scale","consider","Check schematic against coordinate geometry","Only coordinate mode derives lengths and angles; manually annotated values must be justified.");
   if(d.showBearings&&!d.northAligned)add("geometry-north","check","Confirm north","Bearings require x east, y north.");
+ }else if(type==="probability"){
+  const a=probabilityAnalysis(d);
+  add("prob-history","consider","Check each conditioning history","Every later branch is conditional on the complete earlier outcome sequence; do not assume independence without justification.");
+  if(!a.ready)add("prob-validation","check","Complete the probability model",a.issues[0]||"Check each branch probability.");
+  if(d.sourceKind==="primary")add("prob-sampling","consider","Explain probability estimates","State how observations generated each estimate and whether sample sizes differ between conditional groups.");
+  if(d.showEventCalculation&&a.condition===0)add("prob-zero","check","Condition has zero probability","P(E|C) is undefined if P(C)=0.");
  }else if(type==="voronoi"){
   add("voronoi-metric","consider","Nearest means straight-line nearest","A Euclidean Voronoi construction compares planar distances, not road travel time, waiting time, demand or optimal service provision.");
   if(!d.metricConfirmed)add("voronoi-metric-check","check","Confirm the distance model","Explain the coordinate system and why straight-line distance is an appropriate first assumption.");
@@ -298,7 +305,7 @@ export function figureCaption(state,type,draft){
  const d=draft||{},prefix=type==="table"?"Table":"Figure",
   number=words(type==="table"?d.number:d.figureNumber,6),
   title=words(d.title,110),
-  note=words(type==="table"||type==="voronoi"||type==="geometry"?d.note:d.caption,320);
+  note=words(type==="table"||type==="voronoi"||type==="geometry"||type==="probability"?d.note:d.caption,320);
  let citation="";
  if(type==="graph"&&d.kind==="function")citation="Mathematical function drawn over the stated domain; not observed data.";
  else if(sourceType(d)==="primary")citation="Source: own collected measurements (describe collection in the IA).";
@@ -320,6 +327,7 @@ export function handoverQuestions(state,type,draft){
   type==="trace"?"calibrated coordinates extracted from an image":
   type==="voronoi"?"nearest-site regions under a straight-line distance assumption":
   type==="geometry"?"a labelled geometric construction":
+  type==="probability"?"a conditional probability model of successive outcomes":
   {compact:"selected numerical results",summary:"summary statistics",frequency:"observed category frequencies"}[draft?.mode]||"mathematical results";
  const limitation=type==="graph"&&draft?.kind==="function"?"Which assumptions and feasible domain restrict this model?":
   type==="stat"&&draft?.kind==="bar"?"How do group sizes and percentage denominators affect the comparison?":
@@ -329,6 +337,7 @@ export function handoverQuestions(state,type,draft){
   type==="trace"?"How might calibration error, resolution or perspective change the traced coordinates?":
   type==="voronoi"?"How would roads, obstacles, distance metrics or the choice of sites change nearest-site regions?":
   type==="geometry"?"Which scale assumptions, angle measurements or annotations limit this construction?":
+  type==="probability"?"How were conditional probabilities justified? Were events clearly defined, and are independence and sampling assumptions defensible?":
   type==="table"?"Are these the smallest set of results needed, with justified precision?":
   "How could sampling, measurement accuracy, data exclusions or model assumptions change the conclusion?";
  return {

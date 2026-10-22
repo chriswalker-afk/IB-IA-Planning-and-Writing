@@ -78,6 +78,10 @@ function renderRouteDetail(route,state,{e,icon}){
   images:'After calibrating an image, use a separate labelled geometric construction when a triangle or polygon explains your area or length model.',
   optimisation:'For a dimensioned physical design, construct and label its geometry before forming the objective function. For financial optimisation, use other tools.'
  }[route.id];
+ const probabilityHint=route.id==="chance"?
+  "Use a probability tree when the mathematics involves successive or conditional outcomes. For simulated observations, a statistical diagram may fit better.":
+  route.id==="finance"?
+  "If a financial decision has successive dependent risks, a tree can compare their conditional outcomes. Otherwise use a clear table or graph for costs, payoffs and expected values.":null;
  const saved=state.planning.routeExplorer?.selectedRoute===route.id;
  const family=ROUTE_FAMILIES.find(f=>f.id===route.family);
  return '<section class="journey-detail" id="journey-detail" aria-label="Investigative journey for '+e(route.title)+'">'+
@@ -106,6 +110,9 @@ function renderRouteDetail(route,state,{e,icon}){
    (geometryHint?'<div class="journey-optional-tool"><p><strong>Optional diagram creator:</strong> '+e(geometryHint)+'</p>'+
     '<button type="button" class="btn btn-secondary btn-sm" data-action="resource-creator-open" data-resource-creator="geometry">'+
     icon('ruler')+' Open Geometry &amp; Measurement Studio</button></div>':'')+
+   (probabilityHint?'<div class="journey-optional-tool"><p><strong>Optional diagram creator:</strong> '+e(probabilityHint)+'</p>'+
+    '<button type="button" class="btn btn-secondary btn-sm" data-action="resource-creator-open" data-resource-creator="probability">'+
+    icon('git-branch')+' Open Probability Tree Studio</button></div>':'')+
    '<div class="journey-detail-actions">'+
     '<button type="button" class="btn '+(saved?'btn-secondary':'btn-primary')+'" data-action="'+(saved?'math-remove-route':'math-select-route')+'" data-route-id="'+e(route.id)+'">'+
       icon(saved?'check-circle':'bookmark')+' '+(saved?'Saved · Remove route':'Save this as my provisional route')+'</button>'+

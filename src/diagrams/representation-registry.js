@@ -26,7 +26,11 @@ export const REPRESENTATION_TOOLS=Object.freeze([
   root:"voronoi-studio",linkedReason:"linked-voronoi"},
  {id:"geometry",title:"Geometry & Measurement Studio",figureTitle:"Geometric construction",action:"geometry-open",icon:"ruler",
   detail:"Build triangles or polygons with justified lengths, angles and bearings.",groups:["geometry","models"],
-  studio:"geometryStudio",entryKey:"geometryFigureId",root:"geometry-studio",linkedReason:"linked-geometry"}
+  studio:"geometryStudio",entryKey:"geometryFigureId",root:"geometry-studio",linkedReason:"linked-geometry"},
+ {id:"probability",title:"Probability Tree Studio",figureTitle:"Probability tree",action:"probability-open",icon:"git-branch",
+  detail:"Create 2–3-stage conditional trees, validate branches and explore path/event probabilities.",
+  groups:["decisions","models"],studio:"probabilityStudio",entryKey:"probabilityFigureId",
+  root:"probability-studio",linkedReason:"linked-probability"}
 ].map(tool=>Object.freeze({...tool,groups:Object.freeze(tool.groups)})));
 export const representationTool=id=>REPRESENTATION_TOOLS.find(tool=>tool.id===id)||null;
 export const activeRepresentationTool=state=>REPRESENTATION_TOOLS.find(tool=>state?.[tool.studio]?.open===true)||null;
