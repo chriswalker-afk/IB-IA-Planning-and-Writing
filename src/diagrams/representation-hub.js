@@ -13,7 +13,7 @@ export const REPRESENTATION_FILTERS=Object.freeze([
  ["models","Build a model"],["decisions","Make decisions"]
 ]);
 // Each pair is editorially grounded in the saved route's actual first maths.
-const routes={
+export const REPRESENTATION_ROUTE_GUIDANCE=Object.freeze({
  relationships:{name:"Relationships between two variables",ids:["graph","stat"],
   why:["Begin by inspecting genuine paired points, not by assuming a regression.","A distribution view can reveal subgroups or unusual values before fitting."]},
  groups:{name:"Comparing groups",ids:["stat","table"],
@@ -46,7 +46,7 @@ const routes={
   why:["Explore examples visually while remembering that a graph is not proof.","Show a few selected cases, not a long list of substitutions."]},
  iteration:{name:"Iteration and convergence",ids:["graph","table"],
   why:["Plot a function or related sequence behaviour; diagrams alone do not prove convergence.","Show a short series of genuinely calculated iterates and a justified stopping rule."]}
-};
+});
 const fallback={
  scatter:["graph","stat"],distribution:["stat","table"],diagram:["geometry","trace"],
  table:["table","stat"],calculation:["table","graph"],theory:["graph","table"],other:["graph","table"],unsure:["graph","stat"]
@@ -110,7 +110,7 @@ export function representationAdvice(state){
      "No generator is required when a concise calculation or proof is more appropriate."]};
   }
  }
- const route=state?.planning?.routeExplorer?.selectedRoute,chosen=routes[route],
+ const route=state?.planning?.routeExplorer?.selectedRoute,chosen=REPRESENTATION_ROUTE_GUIDANCE[route],
   type=state?.completion?.fields?.firstType||"unsure";
  const ids=chosen?.ids||fallback[type]||fallback.unsure;
  return {chosen,ids,source:chosen?"route":type!=="unsure"?"first":"fallback",
@@ -118,44 +118,61 @@ export function representationAdvice(state){
    type!=="unsure"?"Based on your selected first representation":"Useful starting points",
   why:chosen?.why||["A possible starting tool, not a prescribed technique.","Choose tools only when they help communicate genuine mathematics."]};
 }
+export function representationVisibleTools(state){
+ const advice=representationAdvice(state);
+ const suggestions=contextualRepresentationAdvice(state,advice);
+ const filter=state.ui?.representationFilter||"all";
+ const eligible=t=>filter==="all"||t.groups.includes(filter);
+ const recommended=[];
+ const seen=new Set();
+ for(let i=0;i<suggestions.ids.length;i++){
+  const tool=REPRESENTATION_TOOLS.find(t=>t.id===suggestions.ids[i]);
+  if(!tool||!eligible(tool)||seen.has(tool.id))continue;
+  seen.add(tool.id);
+  recommended.push({...tool,reason:suggestions.why[i]||tool.detail});
+ }
+ const remaining=REPRESENTATION_TOOLS.filter(t=>eligible(t)&&!seen.has(t.id));
+ return {advice,suggestions,filter,recommended,remaining,total:recommended.length+remaining.length};
+}
 export function renderRepresentationHub(state,icon,e){
- const advice=representationAdvice(state),suggestions=contextualRepresentationAdvice(state,advice),
-  filter=state.ui?.representationFilter||"all",
-  first=suggestions.ids.map((id,i)=>{const tool=REPRESENTATION_TOOLS.find(t=>t.id===id);return tool?{...tool,reason:suggestions.why[i]}:null;}).filter(Boolean);
- const chosen=new Set(suggestions.ids),all=REPRESENTATION_TOOLS.filter(t=>!chosen.has(t.id));
- const recommended='<div class="representation-feature-grid">'+first.map(t=>
+ const {advice,suggestions,filter,recommended,remaining,total}=representationVisibleTools(state),
+  reduced=state.ui?.adviceMode==="reduced";
+ const featured='<div class="representation-feature-grid">'+recommended.map(t=>
   '<button type="button" class="representation-card representation-card-featured" data-action="'+t.action+'">'+
   '<span class="representation-card-top">'+icon(t.icon)+' <span>Relevant suggestion</span></span>'+
   '<strong>'+e(t.title)+'</strong><small>'+e(t.reason)+'</small>'+
   '<span class="representation-card-cta">Open tool '+icon("arrow-right")+'</span></button>').join("")+'</div>';
- const visible=filter==="all"?all:REPRESENTATION_TOOLS.filter(t=>t.groups.includes(filter)&&!chosen.has(t.id));
  const catalog='<div class="representation-catalog" data-representation-catalog>'+
- (visible.length?visible.map(t=>
-  '<button type="button" class="representation-card representation-card-small" data-action="'+t.action+'">'+
+  remaining.map(t=>'<button type="button" class="representation-card representation-card-small" data-action="'+t.action+'">'+
   '<span class="representation-card-icon">'+icon(t.icon)+'</span><span class="representation-card-details"><strong>'+
-  e(t.title)+'</strong><small>'+e(t.detail)+'</small></span>'+icon("arrow-right")+'</button>').join(""):'<p>No tools in this category yet. Choose another mathematical purpose.</p>')+'</div>';
- return '<section class="representation-hub" data-representation-hub aria-label="Choose a mathematical representation">'+
+  e(t.title)+'</strong><small>'+e(t.detail)+'</small></span>'+icon("arrow-right")+'</button>').join("")+'</div>';
+ return '<section class="representation-hub" data-representation-hub data-advice-mode="'+(reduced?"reduced":"guided")+'" aria-label="Choose a mathematical representation">'+
  (state.ui?.resourceCreatorReturnRoute?
   '<button type="button" class="btn btn-quiet btn-sm resource-creator-hub-back" data-action="resource-creator-return">'+
    icon("arrow-left")+' Back to my previous page</button>':'')+
  '<header class="representation-header"><div><span class="intro-writing-guide-eyebrow">'+icon("layers")+
  ' CHOOSE YOUR MATHEMATICAL REPRESENTATION</span><h2>Which tool helps tell your mathematical story?</h2>'+
- '<p>Start from your investigative aim. A clear, purposeful figure is more valuable than using extra mathematics just to make the IA look complicated.</p></div></header>'+
+ (reduced?"":'<p>Start from your investigative aim. A purposeful figure is more valuable than extra mathematics just to make the IA look complicated.</p>')+'</div></header>'+
  '<div class="representation-context"><div><span class="representation-context-kicker">'+icon("route")+' RECOMMENDATION CONTEXT</span>'+
- '<strong>'+e(advice.reason)+'</strong><p>Suggestions reflect your current method, a confirmed next question or a provisional plan. They do not identify a pattern in your data or require a particular generator.</p></div>'+
- '<span class="representation-context-count">'+suggestions.ids.length+' suggestions</span></div>'+
-  renderHubDatasetEvidence(state,advice,icon,e)+
- recommended+
- '<div class="representation-browse-head"><div><h3>Browse the other mathematical tools</h3>'+
- '<p>Nothing is locked. You can always use your own software or select a mathematical calculation that needs no diagram.</p></div></div>'+
+ '<strong>'+e(advice.reason)+'</strong>'+
+ (reduced?"":'<p>Suggestions reflect your current method, a confirmed next question or a provisional plan. They do not identify a pattern in your data or require a particular generator.</p>')+'</div>'+
+ '<span class="representation-context-count">'+total+' matching tool'+(total===1?"":"s")+'</span></div>'+
+ (reduced?'<details class="representation-optional-context"><summary>'+icon("circle-help")+
+  ' Why these tools? (optional)</summary><p>'+e(suggestions.note)+'</p></details>':
+  renderHubDatasetEvidence(state,advice,icon,e))+
+ '<div data-representation-recommended>'+(recommended.length?featured:
+  '<p class="representation-filter-note">No featured suggestion matches this category. Browse the available tools below or select All tools.</p>')+'</div>'+
+ '<div class="representation-browse-head"><div><h3>Browse '+(filter==="all"?"other tools":"this category")+'</h3>'+
+ (reduced?"":'<p>Nothing is locked. You can use your own software or select a calculation that needs no diagram.</p>')+'</div></div>'+
  '<div class="representation-filters" role="group" aria-label="Filter tools by mathematical purpose">'+
  REPRESENTATION_FILTERS.map(([value,label])=>
   '<button type="button" class="representation-filter'+(value===filter?" active":"")+
   '" data-action="representation-filter" data-representation-filter="'+value+
   '" aria-pressed="'+(value===filter)+'">'+e(label)+'</button>').join("")+'</div>'+
- catalog+
+ (remaining.length?catalog:'<p class="representation-filter-note">'+
+  (total?"All matching tools are already featured above.":"No tools match this category.")+'</p>')+
  '<p class="representation-writing-reminder">'+icon("info")+
- ' <strong>After creating a diagram or table:</strong> introduce it in your IA <em>before</em> showing it. Then interpret it against your aim, prediction (if any), precision and justified next mathematical step. Long raw-data tables belong in working files, not the IA or appendix.</p>'+
+ ' <strong>Use in your IA:</strong> introduce each relevant figure before showing it, and interpret the actual mathematics afterwards. Saving a figure does not automatically establish a result.</p>'+
  '</section>';
 }
 /** A larger canvas is activated only in C31 while one tool is open. */
