@@ -4,6 +4,7 @@ import {
  imageTraceChecks,saveTraceFigure,traceSignature
 } from "./image-tracer-core.js";
 import {completeEntry,startFirstRepresentation} from "../completing/engine.js";
+import {linkRepresentationFigure} from "./figure-linking.js";
 const TEXT=new Set(["title","figureNumber","sourceKind","sourceCredit","xLabel","yLabel","unit","knownLength","precision","perspective","limitations","caption"]);
 const BOOL=new Set(["showGrid","showLine","closeShape","showLabels"]);
 export function setTraceField(tracer,key,value){
@@ -84,7 +85,7 @@ export function saveAndLinkTrace(state){
  const saved=saveTraceFigure(tracer,entry.id);
  if(!saved.ok)return saved;
  const reviewNeeded=markChangedMath(state,prior,saved.record);
- entry.imageTraceId=saved.record.id;
+ linkRepresentationFigure(state,"trace",saved.record,entry);
  if(entry.phase==="first"&&(!entry.title.trim()||["First purposeful representation","diagram","scatter","other"].includes(entry.title)))
   entry.title=saved.record.draft.title;
  if(!entry.technique.trim())entry.technique="Coordinate tracing and scale calibration";

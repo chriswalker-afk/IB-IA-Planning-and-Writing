@@ -1,6 +1,7 @@
 /** Controlled edits and explicit links to student-generated mathematics. */
 import {newStatDraft,normalizeStatDraft,statAnalysis,statSignature,importStatTable,saveStatFigure} from "./stat-studio-core.js";
 import {completeEntry,startFirstRepresentation} from "../completing/engine.js";
+import {linkRepresentationFigure} from "./figure-linking.js";
 import {splitHeading} from "./graph-core.js";
 
 const TEXT=new Set(["raw","headers","histogramInput","binWidth","binStart","barMode",
@@ -160,7 +161,7 @@ export function saveAndLinkStat(state){
  const saved=saveStatFigure(studio,entry.id);
  if(!saved.ok)return saved;
  const reviewNeeded=flagChangedStats(state,previous,saved.record);
- entry.statFigureId=saved.record.id;
+ linkRepresentationFigure(state,"stat",saved.record,entry);
  if(entry.phase==="first"&&(!entry.title.trim()||["First purposeful representation","distribution","table","diagram","other"].includes(entry.title)))
   entry.title=saved.record.draft.title;
  if(!entry.technique.trim())entry.technique={

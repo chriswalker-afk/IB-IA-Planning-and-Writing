@@ -1,5 +1,6 @@
 import {newProbabilityDraft,normalizeProbabilityDraft,probabilityAnalysis,probabilitySignature,saveProbabilityFigure,activeParents,leafKeys} from "./probability-core.js";
 import {completeEntry,startFirstRepresentation} from "../completing/engine.js";
+import {linkRepresentationFigure} from "./figure-linking.js";
 
 export function setProbabilityField(studio,key,value){
  const d=studio.draft;
@@ -69,7 +70,7 @@ export function saveAndLinkProbability(state){
  const entry=state.entries[index],saved=saveProbabilityFigure(studio,entry.id);
  if(!saved.ok)return saved;
  const reviewNeeded=reviewChanged(state,previous,saved.record);
- entry.probabilityFigureId=saved.record.id;
+ linkRepresentationFigure(state,"probability",saved.record,entry);
  if(!entry.title?.trim())entry.title=saved.record.draft.title;
  if(!entry.technique?.trim())entry.technique="Conditional probability tree";
  entry.kind="diagram";state.completion.activeEntryIndex=index;state.ui.mathIndex=index;
