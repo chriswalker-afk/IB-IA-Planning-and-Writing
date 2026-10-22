@@ -40,7 +40,7 @@ test("two-stage conditional tree calculates four joint outcomes and all event op
  assert(Math.abs(a.intersection-.48)<1e-12);
  assert(Math.abs(a.conditional-.8)<1e-12);
  const svg=renderProbabilitySvg(d);
- assert.match(svg,/Every split gives probabilities conditional/);
+ assert.doesNotMatch(svg,/Every split gives probabilities conditional/);
  assert.match(svg,/P\(path\)/);
  assert.match(svg,/P\(Event E \| Condition C\)/);
 });
