@@ -16,7 +16,35 @@ def state(node='C40',method='pmcc',status='planned',route='completing'):
  return json.loads(subprocess.check_output(['node','--input-type=module','-e',code],input=json.dumps(s).encode()))
 def saved(p):return p.evaluate('(key)=>JSON.parse(localStorage.getItem(key))',KEY)
 def unchanged_fields(s):return json.dumps([s['entries'],s['planning'],s['project'],s['teacher'],s['completion']['stages'],s['scratch']],sort_keys=True)
-def open_library(p):p.locator('[data-action="resource-browse"]').first.click()
+def action(p,name,extra=''):
+ buttons=p.locator('[data-action="'+name+'"]'+extra+':visible')
+ assert buttons.count()>0,('No visible action',name,extra)
+ buttons.first.click()
+def reveal_details(control):
+ # Reach optional advice through its displayed disclosure summaries. Never
+ # force a click into the collapsed examples/more-help panels.
+ assert control.count()==1,'Expected one contextual help control'
+ while not control.is_visible():
+  summaries=[panel.locator(':scope > summary') for panel in control.locator('xpath=ancestor::details[not(@open)]').all()]
+  visible=next((summary for summary in summaries if summary.is_visible()),None)
+  assert visible is not None,'Contextual help is not reachable through a visible disclosure'
+  visible.click()
+def open_library(p):
+ if not p.locator('[data-action="resource-browse"]:visible').count():
+  action(p,'open-panel','[data-panel="help"]')
+ action(p,'resource-browse')
+ assert overlay(p).is_visible(),'Resource library did not open'
+def open_suggestion(p,id):
+ control=p.locator('#main [data-resource-suggestion="'+id+'"] [data-action="resource-open"][data-resource-id="'+id+'"]')
+ reveal_details(control);control.click();assert overlay(p).is_visible()
+def open_stuck(p):
+ if not p.locator('[data-action="open-stuck"]:visible').count():
+  action(p,'open-panel','[data-panel="help"]')
+ action(p,'open-stuck')
+ assert p.locator('.drawer [data-action="stuck-topic"]').count()>0,'Problem-first help did not open'
+def stuck_topic(p,id):
+ control=p.locator('.drawer [data-action="stuck-topic"][data-topic="'+id+'"]')
+ reveal_details(control);control.click()
 def detail(p,id):p.locator('.resource-library [data-action="resource-open"][data-resource-id="'+id+'"]:visible').first.click()
 def choice(p,key,value):
  p.locator('.resource-preferences > summary').click() if p.locator('.resource-preferences').get_attribute('open') is None else None
@@ -49,11 +77,11 @@ with sync_playwright() as pw:
  run('resources-planning-preservation',state(route='planning'),planning)
  def pmcc(p):
   assert p.locator('[data-resource-suggestion="sheets-pmcc"]').count()==1;before=unchanged_fields(saved(p));open_library(p);choice(p,'tool','desmos');close(p)
-  assert p.locator('[data-resource-suggestion="desmos-pmcc"]').count()==1;p.locator('[data-resource-id="desmos-pmcc"]').first.click();assert 'corr(x_1,y_1)' in overlay(p).inner_text();assert unchanged_fields(saved(p))==before
+  assert p.locator('[data-resource-suggestion="desmos-pmcc"]').count()==1;open_suggestion(p,'desmos-pmcc');assert 'corr(x_1,y_1)' in overlay(p).inner_text();assert unchanged_fields(saved(p))==before
   overlay(p).screenshot(path=str(OUT/'resources-pmcc-phone.png'),animations='disabled')
  run('resources-selected-tool-pmcc',state(),pmcc)
  def interpret(p):
-  assert p.locator('[data-resource-suggestion="pmcc-meaning"]').count()==1;p.locator('[data-resource-id="pmcc-meaning"]').first.click();assert 'Understand and check' in overlay(p).inner_text()
+  assert p.locator('[data-resource-suggestion="pmcc-meaning"]').count()==1;open_suggestion(p,'pmcc-meaning');assert 'Understand and check' in overlay(p).inner_text()
   assert 'does not establish' in overlay(p).inner_text();assert p.locator('[data-source-node="C35"]').count()==1
  run('resources-real-result-interpretation',state(node='C35',status='completed'),interpret)
  def filtering(p):
@@ -66,7 +94,7 @@ with sync_playwright() as pw:
  run('resources-filter-pagination-and-back',state(),filtering,1440,1000)
  def image(p):
   before=unchanged_fields(saved(p));open_library(p);choice(p,'image','import');close(p);assert p.locator('[data-resource-suggestion="image-import"]').count()==1
-  p.locator('[data-resource-id="image-import"]').first.click();p.locator('.resource-related > summary').click();detail(p,'image-scale');assert '25' in overlay(p).inner_text()
+  open_suggestion(p,'image-import');p.locator('.resource-related > summary').click();detail(p,'image-scale');assert '25' in overlay(p).inner_text()
   p.locator('.resource-related > summary').click();detail(p,'image-route');p.locator('.resource-related > summary').click();detail(p,'image-visual');assert 'visual' in overlay(p).inner_text().lower()
   choice(p,'image','points');close(p);assert p.locator('[data-resource-suggestion="image-points"]').count()==1;assert unchanged_fields(saved(p))==before
  run('resources-image-paths-do-not-change-method',state(method='other'),image)
@@ -76,19 +104,17 @@ with sync_playwright() as pw:
   p.evaluate('([k,s])=>localStorage.setItem(k,JSON.stringify(s))',[KEY,data]);p.reload(wait_until='networkidle');assert p.locator('[data-resource-suggestion="image-scale"]').count()==1
  run('resources-scale-recheck-after-change',state(node='C35',method='quadratic-fit',status='completed'),review)
  def stuck(p):
-  p.locator('[data-action="open-stuck"]').first.click();p.locator('.drawer [data-topic="calculation"]').click()
-  p.locator('.drawer [data-action="resource-browse"]').first.click();p.locator('#resource-search').fill('PMCC');detail(p,'sheets-pmcc')
+  open_stuck(p);stuck_topic(p,'calculation')
+  action(p,'resource-browse');p.locator('#resource-search').fill('PMCC');detail(p,'sheets-pmcc')
   p.locator('.resource-videos > summary').click();assert 'not been watched end to end' in overlay(p).inner_text();close(p)
   assert p.locator('.drawer .stuck-heading').inner_text()=='My calculation or software is not working'
  run('resources-return-to-stuck-topic',state(),stuck)
  def writer(p):
-  p.locator('[data-action="open-stuck"]').first.click();topic=p.locator('.drawer [data-action="stuck-topic"][data-topic="writing"]')
-  if not topic.is_visible():p.locator('.drawer .stuck-browse > summary').click()
-  topic.click();p.locator('.drawer [data-action="stuck-work"]').click();assert p.locator('[data-resource-suggestion="pmcc-meaning"]').count()==1
-  p.locator('[data-resource-id="pmcc-meaning"]').first.click();close(p);assert p.locator('[data-source-node="C96"]').count()==1
+  open_stuck(p);stuck_topic(p,'writing');action(p,'stuck-work');assert p.locator('[data-resource-suggestion="pmcc-meaning"]').count()==1
+  open_suggestion(p,'pmcc-meaning');close(p);assert p.locator('[data-source-node="C96"]').count()==1
  run('resources-writing-helper-origin',state(node='C34B',status='completed'),writer)
  def hide(p):
-  p.locator('[data-action="resource-hide"]').first.click();assert p.locator('[data-resource-suggestion]').count()==0;p.reload(wait_until='networkidle');assert p.locator('[data-resource-suggestion]').count()==0
+  hide_button=p.locator('#main [data-resource-suggestion] [data-action="resource-hide"]');reveal_details(hide_button);hide_button.click();assert p.locator('[data-resource-suggestion]').count()==0;p.reload(wait_until='networkidle');assert p.locator('[data-resource-suggestion]').count()==0
   open_library(p);p.locator('#resource-search').fill('PMCC');detail(p,'sheets-pmcc');assert 'Read the steps' in overlay(p).inner_text()
  run('resources-dismissal-and-manual-access',state(),hide)
  def no_network(p):
@@ -99,7 +125,7 @@ with sync_playwright() as pw:
   overlay(p).screenshot(path=str(OUT/'resources-video-fallback-phone.png'),animations='disabled')
  run('resources-no-automatic-external-request',state(),no_network)
  def practice(p):
-  before=unchanged_fields(saved(p));p.locator('[data-resource-id="sheets-pmcc"]').first.click();p.locator('.resource-practice > summary').click();p.locator('[data-action="resource-copy"]').click()
+  before=unchanged_fields(saved(p));open_suggestion(p,'sheets-pmcc');p.locator('.resource-practice > summary').click();p.locator('[data-action="resource-copy"]').click()
   p.wait_for_function('document.querySelector("#resource-copy-status").textContent.length>0');assert 'practice' in p.locator('#resource-practice-data').input_value();assert unchanged_fields(saved(p))==before
  run('resources-practice-never-becomes-evidence',state(),practice)
  def backup(p):

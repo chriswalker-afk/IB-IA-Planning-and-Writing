@@ -86,6 +86,9 @@ with sync_playwright() as pw:
   ctx.close()
  
  def direct(p):
+  assert p.locator('[data-planning-intro="true"]').is_visible()
+  p.locator('[data-action="planning-intro-continue"]').click()
+  assert saved(p)['ui']['planningIntroSeen'] is True
   p.locator('[data-choice="planning.fields.ideaStatus"][data-value="yes"]').click()
   p.locator('[data-action="plan-advance"]').click()
   node(p,'N01')
@@ -137,9 +140,13 @@ with sync_playwright() as pw:
   do(p,'remove','[data-id="'+item['id']+'"]')
   assert len(saved(p)['ideaExplorer']['shortlist'])==0
   assert len(saved(p)['ideaExplorer']['rejected'])==1
+  rejected=p.locator('.idea-rejected');assert rejected.get_attribute('open') is None
+  rejected.locator('summary').click()
   assert 'Restore idea' in p.locator('.idea-rejected').inner_text()
   do(p,'restore','[data-id="'+item['id']+'"]')
   assert saved(p)['ideaExplorer']['shortlist'][0]['quickStart']==5
+  assert saved(p)['ideaExplorer']['shortlist'][0]['question']==item['question']
+  assert saved(p)['ideaExplorer']['rejected']==[]
  run('idea-reject-and-restore',state(),reject)
 
  def choose(p):

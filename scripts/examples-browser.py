@@ -2,13 +2,38 @@
 import copy,json,os,traceback
 from pathlib import Path
 from playwright.sync_api import sync_playwright
-OUT=Path(os.environ.get('IA_QA_OUTPUT','qa-output'));OUT.mkdir(exist_ok=True)
+OUT=Path(os.environ.get('IA_QA_OUTPUT','qa-output'));OUT.mkdir(exist_ok=True,parents=True)
 BASE=json.loads((OUT/'examples-fixture.json').read_text());KEY='ia-pathfinder-prototype-v1'
 URL=os.environ.get('IA_QA_URL','http://127.0.0.1:8765/');results=[]
 def saved(p):return p.evaluate('(k)=>localStorage.getItem(k)',KEY)
 def fixture(kind='modelling',node='C10'):
  s=copy.deepcopy(BASE);s['planning']['fields']['kind']=s['project']['kind']=kind;s['completion']['current']=node;return s
-def button(p):return p.locator('#main .criteria-actions [data-action="example-open"], #main .ex-prompt [data-action="example-open"]').first
+def reveal_details(control):
+ assert control.count()==1,'Expected one contextual example control'
+ while not control.is_visible():
+  summaries=[panel.locator(':scope > summary') for panel in control.locator('xpath=ancestor::details[not(@open)]').all()]
+  visible=next((summary for summary in summaries if summary.is_visible()),None)
+  assert visible is not None,'Example control is not reachable through a visible disclosure'
+  visible.click()
+def button(p):
+ # Writing pages now place their contextual comparisons in one optional
+ # examples panel. Planning still has a visible, contextual example prompt.
+ panel=p.locator('#main [data-writing-examples]')
+ if panel.count():
+  control=panel.locator('[data-action="example-open"]:not([data-example-browse="true"])').first
+  reveal_details(control)
+ else:
+  control=p.locator('#main [data-action="example-open"]:not([data-example-browse="true"]):visible').first
+  assert control.count()==1,'No visible contextual example entrance'
+ return control
+def open_stuck(p):
+ control=p.locator('[data-action="open-stuck"]:visible')
+ if not control.count():
+  p.locator('[data-action="open-panel"][data-panel="help"]:visible').click()
+  control=p.locator('.drawer [data-action="open-stuck"]:visible')
+ assert control.count()>0,'Problem-first help is unavailable'
+ control.first.click()
+ assert p.locator('.drawer [data-action="stuck-topic"]').count()>0
 def open_example(p):button(p).click();assert p.locator('#exampleDialog').is_visible()
 def close(p):p.locator('#exampleDialog [data-example-close]').click();assert not p.locator('#exampleDialog').is_visible()
 def card(p,id):assert p.locator('#exampleDialog [data-example-card="'+id+'"]').count()==1,id
@@ -64,13 +89,16 @@ with sync_playwright() as pw:
  s=fixture('modelling','C40L');s['completion']['activeEntryIndex']=1
  run('examples-familiar-mathematics',s,familiar)
  def cue(p):
-  tools=p.locator('.criteria-writing-tools')
-  if tools.count() and not tools.evaluate('(n)=>n.open'):tools.locator('summary').first.click()
-  before=saved(p);p.locator('.guidance-writing [data-action="example-open"]').first.click();card(p,'EX01');close(p);assert saved(p)==before
- run('examples-existing-writing-cue',fixture(),cue)
+  # Introduction tips have moved to the Field Guide. The figure-writing cue
+  # remains an actual embedded cue and must still open its own comparison.
+  control=p.locator('#main .guidance-writing [data-action="example-open"][data-example-cue="W15"]')
+  reveal_details(control);before=saved(p);control.click();card(p,'EX10');close(p);assert saved(p)==before
+  assert p.locator('[data-source-node="C33"]').count()==1
+  assert control.evaluate('(n)=>n===document.activeElement')
+ run('examples-existing-writing-cue',fixture('modelling','C33'),cue)
  def nested(p):
-  p.locator('[data-action="open-stuck"]').first.click();before=saved(p)
-  p.locator('.drawer [data-action="example-open"]').first.click();assert p.locator('#exampleDialog').is_visible();p.keyboard.press('Shift+Tab');assert p.locator('#exampleDialog').evaluate('(n)=>n.contains(document.activeElement)');p.keyboard.press('Escape');assert not p.locator('#exampleDialog').is_visible();assert p.locator('#drawerLayer').is_visible();assert saved(p)==before;p.keyboard.press('Escape');assert not p.locator('#drawerLayer').is_visible()
+  open_stuck(p);before=saved(p)
+  p.locator('.drawer [data-action="example-open"]:visible').first.click();assert p.locator('#exampleDialog').is_visible();p.keyboard.press('Shift+Tab');assert p.locator('#exampleDialog').evaluate('(n)=>n.contains(document.activeElement)');p.keyboard.press('Escape');assert not p.locator('#exampleDialog').is_visible();assert p.locator('#drawerLayer').is_visible();assert saved(p)==before;p.keyboard.press('Escape');assert not p.locator('#drawerLayer').is_visible()
  run('examples-return-to-parent-help',fixture(),nested,390,844)
  def legacy(p):
   assert p.locator('#main [data-example-card]').count()==1;assert 'What changed?' in p.locator('#main').inner_text()

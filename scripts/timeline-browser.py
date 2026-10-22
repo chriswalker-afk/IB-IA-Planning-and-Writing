@@ -50,7 +50,9 @@ def report_checks(p,name):
   assert backup["entries"][0]["result"]=="Original mathematical result must be preserved"
  tap(p,"close-drawer")
 with sync_playwright() as pw:
- b=pw.chromium.launch(headless=True,args=["--no-sandbox"])
+ options={"headless":True,"args":["--no-sandbox"]}
+ if os.environ.get("IA_CHROMIUM_EXECUTABLE"):options["executable_path"]=os.environ["IA_CHROMIUM_EXECUTABLE"]
+ b=pw.chromium.launch(**options)
  def run(name,scenario,w=1440,h=960,changes=None):
   fixture=copy.deepcopy(BASE)
   if changes:changes(fixture)
