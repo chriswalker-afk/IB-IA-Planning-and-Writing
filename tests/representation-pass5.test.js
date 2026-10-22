@@ -67,8 +67,8 @@ test("reduced advice trims optional prose but preserves seven tools, stage-relev
  const guided=renderRepresentationHub(state,icon,esc);
  state.ui.adviceMode="reduced";
  const reduced=renderRepresentationHub(state,icon,esc);
- assert(guided.includes('data-advice-mode="guided"'));
- assert(reduced.includes('data-advice-mode="reduced"'));
+ assert(guided.includes('data-representation-advice-mode="guided"'));
+ assert(reduced.includes('data-representation-advice-mode="reduced"'));
  assert(reduced.includes("Why these tools? (optional)"));
  assert(reduced.includes('data-action="probability-open"'));
  assert(reduced.includes("introduce each relevant figure"));

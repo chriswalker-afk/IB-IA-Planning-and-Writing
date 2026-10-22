@@ -238,9 +238,9 @@ body.representation-focus-active .voronoi-layout{grid-template-columns:minmax(29
 .representation-optional-context>p{font-size:12px;line-height:1.6;padding:0 13px;margin:0 0 9px}
 .representation-optional-context .representation-dataset-note{margin:8px}
 .representation-filter-note{font-size:12px;line-height:1.6;color:#566f72;padding:12px 14px;background:#f8fbfa;border:1px dashed #cbded8;border-radius:9px}
-.representation-hub[data-advice-mode="reduced"] .representation-header{margin-bottom:8px}
-.representation-hub[data-advice-mode="reduced"] .representation-context{padding:10px 13px;margin:8px 0 12px}
-.representation-hub[data-advice-mode="reduced"] .representation-browse-head{margin-top:16px}
+.representation-hub[data-representation-advice-mode="reduced"] .representation-header{margin-bottom:8px}
+.representation-hub[data-representation-advice-mode="reduced"] .representation-context{padding:10px 13px;margin:8px 0 12px}
+.representation-hub[data-representation-advice-mode="reduced"] .representation-browse-head{margin-top:16px}
 @media(max-width:700px){
  .representation-hub .representation-filter{min-height:40px;font-size:12px}
  .representation-hub .representation-context-count{white-space:normal}

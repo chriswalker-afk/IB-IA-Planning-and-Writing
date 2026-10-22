@@ -146,7 +146,7 @@ export function renderRepresentationHub(state,icon,e){
   remaining.map(t=>'<button type="button" class="representation-card representation-card-small" data-action="'+t.action+'">'+
   '<span class="representation-card-icon">'+icon(t.icon)+'</span><span class="representation-card-details"><strong>'+
   e(t.title)+'</strong><small>'+e(t.detail)+'</small></span>'+icon("arrow-right")+'</button>').join("")+'</div>';
- return '<section class="representation-hub" data-representation-hub data-advice-mode="'+(reduced?"reduced":"guided")+'" aria-label="Choose a mathematical representation">'+
+ return '<section class="representation-hub" data-representation-hub data-representation-advice-mode="'+(reduced?"reduced":"guided")+'" aria-label="Choose a mathematical representation">'+
  (state.ui?.resourceCreatorReturnRoute?
   '<button type="button" class="btn btn-quiet btn-sm resource-creator-hub-back" data-action="resource-creator-return">'+
    icon("arrow-left")+' Back to my previous page</button>':'')+

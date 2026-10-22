@@ -58,7 +58,7 @@ def chooser(browser,width):
   }""")
   p.reload(wait_until="networkidle")
   hub=p.locator("[data-representation-hub]")
-  assert hub.get_attribute("data-advice-mode")=="reduced"
+  assert hub.get_attribute("data-representation-advice-mode")=="reduced"
   assert len(actions(hub))==7
   assert hub.locator(".representation-optional-context").count()==1
   hub.locator(".representation-optional-context summary").click()
