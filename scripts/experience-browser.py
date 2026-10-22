@@ -51,7 +51,7 @@ with sync_playwright() as pw:
  run('checkpoint-consistency-edit-and-resume',OWN,checkpoint)
  def compact_path(p):
   nav(p,'path');assert p.locator('.journey-chapter[open]').count()==1;assert p.locator('[data-journey-group="setup"]').get_attribute('open') is not None;before=raw(p)
-  action(p,'journey-toggle-all');assert p.locator('.journey-chapter[open]').count()==5,'All five current chapters should unfold';assert p.locator('[data-node="C90"]').count()>=1;action(p,'journey-toggle-all');assert p.locator('.journey-chapter[open]').count()==0;assert raw(p)==before
+  action(p,'journey-toggle-all');assert p.locator('.journey-chapter[open]').count()==5,'All five current chapters should unfold';assert p.locator('[data-journey-group="check"] [data-action="go-checking"]').count()==1;action(p,'journey-toggle-all');assert p.locator('.journey-chapter[open]').count()==0;assert raw(p)==before
   p.locator('[data-journey-group="setup"]>summary').click();shot(p,'compact-path')
  run('unfolding-path-no-locked-stages',OWN,compact_path,390,844)
  def support(p):
@@ -83,7 +83,15 @@ with sync_playwright() as pw:
   link.click()
   assert p.locator('.drawer').is_visible()
   p.keyboard.press('Escape')
+  assert not p.locator('.drawer').count()
+  assert raw(p)==before
+  # Resources replaces Help (only one drawer is displayed). Opening
+  # I am stuck from Help also replaces it while retaining a safe return.
+  help_button=p.locator('[data-action="open-panel"][data-panel="help"]:visible')
+  help_button.first.click()
+  p.locator('.drawer [data-action="open-stuck"]').click()
   assert p.locator('.drawer').is_visible()
+  assert 'I am stuck' in p.locator('.drawer').inner_text()
   p.keyboard.press('Escape')
   assert not p.locator('.drawer').count()
   assert raw(p)==before
