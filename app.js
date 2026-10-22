@@ -2942,7 +2942,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       return;
     }
     // Show the formatted label beside its source field; never transform cell values.
-    if(target.matches?.('[data-graph-field],[data-stat-field],[data-trace-field],[data-table-field],[data-table-col],[data-voronoi-field],[data-voronoi-site-key="name"],[data-geometry-field],[data-geometry-vertex]')){
+    if(target.matches?.('[data-graph-field],[data-stat-field],[data-trace-field],[data-table-field],[data-table-col],[data-voronoi-field],[data-voronoi-site-key="name"],[data-geometry-field],[data-geometry-vertex],[data-geometry-aux],[data-geometry-guide]')){
       const studio=target.closest("[data-graph-studio],[data-stat-studio],[data-image-tracer],[data-table-studio],[data-voronoi-studio],[data-geometry-studio]");
       for(const root of studio?.querySelectorAll?.("[data-diagram-notation]")||[]){
         if(diagramNotationField(root)===target){refreshDiagramValuePreview(root);break;}
@@ -2961,6 +2961,19 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
        editNativeCell(studio,type,Number(target.dataset.nativeRow),col,target.value);
       if(ok){save();refreshNativeWorksheet(type);}
       return;
+    }
+    if(target.dataset.geometryAux!==undefined){
+      const index=Number(target.dataset.geometryAux),key=target.dataset.geometryAuxKey;
+      if(setGeometryAuxPoint(state.geometryStudio,index,key,target.value)){
+        save();refreshGeometryPreview();
+      }return;
+    }
+    if(target.dataset.geometryGuide!==undefined){
+      const index=Number(target.dataset.geometryGuide),key=target.dataset.geometryGuideKey;
+      const value=target.type==="checkbox"?target.checked:target.value;
+      if(setGeometryGuide(state.geometryStudio,index,key,value)){
+        save();if(target.tagName==="SELECT")render();else refreshGeometryPreview();
+      }return;
     }
     if(target.dataset.geometryVertex!==undefined){
       const index=Number(target.dataset.geometryVertex),key=target.dataset.geometryVertexKey,
