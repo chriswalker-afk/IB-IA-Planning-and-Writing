@@ -22,12 +22,8 @@ jobs:
     steps:
       - name: Check out source
         uses: actions/checkout@v4
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-      - name: Install document tooling
-        run: npm install --no-audit --no-fund
+      - name: Prepare cached Node dependencies
+        uses: ./.github/actions/setup-ci-node
       - name: Validate and build
         run: |
           npm test

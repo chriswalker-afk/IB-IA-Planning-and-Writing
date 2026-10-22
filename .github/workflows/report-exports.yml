@@ -5,11 +5,37 @@ on:
     branches: [fix-report-exports-2026-10-15]
   pull_request:
     branches: [main]
+    paths:
+      - 'app.js'
+      - 'src/handover/**'
+      - 'src/math/**'
+      - 'src/core/project-state.js'
+      - 'src/core/illustrative-samples.js'
+      - 'src/core/sample-**'
+      - 'src/diagrams/*-core.js'
+      - 'src/diagrams/*-render.js'
+      - 'src/diagrams/*-export.js'
+      - 'src/diagrams/diagram-notation.js'
+      - 'src/diagrams/figure-linking.js'
+      - 'src/completing/first-figure-gallery.js'
+      - 'src/completing/entry-record.js'
+      - 'data/math-writing.css'
+      - 'scripts/report-exports-browser.py'
+      - 'scripts/build-browser-vendor.mjs'
+      - 'vendor/**'
+      - 'pdf.worker.min.mjs'
+      - '.github/workflows/report-exports.yml'
+      - '.github/actions/setup-ci-node/action.yml'
+      - '.github/actions/setup-ci-browser/action.yml'
   workflow_run:
     workflows: [Deploy IA Pathfinder]
     types: [completed]
 permissions:
   contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 jobs:
   reports:
     if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
@@ -21,19 +47,11 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.workflow_run.head_sha || github.sha }}
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - run: npm install --no-audit --no-fund
+      - uses: ./.github/actions/setup-ci-node
       - name: Generate pinned, self-hosted browser libraries
         run: node scripts/build-browser-vendor.mjs
-      - run: npm test
       - run: npm run build
-      - run: pip install playwright==1.57.0 pypdf==5.9.0
-      - run: python -m playwright install --with-deps chromium
+      - uses: ./.github/actions/setup-ci-browser
       - name: Test PDF, Word and ZIP downloads from the production bundle
         run: python scripts/report-exports-browser.py
       - name: Verify published reports after deployment
