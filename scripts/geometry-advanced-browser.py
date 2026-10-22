@@ -90,6 +90,25 @@ def exercise(page,width,errors):
  page.locator('[data-geometry-field="sensitivityStep"]').fill("0.10")
  assert "Local coordinate sensitivity" in quality.inner_text()
  assert "one x or y coordinate at a time" in quality.inner_text().lower()
+ # Pass 2: construction annotation controls do not disturb polygon mathematics.
+ area_before=saved(page)["geometryStudio"]["draft"]["vertices"]
+ page.locator('[data-geometry-field="dimensionStyle"]').select_option("dimension")
+ page.locator('[data-geometry-field="showLengths"]').check()
+ assert page.locator('[data-geometry-preview] .geometry-dimension-lines').count()>=4
+ page.locator('[data-geometry-field="lengthFormat"]').select_option("sf")
+ page.locator('[data-geometry-field="lengthDigits"]').fill("3")
+ details=page.locator(".geometry-constructions");details.evaluate("(el)=>el.open=true")
+ details.locator('[data-action="geometry-aux-add"]').click()
+ assert len(saved(page)["geometryStudio"]["draft"]["auxPoints"])==1
+ details=page.locator(".geometry-constructions");details.evaluate("(el)=>el.open=true")
+ details.locator('[data-geometry-aux="0"][data-geometry-aux-key="y"]').fill("1.5")
+ assert page.locator('[data-geometry-preview] .geometry-aux-point').count()==1
+ details.locator('[data-action="geometry-guide-add"][data-geometry-guide-kind="height"]').click()
+ assert len(saved(page)["geometryStudio"]["draft"]["guides"])==1
+ assert page.locator('[data-geometry-preview] .geometry-height-square').count()==1
+ assert saved(page)["geometryStudio"]["draft"]["vertices"]==area_before
+ # Save the editable figure with annotation data (no invented polygon area).
+ assert page.locator('[data-action="geometry-save"]').is_enabled()
  assert page.locator('[data-geometry-preview] svg[data-geometry-canvas]').count()==1
  page.screenshot(path=str(OUT/f"geometry-advanced-l-{width}.png"),full_page=True,animations="disabled")
  # Import creates a new independent draft and keeps original tracer records.
