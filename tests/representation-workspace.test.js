@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
 import {representationFocusActive,renderRepresentationSwitcher,REPRESENTATION_TOOLS} from "../src/diagrams/representation-hub.js";
-import {representationTool,activeRepresentationTool,activateRepresentationTool,closeRepresentationTools,representationFigureKey,representationReturnNode} from "../src/diagrams/representation-registry.js";
+import {representationTool,activeRepresentationTool,activateRepresentationTool,switchRepresentationEditor,closeRepresentationTools,representationFigureKey,representationReturnNode} from "../src/diagrams/representation-registry.js";
 import {FIRST_FIGURE_TYPES} from "../src/completing/first-figure-gallery.js";
 import {createProjectState,normalizeProjectState} from "../src/core/project-state.js";
 import {representationEmpty} from "../src/diagrams/workspace-ui.js";
@@ -27,14 +27,38 @@ test("focus is limited to C31 when a studio is open",()=>{
  assert.equal(representationFocusActive({...s,route:"planning"}),false);
  assert.equal(representationFocusActive({...s,graphStudio:{open:false}}),false);
 });
-test("shared toolbar offers IA return, all tools, and three stages",()=>{
- const html=renderRepresentationSwitcher({route:"completing",completion:{current:"C31"},voronoiStudio:{open:true}},icon,e);
- assert.match(html,/data-node="C30"/);
- assert.match(html,/data-action="representation-return"/);
+test("studio toolbar has one Back control and all seven distinct diagram tools",()=>{
+ const state=createProjectState();
+ state.route="completing";state.completion.current="C31";
+ state.completion.editorReturnNode="C40";
+ assert(activateRepresentationTool(state,"voronoi"));
+ const html=renderRepresentationSwitcher(state,icon,e);
+ assert.match(html,/data-action="representation-return" data-node="C40"/);
  assert.match(html,/data-action="representation-back"/);
- for(const stage of ["create","refine","use"])assert.ok(html.includes('data-representation-step="'+stage+'"'));
- assert.match(html,/Voronoi Studio/);
+ assert(!html.includes('data-action="representation-jump"'),"Obsolete Create/Refine/Use strip should be removed");
+ assert.equal((html.match(/data-action="representation-switch"/g)||[]).length,7);
+ for(const tool of REPRESENTATION_TOOLS){
+  assert.equal((html.match(new RegExp('data-representation-tool="'+tool.id+'"','g'))||[]).length,1);
+  assert.match(html,new RegExp('data-icon="'+tool.icon+'"'));
+  assert(html.includes(tool.navLabel),"The toolbar shows a short text label for "+tool.id);
+ }
+ assert.match(html,/data-representation-tool="voronoi" aria-current="page"/);
+ assert.equal((html.match(/aria-current="page"/g)||[]).length,1);
+ assert.match(html,/aria-label="Diagram creators and return navigation"/);
 });
+test("toolbar Back uses the original library origin without duplicate return controls",()=>{
+ const state=createProjectState();
+ state.route="completing";state.completion.current="C31";
+ state.ui.resourceCreatorReturnRoute="planning";
+ assert(activateRepresentationTool(state,"geometry"));
+ const html=renderRepresentationSwitcher(state,icon,e);
+ assert.match(html,/data-action="resource-creator-return"/);
+ assert.match(html,/aria-label="Back to Planning"/);
+ assert.equal((html.match(/data-action="resource-creator-return"/g)||[]).length,1);
+ assert.doesNotMatch(html,/data-action="representation-return"/);
+ assert.match(html,/data-representation-tool="geometry" aria-current="page"/);
+});
+
 test("studios provide consistent empty states and a completion anchor",()=>{
  for(const name of ["graph-view","stat-studio-view","table-studio-view","image-tracer-view","voronoi-view"]){
   const source=read("src/diagrams/"+name+".js");
@@ -86,6 +110,44 @@ test("registry switching keeps exactly one editor open and preserves saved figur
  assert.equal(activeRepresentationTool(state),null);
  const restored=normalizeProjectState(state);
  assert.equal(restored.graphStudio.draft.title,"My existing graph");
+});
+test("switching keeps unsaved drafts and never overwrites figures owned by another stage",()=>{
+ const state=createProjectState();
+ state.entries=[
+  {id:"first",phase:"first",status:"planned",geometryFigureId:"geometry-earlier"},
+  {id:"later",phase:"substantial",status:"planned"}
+ ];
+ state.completion.activeEntryIndex=1;
+ const original=JSON.parse(JSON.stringify(state.geometryStudio.draft));
+ original.title="Original saved geometry";
+ state.geometryStudio.figures.push({id:"geometry-earlier",entryId:"first",savedAt:"2026-10-22",draft:original});
+ state.geometryStudio.activeId="geometry-earlier";
+ state.geometryStudio.draft.title="Unsaved geometry refinements";
+ assert(activateRepresentationTool(state,"probability"));
+ const result=switchRepresentationEditor(state,"geometry");
+ assert.deepEqual(result,{ok:true,detached:true});
+ assert.equal(activeRepresentationTool(state).id,"geometry");
+ assert.equal(state.geometryStudio.activeId,"");
+ assert.equal(state.geometryStudio.draft.title,"Unsaved geometry refinements");
+ assert.equal(state.geometryStudio.figures[0].draft.title,"Original saved geometry");
+ assert.equal(state.entries[0].geometryFigureId,"geometry-earlier");
+ assert.equal(switchRepresentationEditor(state,"probability").ok,true);
+ assert.deepEqual(switchRepresentationEditor(state,"geometry"),{ok:true,detached:false});
+ assert.equal(state.geometryStudio.draft.title,"Unsaved geometry refinements");
+ const restored=normalizeProjectState(state);
+ assert.equal(restored.geometryStudio.figures[0].draft.title,"Original saved geometry");
+ assert.equal(restored.geometryStudio.draft.title,"Unsaved geometry refinements");
+});
+test("same-stage linked figures keep their identity when switching tools",()=>{
+ const state=createProjectState();
+ state.entries=[{id:"this-stage",phase:"first",status:"planned",geometryFigureId:"geometry-current"}];
+ state.completion.activeEntryIndex=0;
+ state.geometryStudio.figures.push({id:"geometry-current",entryId:"this-stage",draft:state.geometryStudio.draft});
+ state.geometryStudio.activeId="geometry-current";
+ assert(activateRepresentationTool(state,"graph"));
+ assert.deepEqual(switchRepresentationEditor(state,"geometry"),{ok:true,detached:false});
+ assert.equal(state.geometryStudio.activeId,"geometry-current");
+ assert.deepEqual(switchRepresentationEditor(state,"geometry"),{ok:false,detached:false});
 });
 test("return target follows the actual writing stage, with a first-stage fallback",()=>{
  const state=createProjectState();

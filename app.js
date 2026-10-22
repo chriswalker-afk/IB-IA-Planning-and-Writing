@@ -81,7 +81,7 @@ import {chooseProbabilityPreset,enableFlexibleProbability,addProbabilityOutcome,
 import {exportProbability} from "./src/diagrams/probability-export.js";
 import {displayVoronoiBounds,coordinateFromCanvas,canvasPosition,voronoiFrame,recordVoronoiHistory,applyVoronoiFrame,undoVoronoi,redoVoronoi,freezeVoronoiWindow,fitVoronoiSites,setVoronoiTool,selectVoronoiSite,moveVoronoiSite,proposeVoronoiComparison,showVoronoiComparison,finishVoronoiComparison,selectNearestBisector} from "./src/diagrams/voronoi-interactions.js";
 import {renderRepresentationHub,renderRepresentationSwitcher,representationFocusActive} from "./src/diagrams/representation-hub.js";
-import {REPRESENTATION_TOOLS,representationTool,activeRepresentationTool,closeRepresentationTools,activateRepresentationTool,representationFigureKey,representationReturnNode} from "./src/diagrams/representation-registry.js";
+import {REPRESENTATION_TOOLS,representationTool,activeRepresentationTool,closeRepresentationTools,activateRepresentationTool,switchRepresentationEditor,representationFigureKey,representationReturnNode} from "./src/diagrams/representation-registry.js";
 import {renderPresentationCoach,renderFigureHandover} from "./src/diagrams/presentation-coach-view.js";
 import {figureCaption} from "./src/diagrams/presentation-coach-core.js";
 import {renderWriterFieldGuide,renderWriterGuideWelcome,shouldShowWriterGuideWelcome,renderWriterGuidePopin} from "./src/completing/writer-field-guide.js";
@@ -1796,6 +1796,24 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       case "representation-back":{
         closeRepresentationTools(state);
         save();render();break;
+      }
+      case "representation-switch":{
+        const next=el.dataset.representationTool;
+        const previous=activeRepresentationTool(state);
+        if(state.route!=="completing"||state.completion.current!=="C31"||
+           !previous||!representationTool(next)||previous.id===next)break;
+        // Swap the visible editor, never re-load a linked figure here: doing so
+        // would overwrite unsaved drafts when a student revisits another tab.
+        // Keep the original Writing/Planning return target across every switch.
+        const switched=switchRepresentationEditor(state,next);
+        if(!switched.ok)break;
+        save();render();
+        if(switched.detached)toast("Editing a separate copy",
+          "The saved figure used in another mathematical stage is unchanged.");
+        main.querySelector("[data-representation-switcher]")?.scrollIntoView({block:"start",behavior:"auto"});
+        main.querySelector('[data-action="representation-switch"][data-representation-tool="'+next+'"]')
+          ?.focus({preventScroll:true});
+        break;
       }
       case "representation-return":{
         // A tool is not an extra writing stage. Return to the same first
