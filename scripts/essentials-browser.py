@@ -7,7 +7,7 @@ normalize_js="import {normalizeProjectState} from './src/core/project-state.js';
 BASE=json.loads(subprocess.check_output(['node','--input-type=module','-e',normalize_js,str(OUT/'examples-fixture.json')],text=True));KEY='ia-pathfinder-prototype-v1' 
 URL=os.environ.get('IA_QA_URL','http://127.0.0.1:8765/');results=[]
 def fixture(node='C10',course='AA SL',kind='modelling'):
- s=copy.deepcopy(BASE);s['completion']['current']=node;s['planning']['fields']['course']=s['project']['course']=course;s['planning']['fields']['kind']=s['project']['kind']=kind
+ s=copy.deepcopy(BASE);s['ui']['writingIntroSeen']=True;s['ui']['writerGuideIntroSeen']=True;s['ui']['planningIntroSeen']=True;s['completion']['current']=node;s['planning']['fields']['course']=s['project']['course']=course;s['planning']['fields']['kind']=s['project']['kind']=kind
  return s
 def stored(p):return p.evaluate('(k)=>localStorage.getItem(k)',KEY)
 def saved(p):return json.loads(stored(p))
