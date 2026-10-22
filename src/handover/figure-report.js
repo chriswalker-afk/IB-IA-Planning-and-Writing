@@ -127,6 +127,11 @@ const specs=[
        (parent||"start")+": "+(branches||[]).map(x=>x.label+" = "+x.probability).join(" / ")).join("\n")),
      row("Terminal paths",a.paths.map(p=>p.labels.join(" → ")+(p.key.length<d.stages?" (ends early)":"")).join("\n")),
      row("Diagram spacing",d.treeMode==="flexible"?d.layoutStyle:"Legacy binary layout"),
+     row("IA printing and event legend",d.treeMode==="flexible"?
+       (d.printStyle==="mono"?"Monochrome, distinct line patterns":"Colour")+"; "+(d.showPathLegend===false?"legend hidden":"legend shown"):""),
+     row("Student-adjusted branch labels",d.treeMode==="flexible"?
+       Object.entries(d.labelOffsets||{}).map(([path,pos])=>
+         path+": "+(pos.x||0)+" px horizontally, "+(pos.y||0)+" px vertically").join("\n"):""),
      row("Validity",a.ready?"Each active split sums to 1; total path probability = "+a.total:a.issues.join("; ")),
      row("Path products",d.showProducts&&a.ready?a.paths.map(x=>x.labels.join(" → ")+
        ": "+x.steps.join(" × ")+" = "+x.probability).join("\n"):""),
