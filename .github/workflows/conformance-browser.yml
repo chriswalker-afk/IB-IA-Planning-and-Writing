@@ -70,8 +70,17 @@ jobs:
             suites: essentials criterion-level
           - group: Mathematical decisions
             suites: math-routes extended-routes living-journey
-          - group: Complete illustrative samples
+          - group: Complete illustrative samples — A
             suites: illustrative-samples
+            samples: standing-reach,helicopter-groups,revision-formats
+            timeout: 30
+          - group: Complete illustrative samples — B
+            suites: illustrative-samples
+            samples: grinder-reliability,stopping-distance,drink-cooling
+            timeout: 30
+          - group: Complete illustrative samples — C
+            suites: illustrative-samples
+            samples: tide-cycles,ball-clearance,tray-optimisation
             timeout: 30
     steps:
       - uses: actions/checkout@v4
@@ -92,7 +101,7 @@ jobs:
           status=0
           for suite in ${{ matrix.suites }}; do
             echo "::group::$suite browser checks"
-            python "scripts/$suite-browser.py" || status=1
+            IA_QA_SAMPLES="${{ matrix.samples || '' }}" python "scripts/$suite-browser.py" || status=1
             echo "::endgroup::"
           done
           exit "$status"
