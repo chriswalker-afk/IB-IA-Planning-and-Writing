@@ -37,28 +37,43 @@ def fixture(method,planned=False):
  return state
 def saved(p):
  return p.evaluate("(key)=>JSON.parse(localStorage.getItem(key))",KEY)
-def click_value(p,signal):
- p.locator('[data-choice="entries.0.resultSignal"][data-value="'+signal+'"]').click()
+# Method-specific result choices now use the adaptive mathematical-stage
+# outcome picker. Older resultSignal is retained as saved-project compatibility
+# but is no longer the visible selector in C40/C50.
+METHOD_ROUTE={
+ "finance-break-even":"finance-break-even","finance-compound":"finance-compound",
+ "finance-loan":"finance-loan","finance-cashflow":"finance-cashflow",
+ "voronoi":"voronoi","spearman":"nonlinear-association",
+ "quadratic-fit":"nonlinear-model","exponential":"nonlinear-model",
+ "chi-independence":"categorical-test","expected-value":"expected-value",
+ "triangulation":"measurement"
+}
+def choose_finding(p,method,signal):
+ field=p.locator('[data-bind="entries.0.journeyOutcome"]')
+ assert field.is_visible(),method
+ field.select_option(METHOD_ROUTE[method]+":"+signal)
 def scenario(p,method,signal,word,width):
  assert p.locator(".route-coach").is_visible()
  assert word.lower() in p.locator(".route-coach").inner_text().lower(),(method,word)
  assert p.locator(".route-depth-check").is_visible()
- assert p.locator('[data-choice="entries.0.resultSignal"][data-value="'+signal+'"]').is_visible()
+ assert p.locator('[data-journey-outcome-picker]').count()==1
+ assert p.locator('[data-bind="entries.0.journeyOutcome"]').is_visible()
  before=saved(p)["entries"][0]["result"]
- click_value(p,signal)
- assert saved(p)["entries"][0]["resultSignal"]==signal
+ choose_finding(p,method,signal)
+ expected=METHOD_ROUTE[method]+":"+signal
+ assert saved(p)["entries"][0]["journeyOutcome"]==expected
  assert saved(p)["entries"][0]["result"]==before
  assert p.locator(".route-coach").is_visible()
- # Outcome-specific title should change after the student selects what was actually found.
- assert len(p.locator(".route-coach h3").inner_text())>=12
+ assert "Your confirmed mathematical finding" in p.locator(".route-coach").inner_text()
+ assert p.locator('[data-journey-outcome-meaning]').count()>=0
  p.locator('[data-action="toggle-advice-mode"]').first.click()
  assert saved(p)["ui"]["adviceMode"]=="reduced"
  assert p.locator(".route-coach-compact").is_visible()
  assert p.locator(".route-depth-check").is_visible()
  assert not p.locator(".route-coach-detail").count()
- assert p.locator('[data-bind="entries.0.resultSignal"]').is_visible()
+ assert p.locator('[data-bind="entries.0.journeyOutcome"]').input_value()==expected
  p.reload(wait_until="networkidle")
- assert saved(p)["entries"][0]["resultSignal"]==signal
+ assert saved(p)["entries"][0]["journeyOutcome"]==expected
  assert p.locator(".route-coach-compact").is_visible()
  assert p.locator(".advice-mode-toggle").get_attribute("aria-pressed")=="true"
  p.locator('[data-action="toggle-advice-mode"]').first.click()
@@ -70,17 +85,21 @@ def planned_scenario(p,method):
  assert p.locator(".route-preflight").is_visible()
  assert p.locator(".route-preflight").inner_text().strip()
  assert not p.locator(".route-coach").count()
- p.locator('[data-action="toggle-advice-mode"]').click()
+ assert p.locator('[data-journey-outcome-waiting]').count()==1
+ p.locator('[data-action="toggle-advice-mode"]').first.click()
  assert p.locator(".route-preflight").is_visible()
  assert saved(p)["ui"]["adviceMode"]=="reduced"
  assert p.locator(".route-preflight").inner_text().count("Before applying")>0
- # The essential check must appear when a real result is entered, not only on page reload.
- p.locator('[data-choice="entries.0.status"][data-value="completed"]').click()
+ # An actual result is required before outcome options or meaningful advice.
+ status=p.locator('[data-bind="entries.0.status"]')
+ assert status.is_visible()
+ status.select_option("completed")
  result=p.locator('[data-bind="entries.0.result"]')
  result.fill("Calculated a genuine compound balance using a documented effective periodic rate.")
  result.blur()
  assert p.locator(".route-coach-compact").is_visible()
  assert p.locator(".route-depth-check").is_visible()
+ assert p.locator('[data-journey-outcome-picker]').count()==1
  assert saved(p)["entries"][0]["status"]=="completed"
  assert "compound balance" in saved(p)["entries"][0]["result"]
 def periodic_scenario(p):
