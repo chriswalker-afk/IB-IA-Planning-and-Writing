@@ -19,10 +19,10 @@ export function probabilityQualityHtml(studio,e){
   parts.push('<h3>Check before saving</h3><ul>'+a.issues.slice(0,9).map(x=>'<li>'+e(x)+'</li>').join("")+'</ul>'+
     (a.issues.length>9?'<p>There are '+(a.issues.length-9)+' other checks.</p>':""));
  }else{
-  parts.push(d.treeMode==="flexible"?'<h3>All active splits sum to 1</h3><p>The flexible tree has '+a.paths.length+
-   ' terminal paths across up to '+d.stages+' stages. Their total probability is '+fmt(a.total):
+  parts.push((d.treeMode==="flexible"?'<h3>All active splits sum to 1</h3><p>The flexible tree has '+a.paths.length+
+   ' terminal paths across up to '+d.stages+' stages. Their total probability is ':
    '<h3>All branch pairs sum to 1</h3><p>The '+d.stages+'-stage tree has '+a.paths.length+
-   ' terminal paths. Their total probability is '+fmt(a.total)+
+   ' terminal paths. Their total probability is ')+fmt(a.total)+
    '. This verifies arithmetic consistency, not that your underlying probabilities are justified.</p>');
  }
  if(d.showProducts){
