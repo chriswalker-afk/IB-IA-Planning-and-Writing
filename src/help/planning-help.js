@@ -252,7 +252,7 @@ const noData=new Set(["availability","primary-procedure","primary-precision","po
 const safe=v=>typeof v==="string"?v.trim():"";
 export function planningHelpFor(state,spot){
  if(state?.route!=="planning")return null;
- const node=state.planning?.current||"",spec=Object.hasOwn(SPOTS,node+":"+spot)?SPOTS[node+":"+spot]:null;
+ const node=state.planning?.current||"",spec=Object.hasOwn(PLANNING_RECOVERY_SPOTS,node+":"+spot)?SPOTS[node+":"+spot]:null;
  if(!spec)return null;
  const p=state.planning.fields||{},mode=state.ideaExplorer?.map?.mode||"interests",theory=p.kind==="theoretical"||p.dataSource==="theoretical";
  let ids=spec.ids;
