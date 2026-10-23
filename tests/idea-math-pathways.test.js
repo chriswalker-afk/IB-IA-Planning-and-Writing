@@ -8,7 +8,8 @@ import {
  IDEA_MATH_LENSES,IDEA_MATH_LENS_BY_ROUTE,IDEA_DATA_MATH_ENTRYPOINTS,
  IDEA_MATH_COURSE_NOTE,ideaMathLens,ideaMathRoute,ideaMathCardById,
  ideaMathDirectionsForTopic,ideaMathEvidenceEntry,ideaMathDirectionsForEvidence,
- ideaMathCoursePreview
+ ideaMathCoursePreview,ideaMathStarterId,ideaMathEvidenceStarterId,
+ ideaMathStarterById,IDEA_MATH_STARTER_IDS,ideaMathExampleCards
 } from '../src/ideas/math-pathways.js';
 
 test('Pass 1 offers five distinct mathematical investigations for each broad Idea Lab context',()=>{
@@ -137,4 +138,36 @@ test('The proposed content has not altered the currently live map or student sav
  // The current controls/IDs remain authoritative until the Pass 2 migration.
  assert(IDEA_TOPICS.find(t=>t.id==='sport').subtopics.includes('Football'));
  assert(!IDEA_TOPICS.find(t=>t.id==='sport').subtopics.includes('Optimisation'));
+});
+
+test('Pass 2 starters are precisely enumerated and retain mathematical purpose',()=>{
+ const expected=60+IDEA_DATA_MATH_ENTRYPOINTS.reduce((n,e)=>n+e.routeIds.length,0);
+ assert.equal(IDEA_MATH_STARTER_IDS.length,expected);
+ assert.equal(new Set(IDEA_MATH_STARTER_IDS).size,expected);
+ for(const card of IDEA_MATH_DIRECTION_CARDS){
+  const seed=ideaMathStarterById(ideaMathStarterId(card.id));
+  assert.equal(seed.id,'math-'+card.id);
+  assert.equal(seed.routeId,card.routeId);
+  assert.equal(seed.question,card.question);
+  assert.equal(seed.first,card.first);
+  assert.equal(seed.narrow,card.personalise);
+  assert.equal(seed.material,card.evidence);
+  assert.equal(seed.caution,card.caution);
+ }
+ for(const entry of IDEA_DATA_MATH_ENTRYPOINTS){
+  for(const routeId of entry.routeIds){
+   const id=ideaMathEvidenceStarterId(entry.root,entry.branch,routeId);
+   const seed=ideaMathStarterById(id);
+   assert.equal(seed.id,id);
+   assert.equal(seed.routeId,routeId);
+   assert(seed.material.includes(entry.firstCheck));
+   assert(seed.caution.includes(entry.caution));
+   assert(seed.first.length>30);
+   const examples=ideaMathExampleCards(entry.root,entry.branch,routeId);
+   assert(examples.length<=3);
+   assert(examples.every(x=>x.routeId===routeId));
+  }
+ }
+ for(const bad of ['__proto__','math-unknown','evidence-record-survey-optimisation','math-'+'.'.repeat(121)])
+  assert.equal(ideaMathStarterById(bad),null,bad);
 });
