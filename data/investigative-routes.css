@@ -162,3 +162,45 @@
 .journey-route-creators-context>summary{cursor:pointer;font-weight:700;min-height:35px;padding:8px 0}
 .journey-route-creators-context p{font-size:12px;line-height:1.6;margin:5px 0}
 @media(max-width:700px){.journey-route-creators-grid{grid-template-columns:1fr}.journey-route-creator{min-height:74px}}
+
+
+/* Pass 3: a low-key bridge from a student-accepted Idea Lab possibility.
+   Never display it as a selected technique, a verified source or a result. */
+.idea-lab-handoff{min-width:0;margin:13px 0 17px;padding:13px 15px;
+ border:1px solid #d6e2ed;border-left:3px solid #9bb4ce;
+ border-radius:12px;background:var(--surface,#fff);color:#425970}
+.idea-lab-handoff-kicker{display:flex;align-items:center;gap:7px;
+ font-size:10px;font-weight:850;line-height:1.45;letter-spacing:.065em;color:#5d7294}
+.idea-lab-handoff-kicker>.icon{width:15px;height:15px;flex:none}
+.idea-lab-handoff h4{font-size:13px;line-height:1.4;color:#324d6b;margin:6px 0 7px;overflow-wrap:anywhere}
+.idea-lab-handoff p{font-size:11.5px;line-height:1.62;margin:8px 0;color:#556778;overflow-wrap:anywhere}
+.idea-lab-handoff p:last-child{margin-bottom:0}
+.idea-lab-handoff-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px}
+.idea-lab-handoff-link{font:inherit;font-size:11px;font-weight:750;
+ display:inline-flex;align-items:center;gap:7px;white-space:normal;text-align:left;
+ padding:7px 10px;min-height:38px;cursor:pointer;color:#355f8c;
+ border:1px solid #cbdbea;border-radius:9px;background:#fff}
+.idea-lab-handoff-link:hover{border-color:#7397bc;background:#f8fbff}
+.idea-lab-handoff-link:focus-visible,.idea-lab-handoff-details summary:focus-visible{
+ outline:3px solid #7397bc;outline-offset:3px}
+.idea-lab-handoff-link .icon{width:14px;height:14px;flex:none}
+.idea-lab-handoff-status,.idea-lab-handoff-disclaimer{font-size:10px!important;line-height:1.5!important;color:#66798d!important}
+.idea-lab-handoff-caution{padding:8px 10px;border-left:3px solid #c8a36a;
+ border-radius:5px;color:#785d3b!important;background:#fffaf2}
+.idea-lab-handoff-caution>.icon{width:15px;height:15px;vertical-align:-2px;margin-right:4px}
+.idea-lab-handoff-details{padding:3px 0;margin:7px 0;font-size:11px}
+.idea-lab-handoff-details summary{cursor:pointer;font-weight:750;color:#4e6784;min-height:31px}
+.idea-lab-handoff-details p{font-size:11px;margin:5px 0}
+.idea-lab-handoff-outdated,.idea-lab-handoff-superseded{border-left-color:#b7bcc5}
+.idea-lab-handoff-evidence{border-left-color:#91bbaa}
+.idea-lab-handoff-first{border-left-color:#b6a6d3}
+.idea-lab-handoff-review{border-left-color:#b0b7c1}
+.idea-lab-handoff-writing{border-left-color:#b6a6d3;margin-bottom:14px}
+@media(max-width:570px){
+ .idea-lab-handoff{padding:12px 11px;border-radius:10px}
+ .idea-lab-handoff-actions,.idea-lab-handoff-link{width:100%}
+ .idea-lab-handoff-link{justify-content:center}
+}
+@media(prefers-reduced-motion:reduce){
+ .idea-lab-handoff,.idea-lab-handoff-link{transition:none!important;animation:none!important}
+}
