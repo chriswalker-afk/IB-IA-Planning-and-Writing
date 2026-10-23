@@ -112,6 +112,7 @@ test('Teacher cautions and course examples remain explicitly provisional',()=>{
    assert(Object.isFrozen(preview.techniqueExamples));
    assert(!/will receive|guaranteed|automatically suitable/i.test(preview.note));
    if(course==='AA HL'){
+    assert(preview.teacherReview,'AA HL requires an explicit teacher check');
     assert.equal(preview.techniqueExamples.length,0,'Never silently infer AA HL from an SL list');
     assert(preview.note.includes('AA HL mathematical scope'));
    }

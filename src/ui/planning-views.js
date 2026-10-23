@@ -3,6 +3,7 @@ import {renderCitationReminder} from '../resources/citation-prompts.js';
 import {planningScreenTitle} from '../planning/screen-labels.js';
 import {earlyMathRecommendations} from '../planning/math-recommendations.js';
 import {renderInvestigativeRoutes} from './investigative-routes-view.js';
+import {renderIdeaLabPlanningCue} from '../planning/idea-lab-bridge.js';
 
 import {accuracyPlanner} from './data-decisions-view.js';
 import {primaryDataWhat,primaryDataSampling} from './primary-data-steps.js';
@@ -41,6 +42,7 @@ export function createPlanningViews(ctx){
  const edit=(id,label)=>'<button type="button" class="btn btn-quiet btn-sm" data-action="plan-edit" data-node="'+e(id)+'">'+e(label)+icon("chevron-right")+'</button>';
  const stepBody=(title,intro,html,help="",label="Continue")=>({title,intro,html,help,label});
  const small=(html)=>'<div class="task-section">'+html+'</div>';
+ const ideaCue=(state,placement)=>renderIdeaLabPlanningCue(state,placement,{e,icon});
  const bullet=(title,desc)=>'<div class="context-card">'+icon("check-circle")+'<div><strong>'+e(title)+'</strong><p>'+e(desc)+'</p></div></div>';
  function rating(key,title,desc){
   const opts=[1,2,3,4,5].map(n=>({value:String(n),title:String(n)}));
@@ -242,6 +244,7 @@ export function createPlanningViews(ctx){
        ["legacy","First assessment through 2028 · current A–E criteria"],
        ["revised2029","First assessment from May 2029 · updated A–D criteria"]])+
       '<p class="field-hint">Earlier Pathfinder projects stay on the existing A–E system unless you explicitly choose the revised 2029 criteria. Confirm your assessment cohort with your teacher. The revised option provides a published overview, not invented detailed descriptors or an A–E mark conversion.</p></div>'+
+     ideaCue(state,'maths')+
      (eligible?renderInvestigativeRoutes(state,{e,icon,catalogue:()=>mathChoices(state)})+
       '<p class="math-scope-honesty">'+icon('info')+' This catalogue is a planning reference, not formal syllabus verification. Your teacher should confirm mathematical depth and suitability.</p>':
       hasCourse?renderInvestigativeRoutes(state,{e,icon,catalogue:()=>mathChoices(state)})+
@@ -271,6 +274,7 @@ export function createPlanningViews(ctx){
       F("theoreticalCase","Which starting quantities, assumptions and constraints will define the model?","State dimensions, units and restrictions; distinguish assumed values from observations",{type:"textarea",rows:3})+
       callout("Define the starting material","Assumed dimensions or tolerances can define a useful model. Identify them as assumptions and check what the conclusions depend on."):
       callout("Permissions matter","If you may collect personal or sensitive information, check school requirements before any affected activity."))+
+    ideaCue(state,'evidence')+
     renderCitationReminder(state,"planning-choice",icon,e),
     "<h4>Planning your starting material</h4><p>Record what you intend to use here. In IA Studio you will explain what you actually obtained or defined and how it supports the mathematics.</p>",
     modellingAssumptions?"Continue to prediction":"Continue");
@@ -285,6 +289,7 @@ export function createPlanningViews(ctx){
     "Continue to evidence timing");
    case "N03P":return stepBody("What will I collect, and how?",
     "Describe your method once, add the quantities you need, and decide their recording accuracy when possible.",
+    ideaCue(state,'evidence')+
     primaryDataWhat(state,{F,select,e,icon}),
     "<h4>Keep your method simple</h4><p>One clear collection plan is enough at this stage. Add a few measurements, counts or categories; give units only when relevant. Use each row's accuracy control to save the resolution or exact-count rule without entering its name again.</p>",
     "Next: sampling");
@@ -295,6 +300,7 @@ export function createPlanningViews(ctx){
     "Finish primary-data plan");
    case "N03S":return stepBody("Plan your secondary data.",
     "Check what published values represent and their original precision. A table's decimal places do not prove measurement accuracy.",
+    ideaCue(state,'evidence')+
     F("secondaryUrl","Source link (optional while searching)","https://…",{type:"url"})+
     F("secondaryPublisher","Who published the source?","Organisation or publisher")+
     renderCitationReminder(state,"planning-secondary",icon,e)+
@@ -314,6 +320,7 @@ export function createPlanningViews(ctx){
    case "N03D":return stepBody("Can you get started?",
     modellingAssumptions?"Check that you can work with the model's starting quantities and assumptions, and whether any essential resources need arranging.":
       "Check what evidence you can access now and whether anything needs arranging before you collect it. You do not need a numerical readiness score.",
+    ideaCue(state,'evidence')+
     select("dataAvailability","What evidence can you work with now?",[
       ["in-hand",modellingAssumptions?"I have defined usable starting quantities and assumptions":"I already have usable evidence"],
       ["some","I have enough for a small first test"],
@@ -369,11 +376,13 @@ export function createPlanningViews(ctx){
     callout("Course alignment","The current catalog reflects the source sheet's AI SL and AA SL options. It does not automatically certify that a technique is on your syllabus."),
     "<h4>Mathematical depth matters</h4><p>Use an appropriate technique to investigate a genuine question. More advanced mathematics is not automatically a better IA.</p>");
    case "N04T":return stepBody("Record mathematics for your teacher to review.","The AI SL/AA SL menu should not be used as if it were an official menu for your course.",
+    ideaCue(state,'maths')+
     F("otherCourseMaths","Mathematics I'm considering","A tentative technique, question or Not sure yet",{type:"textarea",rows:3})+
     F("teacherQuestion","What would you like to confirm with your teacher?","Suitability, mathematical depth or practical first steps",{type:"textarea",rows:2})+
     callout("Provisional plan","You can still develop your aim, mathematics and safe first step. Teacher validation remains outstanding.",true),
     "<h4>Proceed provisionally</h4><p>Do not interpret an exported report as approval of out-of-course mathematics.</p>");
    case "N04S":return stepBody("Which mathematics might help answer your aim?","Choose possible techniques, not a checklist of things you must do.",
+    ideaCue(state,'maths')+
     renderInvestigativeRoutes(state,{e,icon,catalogue:()=>mathChoices(state)}),
     "<h4>What's a good selection?</h4><p>A few purposeful techniques beat many disconnected ones. Routine syllabus maths can be used without tutorial-style explanations. Research beyond the syllabus should show your understanding when actually used.</p>");
    case "N01P":{
@@ -411,6 +420,7 @@ export function createPlanningViews(ctx){
     return stepBody("What do you predict might happen?",
       "A prediction can help you focus, but it is optional and is not a result. You can also choose to explore first.",
       summary("Your investigation aim",f.aim)+
+      ideaCue(state,'first')+
       (f.beneficiary?summary("My motivation — why this matters",f.beneficiary+(f.intendedUse?" — "+f.intendedUse:"")):"")+
       refinePanel+
       '<div class="field-group"><label class="field-label">Some possible predictions (optional)</label>'+
@@ -457,6 +467,7 @@ export function createPlanningViews(ctx){
     "Review my provisional plan");
    case "N06":return stepBody("Your investigation plan at a glance.","Review what you've actually decided, what is tentative, and what still needs discussing.",
     '<div class="plan-review">'+
+    ideaCue(state,'review')+
     summary("Investigation aim",f.aim)+edit("N01","Edit aim")+
     summary("My motivation — why the answer matters",f.beneficiary+(f.intendedUse?" — "+f.intendedUse:""))+edit("N01V","Edit motivation")+
     summary("Course and mathematical direction",(f.course||"Not confirmed")+" · "+(selectedMaths(state).map(x=>x.label).join("; ")||f.otherMaths||f.otherCourseMaths||"Still to decide"))+edit("N02M","Edit maths")+
@@ -485,6 +496,7 @@ export function createPlanningViews(ctx){
     '<span class="planning-finish-path-done">'+icon("check")+' Planning</span>'+
     icon("arrow-right")+
     '<span class="planning-finish-path-next">IA Studio · Introduction</span></div></div></div>'+
+    ideaCue(state,'first')+
     summary("Provisional IA title",f.provisionalTitle)+summary("Your aim",f.aim)+
     (f.firstAction?summary("Earlier first-step idea (preserved)",f.firstAction):"")+
     '<p class="primary-hint">The first genuine mathematical representation belongs in IA Studio.</p>'+

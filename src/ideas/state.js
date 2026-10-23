@@ -1,5 +1,5 @@
 import {IDEA_TOPICS,IDEA_SEEDS,IDEA_CHECKS,IDEA_DIFFICULTIES} from './catalog.js';
-import {ideaMapRoots,ideaMapRoot,ideaMapTopics,ideaMapBranches,ideaMapMathLenses} from './mindmap.js';
+import {ideaMapRoots,ideaMapRoot,ideaMapTopics,ideaMapBranches,ideaMapMathLenses,ideaMapMathStarters} from './mindmap.js';
 import {IDEA_MATH_STARTER_IDS} from './math-pathways.js';
 const text=(v,n=1600)=>typeof v==='string'?v.slice(0,n):'';
 const plain=v=>v&&typeof v==='object'&&!Array.isArray(v);
@@ -9,11 +9,23 @@ export const MAX_IDEAS=3;
 export function blankChecks(){return Object.fromEntries(IDEA_CHECKS.map(c=>[c.id,'']));}
 const rating=v=>Number.isInteger(Number(v))&&Number(v)>=1&&Number(v)<=5?Number(v):0;
 const difficultyIds=new Set(IDEA_DIFFICULTIES.map(x=>x.id));
+/** Preserve the actual clicked branch, never infer one from an old activity. */
+const validatedMapOrigin=(raw,seedId)=>{
+ if(!plain(raw)||!['interests','data'].includes(raw.mode))return null;
+ const map={mode:raw.mode,root:text(raw.root,32),
+  topic:raw.mode==='interests'?text(raw.topic,32):'',
+  dataBranch:raw.mode==='data'?text(raw.dataBranch,32):'',
+  mathRoute:text(raw.mathRoute,40)};
+ return ideaMapMathStarters(map).includes(seedId)?map:null;
+};
 export function cleanDraft(raw={}){
  const checks=blankChecks();
+ const seedId=ids.has(raw.seedId)?raw.seedId:'own';
+ const fromMap=raw.fromMap===true;
+ const mapOrigin=fromMap?validatedMapOrigin(raw.mapOrigin,seedId):null;
  for(const key of Object.keys(checks))checks[key]=['yes','maybe','no'].includes(raw.checks?.[key])?raw.checks[key]:'';
- return {savedId:/^idea-[1-9]\d{0,5}$/.test(raw.savedId||'')?raw.savedId:'',seedId:ids.has(raw.seedId)?raw.seedId:'own',question:text(raw.question),detail:text(raw.detail),
-  focus:text(raw.focus,160),fromMap:raw.fromMap===true,trialNote:text(raw.trialNote),trialStatus:['workable','adjust','possible'].includes(raw.trialStatus)?raw.trialStatus:'',checks,
+ return {savedId:/^idea-[1-9]\d{0,5}$/.test(raw.savedId||'')?raw.savedId:'',seedId,question:text(raw.question),detail:text(raw.detail),
+  focus:text(raw.focus,160),fromMap,...(mapOrigin?{mapOrigin}:{}),trialNote:text(raw.trialNote),trialStatus:['workable','adjust','possible'].includes(raw.trialStatus)?raw.trialStatus:'',checks,
   clarity:rating(raw.clarity),quickStart:rating(raw.quickStart),
   difficulties:[...new Set(Array.isArray(raw.difficulties)?raw.difficulties.filter(id=>difficultyIds.has(id)):[])].slice(0,IDEA_DIFFICULTIES.length)};
 }
