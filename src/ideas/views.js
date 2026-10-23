@@ -20,7 +20,7 @@ const mapRoot=(r,selected)=>mapAction('map-root',
  'idea-map-root idea-map-root-'+e(r.id)+(selected?' selected':''));
 function ideaMapBranchesView(state){
  const m=ideaState(state).map,root=ideaMapRoot(m.mode,m.root);
- if(!root)return '';
+ if(!root)return {nodes:'',guidance:'<div class="idea-map-guidance"><p class="idea-map-first-prompt" aria-live="polite">Choose one of the three bubbles to grow your mind map.</p></div>'};
  const topic=ideaMapTopics(root).find(x=>x.id===m.topic);
  const access=ideaMapBranches(root).find(x=>x.id===m.dataBranch);
  const topTier=m.mode==='interests'?
@@ -56,34 +56,35 @@ function ideaMapBranchesView(state){
     'idea-map-direction-node')).join('')+'</div>':'';
  const warning=access?.warning?'<p class="idea-map-survey-warning" role="note">'+icon('info')+' '+e(access.warning)+'</p>':'';
  const selected=m.mode==='data'?access?.label:m.subtopic||topic?.label||root.label;
- return tierTwo+subtopicTier+directionTier+warning+
+ return {nodes:tierTwo+subtopicTier+directionTier,guidance:
+  '<div class="idea-map-guidance">'+warning+
   '<p class="idea-map-branch-hint" role="status" aria-live="polite">'+
   (ideas.length?'You have reached some possible directions from '+e(selected)+
     '. Add your own detail to turn one into your question.':
-   'The new nodes are connected to '+e(selected)+'. Choose another node to grow the map.')+'</p>';
+   'These bubbles grew from '+e(selected)+'. Choose another to grow the map further.')+'</p></div>'};
 }
 export function ideaExplorerView(state){
  const s=ideaState(state);
  if(s.pending)return ideaConfirmationView(state);
  if(s.active)return ideaDetailView(state);
  const m=s.map||{mode:'interests',root:'',topic:'',subtopic:'',dataBranch:''},roots=ideaMapRoots(m.mode);
+ const branches=ideaMapBranchesView(state);
  return '<section class="idea-explorer idea-mindmap" aria-label="Explore an IA idea">'+
   '<div class="idea-map-head"><span class="idea-map-overline">'+icon('route')+' IDEA LAB</span>'+
   '<h3 id="idea-map-heading" tabindex="-1">Grow an idea from a starting point</h3>'+
-  '<p>Tap a bubble to make connected branches appear. Follow the branches that interest you, then make the idea your own.</p></div>'+
+  '<p>Explore the bubbles in any direction. Tap one to grow new ideas, follow what catches your interest, then shape a question of your own.</p></div>'+
   '<div class="idea-map-mode" role="group" aria-label="Choose how to start exploring ideas">'+
   mapAction('map-mode',icon('layers')+' Start with my world','data-mode="interests" aria-pressed="'+(m.mode==='interests')+'"','idea-map-mode-button'+(m.mode==='interests'?' selected':''))+
   mapAction('map-mode',icon('calculator')+' Start with data I can get','data-mode="data" aria-pressed="'+(m.mode==='data')+'"','idea-map-mode-button'+(m.mode==='data'?' selected':''))+'</div>'+
   '<div class="idea-map-quickstart">'+icon('clock')+' <p><strong>Make a quick start.</strong> '+e(IDEA_DATA_PROMISE)+'</p></div>'+
-  '<div class="idea-map-network" data-idea-map-network>'+
+  '<div class="idea-map-network" data-idea-map-network data-idea-map-mode="'+e(m.mode)+'">'+
   '<svg class="idea-map-connectors" data-idea-map-connectors aria-hidden="true" focusable="false"></svg>'+
   '<div class="idea-map-tier idea-map-hub-tier"><div class="idea-map-centre" data-idea-node="hub">'+
   icon('compass')+'<strong>Start with you</strong><small>Find your maths</small></div></div>'+
   '<div class="idea-map-tier idea-map-roots" aria-label="Three possible starting points">'+
   roots.map(root=>mapRoot(root,m.root===root.id)).join('')+'</div>'+
-  ideaMapBranchesView(state)+
-  (!m.root?'<p class="idea-map-first-prompt" aria-live="polite">Choose one of the three bubbles to grow your mind map.</p>':'')+
-  '</div>'+
+  branches.nodes+
+  '</div>'+branches.guidance+
   '<p class="idea-map-draft-note">These are paths to explore, not finished IA titles. You decide the question, starting material and mathematics.</p>'+
   '<div class="idea-map-lower"><div class="idea-map-own"><span>'+icon('pencil')+'</span><div><strong>Got something different in mind?</strong>'+
   '<p>Start with a real observation even if none of the branches fits.</p></div>'+
