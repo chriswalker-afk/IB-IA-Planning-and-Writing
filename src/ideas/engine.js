@@ -27,11 +27,21 @@ export function beginIdea(state,id,{fromMap=false,fresh=false}={}){
  const lens=ideaMathLens(map.mathRoute);
  const branchFocus=lens?[map.mode==='interests'?interest:access?.label,lens.label].filter(Boolean).join(' → '):
   map.subtopic||s.subtopic||'';
+ const mapOrigin=fromMap&&ideaMapMathStarters(map).includes(id)?{
+  mode:map.mode,root:map.root,
+  topic:map.mode==='interests'?map.topic:'',
+  dataBranch:map.mode==='data'?map.dataBranch:'',
+  mathRoute:map.mathRoute
+ }:null;
  if(fresh||!s.drafts[id])s.drafts[id]=cleanDraft({
   seedId:id,question:fromMap?'':seed.question,
-  focus:fromMap?branchFocus:s.focus||branchFocus,fromMap
+  focus:fromMap?branchFocus:s.focus||branchFocus,fromMap,
+  ...(mapOrigin?{mapOrigin}:{})
  });
- else if(fromMap)s.drafts[id].fromMap=true;
+ else if(fromMap){
+  s.drafts[id].fromMap=true;
+  if(mapOrigin)s.drafts[id].mapOrigin=mapOrigin;
+ }
  s.active=id;s.pending=null;return true;
 }
 export function ideaInput(state,key,value,{savedId=''}={}){
