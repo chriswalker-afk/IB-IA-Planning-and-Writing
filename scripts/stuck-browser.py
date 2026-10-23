@@ -29,16 +29,21 @@ def open_help(p):
   action(p,'open-stuck')
  assert p.get_by_role('dialog').is_visible()
 def topic(p,t):
- el=p.locator('.drawer [data-action="stuck-topic"][data-topic="'+t+'"]')
- if not el.is_visible():
-  group=p.locator('.drawer .stuck-legacy-browse')
-  if group.count() and not group.get_attribute('open'):
-   group.locator('summary').first.click()
-  if not el.is_visible():
-   browse=p.locator('.drawer .stuck-browse')
-   if browse.count() and not browse.get_attribute('open'):browse.locator('summary').first.click()
-   for category in browse.locator('[data-stuck-group-section]').all():
-    if category.locator('[data-topic="'+t+'"]').count():category.locator('summary').first.click();break
+ # Original 24 topics remain in the legacy browse section, distinct from
+ # contextual suggestions that can intentionally use the same topic ID.
+ group=p.locator('.drawer .stuck-legacy-browse')
+ el=group.locator('[data-action="stuck-topic"][data-topic="'+t+'"]').first
+ if el.count():
+  if group.get_attribute('open') is None:group.locator('summary').first.click()
+  el.click()
+  return
+ browse=p.locator('.drawer .stuck-browse')
+ if browse.get_attribute('open') is None:browse.locator('summary').first.click()
+ el=browse.locator('[data-action="stuck-topic"][data-topic="'+t+'"]').first
+ category=el.locator('xpath=ancestor::*[@data-stuck-group-section][1]')
+ if category.count() and category.get_attribute('open') is None:
+  category.locator('summary').first.click()
+ assert el.is_visible(),t
  el.click()
 def node(p,n):assert p.locator('[data-source-node="'+n+'"]').count()==1,n
 def overflow(p):assert p.evaluate('document.documentElement.scrollWidth<=innerWidth+1')
@@ -160,7 +165,7 @@ with sync_playwright() as pw:
   p.locator('.drawer .stuck-browse > summary').click()
   p.locator('[data-stuck-search]').fill('Works Cited')
   assert 'matching problem' in p.locator('[data-stuck-search-count]').inner_text()
-  chosen=p.locator('.drawer [data-topic="fix:checking:mla-match"]')
+  chosen=p.locator('.drawer .stuck-browse [data-topic="fix:checking:mla-match"]').first
   assert chosen.is_visible(), 'Specific MLA two-way troubleshooting should be searchable'
   chosen.click()
   assert 'How to check whether it helped' in p.locator('.stuck-recovery').inner_text()
