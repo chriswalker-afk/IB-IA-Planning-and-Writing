@@ -41,7 +41,7 @@ test('unresolved permission prioritises safe preparation without changing consen
 });
 test('the normal menu recommends at most five problems with deeper alternatives closed',()=>{
  const s=fixture();assert(suggestedTopics(s).length<=5);const html=view(s);
- assert(html.includes('Other problems'));assert(!html.includes('<details class="stuck-browse" open'));
+ assert(html.includes('Find another problem'));assert(!html.includes('<details class="stuck-browse" open'));assert(html.includes('data-stuck-search'));
 });
 test('one support card has one primary action, with example and saving optional',()=>{
  const s=fixture();s.completion.support.selected='interpret';const html=view(s);
