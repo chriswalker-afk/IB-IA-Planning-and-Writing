@@ -105,7 +105,10 @@ export function renderIdeaLabPlanningCue(state,placement,{e,icon}){
    '<h4>'+e(ctx.sourceLabel)+' → '+e(ctx.lensLabel)+'</h4>'+
    '<p>This mathematical direction came from your chosen possible aim. It is <strong>not</strong> a selected technique or confirmed investigative route.</p>'+
    (!reduced?'<p><strong>One first calculation or representation to consider:</strong> '+e(ctx.first)+'</p>'+
-    '<p><strong>Evidence to check:</strong> '+e(ctx.evidence)+'</p>'+
+    '<details class="idea-lab-handoff-details"><summary>Evidence and limitations to check (optional)</summary>'+
+    '<p><strong>Evidence:</strong> '+e(ctx.evidence)+'</p>'+
+    '<p><strong>Possible limitation:</strong> '+e(ctx.caution)+'</p></details>'+
+
     (ctx.kindReview?'<p class="idea-lab-handoff-caution">The investigation type you selected may not match this route. Reconsider rather than forcing the mathematics.</p>':'')+
     (ctx.evidenceReview?'<p class="idea-lab-handoff-caution">Your current evidence-source choice differs from the earlier Idea Lab starting material. Check what you can actually obtain.</p>':'')+
     (ctx.coursePreview?.teacherReview?'<p class="idea-lab-handoff-caution">Teacher check recommended: the course, scope or mathematical depth is not confirmed.</p>':''):'')+
@@ -132,7 +135,7 @@ export function renderIdeaLabPlanningCue(state,placement,{e,icon}){
    (!reduced?'<p class="idea-lab-handoff-disclaimer">This is a possible source, not evidence you have collected or verified.</p>':''));
  }
  if(placement==='first'){
-  if(reduced)return '';
+  if(reduced||ctx.hasPlannedRoute)return '';
   return shell('first',
    '<span class="idea-lab-handoff-kicker">'+icon('target')+' EARLIER MATHEMATICAL FIRST MOVE</span>'+
    '<p><strong>'+e(ctx.lensLabel)+':</strong> '+e(ctx.first)+'</p>'+
