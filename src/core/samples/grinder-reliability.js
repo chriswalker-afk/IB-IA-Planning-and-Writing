@@ -149,11 +149,11 @@ const completionFields={
  changedSincePlanning:"The ordered blocks made me restrict the normal calculation to a conditional comparison. The centering calculation then showed that correcting the average alone could not achieve my 95% objective, so I investigated the spread and the sensitivity to a remaining offset.",
  permissionStatus:"not-needed",permissionNotes:"I used only declared constructed cases and public mathematical references. I collected no participant or business data.",
  dataStatusSummary:"There is no calibration record or independent physical run. I cannot determine true weighing accuracy, physical stability or how a timer adjustment changes the mass distribution from these cases.",
- dataAimLink:String.raw`My aim concerns individual doses, so I need both their distances from \(18.00\text{ g}\) and the number inside \([17.70,18.30]\text{ g}\). I keep trial order because a pooled average could conceal a change during a run. My first representation therefore uses trial index horizontally and dose mass vertically.`,
+ dataAimLink:"My criterion concerns individual masses, so I need a direct tolerance count. Before pooling the cases, however, I will preserve their order: an acceptable overall summary could conceal a high early portion and a lower later one.",
  chosenMethod:"An ordered plot and fixed blocks, distribution summaries, an observed tolerance count, a conditional normal comparison, then translation and spread sensitivity.",
- methodReason:String.raw`I began with an ordered plot because repeatability requires more than a narrow-looking histogram. NIST describes the run-sequence plot as a way to inspect changes in location or spread [1]. Keeping \(i\) beside \(m_i\) lets me see whether pooling all the cases might hide such a change before I calculate a single mean and standard deviation.`,
+ methodReason:"A run-sequence plot places each mass against its index and can reveal changes in location or spread [1]. I therefore begin with that plot, accompanied by six consecutive blocks of ten. The equal blocks give comparable summaries of the entire sequence and keep the boundaries independent of the outcomes.",
  firstPurpose:String.raw`Do the 60 masses show an apparent change with trial order that would make a single pooled description misleading?`,
- firstMethodEvaluation:"I considered beginning with a histogram, but it would erase order. I used consecutive blocks of 10 as a transparent numerical companion to the ordered plot, fixing those equal blocks before comparing their means. I did not fit a trend line: an apparent fall over part of one short sequence would not establish a persistent drift law. The ordered plot identifies questions about stability; it does not establish independence or prove their cause.",
+ firstMethodEvaluation:"I fixed those blocks before comparing their means. A histogram would discard the ordering, while a fitted trend line could turn a short apparent fall into an unjustified prediction of continued drift. The order check will determine how cautiously I interpret a pooled distribution; it will not identify a physical cause or prove independence.",
  firstMathsBridgePlacement:"before",firstType:"scatter",
  firstDefinitions:String.raw`\(i\) is the trial index, \(m_i\) its supplied mass in g, and \(n=60\). The fixed timer setting is \(6.0\text{ s}\). My target is \(18.00\text{ g}\), my inclusive tolerance is \(\pm0.30\text{ g}\), and my desired fraction within tolerance is \(0.95\). These are design choices, not published coffee standards.`,
  firstPresentation:"Figure 1 preserves all 60 cases in order. Its lower vertical bound is the lower tolerance limit, 17.70 g, and its horizontal reference is the upper limit, 18.30 g; the truncated mass scale is explicit.",
@@ -170,20 +170,20 @@ const completionFields={
  accuracyResolution:"The supplied values use a 0.01 g display increment. Ideal nearest-increment rounding would contribute at most 0.005 g; calibration accuracy and other measurement errors are not supplied.",
  accuracyPolicy:"I retain the original two-decimal inputs, use guard digits in transformations and compare endpoints before rounding displayed results.",
  accuracyReason:"Resolution controls the reporting grid, not the unknown true-mass error. Later shifts put cases exactly on tolerance boundaries, so display rounding could matter to those hypothetical counts.",
- predictionComparison:"I expected clustered masses to make a fixed timer useful, but the actual within-tolerance fraction was only 75%. Even exact centering left too much variation for my 95% objective, under either the finite-case argument or the conditional normal comparison.",
+ predictionComparison:"The original 75% fraction misses the declared goal. Correcting only the mean is insufficient by both the exhaustive finite-window proof and the conditional normal maximum; the combined scenario needs reduced spread and a closely controlled centre.",
  benefitFinding:"I would keep weighing individual doses in the proposed setup until a new physical check supports the desired tolerance. My calculations identify separate centering and spread targets rather than an unsupported timer adjustment.",
  technologyTool:"I used the native ordered graph, histogram and tables, together with a calculation file for summaries, sorted windows and numerical normal CDF evaluations.",
  technologyInput:"All 60 masses in original order; limits 17.70 and 18.30 g; normal parameters mu=18.172333… and sigma=0.196368… g. For sensitivity I changed the assumed mean and SD explicitly and kept the limits fixed.",
  technologyOutcome:String.raw`My conditional fitted-normal area is \(0.73411993\). At \(\mu=18\), the maximum SD giving area \(0.95\) is approximately \(0.153064\text{ g}\). With \(\sigma=0.15\text{ g}\), the permitted magnitude of a mean offset is approximately \(0.030568\text{ g}\).`,
  technologyInterpretation:"I checked normal areas by direct numerical integration, checked the centered result using equal tails, and bracketed the final offset threshold between 0.0305 and 0.0306 g. The output describes individual model masses, not confidence in an estimated mean.",
  courseWhy:"Descriptive statistics and normal probabilities answer the reliability question. Expanding squared deviations explains bias versus spread, and translation plus a sorted-window argument tests a practical change without needing a new distributional assumption.",
- courseConcern:"My probability conclusions remain conditional because the evidence is constructed and does not establish a stable physical process. The central methods are descriptive statistics, algebra and normal distribution calculations at AI SL scope; I have made no teacher-approval claim.",
- mathsLearning:"I learned that removing a mean error and reducing variation solve different parts of the problem. I also found that the shift giving the largest finite tolerance count need not place the finite mean exactly at the target.",
+ courseConcern:"The descriptive statistics and normal probabilities provide the familiar core. The squared-error decomposition, exhaustive window proof, affine transformation and numerical threshold reasoning are additional mathematical explanations included in the narrative. I have made no teacher-approval claim, and the probability conclusions remain conditional on the stated model.",
+ mathsLearning:"The target-error expansion shows why a mean correction cannot remove spread. The sorted-window proof distinguishes maximising a finite tolerance count from centering. The joint scenario and offset bracket then show why a favourable spread requirement depends on how closely the mean is controlled.",
  notationIssue:"I distinguish the sample variance with denominator 59 from the descriptive mean squared deviation with denominator 60. In N(mu,sigma squared), the second parameter is variance. Percentages describe individual model masses, never a confidence interval for the mean.",
- presentationIssue:"I placed the ordered plot before the pooled histogram, kept the complete 60-case table in the working data, and used compact tables for block means, probabilities, window widths and sensitivity. I checked the complete exported layout, including the distinction between calculated probabilities and observed case counts.",
+ presentationIssue:"All seven native figures and five editable datasets are retained. I inspected the desktop and phone reader views, every PDF and Word page, and all seven figures at both widths. Shortening three passages removed their isolated page-break fragments.",
  referencesIssue:"The data source explicitly says constructed, and its generation recipe is retained. I cite NIST's run-sequence and normal-distribution pages where those methods enter the argument; neither is the source of my masses or chosen tolerance.",
  draftComplete:"ready",
- finalProofread:"I read every page of the PDF and Word exports and checked the reader at desktop and phone widths. The probability graph, table headings, normal equations and sorted-window argument remain complete; each section heading stays with its opening prose. I have not recorded a peer, teacher or school-format check.",
+ finalProofread:"I checked the revised mathematics, the reader views and every PDF and Word page, including all pages changed by the final wording corrections. I have not recorded a peer, teacher or school-format review.",
 };
 
 export const GRINDER_RELIABILITY_SPEC={
@@ -197,7 +197,7 @@ export const GRINDER_RELIABILITY_SPEC={
   planIdentifier:"Timed grinder: centre, spread and tolerance",ideaStatus:"yes",
   provisionalTitle:"How reliable is a timed coffee-grinder dose?",
   idea:"I want to investigate whether one fixed timer cycle could deliver an 18 g dose consistently enough for a coffee setup I am designing.",
-  aim:"To determine how the 60 constructed masses at one fixed 6.0 s setting meet my inclusive 17.70–18.30 g tolerance, and investigate what centering and variation would need to change to reach a desired 95% within that band.",
+  aim:"To assess the 60 constructed masses against my inclusive 17.70–18.30 g tolerance, determine whether any common shift could put at least 57 of them inside it, and derive the centre and spread requirements for 95% coverage under a stated normal model.",
   motivation:"Using a timer would be convenient, but an average near 18 g would not reassure me if many individual doses needed correction. I want a mathematical definition of consistent enough before judging the cases.",
   beneficiaryType:"me",beneficiary:"I would use the result to decide whether my proposed timed-dose setup still needs individual weighing and what a later physical trial should investigate.",
   intendedUse:"I will distinguish the finite fraction meeting my criterion from conditional model probabilities and use the difference to decide what is still unverified.",
@@ -205,8 +205,8 @@ export const GRINDER_RELIABILITY_SPEC={
   prediction:"I expect the masses to cluster, but I suspect that a satisfactory average alone will not be enough for 95% to fall within ±0.30 g.",
   predictionWhy:"Some doses can be too high and others too low even when their signed errors cancel. A timer controls duration, whereas my criterion concerns each delivered mass.",
   predictionImplication:"If centering alone is insufficient, I will need to investigate spread rather than recommend a timer change from the average error alone.",
-  courseSuitability:"yes",mathsOutside:"syllabus",
-  mathsRevisedWhy:"I will begin with order and distribution, then choose any probability model conditionally. A location or spread sensitivity check will be useful only if it follows an actual limitation of the first result.",
+  courseSuitability:"yes",mathsOutside:"outside",
+  mathsRevisedWhy:"Descriptive statistics and normal probabilities provide the core. I explain the extra algebraic decomposition, finite-window optimisation, affine mean/SD proof and numerical threshold reasoning at first use in the continuous investigation, instead of treating them as unexplained technology output.",
   permissionNeed:"no",permissionDetails:"I will analyse the supplied constructed cases and public mathematical references, with no personal data or proposed human participants.",
   practicalBlocker:"no",dataAvailability:"in-hand",
   firstAction:"I will preserve trial order, plot all 60 masses and compare six consecutive blocks of 10 before pooling the data.",
@@ -227,183 +227,119 @@ export const GRINDER_RELIABILITY_SPEC={
   milestoneAdjustment:"My relative working plan is definitions and sources, order and distribution, tolerance analysis, sensitivity, writing and review. I have not assigned school dates or claimed a submitted draft."
  },
  completion:completionFields,
- introduction:String.raw`I wanted to know whether a timer could replace weighing every dose in a coffee setup I was designing. The useful output for my decision is the mass delivered, not simply how long the grinder runs. I chose \(18.00\text{ g}\) as my target and, before analysing the cases, defined an acceptable displayed mass as
-\[
-17.70\le m\le18.30\text{ g}.
-\]
-Equality counts as acceptable. I also chose a desired fraction of \(95\%\) within this band. These are my design criteria, not claims about a universal coffee standard or the effect of mass on flavour.
-
-My aim is to determine how consistently a fixed \(6.0\text{ s}\) setting meets that criterion in the supplied 60-case sequence, then investigate whether changing its centre or spread could achieve the desired fraction. I want to separate two questions: are doses generally too high or too low, and how far do individual doses vary around their own average? Those questions could lead to different changes in a proposed setup.
-
-This is a design investigation using declared constructed data. I have not tested a physical grinder. I will distinguish conclusions about the finite cases from probabilities that depend on an assumed distribution, and keep any changed-setting scenario separate from an experiment I have not performed.`,
- dataNotes:String.raw`I used all 60 masses in Grinder Dose Cases v1, retaining their trial indices. The complete table is in the editable working data. The cases were generated once from a normal authoring sequence and rounded to two decimal places; the exact recipe is recorded with the source. That known construction is not evidence that a real grinder has a normal output. The scenario holds the timer at \(6.0\text{ s}\), with no timer calibration or relationship between duration and mass supplied.
-
-I treated the \(0.01\text{ g}\) increment as a display convention. Ideal rounding to the nearest increment would differ from an unrounded reading by at most \(0.005\text{ g}\), but the increment tells me nothing about calibration bias or other weighing error. My numerical analysis uses the displayed masses as its fixed inputs. I therefore cannot certify a true-mass tolerance from this source.
-
-I numbered cases \(i=1,\ldots,60\), used \(m_i\) for mass in grams, and retained every case. I fixed six consecutive blocks of ten for an order comparison. I did not remove the beginning of the sequence as a supposed warm-up period or remove large values after seeing their effect.`,
+ introduction:"A timer would be convenient in the coffee setup I am designing, but a suitable average is not enough if individual doses often need correction. I therefore chose a mass-based decision rule before analysing the cases. My target is \\(18.00\\text{ g}\\), and an acceptable displayed mass satisfies\n\\[\n17.70\\le m\\le18.30\\text{ g}.\n\\]\nEquality counts as acceptable. The \\(0.30\\text{ g}\\) allowance is about \\(1.7\\%\\) of the target; I use it as a specified design tolerance, without claiming that it defines coffee quality. I also require at least \\(95\\%\\) within the band, representing a convenience goal of at most one exception in twenty. For 60 cases this means at least \\(57\\) acceptable masses. Fixing both criteria now prevents me from making the result favourable by widening the band later.\n\nMy material is a supplied constructed sequence at one fixed \\(6.0\\text{ s}\\) setting. I will assess its current fraction, determine whether a common shift could bring at least 57 cases into tolerance, and then derive centre and spread requirements under a stated normal model. This separates a change in average mass from a change in the variation around that average.\n\nI have not tested a physical grinder. My conclusions will concern the fixed cases and explicit mathematical scenarios. With only one timer setting and no physical mass-versus-time relationship, a calculated mass correction cannot by itself specify a new duration.",
+ dataNotes:"I used all 60 masses in Grinder Dose Cases v1, retaining their original trial indices. The complete table remains in the editable working data. The first sequence from the declared normal generation recipe was rounded to two decimal places and retained in full; the exact recipe appears in the source record. That known construction is not evidence that a real grinder has a normal output. The fixed \\(6.0\\text{ s}\\) timer and the tolerance are scenario conditions, not measured operating performance.\n\nI use \\(i=1,\\ldots,60\\) for order and \\(m_i\\) for the corresponding mass in grams. The index is not elapsed time. The \\(0.01\\text{ g}\\) display increment means ideal rounding can change an unrounded value by at most \\(0.005\\text{ g}\\); it supplies no bound on calibration error. I analyse the displayed masses as fixed inputs and retain every value, including the highest, \\(18.67\\text{ g}\\). Neither removing an apparent warm-up period nor discarding an inconvenient extreme is justified by this source.",
  stages:[
   {
-   key:"order",title:"Does pooling the run conceal a change?",bridge:"",
-   purpose:String.raw`Figure 1 shows each \(m_i\) against its original index. I joined neighbouring points only to make their order visible; the segments do not describe what happened between doses. The lower axis bound is \(17.70\text{ g}\), and the horizontal reference marks \(18.30\text{ g}\). Table 1 then summarises the same fixed blocks of ten, so I can compare location without selecting favourable portions.`,
-   technique:"Run-sequence plot and consecutive-block summaries",methodId:"follow-journey",kind:"scatter",knowledge:"syllabus",
-   observation:"unclear",
-   observationText:"The first four ten-dose means fall from 18.305 to 18.040 g, then recover to 18.156 and 18.173 g. I see an apparent order effect without a persistent linear trend. The plot makes a pooled summary worth questioning, but cannot establish physical drift or independence.",
-   result:String.raw`For each block I calculated its mean from all ten masses. For example, the first block totals \(183.05\text{ g}\), giving
-\[
-\bar m_{1:10}=\frac{183.05}{10}=18.305\text{ g}.
-\]
-The next three block means are \(18.224\), \(18.136\) and \(18.040\text{ g}\), followed by \(18.156\) and \(18.173\text{ g}\). The first-to-fourth difference is therefore \(0.265\text{ g}\), almost the size of my one-sided \(0.30\text{ g}\) tolerance. Only five of the first ten cases are acceptable, compared with nine in each of the final three blocks.`,
-   interpretation:String.raw`The early part is higher than much of the middle of the sequence, although the pattern does not continue as a steady fall. A single pooled mean will hide this ordering. I cannot read the plot as six interchangeable demonstrations of the same physical performance, and I would not use a descending regression line to predict a later dose.
-
-This changes the role of my later probability calculation. I can use one normal distribution as a conditional description of the pooled cases, but I cannot claim that the plot has established a stable physical process.`,
-   limitations:"A short sequence can show apparent changes by chance; the disclosed synthetic generation does not make this pattern evidence of warming up or grinder drift. Conversely, a plot without an obvious trend would not establish independence. I would need repeated physical runs and information about operating conditions to investigate those questions.",
-   localTakeaway:"The first four block means fall by 0.265 g overall, so a pooled normal comparison must remain conditional and cannot certify stable physical performance.",
-   nextQuestion:"How much of the mismatch with 18 g comes from the average offset, and how much from variation around that average?",
-   nextWhy:"The order check limits interpretation, but it does not quantify the size of the overall error. I next need a distribution and separate measures of centre and spread.",
-   mathsInsight:"A histogram can preserve every value while discarding information relevant to reliability: the order in which the values occur.",
-   methodChangeReason:"I kept the order warning in view when moving to pooled summaries, rather than treating pooling as proof of constant behaviour.",
-   outcomeId:"uncertain"
+    "key": "order",
+    "title": "Does pooling the run conceal a change?",
+    "bridge": "",
+    "purpose": "Figure 1 retains each \\(m_i\\) beside its original index. Joining neighbouring points shows order, not what happened between doses. The lower axis bound is my lower limit, \\(17.70\\text{ g}\\), and the horizontal reference marks \\(18.30\\text{ g}\\). Table 1 uses the same six fixed blocks to quantify what the ordered plot suggests.",
+    "technique": "Run-sequence plot and consecutive-block summaries",
+    "methodId": "follow-journey",
+    "kind": "scatter",
+    "knowledge": "syllabus",
+    "observation": "unclear",
+    "observationText": "The first four ten-dose means fall from 18.305 to 18.040 g, then recover to 18.156 and 18.173 g. I see an apparent order effect without a persistent linear trend. The plot makes a pooled summary worth questioning, but cannot establish physical drift or independence.",
+    "result": "For each block I averaged all ten masses. The first block totals \\(183.05\\text{ g}\\), so\n\\[\n\\bar m_{1:10}=\\frac{183.05}{10}=18.305\\text{ g}.\n\\]\nThe next three means are \\(18.224\\), \\(18.136\\) and \\(18.040\\text{ g}\\), followed by \\(18.156\\) and \\(18.173\\text{ g}\\). The first-to-fourth difference is \\(0.265\\text{ g}\\), almost my one-sided \\(0.30\\text{ g}\\) allowance. Five of the first ten cases meet the band, compared with nine in each of the final three blocks.\n\nTable 1 also reports each block's sample standard deviation: square the departures from that block's mean, divide their sum by \\(10-1=9\\), then take the square root. This restores grams and compares within-block spread with differences between block means.",
+    "interpretation": "The early portion is higher than much of the middle, but the later recovery prevents me from describing a persistent fall. A pooled mean will conceal that ordering. I can still describe all 60 supplied cases, but any single normal distribution used later must remain a conditional comparison, not evidence that a physical process has a constant mean and spread.",
+    "limitations": "A short sequence can show apparent changes by chance; the disclosed synthetic generation does not make this pattern evidence of warming up or grinder drift. Conversely, a plot without an obvious trend would not establish independence. Repeated physical runs and operating information would be needed to investigate those questions.",
+    "localTakeaway": "The first four block means fall by 0.265 g overall, so a pooled normal comparison must remain conditional and cannot certify stable physical performance.",
+    "nextQuestion": "The order check limits what I can infer, but leaves the total size and source of the mass error unresolved.",
+    "nextWhy": "I will separate the average offset from the variation around that average before deciding which change is worth testing.",
+    "mathsInsight": "A histogram can preserve every value while discarding information relevant to reliability: the order in which the values occur.",
+    "methodChangeReason": "I kept the order warning in view when moving to pooled summaries, rather than treating pooling as proof of constant behaviour.",
+    "outcomeId": "uncertain"
   },
   {
-   key:"centre-spread",title:"Is the main problem an offset or a wide spread?",
-   bridge:"I kept all 60 cases together for a descriptive calculation, while retaining the warning that their order raises.",
-   purpose:String.raw`I chose \(0.10\text{ g}\) histogram classes so their widths are easy to compare with my \(0.60\text{ g}\) acceptance band. Figure 2 uses frequency density as its vertical scale: a class with frequency \(f\) has height \(f/0.10\). The labels give the actual counts. I then calculated summaries from the original values, not from class midpoints.`,
-   technique:"Histogram, mean, median, standard deviation and squared-error decomposition",methodId:"follow-journey",kind:"model",knowledge:"syllabus",
-   result:String.raw`The total mass is \(1090.34\text{ g}\), so
-\[
-\bar m=\frac{1090.34}{60}\approx18.172333\text{ g}.
-\]
-The median is \(18.165\text{ g}\). Using the medians of the lower and upper halves gives \(Q_1=18.030\), \(Q_3=18.295\), and \(\mathrm{IQR}=0.265\text{ g}\). The range is \(18.67-17.76=0.91\text{ g}\). The usual \(1.5\mathrm{IQR}\) fences are \(17.6325\) and \(18.6925\text{ g}\); no case lies outside them. I retained the high value \(18.67\text{ g}\), which is still a genuine part of this supplied list.
-
-With the conventional sample standard deviation,
-\[
-s=\sqrt{\frac{\sum_{i=1}^{60}(m_i-\bar m)^2}{59}}
-  =\sqrt{\frac{2.275073333\ldots}{59}}
-  \approx0.196368\text{ g}.
-\]
-The mean offset is \(b=\bar m-18\approx0.172333\text{ g}\). To connect the two quantities, I wrote \(m_i-18=(m_i-\bar m)+b\), squared and summed. The cross term vanishes because \(\sum(m_i-\bar m)=0\), leaving
-\[
-\frac1{60}\sum(m_i-18)^2
-=\frac1{60}\sum(m_i-\bar m)^2+b^2.
-\]
-Numerically this is \(0.067616667\approx0.037917889+0.029698778\), in \(\text{g}^2\). The root mean squared distance from the target is therefore approximately \(0.260032\text{ g}\).`,
-   interpretation:String.raw`The histogram has one broad concentration near \(18.1\)–\(18.3\text{ g}\), with a longer upper extreme. The close mean and median do not make the average correct for my target: both exceed \(18.00\text{ g}\). Around \(43.9\%\) of the mean squared target error is the squared offset, with the rest due to variation around the mean. This decomposition makes centering worth examining, but also shows why it cannot remove all of the error.
-
-I used denominator \(60\) in the decomposition because I was averaging the squared errors of these 60 cases. I used denominator \(59\) in \(s^2\), the conventional sample variance I will insert into the conditional normal comparison. Substituting \(s^2\) for the first term of that identity would be incorrect.`,
-   limitations:"The choice of bin width affects appearance, and an absence of Tukey outliers is not a normality test. The target RMSE is an overall distance measure, not the fraction of doses that meet the tolerance. None of these summaries resolves the ordering issue or establishes balance accuracy.",
-   localTakeaway:"The mean is 0.172333 g high and the sample SD is 0.196368 g; removing the offset would leave substantial variation.",
-   nextQuestion:"What fraction actually lies within tolerance, and what would a pooled normal comparison say about individual masses?",
-   nextWhy:"My criterion is a fraction within a fixed band, so I now need to count that event directly rather than substitute a mean, SD or RMSE for it.",
-   mathsInsight:"The squared-error identity separates an avoidable location offset from the spread that a common shift cannot change.",
-   methodChangeReason:"A descriptive error magnitude did not answer the stated tolerance question, so I moved to direct counts and an explicitly conditional probability calculation.",
-   outcomeId:"wide"
+    "key": "centre-spread",
+    "title": "Is the main problem an offset or a wide spread?",
+    "bridge": "The block means differ, yet all 60 cases still form the fixed list I must assess. I now pool them for that descriptive purpose, retaining the order warning.",
+    "purpose": "Figure 2 uses \\(0.10\\text{ g}\\) classes, one sixth of the acceptance band's width, to show the distribution on a useful scale for this question. A class with frequency \\(f\\) has frequency-density height \\(f/0.10\\), so its area represents the count; the labels also show those counts. I calculate the following summaries from the original values, not from class midpoints.",
+    "technique": "Histogram, mean, median, standard deviation and squared-error decomposition",
+    "methodId": "follow-journey",
+    "kind": "model",
+    "knowledge": "mixed",
+    "result": "The masses total \\(1090.34\\text{ g}\\), giving\n\\[\n\\bar m=\\frac{1090.34}{60}\\approx18.172333\\text{ g}.\n\\]\nThe median is \\(18.165\\text{ g}\\). Medians of the lower and upper halves give \\(Q_1=18.030\\) and \\(Q_3=18.295\\text{ g}\\), so the middle half spans an interquartile range of \\(0.265\\text{ g}\\). The full range is \\(18.67-17.76=0.91\\text{ g}\\). The usual \\(1.5\\mathrm{IQR}\\) fences, \\(Q_1-1.5\\mathrm{IQR}\\) and \\(Q_3+1.5\\mathrm{IQR}\\), are \\(17.6325\\) and \\(18.6925\\text{ g}\\). No case lies outside them; this is a descriptive check, not a reason to discard any supplied value.\n\nFor spread I use the conventional sample standard deviation,\n\\[\ns=\\sqrt{\\frac{\\sum_{i=1}^{60}(m_i-\\bar m)^2}{59}}\n=\\sqrt{\\frac{2.275073333\\ldots}{59}}\n\\approx0.196368\\text{ g}.\n\\]\nSquaring prevents positive and negative departures from cancelling, and the square root returns to grams. The sample convention uses \\(n-1=59\\): once the mean is calculated, the centred departures sum to zero, so the last departure is determined by the others. I will use this sample scale in the normal comparison [2].\n\nTo distinguish offset from spread, let \\(b=\\bar m-18\\approx0.172333\\text{ g}\\) and \\(a_i=m_i-\\bar m\\). Each target error is \\(m_i-18=a_i+b\\). Expanding and averaging gives\n\\[\n\\begin{aligned}\n\\frac1{60}\\sum(m_i-18)^2\n&=\\frac1{60}\\sum a_i^2+\\frac{2b}{60}\\sum a_i+b^2\\\\\n&=\\frac1{60}\\sum a_i^2+b^2,\n\\end{aligned}\n\\]\nbecause \\(\\sum a_i=0\\). Here the divisor is 60 because I am averaging these 60 squared errors, not calculating sample variance. Numerically,\n\\[\n0.067616667\\approx0.037917889+0.029698778\n\\quad\\text{in }\\mathrm{g}^2.\n\\]\nTaking the square root of the mean squared target error gives the root mean squared distance, \\(\\sqrt{0.067616667}\\approx0.260032\\text{ g}\\).",
+    "interpretation": "The close mean and median both exceed \\(18.00\\text{ g}\\), so a central-looking histogram does not imply correct centering. The squared offset contributes about \\(43.9\\%\\) of the mean squared target error, since \\(0.029698778/0.067616667\\approx0.4392\\). Correcting that offset is therefore worth testing, but it would leave the variation term.\n\nThis identity also prevents a denominator mistake: its variation term is \\((59/60)s^2\\), not \\(s^2\\). More importantly for my aim, a share of squared error is not a share of unacceptable doses. I still need the direct band count.",
+    "limitations": "Bin width changes the appearance of the histogram, and the absence of Tukey outliers is not a normality test. These pooled summaries neither remove the ordering limitation nor establish balance accuracy.",
+    "localTakeaway": "The mean is 0.172333 g high and the sample SD is 0.196368 g; removing the offset would leave substantial variation.",
+    "nextQuestion": "The decomposition identifies two possible sources of failure without establishing the actual acceptable fraction.",
+    "nextWhy": "I will count the fixed tolerance event, then use a conditional distribution to compare explicit changes in centre and spread.",
+    "mathsInsight": "The squared-error identity separates an avoidable location offset from the spread that a common shift cannot change.",
+    "methodChangeReason": "A descriptive error magnitude did not answer the stated tolerance question, so I moved to direct counts and an explicitly conditional probability calculation.",
+    "outcomeId": "wide",
+    "unfamiliarComponent": "An algebraic decomposition of mean squared target error into centred variation and squared mean offset.",
+    "knowledgeNotes": "The printed calculation defines the centred departure, expands the square, uses its zero sum to remove the cross term, and explains the different divisors 60 and 59. The square root and units of the target RMSE are explained at first use.",
+    "understandingExample": "The mean squared target error \\(0.067616667\\text{ g}^2\\) separates into \\(0.037917889\\text{ g}^2\\) of centred variation and \\(0.029698778\\text{ g}^2\\) of squared offset. A common shift can remove the latter without changing the former.",
+    "researchSource": "NIST/SEMATECH, e-Handbook of Statistical Methods, §1.3.6.6.1, Normal Distribution [2], https://www.itl.nist.gov/div898/handbook/eda/section3/eda3661.htm, supports using the sample mean and sample SD as location and scale estimates. The squared-error identity is derived here from the displayed algebra."
   },
   {
-   key:"tolerance",title:"What does the observed tolerance fraction establish?",
-   bridge:"I used my original acceptance band to classify every case, without widening it after seeing the distribution.",
-   purpose:String.raw`I first counted the finite cases. I then used a normal model only as a comparison whose assumptions remain visible. Its parameters describe individual masses, not sample means. The known normal authoring recipe and the broadly single-peaked histogram make this an interpretable mathematical scenario; neither supplies physical validation.`,
-   technique:"Observed tolerance proportion and conditional normal probabilities",methodId:"normal",kind:"model",knowledge:"syllabus",
-   result:String.raw`There are no masses below \(17.70\text{ g}\), \(45\) inside the inclusive band, and \(15\) above the \(18.30\text{ g}\) upper limit. My observed case fraction is
-\[
-\widehat p=\frac{45}{60}=0.75.
-\]
-For the conditional comparison I used \(X\sim N(\bar m,s^2)\), with \(\bar m\approx18.172333\) and \(s\approx0.196368\), in grams. If \(Z\) is standard normal, \(\Phi(z)=P(Z\le z)\); standardising the two endpoints gives
-\[
-z_L=\frac{17.70-\bar m}{s}\approx-2.405342,
-\qquad z_U=\frac{18.30-\bar m}{s}\approx0.650138.
-\]
-Using the numerical normal CDF [2], I obtained
-\[
-P(17.70\le X\le18.30)=\Phi(z_U)-\Phi(z_L)
-\approx0.73411993.
-\]
-Table 2 compares all three regions. The model assigns about \(0.81\%\) below the band and \(25.78\%\) above it, leaving \(73.41\%\) inside.`,
-   interpretation:String.raw`The \(75\%\) finite fraction and \(73.41\%\) model area are close enough to make the scale of the problem clear: both are far from my desired \(95\%\). They are not two independent confirmations. I estimated the model parameters from the same cases being compared.
-
-The asymmetric failures fit the positive mean offset. All 15 observed failures are high, and the model's upper tail is much larger than its lower tail because \(18.30\text{ g}\) lies only about \(0.65s\) above the fitted mean. My next question is therefore whether centering the distribution could solve the problem.`,
-   limitations:String.raw`I do not adopt \(0.7341\) as a validated probability for the next physical dose. The case construction, apparent changes with order and unknown calibration prevent that conclusion. A normal probability here is an area describing individual model masses; it is not a confidence interval for a mean. I also cannot invoke the central limit theorem to make individual masses normal.
-
-For the original count, ideal \(\pm0.005\text{ g}\) display rounding alone cannot change a classification: no supplied value is close enough to either boundary. That observation still does not bound an unknown calibration error.`,
-   localTakeaway:"45/60 cases meet the band, versus a conditional normal area of 73.41%; neither meets 95%, and neither is a certified physical success probability.",
-   nextQuestion:"Could any common shift of the existing masses reach 95%, or does the spread itself prevent that?",
-   nextWhy:"A setting change might change the mean, but I need to test the mathematical effect of centering before treating it as a solution.",
-   mathsInsight:"A distribution can look reasonably concentrated yet fail a narrow operational tolerance frequently when the band is not centred on its mean.",
-   methodChangeReason:"I moved from describing the original cases to a clearly labelled translation scenario, because the large upper failure count suggests an offset worth testing.",
-   outcomeId:"wide"
+    "key": "tolerance",
+    "title": "What does the observed tolerance fraction establish?",
+    "bridge": "The mean is about 0.172 g high, but the decision rule concerns individual masses rather than their average error. I keep the original limits unchanged.",
+    "purpose": "The direct count answers the finite-list question without a distributional assumption. I then use a normal distribution to make centre and spread changes mathematically explicit. Its known role in constructing the cases makes this an interpretable comparison, while providing no independent evidence about physical doses.",
+    "technique": "Observed tolerance proportion and conditional normal probabilities",
+    "methodId": "normal",
+    "kind": "model",
+    "knowledge": "syllabus",
+    "result": "No mass is below \\(17.70\\text{ g}\\); \\(45\\) are in the inclusive band and \\(15\\) are above \\(18.30\\text{ g}\\). Thus the finite fraction is\n\\[\n\\widehat p=\\frac{45}{60}=0.75,\n\\]\nbelow the required \\(57/60=0.95\\).\n\nFor the conditional comparison, \\(X\\) represents an individual model mass. I use \\(X\\sim N(\\bar m,s^2)\\): the first parameter is the mean and the second is the variance, with \\(\\bar m\\approx18.172333\\text{ g}\\) and \\(s\\approx0.196368\\text{ g}\\) [2]. The normal curve is symmetric about its mean, and probabilities are areas beneath it.\n\nSubtracting \\(\\bar m\\) and dividing by \\(s\\) expresses a mass in standard-deviation units. The resulting \\(Z=(X-\\bar m)/s\\) has standard-normal mean zero and SD one. Its cumulative function \\(\\Phi(z)=P(Z\\le z)\\) is the area to the left of \\(z\\). The two limits become\n\\[\nz_L=\\frac{17.70-\\bar m}{s}\\approx-2.405342,\n\\qquad z_U=\\frac{18.30-\\bar m}{s}\\approx0.650138.\n\\]\nSubtracting the lower cumulative area from the upper leaves the band area:\n\\[\nP(17.70\\le X\\le18.30)\n=\\Phi(z_U)-\\Phi(z_L)\\approx0.73411993.\n\\]\nI evaluate these normal areas numerically [2]. Table 2 gives about \\(0.81\\%\\) below, \\(73.41\\%\\) inside and \\(25.78\\%\\) above the band.",
+    "interpretation": "The \\(75\\%\\) case fraction and \\(73.41\\%\\) model area are both far below \\(95\\%\\). They are not two independent confirmations: both use the same 60 cases.\n\nAll 15 finite failures are high. In the model, too, the upper tail dominates because the upper limit is only about \\(0.65s\\) above the mean. This gives a specific reason to test a downward shift before considering more complicated changes.",
+    "limitations": "The fitted area is not a validated probability for the next physical dose, and it is not a confidence interval for a mean. I cannot invoke the central limit theorem to make individual masses normal: that theorem concerns the distribution of averages as sample size increases.\n\nIdeal \\(\\pm0.005\\text{ g}\\) display rounding alone cannot change any original classification; every supplied value is farther than that from either boundary. This preserves the displayed-case result, while leaving unknown calibration error unresolved.",
+    "localTakeaway": "45/60 cases meet the band, versus a conditional normal area of 73.41%; neither meets 95%, and neither is a certified physical success probability.",
+    "nextQuestion": "The concentration of failures above the band suggests centering, but does not show that centering is sufficient.",
+    "nextWhy": "I will first correct the mean exactly, then check every possible common shift so that the best finite count is established rather than assumed.",
+    "mathsInsight": "A distribution can look reasonably concentrated yet fail a narrow operational tolerance frequently when the band is not centred on its mean.",
+    "methodChangeReason": "I moved from describing the original cases to a clearly labelled translation scenario, because the large upper failure count suggests an offset worth testing.",
+    "outcomeId": "wide"
   },
   {
-   key:"centering",title:"Can a common shift alone reach my 95% target?",
-   bridge:"I treated a common mass shift as a hypothetical change, without claiming that a particular timer adjustment would produce it.",
-   purpose:String.raw`I began with exact centering, \(y_i=m_i+d\) where \(d=18-\bar m\). I then widened the question to every possible common shift. This separates a property of the fixed data from a normal-model prediction and avoids choosing a shift just because it improves one summary.`,
-   technique:"Translation invariance, sorted windows and fixed-width normal coverage",methodId:"algebra",kind:"model",knowledge:"syllabus",
-   result:String.raw`For exact centering, \(d\approx-0.172333\text{ g}\), so \(\bar y=18\). Also
-\[
-y_i-\bar y=(m_i+d)-(\bar m+d)=m_i-\bar m.
-\]
-Every centred deviation is unchanged: the sample SD remains \(0.196368\text{ g}\). Recounting the translated values gives \(51/60=85\%\) inside the band.
-
-To examine any shift, I sorted a copy of the masses as \(m_{(1)}\le\cdots\le m_{(60)}\). A common shift can place a group inside my tolerance only if its original span is at most \(0.60\text{ g}\). For \(k\) included values, a narrowest group can be chosen as a consecutive sorted window: skipping an intermediate value cannot reduce the two endpoints. I therefore checked all \(61-k\) windows of size \(k\), with widths \(m_{(j+k-1)}-m_{(j)}\).
-
-Table 3 shows minimum widths of \(0.60\), \(0.61\) and \(0.69\text{ g}\) for \(53\), \(54\) and \(57\) values. A shift of \(-0.20\text{ g}\) fits the 53 values from \(17.90\) to \(18.50\text{ g}\) exactly into my band. No shift can include 54, so the finite maximum is \(53/60\approx88.33\%\). My \(95\%\) criterion would require at least \(57\) cases.
-
-For the normal comparison with the same SD, centering gives
-\[
-P(17.70\le X\le18.30)
-=2\Phi\!\left(\frac{0.30}{s}\right)-1
-\approx0.87342299.
-\]
-Figure 3 plots the calculated coverage as I vary the assumed normal mean while keeping \(s\) fixed.`,
-   interpretation:String.raw`For a symmetric normal density that decreases away from its mean, a fixed-width interval contains the greatest area when centred on the mean. Moving it away loses density near the centre and gains lower density in the other tail. Thus \(87.34\%\) is the best conditional normal coverage at this spread, not merely the result of one convenient trial.
-
-The finite count is less symmetric: its best shift is \(-0.20\text{ g}\), leaving mean \(17.972333\text{ g}\), rather than exactly \(18\). This is why I did not assume that centering and maximising a finite count are identical. Both arguments nevertheless rule out reaching my objective by a common shift alone.`,
-   limitations:String.raw`These are transformed cases and conditional distributions, not newly collected doses. The finite optimum places supplied values exactly on the tolerance boundaries, so its \(53/60\) count treats the displayed inputs as exact; an unknown weighing error could alter it. The sorted-window result establishes what translation can do to this list, not the best possible outcome of a physical timer change that might also alter spread.`,
-   localTakeaway:"No common shift can put more than 53/60 fixed cases inside tolerance; a centred normal with the current SD reaches only 87.34%. Spread must also change in any successful model scenario.",
-   nextQuestion:"How small would the spread need to be, and how sensitive would the improvement be to a remaining mean offset?",
-   nextWhy:"The centering limit gives a reason to investigate scale. I can now derive a spread requirement instead of proposing an untested timer setting.",
-   mathsInsight:"A translation preserves every centred deviation, while maximising a finite in-band count depends on the widths of sorted groups rather than only their mean.",
-   methodChangeReason:"I added a distribution-free window argument because the normal comparison alone could not establish what translation does to the supplied finite cases.",
-   outcomeId:"meaningful-result"
+    "key": "centering",
+    "title": "Can a common shift alone reach my 95% target?",
+    "bridge": "Because all original failures are high, my first hypothetical change places the average at the target. I treat this as a mathematical translation, not a claim about a particular timer adjustment.",
+    "purpose": "Let \\(y_i=m_i+d\\), adding the same mass change \\(d\\) to every case. I first choose \\(d=18-\\bar m\\) for exact centering, then ask whether another common shift could give a larger acceptable count. The second question matters because meeting a tolerance is not the same objective as making the mean correct.",
+    "technique": "Translation invariance, sorted windows and fixed-width normal coverage",
+    "methodId": "algebra",
+    "kind": "model",
+    "knowledge": "mixed",
+    "result": "Exact centering uses \\(d\\approx-0.172333\\text{ g}\\), giving \\(\\bar y=18\\). Its effect on every centred departure is\n\\[\ny_i-\\bar y=(m_i+d)-(\\bar m+d)=m_i-\\bar m.\n\\]\nThe squared departures and their SD are therefore unchanged: \\(s_y=s\\approx0.196368\\text{ g}\\). Recounting the shifted values gives \\(51/60=85\\%\\), still below \\(95\\%\\).\n\nTo check any common shift, consider a group whose smallest and largest original masses are \\(L\\) and \\(U\\). All of it fits after translation precisely when\n\\[\n17.70-L\\le d\\le18.30-U.\n\\]\nSuch a \\(d\\) exists if and only if the lower bound does not exceed the upper, which rearranges to \\(U-L\\le0.60\\text{ g}\\). Thus a span no wider than my band is both necessary and sufficient; moving the group cannot compress it.\n\nI sort a copy as \\(m_{(1)}\\le\\cdots\\le m_{(60)}\\). For a group of \\(k\\) values, its narrowest possible span occurs among consecutive sorted values. Indeed, the interval between any group's endpoints also contains all intermediate values, from which a consecutive group of \\(k\\) can be taken without increasing the span. I therefore check all \\(61-k\\) widths\n\\[\nm_{(j+k-1)}-m_{(j)},\\qquad j=1,\\ldots,61-k.\n\\]\nTable 3 gives minimum spans of \\(0.60\\), \\(0.61\\) and \\(0.69\\text{ g}\\) for \\(53\\), \\(54\\) and \\(57\\) values. A shift of \\(-0.20\\text{ g}\\) places the 53 cases from \\(17.90\\) to \\(18.50\\text{ g}\\) exactly in the tolerance band. No shift can include 54; a larger group would contain 54 as well, so it cannot fit either. The finite maximum is consequently \\(53/60\\approx88.33\\%\\), below the required 57 cases.\n\nFor the normal comparison, centering puts the limits equally far from the mean. Symmetry gives \\(\\Phi(-a)=1-\\Phi(a)\\), so at unchanged SD,\n\\[\nP(17.70\\le X\\le18.30)\n=2\\Phi\\!\\left(\\frac{0.30}{s}\\right)-1\n\\approx0.87342299.\n\\]",
+    "interpretation": "This centred normal area is also the largest possible at the fixed spread. A normal curve's height decreases with distance from its mean [2]. Moving a fixed-width interval away from the mean removes a strip at the nearer edge and adds an equal-width strip farther out; the lost area is larger. Symmetry gives the same result in the other direction. Thus \\(87.34\\%\\) is a maximum, not just one favourable trial. Figure 3 illustrates it for assumed means from \\(17.60\\) to \\(18.40\\text{ g}\\).\n\nThe fixed cases need not behave symmetrically. Their best shift, \\(-0.20\\text{ g}\\), leaves a mean of \\(17.972333\\text{ g}\\), rather than exactly 18. I therefore keep the two results distinct: the window proof establishes the finite maximum, while the curve-area argument establishes the normal-model maximum. Both exclude a location-only solution.",
+    "limitations": "The finite optimum treats the supplied numbers as exact and places some values exactly on the boundaries; unlike the original count, this count could change under a small weighing error. Both analyses describe stipulated changes. A physical timer adjustment might also change spread, so the translation bound is not a bound on every possible change to a real grinder.",
+    "localTakeaway": "No common shift can put more than 53/60 fixed cases inside tolerance; a centred normal with the current SD reaches only 87.34%. Spread must also change in any successful model scenario.",
+    "nextQuestion": "Even the best common shift leaves at least seven of these 60 cases outside, and the best normal coverage at the current SD is below 95%.",
+    "nextWhy": "This is the reason to investigate reduced spread. I will derive a normal-model requirement and test how much residual offset it can tolerate.",
+    "mathsInsight": "A translation preserves every centred deviation, while maximising a finite in-band count depends on the widths of sorted groups rather than only their mean.",
+    "methodChangeReason": "I added a distribution-free window argument because the normal comparison alone could not establish what translation does to the supplied finite cases.",
+    "outcomeId": "meaningful-result",
+    "unfamiliarComponent": "Proving the maximum finite tolerance count using sorted windows, and explaining why a centred fixed-width interval maximises normal coverage.",
+    "knowledgeNotes": "The printed proof derives both bounds on an admissible shift, shows that their compatibility is equivalent to a span no greater than 0.60 g, and explains why consecutive sorted windows exhaust the finite question. A separate area comparison explains the normal optimum.",
+    "understandingExample": "The 53 values between \\(17.90\\) and \\(18.50\\text{ g}\\) fit after \\(d=-0.20\\text{ g}\\). Every 54-value window spans at least \\(0.61\\text{ g}\\), so none can fit into a \\(0.60\\text{ g}\\) band, regardless of the shift.",
+    "researchSource": "NIST/SEMATECH, e-Handbook of Statistical Methods, §1.3.6.6.1, Normal Distribution [2], https://www.itl.nist.gov/div898/handbook/eda/section3/eda3661.htm, gives the symmetric normal density and its location/scale form. The translation and finite-window proofs are derived in the narrative."
   },
   {
-   key:"sensitivity",title:"What would meeting 95% require from centre and spread?",
-   bridge:"Since centering alone was insufficient, I considered a family of hypothetical distributions with both location and spread made explicit.",
-   purpose:String.raw`I wrote the general normal coverage as
-\[
-p(\mu,\sigma)=\Phi\!\left(\frac{18.30-\mu}{\sigma}\right)
--\Phi\!\left(\frac{17.70-\mu}{\sigma}\right),\qquad \sigma>0.
-\]
-This lets me change one parameter at a time. I can also define a finite transformation \(y_i=\mu'+k(m_i-\bar m)\), with \(k=\sigma'/s\); it has mean \(\mu'\) and sample SD \(\sigma'\). The rule describes a scenario, not a claim that adjusting a grinder will scale every deviation in that way.`,
-   technique:"Inverse normal probability and sensitivity to location and scale",methodId:"normal",kind:"model",knowledge:"syllabus",
-   result:String.raw`At \(\mu=18\), my desired condition becomes
-\[
-2\Phi(0.30/\sigma)-1\ge0.95
-\quad\Longleftrightarrow\quad
-0.30/\sigma\ge\Phi^{-1}(0.975).
-\]
-Since \(\Phi^{-1}(0.975)\approx1.959964\), the centred normal requirement is
-\[
-\sigma\le\frac{0.30}{1.959964}\approx0.153064\text{ g}.
-\]
-That is a reduction of at least \(22.05\%\) from the current fitted \(s\), within this model. I chose \(0.15\text{ g}\) as a nearby scenario to compare in Table 4.
-
-Reducing spread alone, with the original mean, gives only \(80.18\%\) inside. Changing the mean to \(18.00\) as well gives \(95.45\%\). However, if that latter scenario retains a \(+0.05\text{ g}\) offset, its coverage drops to \(94.24\%\). To quantify the small margin, I solved
-\[
-\Phi\!\left(\frac{0.30-b}{0.15}\right)
--\Phi\!\left(\frac{-0.30-b}{0.15}\right)=0.95
-\]
-for positive \(b\). The root is approximately \(0.030568\text{ g}\), between \(0.0305\) and \(0.0306\text{ g}\). By symmetry, with \(\sigma=0.15\text{ g}\), the model reaches at least \(95\%\) only while the magnitude of the mean offset is no more than about \(0.03057\text{ g}\).`,
-   interpretation:String.raw`The proposed improvement needs both location and spread. A mean close to target cannot compensate for the original variation, and a smaller SD does not compensate sufficiently for the original positive offset. Even the combined \(18.00\text{ g}\), \(0.15\text{ g}\) scenario has little margin against a shifted centre.
-
-The \(0.01\text{ g}\) display increment does not certify that the true mean is within \(0.03057\text{ g}\) of the target. My \(+0.05\text{ g}\) calculation is a hypothetical sensitivity check, not a measured calibration error. It shows why calibration and repeated-run location would matter to a physical follow-up.`,
-   limitations:"The calculated 95% is a fraction of individual masses under the specified normal model, not a confidence level or a guarantee about a future run. No evidence here shows that a changed setting can achieve SD 0.15 g. With only one timer setting and no physical calibration data, I cannot convert the mass offset into a justified number of seconds to add or remove.",
-   localTakeaway:"A centred normal needs SD no greater than 0.153064 g to reach 95%; at SD 0.15 g, a residual mean offset above about 0.030568 g defeats that objective.",
-   nextQuestion:"Would separate physical runs at defined timer settings achieve both a stable mean near 18 g and sufficiently small spread?",
-   nextWhy:"I can now conclude the case study: the existing sequence fails my criterion, common centering cannot rescue it, and the improvement targets depend on conditions that a new physical investigation would need to test.",
-   mathsInsight:"A threshold on spread is conditional on centering. Reporting one favourable probability without perturbing the mean would conceal how little tolerance the proposed improvement has for offset.",
-   methodChangeReason:"I varied the mean after calculating the centred SD threshold because the first scenario was only slightly above 95%, making residual offset a consequential uncertainty.",
-   outcomeId:"measurement-limited"
+    "key": "sensitivity",
+    "title": "What would meeting 95% require from centre and spread?",
+    "bridge": "The previous maxima rule out centering alone. I now keep the same tolerance and make both the assumed mean and the spread explicit, so any successful scenario has identifiable requirements.",
+    "purpose": "For a normal mass with mean \\(\\mu\\) and SD \\(\\sigma>0\\), the coverage is\n\\[\np(\\mu,\\sigma)=\\Phi\\!\\left(\\frac{18.30-\\mu}{\\sigma}\\right)\n-\\Phi\\!\\left(\\frac{17.70-\\mu}{\\sigma}\\right).\n\\]\nI vary these parameters one at a time, without fitting a relationship between mass and timer duration.\n\nFor comparison with the fixed list, I also define a transformation to chosen mean \\(\\mu'\\) and SD \\(\\sigma'>0\\):\n\\[\ny_i=\\mu'+k(m_i-\\bar m),\\qquad k=\\frac{\\sigma'}s>0.\n\\]\nSince the original centred departures sum to zero, averaging gives \\(\\bar y=\\mu'\\). Every new centred departure is \\(k(m_i-\\bar m)\\), so\n\\[\ns_y^2=\\frac1{59}\\sum k^2(m_i-\\bar m)^2=k^2s^2,\n\\qquad s_y=ks=\\sigma'.\n\\]\nThis proves what the transformation changes. It scales every departure by the same factor; recounting it will describe those transformed inputs, not newly observed doses.",
+    "technique": "Inverse normal probability and sensitivity to location and scale",
+    "methodId": "normal",
+    "kind": "model",
+    "knowledge": "mixed",
+    "result": "At \\(\\mu=18\\), symmetry puts equal probability in the two tails. Coverage of \\(0.95\\) leaves \\(0.025\\) in each tail, so the cumulative area at the upper limit must be at least \\(0.975\\). Thus\n\\[\n2\\Phi(0.30/\\sigma)-1\\ge0.95\n\\quad\\Longleftrightarrow\\quad\n0.30/\\sigma\\ge\\Phi^{-1}(0.975).\n\\]\nHere \\(\\Phi^{-1}(0.975)\\) means the standard-normal value with 0.975 of the area to its left, not the reciprocal of a probability. Numerical inversion gives \\(1.959964\\ldots\\) [2], hence\n\\[\n\\sigma\\le\\frac{0.30}{1.959964\\ldots}\n\\approx0.153064\\text{ g}.\n\\]\nRelative to the current \\(s\\), this is a reduction of at least \\(1-0.153064037\\ldots/s\\approx22.05\\%\\), conditional on exact centering.\n\nI choose \\(0.15\\text{ g}\\) as a nearby, simply stated SD below that limit. Table 4 isolates the changes: with the original mean, this smaller spread gives only \\(80.18\\%\\) normal coverage; with the mean also moved to \\(18.00\\text{ g}\\), it gives \\(95.45\\%\\). That is a small margin. A stipulated \\(+0.05\\text{ g}\\) mean offset, equal to five display increments, lowers the area to \\(94.24\\%\\).\n\nApplying the proved transformation to the original list gives respectively \\(50/60\\), \\(58/60\\) and \\(56/60\\) in these three scenarios. The combined change meets the finite 57-case target, whereas the residual-offset case misses it. These counts are not the model probabilities and provide no independent observations; they show what the same parameter choices do to the retained finite pattern.\n\nTo find the normal model's remaining offset margin, write \\(b=\\mu-18\\) and solve, for \\(b\\ge0\\),\n\\[\n\\Phi\\!\\left(\\frac{0.30-b}{0.15}\\right)\n-\\Phi\\!\\left(\\frac{-0.30-b}{0.15}\\right)=0.95.\n\\]\nCoverage changes continuously with the mean, and the earlier area argument shows that it decreases as the centre moves away. At \\(b=0\\) it exceeds 0.95; at \\(b=0.05\\) it is below. I repeatedly halve that interval and retain the half whose endpoints still lie on opposite sides of 0.95. This numerical bracketing gives\n\\[\np(18.0305,0.15)\\approx0.9500201,\n\\qquad p(18.0306,0.15)\\approx0.9499906,\n\\]\nwith the boundary at \\(b\\approx0.030568\\text{ g}\\). Symmetry therefore gives the joint condition: at \\(\\sigma=0.15\\text{ g}\\), normal coverage is at least 95% only while \\(|\\mu-18|\\) is no more than about \\(0.03057\\text{ g}\\).",
+    "interpretation": "The improvement requires both changes. A target mean cannot compensate for the current spread, and the proposed smaller spread does not compensate for the original offset. Even their combination has little room for a displaced centre.\n\nThe calculated \\(0.03057\\text{ g}\\) threshold is not a claim about attainable calibration. A \\(0.01\\text{ g}\\) display grid cannot certify that the true mean is inside it, and the tested \\(0.05\\text{ g}\\) shift was an assumption, not a measured error. I retain guard digits to show which side of the mathematical threshold a calculation lies on, without treating them as additional measurement accuracy.",
+    "limitations": "The normal 95% describes individual model masses, not a confidence level or a guarantee about a future run. No evidence here shows that a changed setting can achieve SD 0.15 g. With only one timer setting and no physical calibration data, I cannot convert the mass offset into a justified number of seconds to add or remove.",
+    "localTakeaway": "A centred normal needs SD no greater than 0.153064 g to reach 95%; at SD 0.15 g, a residual mean offset above about 0.030568 g defeats that objective.",
+    "nextQuestion": "The original count, the translation limits and the joint centre-and-spread scenarios now answer the finite-case and model questions I set.",
+    "nextWhy": "I can conclude here. The remaining link between a timer change and those mass parameters requires physical evidence, rather than another calculation on this same list.",
+    "mathsInsight": "A threshold on spread is conditional on centering. Reporting one favourable probability without perturbing the mean would conceal how little tolerance the proposed improvement has for offset.",
+    "methodChangeReason": "I varied the mean after calculating the centred SD threshold because the first scenario was only slightly above 95%, making residual offset a consequential uncertainty.",
+    "outcomeId": "measurement-limited",
+    "unfamiliarComponent": "Deriving the mean and SD of a shifted-and-scaled finite list, and obtaining a residual-offset threshold through monotonic normal coverage and numerical bracketing.",
+    "knowledgeNotes": "The printed calculation proves the affine mean/SD effects, derives the equal-tail inverse-normal condition, explains the inverse notation and describes interval halving using passing and failing probabilities. It keeps transformed counts separate from distribution areas.",
+    "understandingExample": "At \\(\\sigma=0.15\\text{ g}\\), the normal area is about \\(0.9500201\\) at mean \\(18.0305\\text{ g}\\) and \\(0.9499906\\) at \\(18.0306\\text{ g}\\). The threshold lies between them; finer interval halving gives offset \\(0.030568\\text{ g}\\).",
+    "researchSource": "NIST/SEMATECH, e-Handbook of Statistical Methods, §1.3.6.6.1, Normal Distribution [2], https://www.itl.nist.gov/div898/handbook/eda/section3/eda3661.htm, supports numerical normal CDF and inverse-CDF evaluation. The affine proof, equal-tail rearrangement and bracketing are explained for this investigation."
   }
- ],
+],
  figures:[
   {id:"figure-grinder-order",tool:"graph",stage:0,after:"purpose",draft:graphDraft({
    title:"Dose masses in supplied order",number:1,kind:"time",
@@ -495,53 +431,83 @@ The \(0.01\text{ g}\) display increment does not certify that the true mean is w
    sourceText:"Normal areas and the explicitly hypothetical transformation y=mu+(sigma/s)(m−mean). The transformed counts are not newly observed doses."}
  ],
  conclusion:{
-  mainConclusion:String.raw`The supplied fixed-setting sequence does not meet my chosen reliability criterion: only \(45/60=75\%\) of the displayed masses lie within \(17.70\)–\(18.30\text{ g}\), compared with my desired \(95\%\). The mean is approximately \(18.172\text{ g}\), so the distribution is high relative to the target, but its sample SD of approximately \(0.196\text{ g}\) also matters.
-
-Correcting the mean alone cannot solve this case study. Exact centering puts \(51/60\) translated values within tolerance, and the sorted-window argument limits any common shift to \(53/60\). Under the conditional normal comparison, even perfect centering reaches only about \(87.34\%\) at the current spread. I would therefore not recommend a timer adjustment as a sufficient solution merely because it corrected the average.`,
-  conclusionBenefit:String.raw`Within a centred normal model, reaching \(95\%\) requires \(\sigma\le0.153064\text{ g}\), about \(22.05\%\) below the fitted current SD. The nearby \(0.15\text{ g}\) scenario reaches \(95.45\%\) only with careful centering; a \(0.05\text{ g}\) mean offset lowers it to \(94.24\%\). This gives me separate location and spread questions for a practical follow-up.
-
-The sequence is constructed, its early and later blocks differ, and no balance calibration or new timer setting has been tested. I have therefore established finite-case results and conditional improvement requirements, not the future reliability of a real machine. For my proposed setup I would keep weighing individual doses until new physical evidence supports dispensing with that check.`,
-  conclusionExtension:"I would next compare several defined timer settings using new ordered physical runs, with the same beans and stated operating conditions, and a balance whose calibration has been checked. I would examine whether the mean response to time is consistent across runs and whether the spread changes with setting. I would then test a chosen setting on a separate run rather than use the cases that selected it as evidence of success. That would address the missing link between my mass-based scenarios and an actual timer decision."
+  mainConclusion:"The supplied sequence fails my declared criterion: \\(45/60=75\\%\\) of its displayed masses lie within \\(17.70\\)–\\(18.30\\text{ g}\\), rather than the required \\(57/60=95\\%\\). The mean is about \\(18.172\\text{ g}\\), but correcting it alone cannot solve the finite problem. Exact centering gives \\(51/60\\), and the exhaustive sorted-window argument limits any common shift to \\(53/60\\). This identifies variation, as well as offset, as a necessary part of an improvement scenario.\n\nThe conditional normal comparison agrees on that structural limitation: its current \\(s\\approx0.196\\text{ g}\\) gives at most \\(87.34\\%\\) coverage, even when centred. Reaching \\(95\\%\\) with mean 18 requires \\(\\sigma\\le0.153064\\text{ g}\\), about \\(22.05\\%\\) below the fitted scale. These are separate mathematical results for the fixed list and the assumed distribution, not interchangeable estimates of physical performance.",
+  conclusionBenefit:"The nearby mean-18, SD-0.15 scenario reaches \\(95.45\\%\\) normal coverage and puts \\(58/60\\) transformed cases inside the band. Its margin is small: a \\(0.05\\text{ g}\\) mean offset gives \\(94.24\\%\\) and \\(56/60\\), respectively. Under that normal SD, the allowable offset is only about \\(0.03057\\text{ g}\\). A useful follow-up therefore has to check centering as well as spread.\n\nI have established finite-case limits and conditional requirements, not the future reliability of a real machine. The constructed source, ordering differences and missing calibration prevent that stronger conclusion. For the proposed setup, these calculations do not justify dispensing with individual weighing or recommending a new timer setting.",
+  conclusionExtension:"A focused physical follow-up would collect repeated ordered runs at defined timer settings, using stated operating conditions and a checked balance. It would measure how both mean and spread change with duration, then assess a chosen setting on a separate run. That would supply the missing evidence linking the mass requirements to a timer decision."
  },
  reviews:[
-  {id:"D01",location:"Introduction, five linked stages and conclusion",
-   note:"My draft includes the fixed target and tolerance, the complete source sequence, actual summaries and probabilities, a finite-window argument, conditional sensitivity and an answer to the original aim.",
-   action:"I have kept the unresolved physical validation and school process separate from the completed case-study mathematics."},
-  {id:"D02",location:"Order check through centering and spread sensitivity",
-   note:"Each stage responds to the preceding result: an order warning limits pooling; centre and spread lead to a direct tolerance count; the offset suggests centering; centering's limit motivates a spread calculation. I have not added an unrelated statistical test.",
-   action:"I checked that every transition names the question the next calculation answers."},
-  {id:"D03",location:"Notation, squared-error identity, normal equations and all figure captions",
-   note:"I distinguish mass in grams, variance in squared grams, percentages and dimensionless trial index. I explain the different denominators 60 and 59, define Phi, and use approximation signs for rounded results.",
-   action:"I corrected the wording so a normal coverage interval cannot be mistaken for a confidence interval."},
-  {id:"D04",location:"Introduction, source decisions and scenario selection",
-   note:"My criteria are explicit choices made before the count. I retained every case, preserved order, rejected a timer recommendation unsupported by the source and chose a remaining-offset check because the 0.15 g scenario had little margin.",
-   action:"I linked each choice to its mathematical consequence rather than adding a personal story about an experiment I did not perform."},
-  {id:"D05",location:"Interpretations and limitations following each result",
-   note:"I explain why apparent drift is not proof of drift, why a near-target mean is insufficient, why a fitted comparison is not validation, and why maximum finite count differs from exact centering. The conclusion changes as a result of those checks.",
-   action:"I retained the consequences beside the relevant results rather than moving every limitation into the ending."},
-  {id:"D06",location:"Summaries, translation proof, sorted windows and normal sensitivity",
-   note:"I independently checked summaries from integer hundredths, all tolerance classifications, the exhaustive window widths and normal areas by numerical integration. I checked the offset root on both sides and explained why the location optimum is centred for a symmetric unimodal normal density.",
-   action:"If a case or criterion changes, I will recompute the entire linked analysis, including displayed table values and the conclusion."},
-  {id:"D07",status:"checked",location:"Whole exported reader, PDF and Word document",
-   note:"I inspected every PDF and Word page and all seven saved figures in the desktop and phone reader. The ordered plot, probability curve, normal equations and all four tables retain their axes, units, values and source notes.",
-   action:"I corrected the probability graph's legend to identify calculated points, kept the section-five heading with its opening prose, and reworded the tolerance count so punctuation does not wrap on its own. I rechecked the revised pages."},
-  {id:"D09",location:"Source record, source notes and references [1]–[2]",
-   note:"I disclose the exact constructed-data recipe and credit the NIST pages for the run-sequence and normal-CDF methods. Those references do not supply the masses, timer, tolerance or success criterion.",
-   action:"I checked that the source labels do not imply real collection, calibration or independent normal-model validation."},
-  {id:"D11",location:"All five mathematical stages",
-   note:"The narrative includes a worked block mean, full summary values, the squared-error derivation, a normal standardisation, the translation identity, exhaustive window results and inverse-normal sensitivity. These are completed calculations, not proposed methods.",
-   action:"I verified that the conclusion uses the computed finite and conditional results with their distinct meanings."},
-  {id:"D19",location:"Compact result tables and editable working data",
-   note:"All 60 source masses remain available in their original order. The body uses six block rows, three tolerance rows, three window summaries and five scenarios; the full window calculations are also retained.",
-   action:"I kept the necessary width argument in the main text so the reader does not need the working-data table to understand the conclusion."},
-  {id:"D20",location:"Normal-CDF calculation and final sensitivity stage",
-   note:"I specify both limits and both distribution parameters, show the standardisation, derive the centred SD threshold and bracket the offset root. I distinguish the model's individual-dose probability from estimation uncertainty.",
-   action:"I retained editable figure inputs and reproducible calculation data, and checked the software results with independent arithmetic and integration."}
- ],
+  {
+    "id": "D01",
+    "location": "Introduction, five linked stages and conclusion",
+    "note": "My draft includes the fixed target and tolerance, the complete source sequence, actual summaries and probabilities, a finite-window argument, conditional sensitivity and an answer to the original aim.",
+    "action": "I have kept the unresolved physical validation and school process separate from the completed case-study mathematics."
+  },
+  {
+    "id": "D02",
+    "location": "Order check through centering and spread sensitivity",
+    "note": "Each stage responds to the preceding result: an order warning limits pooling; centre and spread lead to a direct tolerance count; the offset suggests centering; centering's limit motivates a spread calculation. I have not added an unrelated statistical test.",
+    "action": "I checked that every transition names the question the next calculation answers."
+  },
+  {
+    "id": "D03",
+    "location": "Notation, squared-error identity, normal equations and all figure captions",
+    "note": "I define mass, squared-mass error, standardisation, cumulative area and inverse-normal notation where used. The variance expansion explains the different divisors 60 and 59, while the affine proof separates changed means from changed SDs.",
+    "action": "I distinguish finite counts, model areas and parameter thresholds, and retain approximation signs for rounded numbers."
+  },
+  {
+    "id": "D04",
+    "location": "Introduction, source decisions and scenario selection",
+    "note": "My criteria are explicit choices made before the count. I retained every case, preserved order, rejected a timer recommendation unsupported by the source and chose a remaining-offset check because the 0.15 g scenario had little margin.",
+    "action": "I linked each choice to its mathematical consequence rather than adding a personal story about an experiment I did not perform."
+  },
+  {
+    "id": "D05",
+    "location": "Interpretations and limitations following each result",
+    "note": "I explain why apparent drift is not proof of drift, why a near-target mean is insufficient, why a fitted comparison is not validation, and why maximum finite count differs from exact centering. The conclusion changes as a result of those checks.",
+    "action": "I retained the consequences beside the relevant results rather than moving every limitation into the ending."
+  },
+  {
+    "id": "D06",
+    "location": "Summaries, translation proof, sorted windows and normal sensitivity",
+    "note": "I independently recomputed the complete generation recipe, summaries, all tolerance counts, sorted-window minima, endpoint-shift maximum, normal probabilities, affine counts and threshold brackets. The normal probabilities were checked independently of the sample calculation routine.",
+    "action": "The displayed proofs explain the translation bound, centred normal optimum and affine mean/SD effects; numerical agreement alone is not used in place of those arguments."
+  },
+  {
+    "id": "D07",
+    "status": "checked",
+    "location": "Whole exported reader, PDF and Word document",
+    "note": "I visually inspected every PDF and Word page, the desktop and phone reader views, and all seven figures at both widths. Unchanged page images match the reviewed exports; I rechecked every page altered by the final wording corrections.",
+    "action": "I corrected the short page-break fragments and checked the regenerated equations, tables, figures, captions, source notes and references."
+  },
+  {
+    "id": "D09",
+    "location": "Source record, source notes and references [1]–[2]",
+    "note": "I disclose the exact constructed-data recipe and credit the NIST pages for the run-sequence and normal-CDF methods. Those references do not supply the masses, timer, tolerance or success criterion.",
+    "action": "I checked that the source labels do not imply real collection, calibration or independent normal-model validation."
+  },
+  {
+    "id": "D11",
+    "location": "All five mathematical stages",
+    "note": "The narrative includes completed calculations and explains the squared-error expansion, standardisation, finite-window equivalence, affine mean/SD changes, equal-tail inversion and offset bracketing at first use. The last stage closes the stated aim before one physical extension.",
+    "action": "I verified that the conclusion uses the computed finite and conditional results with their distinct meanings."
+  },
+  {
+    "id": "D19",
+    "location": "Compact result tables and editable working data",
+    "note": "All 60 source masses remain available in their original order. The body uses six block rows, three tolerance rows, three window summaries and five scenarios; the full window calculations are also retained.",
+    "action": "I kept the necessary width argument in the main text so the reader does not need the working-data table to understand the conclusion."
+  },
+  {
+    "id": "D20",
+    "location": "Normal-CDF calculation and final sensitivity stage",
+    "note": "I specify both limits and both distribution parameters, show the standardisation, derive the centred SD threshold and bracket the offset root. I distinguish the model's individual-dose probability from estimation uncertainty.",
+    "action": "I retained editable figure inputs and reproducible calculation data, and checked the software results with independent arithmetic and integration."
+  }
+],
  references:[
   {label:"Data record",value:"Grinder Dose Cases v1. Original constructed 60-case teaching dataset supplied with this illustrative project. Reproduction: Python random.Random(1842), 60 successive gauss(18.16, 0.20) values, each rounded to two decimal places; the first sequence is retained in full and in order. No physical measurements are claimed."},
-  {label:"[1] Run-sequence method",value:"NIST/SEMATECH. e-Handbook of Statistical Methods, section 1.3.3.25, ‘Run-Sequence Plot’. https://www.itl.nist.gov/div898/handbook/eda/section3/eda33p.htm . Accessed 22 October 2026. Consulted for the role of preserving observation order when inspecting changes in location and spread."},
-  {label:"[2] Normal distribution",value:"NIST/SEMATECH. e-Handbook of Statistical Methods, section 1.3.6.6.1, ‘Normal Distribution’. https://www.itl.nist.gov/div898/handbook/eda/section3/eda3661.htm . Accessed 22 October 2026. Consulted for the location/scale model, standard normal CDF and numerical inverse-CDF interpretation."},
+  {label:"[1] Run-sequence method",value:"NIST/SEMATECH. e-Handbook of Statistical Methods, section 1.3.3.25, ‘Run-Sequence Plot’. https://www.itl.nist.gov/div898/handbook/eda/section3/eda33p.htm . Accessed 23 October 2026. Consulted for the role of preserving observation order when inspecting changes in location and spread."},
+  {label:"[2] Normal distribution",value:"NIST/SEMATECH. e-Handbook of Statistical Methods, section 1.3.6.6.1, ‘Normal Distribution’. https://www.itl.nist.gov/div898/handbook/eda/section3/eda3661.htm . Accessed 23 October 2026. Consulted for the location/scale model, standard normal CDF and numerical inverse-CDF interpretation."},
   {label:"Calculation record",value:"My calculation record uses the fixed ordered inputs, six consecutive blocks, all sorted windows of lengths 53, 54 and 57, and the explicitly stated normal location/scale scenarios. Graphs and tables are generated from these retained inputs. Numerical normal areas were cross-checked by direct integration."}
  ]
 };

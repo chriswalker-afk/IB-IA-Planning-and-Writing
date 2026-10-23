@@ -50,7 +50,7 @@ export const HELICOPTER_OMISSIONS=Object.freeze(HELICOPTER_CASES.map(omitted=>{
 
 const sourceId='source-helicopter-constructed-log';
 const sourceText='Helicopter Flight Log v1: 24 constructed helicopters, each with three elapsed-frame counts at an assumed 50 frames per second; no physical flights were recorded.';
-const aim='I want to compare the three-drop mean flight times of two paper-helicopter designs from the same stated height, and decide whether design B offers a useful advantage of at least 0.20 s relative to the variation between helicopters.';
+const aim='I want to compare the recorded three-drop mean flight times of designs A and B: does B gain at least 0.20 s on average, and how often does a uniformly chosen recorded B helicopter have that useful advantage over a uniformly chosen A helicopter?';
 const definitions=R`I write \(F_{gik}\) for the elapsed-frame count for design \(g\), helicopter \(i\), drop \(k\), where \(g\in\{A,B\}\), \(i=1,\ldots,12\) and \(k=1,2,3\). The drop time is \(t_{gik}=F_{gik}/50\) seconds. My comparison unit is the helicopter's three-drop mean, \(x_{gi}=(t_{gi1}+t_{gi2}+t_{gi3})/3\). I use \(\bar x_A\) and \(\bar x_B\) for the means of the 12 helicopter means, and \(\Delta=\bar x_B-\bar x_A\) for their difference.`;
 const sourceFields={
  dataStatus:'ready',actualSourceType:'secondary',actualSource:sourceText,
@@ -59,30 +59,30 @@ const sourceFields={
  statisticalPopulation:'The finite collection of 12 constructed A helicopters and 12 constructed B helicopters. Any probability in my investigation concerns a specified selection from those lists, not a population of future helicopters.',
  sampleOrCensus:'',
  samplingMethod:'I included every helicopter in the supplied log. The records are constructed rather than randomly sampled or experimentally randomised observations. Each ID denotes a separate object; the three records under an ID are repeated drops of that object.',
- samplingRationale:'My question is a comparison within the fixed design scenario. Giving each helicopter one three-drop mean keeps an unusually variable object from acquiring more weight simply because it was dropped repeatedly.',
+ samplingRationale:R`I compare objects, so each helicopter contributes one three-drop mean. Every object has the same number of drops, so this preserves the pooled group mean while making the plotted spread and later pair comparisons refer to helicopters rather than releases.`,
  sampleSize:'24 distinct helicopters: 12 of each design. Three drops per helicopter give 72 frame-count readings; the group comparison contains 12 helicopter means per design.',
  pairing:'The three drops are matched within a helicopter ID. A01 and B01 are different objects, not a matched pair: I did not use a paired-difference test or subtract corresponding row numbers.',
  responseBias:'There are no survey responses. The constructed log cannot establish how representative the objects are, whether real drops would be independent, or whether release conditions would favour one design.',
  dataCleaning:'I checked 24 distinct IDs, one design per ID and exactly three positive integer frame counts per helicopter. I retained every record, including B07. Omission calculations are labelled diagnostics and never replace the full-data comparison.',
  dataStatusSummary:'The complete 24-by-three log is retained. The figures use one three-drop mean per object, and the 144 A–B differences are calculated combinations of those same 24 means.',
- chosenMethod:'Compare per-helicopter distributions, means, medians and spread; diagnose one-object sensitivity; enumerate the finite A–B comparison space; bound the effect of frame-selection error.',
- alternativeMethod:'I considered an unpaired two-sample t-test on the helicopter means. A hypothetical population significance statement would not answer my finite-list question or establish practical usefulness, so I used descriptive comparisons and exact counting instead.',
- methodReason:R`I started with a dot plot of the 12 helicopter means for each design. It shows all the objects, including overlap and unusually long flights, without treating three drops of the same object as three separate helicopters. I then used a common-scale box plot to compare the centres and middle halves. My practical criterion is a gain of at least \(0.20\text{ s}\), including equality; I chose it before calculating the summaries.`,
+ chosenMethod:R`Compare object-level distributions and centres; diagnose the effect of omitting each whole object; count equally weighted A–B choices; then derive bounds under a stated endpoint-timing model.`,
+ alternativeMethod:R`A two-sample significance test would concern a population or randomisation model that this constructed log does not provide. My finite-list decision can instead be answered by direct comparisons and exact counting, with separate sensitivity calculations.`,
+ methodReason:R`I begin with every helicopter mean visible on a common scale. Individual dots can reveal overlap and unusually large values that a chart of two group averages would hide. I then compare a mean with a median, and a spread measure using every distance from the mean with one using the middle half of the values. Agreement or disagreement between these summaries will determine what needs checking next.`,
  methodLimitation:'A mean of three drops describes that object under the stated procedure. It does not guarantee the duration of its next drop, and the constructed log cannot validate a real experimental procedure.',
  limitationConsequence:'I can establish which claims are true for these defined records, but cannot estimate a future manufacturing success rate or attribute the difference to rotor length alone.',
  limitationMitigation:'I kept the complete designs and repeated-drop structure explicit, retained B07, checked all single-object omissions and bounded a specified timing error rather than inventing a confidence interval.',
- limitationAcceptable:'I can recommend a design for mean performance within the constructed comparison and state how often its recorded object mean has the chosen advantage over a uniformly selected object from the other list.',
- dataAimLink:R`A design that has a longer average time might still be disappointing in a particular comparison. I therefore began by looking at the distribution of one three-drop mean per helicopter, rather than only the best drop or the grand mean. The two displayed groups each contain 12 objects.`
+ limitationAcceptable:R`The log supports a conditional choice for average three-drop performance and exact proportions for a specified selection from its two object lists. It does not establish the performance of new objects.`,
+ dataAimLink:R`A three-drop mean gives one object a summary under the stated procedure without letting its best release define its performance. Giving those summaries equal weight makes the comparison reflect the complete supplied collection rather than a selection of favourable flights.`
 };
 const completionFields={
  ...sourceFields,
- changedSincePlanning:'The larger centre for B agreed with my prediction, but its long upper tail and overlap with A made a claim of consistently better performance too strong. I added finite-pair counting and a timing-bound check after the initial summaries.',
+ changedSincePlanning:R`B's larger centre supported my expectation, but the overlap and B07 made the meaning of that advantage more specific. I checked whether any one object controlled the mean decision, counted useful individual comparisons and finally joined the omission and timing checks because both affect the same 0.20 s threshold.`,
  permissionStatus:'not-needed',permissionNotes:'This investigation uses an identified constructed log. It contains no personal data, actual school experiment, permission grant or recorded video of people.',
  firstMathsBridgePlacement:'before',firstType:'distribution',
  firstPurpose:'How do the distributions of the 12 three-drop helicopter means differ in position, overlap and unusual values?',
  firstDefinitions:definitions,
  firstPresentation:'Figure 1 shows every helicopter mean on a common seconds scale. Figure 2 uses median-of-halves quartiles, with a point for any value outside the stated 1.5 IQR fences.',
- firstMethodEvaluation:'A histogram of all 72 drops would conceal which readings came from the same object. A bar chart of two means would conceal the overlap and B07. I chose individual dots followed by boxes, retaining the three underlying readings in the working log. Neither representation by itself establishes population independence or a useful gain.',
+ firstMethodEvaluation:R`The three readings under one ID describe repeated releases of the same object. Pooling the 72 drops without object IDs would lose that structure, even though equal numbers of readings per object leave each design’s mean unchanged. I keep all readings in the working log and use the plots to compare the 12 object summaries per design. Population inference would require evidence beyond these supplied lists.`,
  variableDefinitions:definitions,
  specialistTerms:'A rotor is one of the two paper blades folded in opposite directions. In this investigation a flight lasts from release until the first floor contact. I compare complete designs A and B, not an isolated aerodynamic property.',
  accuracyQuantity:'Elapsed video-frame count and derived flight time',accuracySymbol:'F, t',accuracyUnit:'s',
@@ -99,153 +99,230 @@ const completionFields={
  technologyInput:'I formed all 144 ordered combinations of one A helicopter mean and one B helicopter mean. I counted positive differences and differences of at least 0.20 s using the original frame sums.',
  technologyOutcome:R`I obtained 121 strict B wins, three ties and 20 A wins. Exactly 86 of the 144 combinations had \(x_B-x_A\ge0.20\text{ s}\). Their mean difference was \(0.290\text{ s}\).`,
  technologyInterpretation:'I checked one row of pair counts by hand and derived why the mean of all pair differences equals the difference of the group means. The 144 outputs reuse the same 24 objects and do not provide 144 independent experimental observations.',
- courseWhy:'I developed descriptive statistics through an outlier-sensitivity calculation, an explicit finite probability space, expected difference and algebraic error bounds. Each calculation changes what I can say about the usefulness of the design comparison.',
- courseConcern:'I have kept the investigation within descriptive statistics, finite probabilities and algebra rather than presenting a test without a meaningful sampling claim. This is a scope judgement, not recorded teacher approval.',
+ courseWhy:R`AI SL descriptive statistics and finite probabilities provide the starting methods. I extend them by deriving the one-object mean updates, explaining why the mean of all pair differences equals the difference of group means, and propagating deterministic timing bounds. Each derivation is included where it first affects the decision.`,
+ courseConcern:R`The sample-SD convention and the tailored omission and error-bound arguments need explanation rather than a syllabus label alone. I derive the necessary algebra in the paper and distinguish calculated finite-list probabilities from population inference; no teacher approval is claimed.`,
  mathsLearning:'I learned that the average of all A–B differences can be comfortably above a practical threshold while many individual differences fall below it. I also found that a sensitivity check can be reassuring alone but less reassuring when combined with another uncertainty.',
  notationIssue:'I distinguish a drop time t, a helicopter mean x, a group mean and the B-minus-A difference Δ. I use s_g for sample standard deviation and write seconds as a unit, avoiding an unexplained reuse of the same symbol.',
- presentationIssue:'The narrative uses the object-level distributions and compact summaries. The 72 raw readings, all 24 omission diagnostics and all 144 pair calculations remain in the editable datasets rather than being printed as long tables.',
- referencesIssue:'I identify the source as the original constructed Helicopter Flight Log v1. The figures and arithmetic are my calculations from it; no external experiment, photograph, mathematical test or borrowed result is attributed to a fabricated source.',
- finalProofread:'I have read every page of the final PDF and Word documents and checked the reader’s figures at desktop and phone widths. I found no remaining missing text, clipped equation or incomplete caption in these versions. Peer, teacher and school-format checks remain unrecorded.',
+ presentationIssue:R`The three plots and three short tables carry the main comparison. All 72 readings, 24 omission diagnostics and 144 pair calculations remain in the working datasets. I inspected every PDF and Word page, the desktop and phone reader views, and all six figures at both widths.`,
+ referencesIssue:R`The data and hypothetical procedure are identified as Helicopter Flight Log v1. NIST/SEMATECH method references [M1] and [M2] support the sample-standard-deviation and box-plot conventions. The omission, finite-pair and timing-bound derivations are shown directly; no external experiment or image is claimed.`,
+ finalProofread:R`I checked the revised mathematical argument and source calculations and visually inspected every PDF and Word page, including the regenerated pages after shortening two passages. Desktop and phone view checks are complete. Peer, teacher and school-format checks remain unrecorded.`,
  draftComplete:'ready'
 };
 
 const stages=[
  {
   key:'object-distributions',title:'Comparing helicopters rather than counting drops',
-  bridge:'My first task was to choose a comparison unit that matched the design decision. A helicopter can be dropped several times without becoming several independent objects.',
-  purpose:R`I converted each elapsed-frame count to seconds using \(t=F/50\), then averaged the three times under each helicopter ID. Figure 1 plots these 12 means per design, with the same horizontal scale. A01 and B01 share a row number only; they are not matched experimental partners.`,
+  bridge:R`A design is represented by the objects made from it. Dropping one helicopter three times provides three readings of that object, not three different examples of the design.`,
+  purpose:R`For design \(g\) and helicopter \(i\), I use its three-drop mean \(x_{gi}=(t_{gi1}+t_{gi2}+t_{gi3})/3\). Figure 1 gives each of these means one dot. This matches a choice between helicopters, while retaining all three releases rather than selecting an object's best flight.`,
   technique:'Repeated-reading aggregation and comparative dot plots',methodId:'follow-journey',kind:'other',knowledge:'syllabus',
   observationText:'The B means tend to lie to the right of A, but the ranges overlap from 1.80 to 2.12 s. B07 has a three-drop mean of 2.82 s, separated from the next B mean at 2.38 s. I need to quantify the centres and spread before deciding whether the shift is useful.',
-  result:R`For A01 the three counts are 88, 93 and 95 frames. Its times are \(1.76\), \(1.86\) and \(1.90\text{ s}\), giving
-\[x_{A1}=\frac{88+93+95}{3\times50}=1.84\text{ s}.\]
-I used the same calculation for every object. There are 36 drops of each design, but the distribution I compare has \(n_A=n_B=12\) helicopter means. The 36 readings are useful for describing repeated drops; treating them as 36 separate manufactured helicopters would change the meaning of the comparison.
+  result:R`For A01 the counts 88, 93 and 95 give times of \(1.76\), \(1.86\) and \(1.90\text{ s}\). Its summary is therefore
+\[
+x_{A1}=\frac{88+93+95}{3\times50}=1.84\text{ s}.
+\]
+I repeat this for all objects, giving \(n_A=n_B=12\) means. Because every object has three readings, averaging these twelve means gives the same group mean as averaging its 36 drop times. The reason for keeping the object summaries is the meaning of their variation and of a later A–B comparison, not a change to that overall average.
 
-The A means extend from \(1.64\) to \(2.12\text{ s}\); the B means extend from \(1.80\) to \(2.82\text{ s}\). Their ranges overlap from \(1.80\) to \(2.12\text{ s}\), although most B means lie further to the right. B07, at \(2.82\text{ s}\), is visibly separated from the next B mean, \(2.38\text{ s}\). I retained it at this stage rather than deciding from the plot that it must be wrong.`,
-  interpretation:'The plot supports my initial expectation that B usually stays airborne longer within this log. It also shows two qualifications: the designs overlap, and one B helicopter has a much longer mean than the others. I need numerical centres and spreads before deciding whether the difference is useful.',
-  limitations:'A three-drop mean reduces the visible influence of a single release, but does not establish how the same object would perform on its next drop. Distinct IDs identify the experimental units in the scenario; they do not prove statistical independence or representativeness of a real experiment.',
+A's means range from \(1.64\) to \(2.12\text{ s}\), and B's from \(1.80\) to \(2.82\text{ s}\). The intervals overlap between \(1.80\) and \(2.12\text{ s}\). B07, at \(2.82\text{ s}\), is separated from the next B mean, \(2.38\text{ s}\); it remains included because an isolated dot alone gives no reason to call a record wrong.`,
+  interpretation:R`B's distribution is shifted towards longer times, but some A means exceed some B means. This overlap limits the design preference I can draw from the dots alone.`,
+  limitations:R`The comparison describes three-drop means. It does not predict an object's next release or measure its repeatability separately. A01 and B01 are different objects; their shared row number supplies no matching condition.`,
   localTakeaway:'The 12 B means tend to be larger, but the ranges overlap and B07 may affect average-based comparisons.',
-  nextQuestion:'How large is the difference in centre compared with the spread of the two groups?',
-  nextWhy:'I need to compare the observed advantage with my 0.20 s criterion while accounting for the overlap and the long upper tail.',
-  mathsInsight:'The number of measurements and the number of experimental units are different. Equal three-drop summaries give each constructed helicopter one place in the comparison.',
-  methodChangeReason:'The individual dots revealed both a shift and an unusual value, so I compared resistant and mean-based summaries together.',
+  nextQuestion:R`The useful-gain decision now requires the size of the shift, not just its direction.`,
+  nextWhy:R`A mean and a median will show whether two different descriptions of centre support the same decision, while spread measures will help locate the effect of B07.`,
+  mathsInsight:R`Equal numbers of drops make the pooled and object-level group means equal, but the two distributions answer different questions. I compare object summaries because the choice is between helicopters.`,
+  methodChangeReason:R`The visible overlap and separated B07 value make both centre and the location of extra spread relevant.`,
   outcomeId:'different-shapes'
  },
  {
   key:'centres-and-spreads',title:'Measuring the average gain and the variability',
-  bridge:'The first plot suggested a shift towards longer flights for B, but the size of that shift and its dependence on the long tail were still unclear.',
-  purpose:'I calculated means and medians to describe the centres, and sample standard deviations and interquartile ranges to describe the spreads. I used median-of-halves quartiles consistently in Figure 2 and Table 1.',
-  technique:'Comparative means, medians, standard deviations and interquartile ranges',methodId:'follow-journey',kind:'calculation',knowledge:'syllabus',
-  result:R`The sums of the 12 helicopter means are \(\sum x_A=22.36\text{ s}\) and \(\sum x_B=25.84\text{ s}\). Therefore
-\[\bar x_A=\frac{22.36}{12}\approx1.86333\text{ s},\qquad
-\bar x_B=\frac{25.84}{12}\approx2.15333\text{ s},\]
-and
-\[\Delta=\bar x_B-\bar x_A=0.290\text{ s}.\]
-This is approximately \(100(0.290/1.86333)\approx15.56\%\) of A's mean, and exceeds my \(0.20\text{ s}\) criterion by \(0.090\text{ s}\).
+  bridge:R`B07 makes it especially important to distinguish the middle of a group from its long upper tail. A single summary of variability could conceal that difference.`,
+  purpose:R`I compare the means and medians, then two measures of spread. For twelve sorted values, my quartiles are the medians of the lower six and upper six; their difference, \(\mathrm{IQR}=Q_3-Q_1\), describes the middle half. Figure 2 uses this convention. The sample standard deviation \(s_g\) uses every value's distance from its group mean, so it can reveal variation that the IQR leaves outside the box.`,
+  technique:'Comparative means, medians, standard deviations and interquartile ranges',methodId:'follow-journey',kind:'calculation',knowledge:'mixed',
+  unfamiliarComponent:R`Sample-SD denominator convention and the algebraic identity for the sum of squared deviations.`,
+  knowledgeNotes:R`Means, medians, quartiles and standard deviation are AI SL content. I explain the reported sample-SD convention, its distinction from dividing by n, and derive the calculation identity in the printed result.`,
+  researchSource:R`NIST/SEMATECH e-Handbook, §1.3.5.6 Measures of Scale [M1], https://www.itl.nist.gov/div898/handbook/eda/section3/eda356.htm; §1.3.3.7 Box Plot [M2], https://www.itl.nist.gov/div898/handbook/eda/section3/boxplot.htm. Accessed 23 October 2026.`,
+  understandingExample:R`Because \(\sum x_i=n\bar x\), expanding \(\sum(x_i-\bar x)^2\) gives \(\sum x_i^2-(\sum x_i)^2/n\). For A this produces \(s_A\approx0.15011\text{ s}\).`,
+  result:R`Writing \(\bar x_g\) for the mean of design \(g\)'s twelve object means, the totals give
+\[
+\bar x_A=\frac{22.36}{12}\approx1.86333\text{ s},\qquad
+\bar x_B=\frac{25.84}{12}\approx2.15333\text{ s}.
+\]
+Their difference is
+\[
+\Delta=\bar x_B-\bar x_A=0.290\text{ s},
+\]
+about \(15.56\%\) of A's mean. It exceeds my \(0.20\text{ s}\) criterion by \(0.090\text{ s}\).
 
-For spread I used \(s_g=\sqrt{\sum(x_{gi}-\bar x_g)^2/(12-1)}\). For example, \(\sum x_A^2=41.912\text{ s}^2\), so
-\[s_A=\sqrt{\frac{41.912-22.36^2/12}{11}}\approx0.15011\text{ s}.\]
-The analogous calculation from \(\sum x_B^2=56.448\text{ s}^2\) gives \(s_B\approx0.27067\text{ s}\). I report the usual sample standard deviation of the 12 means; it is a descriptive spread, not the standard error of a population estimate.
+For standard deviation I use the conventional sample formula [M1]: subtract the group mean from each value, square the differences, divide their total by \(n-1\), and take the square root. Here \(n\) is the number of object means and the root restores seconds:
+\[
+s_g=\sqrt{\frac{\sum_i(x_{gi}-\bar x_g)^2}{n-1}}.
+\]
+The \(n-1\) denominator identifies the reported sample-SD convention; it is not a claim that these constructed objects are a random sample. Dividing by \(n\) would instead describe the full finite list's standard deviation. For the two groups of twelve, that would multiply both reported values by \(\sqrt{11/12}\), leaving their ratio unchanged.
 
-For 12 sorted values, I take the median of the lower six and the median of the upper six. A has \(Q_1=1.74\), median \(1.86\), and \(Q_3=1.98\), all in seconds. B has \(Q_1=1.97\), median \(2.12\), and \(Q_3=2.27\). Thus the median difference is \(0.26\text{ s}\), and the IQRs are \(0.24\) and \(0.30\text{ s}\).
+To show the calculation behind the output, \(\sum x_i=n\bar x\) gives
+\[
+\begin{aligned}
+\sum(x_i-\bar x)^2
+&=\sum x_i^2-2\bar x\sum x_i+n\bar x^2\\
+&=\sum x_i^2-\frac{(\sum x_i)^2}{n}.
+\end{aligned}
+\]
+The sums of squares are \(41.912\text{ s}^2\) for A and \(56.448\text{ s}^2\) for B. Thus
+\[
+s_A=\sqrt{\frac{41.912-22.36^2/12}{11}}
+\approx0.15011\text{ s},
+\]
+and the same calculation for B gives \(s_B\approx0.27067\text{ s}\). Squaring gives an unusually distant value more influence than a nearby one; the IQR provides a complementary comparison of the middle.
 
-Using the \(1.5\times\mathrm{IQR}\) screening rule, B's upper fence is
-\[2.27+1.5(0.30)=2.72\text{ s}.\]
-B07 lies above it. The upper B whisker reaches the largest non-flagged mean, \(2.38\text{ s}\); the point at \(2.82\text{ s}\) remains visible.`,
-  interpretation:R`Both centre measures favour B by more than \(0.20\text{ s}\). However, B's standard deviation is about 1.80 times A's, whereas its IQR is only 1.25 times A's. The middle halves are more similar in spread than the standard deviations suggest. This discrepancy makes the upper tail worth investigating. The mean gain is also only about 1.07 of B's standard deviations, which helps explain why a larger group average can coexist with substantial overlap; this ratio is descriptive, not a test statistic.`,
-  limitations:'The 1.5 IQR rule flags an unusual value under a stated convention. It does not identify a recording mistake, justify deletion or establish a probability that an observation is genuine. I have not assumed normally distributed flights or equal group variances.',
+A has \(Q_1=1.74\), median \(1.86\) and \(Q_3=1.98\), in seconds. B has \(Q_1=1.97\), median \(2.12\) and \(Q_3=2.27\). The median gain is therefore \(0.26\text{ s}\), while the IQRs are \(0.24\) and \(0.30\text{ s}\).
+
+I use the conventional box-plot fence [M2], \(Q_3+1.5\mathrm{IQR}\), to flag a value unusually far above the middle half. For B it is
+\[
+2.27+1.5(0.30)=2.72\text{ s}.
+\]
+B07 at \(2.82\text{ s}\) is beyond the fence; \(2.38\text{ s}\), the largest mean inside, ends the whisker.`,
+  interpretation:R`Both centre measures exceed the useful-gain threshold, so the direction of the decision does not depend on using the mean. However, B's standard deviation is about \(1.80\) times A's, while its IQR is only \(1.25\) times A's. The extra spread is therefore more pronounced when distant values receive weight. That identifies the upper tail as a concrete reason to test the mean recommendation's sensitivity.`,
+  limitations:R`The fence is a screening convention, not proof of an erroneous entry. These descriptive calculations also require neither normally distributed flights nor equal group variances; I have not used them to make an inferential claim.`,
   localTakeaway:'B has a 0.290 s larger mean and a 0.26 s larger median, but its longer upper tail raises the standard deviation substantially.',
-  nextQuestion:'Could omitting one helicopter, especially B07, remove the useful mean gain?',
-  nextWhy:'The mean-based recommendation needs a direct influence check before I rely on it.',
-  mathsInsight:'Comparing the IQR with the standard deviation located the source of the extra spread more precisely than calling B simply less consistent.',
-  methodChangeReason:'The disagreement between the two spread comparisons led me to diagnose the effect of each object, keeping the source data intact.',
+  nextQuestion:R`The unresolved issue is whether one helicopter contributes enough to move the mean gain across 0.20 s.`,
+  nextWhy:R`Recalculating the same decision after each whole-object omission will measure that influence directly, while preserving every record in the main comparison.`,
+  mathsInsight:R`The sample-SD calculation weights squared distances, whereas the IQR depends on the middle ordered values. Their different spread ratios locate the aspect of variation that needs checking.`,
+  methodChangeReason:R`The tail-sensitive spread is substantially larger for B, so I check the mean-gain threshold under whole-object omissions rather than declaring B07 invalid.`,
   outcomeId:'centre'
  },
  {
   key:'single-object-sensitivity',title:'Checking whether one helicopter controls the conclusion',
-  bridge:'B07 was unusual under the box-plot rule. I investigated its influence while retaining it in the main analysis.',
-  purpose:'I recalculated the mean difference after omitting each of the 24 helicopters in turn. Each diagnostic removes one object and its three drops together. Table 2 shows the full result and the diagnostic cases that define the important comparisons; the complete set of 24 calculations is saved with the project.',
-  technique:'One-helicopter-at-a-time sensitivity and algebraic mean updates',methodId:'follow-journey',kind:'calculation',knowledge:'syllabus',
-  result:R`B07's counts are 133, 142 and 148 frames, giving \(2.66\), \(2.84\) and \(2.96\text{ s}\). All three are longer than the next-largest helicopter mean, so its long mean is not produced by just one unusually long drop. This observation does not prove that the procedure was unbiased; it explains why deleting a single reading would not answer my question.
+  bridge:R`Each omission will be a separate diagnostic; none will replace the all-object comparison. I keep the same useful-gain threshold so that any change in the decision comes from the omitted object.`,
+  purpose:R`For each of the 24 IDs, I temporarily remove that helicopter and its three readings, recompute the two group means and their difference, then restore it before checking the next ID. The affected group has eleven objects and the other still has twelve. Table 2 shows the full result and selected extreme diagnostics; all 24 calculations remain in the working data.`,
+  technique:'One-helicopter-at-a-time sensitivity and algebraic mean updates',methodId:'follow-journey',kind:'calculation',knowledge:'mixed',
+  unfamiliarComponent:R`Whole-object omission sensitivity and exact mean-update formulas.`,
+  knowledgeNotes:R`I define and carry out all 24 omissions, restore the full list between cases and derive each update by removing one contribution from a twelve-object total. This is an explained extension of mean arithmetic, not a sampling interval.`,
+  researchSource:R``,
+  understandingExample:R`Omitting B07 leaves \((25.84-2.82)/11\) for B's mean, so the gain is approximately \(0.229394\text{ s}\). The full-log result still includes B07.`,
+  result:R`B07's counts give \(2.66\), \(2.84\) and \(2.96\text{ s}\). All three exceed the next-largest object mean, \(2.38\text{ s}\), so its long mean cannot be explained by only one long drop.
 
-If I omit B helicopter \(j\), its group mean becomes \((12\bar x_B-x_{Bj})/11\). Therefore its diagnostic difference is
-\[\Delta_{-B_j}=\Delta+\frac{\bar x_B-x_{Bj}}{11}.\]
-For B07,
-\[\Delta_{-B07}=\frac{25.84-2.82}{11}-\frac{22.36}{12}
-\approx0.229394\text{ s}.\]
-The reduced B mean is approximately \(2.09273\text{ s}\), and its sample standard deviation becomes \(0.17917\text{ s}\). Removing this object reduces the apparent variability markedly, but the mean difference still exceeds \(0.20\text{ s}\).
+I write \(\Delta_{-B_j}\) for the mean gain with B helicopter \(j\) omitted. The subscript labels the omission. Removing \(x_{Bj}\) from B's total and dividing the remainder among eleven objects gives
+\[
+\begin{aligned}
+\Delta_{-B_j}
+&=\frac{12\bar x_B-x_{Bj}}{11}-\bar x_A\\
+&=\Delta+\frac{\bar x_B-x_{Bj}}{11}.
+\end{aligned}
+\]
+The last term shows the direction of influence: omitting a B mean above its group mean reduces the advantage. For B07,
+\[
+\Delta_{-B07}=\frac{25.84-2.82}{11}-\frac{22.36}{12}
+\approx0.229394\text{ s}.
+\]
+Its omission leaves a B mean of approximately \(2.09273\text{ s}\). Repeating the standard-deviation calculation with eleven values and denominator ten gives \(s_B\approx0.17917\text{ s}\), a marked reduction from \(0.27067\text{ s}\).
 
-Similarly, omitting A helicopter \(i\) gives
-\[\Delta_{-A_i}=\Delta+\frac{x_{Ai}-\bar x_A}{11}.\]
-Across all 24 one-object omissions, the differences range from approximately \(0.229394\text{ s}\), omitting B07, to \(0.322121\text{ s}\), omitting B06. Omitting an A object gives the narrower range \(0.269697\) to \(0.313333\text{ s}\). The formulas explain the extremes: removing the largest B mean decreases B's advantage most; removing its smallest mean increases it most.`,
-  interpretation:R`No single helicopter is solely responsible for the mean difference exceeding my criterion. B07 increases the mean advantage by about \(0.0606\text{ s}\), but the advantage remains about \(0.2294\text{ s}\) without it. I kept all 24 objects in my main results because the log provides no reason to label B07 erroneous. The smaller margin of only \(0.0294\text{ s}\) in that diagnostic will matter when I examine timing precision.`,
-  limitations:'These are sensitivity calculations, not 24 new experiments or an uncertainty interval. They examine the absence of one supplied object at a time, not several atypical objects, a different manufacturing process or a systematic bias affecting a whole design.',
+Omitting an A helicopter instead changes the subtracted mean:
+\[
+\begin{aligned}
+\Delta_{-A_i}
+&=\bar x_B-\frac{12\bar x_A-x_{Ai}}{11}\\
+&=\Delta+\frac{x_{Ai}-\bar x_A}{11}.
+\end{aligned}
+\]
+Across all 24 omissions, the gain ranges from about \(0.229394\text{ s}\), omitting B07, to \(0.322121\text{ s}\), omitting B06. The A-only omissions range from about \(0.269697\) to \(0.313333\text{ s}\). The formulas explain the overall extremes: removing B's largest mean reduces its advantage most, and removing its smallest increases it most.`,
+  interpretation:R`Every one-object omission preserves a mean gain above \(0.20\text{ s}\). B07 raises the full-log gain by about \(0.0606\text{ s}\), but does not alone create the useful mean advantage. I kept all 24 objects in the main results because the log supplies no evidence of an erroneous record. The smallest diagnostic margin is only about \(0.0294\text{ s}\); I retain that value for the later timing check.`,
+  limitations:R`This is a finite set of sensitivity calculations, not 24 new experiments or a statistical uncertainty interval. It tests one absence at a time; it does not establish stability under several omissions or a change to the complete production process.`,
   localTakeaway:'The useful mean gain survives every single-object omission, although its smallest margin above 0.20 s is only about 0.0294 s.',
-  nextQuestion:'For how many particular A–B choices is the improvement at least 0.20 s?',
-  nextWhy:'The mean comparison is reasonably stable, but it still does not quantify the overlap seen in the first figure.',
-  mathsInsight:'An omission formula identifies both the size and direction of influence; I do not need to treat an outlier label as an instruction to remove data.',
-  methodChangeReason:'Having checked the average, I changed the object of the comparison to a specific choice from each finite list.',
+  nextQuestion:R`The mean decision survives this check, but it still leaves the overlap in Figure 1 unquantified.`,
+  nextWhy:R`I now examine each possible A–B object comparison, so that a large average cannot stand in for the frequency of a useful individual gain.`,
+  mathsInsight:R`Subtracting one contribution from a fixed group total gives an exact influence formula. The sign and size of the removed object's deviation explain the diagnostic result.`,
+  methodChangeReason:R`Single-object sensitivity answers whether the mean depends on one record; exact pair counting answers the separate consistency question in my aim.`,
   outcomeId:'centre'
  },
  {
   key:'finite-pair-comparison',title:'Separating an average improvement from a particular advantage',
-  bridge:'The mean result favoured B even without any one object. I now returned to the overlapping distributions to find what that result means for a particular comparison.',
-  purpose:R`I defined a finite selection experiment: choose one of the 12 recorded A means uniformly, and independently choose one of the 12 recorded B means uniformly. Each ordered pair has probability \(1/144\). I calculated \(D_{ij}=x_{Bj}-x_{Ai}\) for all \(12\times12=144\) possible choices. Figure 3 displays the distribution of these differences; it contains no additional experimental data.`,
-  technique:'Finite sample-space counting and expected difference',methodId:'follow-journey',kind:'calculation',knowledge:'syllabus',
-  result:R`B's recorded mean is strictly larger in 121 combinations, equal in three and smaller in 20. Thus, under this explicit uniform-selection rule,
-\[P(D>0)=\frac{121}{144}\approx0.8403.\]
-The useful-gain question is stricter. Exactly 86 combinations have \(D\ge0.20\text{ s}\), giving
-\[P(D\ge0.20)=\frac{86}{144}\approx0.5972.\]
-There are three pairs exactly on the \(0.20\text{ s}\) boundary; I include them as specified in my criterion. I compared the integer frame sums before division so floating-point rounding could not change that boundary decision.
-
-As a check, A01's \(1.84\text{ s}\) mean requires a B mean of at least \(2.04\text{ s}\) for a useful gain; eight of the 12 B means qualify. For A05, at \(2.12\text{ s}\), only B03 at \(2.38\) and B07 at \(2.82\) meet the required \(2.32\text{ s}\). A uniform choice of A therefore averages comparisons with very different prospects of a useful gain.
-
-The mean of all the pair differences is not a new estimate. Algebra gives
+  bridge:R`An average gain can combine many small improvements with a few large ones. To describe consistency, I need to know how often the actual A–B differences reach my threshold.`,
+  purpose:R`I define a selection rule: choose one of the twelve A means uniformly, and independently choose one of the twelve B means uniformly. Uniformly means each listed object has chance \(1/12\); the independent choices give each ordered pair chance \((1/12)(1/12)=1/144\). This gives the objects equal weight without pretending to know which will be manufactured or chosen in reality. For pair \((i,j)\), let \(D_{ij}=x_{Bj}-x_{Ai}\). I calculate all \(12\times12=144\) differences.`,
+  technique:'Finite sample-space counting and expected difference',methodId:'follow-journey',kind:'calculation',knowledge:'mixed',
+  unfamiliarComponent:R`The tailored finite pair-selection model and the double-sum proof connecting expected difference to group means.`,
+  knowledgeNotes:R`Finite probabilities and expected value are course methods. I define the equal pair weights and explain the double sum in words, then count how often every group value occurs to derive the identity in the printed result.`,
+  researchSource:R``,
+  understandingExample:R`Each B mean appears in twelve differences and each A mean is subtracted twelve times. Dividing the total by 144 leaves \(\bar x_B-\bar x_A=0.290\text{ s}\), whereas only 86 differences reach \(0.20\text{ s}\).`,
+  result:R`B is strictly higher in 121 comparisons, equal in three and lower in 20. Probability under the stated rule is the number of qualifying pairs divided by 144, so
 \[
-E(D)=\frac{1}{144}\sum_{i=1}^{12}\sum_{j=1}^{12}(x_{Bj}-x_{Ai})
-=\frac{12\sum_jx_{Bj}-12\sum_ix_{Ai}}{144}
-=\bar x_B-\bar x_A=0.290\text{ s}.
+P(D>0)=\frac{121}{144}\approx0.8403.
 \]
-This expected difference can exceed \(0.20\text{ s}\) even though only about \(59.7\%\) of the individual combinations reach it. The differences range from \(-0.32\text{ s}\) to \(1.18\text{ s}\), so the sizes of gains and losses matter as well as their counts.`,
-  interpretation:'For a uniform choice from these two finite lists, B has a higher recorded mean in about 84% of comparisons, but provides the full useful gain in only about 60%. This changes how I would describe the recommendation: B is attractive for its average performance, while a useful advantage in a particular comparison is much less certain. A probability of 0.5972 here is a property of my stated list-selection experiment, not the chance that a newly made B helicopter will outperform a newly made A helicopter.',
-  limitations:'The 144 differences reuse the same 24 object means many times. They are not independent experimental trials, and I do not use 144 as a statistical sample size or attach a binomial confidence interval. The selection rule concerns three-drop means, not the outcome of a single future drop.',
+For the useful-gain question, exactly 86 pairs reach \(0.20\text{ s}\):
+\[
+P(D\ge0.20)=\frac{86}{144}\approx0.5972.
+\]
+Three pairs are exactly on the boundary and count as useful. Since an object mean is its frame sum divided by 150, I test whether B's frame sum exceeds A's by at least \(150(0.20)=30\) frames. Counting integers avoids a rounded decimal deciding whether equality is included. Figure 3 displays these differences in bins; the threshold counts use the original values.
+
+For example, A01's \(1.84\text{ s}\) requires a B mean of at least \(2.04\text{ s}\); eight B objects qualify. A05's \(2.12\text{ s}\) requires at least \(2.32\text{ s}\), met only by B03 at \(2.38\) and B07 at \(2.82\text{ s}\). The chosen A object therefore matters even though every one receives the same weight.
+
+The expected difference \(E(D)\) is the probability-weighted average of all possible differences. With equal probabilities, it is their ordinary mean. In the double sum below, I first add over all twelve B choices for one A, then repeat for each A. Each B mean appears twelve times and each A mean is subtracted twelve times:
+\[
+\begin{aligned}
+E(D)&=\frac{1}{144}\sum_{i=1}^{12}\sum_{j=1}^{12}(x_{Bj}-x_{Ai})\\
+&=\frac{12\sum_jx_{Bj}-12\sum_ix_{Ai}}{144}\\
+&=\bar x_B-\bar x_A=0.290\text{ s}.
+\end{aligned}
+\]
+This identity connects the pairwise result to the earlier mean calculation. The differences range from \(-0.32\) to \(1.18\text{ s}\), so an average above \(0.20\text{ s}\) can coexist with many gains below it: their sizes as well as their frequencies determine the average.`,
+  interpretation:R`The distinction in my aim is now numerical. B is higher in about 84% of these recorded comparisons, but reaches the full useful gain in about 60%. I can prefer it for average performance without promising the chosen improvement for every particular pair.`,
+  limitations:R`The 144 differences reuse the same 24 means; they are not independent experimental trials. Independence here belongs to the defined act of choosing from two lists, not to the drops that produced them. I do not treat 144 as a new experimental sample size, and the probability concerns recorded three-drop means rather than future single flights.`,
   localTakeaway:'The expected finite-list difference is 0.290 s, but only 86/144 pair choices give the chosen 0.20 s useful gain.',
-  nextQuestion:'Could the frame-selection precision change either the average recommendation or the useful-pair count?',
-  nextWhy:'Some pair differences lie exactly on the criterion, and the smallest omission margin is small, so display precision alone cannot establish the stability of the decision.',
-  mathsInsight:'The expected difference equals the difference of means, whereas the probability of exceeding a threshold depends on the whole distribution of pair differences.',
-  methodChangeReason:'The threshold count exposed boundary cases, which gave me a specific reason to propagate a stated timing error.',
+  nextQuestion:R`Three useful pairs lie exactly on 0.20 s, and the smallest omission margin was only about 0.0294 s.`,
+  nextWhy:R`These specific margins make frame-selection precision relevant to both parts of the decision. I therefore test a stated timing bound instead of inferring accuracy from the displayed decimals.`,
+  mathsInsight:R`Expected gain averages the sizes of all differences; the threshold probability counts which differences qualify. Equal pair probabilities arise from the stated selection rule, not from extra experimental observations.`,
+  methodChangeReason:R`The exact boundary cases and the small omission margin identify the quantities whose timing sensitivity must be checked.`,
   outcomeId:'sampling'
  },
  {
   key:'timing-bound',title:'Testing the conclusion against frame-selection error',
-  bridge:'The frame counts fix the arithmetic, but their 0.02 s spacing would not make a real measured duration exact. I examined a specific timing scenario before stating my final recommendation.',
-  purpose:R`I assumed a fixed rate of 50 frames per second and that each release and first-contact event could be located within half a frame of its recorded endpoint. I used worst-case bounds, without assuming independent or cancelling timing errors. Table 3 separates the full-data result from the B07-omission diagnostic.`,
-  technique:'Endpoint error propagation and threshold sensitivity bounds',methodId:'follow-journey',kind:'calculation',knowledge:'syllabus',
-  result:R`One frame lasts \(1/50=0.02\text{ s}\). Each endpoint can therefore be displaced by at most \(0.01\text{ s}\). Since duration is end time minus start time, the error in one duration satisfies
-\[|\varepsilon_t|\le0.01+0.01=0.02\text{ s}.\]
-For a three-drop mean,
-\[|\varepsilon_x|=\left|\frac{\varepsilon_1+\varepsilon_2+\varepsilon_3}{3}\right|
-\le\frac{0.02+0.02+0.02}{3}=0.02\text{ s}.\]
-The bound does not become \(0.02/3\): all errors could have the same sign. Averaging the 12 object means does not reduce this worst-case bound either. Consequently the B-minus-A group difference and each pair difference can shift by at most \(0.04\text{ s}\).
+  bridge:R`The fixed counts make the arithmetic exact, but the hypothetical video procedure would still require selecting release and contact endpoints. I now ask how a specified endpoint error could change the mean gain and the useful-pair count.`,
+  purpose:R`I assume the frame rate is exactly 50 per second and each identifiable event is assigned to its nearest frame. That idealisation places an endpoint within half a frame of its recorded position. It is a sensitivity assumption, not a calibration established by this log. I allow the errors to share a direction, so any conclusion that survives is valid without assuming random, independent or cancelling errors. Table 3 keeps the full-data result separate from the B07-omission diagnostic.`,
+  technique:'Endpoint error propagation and threshold sensitivity bounds',methodId:'follow-journey',kind:'calculation',knowledge:'mixed',
+  unfamiliarComponent:R`Deterministic propagation of endpoint errors, attainable count bounds and combined sensitivity.`,
+  knowledgeNotes:R`I define each signed correction, bound a difference by the sum of magnitudes, and show why averaging does not reduce a shared bound. I then translate the difference bound into sufficient and necessary threshold conditions and exhibit simultaneous shifts attaining both counts.`,
+  researchSource:R``,
+  understandingExample:R`If all B means move down \(0.02\text{ s}\) and all A means move up \(0.02\text{ s}\), every difference falls by \(0.04\text{ s}\). Exactly the 78 original differences at least \(0.24\text{ s}\) remain useful.`,
+  result:R`One frame lasts \(1/50=0.02\text{ s}\), so the allowed endpoint correction is at most \(0.01\text{ s}\). Let \(e_s\) and \(e_e\) be the signed corrections to the recorded start and end times. Since duration is end minus start, its correction is \(\varepsilon_t=e_e-e_s\). Its magnitude cannot exceed the sum of the endpoint magnitudes:
+\[
+|\varepsilon_t|\le|e_e|+|e_s|\le0.01+0.01=0.02\text{ s}.
+\]
+For corrections \(\varepsilon_1,\varepsilon_2,\varepsilon_3\) to three drops, their mean has correction
+\[
+|\varepsilon_x|=
+\left|\frac{\varepsilon_1+\varepsilon_2+\varepsilon_3}{3}\right|
+\le\frac{0.02+0.02+0.02}{3}=0.02\text{ s}.
+\]
+Averaging cannot reduce this worst-case bound: all three corrections may be \(+0.02\), or all \(-0.02\). The same argument for twelve object means, or eleven after an omission, gives the same \(0.02\text{ s}\) bound for a group mean. Subtracting two bounded means allows a \(0.04\text{ s}\) change to either a group difference or an individual pair difference.
 
-For the full log, the corresponding mean-difference interval is
-\[0.290-0.040\le\Delta_{\rm adjusted}\le0.290+0.040,
-\qquad 0.250\le\Delta_{\rm adjusted}\le0.330.\]
-It remains above \(0.20\text{ s}\). More generally, if each duration has error bounded by \(\delta\), the lowest possible difference is \(0.290-2\delta\). The full-data useful mean gain is guaranteed under that error model exactly while \(\delta\le0.045\text{ s}\).
+Writing \(\Delta_{\rm adjusted}\) for the group difference after any allowed corrections, the full log gives
+\[
+0.290-0.040\le\Delta_{\rm adjusted}\le0.290+0.040,
+\]
+so its possible values lie between \(0.250\) and \(0.330\text{ s}\), all above the criterion. To see the limit of that protection, let \(\delta\ge0\) be a bound on each duration's correction, in seconds. The lowest allowed mean gain is \(0.290-2\delta\). Solving
+\[
+0.290-2\delta\ge0.20
+\quad\Longleftrightarrow\quad
+\delta\le0.045\text{ s}
+\]
+gives the largest duration-error bound that guarantees the full-data useful mean gain. The lower value is attainable by shifting every B duration down by \(\delta\) and every A duration up by \(\delta\).
 
-For the pair count, any recorded difference of at least \(0.24\text{ s}\) remains at least \(0.20\) after the largest adverse shift. There are 78 such pairs. A recorded difference below \(0.16\text{ s}\) cannot reach \(0.20\) even after the largest favourable shift; 95 pairs have differences of at least \(0.16\). Thus
-\[\frac{78}{144}\le P(D_{\rm adjusted}\ge0.20)\le\frac{95}{144},\]
-or approximately \(54.2\%\) to \(66.0\%\), for the same uniform selection from the lists. These bounds can be attained within this error model: shifting every B mean down by \(0.02\) and every A mean up by \(0.02\) attains the lower count; reversing the shifts attains the upper count.
+For a pair to remain useful after an adverse \(0.04\text{ s}\) shift, its recorded difference must be at least \(0.24\text{ s}\); 78 pairs meet that condition. Conversely, a difference below \(0.16\text{ s}\) cannot reach \(0.20\) even with the favourable shift; only 95 pairs reach \(0.16\). With the same uniform selection rule,
+\[
+\frac{78}{144}\le P(D_{\rm adjusted}\ge0.20)\le\frac{95}{144},
+\]
+about \(54.2\%\) to \(66.0\%\). These are attainable bounds for the whole count, not just separate guesses for each pair: move every B mean down by \(0.02\) and every A mean up by \(0.02\) to attain the lower count, and reverse the shifts for the upper count.
 
-Finally, combining the B07-omission diagnostic with the adverse timing bound gives
-\[0.2293939-0.040\approx0.1893939\text{ s},\]
-which is below the useful-gain criterion. Omission alone and timing alone preserved that criterion, but their combination need not.`,
-  interpretation:'The full-data recommendation is stable under the specified frame-selection bound, and the finite-list probability still indicates that a useful gain is far from guaranteed in every comparison. The combined sensitivity check prevents a stronger claim: if I both discount the most favourable B object and allow a design-wide timing shift, the mean gain need not reach 0.20 s. This does not justify deleting B07 or establish that such a shift occurred. It identifies how little evidence is available for an unconditional practical guarantee.',
-  limitations:'These are deterministic sensitivity bounds, not a confidence interval. The half-frame assumption requires the two events to be identifiable; occlusion, inconsistent release height, frame-rate error or changes to the paper over repeated drops could create other errors. No supplied video or physical measurements validate those conditions.',
+The earlier omission check concerns the same mean-gain decision. Combining its least favourable case with the allowed adverse timing shift gives
+\[
+\Delta_{-B07}-0.040\approx0.189394\text{ s},
+\]
+which falls below \(0.20\text{ s}\). Omission alone and timing alone preserve the criterion, but the combined assumptions need not.`,
+  interpretation:R`The full-log mean recommendation survives this timing model, while a useful individual advantage remains far from certain. The combined check identifies the limit of a stronger claim: discounting B07 and allowing a shared adverse timing shift can remove the useful mean gain. That is a conditional scenario, not evidence that either adjustment should be made to the recorded results.`,
+  limitations:R`These are deterministic sensitivity bounds, not a confidence interval. They cover identifiable endpoints and a fixed frame rate; they do not cover an obscured event, inconsistent release height or a changed paper object. No supplied video verifies the half-frame assumption.`,
   localTakeaway:'All recorded objects support B for mean performance, including the stated timing bound, but the useful-gain claim is conditional and individual pair outcomes remain variable.',
-  nextQuestion:'Would the same useful mean gain persist for a new independently constructed batch under a recorded, interleaved drop protocol?',
-  nextWhy:'I have answered the fixed-log question. Testing a new batch with traceable release conditions would address the unresolved transfer to real objects more directly than adding another statistic to the same constructed records.',
-  mathsInsight:'Averaging reduces neither a worst-case shared error nor the need to state what the error bound covers. Two individually reassuring sensitivity checks can have a less reassuring combined effect.',
-  methodChangeReason:'I joined the timing and object-influence checks because both affect the same 0.20 s decision, then stopped rather than claiming a population result.',
+  nextQuestion:R`The calculations now answer both the average-gain question and the frequency of a useful recorded comparison, with the important sensitivity limits attached.`,
+  nextWhy:R`Another statistic on the same list would not establish transfer to real objects. I therefore stop the calculation here and state the design choice within the evidence available.`,
+  mathsInsight:R`The same-direction construction explains why averaging does not shrink the worst-case error. It also proves the pair-count bounds can be attained simultaneously. Two individually reassuring checks need not remain reassuring when combined.`,
+  methodChangeReason:R`The omission and timing checks alter the same threshold decision, so combining them is necessary to state the limits of the recommendation before concluding.`,
   outcomeId:'sampling'
  }
 ];
@@ -292,14 +369,14 @@ export const HELICOPTER_GROUPS_SPEC={
   idea:'I want to compare two paper helicopter designs without allowing one lucky drop or one unusually successful helicopter to decide which design I choose.',
   aim,motivation:'A paper helicopter that stays airborne longer is more enjoyable to watch, but I would be disappointed if an impressive average concealed unreliable performance. I want a numerical meaning for a useful improvement.',
   beneficiaryType:'me',beneficiary:'I would use the comparison to choose a design for a model classroom demonstration and to explain how much variation to expect within the supplied cases.',
-  intendedUse:'Compare both average performance and the proportion of finite A–B choices with at least 0.20 s advantage, keeping the recommendation within the stated log.',
+  intendedUse:R`Choose between the two supplied designs for average three-drop performance, report how often an equally weighted A–B comparison gains at least 0.20 s, and state the assumptions under which those conclusions hold.`,
   kind:'statistics',statisticsContext:'Two groups',dataSource:'secondary',dataAvailability:'in-hand',course:'AI SL',
   prediction:'I expect design B, with the longer rotors, to have the longer typical flight time. I am less certain whether its advantage will be consistent across individual helicopters.',
   predictionWhy:'Longer rotors suggest a possible way to slow descent, but the complete designs also have different body lengths. This is a starting intuition, not an established physical law or proof of the outcome.',
-  predictionImplication:'If the gain is large relative to the spread, I could choose B for the demonstration; if there is substantial overlap, I will need to explain the limits of that recommendation.',
-  courseSuitability:'yes',mathsOutside:'syllabus',
-  otherMaths:'I may enumerate the finite choices of one helicopter from each list to distinguish average gain from the frequency of a useful individual difference.',
-  mathsRevisedWhy:'I will let the plotted shape and the practical 0.20 s threshold determine whether sensitivity or finite-pair calculations add something the group summaries cannot show.',
+  predictionImplication:R`A gain of at least 0.20 s in the mean would support B for my chosen average-performance decision. The frequency of that gain for particular recorded pairs will describe its consistency without imposing an unannounced probability target.`,
+  courseSuitability:'yes',mathsOutside:'outside',
+  otherMaths:R`I will explain the sample-SD convention and derive whole-object omission formulas, the expected pair-difference identity and conditional timing-error bounds. The starting descriptive statistics and finite probabilities are course mathematics.`,
+  mathsRevisedWhy:R`I will use the actual gap after each result: overlap needs a pair comparison; a long tail needs an influence calculation; near-threshold margins need a stated timing bound.`,
   secondaryPublisher:'Helicopter Flight Log v1, original constructed teaching material supplied with this sample.',
   secondaryVariables:'Helicopter ID, design A or B, and three elapsed-frame counts. At the stipulated 50 frames per second, frame count is divided by 50, giving time in seconds.',
   secondaryScope:'All 24 constructed objects, 12 per design, with three drops each. My primary comparison will use one three-drop mean per object.',
@@ -318,18 +395,20 @@ export const HELICOPTER_GROUPS_SPEC={
   milestoneAdjustment:'My illustrative sequence is to check the log, compare distributions, investigate influential objects, count useful differences, examine timing sensitivity, then write and review. I have not supplied school-confirmed dates.'
  },
  completion:completionFields,
- introduction:R`I enjoy the contrast between a simple paper object and the complicated motion it produces. When choosing a paper helicopter for a demonstration, I would prefer one that stays airborne longer, but I would also want to know whether a reported improvement is typical or depends on a few fortunate flights. This led me to compare two designs using both the size and consistency of their flight-time advantage.
+ introduction:R`I would like a paper helicopter for a classroom demonstration to remain airborne long enough to watch its motion. Choosing a design by its best drop could be misleading: I also want to know whether a reported advantage is shared across the objects being compared. I investigate this using Helicopter Flight Log v1, an explicitly constructed record of twelve A helicopters and twelve B helicopters, with three readings per object. I did not carry out physical flights.
 
-My aim is to compare the three-drop mean flight times of designs A and B from the same stated release height, and decide whether B offers a useful advantage relative to their variability. I defined a useful gain as at least \(0.20\text{ s}\), equal to ten frame intervals at the stipulated recording rate. I decided that an improvement of only one or two intervals would not be enough to change my design choice. This is my personal decision threshold, not an externally established performance requirement. I use it throughout instead of choosing a threshold after seeing the results.
+My aim has two parts. Does B's recorded three-drop mean performance exceed A's by a useful amount on average? How often does a particular B object have that useful advantage over an A object, when every listed object receives equal weight? The first is my design-choice criterion; the second describes the consistency of that choice rather than requiring a separate success percentage.
 
-The source is an explicitly constructed flight log representing 12 separate helicopters of each design, with three drops per helicopter. It is a fictional experimental scenario, not a record of flights I performed. The mathematical conclusions will describe those supplied objects and the stated measurement model. I expected B's longer rotors to increase the typical flight time, while recognising that both designs could have enough variation to make a particular comparison uncertain.`,
- dataNotes:R`The scenario uses the same \(18\text{ cm}\times4\text{ cm}\) paper blank and one identical clip for each object. The upper part is split into two \(2\text{ cm}\)-wide rotor strips, folded in opposite directions. A has \(6\text{ cm}\)-long rotors and B has \(9\text{ cm}\)-long rotors, leaving different body lengths. The lower body is folded lengthwise to the same nominal width and the clip is attached at its bottom. I compare these two complete layouts; I cannot isolate rotor length as the only physical cause because changing the slit also changes the body geometry.
+I set the useful gain at at least \(0.20\text{ s}\), including equality, before calculating the group results. This is a personal threshold for the fictional demonstration: a gain of one or two frame intervals would not persuade me to change designs, whereas I choose ten intervals as the minimum I would count as worthwhile. At the stated 50 frames per second, ten intervals are \(0.20\text{ s}\). This choice is not a measured perceptual limit or an externally validated performance standard.
 
-The stated procedure releases each object without a push, with the bottom of its clip \(2.00\text{ m}\) above the floor in the same still indoor setting. Flight time runs from release to first contact. The three columns represent three drop rounds, with A and B intended to be interleaved. These conditions define the hypothetical log. There is no actual video, random allocation or recorded run order that could verify them, so I do not use them as evidence that a real experiment eliminated drift or release bias.
+I initially expected B's longer rotors to favour longer flights. The complete layouts also differ in body length, so this is a starting expectation about the designs, not a claim that the log can isolate an aerodynamic cause.`,
+ dataNotes:R`The scenario gives both designs an \(18\text{ cm}\times4\text{ cm}\) paper blank and the same clip. Its two rotor strips are each \(2\text{ cm}\) wide and folded in opposite directions. A uses \(6\text{ cm}\) rotors and B uses \(9\text{ cm}\) rotors, leaving different body lengths; each lower body is folded to the same nominal width. I therefore compare complete layouts rather than rotor length alone.
 
-At the defined rate of 50 frames per second, I convert each integer frame count \(F\) into \(t=F/50\) seconds. I use one mean \(x\) of the three drops for each helicopter, then compare the 12 values of \(x\) in each design. The three drops within one ID are repeated measurements; corresponding A and B row numbers are not paired subjects. I included all objects and checked that there were no missing counts. The complete frame log is retained in the editable dataset.
+The stipulated procedure releases each object without a push, with the clip bottom \(2.00\text{ m}\) above the floor. The three columns represent drop rounds intended to interleave A and B in the same still indoor setting. Time runs from release to first floor contact. These conditions define the hypothetical comparison; no video or recorded order establishes that a real experiment achieved them.
 
-I retain exact frame sums while calculating, report object means to \(0.01\text{ s}\) and standard deviations to \(0.001\text{ s}\), and use approximation signs for rounded outputs. Fractions of a frame produced by averaging are arithmetic results, not proof of more accurate timing. I examine a separate explicit error bound after the group comparison.`,
+I write \(F_{gik}\) for the supplied elapsed-frame count, where \(g\) denotes A or B, \(i=1,\ldots,12\) identifies a helicopter and \(k=1,2,3\) identifies its drop. The converted time is \(t_{gik}=F_{gik}/50\) seconds. I checked the 24 distinct IDs and three positive integer counts under each, found no missing entries and retained every object. The complete log remains in the editable working data.
+
+I use exact frame sums in calculations, display object means to \(0.01\text{ s}\) and summary standard deviations to \(0.001\text{ s}\), retaining extra digits where a threshold comparison needs them. An average may contain a fraction of a frame interval; that is arithmetic precision, not evidence of improved timing accuracy.`,
  stages,
  figures:[
   {id:'stat-helicopter-means',tool:'stat',stage:0,after:'purpose',draft:distribution('dot','All helicopter means, with repeated drops kept together',1,'Each dot is one helicopter mean from three drops; there are 12 objects per design.')},
@@ -357,13 +436,13 @@ I retain exact frame sums while calculating, report object means to \(0.01\text{
   {name:'All 144 finite A–B choices',columns:['A helicopter','B helicopter','Frame-sum difference','B minus A (s)','Gain at least 0.20 s'],rows:HELICOPTER_COMPARISONS.map(item=>[item.aId,item.bId,item.frameSumDifference,item.difference,item.frameSumDifference>=30?'Yes':'No']),sourceText:'One combination of each A and B object mean. These 144 calculations reuse the same 24 objects and are not independent trials.'}
  ],
  conclusion:{
-  mainConclusion:R`Within the constructed log, I would choose design B for its longer average flight time. Its mean three-drop performance is approximately \(2.153\text{ s}\), compared with \(1.863\text{ s}\) for A: a gain of \(0.290\text{ s}\), or about \(15.6\%\). The median gain of \(0.26\text{ s}\) also exceeds my chosen useful-gain threshold of \(0.20\text{ s}\). Every one-helicopter omission leaves the mean gain above that threshold, and the full-log gain remains between \(0.250\) and \(0.330\text{ s}\) under the stated timing model.
+  mainConclusion:R`For average three-drop performance within this log, I would choose B. Its mean is approximately \(2.153\text{ s}\), compared with \(1.863\text{ s}\) for A: a gain of \(0.290\text{ s}\), about \(15.6\%\) of A's mean. That clears my personal \(0.20\text{ s}\) criterion, and the \(0.26\text{ s}\) median gain supports the same direction without relying on the mean alone.
 
-However, that average advantage is not a reliable promise for every particular comparison. If I choose uniformly and independently from the two lists of 12 recorded helicopter means, B is strictly higher in \(121/144\) choices, but exceeds A by at least \(0.20\text{ s}\) in only \(86/144\), approximately \(59.7\%\). The design preference is supported on average for these objects; the more demanding claim of a useful individual advantage is much less consistent.`,
-  conclusionBenefit:R`My prediction about B's larger typical time was supported, while its greater variation mattered more than I initially expected. B07 increased the standard deviation strongly, but retaining or diagnosing that object did not reverse the mean ordering. The timing model gives a useful-pair proportion between about \(54.2\%\) and \(66.0\%\). If I combine the omission of B07 with the most adverse allowed timing shift, the mean gain falls to about \(0.1894\text{ s}\), so I cannot claim that every sensitivity combination preserves the \(0.20\text{ s}\) benefit.
+The second part of the aim qualifies that choice. Under uniform independent selection from the two recorded lists, B is higher in \(121/144\) comparisons, but reaches the useful gain in \(86/144\), about \(59.7\%\). A useful average advantage therefore does not imply a useful advantage for every particular pair. These are exact proportions of the supplied comparisons, not estimates of a manufacturing success rate.`,
+  conclusionBenefit:R`The sensitivity calculations show how far the recommendation is supported. Every single-object omission leaves the mean gain above \(0.20\text{ s}\). With all objects retained, the stated timing model allows a gain from \(0.250\) to \(0.330\text{ s}\), still useful, and a useful-pair proportion from about \(54.2\%\) to \(66.0\%\). However, combining the B07 omission with the adverse timing shift can lower the gain to about \(0.1894\text{ s}\). The two checks support a conditional choice, not a guarantee under every combined change.
 
-The comparison uses 24 object means, not 72 independent helicopters or 144 independent pair trials. Its probabilities describe uniform selection from the fixed lists, not future flights or newly manufactured helicopters. The source is constructed, the complete designs differ in more than rotor length, and the video-error bound excludes other experimental biases. Those restrictions define the scope of my recommendation.`,
-  conclusionExtension:'I would next compare a new batch of separately constructed objects under a recorded interleaved release order, using the same useful-gain threshold and an independently checked timing method. I would record the three drops and the object identities separately so that between-object variation and repeatability could be examined without increasing the apparent number of helicopters. That would test whether the present design preference transfers beyond this finite constructed log.'
+I learned to distinguish the average size of an advantage from how frequently it reaches a chosen threshold. My conclusion concerns three-drop object means, not future flights or newly made helicopters. The constructed source, the complete-design comparison and the unverified endpoint assumption limit transfer beyond this mathematical scenario.`,
+  conclusionExtension:R`To test that transfer, I would compare a new batch of separately made objects with a recorded interleaved release order and a checked timing procedure, keeping the same stated useful-gain criterion. Retaining object IDs and individual drops would allow repeatability and between-object variation to be examined separately. That supplies new evidence for the unresolved practical question rather than another summary of this fixed log.`
  },
  reviews:[
   {id:'D01',location:'Introduction, five mathematical stages and conclusion',note:'I have a stated decision threshold, the complete constructed inputs, completed calculations, interpretations and a conclusion answering the original comparison. The draft is mathematical work rather than a collection plan.',action:'School submission and teacher feedback are separate processes; neither is claimed here.'},
@@ -372,14 +451,16 @@ The comparison uses 24 object means, not 72 independent helicopters or 144 indep
   {id:'D04',location:'Choice of 0.20 s, B07 diagnostic and finite-pair question',note:'My decisions shape the mathematics: I specify usefulness, give each helicopter one mean, retain an unusual value and change the comparison from average gain to a particular finite-list choice.',action:'I explain why each of those decisions is relevant to the demonstration I am considering.'},
   {id:'D05',location:'Interpretations after the summaries, omissions, pair counts and timing bounds',note:'I explain why standard deviation and IQR tell different stories, why a useful mean does not imply consistent individual gains, and why combining two sensitivity checks can weaken the conclusion.',action:'I retain the combined 0.1894 s diagnostic in the conclusion rather than presenting only the reassuring checks.'},
   {id:'D06',location:'Mean and SD calculations, omission formulas, pair-space identity and error propagation',note:'I checked the three-drop denominators, the n−1 standard deviations, all 24 omission results and all 144 finite comparisons. I derived the expected-difference identity and propagated endpoint bounds without assuming cancellation.',action:'I independently recomputed the numeric claims from the integer frame log; any change to the log requires the figures and conclusion to be recomputed.'},
-  {id:'D07',status:'checked',location:'Continuous reader and exported PDF/Word pages',note:'I checked the reader’s figures at desktop and phone widths and every page of the PDF and Word exports. The worked fractions, standard-deviation formula, pair-sum identity and timing bounds remain complete, and all three figures and three tables retain their labels, units and source notes.',action:'I replaced the misleading measurement wording, compacted Table 1 and shortened the transition and A01 counting example. I rechecked the revised pages for clipping, isolated text and missing captions.'},
-  {id:'D09',location:'Source record, opening disclosure and data references',note:'I identify the log, procedure and frame-rate assumption as constructed teaching material. I have no real video, randomised experiment, borrowed image or external dataset to cite.',action:'I have not added a fabricated publication or source URL; the complete internal data record is retained.'},
+  {id:'D07',status:'checked',location:'Revised continuous reader and exported PDF/Word pages',note:'I visually inspected every PDF and Word page, the desktop and phone reader views, and all six figures at both widths. Unchanged page images match the reviewed exports; every page altered by the final wording corrections was rechecked.',action:'I shortened two passages to remove isolated continuation fragments and inspected every changed exported page. Equations, tables, figures, captions and references remain readable and complete.'},
+  {id:'D09',location:'Source record, opening disclosure and method references',note:'The log and procedure are constructed teaching material. The two genuine NIST/SEMATECH references support the sample-SD and box-plot conventions; no external flight data, video or image is claimed.',action:'I cite the methods at first use and retain the complete internal data record, keeping methodological sources distinct from the constructed observations.'},
   {id:'D11',location:'All five mathematical stages',note:'The draft contains worked object means, a standard-deviation calculation, quartile fences, omission algebra, exact pair counts and conditional error bounds. Each output is followed by its meaning for the design decision.',action:'I checked that the conclusion refers to completed calculations rather than my initial prediction.'},
   {id:'D19',location:'Short narrative tables and three editable working datasets',note:'The plots show all 24 object means, and the main text includes the calculations needed to understand the result. The full raw log, omission list and pair list remain available without inserting a 144-row table into the narrative.',action:'I label the displayed omission cases as selected diagnostics and preserve every omitted-case result in the working dataset.'},
   {id:'D20',location:'Finite-pair counting and statistical diagrams',note:'I state the integer inputs and threshold operation, check an eight-success row by hand and derive why the mean pair difference must equal the group-mean difference. The figures use those same object means.',action:'I retained the saved statistical drafts and exact frame counts so the calculations can be reproduced and edited.'}
  ],
  references:[
   {label:'Constructed source',value:'Helicopter Flight Log v1. Original 24-object teaching dataset supplied with this project. All 72 integer elapsed-frame counts, the assumed 50 frames-per-second conversion and object identities are retained in the editable working data. No physical measurements or randomised experiment are claimed.'},
-  {label:'Calculation records',value:'All one-helicopter omission diagnostics and all 144 finite A–B choices. My calculations from the stated source, retained with the project. The box-plot convention and error model are defined in the investigation; no external inferential result is used.'}
+  {label:'Calculation records',value:'All one-helicopter omission diagnostics and all 144 finite A–B choices. My calculations from the stated source, retained with the project. The omission and pair-mean identities and the conditional timing bounds are derived in the investigation.'},
+  {label:'[M1] Sample standard deviation',value:'NIST/SEMATECH e-Handbook of Statistical Methods, §1.3.5.6, Measures of Scale. Definition of sample variance and standard deviation, and the influence of squared deviations. https://www.itl.nist.gov/div898/handbook/eda/section3/eda356.htm (accessed 23 October 2026).'},
+  {label:'[M2] Box-plot screening convention',value:'NIST/SEMATECH e-Handbook of Statistical Methods, §1.3.3.7, Box Plot, subsection Box plots with fences. The 1.5 IQR fence convention; the median-of-halves quartiles are specified in my own calculation. https://www.itl.nist.gov/div898/handbook/eda/section3/boxplot.htm (accessed 23 October 2026).'}
  ]
 };
