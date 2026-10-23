@@ -60,7 +60,7 @@ export const CHECKING_RECOVERY_CARDS=Object.freeze([
   "Which single calculation or inference requires an unstated assumption?",
   "Ask them to point to the exact line where the reasoning stops being checkable. Trace the missing definition, intermediate step or mathematical dependency.",
   "Can they now follow the mathematics using the actual displayed working?",
-  "One repaired mathematical link.",
+  "One repaired mathematical link in the actual calculation.",
   "If the mathematics is incorrect, correct it first; writing polish cannot fix that.",
   "A reader's confusion does not by itself identify an assessment mark."),
  row("mla-need","I cannot tell which sources in my IA need MLA citations",
