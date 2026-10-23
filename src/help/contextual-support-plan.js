@@ -193,3 +193,168 @@ export const SUPPORT_SELECTION_POLICY=Object.freeze({
  maxBubblesPerAnchor:1,maxInitialHubProblems:4,maxPopinProblems:3,maxAlternativeActions:2,
  automaticPopups:false,reducedAdviceKeepsAccess:true,readOnlyUntilExplicitAction:true
 });
+
+
+/**
+ * EDITORIAL ROLE BOUNDARIES — these are distinct tools, not three colours
+ * containing variants of the same advice.
+ *
+ * Criteria:   what matters to the IB's assessment in this location.
+ * Field Guide: how a mathematical writer communicates effectively.
+ * Stuck help:  what specific obstacle prevents the student's NEXT ACTION,
+ *             and what bounded diagnostic/repair will unblock it?
+ */
+export const SUPPORT_ROLE_BOUNDARIES=Object.freeze({
+ criteria:Object.freeze({
+  question:"What does the applicable IB assessment framework value here?",
+  output:"Criterion-specific explanation and full rubric; never an issue diagnosis",
+  avoid:"Never use marks, levels or assessment speculation to decide a stuck remedy"
+ }),
+ writersGuide:Object.freeze({
+  question:"How could an already feasible mathematical explanation be communicated?",
+  output:"Writing craft, worked weak/strong comparisons and coherent prose advice",
+  avoid:"Do not repeat general writing instructions as a supposed stuck solution"
+ }),
+ stuck:Object.freeze({
+  question:"What exactly cannot the student do now, and which small repair helps?",
+  output:"Student-recognisable blocker -> diagnosis -> one action -> specific check -> optional fallback",
+  avoid:"Do not prescribe ideal writing, duplicate criteria, predict struggle from blanks or issue generic encouragement"
+ })
+});
+
+/**
+ * Every NEW student-visible stuck response must fulfil this shape.
+ * The data below are Pass 1 worked exemplars for editorial review, NOT
+ * final help text or automatic identification of a student's difficulty.
+ */
+export const SUPPORT_BLOCKER_STANDARD=Object.freeze({
+ required:["id","placementId","problem","quickQuestion","action","check","stoppingPoint","ifStillStuck","boundary","distinctFrom"],
+ maxInitialChoices:3,
+ problemFirst:true,
+ oneImmediateAction:true,
+ supportsExplicitStudentChoice:true,
+ explainsHowToCheck:true,
+ noCopyReadyIAParagraph:true,
+ linkToGuideOnlyAfterBlocker:true,
+ genericCriteriaOrWritingAdviceIsNotEnough:true
+});
+const recovery=(id,placementId,problem,quickQuestion,action,check,stoppingPoint,ifStillStuck,boundary,distinctFrom)=>({
+ id,placementId,problem,quickQuestion,action,check,stoppingPoint,ifStillStuck,boundary,distinctFrom
+});
+/**
+ * This is the editorial quality bar for Passes 2-4.
+ * The first-person difficulty is an OFFER, never a judgement of the student's
+ * work. Diagnostic questions branch only when the answer changes the remedy.
+ */
+export const SUPPORT_RECOVERY_EXEMPLARS=freeze([
+ recovery(
+  "sport-but-no-question","idea-interest",
+  "I am interested in sport but cannot find a mathematical investigation.",
+  "Would you rather compare repeated performances, model a movement or optimise a decision?",
+  "Choose just one mathematical lens. Name one variable, mathematical property or constraint you could investigate and how you would measure or define it.",
+  "Can you now state what a calculation, comparison or model would actually help you find out?",
+  "One possible mathematical question and one realistic first check, not a final IA title.",
+  "If no safe evidence or useful mathematics is possible, change lens rather than just making the sport more specific.",
+  "A suggested direction is not guaranteed course-appropriate or viable; no compulsory survey or invented results.",
+  "Unlike Field Guide motivation tips or personal-engagement criteria, this gives an executable route from interest to mathematics."
+ ),
+ recovery(
+  "sample-frame-confusion","sampling",
+  "I cannot tell the difference between the population and my sampling frame.",
+  "Could somebody be in the population you want to describe but impossible to reach through your actual selection list?",
+  "Write three separate short labels: who you want to make a claim about, who could really be selected, and what counts as one observation.",
+  "If those first two groups differ, can you name at least one kind of person or unit missing from the frame?",
+  "A concrete sample/frame distinction and what it could restrict.",
+  "If there is no defensible sampling frame, discuss a narrower claim or different permitted evidence with your teacher.",
+  "Never assume permission to contact participants or collect sensitive data.",
+  "Not a generic criterion D reflection hint or Field Guide paragraph on sampling."
+ ),
+ recovery(
+  "source-row-mismatch","secondary",
+  "I have two useful-looking datasets but cannot tell whether I can combine them.",
+  "In each source, what exactly does one row represent: a person, place, event, average or time period?",
+  "For each file, check one row's unit, variable definition, date range and measurement units; put them side by side.",
+  "Do the values refer to the same kind of observation and meaning, or would combining them change the original aim?",
+  "A justified keep, reject or refine-aim decision for these actual sources.",
+  "If definitions cannot be verified, look for original publisher metadata rather than treating the numbers as equivalent.",
+  "Never silently merge individual measurements with group averages or claim a source was verified without checking.",
+  "This solves source compatibility before any writing advice about citation or clarity."
+ ),
+ recovery(
+  "course-maths-uncertain","course",
+  "I have a possible technique but am not sure whether it suits my course or question.",
+  "What specific mathematical question would this technique answer in your investigation?",
+  "Write that mathematical job in one sentence, identify the exact part you understand, and compare it with your chosen course's available methods.",
+  "Can you explain why this technique is needed instead of naming it just because it is advanced?",
+  "One candidate method with a reason and one exact suitability question if uncertainty remains.",
+  "Ask your teacher about course depth or an unfamiliar method before building the investigation around it.",
+  "The site must not assert AA HL suitability or guaranteed scoring from a method choice.",
+  "Unlike Criterion E guidance, it helps decide an immediate feasible mathematical method, not describe assessment descriptors."
+ ),
+ recovery(
+  "curved-scatter-small-r","pmcc",
+  "My Pearson coefficient is small but my actual scatter seems to show a curve.",
+  "Have you checked the original paired observations, and does the graph genuinely bend or just have a few unusual points?",
+  "Look again at the plotted matched pairs and describe the observed shape before interpreting the coefficient; note explicitly that Pearson measures linear association.",
+  "Does your claim distinguish a weak linear association from the possible presence of a non-linear relationship?",
+  "A corrected interpretation and a reason either to examine another model or to stop.",
+  "If the shape is unclear, check scale, axes and source pairs before choosing another coefficient or curve.",
+  "Only offer this case when relevant actual paired results and a user-confirmed shape exist. Curvature alone does not establish monotonicity.",
+  "This repairs a mathematical misunderstanding, not a writing style or IB grading issue."
+ ),
+ recovery(
+  "proof-from-examples","theory",
+  "I can verify lots of examples, but I cannot establish my general claim.",
+  "What are the exact permitted values and assumptions in the claim?",
+  "Write the statement with its domain. Test one boundary case or plausible counterexample, then identify the general step that still needs an argument.",
+  "Would the reasoning apply beyond the particular numbers already checked?",
+  "Either a more precise conjecture, a genuine counterexample, or one justified proof step.",
+  "If you cannot justify the general step, ask your teacher which suitable proof approach might apply and label the statement a conjecture.",
+  "Examples and numerical checking are not a proof; no invented argument can be supplied as student work.",
+  "This targets the mathematical gap, not a general Field Guide instruction to explain unfamiliar notation."
+ ),
+ recovery(
+  "stage-transition-block","link-next",
+  "I have a result but cannot explain why another mathematical stage should follow it.",
+  "What exact question is left unanswered by the result you have actually obtained?",
+  "Write three private notes: the previous finding, what that finding cannot establish, and the job a possible next method would do.",
+  "Can you point to a real gap that the next method answers, rather than a desire to use more mathematics?",
+  "One justified next mathematical question, or a decision to conclude.",
+  "If the aim is already answered, go to the conclusion instead. Only then consult the Field Guide if you need help joining the notes into prose.",
+  "Never insert a ready-made bridge into the student's actual IA or turn a predicted result into an established fact.",
+  "Field Guide teaches the prose structure; this case decides whether there is any mathematical reason for a second stage."
+ ),
+ recovery(
+  "probability-tree-error","first-figure",
+  "My probability tree gives totals that do not make sense.",
+  "At which node do the outgoing branch probabilities first fail to total 1?",
+  "Inspect just that node. Identify the event being conditioned on and correct the outgoing probabilities using the appropriate conditional group.",
+  "For each node checked, do its branches represent mutually exclusive outcomes with a sum of 1?",
+  "One independently checked branching step before trusting any final path probability.",
+  "If probabilities depend on previous outcomes, revisit the conditioning assumption rather than copying the first branches.",
+  "A tree diagram does not create valid probabilities automatically; no external participant data are required.",
+  "Unlike generator tutorials, this diagnoses the mathematical source of an inconsistent diagram."
+ ),
+ recovery(
+  "conclusion-or-more-maths","conclusion",
+  "I cannot decide whether I should add more mathematics before concluding.",
+  "Which exact part of your original aim is not answered by your completed results?",
+  "Compare the stated aim with the results you can actually support, then write one unresolved mathematical question only if one remains.",
+  "Would further mathematics answer that question, or merely make the IA longer?",
+  "A defensible continue-or-conclude decision anchored to actual work.",
+  "If essential evidence is missing, return to that mathematical step; do not compensate with unrelated techniques.",
+  "A plan or a persuasive prediction is not an actual result; no required number of stages or promised marks.",
+  "Criteria discusses evaluation; the Field Guide discusses conclusion prose; this removes the student's decision blockage."
+ ),
+ recovery(
+  "citation-original-source","checking-cites",
+  "I used a picture or dataset but cannot find the source details needed to acknowledge it.",
+  "Can you find the original publisher or creator rather than only the page where you discovered a copy?",
+  "Open the original source, record its author/organisation, title, relevant date and URL or publication details, and mark where the material appears in your actual IA.",
+  "Can you trace the actual item to an in-text citation AND an entry in Works Cited?",
+  "One genuinely traceable source ready for the site's MLA tutorial.",
+  "If the original cannot be verified, do not invent bibliographic details; replace the material or ask your teacher.",
+  "The website cannot read, verify or automatically edit a separate Google Docs IA.",
+  "Referencing tutorial gives formatting steps; stuck help identifies and repairs missing original-source information."
+ )
+]);
