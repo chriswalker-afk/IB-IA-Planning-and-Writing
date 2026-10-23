@@ -991,12 +991,109 @@ def contextual_planning_help(browser,width):
  finally:
   ctx.close()
 
+def contextual_studio_help(browser,width):
+ """Pass 3: selected mathematical obstacles only, actual-result gate and focus."""
+ def setup(node,real=False,cohort="legacy"):
+  v=copy.deepcopy(BASE);v["route"]="completing"
+  v["completion"]["current"]=node;v["completion"]["activeEntryIndex"]=0
+  v["ui"]["writingIntroSeen"]=True;v["ui"]["writerGuideIntroSeen"]=True
+  v["planning"]["fields"]["course"]="AA SL"
+  v["planning"]["fields"]["assessmentFramework"]=cohort
+  v["planning"]["routeExplorer"]["selectedRoute"]="relationships"
+  v["entries"]=[{"id":"real-first","phase":"first","kind":"scatter","title":"A real scatter representation",
+    "status":"completed" if real else "planned",
+    "result":"Actual plotted paired observations" if real else "",
+    "journeyOutcome":"relationships:curve" if real else "",
+    "methodId":"","accuracyRefs":[]}]
+  return v
+ s=setup("C20",cohort="revised2029")
+ s["ui"]["adviceMode"]="reduced"
+ ctx,page=open_fixture(browser,s,width)
+ try:
+  badge=page.locator('[data-source-node="C20"] [data-studio-stuck="C20:page"]')
+  assert badge.is_visible(),("IA Studio bubble hidden under Reduce advice",width)
+  # The existing help rail keeps the green/purple controls in place.
+  field=page.locator('[data-bind="completion.fields.methodReason"]')
+  group=field.locator('xpath=ancestor::*[contains(concat(" ",normalize-space(@class)," ")," field-group ")][1]')
+  assert group.locator('.criterion-field-help-rail [data-studio-stuck="C20:field:methodReason"]').count()==1
+  assert field.is_visible()
+  original=stored(page)
+  badge.click()
+  dialog=page.locator("#studioStuckDialog[open]")
+  assert dialog.is_visible()
+  assert "I have several possible techniques" in dialog.inner_text()
+  assert "First, ask yourself" in dialog.inner_text()
+  assert stored(page)==original
+  page.screenshot(path=str(OUT/f"stuck-studio-method-{width}.png"),animations="disabled")
+  page.keyboard.press("Escape")
+  assert page.locator("#studioStuckDialog[open]").count()==0
+  assert page.evaluate("document.activeElement.getAttribute('data-studio-stuck')")=="C20:page"
+  group.locator('[data-studio-stuck="C20:field:methodReason"]').click()
+  assert dialog.is_visible()
+  dialog.locator('[data-studio-stuck-go]').click()
+  assert page.evaluate("document.activeElement.getAttribute('data-bind')")=="completion.fields.methodReason"
+  assert stored(page)==original
+  without_overflow(page)
+ finally:ctx.close()
+ s=setup("C30",real=False)
+ ctx,page=open_fixture(browser,s,width)
+ try:
+  badge=page.locator('[data-studio-stuck="C30:part:reflect"]').first
+  assert badge.is_visible()
+  before=stored(page)
+  badge.click()
+  dialog=page.locator("#studioStuckDialog[open]")
+  assert "I have not actually completed the mathematical result yet" in dialog.inner_text()
+  assert "I selected this real outcome" not in dialog.inner_text()
+  dialog.locator("[data-studio-stuck-close]").click()
+  assert stored(page)==before
+ finally:ctx.close()
+ s=setup("C30",real=True)
+ ctx,page=open_fixture(browser,s,width)
+ try:
+  badge=page.locator('[data-studio-stuck="C30:part:next"]').first
+  assert badge.is_visible()
+  before=stored(page)
+  badge.click()
+  dialog=page.locator("#studioStuckDialog[open]")
+  assert "Student-confirmed outcome" in dialog.inner_text()
+  assert "I selected this real outcome" in dialog.inner_text()
+  assert stored(page)==before
+  dialog.locator("[data-studio-stuck-close]").click()
+  without_overflow(page)
+ finally:ctx.close()
+ s=setup("C31")
+ s["graphStudio"]["open"]=True
+ ctx,page=open_fixture(browser,s,width)
+ try:
+  page.locator('[data-studio-stuck="C31:page"]').click()
+  dialog=page.locator("#studioStuckDialog[open]")
+  assert "Graph plotter" in dialog.inner_text()
+  assert "My graph axes, model or scale are unclear" in dialog.inner_text()
+  dialog.locator("[data-studio-stuck-close]").click()
+  without_overflow(page)
+ finally:ctx.close()
+ s=setup("C60")
+ s["entries"]=[]
+ s["completion"]["activeEntryIndex"]=-1
+ ctx,page=open_fixture(browser,s,width)
+ try:
+  badge=page.locator('[data-studio-stuck="C60:page"]')
+  assert badge.is_visible()
+  badge.click()
+  dialog=page.locator("#studioStuckDialog[open]")
+  assert "I want to conclude but have no verified mathematical result" in dialog.inner_text()
+  dialog.locator("[data-studio-stuck-go]").click()
+  assert stored(page)["completion"]["current"]=="C30"
+  without_overflow(page)
+ finally:ctx.close()
+
 def main():
  results=[]
  with sync_playwright() as p:
   browser=p.chromium.launch(headless=True)
   for width in (1360,390):
-   for scenario,fn in (("contextual-stuck-planning",contextual_planning_help),("new",first_time),("resource-diagram-creators",resource_diagram_creators),("completed",completed_plan),("writing-stages",writing_sections),("maths-model-start",modelling_math_start),("repeatable-mathematics",repeatable_mathematics),("growing-discovery-trail",growing_discovery_trail),("adaptive-mathematical-journey",adaptive_mathematical_journey),("reduced-advice",reduced_writing)):
+   for scenario,fn in (("contextual-stuck-studio",contextual_studio_help),("contextual-stuck-planning",contextual_planning_help),("new",first_time),("resource-diagram-creators",resource_diagram_creators),("completed",completed_plan),("writing-stages",writing_sections),("maths-model-start",modelling_math_start),("repeatable-mathematics",repeatable_mathematics),("growing-discovery-trail",growing_discovery_trail),("adaptive-mathematical-journey",adaptive_mathematical_journey),("reduced-advice",reduced_writing)):
     try:
      fn(browser,width)
      results.append({"scenario":scenario,"width":width,"status":"passed"})

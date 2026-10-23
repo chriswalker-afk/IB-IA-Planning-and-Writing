@@ -42,3 +42,21 @@
  .stuck-help-badge{width:33px;min-width:33px;height:33px}
 }
 @media(prefers-reduced-motion:reduce){.stuck-help-badge{transition:none;transform:none!important}}
+
+/* Pass 3: the same amber recovery controls across IA Studio; never cover
+   green assessment or purple writing-craft bubbles. */
+.stuck-studio-dialog .stuck-context-factual{display:flex;flex-wrap:wrap;gap:5px 9px;margin:-2px 0 12px}
+.stuck-studio-dialog .stuck-context-factual span{font-size:12px;color:#64513b;background:#f6f0e6;border:1px solid #e9decb;padding:4px 9px;border-radius:9px}
+.completing-page .stuck-page-header{align-items:flex-start}
+.completing-page .stuck-page-header>.stuck-help-badge{margin-top:4px}
+.completing-page .first-maths-writing-part-head>.stuck-help-badge,
+.completing-page .show-first-part-heading>.stuck-help-badge,
+.completing-page .conclusion-part-title>.stuck-help-badge{margin-left:auto;flex:none;align-self:flex-start}
+.completing-page .criterion-field-help-rail>.stuck-help-badge{width:29px;height:29px;min-width:29px;font-size:16px}
+.completing-page .criterion-field-help-rail{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.completing-page .stuck-help-badge{position:relative;z-index:1}
+@media(max-width:700px){
+ .completing-page .stuck-page-header{gap:7px}
+ .stuck-studio-dialog .stuck-context-factual{display:block}
+ .stuck-studio-dialog .stuck-context-factual span{display:inline-block;margin:2px}
+}

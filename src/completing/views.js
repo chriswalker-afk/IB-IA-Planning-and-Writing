@@ -1,5 +1,6 @@
 import {chapterRibbon} from '../ui/living-journey.js';
 import {renderFieldGuideTeaser} from './writer-field-guide.js';
+import {studioHelpBadge} from '../help/studio-help.js';
 import {writerGuideFieldBubble} from './writer-guide-context.js';
 import {renderIntroductionSparkPrompt,renderIntroductionWritingAdvice,renderIntroductionOptionalExamples} from './intro-writing-advice.js';
 import {renderWritingStageFlow} from './stage-writing-flow.js';
@@ -649,7 +650,8 @@ export function createCompletingViews(ctx){
       linkPrompt+'</div>';
    const writingPart=(id,number,title,description,content)=>'<section class="first-maths-writing-part" data-first-maths-writing-part="'+id+'">'+
     '<div class="first-maths-writing-part-head"><span class="first-maths-writing-part-number" aria-hidden="true">'+number+'</span>'+
-    '<div><h3>'+e(title)+'</h3><p>'+e(description)+'</p></div></div>'+content+'</section>';
+    '<div><h3>'+e(title)+'</h3><p>'+e(description)+'</p></div>'+
+    studioHelpBadge(s,"part:"+id,e)+'</div>'+content+'</section>';
    const bridgePart=writingPart("connection","1","Connect your Introduction to the first maths",
     "Make the mathematics follow naturally from your aim. Explain why this is a sensible first step, but do not repeat a clear explanation from the Introduction.",
     '<div class="first-maths-bridge-choice">'+where+introductionLink+'</div>');
@@ -806,7 +808,8 @@ export function createCompletingViews(ctx){
    const hasPlannedMove=Boolean(plannedMaths.firstIdea||plannedMaths.activeRoute);
    const genuine=entry?.status==="completed"&&!!entry.result?.trim();
    const cards=(id,num,title,description,html)=>'<section class="show-first-part" data-show-first-part="'+id+'">'+
-    '<div class="show-first-part-heading"><span class="show-first-part-number">'+num+'</span><div><h3>'+e(title)+'</h3><p>'+e(description)+'</p></div></div>'+html+'</section>';
+    '<div class="show-first-part-heading"><span class="show-first-part-number">'+num+'</span><div><h3>'+e(title)+'</h3><p>'+e(description)+'</p></div>'+
+    studioHelpBadge(s,"part:"+id,e)+'</div>'+html+'</section>';
    const to=(node,text)=>'<button type="button" class="btn btn-secondary btn-sm" data-action="completion-open" data-node="'+node+'">'+e(text)+' '+icon("arrow-right")+'</button>';
    const context=phase=>renderShowingMathsContext(s,phase,icon,e,{reduced});
    const priorNotes=(f.firstMathsBridgePlacement==="intro"?
@@ -1072,7 +1075,8 @@ export function createCompletingViews(ctx){
    const priorToReview=prior?(prior.localTakeaway||prior.interpretation||prior.observationText||prior.result):substantial.previousTakeaway;
    const card=(id,number,title,description,content)=>'<section class="show-first-part" data-show-first-part="'+id+'">'+
     '<div class="show-first-part-heading"><span class="show-first-part-number">'+number+'</span>'+
-    '<div><h3>'+e(title)+'</h3><p>'+e(description)+'</p></div></div>'+content+'</section>';
+    '<div><h3>'+e(title)+'</h3><p>'+e(description)+'</p></div>'+
+    studioHelpBadge(state,"part:"+id,e)+'</div>'+content+'</section>';
    const pageNavigation=mathematicalPageLinks(state,idx);
    const first=card("introduce","1","Connecting to the previous mathematics",
     "State the earlier finding, identify what it still fails to establish for your aim, and explain why this mathematics can resolve that gap.",
@@ -1218,6 +1222,7 @@ export function createCompletingViews(ctx){
   };
   case "C60":return{intro:"Use genuine mathematics to answer your aim, explain its significance and consider a meaningful future mathematical question.",
    html:renderConclusionWorkspace({state:s,e,icon,field,F,criteriaField,
+     stuckBubble:spot=>studioHelpBadge(s,spot,e),
      criterionMarkedWritingBox,currentAim,plannedPrediction,currentBenefit,
      savedLimitations:guides.conclusionLimitations})
   };
@@ -1362,7 +1367,9 @@ export function createCompletingViews(ctx){
     (!writingIntro&&node!=="C00"&&node!=="C04"&&node!=="C10"&&!studioWriting&&!isStuckNode(node)?'<p class="studio-ia-writing-reminder">'+icon("pencil")+
       ' WRITE IN YOUR IA · Use these prompts to develop your own document; nothing is inserted automatically.</p>':'')+
     '<div class="task-shell'+(writingIntro||node==="C00"?' chapter-onboarding-shell':'')+'" data-source-node="'+e(node)+'">'+
+    '<div class="stuck-page-header">'+
     criterionPageHeading(writingIntro?"Welcome to Writing.":label,"completing",writingIntro?"":(fieldBadgeInsteadOfTitle?"":node))+
+    (writingIntro?"":studioHelpBadge(s,"page",e))+'</div>'+
     (node==="C10"&&!writingIntro||studioWriting?"":'<p class="task-intro">'+e(screen.intro)+'</p>')+
     (writingIntro||node==="C10"||studioWriting?"":insightEcho(s,node))+(writingIntro?"":extra.returnToReview())+
     (writingIntro||studioWriting||isStuckNode(node)||["C00","C04","C10","C10E"].includes(node)||isAdviceReduced(s)?"":criteriaPanel(s))+
