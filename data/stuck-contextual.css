@@ -110,3 +110,27 @@
  .stuck-hub .stuck-topic small{font-size:.74rem}
  .stuck-support .stuck-footer .btn{flex:1;min-width:130px}
 }
+
+/* Pass 5: small-screen reachability, legible result sets and visible focus.
+   Do not make the amber repair control visually compete with rubric bubbles. */
+.stuck-support .stuck-suggested[hidden],
+.stuck-support [data-stuck-no-results][hidden]{display:none!important}
+.stuck-support .stuck-topic:focus-visible,
+.stuck-support .stuck-filter:focus-visible{outline:3px solid #ad751c;outline-offset:2px}
+.stuck-support .stuck-topic-group summary{overflow-wrap:anywhere}
+.stuck-focused .stuck-recovery .btn{max-width:100%;overflow-wrap:anywhere}
+.stuck-context-dialog .stuck-context-choices button,
+.stuck-support .stuck-topic{touch-action:manipulation}
+.stuck-context-body{overflow-wrap:anywhere}
+@media(max-width:600px){
+  .stuck-page-header>.stuck-help-badge,
+  .stuck-field-header>.stuck-help-badge,
+  .completing-page .criterion-field-help-rail>.stuck-help-badge,
+  .checking-item-top>.stuck-help-badge,
+  .checking-section-head>.stuck-help-badge{min-width:36px;width:36px;height:36px}
+  .stuck-focused .stuck-recovery .btn{width:100%;justify-content:center}
+  .stuck-support .stuck-group-filters{row-gap:7px}
+}
+@media(prefers-reduced-motion:reduce){
+  .stuck-support *, .stuck-context-dialog *{scroll-behavior:auto}
+}
