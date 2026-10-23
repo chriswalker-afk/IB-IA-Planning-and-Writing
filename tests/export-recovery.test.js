@@ -13,7 +13,7 @@ test('a stale GitHub Pages chunk yields an actionable JSON-first reload explanat
  ]){
   const tip=fullProjectExportRecovery(new TypeError(text));
   assert.equal(tip.kind,'module',text);
-  assert.match(tip.message,/JSON backup/i);
+  assert.match(tip.message,/JSON(?: project)? backup/i);
   assert.match(tip.message,/reload/i);
   assert(!tip.toast.includes('filename'));
  }
@@ -28,7 +28,7 @@ test('figure, size, and genuinely unknown failures do not get misdiagnosed as up
  for(const [error,expected] of samples){
   const tip=fullProjectExportRecovery(error);
   assert.equal(tip.kind,expected,error.message);
-  assert.match(tip.message,/JSON backup/i);
+  assert.match(tip.message,/JSON(?: project)? backup/i);
   assert(!tip.message.includes('My diagram'),'Do not expose private figure names in the UI');
  }
 });
