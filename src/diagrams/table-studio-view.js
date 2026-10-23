@@ -315,7 +315,7 @@ export function renderTableStudio(state,icon,e){
  return '<section class="ia-table-studio representation-studio" data-table-studio aria-label="Mathematical Table Studio">'+
  '<header class="ia-table-head"><div><span class="intro-writing-guide-eyebrow">'+icon("table")+' MATHEMATICAL TABLE STUDIO</span>'+
  '<h2>Make a table worth showing</h2><p>Turn real information into a concise, easy-to-read mathematical table. The width adapts to its contents for a better fit in your IA.</p></div>'+
- '<button type="button" class="btn btn-quiet btn-sm" data-action="table-close">'+icon("x")+' Close studio</button></header>'+
+ '<button type="button" class="btn btn-quiet btn-sm representation-studio-close" aria-label="Browse all diagram tools" data-action="table-close">'+icon("grid-2x2")+' All tools</button></header>'+
  (routes[route]?'<aside class="ia-table-context"><strong>Your investigative pathway:</strong> '+e(routes[route])+'</aside>':"")+
  '<div class="ia-table-types" role="group" aria-label="Table purpose">'+kinds.map(([key,title,desc])=>
  '<button type="button" data-action="table-mode" data-table-mode="'+key+'" class="ia-table-type'+(d.mode===key?" selected":"")+'" aria-pressed="'+(d.mode===key)+'"><strong>'+e(title)+'</strong><small>'+e(desc)+'</small></button>').join("")+'</div>'+
