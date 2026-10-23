@@ -166,7 +166,7 @@ export function renderGraphStudio(state,icon,e){
  return '<section class="graph-studio representation-studio" data-graph-studio aria-label="Mathematical graph plotter">'+
   '<div class="graph-studio-head"><div><span class="intro-writing-guide-eyebrow">'+icon("chart")+' MY MATHEMATICS · GRAPH STUDIO</span>'+
   '<h2>Graph &amp; Model Explorer</h2><p>Plot genuine observations, optionally explore a justified model, and export a clear mathematical figure for your IA.</p></div>'+
-  '<button type="button" class="btn btn-quiet btn-sm" data-action="graph-close">'+icon("x")+' Close plotter</button></div>'+
+  '<button type="button" class="btn btn-quiet btn-sm representation-studio-close" aria-label="Browse all diagram tools" data-action="graph-close">'+icon("grid-2x2")+' All tools</button></div>'+
   '<div class="graph-type-picker" role="group" aria-label="Choose a graph type">'+
   types.map(([id,name,description])=>'<button class="graph-type'+(d.kind===id?" selected":"")+'" type="button" aria-pressed="'+(d.kind===id)+'" data-action="graph-type" data-graph-value="'+id+'"><strong>'+e(name)+'</strong><small>'+e(description)+'</small></button>').join("")+
   '</div>'+
