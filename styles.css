@@ -5,6 +5,25 @@
   --ink: #17353c; --muted: #586f73; --soft-ink: #74888b; --teal: #08766e; --teal-dark: #075d59; --teal-pale: #e7f4ef;
   --coral: #f2a885; --gold: #edca72; --line: #e1eae5; --shadow: 0 15px 50px rgba(28,63,60,.055);
   --round: 22px; --ease: cubic-bezier(.22,.8,.22,1);
+  /* Release design tokens — shared by Planning, IA Studio, Checking and the seven tools. */
+  --ui-font-body: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --ui-space-1:4px; --ui-space-2:8px; --ui-space-3:12px; --ui-space-4:16px;
+  --ui-space-5:20px; --ui-space-6:24px; --ui-space-8:32px;
+  --ui-radius-control:12px; --ui-radius-card:20px; --ui-radius-shell:26px;
+  --ui-radius-dialog:22px; --ui-radius-pill:999px;
+  --ui-control-height:44px; --ui-control-height-compact:40px;
+  --ui-type-label:13px; --ui-type-compact:12.5px;
+  --ui-reading-width:68ch; --ui-line-height-reading:1.64;
+  --ui-line:var(--line); --ui-line-strong:#cdded5; --ui-line-hover:#89b9aa;
+  --ui-control-surface:#fcfdfa;
+  --ui-action:var(--teal); --ui-action-hover:var(--teal-dark);
+  --ui-focus:#b8863b; --ui-focus-halo:rgba(8,118,110,.18);
+  --ui-danger:#b04b3d; --ui-danger-line:#f0d5d0; --ui-danger-halo:rgba(176,75,61,.14);
+  --ui-duration:180ms;
+  --ui-shadow-card:0 8px 28px rgba(28,63,60,.045);
+  --ui-shadow-hover:0 14px 33px rgba(28,63,60,.085);
+  --ui-shadow-popin:0 24px 75px rgba(21,49,49,.19);
+  --ui-advice-recovery:#ad751c; --ui-advice-writing:#7554aa; --ui-advice-criteria:#2f835a;
   font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: var(--ink); font-synthesis:none;
 }
 * { box-sizing: border-box; } html {scroll-behavior:smooth} body { margin:0; background:var(--page); color:var(--ink); min-width:320px; line-height:1.58; font-size:15.5px; } body.dialog-open {overflow:hidden}
