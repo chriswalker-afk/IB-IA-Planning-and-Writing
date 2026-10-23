@@ -16,8 +16,8 @@ const ids=(s,o)=>resourceSuggestions(s,o).map(r=>r.id);
 const educational=s=>JSON.stringify([s.entries,s.planning,s.project,s.teacher,s.completion,s.scratch]);
 const view=(s,id)=>resourceDrawer(s,{...newResourceSession(),id});
 test('resources: all task IDs are unique with written steps, checks, valid references and related tasks',()=>{
- assert.equal(RESOURCES.length,31);assert.equal(new Set(RESOURCES.map(r=>r.id)).size,31);
- for(const r of RESOURCES){assert(r.steps.length>=3&&r.check&&r.after&&r.when,r.id);assert(Object.hasOwn(TOOLS,r.tool));assert(r.sources.length);assert(r.related.length<=2);for(const id of r.related)assert(resourceById(id));for(const x of [...r.sources,...r.videos]){assert(safeResourceUrl(x.url),x.url);assert.equal(x.checkedAt,'2026-10-15');}}
+ assert.equal(RESOURCES.length,32);assert.equal(new Set(RESOURCES.map(r=>r.id)).size,32);
+ for(const r of RESOURCES){assert(r.steps.length>=3&&r.check&&r.after&&r.when,r.id);assert(Object.hasOwn(TOOLS,r.tool));assert(r.sources.length);assert(r.related.length<=2);for(const id of r.related)assert(resourceById(id));for(const x of [...r.sources,...r.videos]){assert(safeResourceUrl(x.url),x.url);assert.equal(x.checkedAt,r.id==='mla-citations'?'2026-10-23':'2026-10-15');}}
 });
 test('resources: video listings do not claim teacher approval or full viewing',()=>{
  assert.equal(RESOURCES.filter(r=>r.videos.length).length,19);
@@ -141,10 +141,12 @@ test('resources: native diagram creators are available without hiding or replaci
  const browseResults=html.split('<div id="resource-results">')[1];
  assert(browseResults);
  assert.equal((browseResults.match(/class="resource-row"/g)||[]).length,8);
- assert(html.includes('31 matching guides'));
+ assert(html.includes('32 matching guides'));
  assert(!html.includes('target="_self"'));
  const guide=resourceDrawer(s,{...session,id:'sheets-scatter'});
  assert(guide.includes('Use a Pathfinder diagram creator'));
  assert(guide.includes('data-resource-creator="graph"'));
  assert(guide.includes('Read the steps'));
 });
+
+test('resources: MLA guide is featured, searchable, authentic and read-only',()=>{const s=fixture(),before=educational(s),library=resourceDrawer(s,newResourceSession()),guide=view(s,'mla-citations');assert(library.includes('Open MLA referencing guide'));assert(filterResources({query:'MLA'}).some(r=>r.id==='mla-citations'));assert(filterResources({tool:'docs'}).some(r=>r.id==='mla-citations'));for(const str of ['MLA (8th ed.)','Works Cited','(World Bank)','What needs citing in a Maths IA?','Insert bibliography'])assert(guide.includes(str),str);assert.equal((guide.match(/class="resource-mla-case"/g)||[]).length,8);assert(!guide.includes('<iframe'));assert.equal(educational(s),before);});

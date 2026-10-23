@@ -2,7 +2,8 @@ import {RESOURCES,TOOLS,resourceById,PRACTICE_PAIRS} from './catalog.js';
 import {resourceContext,resourceSuggestions,filterResources} from './context.js';
 import {escapeHtml as e,icon} from '../ui/primitives.js';
 import {REPRESENTATION_TOOLS} from '../diagrams/representation-registry.js';
-const hosts=new Set(['support.google.com','help.desmos.com','www.desmos.com','runestone.academy','www.dataspire.org','www.lehman.cuny.edu','datahelpdesk.worldbank.org','databank.worldbank.org','automeris.io','www.perkins.org','knilt.arcc.albany.edu','mathispower4u.com','www.youtube.com','sheets.google.com','forms.google.com']);
+import {renderMlaCitationGuide} from './mla-guide.js';
+const hosts=new Set(['support.google.com','help.desmos.com','www.desmos.com','runestone.academy','www.dataspire.org','www.lehman.cuny.edu','datahelpdesk.worldbank.org','databank.worldbank.org','automeris.io','www.perkins.org','knilt.arcc.albany.edu','mathispower4u.com','www.youtube.com','sheets.google.com','forms.google.com','docs.google.com','style.mla.org','www.ibo.org','data.worldbank.org']);
 export function safeResourceUrl(value){
  try{const u=new URL(value);return u.protocol==='https:'&&hosts.has(u.hostname)&&!u.username&&!u.password?u.href:'';}catch{return '';}
 }
@@ -67,13 +68,13 @@ export function resourceDrawer(state,session){
    '<p class="resource-small">'+e(TOOLS[r.tool].device)+'</p>'+
    ((r.id==='inference'||['normal','binomial','derivatives','integrals'].includes(r.id))?'<p class="resource-scope">Check your exact course and understanding with your teacher. This guide explains tool operation, not syllabus approval.</p>':'')+
    '<div class="button-row">'+tool+'</div><h4>Read the steps</h4><ol class="resource-steps">'+r.steps.map(t=>'<li>'+e(t)+'</li>').join('')+'</ol>'+
-   resourceCreatorHub({compact:true})+
+   (r.id==='mla-citations'?renderMlaCitationGuide({e,icon,link}):resourceCreatorHub({compact:true}))+
    (r.snippets.length?'<div class="resource-snippets">'+r.snippets.map(([label,code])=>'<p class="resource-small">'+e(label)+'</p><pre><code>'+e(code)+'</code></pre>').join('')+'</div>':'')+
    '<div class="resource-check"><strong>Check before using the output</strong><p>'+e(r.check)+'</p></div>'+
    '<div class="resource-after"><strong>Back in your own IA</strong><p>'+e(r.after)+'</p><p class="resource-small">Record only mathematics you actually performed. Reading or watching does not mark anything complete or edit your IA.</p></div>'+
    (r.practice?'<details class="resource-practice"><summary>Try six practice pairs (optional)</summary><p>Invented practice values, not a dataset for your IA. Paste the headings and values into A1 of a blank practice Sheet; for Desmos, copy just the numerical rows.</p><label for="resource-practice-data">Practice table (tab-separated)</label><textarea id="resource-practice-data" readonly rows="7">'+e(PRACTICE_PAIRS)+'</textarea>'+button('copy','Copy practice table')+'<p id="resource-copy-status" role="status" class="resource-small"></p></details>':'')+
    video+'<details class="resource-sources"><summary>Written references & link information</summary>'+r.sources.map(s=>'<p>'+link(s.url,s.publisher+': '+s.title)+'</p>').join('')+
-   '<p class="resource-small">Source pages checked 15 October 2026. Interfaces can change. A broken link never blocks saving or the written instructions above. Nothing from your project is added to these external URLs.</p></details>'+
+   '<p class="resource-small">Source guidance checked at the date stated in each source record. Interfaces can change. A broken link never blocks saving or the written instructions above. Nothing from your project is added to these external URLs.</p></details>'+
    (r.related.length?'<details class="resource-related"><summary>Related tasks, only when useful</summary>'+r.related.map(id=>guideButton(id,resourceById(id).title,session.help)).join('')+'</details>':'')+
    preferences(x)+'<div class="resource-footer">'+close+'</div></div>';
  }
@@ -81,6 +82,7 @@ export function resourceDrawer(state,session){
  const options=(values,selected)=>values.map(([v,t])=>'<option value="'+e(v)+'"'+(v===selected?' selected':'')+'>'+e(t)+'</option>').join('');
  const suggested=resourceSuggestions(state,{help:session.help});
  return '<div class="resource-library"><p>Learn the tool for the task you have chosen. Written steps come first; external videos are optional.</p>'+intro+close+
+  '<section class="resource-mla-feature"><strong>Referencing made easy: MLA</strong><p>One Google Docs method, a worked Maths IA dataset citation and simple decisions about what to cite.</p>'+guideButton('mla-citations','Open MLA referencing guide')+'</section>'+
   resourceCreatorHub()+
   preferences(x)+(suggested.length?'<details class="resource-current"><summary>Useful for this stage</summary>'+suggested.map(r=>resourceRow(r,session.help)).join('')+'</details>':'')+
   '<form class="resource-filter-form" role="search"><label class="resource-control" for="resource-search"><span>Search tasks (for example PMCC, picture or integral)</span><input id="resource-search" type="search" maxlength="120" data-resource-filter="query" value="'+e(session.query)+'" placeholder="Find a task"></label><div class="resource-filters">'+
