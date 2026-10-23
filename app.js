@@ -47,6 +47,7 @@ import {toggleConclusionResult} from "./src/completing/conclusion-workspace.js";
 import {newGraphDraft,saveGraphFigure,renderGraphSvg,graphData,splitHeading,analyseGraph} from "./src/diagrams/graph-core.js";
 import {renderGraphQuality,renderGraphActions,graphSourceChoices,renderGraphModelSummary} from "./src/diagrams/graph-view.js";
 import {renderModelComparison,renderResidualPanelContents} from "./src/diagrams/graph-diagnostics-view.js";
+import {representationWorkflowState,renderRepresentationWorkflow} from "./src/diagrams/representation-workflow.js";
 import {updateGraphField,chooseGraphType,importGraphTable,loadSavedGraph,freshGraph,saveAndLinkGraph,saveGraphDraft,addGraphModel,toggleGraphModel,removeGraphModel,updateGraphModelExpression,updateGraphModelOption} from "./src/diagrams/graph-actions.js";
 import {exportGraphFigure} from "./src/diagrams/graph-export.js";
 import {imageTraceChecks,renderTraceOverlaySvg,renderCleanTraceSvg,traceCoordinates,traceCalibration} from "./src/diagrams/image-tracer-core.js";
@@ -500,6 +501,13 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     }
     const handover=root.querySelector('[data-figure-handover="'+type+'"]');
     if(handover)handover.outerHTML=renderFigureHandover(state,type,studio.draft,icon,e);
+    // Some editors repaint the preview without a full page render. Keep the
+    // shared readiness and saved/link explanation accurate after each edit.
+    const workflow=main.querySelector?.("[data-representation-workflow]");
+    if(workflow){
+      const status=representationWorkflowState(state);
+      if(status?.tool===type)workflow.outerHTML=renderRepresentationWorkflow(status,icon,e);
+    }
   }
   function refreshGraphPreview(){
     const d=state.graphStudio?.draft;
