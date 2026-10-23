@@ -13,6 +13,7 @@ import {examplePrompt} from "../examples/views.js";
 import {criteriaPanel,essentialsNudge} from "../essentials/views.js";
 import {criterionMarkedField,criterionPageHeading} from "../essentials/criteria-badges.js";
 import {ideaExplorerView,ideaComparisonView,ideaFooter} from '../ideas/views.js';
+import {planningHelpBadge,planningHelpMarkedField} from '../help/planning-help.js';
 import {renderTimelineStep} from "./timeline-view.js";
 /**
  * Full Planning student experience. Source node IDs are attached to UI for test
@@ -32,7 +33,7 @@ export function createPlanningViews(ctx){
  const {icon,e,button,field,choose,numberPick,note,summary,helpButton,helpBox,tabletNav}=ctx;
  const span=(v)=>e(String(v||""));
  const fval=(state,key)=>state.planning.fields[key]||"";
- const F=(key,label,placeholder,opts={})=>field("planning.fields."+key,label,placeholder,opts);
+ const F=(key,label,placeholder,opts={})=>planningHelpMarkedField(ctx.getState(),key,field("planning.fields."+key,label,placeholder,opts),e);
  const choice=(key,options,opts={})=>choose("planning.fields."+key,options,opts);
  const select=(key,label,options)=>F(key,label,"",{type:"select",options:[["","Choose or leave undecided"],...options]});
  const text=(value)=>e(value||"");
@@ -548,7 +549,8 @@ export function createPlanningViews(ctx){
    '<span class="progress-counter">1. Planning · '+e(welcome?"How Pathfinder works":PROGRESS_GROUPS[stageI]?.label||"Review")+'</span>'+
    (welcome?'':'<button type="button" class="chapter-guide-reopen" data-action="planning-intro-open">'+icon("circle-help")+' How this works</button>')+'</div>'+
    '<div class="task-shell'+(welcome?' chapter-onboarding-shell':'')+(kickoff&&!welcome?' planning-kickoff':'')+(titleStep?' planning-title-step':'')+(n==="N07"?' planning-finish':'')+'" data-source-node="'+e(n)+'"'+(welcome?' data-planning-intro="true"':'')+'>'+
-   criterionPageHeading(welcome?screen.title:planningScreenTitle(n,state),"planning",n)+'<p class="task-intro">'+e(screen.intro)+'</p>'+
+   '<div class="stuck-page-header">'+criterionPageHeading(welcome?screen.title:planningScreenTitle(n,state),"planning",n)+
+   (welcome?'':planningHelpBadge(state,'page',e))+'</div><p class="task-intro">'+e(screen.intro)+'</p>'+
    (welcome?'':renderSparkShelf(state,n,{surface:'planning'}))+screen.html+
    (!welcome&&["N01","N01V","N02M","N03P","N03P2","N03S","N04S"].includes(n)?
     '<div class="planning-context-examples" aria-label="Examples for this planning decision">'+examplePrompt(state)+'</div>':'')+
