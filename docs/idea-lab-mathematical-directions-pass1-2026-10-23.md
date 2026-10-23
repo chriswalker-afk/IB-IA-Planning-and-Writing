@@ -66,7 +66,7 @@ been migrated.
 | Technology and media | Data relationships; animated movement; storage models; generalising patterns; numerical iteration | Valid digital units and explainable mathematics rather than unexplained code |
 | Money and business | Subscription cost functions; constrained optimisation; conditional pricing; sensitivity of a budget model; compound growth | Hypothetical or published terms, not private accounts |
 | School and daily activities | Queuing variability; categorical comparisons; space optimisation; discrete scheduling; Voronoi | Permission, anonymity, constrained hypothetical or verified layouts |
-| Mathematical patterns (teacher-gated) | Proof of sequences; geometric proof; counterexample; recursive counting; numerical iteration | Precise statements and justified general arguments; consider EE suitability |
+| Mathematical patterns (teacher-gated) | Proof of sequences; geometric proof; counterexample; model a growing count; numerical iteration | Precise statements and justified general arguments; consider EE suitability |
 
 Repeated lenses within one topic are allowed when the actual questions differ:
 for example, comparing two conditional money offers and finding a
