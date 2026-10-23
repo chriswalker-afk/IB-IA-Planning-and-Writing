@@ -1,4 +1,4 @@
-import {representationEmpty} from "./workspace-ui.js";
+import {representationEmpty,representationOutputActions} from "./workspace-ui.js";
 import {diagramNotationControls} from "./diagram-notation.js";
 import {renderNativeDataGrid} from "./native-data-view.js";
 import {renderPresentationCoach,renderFigureHandover} from "./presentation-coach-view.js";
@@ -257,10 +257,12 @@ export function renderGraphQuality(studio,icon,e){
   '<p class="graph-quality-footnote">These are communication checks, not an IB grade. Check whether the representation is mathematically suitable for your question.</p>';
 }
 export function renderGraphActions(studio,icon,e){
- const q=analyseGraph(studio.draft),disabled=q.ready?"":' disabled title="Fix the required presentation checks first"';
- return '<div class="graph-actions-primary"><button type="button" class="btn btn-primary" data-action="graph-use"'+disabled+'>'+icon("check-circle")+' Save & link to my first maths</button></div>'+
-  '<div class="graph-buttons"><button type="button" class="btn btn-secondary btn-sm" data-action="graph-save"'+disabled+'>'+icon("layers")+' Save draft</button>'+
-  '<button type="button" class="btn btn-secondary btn-sm" data-action="graph-copy"'+disabled+'>'+icon("copy")+' Copy PNG</button>'+
-  '<button type="button" class="btn btn-secondary btn-sm" data-action="graph-png"'+disabled+'>'+icon("download")+' PNG</button>'+
-  '<button type="button" class="btn btn-secondary btn-sm" data-action="graph-svg"'+disabled+'>'+icon("download")+' SVG</button></div>';
+ const q=analyseGraph(studio.draft);
+ return representationOutputActions(icon,e,{
+  type:"graph",ready:q.ready,saveAction:"graph-save",linkAction:"graph-use",
+  disabledReason:"Resolve the required graph checks first.",
+  linkGroupClass:"graph-actions-primary",exportGroupClass:"graph-buttons",
+  formats:[["graph-copy","Copy PNG","copy"],["graph-png","Download PNG","download"],
+   ["graph-svg","Download SVG","download"]]
+ });
 }
