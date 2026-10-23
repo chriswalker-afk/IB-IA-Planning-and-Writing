@@ -285,6 +285,47 @@ with sync_playwright() as pw:
  old['ideaExplorer']['drafts']['sport-trajectory']={'seedId':'sport-trajectory','question':'Earlier recorded aim','clarity':4,'quickStart':4}
  run('idea-legacy-map-selection-remains-unchanged',old,old_map_preserved,390,844)
 
+
+ # Pass 3: selecting a rated possibility recalls a provisional route at the
+ # later mathematics screen. Merely opening it must not select mathematics.
+ def idea_to_planning(p):
+  note=p.locator('[data-idea-lab-handoff="maths"]')
+  assert note.is_visible()
+  assert 'Model movement' in note.inner_text()
+  assert saved(p)['planning']['routeExplorer']['selectedRoute']==''
+  assert saved(p)['planning']['mathSelected']==[]
+  assert note.locator('[data-action="plan-toggle-math"]').count()==0
+  note.locator('[data-action="math-open-route"][data-route-id="trajectories"]').click()
+  assert p.locator('#journey-detail-title').inner_text()=='Movement and trajectories'
+  assert saved(p)['planning']['routeExplorer']['selectedRoute']==''
+  p.locator('[data-action="math-select-route"][data-route-id="trajectories"]').click()
+  assert saved(p)['planning']['routeExplorer']['selectedRoute']=='trajectories'
+  assert saved(p)['planning']['mathSelected']==[]
+  assert 'explicitly saved' in note.inner_text()
+  p.screenshot(path=str(OUT/'idea-planning-handoff.png'),full_page=True,animations='disabled')
+  p.locator('[data-action="toggle-advice-mode"]').first.click()
+  assert saved(p)['ui']['adviceMode']=='reduced'
+  assert note.is_visible()
+  assert 'One first calculation' not in note.inner_text()
+  assert saved(p)['planning']['routeExplorer']['selectedRoute']=='trajectories'
+
+ handoff=state('N02M')
+ handoff['planning']['fields'].update({
+  'course':'AI SL','kind':'modelling',
+  'aim':'How could I model a ball path using a scaled sporting recording?',
+  'idea':'How could I model a ball path using a scaled sporting recording?'
+ })
+ handoff['ideaExplorer']['shortlist']=[{
+  'id':'idea-1','seedId':'math-sport-trajectory',
+  'question':handoff['planning']['fields']['aim'],
+  'fromMap':True,'clarity':4,'quickStart':3,
+  'mapOrigin':{'mode':'interests','root':'hobbies','topic':'sport',
+   'dataBranch':'','mathRoute':'trajectories'}
+ }]
+ handoff['ideaExplorer']['selectedId']='idea-1'
+ run('idea-lab-handoff-desktop',handoff,idea_to_planning,1440,900)
+ run('idea-lab-handoff-phone',handoff,idea_to_planning,390,844)
+
  browser.close()
 
 (OUT/'ideas-results.json').write_text(json.dumps(RESULTS,indent=2))
