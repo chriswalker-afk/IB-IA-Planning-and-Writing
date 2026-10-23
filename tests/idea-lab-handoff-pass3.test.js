@@ -86,6 +86,8 @@ test('Only a student-selected mathematical Idea Lab aim supplies the handover',(
  assert.deepEqual(s.planning.mathSelected,[]);
  assert.equal(s.teacher.pendingApproval,false);
  assert.equal(s.entries.length,0);
+ setPlanCurrent(s,'N02M');
+ applyPlanningField(s,'course','AI SL');
  const before=JSON.stringify(s);
  const rendered=cue(s,'maths');
  assert(rendered.includes('FROM YOUR SELECTED IDEA LAB POSSIBILITY'));
@@ -154,6 +156,8 @@ test('Data-first provenance survives saving, editing and full project JSON norma
 });
 test('Reduced advice hides optional detail but preserves safety and route access',()=>{
  const s=selectedSport();
+ setPlanCurrent(s,'N02M');
+ applyPlanningField(s,'course','AI SL');
  s.ui.adviceMode='reduced';
  const html=cue(s,'maths');
  assert(html.includes('data-action="math-open-route"'));
@@ -168,6 +172,18 @@ test('Reduced advice hides optional detail but preserves safety and route access
  assert(cue(survey,'evidence').includes('school permission'));
  assert(!cue(survey,'evidence').includes('Earlier evidence possibility'));
  assert(!cue(survey,'maths').includes('One first calculation'));
+});
+test('Mathematical route buttons are not misleading when the explorer is unavailable',()=>{
+ const s=selectedSport();
+ setPlanCurrent(s,'N02M');
+ assert(cue(s,'maths').includes('Choose your course above'));
+ assert(!cue(s,'maths').includes('data-action="math-open-route"'));
+ setPlanCurrent(s,'N04T');
+ assert(cue(s,'maths').includes('data-action="plan-edit" data-node="N02M"'));
+ applyPlanningField(s,'course','AA HL');
+ setPlanCurrent(s,'N04S');
+ assert(cue(s,'maths').includes('data-action="math-open-route"'));
+ assert.equal(s.planning.routeExplorer.selectedRoute,'');
 });
 test('Course preview is never an automatic AA HL technique recommendation',()=>{
  const s=selectedSport();
