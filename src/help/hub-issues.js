@@ -61,7 +61,7 @@ export function hubOriginalView(state){
  const completion=o?{...state.completion,current:o.node,
   activeEntryIndex:state.entries.findIndex(e=>e.id===o.entryId),
   nextFromEntryId:o.nextFromEntryId}:state.completion;
- return {...state,route,planning,completion};
+ return {...state,route,planning,completion,ui:o?.route==="checking"?{...state.ui,checkingMode:o.checkMode||"draft"}:state.ui};
 }
 const targetFor=(view,surface,card)=>{
  if(surface==="planning"){
