@@ -584,7 +584,13 @@ export function studioHelpFor(state,spot){
  // A chosen route does not overrule the first safety/genuine-result repair.
  if(!actual&&choices[0]?.id==="not-yet-result")choices=[
   choices[0],...choices.filter(x=>x.id!=="not-yet-result")];
- const unique=[...new Map(choices.filter(Boolean).map(x=>[x.id,x])).values()].slice(0,3);
+ const unique=[...new Map(choices.filter(Boolean).map(x=>{
+   // The same unperformed-output difficulty returns the student to their
+   // *current* later stage, not the original C30 mathematical page.
+   if(x.id==="not-yet-result"&&["C40","C50"].includes(node))
+    x=Object.freeze({...x,targetNode:node,targetLabel:"Return to this mathematical stage"});
+   return[x.id,x];
+  })).values()].slice(0,3);
  if(!unique.length)return null;
  const toolTitle=tool?.title||"";
  const selectedCourse=str(state.planning?.fields?.course||state.project?.course);
@@ -593,7 +599,7 @@ export function studioHelpFor(state,spot){
    spot==="page"?"Find a way forward here":
    spot.startsWith("part:")?"Unblock this mathematical step":"Help with this mathematical decision",
   route:route&&ROUTE_IDS.has(routeId)?route.title:"",method:actual?str(entry?.methodId):"",
-  source:actual?"Verified mathematical result recorded":entry?"Work not yet confirmed":"No mathematical result selected",
+  source:actual?"Student-confirmed completed mathematical work":entry?"Work not yet confirmed":"No mathematical result selected",
   selectedOutcome:outcome?.title||"",course:selectedCourse,choices:unique
  });
 }
