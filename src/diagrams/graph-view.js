@@ -1,4 +1,4 @@
-import {representationEmpty} from "./workspace-ui.js";
+import {representationEmpty,representationOutputActions} from "./workspace-ui.js";
 import {diagramNotationControls} from "./diagram-notation.js";
 import {renderNativeDataGrid} from "./native-data-view.js";
 import {renderPresentationCoach,renderFigureHandover} from "./presentation-coach-view.js";
@@ -166,7 +166,7 @@ export function renderGraphStudio(state,icon,e){
  return '<section class="graph-studio representation-studio" data-graph-studio aria-label="Mathematical graph plotter">'+
   '<div class="graph-studio-head"><div><span class="intro-writing-guide-eyebrow">'+icon("chart")+' MY MATHEMATICS · GRAPH STUDIO</span>'+
   '<h2>Graph &amp; Model Explorer</h2><p>Plot genuine observations, optionally explore a justified model, and export a clear mathematical figure for your IA.</p></div>'+
-  '<button type="button" class="btn btn-quiet btn-sm" data-action="graph-close">'+icon("x")+' Close plotter</button></div>'+
+  '<button type="button" class="btn btn-quiet btn-sm representation-studio-close" aria-label="Browse all diagram tools" data-action="graph-close">'+icon("grid-2x2")+' All tools</button></div>'+
   '<div class="graph-type-picker" role="group" aria-label="Choose a graph type">'+
   types.map(([id,name,description])=>'<button class="graph-type'+(d.kind===id?" selected":"")+'" type="button" aria-pressed="'+(d.kind===id)+'" data-action="graph-type" data-graph-value="'+id+'"><strong>'+e(name)+'</strong><small>'+e(description)+'</small></button>').join("")+
   '</div>'+
@@ -257,10 +257,12 @@ export function renderGraphQuality(studio,icon,e){
   '<p class="graph-quality-footnote">These are communication checks, not an IB grade. Check whether the representation is mathematically suitable for your question.</p>';
 }
 export function renderGraphActions(studio,icon,e){
- const q=analyseGraph(studio.draft),disabled=q.ready?"":' disabled title="Fix the required presentation checks first"';
- return '<div class="graph-actions-primary"><button type="button" class="btn btn-primary" data-action="graph-use"'+disabled+'>'+icon("check-circle")+' Save & link to my first maths</button></div>'+
-  '<div class="graph-buttons"><button type="button" class="btn btn-secondary btn-sm" data-action="graph-save"'+disabled+'>'+icon("layers")+' Save draft</button>'+
-  '<button type="button" class="btn btn-secondary btn-sm" data-action="graph-copy"'+disabled+'>'+icon("copy")+' Copy PNG</button>'+
-  '<button type="button" class="btn btn-secondary btn-sm" data-action="graph-png"'+disabled+'>'+icon("download")+' PNG</button>'+
-  '<button type="button" class="btn btn-secondary btn-sm" data-action="graph-svg"'+disabled+'>'+icon("download")+' SVG</button></div>';
+ const q=analyseGraph(studio.draft);
+ return representationOutputActions(icon,e,{
+  type:"graph",ready:q.ready,saveAction:"graph-save",linkAction:"graph-use",
+  disabledReason:"Resolve the required graph checks first.",
+  linkGroupClass:"graph-actions-primary",exportGroupClass:"graph-buttons",
+  formats:[["graph-copy","Copy PNG","copy"],["graph-png","Download PNG","download"],
+   ["graph-svg","Download SVG","download"]]
+ });
 }

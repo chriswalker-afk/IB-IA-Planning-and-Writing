@@ -7,6 +7,7 @@ import {contextualRepresentationAdvice} from "./presentation-coach-core.js";
 import {renderHubDatasetEvidence} from "./presentation-coach-view.js";
 import {methodFamilies} from "../completing/method-identity.js";
 import {REPRESENTATION_TOOLS,activeRepresentationTool,representationReturnNode} from "./representation-registry.js";
+import {representationWorkflowState,renderRepresentationWorkflow} from "./representation-workflow.js";
 export {REPRESENTATION_TOOLS} from "./representation-registry.js";
 export const REPRESENTATION_FILTERS=Object.freeze([
  ["all","All tools"],["data","Explore data"],["geometry","Explore geometry"],
@@ -188,13 +189,14 @@ export function renderRepresentationSwitcher(state,icon,e){
   home:"Back to Home",planning:"Back to Planning",completing:"Back to IA Studio",
   checking:"Back to Checking",path:"Back to My path",report:"Back to my report"
  };
- const backLabel=fromLibrary?originLabel[fromLibrary]||"Back to my work":"Back to my mathematical stage";
+ const backLabel=fromLibrary?originLabel[fromLibrary]||"Back to my work":
+  representationReturnNode(state)==="C30"?"Back to first mathematics":"Back to later mathematics";
  const backAction=fromLibrary?"resource-creator-return":"representation-return";
  const backTarget=fromLibrary?"":' data-node="'+representationReturnNode(state)+'"';
  const back='<button type="button" class="representation-workspace-tool representation-workspace-tool-back"'+
   ' data-action="'+backAction+'"'+backTarget+' aria-label="'+e(backLabel)+'" title="'+e(backLabel)+'">'+
   '<span class="representation-workspace-tool-icon" aria-hidden="true">'+icon("arrow-left")+'</span>'+
-  '<span class="representation-workspace-tool-label">Back</span></button>';
+  '<span class="representation-workspace-tool-label">'+e(backLabel)+'</span></button>';
  const tools=REPRESENTATION_TOOLS.map(tool=>{
   const selected=active?.id===tool.id;
   return '<button type="button" class="representation-workspace-tool'+(selected?' is-active':'')+'"'+
@@ -207,13 +209,14 @@ export function renderRepresentationSwitcher(state,icon,e){
  return '<div class="representation-workspace-header" data-representation-workspace data-representation-switcher>'+
   '<div class="representation-workspace-bar">'+
   '<div class="representation-workspace-identity"><span class="representation-workspace-mark">'+
-    icon(active?.icon||"layers")+'</span><span><small>IA Studio / Explore &amp; explain</small>'+
+    icon(active?.icon||"layers")+'</span><span><small>'+(fromLibrary?e("Tools & tutorials · Figure creator"):e("IA Studio · Explore & explain"))+'</small>'+
     '<strong>'+e(active?.title||"Mathematical workspace")+'</strong></span></div>'+
   '<div class="representation-workspace-actions">'+
    '<button type="button" class="btn btn-secondary btn-sm" data-action="representation-back">'+
     icon("grid-2x2")+' All tools</button></div></div>'+
   '<nav class="representation-workspace-tools" aria-label="Diagram creators and return navigation">'+
    back+tools+'</nav>'+
+  renderRepresentationWorkflow(representationWorkflowState(state),icon,e)+
   '<p class="representation-workspace-guidance">'+icon("info")+
-   ' Explore with genuine or clearly identified hypothetical information. Refine the presentation, then save and use it in your own IA when ready.</p></div>';
+   ' Save an editable draft to keep a figure for later; Save &amp; link associates it with this mathematical stage. Downloads are separate files and do not write your IA.</p></div>';
 }

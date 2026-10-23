@@ -1,4 +1,5 @@
-import {representationEmpty} from "./workspace-ui.js";
+import {representationEmpty,representationOutputActions} from "./workspace-ui.js";
+import {escapeHtml} from "../ui/primitives.js";
 import {renderNativeDataGrid} from "./native-data-view.js";
 import {renderPresentationCoach,renderFigureHandover} from "./presentation-coach-view.js";
 /** Short, readable tables, contextual mathematical help and reliable quality gates. */
@@ -285,24 +286,26 @@ function quality(studio,icon,e){
  '<p class="ia-table-quality-note">Criterion A — presentation and Criterion B — mathematical communication: help the reader see only relevant mathematics, accurately labelled. These checks do not award an IB grade.</p>';
 }
 function output(studio,icon){
- const ready=analyzeTable(studio.draft).ready,disable=ready?"":' disabled title="Resolve the essential table checks first"';
- const btn=(action,text)=>'<button type="button" class="btn btn-secondary btn-sm" data-action="'+action+'"'+disable+'>'+text+'</button>';
- return '<button type="button" class="btn btn-primary" data-action="table-use"'+disable+'>'+
- icon("check-circle")+' Save and link to my first mathematics</button>'+
+ const q=analyzeTable(studio.draft),ready=q.ready;
+ return representationOutputActions(icon,escapeHtml,{
+  type:"table",ready,saveAction:"table-save",linkAction:"table-use",
+  disabledReason:"Resolve the essential table checks before saving or exporting.",
+  exportGroupClass:"ia-table-export-buttons",
+  formats:[["table-editable","Copy editable table","copy"],
+   ["table-html","Download editable HTML","download"],
+   ["table-png","Download PNG","download"],["table-svg","Download SVG","download"],
+   ["table-copy","Copy image","copy"],["table-csv","Download table CSV","table"]]
+ })+
  (studio.draft.mode==="grouped"?
- '<div class="ia-table-stat-transfer"><button type="button" class="btn btn-secondary btn-sm" data-action="table-to-stat"'+disable+
- '>'+icon("chart")+' Build matching frequency-density histogram</button>'+
- '<button type="button" class="btn btn-secondary btn-sm" data-action="table-to-ogive"'+disable+'>'+icon("chart")+' Build cumulative-frequency curve</button>'+
- '<button type="button" class="btn btn-secondary btn-sm" data-action="table-to-polygon"'+disable+'>'+icon("chart")+' Build frequency polygon</button>'+
- '<small>Each diagram uses this exact grouped dataset, source and class boundaries. No measurements, saved tables or saved diagrams are overwritten.</small></div>':"")+
- '<div class="ia-table-export-buttons">'+
- btn("table-editable",icon("copy")+' Copy editable table')+
- btn("table-html",icon("download")+' Editable HTML')+
- btn("table-png",icon("download")+' PNG')+
- btn("table-svg",icon("download")+' SVG')+
- btn("table-copy",icon("copy")+' Copy image')+
- btn("table-csv",icon("table")+' Table CSV')+
- '</div><p>The editable version can be pasted into Google Docs, but check its column widths after pasting. The SVG/PNG preserves the precise on-screen layout.</p>';
+ '<div class="ia-table-stat-transfer">'+
+ [["table-to-stat","Build matching frequency-density histogram"],
+  ["table-to-ogive","Build cumulative-frequency curve"],
+  ["table-to-polygon","Build frequency polygon"]].map(([action,label])=>
+ '<button type="button" class="btn btn-secondary btn-sm" data-action="'+action+'"'+
+ (ready?"":' disabled aria-disabled="true" title="Resolve the table checks first"')+
+ '>'+icon("chart")+label+'</button>').join("")+
+ '<small>Each diagram uses this exact grouped dataset, source and class boundaries. Saved tables and diagrams are not overwritten.</small></div>':"")+
+ '<p>The editable version can be pasted into Google Docs; check column widths afterwards. SVG/PNG preserves the figure layout.</p>';
 }
 export const tablePreviewHtml=preview,tableA4PreviewHtml=a4Preview,tableQualityHtml=quality,tableOutputHtml=output;
 export function renderTableStudio(state,icon,e){
@@ -312,7 +315,7 @@ export function renderTableStudio(state,icon,e){
  return '<section class="ia-table-studio representation-studio" data-table-studio aria-label="Mathematical Table Studio">'+
  '<header class="ia-table-head"><div><span class="intro-writing-guide-eyebrow">'+icon("table")+' MATHEMATICAL TABLE STUDIO</span>'+
  '<h2>Make a table worth showing</h2><p>Turn real information into a concise, easy-to-read mathematical table. The width adapts to its contents for a better fit in your IA.</p></div>'+
- '<button type="button" class="btn btn-quiet btn-sm" data-action="table-close">'+icon("x")+' Close studio</button></header>'+
+ '<button type="button" class="btn btn-quiet btn-sm representation-studio-close" aria-label="Browse all diagram tools" data-action="table-close">'+icon("grid-2x2")+' All tools</button></header>'+
  (routes[route]?'<aside class="ia-table-context"><strong>Your investigative pathway:</strong> '+e(routes[route])+'</aside>':"")+
  '<div class="ia-table-types" role="group" aria-label="Table purpose">'+kinds.map(([key,title,desc])=>
  '<button type="button" data-action="table-mode" data-table-mode="'+key+'" class="ia-table-type'+(d.mode===key?" selected":"")+'" aria-pressed="'+(d.mode===key)+'"><strong>'+e(title)+'</strong><small>'+e(desc)+'</small></button>').join("")+'</div>'+

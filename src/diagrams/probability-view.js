@@ -3,6 +3,8 @@ import {renderProbabilitySvg} from "./probability-render.js";
 import {probabilityFigureDiagnostics} from "./probability-flexible-render.js";
 import {probabilityPresetChooser,probabilityFlexibleEditors} from "./probability-flexible-view.js";
 import {renderPresentationCoach,renderFigureHandover} from "./presentation-coach-view.js";
+import {representationOutputActions} from "./workspace-ui.js";
+import {escapeHtml} from "../ui/primitives.js";
 const field=(key,name,value,e,placeholder="")=>
  '<label class="probability-field"><span>'+e(name)+'</span><input type="text" data-prob-field="'+key+
  '" value="'+e(value)+'" placeholder="'+e(placeholder)+'"></label>';
@@ -67,15 +69,15 @@ export function probabilityQualityHtml(studio,e){
 }
 export function probabilityOutputHtml(studio,icon){
  const remaining=MAX_PROBABILITY_FIGURES-studio.figures.length+(studio.activeId?1:0);
- const ready=probabilityAnalysis(studio.draft).ready,disabled=ready?"":" disabled";
- return '<div class="probability-output" data-prob-output><div class="probability-buttons">'+
- '<button type="button" class="btn btn-secondary" data-action="probability-save"'+disabled+'>'+icon("save")+' Save editable figure</button>'+
- '<button type="button" class="btn btn-primary" data-action="probability-use"'+disabled+'>'+icon("arrow-right")+' Use in this mathematical stage</button>'+
- '<button type="button" class="btn btn-secondary" data-action="probability-svg"'+disabled+'>Download SVG</button>'+
- '<button type="button" class="btn btn-secondary" data-action="probability-png"'+disabled+'>Download PNG</button></div>'+
- '<p>'+remaining+' saved-figure slot(s) available. '+(ready?"Check that every probability and modelling assumption is defensible before using this in your IA.":
- 'Complete the validation checks before saving, linking or downloading. Unsaved edits remain in your local project and JSON backup.')+
- '</p></div>';
+ const ready=probabilityAnalysis(studio.draft).ready;
+ return '<div class="probability-output" data-prob-output>'+
+  representationOutputActions(icon,escapeHtml,{
+   type:"probability",ready,saveAction:"probability-save",linkAction:"probability-use",
+   disabledReason:"Complete the probability and source checks before saving or exporting.",
+   exportGroupClass:"probability-buttons",
+   formats:[["probability-svg","Download SVG","download"],["probability-png","Download PNG","download"]]
+  })+
+  '<p>'+remaining+' saved-figure slot(s) available. Check that all probabilities and assumptions are justified before interpreting this tree in your IA.</p></div>';
 }
 function stageEditor(d,level,e){
  const ids=activeParents(d.stages).filter(x=>x.length===level),open=level===0;

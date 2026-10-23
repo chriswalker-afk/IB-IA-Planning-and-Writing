@@ -4,6 +4,8 @@ import {renderGeometrySvg} from "./geometry-render.js";
 import {orthogonalDecomposition,geometrySensitivity} from "./geometry-advanced.js";
 import {diagramNotationControls,diagramHtmlMath} from "./diagram-notation.js";
 import {renderPresentationCoach,renderFigureHandover} from "./presentation-coach-view.js";
+import {representationOutputActions} from "./workspace-ui.js";
+import {escapeHtml} from "../ui/primitives.js";
 const choices=(key,label,value,opts,e)=>'<label class="geometry-field"><span>'+e(label)+'</span><select data-geometry-field="'+key+'">'+opts.map(([id,name])=>'<option value="'+id+'"'+(value===id?" selected":"")+'>'+e(name)+'</option>').join("")+'</select></label>';
 const field=(key,label,value,e,placeholder="")=>'<label class="geometry-field"><span>'+e(label)+'</span><input type="text" data-geometry-field="'+key+'" value="'+e(value)+'" placeholder="'+e(placeholder)+'"></label>';
 const tick=(key,label,checked)=>'<label class="geometry-toggle"><input type="checkbox" data-geometry-field="'+key+'"'+(checked?" checked":"")+'><span>'+label+'</span></label>';
@@ -58,14 +60,16 @@ export function geometryImportHtml(state,icon,e){
   '<button type="button" class="btn btn-quiet btn-sm" data-action="trace-open">Open Image Tracer</button></details>';
 }
 export function geometryOutputHtml(studio,icon){
- const remaining=MAX_GEOMETRY_FIGURES-studio.figures.length+(studio.activeId?1:0),ready=geometryAnalysis(studio.draft).ready;
- const disabled=ready?"":' disabled aria-disabled="true"';
- return '<div class="geometry-output"><p>Keep your saved figures editable in your project. Export a vector SVG or a high-resolution PNG to insert into your IA.</p>'+
-  '<div class="geometry-buttons"><button type="button" class="btn btn-secondary" data-action="geometry-save"'+disabled+'>'+icon("save")+' Save editable figure</button>'+
-  '<button type="button" class="btn btn-primary" data-action="geometry-use"'+disabled+'>'+icon("arrow-right")+' Use in this mathematical stage</button>'+
-  '<button type="button" class="btn btn-secondary" data-action="geometry-svg"'+disabled+'>Download SVG</button>'+
-  '<button type="button" class="btn btn-secondary" data-action="geometry-png"'+disabled+'>Download PNG</button></div>'+
-  '<p class="geometry-note">'+remaining+' available saved-figure slot(s). '+(ready?'Save your diagram before moving it into the IA.':'Complete the highlighted checks before saving, linking or downloading.')+' Saved figures remain editable; they are not independent evidence of mathematical correctness.</p></div>';
+ const remaining=MAX_GEOMETRY_FIGURES-studio.figures.length+(studio.activeId?1:0);
+ const ready=geometryAnalysis(studio.draft).ready;
+ return '<div class="geometry-output">'+
+  representationOutputActions(icon,escapeHtml,{
+   type:"geometry",ready,saveAction:"geometry-save",linkAction:"geometry-use",
+   disabledReason:"Complete the geometry construction and source checks first.",
+   exportGroupClass:"geometry-buttons",
+   formats:[["geometry-svg","Download SVG","download"],["geometry-png","Download PNG","download"]]
+  })+
+  '<p class="geometry-note">'+remaining+' available saved-figure slot(s). Saved figures remain editable; neither a construction nor an export establishes the correctness of a mathematical conclusion.</p></div>';
 }
 /** Optional controls stay collapsed so the main vertex editor is approachable. */
 function geometryAnnotationControls(d,e){

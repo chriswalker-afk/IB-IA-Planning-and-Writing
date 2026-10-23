@@ -1,4 +1,4 @@
-import {representationEmpty} from "./workspace-ui.js";
+import {representationEmpty,representationOutputActions} from "./workspace-ui.js";
 import {renderPresentationCoach,renderFigureHandover} from "./presentation-coach-view.js";
 import {diagramNotationControls,diagramHtmlMath,diagramUnitPower} from "./diagram-notation.js";
 /** Image tracing studio: coordinate calibration and careful IB-style mathematical communication. */
@@ -65,18 +65,17 @@ export function traceQualityHtml(tracer,icon,e){
 }
 export function traceOutputHtml(tracer,icon,e){
  const q=imageTraceChecks(tracer.draft);
- const disabled=q.ready?"":' disabled title="Resolve the required image and calibration checks first"';
- return '<button type="button" class="btn btn-primary" data-action="trace-use"'+disabled+'>'+icon("check-circle")+' Save and link to first mathematics</button>'+
-  '<div class="trace-output-options">'+
-  '<button type="button" class="btn btn-secondary btn-sm" data-action="trace-save"'+disabled+'>'+icon("layers")+' Save draft</button>'+
-  '<button type="button" class="btn btn-secondary btn-sm" data-action="trace-copy"'+disabled+'>'+icon("copy")+' Copy PNG</button>'+
-  '<button type="button" class="btn btn-secondary btn-sm" data-action="trace-png"'+disabled+'>'+icon("download")+' PNG</button>'+
-  '<button type="button" class="btn btn-secondary btn-sm" data-action="trace-svg"'+disabled+'>'+icon("download")+' SVG</button>'+
-  '<button type="button" class="btn btn-secondary btn-sm" data-action="trace-csv"'+disabled+'>'+icon("table")+' Coordinates CSV</button></div>'+
-  (q.ready&&q.draft.closeShape&&q.draft.perspective==="front-on"&&q.draft.points.length>=3&&q.draft.points.length<=8?
-   '<div class="trace-to-geometry"><p><strong>Next mathematical step:</strong> Reuse these calibrated outline coordinates in Geometry Studio to label dimensions, construct a composite shape or test sensitivity. The original traced photograph is preserved.</p>'+
-   '<button type="button" class="btn btn-secondary" data-action="geometry-import-trace">'+icon("ruler")+' Continue in Geometry Studio</button></div>':
-   q.ready?'<p class="trace-fine-print">Geometry Studio transfer is available for a closed, front-on outline of 3–8 traced points. This does not change your current tracing.</p>':"");
+ return representationOutputActions(icon,e,{
+  type:"trace",ready:q.ready,saveAction:"trace-save",linkAction:"trace-use",
+  disabledReason:"Resolve the image and calibration checks first.",
+  exportGroupClass:"trace-output-options",
+  formats:[["trace-copy","Copy PNG","copy"],["trace-png","Download PNG","download"],
+   ["trace-svg","Download SVG","download"],["trace-csv","Download coordinates CSV","table"]]
+ })+
+ (q.ready&&q.draft.closeShape&&q.draft.perspective==="front-on"&&q.draft.points.length>=3&&q.draft.points.length<=8?
+  '<div class="trace-to-geometry"><p><strong>Next mathematical step:</strong> Reuse these calibrated outline coordinates in Geometry Studio to label dimensions, construct a composite shape or test sensitivity. The original tracing is preserved.</p>'+
+  '<button type="button" class="btn btn-secondary" data-action="geometry-import-trace">'+icon("ruler")+' Continue in Geometry Studio</button></div>':
+  q.ready?'<p class="trace-fine-print">Geometry Studio transfer is available for a closed, front-on outline of 3–8 traced points. This does not change your tracing.</p>':"");
 }
 export function tracePreviewHtml(tracer,icon,e){
  const d=tracer.draft,q=imageTraceChecks(d),c=q.calibration;
@@ -119,7 +118,7 @@ export function renderImageTracer(state,icon,e){
   '<header class="trace-studio-header"><div><div class="intro-writing-guide-eyebrow">'+icon("image")+' IMAGE & COORDINATE STUDIO</div>'+
   '<h2>Turn your photograph into mathematics</h2>'+
   '<p>Trace an actual object, geometry or trajectory, using your own origin and scale. The photograph remains distinct from the mathematical coordinate plot.</p></div>'+
-  '<button type="button" class="btn btn-quiet btn-sm" data-action="trace-close">'+icon("x")+' Close tracer</button></header>'+
+  '<button type="button" class="btn btn-quiet btn-sm representation-studio-close" aria-label="Browse all diagram tools" data-action="trace-close">'+icon("grid-2x2")+' All tools</button></header>'+
   (advice?'<aside class="trace-journey-advice"><strong>Based on your investigative pathway:</strong> '+e(advice)+'</aside>':"")+
   '<div class="trace-studio-columns"><div class="trace-control-stack">'+
   '<section class="trace-control-card" data-representation-step="create"><h3><span class="trace-step-index">1</span> Import a real image</h3>'+

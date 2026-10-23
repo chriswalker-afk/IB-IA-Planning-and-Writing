@@ -1,0 +1,103 @@
+/* Release polish Pass 4 — one workflow and action hierarchy in every creator.
+ * This layer affects presentation only. Existing per-tool mathematical checks,
+ * save/link functions, export handlers and separate draft state are preserved.
+ */
+.representation-workflow{
+ display:grid;grid-template-columns:minmax(190px,.95fr) minmax(0,2fr);
+ gap:11px 18px;padding:13px 15px;background:var(--surface);
+ border:1px solid var(--ui-line);border-top:0;min-width:0
+}
+.representation-workflow-status{display:flex;flex-direction:column;align-items:flex-start;gap:7px;min-width:0}
+.representation-workflow-kicker,.representation-figure-action-kicker{
+ font:800 10px/1.4 var(--ui-font-body);letter-spacing:.065em;color:var(--muted);
+}
+.representation-workflow-state{
+ display:inline-flex;align-items:center;flex-wrap:wrap;gap:6px;
+ border:1px solid #e9d6b6;background:#fff6e7;color:#775019;
+ border-radius:var(--ui-radius-pill);padding:7px 11px;font-size:12px;line-height:1.3
+}
+.representation-workflow-state.ready{border-color:#b7deca;background:#ecf8f0;color:#246348}
+.representation-workflow-state .icon{width:16px;height:16px;flex:none}
+.representation-workflow-steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;list-style:none;padding:0;margin:0}
+.representation-workflow-step{
+ display:flex;align-items:center;gap:6px;padding:6px 8px;min-width:0;
+ border:1px solid var(--ui-line);border-radius:10px;background:var(--surface-soft);
+ color:var(--muted);font-size:11px;line-height:1.4;font-weight:700
+}
+.representation-workflow-step>span{
+ display:grid;place-items:center;width:20px;height:20px;min-width:20px;
+ border:1px solid #d2e2dc;border-radius:50%;background:#fff;
+ font-size:10px;font-variant-numeric:tabular-nums
+}
+.representation-workflow-step.is-checked,.representation-workflow-step.is-saved{background:#edf7f1;color:#246348;border-color:#bbdacc}
+.representation-workflow>p{grid-column:1/-1;margin:0;color:var(--muted);font-size:11.5px;line-height:1.5;overflow-wrap:anywhere}
+.representation-workspace-header .representation-workspace-guidance{border-top:0}
+.representation-workspace-tool-back .representation-workspace-tool-label{font-size:10px;line-height:1.25}
+.representation-studio-close{min-height:40px}
+
+/* Use -> editable draft -> export, repeated with exactly the same semantics. */
+.representation-figure-actions{
+ display:grid;gap:11px;margin:0 0 12px;min-width:0
+}
+.representation-figure-actions :is(.representation-figure-use,.representation-figure-save,.representation-figure-export){
+ display:flex;flex-direction:column;align-items:stretch;gap:7px;
+ border:1px solid var(--ui-line);border-radius:var(--ui-radius-card);
+ background:var(--surface);padding:12px 13px;margin:0;min-width:0
+}
+.representation-figure-actions .representation-figure-use{
+ background:var(--teal-pale);border-color:#b5d8ca
+}
+.representation-figure-actions .representation-figure-use .btn{width:100%;min-height:44px}
+.representation-figure-actions .representation-figure-save .btn{align-self:stretch}
+.representation-figure-actions .representation-figure-formats{
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;width:100%
+}
+.representation-figure-actions .representation-figure-formats .btn{
+ min-height:44px;width:100%;padding:9px 10px;justify-content:center;
+ font-size:12px;line-height:1.35;white-space:normal;text-align:center
+}
+.representation-figure-actions .representation-figure-formats .btn .icon{
+ width:16px;height:16px;flex:none
+}
+.representation-figure-action-explain{
+ margin:0;padding:0 2px;color:var(--muted);font-size:12px;line-height:1.6
+}
+.representation-figure-actions button:disabled{cursor:not-allowed;opacity:.55}
+/* Override older studio-specific grid/flex rules only inside the common shell. */
+.representation-figure-actions :is(.graph-buttons,.stat-output-buttons,.ia-table-export-buttons,
+ .trace-output-options,.voronoi-exports,.geometry-buttons,.probability-buttons){
+ display:flex;flex-direction:column;align-items:stretch;gap:7px;margin:0;
+ grid-template-columns:none
+}
+.representation-figure-actions :is(.graph-buttons,.stat-output-buttons,.ia-table-export-buttons,
+ .trace-output-options,.voronoi-exports,.geometry-buttons,.probability-buttons)>.btn{width:auto}
+.representation-figure-actions :is(.graph-actions-primary,.representation-figure-use) .btn{white-space:normal}
+.representation-figure-actions .btn:focus-visible,
+.representation-workspace-tool-back:focus-visible{
+ outline:3px solid var(--ui-focus);outline-offset:2px
+}
+/* Special-purpose cross-tool transfers remain separate and visually secondary. */
+:is(.stat-table-transfer,.ia-table-stat-transfer,.trace-to-geometry){margin-top:11px}
+:is(.graph-saved-list,.stat-saved-items,.ia-table-saved-list,.trace-saved-list,
+ .voronoi-saved-row,.geometry-saved-row,.probability-saved-row) .btn{min-height:40px}
+@media(max-width:900px){
+ .representation-workflow{grid-template-columns:1fr}
+ .representation-workflow>p{grid-column:auto}
+}
+@media(max-width:760px){
+ .representation-workflow{padding:12px;gap:10px}
+ .representation-workflow-steps{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .representation-workflow-step{font-size:11.5px}
+ .representation-figure-actions .representation-figure-formats{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .representation-figure-actions :is(.representation-figure-use,.representation-figure-save,.representation-figure-export){padding:11px}
+}
+@media(max-width:380px){
+ .representation-figure-actions .representation-figure-formats{grid-template-columns:1fr}
+ .representation-workflow-steps{gap:4px}
+}
+@media(prefers-reduced-motion:reduce){
+ .representation-workflow *,.representation-figure-actions *{animation:none!important;transition:none!important}
+}
+@media print{
+ .representation-workflow,.representation-figure-actions{box-shadow:none!important}
+}
