@@ -161,7 +161,8 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   const planningHelpController=createPlanningHelpController({
     getState:()=>state,escapeHtml:e,
     onHub:trigger=>{
-      captureStuckOrigin(state,{scrollY:window.scrollY||0,focusId:trigger?.id||""});
+      captureStuckOrigin(state,{scrollY:window.scrollY||0,focusId:trigger?.id||"",
+        helpSpot:trigger?.dataset?.stuckHelp||trigger?.dataset?.studioStuck||trigger?.dataset?.checkingStuck||""});
       lastFocus=trigger;save();openDrawer("stuck");
     },
     onNavigate:node=>{
@@ -172,7 +173,8 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   const studioHelpController=createStudioHelpController({
     getState:()=>state,escapeHtml:e,
     onHub:trigger=>{
-      captureStuckOrigin(state,{scrollY:window.scrollY||0,focusId:trigger?.id||""});
+      captureStuckOrigin(state,{scrollY:window.scrollY||0,focusId:trigger?.id||"",
+        helpSpot:trigger?.dataset?.stuckHelp||trigger?.dataset?.studioStuck||trigger?.dataset?.checkingStuck||""});
       lastFocus=trigger;save();openDrawer("stuck");
     },
     onNavigate:node=>{
