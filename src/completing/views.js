@@ -1264,10 +1264,11 @@ export function createCompletingViews(ctx){
      F("finalProofread","What still needs proofreading or verifying?","Notation, ≈, units, diagrams, precision, source links, page numbers",{type:"textarea",rows:3})+
      F("finalRequirements","Confirmed submission and formatting requirements","School guidance, not assumed IB deadlines",{type:"textarea",rows:2})+extra.review("final")+extra.feedback()
   };
-  case "C91":return{intro:"Keep the whole project: the original plan, mathematical records, writing notes, and stage progress.",
-   html:button("Download complete progress backup (.json)","export-json","btn-primary","", "download")+
-     info("PDF/Word are Planning-only","Your downloadable JSON project contains actual mathematical steps, interpretations and writing notes. PDF/Word planning reports do not.")+
-     info("Saved locally","Autosave is on this device only. Use the JSON file if you want to move to another device or safeguard your progress.")
+  case "C91":return{intro:"Keep the whole project: the original plan, mathematical records, writing notes, diagrams and stage progress.",
+   html:button("Download complete project backup (.json)","export-json","btn-primary","", "download")+
+     button("See full-project PDF, Word and ZIP exports","open-files","btn-secondary","", "download")+
+     info("Which file keeps my work?","A JSON backup can restore the whole Pathfinder project, including Planning, mathematical stages, diagrams and writing notes. Full-project PDF and Word are readable snapshots, not restorable complete-project backups. Importing a PDF or Word into Pathfinder restores Planning fields only.")+
+     info("Saved locally","Autosave is on this device only. Keep a JSON backup if you want to safeguard your project or continue on another device.")
   };
   case "C96":return{intro:"A writing cue for the exact work you came from, using your actual choices and results.",
    html:info("Your current work is preserved","Use the optional cue below if it helps. If you have already addressed or dismissed the relevant guidance, no new writing is required. Return to your saved work when ready.")
