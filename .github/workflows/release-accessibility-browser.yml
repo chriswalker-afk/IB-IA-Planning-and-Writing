@@ -1,0 +1,56 @@
+name: Release responsive and accessibility acceptance
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'app.js'
+      - 'styles.css'
+      - 'data/release-accessibility.css'
+      - 'data/release-design-system.css'
+      - 'data/release-guidance.css'
+      - 'data/release-representation.css'
+      - 'data/workspace-navigation.css'
+      - 'src/ui/workspace-navigation.js'
+      - 'scripts/release-accessibility-browser.py'
+      - 'tests/release-accessibility.test.js'
+      - '.github/workflows/release-accessibility-browser.yml'
+      - '.github/actions/setup-ci-node/action.yml'
+      - '.github/actions/setup-ci-browser/action.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'app.js'
+      - 'data/release-accessibility.css'
+      - 'scripts/release-accessibility-browser.py'
+      - '.github/workflows/release-accessibility-browser.yml'
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-ci-node
+      - name: Build site
+        run: npm run build
+      - uses: ./.github/actions/setup-ci-browser
+      - name: Check keyboard, narrow-screen reflow, focus and reduced motion
+        run: |
+          mkdir -p qa-output/release-accessibility
+          python -m http.server 8765 --directory dist > qa-output/release-accessibility/server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID"' EXIT
+          IA_QA_OUTPUT=qa-output/release-accessibility python scripts/release-accessibility-browser.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: release-accessibility-browser-results
+          path: qa-output/release-accessibility
+          retention-days: 7
