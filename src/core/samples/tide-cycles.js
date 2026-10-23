@@ -9,8 +9,8 @@ const STUDY={
     "AI09"
   ],
   "technologyStage": 1,
-  "description": "A complete constructed cyclic-height investigation: derive a fixed 12-hour sinusoid, check a reserved cycle, and distinguish its threshold prediction from a continuously justified error bound.",
-  "provenance": "Tide-like Height Cases v1: 49 constructed hourly heights in metres for t=0,…,48 h, referenced to an arbitrary fictional datum. Exact construction: H(t)=2.5+cos[π(t−2)/6]+0.18 cos(2πt/24), rounded to 0.001 m at integer hours. Fit only t=0,…,35 (three 12-hour cycles); reserve the complete t=36,…,48 cycle for a check. Values are synthetic, not a tidal station record, sea-level forecast, chart datum or navigational guidance.",
+  "description": "A complete constructed cyclic-height investigation: derive a fixed 12-hour sinusoid, check a reserved block, and distinguish its threshold prediction from a continuously justified error bound.",
+  "provenance": "Tide-like Height Cases v1: 49 constructed hourly heights in metres for t=0,…,48 h, referenced to an arbitrary fictional datum. Exact construction: H(t)=2.5+cos[π(t−2)/6]+0.18 cos(2πt/24), rounded to 0.001 m at integer hours. Fit only t=0,…,35 (three twelve-hour blocks); reserve the complete t=36,…,48 block for a check. Values are synthetic, not a tidal station record, sea-level forecast, chart datum or navigational guidance.",
   "citation": "Tide-like Height Cases v1. Original explicitly constructed mathematical series in this project; no port or public tide table was consulted.",
   "readingNote": "This is a mathematical simulation, not an actual tide prediction. The height datum and hours are fictional; the threshold calculation cannot guide water access or navigation.",
   "idea": "I want to quantify what is lost when a deliberately simple sinusoid replaces a known curve with two repeating components, especially when that replacement is used to decide when a height crosses a level.",
@@ -69,7 +69,7 @@ const STUDY={
   "stages": [
     {
       "key": "cycle-inspection",
-      "title": "Checking the chosen time scale against the fitting cycles",
+      "title": "Checking the chosen time scale against the fitting blocks",
       "methodId": "follow-journey",
       "kind": "model",
       "technique": "Repeated peak locations and domain specification",
@@ -100,7 +100,7 @@ const STUDY={
       "interpretation": "Every fitted crest has height about 3.55347 m and occurs roughly 2.030 hours into its twelve-hour block. This is the required averaging compromise between the unequal supplied peaks.",
       "limitations": "These coefficients minimise the sum of squared errors on the 36 fitting heights. The RMSE is an average vertical discrepancy; it is not a maximum error or a bound on a crossing time.",
       "localTakeaway": "The fixed-period coefficients follow from three separate completed squares, and the phase conversion supplies the crest location needed for the threshold calculation.",
-      "nextQuestion": "The unresolved question is how this unchanged curve describes the reserved fourth cycle, particularly near the 3.2 m level.",
+      "nextQuestion": "The unresolved question is how this unchanged curve describes the reserved fourth block, particularly near the 3.2 m level.",
       "nextWhy": "Those heights played no part in minimising the fitting error. Comparing them with the fixed model checks the approximation where my eventual interval is to be used.",
       "mathsInsight": "Full, evenly spaced cycles make the coefficient products cancel, allowing a fixed-frequency least-squares fit to be derived by elementary algebra.",
       "methodChangeReason": "I keep the derived coefficients fixed when moving from fitting inputs to the reserved comparison.",
@@ -116,7 +116,7 @@ const STUDY={
       "title": "Checking the reserved block against the same curve",
       "methodId": "sinusoidal",
       "kind": "model",
-      "technique": "Reserved-cycle residuals and model limitations",
+      "technique": "Reserved-block residuals and model limitations",
       "bridge": "I now evaluate the fitted curve at all thirteen reserved hours, without changing its period or coefficients.",
       "purpose": "Figure 3 shows signed supplied-minus-model discrepancies over the complete record; the checking values are those at hours 36–48.",
       "result": "Keeping fitting and checking cases separate [M2] avoids making their errors small by using the same heights to choose the coefficients. Here it is a check on a known constructed series, not a blind forecast experiment. I continue to use \\(r_i=h_i-M(i)\\) for the plotted signed discrepancies on both parts of the record.\n\nFor the reserved inputs,\n\\[\n\\sum_{i=36}^{48}r_i^2\\approx0.333279226\\text{ m}^2,\\qquad\n\\mathrm{RMSE}_{\\mathrm{reserve}}\n\\approx\\sqrt{\\frac{0.333279226}{13}}\n\\approx0.160115\\text{ m}.\n\\]\nThis exceeds the fitting RMSE of approximately \\(0.121985\\text{ m}\\). The largest absolute reserved discrepancy occurs at \\(t=37\\):\n\\[\nr_{37}\\approx3.192-3.404703081=-0.212703081\\text{ m}.\n\\]\nThat example connects the height error directly to my aim. The model is above \\(3.2\\text{ m}\\), but the supplied height is below it. Even the exact \\(H(37)\\) is below the threshold, because the rounding allowance gives \\(H(37)\\le3.1925<3.2\\).\n\nAt the sampled fourth peak, \\(h_{38}=3.344\\text{ m}\\) while \\(M(38)\\approx3.553339\\text{ m}\\). The signs in Figure 3 vary systematically through the blocks. This agrees with the disclosed slower cosine: one curve that repeats every twelve hours cannot follow the alternating peak heights of the construction.",
@@ -166,7 +166,7 @@ const STUDY={
       "tool": "graph",
       "stage": 0,
       "after": "purpose",
-      "title": "Four cycles with the final cycle reserved",
+      "title": "Four twelve-hour blocks with the final block reserved",
       "number": 1,
       "kind": "time",
       "columns": [
@@ -381,14 +381,14 @@ const STUDY={
       "xMax": 48,
       "yMin": 1,
       "yMax": 4,
-      "caption": "Values at every integer hour. The model fitting range ends at t=35; the complete fourth cycle from t=36 is reserved."
+      "caption": "Values at every integer hour. The model fitting range ends at t=35; the complete fourth block from t=36 is reserved."
     },
     {
       "id": "figure-p3-tide-fit",
       "tool": "graph",
       "stage": 1,
       "after": "result",
-      "title": "Fixed-frequency sinusoid on the first three cycles",
+      "title": "Fixed-frequency sinusoid on the first three blocks",
       "number": 2,
       "kind": "time",
       "columns": [
@@ -566,7 +566,7 @@ const STUDY={
       "tool": "graph",
       "stage": 2,
       "after": "result",
-      "title": "Signed height residuals across the four cycles",
+      "title": "Signed height residuals across the four blocks",
       "number": 3,
       "kind": "time",
       "columns": [
@@ -797,7 +797,7 @@ const STUDY={
       "tool": "graph",
       "stage": 3,
       "after": "purpose",
-      "title": "Fourth-cycle values and the 3.2 m level",
+      "title": "Fourth-block values and the 3.2 m level",
       "number": 4,
       "kind": "time",
       "columns": [
@@ -1572,16 +1572,19 @@ const STUDY={
   },
   "review": {
     "story": "The chosen single-sinusoid simplification leads to a derived fit; the reserved threshold failure motivates a continuous bound; the bound gives the qualified fourth-crest interval requested in the aim.",
-    "sequence": "Three fitting peaks supply two spacings. The full generating formula is disclosed before fitting, the fourth-cycle inputs never determine coefficients, and the final stage explicitly closes the original question.",
+    "sequence": "Three fitting peaks supply two spacings. The full generating formula is disclosed before fitting, the reserved-block inputs never determine coefficients, and the final stage explicitly closes the original question.",
     "notation": "I distinguish exact continuous H(t), rounded hourly h_i, fitted M(t) and sampled r_i. Angles are in radians, all fitting sums have explicit ranges, rounded outputs use approximate signs, and necessary/sufficient intervals are distinguished.",
     "purpose": "The stipulated 3.2 m level creates a hypothetical threshold question around the fourth crest. It is not a real access requirement, and the known construction is used to examine information lost by simplification.",
     "limits": "The sampled maximum is not promoted into a continuous bound. The exact-function proof, hourly rounding allowance, reserved-domain boundary and next-crest possible portion are explained where they affect the conclusion.",
     "calculations": "I recomputed the three coefficient sums, completed-square minimum, phase and amplitude, fitting and reserved errors, continuous 0.236035384 m bound, and three inverse-cosine intervals. Two native-table duration cells were corrected to use unrounded crossings before rounding.",
-    "presentation": "I checked the desktop and mobile reader previews and every page of the 17-page PDF and 20-page Word export. Equations, the four graphs, crossing table and references are readable, with no clipped or overlapping content. The revised passages no longer leave isolated words at page breaks.",
-    "presentationChecked": true,
+    "presentation": "The labels now distinguish twelve-hour observation blocks from the fitted sinusoid's cycles. The revised reader, figure labels and affected PDF and Word pages are awaiting fresh visual inspection.",
+    "presentationChecked": false,
     "sources": "The constructed recipe is identified as [D1]. NIST supports the least-squares criterion [M1], OTexts supplies the error measure and separate-checking distinction [M2], and OpenStax supplies the cosine identity [M3]; the displayed derivations are my own working.",
     "figures": "All graph definitions, source rows, working rows and crossing endpoints are retained. Only the guaranteed and possible duration cells change from 1.794 and 4.286 to correctly rounded 1.793 and 4.285 h.",
     "technology": "Technology evaluates disclosed scalar sums and radian inverse trigonometric functions. The printed mathematics explains their purpose and meaning without requiring unexplained matrices or a black-box fit."
+  },
+  "completionExtra": {
+    "finalProofread": "The mathematical argument and calculations are unchanged. Final proofreading of the revised labels and affected PDF and Word pages is pending."
   },
   "planningExtra": {
     "mathsOutside": "outside",
@@ -1590,7 +1593,7 @@ const STUDY={
   "references": [
     {
       "label": "[D1] Constructed case record",
-      "value": "Tide-like Height Cases v1: 49 constructed hourly heights in metres for t=0,…,48 h, referenced to an arbitrary fictional datum. Exact construction: H(t)=2.5+cos[π(t−2)/6]+0.18 cos(2πt/24), rounded to 0.001 m at integer hours. Fit only t=0,…,35 (three 12-hour cycles); reserve the complete t=36,…,48 cycle for a check. Values are synthetic, not a tidal station record, sea-level forecast, chart datum or navigational guidance."
+      "value": "Tide-like Height Cases v1: 49 constructed hourly heights in metres for t=0,…,48 h, referenced to an arbitrary fictional datum. Exact construction: H(t)=2.5+cos[π(t−2)/6]+0.18 cos(2πt/24), rounded to 0.001 m at integer hours. Fit only t=0,…,35 (three twelve-hour blocks); reserve the complete t=36,…,48 block for a check. Values are synthetic, not a tidal station record, sea-level forecast, chart datum or navigational guidance."
     },
     {
       "label": "Calculation record",
