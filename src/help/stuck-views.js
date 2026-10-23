@@ -34,7 +34,7 @@ export function applyStuckBrowseFilter(root){
 export function createStuckViews({getState,e,icon,field}){
  // Browse choices survive a trip into a help card within the same open
  // session, without adding new fields to student project backups.
- let searchQuery="",selectedGroup="all",browseOpened=false;
+ let searchQuery="",selectedGroup="all",browseOpened=false,lastWorkKey="";
  const action=(name,label,extra="",primary=false)=>'<button type="button" class="btn '+
   (primary?"btn-primary":"btn-secondary")+'" data-action="stuck-'+name+'" '+extra+'>'+e(label)+'</button>';
  const pick=(issue,{compact=false}={})=>'<button type="button" class="stuck-topic'+
@@ -61,6 +61,12 @@ export function createStuckViews({getState,e,icon,field}){
    a=hubIssueFor(state,s.selected)||adviceFor(state,s.selected),origin=hubOriginalView(state),
    suggestions=suggestedHubIssues(state),all=hubFilteredIssues(state),legacy=hubLegacyTopics(state);
   const route=origin.route,mode=origin.ui?.checkingMode||"draft";
+  const workKey=[route,route==="planning"?origin.planning.current:route==="checking"?mode:origin.completion.current,
+   route==="completing"?origin.completion.activeEntryIndex:""].join("|");
+  if(lastWorkKey&&lastWorkKey!==workKey){
+   searchQuery="";selectedGroup="all";browseOpened=false;
+  }
+  lastWorkKey=workKey;
   const context=route==="checking"?"Checking · "+(mode==="feedback"?"feedback and revisions":mode==="final"?"final document":"draft review"):
    route==="planning"?"Planning · "+(state.planning.fields.aim||"developing your investigation"):
    (x.entry?"IA Studio · "+(x.entry.title||"selected mathematical step"):
