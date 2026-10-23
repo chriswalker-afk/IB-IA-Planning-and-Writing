@@ -8,6 +8,7 @@ import {isStudioWritingNode,renderStudioWritingStage} from './studio-writing-sta
 import {firstMathsContext} from "./first-maths-bridge.js";
 import {renderJourneyWritingAdvice} from "./first-maths-writing-guidance.js";
 import {renderShowingMathsContext} from "./showing-first-maths.js";
+import {MATHEMATICAL_LINK_HINT,renderConsequentialChoice,renderStorySynthesis} from "./mathematical-story-guidance.js";
 import {renderGraphStudio} from "../diagrams/graph-view.js";
 import {renderGraphSvg} from "../diagrams/graph-core.js";
 import {renderImageTracer} from "../diagrams/image-tracer-view.js";
@@ -659,6 +660,7 @@ export function createCompletingViews(ctx){
        "Introduce the maths, the question it can help answer, and why it fits my aim. No textbook-style explanation of familiar course maths.",
        {type:"textarea",rows:5}),
       ["completing:C20:methodIntroduction","completing:C20:methodJustification"])+'</div>'+
+    renderConsequentialChoice(s,icon,e,{phase:"opening",reduced:isAdviceReduced(s)})+
     '<div class="first-maths-first-question">'+
     criteriaField(F("firstPurpose","The mathematical question for my first figure or calculation",
       "What should this first step reveal about my aim? (This answer is reused in the first exploration.)",
@@ -820,6 +822,7 @@ export function createCompletingViews(ctx){
        F("firstOutputIntroduction","My words to introduce this figure, table or calculation",
        "Before Figure 1, explain what it will show, why it is relevant to the aim and any necessary variables or units.",{type:"textarea",rows:5})),
       ["completing:C30:introduceA","completing:C30:introduceB"])+'</div>'+
+    renderConsequentialChoice(s,icon,e,{entry,phase:"later",reduced})+
     '<p class="field-hint">Use this wording in your <strong>actual IA before</strong> the output, not just as a caption. It is different from the earlier explanation of why you selected the method.</p>');
    const second=cards("show","2","Showing your tables, diagrams and calculations",
     "Show genuine mathematical work: clear diagrams or tables where useful, concise calculations, units, citations and defensible precision.",
@@ -895,8 +898,9 @@ export function createCompletingViews(ctx){
     criteriaField(F("nextQuestion","What mathematical question remains unanswered? (if any)",
      "Identify a meaningful question raised by the result, or note that you have enough evidence to conclude.",{type:"textarea",rows:3}),"completing:C30:nextC")+
     criterionMarkedWritingBox(F("nextReason","My written bridge to the next step (or conclusion)",
-     "Refer to what you actually found. Why would another technique answer the outstanding question, or why is the investigation ready to conclude?",{type:"textarea",rows:5}),
+     MATHEMATICAL_LINK_HINT,{type:"textarea",rows:5}),
      ["completing:C30:nextD"])+'</div>'+
+    renderStorySynthesis(s,icon,e,{entry,phase:"later",reduced})+
     (genuine?to("C35","Decide whether another mathematical step is needed"):""));
    return{intro:"Show your first mathematics as a connected mathematical story: introduce each output before displaying it, present it selectively, interpret it against your aim, and justify whatever follows.",
     html:'<div class="show-first-sequence" data-show-first-sequence>'+
@@ -1016,7 +1020,8 @@ export function createCompletingViews(ctx){
     (sourceResultForNext(s)?.phase==="first"&&filled(f.nextReason)?
       smallSummary("Your earlier justification for the next step",f.nextReason)+
       '<p class="field-hint">This bridge is already saved on the four-part first-mathematics screen. There is no need to rewrite it.</p>':
-      criteriaField(F("nextReason","Why would this next technique follow from the previous result?","Explain the bridge BEFORE the new mathematics in your real IA",{type:"textarea",rows:3}),"completing:C35:nextReason"))+
+      criteriaField(F("nextReason","Why would this next technique follow from the previous result?",MATHEMATICAL_LINK_HINT,{type:"textarea",rows:3}),"completing:C35:nextReason"))+
+    renderStorySynthesis(s,icon,e,{entry:sourceResultForNext(s),phase:"later",reduced:isAdviceReduced(s)})+
     info("No prescribed number of mathematical sections","Another technique is useful only if it answers a genuine next question. An honest conclusion may be the best next step.")+
     '<div class="button-row">'+sourceAction("Show me relevant NEXT mathematical ideas","Help me think of a next step")+
     (canViewScatterFollowup(s)?sourceAction("Show bivariate options for actual scatter pattern","Interpret my scatter pattern"):"")+
@@ -1026,7 +1031,7 @@ export function createCompletingViews(ctx){
   case "C35H":return{intro:"Two optional prompts based on what you actually recorded. Neither is a required extra technique.",
    html:bridgeFromPrior()+suggestionCards()+
     F("nextQuestion","My OWN next mathematical question","You may reject all suggestions",{type:"textarea",rows:2})+
-    criteriaField(F("nextReason","Why would answering this follow from my result?","Meaningful mathematical connection",{type:"textarea",rows:3}),"completing:C35H:nextReason")
+    criteriaField(F("nextReason","Why would answering this follow from my result?",MATHEMATICAL_LINK_HINT,{type:"textarea",rows:3}),"completing:C35H:nextReason")
   };
   case "C35B":return{intro:"Confirm what the actual scatter graph shows before deciding on correlation or fitting a model.",
    html:smallSummary("Last actual scatter result",scatterForNext(s)?.result)+
@@ -1067,7 +1072,7 @@ export function createCompletingViews(ctx){
     '<div><h3>'+e(title)+'</h3><p>'+e(description)+'</p></div></div>'+content+'</section>';
    const pageNavigation=mathematicalPageLinks(state,idx);
    const first=card("introduce","1","Connecting to the previous mathematics",
-    "Begin from what the previous section actually established. Explain the mathematical question that follows, and why this technique can advance your aim.",
+    "State the earlier finding, identify what it still fails to establish for your aim, and explain why this mathematics can resolve that gap.",
     entryReviewAlert()+
     '<div class="completion-evidence-anchor">'+icon("route")+'<div>'+
       '<strong>'+(priorVerified?'Earlier confirmed mathematical finding':'Earlier mathematical context to verify')+'</strong>'+
@@ -1080,10 +1085,12 @@ export function createCompletingViews(ctx){
     entryField("title","What mathematical question is this stage investigating?",
      "A specific mathematical question arising from the previous result",{type:"textarea",rows:2})+
     '<div class="show-first-writing-field">'+
-     criterionMarkedWritingBox(entryField("bridge","My linking sentence from the previous result",
-      "For example: The earlier result raises the question of ..., so I will now investigate ...",{type:"textarea",rows:3}),["completing:"+n+":bridgeA"])+'</div>'+
+     criterionMarkedWritingBox(entryField("bridge","My bridge from the previous result",
+      MATHEMATICAL_LINK_HINT,{type:"textarea",rows:3}),["completing:"+n+":bridgeA"])+'</div>'+
     criteriaField(entryField("purpose","Why is the chosen approach appropriate here?",
-     "Link the technique to the previous finding and your overall aim",{type:"textarea",rows:3}),"completing:"+n+":title")+
+     "Explain how the technique answers the outstanding question. Combine this with your bridge in the IA so that the shared reason appears once.",{type:"textarea",rows:3}),"completing:"+n+":title")+
+    renderConsequentialChoice(state,icon,e,{entry:substantial,phase:"later",reduced:isAdviceReduced(state)})+
+    renderStorySynthesis(state,icon,e,{entry:substantial,phase:"later",reduced:isAdviceReduced(state)})+
     '<div class="journey-stage-method"><strong>'+icon("compass")+
      ' The mathematical approach for THIS stage</strong>'+
      '<p>Choose the method you are using or have actually used. This changes the possible outcomes you can select in Section 3; it does not claim that the calculation has been completed.</p>'+
@@ -1164,7 +1171,7 @@ export function createCompletingViews(ctx){
        "A worthwhile question that follows from your finding",{type:"textarea",rows:3}),
        ["completing:"+n+":nextC"])+
       criterionMarkedWritingBox(entryField("nextWhy","My bridge to another stage, or explanation for concluding",
-       "Justify how another technique would help, or why you now have enough evidence",{type:"textarea",rows:4}),
+       MATHEMATICAL_LINK_HINT,{type:"textarea",rows:4}),
        ["completing:"+n+":nextD"])+
     '</div>');
    return{intro:"Build on the actual finding from the previous stage. Explain why this mathematics follows, show the work, and interpret what it establishes for your aim—without starting your IA introduction again.",

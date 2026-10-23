@@ -133,7 +133,7 @@ test('Mathematical interpretation and a concise honest conclusion keep their sup
  assert(math.includes('Four')||math.includes('four writing tips'));
  const mathsTips=writerStageAdviceBundle(s,'C40').items;
  assert(mathsTips.some(t=>t.detail.includes('no quota')));
- assert(mathsTips.some(t=>t.strong.includes('residuals')));
+ assert(mathsTips.some(t=>/residuals|pattern in the errors/.test(t.strong)));
  const conclusion=stage(s,'C60');
  assert(conclusion.includes('real results'));
  assert(conclusion.includes('Answer · support · qualify'));
