@@ -81,6 +81,12 @@ jobs:
           - group: Complete illustrative samples — C
             suites: illustrative-samples
             samples: tide-cycles,ball-clearance,tray-optimisation
+          - group: Complete illustrative samples - D
+            suites: illustrative-samples
+            samples: leaf-area,inaccessible-height
+          - group: Complete illustrative samples - E
+            suites: illustrative-samples
+            samples: water-stations,repayment-plans
             timeout: 30
     steps:
       - uses: actions/checkout@v4
