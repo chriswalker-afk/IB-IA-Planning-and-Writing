@@ -1515,7 +1515,13 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       if(support.stay)render();
       else if(!layer.hidden){openDrawer("stuck");
         if(support.saved){const details=layer.querySelector('.stuck-save');if(details)details.open=true;}
-        const heading=layer.querySelector('.stuck-heading');if(heading)heading.focus({preventScroll:true});
+        const heading=layer.querySelector('.stuck-heading')||
+          (action==="stuck-menu"?layer.querySelector('.stuck-suggested h3,.stuck-intro'):null);
+        if(heading){
+          if(typeof heading.hasAttribute==='function'&&typeof heading.setAttribute==='function'&&
+             !heading.hasAttribute('tabindex'))heading.setAttribute('tabindex','-1');
+          heading.focus?.({preventScroll:true});
+        }
       }else render();
       if(support.message)toast(support.message);return;
     }

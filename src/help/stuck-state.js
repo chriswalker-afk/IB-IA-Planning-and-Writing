@@ -1,5 +1,9 @@
 /** Small, private support state. No help action is a mathematical result. */
 import {TOPIC_IDS} from './stuck-catalog.js';
+import {PLANNING_ROUTES} from '../planning/route-table.js';
+import {C_NODES} from '../completing/catalog.js';
+const planNodes=new Set(PLANNING_ROUTES.flatMap(x=>[x.from,x.to]).filter(x=>x.startsWith('N')));
+const compNodes=new Set(C_NODES.map(x=>x.id));
 const str=(v,n=3000)=>typeof v==='string'?v.slice(0,n):'';
 const routes=['home','planning','completing','checking','path','report'];
 const modernIssue=id=>typeof id==='string'&&/^fix:(?:planning|studio|checking):[a-z][a-z0-9-]{2,90}$/.test(id);
@@ -10,8 +14,8 @@ export function createStuckState(){return{origin:null,selected:'',browse:false,m
 export function normalizeStuckState(v){
  const s=createStuckState();if(!v||typeof v!=='object')return s;
  if(v.origin&&routes.includes(v.origin.route)){
-  const o=v.origin;s.origin={route:o.route,planNode:/^N\d{2}[A-Z]?$/.test(o.planNode)?o.planNode:'N00',
-   node:/^C\d{2}[A-Z]?$/.test(o.node)?o.node:'C04',entryId:str(o.entryId,160),nextFromEntryId:str(o.nextFromEntryId,160),
+  const o=v.origin;s.origin={route:o.route,planNode:planNodes.has(o.planNode)?o.planNode:'N00',
+   node:compNodes.has(o.node)?o.node:'C04',entryId:str(o.entryId,160),nextFromEntryId:str(o.nextFromEntryId,160),
    scrollY:Math.max(0,Math.min(100000,Number(o.scrollY)||0)),focusId:str(o.focusId,180),
    checkMode:['draft','feedback','final'].includes(o.checkMode)?o.checkMode:'draft',
    helpSpot:/^[A-Za-z0-9:_-]{1,120}$/.test(o.helpSpot||'')?o.helpSpot:''};

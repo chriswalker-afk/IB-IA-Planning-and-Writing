@@ -10,6 +10,9 @@ import {selectedInvestigativeRoute,outcomeRouteForEntry,actualMathematics} from 
 import {completeEntry,isPearsonResult,scatterForNext} from "../completing/engine.js";
 import {REPRESENTATION_TOOLS,activeRepresentationTool} from "../diagrams/representation-registry.js";
 import {STUCK_TOPICS} from "./stuck-catalog.js";
+import {reviewChecksFor} from "../completing/review.js";
+import {isRevisedAssessment} from "../essentials/assessment-cohorts.js";
+import {needsJourneyLinkReview} from "../completing/adaptive-journey.js";
 
 export const HUB_GROUPS=Object.freeze([
  ["ideas","Ideas & planning"],
@@ -25,6 +28,44 @@ const hubs=Object.freeze({planning:PLANNING_RECOVERY_CARDS,
 const id=(surface,card)=>"fix:"+surface+":"+card.id;
 const normalize=x=>typeof x==="string"?x.trim().toLowerCase():"";
 const str=x=>typeof x==="string"?x.trim():"";
+const modes=["draft","feedback","final"];
+const oldCriterionChecks=new Set(["D02","D03","D04","D05","D06","D16"]);
+const observedResultOnly=new Set([
+ "meaning-units","outcome-choice","next-gap","next-method","unexpected-output",
+ "model-residual","conclusion-narrow","conclusion-limits","conclusion-stop"
+]);
+// These are searchable problems, not confirmed diagnoses. Do not offer
+// problems presupposing a finding until real mathematics exists.
+function eligibleStudioCard(view,card){
+ const current=view.completion.current;
+ const entry=completeEntry(view),actual=!!entry&&actualMathematics(entry);
+ const anyActual=view.entries.some(actualMathematics);
+ if(card.id==="not-yet-result")return !actual;
+ if(card.id==="conclusion-no-result")return !anyActual;
+ if(card.id==="result-needs-review")
+  return !!entry&&needsJourneyLinkReview(view,entry);
+ if(observedResultOnly.has(card.id)){
+  return card.id.startsWith("conclusion-")?anyActual:actual;
+ }
+ if(card.id==="stages-dont-link")return ["C40","C50"].includes(current);
+ return true;
+}
+function validCheckingTargets(view,card){
+ const preferred=card.targetCheck?[card.targetCheck]:[];
+ const mapped=Object.entries(CHECKING_RECOVERY_SPOTS)
+   .filter(([,ids])=>ids.includes(card.id)).map(([node])=>node==="feedback"?"D13":node);
+ const keys=[...new Set([...preferred,...mapped])].filter(x=>/^D\d{2}$/.test(x));
+ const modern=isRevisedAssessment(view),current=modes.includes(view.ui?.checkingMode)?view.ui.checkingMode:"draft";
+ const order=[current,...modes.filter(x=>x!==current)];
+ const pairs=[];
+ for(const id of keys){
+  if(modern&&oldCriterionChecks.has(id))continue;
+  for(const mode of order)if(reviewChecksFor(view,mode).some(c=>c.id===id)){
+    pairs.push({route:"checking",check:id,mode});break;
+  }
+ }
+ return pairs;
+}
 const groupOf=(surface,card)=>{
  const x=card.id;
  if(surface==="checking")return "checking";
@@ -89,12 +130,7 @@ const targetFor=(view,surface,card)=>{
    card.targetNode||match?.[0].split(":")[0]||(["C40","C50"].includes(current)?current:"C30");
   return{route:"completing",node};
  }
- if(surface==="checking"){
-  const match=Object.entries(CHECKING_RECOVERY_SPOTS)
-   .find(([,arr])=>arr.includes(card.id));
-  const check=card.targetCheck||match?.[0]||"D09";
-  return{route:"checking",check:check==="feedback"?"D13":check};
- }
+ if(surface==="checking")return validCheckingTargets(view,card)[0]||null;
  return{route:view.route};
 };
 const asIssue=(view,surface,card)=>Object.freeze({
@@ -115,7 +151,7 @@ export function availableHubIssues(state){
  if(surface==="studio"){
   const entry=completeEntry(view),route=entry&&actualMathematics(entry)?
    outcomeRouteForEntry(view,entry):selectedInvestigativeRoute(view);
-  const activeRoute=route?.id||"",activeTool=activeRepresentationTool(view)?.id;
+  const activeRoute=route?.id||"";
   // Route overlays are meaningful only for the relevant chosen route or stage.
   cards=cards.filter(c=>!c.id.startsWith("route-")||c.id==="route-"+activeRoute);
   // Never offer Pearson-specific repairs from a title or a planned PMCC.
@@ -123,9 +159,9 @@ export function availableHubIssues(state){
    cards=cards.filter(c=>c.id!=="pmcc-curved");
   if(view.planning.fields.kind==="theoretical")
    cards=cards.filter(c=>!["sample-relevance","source-precision"].includes(c.id));
-  // All tools remain searchable; put the open tool first in contextual suggestions.
-  void activeTool;
+  cards=cards.filter(c=>eligibleStudioCard(view,c));
  }
+ if(surface==="checking")cards=cards.filter(c=>validCheckingTargets(view,c).length>0);
  let out=cards.map(c=>asIssue(view,surface,c));
  if(surface==="studio"){
   const candidate=["part:next","part:reflect","page"].map(spot=>studioHelpFor(view,spot))

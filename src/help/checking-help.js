@@ -140,14 +140,16 @@ export const CHECKING_RECOVERY_CARDS=Object.freeze([
   "Do both changes appear in the actual file you intend to submit?",
   "One confirmed final-file version.",
   "Check the destination and filename using your school's instructions.",
-  "A local Pathfinder backup is not a school submission."),
+  "A local Pathfinder backup is not a school submission.",
+  {targetCheck:"D17"}),
  row("submission-where","I cannot find the correct final submission instructions",
   "Have you seen a current instruction specifying where, how and when to submit?",
   "Check the latest school/teacher instructions and confirm the required format, exact location and deadline; record the unresolved question if any.",
   "Can you follow the verified instructions without guessing?",
   "One accurate submission action or teacher question.",
   "Keep a local project and final-file copy, but do not assume this website submits your IA.",
-  "Pathfinder cannot submit, grade or confirm receipt of a real IA.")
+  "Pathfinder cannot submit, grade or confirm receipt of a real IA.",
+  {targetCheck:"D21"})
 ]);
 const byId=Object.fromEntries(CHECKING_RECOVERY_CARDS.map(x=>[x.id,x]));
 export const CHECKING_RECOVERY_SPOTS=Object.freeze({
