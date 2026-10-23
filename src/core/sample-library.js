@@ -21,6 +21,7 @@ import {INACCESSIBLE_HEIGHT_SPEC} from './samples/inaccessible-height.js';
 import {WATER_STATIONS_SPEC} from './samples/water-stations.js';
 import {REPAYMENT_PLANS_SPEC} from './samples/repayment-plans.js';
 import {SAMPLE_BRIEFS} from './samples/briefs.js';
+import {withSampleMla} from './samples/mla-references.js';
 
 const copy=value=>structuredClone(value);
 const SPECS=Object.freeze([
@@ -28,7 +29,7 @@ const SPECS=Object.freeze([
  GRINDER_RELIABILITY_SPEC,STOPPING_DISTANCE_SPEC,DRINK_COOLING_SPEC,
  TIDE_CYCLES_SPEC,BALL_CLEARANCE_SPEC,TRAY_OPTIMISATION_SPEC,
  LEAF_AREA_SPEC,INACCESSIBLE_HEIGHT_SPEC,WATER_STATIONS_SPEC,REPAYMENT_PLANS_SPEC
-]);
+].map(withSampleMla));
 export const referenceSampleSpec=id=>SPECS.find(spec=>spec.id===id)||null;
 export const REFERENCE_SAMPLE_CHOICES=Object.freeze(SPECS.map(spec=>Object.freeze({
  id:spec.id,title:spec.title,description:spec.description,routeId:spec.routeId,
