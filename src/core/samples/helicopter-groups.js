@@ -179,7 +179,7 @@ I use the conventional box-plot fence [M2], \(Q_3+1.5\mathrm{IQR}\), to flag a v
 \[
 2.27+1.5(0.30)=2.72\text{ s}.
 \]
-B07 remains visible beyond the fence at \(2.82\text{ s}\); the upper whisker ends at the largest mean inside it, \(2.38\text{ s}\).`,
+B07 at \(2.82\text{ s}\) is beyond the fence; \(2.38\text{ s}\), the largest mean inside, ends the whisker.`,
   interpretation:R`Both centre measures exceed the useful-gain threshold, so the direction of the decision does not depend on using the mean. However, B's standard deviation is about \(1.80\) times A's, while its IQR is only \(1.25\) times A's. The extra spread is therefore more pronounced when distant values receive weight. That identifies the upper tail as a concrete reason to test the mean recommendation's sensitivity.`,
   limitations:R`The fence is a screening convention, not proof of an erroneous entry. These descriptive calculations also require neither normally distributed flights nor equal group variances; I have not used them to make an inferential claim.`,
   localTakeaway:'B has a 0.290 s larger mean and a 0.26 s larger median, but its longer upper tail raises the standard deviation substantially.',
