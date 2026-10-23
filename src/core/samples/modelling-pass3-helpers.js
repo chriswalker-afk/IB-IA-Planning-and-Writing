@@ -38,6 +38,7 @@ function draftFor(item,study){
 }
 function authoredReviews(d){
  const focus=d.review;
+ const presentationChecked=focus.presentationChecked===true;
  const shared=[
   ['D01','Introduction, mathematical stages and conclusion',focus.story,'I checked that every claim in the conclusion has worked evidence.'],
   ['D02','Transitions between mathematical stages',focus.sequence,'I removed repetitive summaries and kept the next question connected to the preceding result.'],
@@ -45,13 +46,13 @@ function authoredReviews(d){
   ['D04','Purpose and personal decision',focus.purpose,'I kept the interpretation tied to the original decision rather than just naming a good-looking curve.'],
   ['D05','Local interpretation and limitations',focus.limits,'I placed consequential model restrictions beside the calculations they affect.'],
   ['D06','Core mathematical workings',focus.calculations,'I recomputed the numerical claims from the supplied records.'],
-  ['D07','Complete reader and generated PDF/Word',focus.presentation,'I will inspect the document exports and figures at normal reading size.'],
+  ['D07','Complete reader and generated PDF/Word',focus.presentation,presentationChecked?'I inspected the complete reader and every page of the generated PDF and Word documents.':'I will inspect the document exports and figures at normal reading size.'],
   ['D09','Data provenance and references',focus.sources,'I checked that constructed observations and derived calculations are not described as real experiments.'],
   ['D11','Mathematical stages and conclusion',focus.story,'I checked that each result contains performed mathematics rather than a plan to do it.'],
   ['D19','Native graphs, tables and source data',focus.figures,'I kept long records editable instead of padding the narrative with them.'],
   ['D20','Technology-supported calculations',focus.technology,'I record the mathematical inputs, method and interpretation independently of the graph image.']
  ];
- return shared.map(([id,location,note,action])=>({id,location,note,action,status:id==='D07'?'unchecked':'checked'}));
+ return shared.map(([id,location,note,action])=>({id,location,note,action,status:id==='D07'&&!presentationChecked?'unchecked':'checked'}));
 }
 export function buildModellingPass3(d){
  const id=d.id,sourceId='source-'+id,accuracyId='accuracy-'+id;

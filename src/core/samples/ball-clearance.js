@@ -144,8 +144,8 @@ const STUDY={
       "interpretation": "The robust-positive claim requires every permitted input choice to retain a positive gap. The adverse choice is permitted and its gap is negative, so one counterexample settles that claim. My initial positive expectation survives only for the nominal model inputs.",
       "limitations": "The supplied allowances are not measured uncertainties, and independent centre changes, perspective effects and ball radius are outside this calculation. I have rejected positivity throughout the stated alternatives, not estimated how often a real ball would fail to clear.",
       "localTakeaway": "One permitted combined coordinate change gives a negative centre gap, so the nominal positive result is not robust within the stipulated scenario.",
-      "nextQuestion": "I can therefore finish the investigation without determining the most negative gap over every permitted combination.",
-      "nextWhy": "That optimization would answer a different question. The stated claim only requires me to decide whether every permitted gap stays positive, and the counterexample has settled it.",
+      "nextQuestion": "This answers my robustness question, so I can conclude.",
+      "nextWhy": "Finding the most negative gap over all permitted combinations would be a different optimisation problem.",
       "mathsInsight": "The derivative describes the direction of a small horizontal effect, the quadratic term makes its finite change exact, and the counterexample determines the logical strength of the final claim.",
       "methodChangeReason": "I concluded once the robustness claim was settled instead of adding a new technique without an unresolved question.",
       "outcomeId": "poor-scale",
@@ -567,7 +567,7 @@ const STUDY={
   ],
   "conclusion": {
     "mainConclusion": "The fitted quadratic gives a nominal centre-to-top gap of \\(+6.893\\) px, about \\(+6.9\\) cm at the stipulated \\(100\\text{ px/m}\\) scale. However, moving the barrier \\(10\\) px right and \\(2\\) px higher while shifting every centre \\(3\\) px lower gives \\(-4.314\\) px. The centre therefore does not remain above the top for every allowed input choice.",
-    "conclusionBenefit": "The calculation explains the failure rather than merely displaying it: the descending slope makes horizontal placement consequential, and the two vertical changes consume the remaining margin. A common positive scale changes the metre value but cannot restore a negative sign. The small fitting RMSE describes the original arch; it is not a guarantee for this barrier decision.",
+    "conclusionBenefit": "The calculation explains the failure rather than merely displaying it: the descending slope makes horizontal placement consequential, and the two vertical changes consume the remaining margin. A common positive scale changes the metre value but cannot make a negative gap positive. The small fitting RMSE describes the original arch; it is not a guarantee for this barrier decision.",
     "conclusionExtension": "A useful follow-up would define the ball's radius and replace the stipulated allowances with evidence from a calibrated image in the same plane, including how centre and top positions are located. That would support a new question about whole-ball clearance. I have not obtained those inputs or demonstrated that any real ball clears a barrier."
   },
   "planningExtra": {
@@ -599,7 +599,8 @@ const STUDY={
     "purpose": "The decision concerns positivity of a centre-to-top gap throughout explicitly stated alternatives. It does not claim actual sporting success or whole-ball clearance.",
     "limits": "The coordinate budgets are stipulated, the centre shift is coherent, and no probability distribution or ball radius is supplied. A permitted counterexample is enough to reject the robust-positive claim.",
     "calculations": "I checked the seven-point centred sums, completed-square least-squares expression, residual RMSE, vertex, nominal gap and both scenario values. The horizontal-only gap stays positive; the combined adverse choices reverse it.",
-    "presentation": "The existing native figures and tables remain beside the corresponding argument. The complete reader and PDF/Word layout still need rendered inspection.",
+    "presentation": "I inspected the complete reader and every PDF and Word page. The least-squares, RMSE and sensitivity equations are legible, and the figures and tables remain beside the stages they support. I tightened the final transition and clarified the conclusion's scale argument after this review.",
+    "presentationChecked": true,
     "sources": "I identify the constructed inputs as D1 and distinguish the consulted least-squares and RMSE explanations in M1 and M2 from my own algebra and calculations.",
     "figures": "The seven original points, fitted curve, nominal barrier reference and scenario table retain their fixed values. The barrier-height reference is a level, not a drawing of a physical obstacle width.",
     "technology": "Numerical regression is checked against exact centred-coordinate algebra. I calculated the scenario effects from the same fitted polynomial rather than treating a graph image as the evidence."
