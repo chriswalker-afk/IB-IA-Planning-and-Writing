@@ -83,7 +83,8 @@ test('pass1 recovery exemplars are specific, testable and linked to a possible l
    assert(!seen.has(example.id),example.id);seen.add(example.id);
    assert(placements.has(example.placementId),example.id);
    for(const key of SUPPORT_BLOCKER_STANDARD.required){
-     assert(typeof example[key]==='string'&&example[key].trim().length>=18,example.id+':'+key);
+     const minLength=['id','placementId'].includes(key)?1:18;
+     assert(typeof example[key]==='string'&&example[key].trim().length>=minLength,example.id+':'+key);
    }
    assert(/^(I |My |I'm )/.test(example.problem),example.id);
    assert(example.quickQuestion.includes('?'),example.id);
