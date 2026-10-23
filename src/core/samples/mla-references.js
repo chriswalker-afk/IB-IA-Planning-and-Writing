@@ -98,8 +98,8 @@ export const VERIFIED_SAMPLE_MLA_SOURCES=sources;
 const own=(obj,k)=>Object.prototype.hasOwnProperty.call(obj,k);
 const rewriteLine=(value,mapping)=>{
  if(typeof value!=='string')return value;
- return value.replace(/\s*\[(D1|M[1-4]|[12])\]/g,(all,key)=>{
-  if(key==='D1')return ' (constructed example)';
+ return value.replace(/\s*\[(D1|M[1-4]|[12])\]/g,(all,key,offset)=>{
+  if(key==='D1')return (offset===0?'':' ')+'(constructed example)';
   const id=mapping[key];
   return id&&sources[id]?' '+sources[id].cite:all;
  });
