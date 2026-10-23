@@ -18,7 +18,7 @@ const smallVariation=(id)=>[0,-7,8,-5,5][id.split('').reduce((n,c)=>n+c.charCode
  * shrinking bubbles until they are unreadable.
  */
 export function computeIdeaMapPositions(input,width){
- const W=Math.max(280,Number(width)||700),mobile=W<620;
+ const W=Math.max(280,Number(width)||700),mobile=W<800;
  const nodes=input.map(n=>({id:n.id,parent:n.parent||'',width:Math.max(1,n.width||140),
   height:Math.max(1,n.height||65)}));
  const byId=new Map(nodes.map(n=>[n.id,n])),placed=new Map();
