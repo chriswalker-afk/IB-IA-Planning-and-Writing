@@ -123,7 +123,7 @@ x_{A1}=\frac{88+93+95}{3\times50}=1.84\text{ s}.
 I repeat this for all objects, giving \(n_A=n_B=12\) means. Because every object has three readings, averaging these twelve means gives the same group mean as averaging its 36 drop times. The reason for keeping the object summaries is the meaning of their variation and of a later A–B comparison, not a change to that overall average.
 
 A's means range from \(1.64\) to \(2.12\text{ s}\), and B's from \(1.80\) to \(2.82\text{ s}\). The intervals overlap between \(1.80\) and \(2.12\text{ s}\). B07, at \(2.82\text{ s}\), is separated from the next B mean, \(2.38\text{ s}\); it remains included because an isolated dot alone gives no reason to call a record wrong.`,
-  interpretation:R`B's distribution is shifted towards longer times, but the order is not uniform: some A objects have higher recorded means than some B objects. A design preference based on these dots must account for that overlap.`,
+  interpretation:R`B's distribution is shifted towards longer times, but some A means exceed some B means. This overlap limits the design preference I can draw from the dots alone.`,
   limitations:R`The comparison describes three-drop means. It does not predict an object's next release or measure its repeatability separately. A01 and B01 are different objects; their shared row number supplies no matching condition.`,
   localTakeaway:'The 12 B means tend to be larger, but the ranges overlap and B07 may affect average-based comparisons.',
   nextQuestion:R`The useful-gain decision now requires the size of the shift, not just its direction.`,
@@ -179,7 +179,7 @@ I use the conventional box-plot fence [M2], \(Q_3+1.5\mathrm{IQR}\), to flag a v
 \[
 2.27+1.5(0.30)=2.72\text{ s}.
 \]
-B07 exceeds this fence. The upper whisker ends at the largest value inside it, \(2.38\text{ s}\), while the \(2.82\text{ s}\) point stays visible.`,
+B07 remains visible beyond the fence at \(2.82\text{ s}\); the upper whisker ends at the largest mean inside it, \(2.38\text{ s}\).`,
   interpretation:R`Both centre measures exceed the useful-gain threshold, so the direction of the decision does not depend on using the mean. However, B's standard deviation is about \(1.80\) times A's, while its IQR is only \(1.25\) times A's. The extra spread is therefore more pronounced when distant values receive weight. That identifies the upper tail as a concrete reason to test the mean recommendation's sensitivity.`,
   limitations:R`The fence is a screening convention, not proof of an erroneous entry. These descriptive calculations also require neither normally distributed flights nor equal group variances; I have not used them to make an inferential claim.`,
   localTakeaway:'B has a 0.290 s larger mean and a 0.26 s larger median, but its longer upper tail raises the standard deviation substantially.',
