@@ -10,8 +10,8 @@ const idealCut=(25-5*Math.sqrt(7))/3;
 const idealVolume=volume(idealCut);
 const lower99=3.484198595373365;
 const provenance='Constructed design scenario: a 30 cm by 20 cm sheet, 4 cm height limit, nominal settings in 0.1 cm steps and a common setting error bounded by 0.1 cm. All volumes are calculated from the stated zero-thickness model.';
-const aim=R`I want to choose a corner-cut setting for a tray made from a \(30\text{ cm}\times20\text{ cm}\) sheet that gives the greatest guaranteed volume while fitting below a \(4.0\text{ cm}\) height limit. I will allow a common setting error of up to \(1\text{ mm}\) and use nominal settings marked in \(1\text{ mm}\) steps.`;
-const definitions=R`I use \(c\) for the actual common corner-cut size, \(n\) for my nominal setting and \(\varepsilon=c-n\) for its error, all in centimetres. The bound on the error is \(\delta\), so \(|\varepsilon|\le\delta\). The modelled volume is \(V(c)\), in \(\text{cm}^3\), and \(W(n)\) is the smallest volume allowed by the error interval. The height is \(c\).`;
+const aim=R`I want to choose a nominal corner-cut setting for a tray made from a \(30\text{ cm}\times20\text{ cm}\) sheet that gives the greatest guaranteed volume while keeping its height at or below \(4.0\text{ cm}\). I will allow a common setting error of up to \(1\text{ mm}\) and use nominal settings marked in \(1\text{ mm}\) steps. I will then qualify that decision by finding how large the error bound could become if I accepted a loss of at most \(1\%\) of the ideal capacity and could choose a different nominal setting.`;
+const definitions=R`I use \(n\) for the nominal setting I choose and \(c\) for the actual common corner-cut size. Their difference is the setting error \(\varepsilon=c-n\), so \(c=n+\varepsilon\). All three lengths are in centimetres. I write \(\delta\) for the nonnegative bound on the error: \(|\varepsilon|\le\delta\) means that the actual cut lies between \(n-\delta\) and \(n+\delta\). The tray height is \(c\), and its modelled volume is \(V(c)\), in \(\text{cm}^3\). For the initial fixed bound \(\delta=0.1\text{ cm}\), I call the smallest possible volume at setting \(n\) its guaranteed volume, \(W(n)\).`;
 const assumptions=R`I treat the sheet as an exact \(30\text{ cm}\times20\text{ cm}\) rectangle with negligible thickness. Equal square cuts and perpendicular folds produce a rectangular tray. One common setting controls all four corners: the same error changes every cut equally. My \(4.0\text{ cm}\) height limit and \(1\text{ mm}\) error bound are design assumptions, not measured clearances or estimates from an experiment. I ignore wall bowing, fold radius and joints.`;
 const accuracyReason=R`I distinguish exact design inputs from hypothetical construction tolerance. A ruler increment of \(0.1\text{ cm}\) does not itself establish the error bound; I separately assume \(\delta=0.1\text{ cm}\). I retain unrounded calculations when comparing designs, report volumes to \(0.1\text{ cm}^3\) in the conclusion and never round an allowable error upwards.`;
 const sourceFields={
@@ -26,134 +26,165 @@ const sourceFields={
  modelAlternative:R`I compared the best exact cut, the available nominal settings, and the smallest volume over a whole error interval. These choices have different objectives even though they use the same geometric model.`,
  alternativeMethod:'I could compare many cut sizes in a spreadsheet, but a finite grid could miss the best exact value and would not prove a guarantee for every permitted error.',
  chosenMethod:'I derived a polynomial volume model, used differentiation to locate its maximum, and then used inequalities and endpoint comparisons to include tolerance.',
- methodReason:R`I began with rectangular geometry because equal corner cuts determine all three tray dimensions. Expressing each dimension in terms of the same variable lets me derive the capacity function instead of assuming a curve from a few plotted values.`,
+ methodReason:R`Rectangular geometry links the competing effects of a larger cut: greater height and a smaller base. I can derive the volume from those dimensions, then use its rate of change to establish an exact benchmark before introducing an error interval.`,
  methodLimitation:'The common-setting model keeps the tray rectangular. Four unequal corner errors could produce incompatible folds, so this model does not describe every possible cutting mistake.',
  limitationConsequence:'My guaranteed volume applies to the stated geometric and common-error assumptions. It is not a tested guarantee of usable capacity in a real folded-card tray.',
  limitationMitigation:'I state the assumptions before calculating, preserve them through each comparison and separate a future independent-corner-error investigation from the results proved here.',
  limitationAcceptable:'The model answers my stated mathematical design question. It would need physical measurements and a revised geometry before I used it as a manufacturing specification.',
- dataAimLink:R`I first need to express capacity in terms of the cut size. In Figure 1, each pair of folds removes \(2c\) from a sheet dimension, so the same choice that increases height also reduces both base dimensions.`
+ dataAimLink:R`The starting quantities define a design problem rather than a dataset to fit. To choose a setting, I first need a function that converts each possible actual cut into capacity; only then can I compare what different settings guarantee.`
 };
 
 const stages=[
  {
-  key:'volume-model',title:'Connecting the cuts to the tray volume',bridge:R`My aim concerns capacity, so I began by expressing the three tray dimensions using one variable.`,
-  purpose:R`Figure 1 shows the sheet and its fold lines. The four corner squares are removed before the remaining sides are folded upwards. I illustrated the layout at \(c=3.9\text{ cm}\), but used a variable cut size in the calculation.`,
+  key:'volume-model',title:'Connecting the cuts to the tray volume',bridge:R`I began with the actual cut, because it determines the dimensions regardless of which nominal mark produced it.`,
+  purpose:R`Figure 1 shows the four corner squares to remove and the fold lines of the remaining sheet. Its illustrated value \(c=3.9\text{ cm}\) makes the layout visible; the derivation below keeps \(c\) variable.`,
   technique:'Rectangular geometry and polynomial modelling',methodId:'algebra',kind:'model',knowledge:'syllabus',
   result:R`The base has length \(30-2c\), width \(20-2c\), and height \(c\). Therefore
 \[V(c)=c(30-2c)(20-2c).\]
 Expanding gives
 \[V(c)=4c^3-100c^2+600c.\]
-Each factor must be positive. The width gives the strongest restriction, \(20-2c>0\), so the geometric domain is \(0<c<10\). The extra height restriction will later reduce the feasible choices, but I first kept this wider domain to establish an ideal benchmark.
+Each dimension must be positive. The width gives the strongest upper restriction, \(20-2c>0\), so a non-degenerate tray requires \(0<c<10\). My design also requires \(c\le4\), but I first examine the wider geometric domain to find the ideal capacity against which to judge that restriction.
 
 For example, a \(3\text{ cm}\) cut gives a \(24\text{ cm}\times14\text{ cm}\) base and \(V(3)=1008\text{ cm}^3\). A \(4\text{ cm}\) cut gives \(V(4)=4\times22\times12=1056\text{ cm}^3\), whereas \(V(5)=5\times20\times10=1000\text{ cm}^3\). Thus increasing the height does not necessarily increase capacity.`,
-  interpretation:R`The comparison places a promising cut near \(4\text{ cm}\), rather than at the tallest possible tray. The trade-off is visible in the product: an increase in \(c\) improves the height factor but reduces both base factors. These three examples do not establish which cut is best between them.`,
-  limitations:R`The volume is the capacity of an ideal rectangular prism. I have not subtracted space occupied by card thickness or allowed for non-vertical walls, so the numerical volumes are model outputs, not measured capacities.`,
+  interpretation:R`A cut near \(4\text{ cm}\) is promising. The product explains why: increasing \(c\) improves the height factor but reduces both base factors, so choosing the tallest geometric tray would not maximise its volume.`,
+  limitations:R`The \(5\text{ cm}\) trial already exceeds my height limit; I use it only to examine the descending side of the unrestricted model. Three selected values still leave all the cuts between them unresolved.`,
   localTakeaway:R`I obtained \(V(c)=4c^3-100c^2+600c\) on \(0<c<10\), with \(V(4)>V(3)\) and \(V(4)>V(5)\). This suggests an interior maximum that needs a continuous calculation.`,
-  nextQuestion:'Which exact cut maximises the ideal volume, and how much better is it than a 4.0 cm cut?',
-  nextWhy:'The initial comparisons leave all the cut sizes between the chosen examples unresolved.',
+  nextQuestion:'I therefore need to locate the point where increasing the cut stops increasing the volume.',
+  nextWhy:'Differentiating the model will identify that change continuously, so a high value in a short table is not mistaken for the maximum.',
   mathsInsight:'The height and base dimensions cannot be optimised independently because all three depend on the same cut.',
   methodChangeReason:'I moved from evaluating selected cases to differentiating the volume function so that I could locate and justify its continuous maximum.',
   outcomeId:'stationary'
  },
  {
   key:'ideal-maximum',title:'Finding the ideal maximum and judging its precision',
-  bridge:R`The volume model gave a promising region but no exact best cut. I used its rate of change to locate the maximum.`,
-  purpose:R`I compared the stationary points with the geometric domain and the boundary behaviour. Figure 2 shows the full model, including the loss of volume as either the height or the base width approaches zero.`,
+  bridge:R`For this benchmark I temporarily assume that the chosen cut is made exactly. The derivative \(V'(c)\) gives the change in volume per unit increase in cut size; its sign tells me where a larger cut helps.`,
+  purpose:R`I look for a zero derivative, then check the sign on both sides and the geometric boundaries. Figure 2 places this calculation on the full volume curve.`,
   technique:'Differentiation, stationary points and domain checks',methodId:'optimisation',kind:'calculus',knowledge:'syllabus',
   result:R`Differentiating gives
 \[V'(c)=12c^2-200c+600.\]
 Solving \(V'(c)=0\) gives
 \[c=\frac{25\pm5\sqrt7}{3}.\]
-The smaller root is \(c_*\approx3.9237478\text{ cm}\); the other is approximately \(12.7429\text{ cm}\), outside \(0<c<10\). Within the domain, \(V'\) is positive before \(c_*\) and negative after it. Also, \(V(c)\) tends to zero as \(c\) approaches either \(0\) or \(10\). Together these facts establish the global maximum on the geometric domain, not just a stationary candidate.
+I name the smaller root \(c_*=(25-5\sqrt7)/3\approx3.9237478\text{ cm}\). The other is approximately \(12.7429\text{ cm}\), outside \(0<c<10\). Within the domain, \(V'\) is positive before \(c_*\) and negative after it: volume increases to this cut and decreases afterwards. Also, \(V(c)\) tends to zero as \(c\) approaches either \(0\) or \(10\). These checks establish the global maximum.
 
 Substitution gives
 \[V(c_*)\approx1056.3059\text{ cm}^3.\]
 My initial whole-centimetre trial of \(4.0\text{ cm}\) loses only
-\[\frac{1056.3059-1056}{1056.3059}\times100\%\approx0.0290\%.\]
-I also checked \(V''(c)=24c-200\), so \(V''(c_*)=-40\sqrt7<0\), consistent with the maximum.`,
-  interpretation:R`My original expectation of a useful cut near \(4\text{ cm}\) was supported. On my prescribed \(0.1\text{ cm}\) marking grid, however, \(c_*\) rounds to \(3.9\text{ cm}\), not \(4.0\text{ cm}\). The exact value \(V(3.9)=1056.276\text{ cm}^3\) also exceeds \(V(4.0)=1056\text{ cm}^3\). The \(4.0\text{ cm}\) trial was a convenient whole-centimetre comparison, not the nearest available setting. These nominal capacities still do not answer my aim: I need to check the complete error interval around a setting, including whether its largest actual height fits.`,
-  limitations:R`The derivative optimises \(V\) for an exact cut; it says nothing by itself about a range of possible cuts. Rounding the optimum cannot establish that every allowed error still fits below the shelf.`,
+\[\frac{V(c_*)-V(4)}{V(c_*)}\times100\%\approx0.0290\%.\]
+As a second check, \(V''(c)=24c-200\) and \(V''(c_*)=-40\sqrt7<0\): the slope is decreasing through zero there, consistent with a maximum.`,
+  interpretation:R`The exact optimum is already below \(4\text{ cm}\), so the height restriction alone would not change it. Its nearest permitted \(0.1\text{ cm}\) mark is \(3.9\text{ cm}\), with \(V(3.9)=1056.276\text{ cm}^3\), slightly more than \(V(4.0)=1056\text{ cm}^3\). Thus the whole-centimetre trial is close in capacity but is not even the nearest available mark.`,
+  limitations:R`Those values assume exact cuts. A nominal setting can have an attractive capacity while its positive error makes the tray too tall, and rounding \(c_*\) does not check this.`,
   localTakeaway:R`The ideal optimum is \(c_*=(25-5\sqrt7)/3\), with volume approximately \(1056.3059\text{ cm}^3\). The nearest permitted mark is \(3.9\text{ cm}\); I still need to justify its feasibility and performance under the stated error.`,
-  nextQuestion:'Which nominal settings remain feasible throughout the 1 mm error interval, and what volumes can they guarantee?',
-  nextWhy:'The nominal capacities are close, but the height constraint and the least favourable actual volume depend on the whole error interval.',
+  nextQuestion:'I now replace each nominal capacity by the full interval of actual cuts allowed by the 1 mm error.',
+  nextWhy:'Checking both the height and the smallest volume over that interval will turn the exact benchmark into a candidate design for my stated conditions.',
   mathsInsight:'A mathematically exact optimum and a useful practical setting answer different questions.',
   methodChangeReason:'I replaced a single exact cut with an interval around a nominal setting so that the stated error and height restriction could affect the decision.',
   outcomeId:'flat-optimum'
  },
  {
   key:'error-interval',title:'Including the height limit and a common setting error',
-  bridge:R`The ideal calculation left the possible error untreated. I wrote the actual cut as \(c=n+\varepsilon\), where \(n\) is the chosen setting.`,
-  purpose:R`For the specified \(\delta=0.1\text{ cm}\), I compared the complete interval \([n-0.1,n+0.1]\). Table 1 records nearby settings, while Figure 3 makes the shallow peak visible.`,
-  technique:'Interval constraints and sensitivity comparisons',methodId:'optimisation',kind:'model',knowledge:'syllabus',
-  result:R`Fitting below the \(4.0\text{ cm}\) limit for every permitted error requires
+  bridge:R`With \(\delta=0.1\text{ cm}\), choosing \(n\) allows every actual cut in \([n-0.1,n+0.1]\). I must therefore check the highest possible tray, rather than just its nominal height.`,
+  purpose:R`I use the height restriction to identify feasible settings, then compare the least volume each can produce. Figure 3 shows the shallow peak and Table 1 records the nearby candidates.`,
+  technique:'Interval constraints and sensitivity comparisons',methodId:'optimisation',kind:'model',knowledge:'mixed',
+  result:R`The largest allowed cut must be at or below \(4.0\text{ cm}\), giving
 \[n+0.1\le4,\qquad n\le3.9.\]
-I also require \(n-0.1>0\), so the feasible nominal interval is \(0.1<n\le3.9\). My marking rule restricts \(n\) to multiples of \(0.1\text{ cm}\).
+The smallest cut must remain positive: \(n-0.1>0\). Thus \(0.1<n\le3.9\), with \(n\) a multiple of \(0.1\text{ cm}\). Equality at the height limit is permitted in my specification.
 
-At \(n=3.9\), the possible actual cuts range from \(3.8\) to \(4.0\text{ cm}\). The maximum of \(V\) lies inside that interval; its minimum must be at an endpoint because the function increases up to \(c_*\) and decreases afterwards. I found
+At \(n=3.9\), the possible actual cuts range from \(3.8\) to \(4.0\text{ cm}\). The function increases to \(c_*\) and then decreases, so an interior point cannot give the smallest volume on this interval. I only need to compare the two endpoint values:
 \[V(3.8)=1055.488,\qquad V(4.0)=1056\]
-in cubic centimetres. The guaranteed modelled volume is therefore \(1055.488\text{ cm}^3\), or approximately \(99.9226\%\) of the unconstrained ideal maximum. The nominal dimensions are \(22.2\text{ cm}\times12.2\text{ cm}\times3.9\text{ cm}\).
+in cubic centimetres. The smaller is \(1055.488\text{ cm}^3\). Every allowed cut produces at least this volume, and the allowed cut \(c=3.8\) attains it, so this is exactly \(W(3.9)\). It is approximately \(99.9226\%\) of the ideal maximum. The nominal dimensions are \(22.2\text{ cm}\times12.2\text{ cm}\times3.9\text{ cm}\).
 
 For comparison, \(n=3.8\) guarantees \(V(3.7)=1053.612\text{ cm}^3\), and \(n=3.7\) guarantees \(V(3.6)=1050.624\text{ cm}^3\). The \(4.0\text{ cm}\) setting reaches \(4.1\text{ cm}\), so I reject it even though its nominal volume is attractive.`,
-  interpretation:R`A \(3.9\text{ cm}\) setting sacrifices only about \(0.0774\%\) of the ideal volume in its least favourable allowed case, while respecting the height limit. This is stronger than quoting its nominal volume of \(1056.276\text{ cm}^3\), because that single value hides the error interval. The limiting case for this setting is the smaller actual cut, not the largest allowed height.`,
-  limitations:R`My error describes one shared setting, such as a common cutting-and-folding template. It does not describe four independently misplaced cuts. I have also assumed that the stated error bound is always met; it is not a probability interval inferred from trials.`,
+  interpretation:R`The candidate \(n=3.9\text{ cm}\) loses only about \(0.0774\%\) of ideal capacity in its least favourable allowed case. The volume limit comes from the smaller cut, while the height limit comes from the larger one; looking at only one direction of error would miss part of the decision.`,
+  limitations:R`This is an absolute bound for one common setting, such as a cutting-and-folding template. I have not estimated how often a process stays within it, and the calculation does not describe four independently misplaced corners.`,
   localTakeaway:R`Among the nearby settings, \(n=3.9\text{ cm}\) is feasible and guarantees \(1055.488\text{ cm}^3\) under the common \(\pm0.1\text{ cm}\) error model. A nominal \(4.0\text{ cm}\) cut is infeasible.`,
-  nextQuestion:'Can I prove that 3.9 cm gives the greatest guaranteed volume, rather than merely winning this short comparison?',
-  nextWhy:'A table of nearby choices is not a proof that every other feasible setting performs no better.',
+  nextQuestion:'The nearby comparison makes 3.9 cm a strong candidate, but it leaves the other feasible settings unchecked.',
+  nextWhy:'I next seek a bound on every setting’s guaranteed volume. If 3.9 cm attains that bound, the design decision will be proved without a long search.',
   mathsInsight:'The least favourable endpoint depends on the volume curve; a larger actual cut is not always a worse error.',
   methodChangeReason:'I turned the numerical comparison into an optimisation of the minimum volume over each error interval.',
-  outcomeId:'real-world'
+  outcomeId:'real-world',
+  unfamiliarComponent:'Replacing an exact capacity by the least volume over a common-error interval and justifying why endpoint evaluation is sufficient.',
+  knowledgeNotes:'The printed calculation derives both feasibility inequalities, uses the increase-then-decrease shape to locate the minimum at an endpoint, and explains why the attained minimum is a guarantee for every allowed error.',
+  understandingExample:R`At \(n=3.9\), the endpoint volumes are \(V(3.8)=1055.488\) and \(V(4)=1056\text{ cm}^3\). The lower value is attained and no interior cut is worse, so \(W(3.9)=1055.488\text{ cm}^3\).`,
+  researchSource:''
  },
  {
   key:'guaranteed-optimum',title:'Proving the best guaranteed design',
-  bridge:R`The interval comparison suggested \(n=3.9\text{ cm}\). I now needed a bound that applied to every feasible setting.`,
-  purpose:R`I defined \(W(n)\) to be the smallest volume generated by any permitted common error. This makes the word “guaranteed” a precise mathematical objective. Figure 4 shows this objective on the last part of the feasible interval.`,
-  technique:'Maximising a lower bound using monotonicity',methodId:'optimisation',kind:'calculus',knowledge:'syllabus',
-  result:R`For \(0.1<n\le3.9\), I define
+  bridge:R`I have a feasible design that guarantees \(1055.488\text{ cm}^3\). To prove it is best, I need to show that no feasible design can guarantee a larger amount.`,
+  purpose:R`I write the minimum explicitly as a function of the nominal setting. Here “minimum” means the least volume among all cuts allowed by the error, not their average or just the nominal capacity.`,
+  technique:'Maximising a lower bound using monotonicity',methodId:'optimisation',kind:'calculus',knowledge:'mixed',
+  result:R`For \(0.1<n\le3.9\), the definition is
 \[W(n)=\min_{|\varepsilon|\le0.1}V(n+\varepsilon).\]
-The choice \(\varepsilon=-0.1\) is always allowed, so
-\[W(n)\le V(n-0.1).\]
-Every feasible setting satisfies \(0<n-0.1\le3.8<c_*\). Since \(V\) is increasing on this whole interval,
-\[W(n)\le V(n-0.1)\le V(3.8)=1055.488.\]
-Stage 3 established that \(W(3.9)=1055.488\). The upper bound on every design's guaranteed volume is therefore attained at \(n=3.9\), which proves it is globally best under these constraints. It is also an allowed \(0.1\text{ cm}\) setting, so restricting the choices to the marking grid does not change this result.
+The subscript asks me to include every error from \(-0.1\) to \(+0.1\text{ cm}\). Each resulting volume is at least \(W(n)\), so \(W(n)\) is a lower bound on what that setting produces.
 
-For the graph, I evaluated the endpoint form
+To compare settings, I instead need an upper bound on \(W(n)\). The error \(\varepsilon=-0.1\) is always allowed. The least volume cannot exceed this particular outcome, giving
+\[W(n)\le V(n-0.1).\]
+Every feasible setting satisfies \(0<n-0.1\le3.8<c_*\). Volume increases on this entire range, so
+\[W(n)\le V(n-0.1)\le V(3.8)=1055.488.\]
+The previous endpoint calculation showed \(W(3.9)=1055.488\). Thus every feasible design is bounded above by a value that \(n=3.9\) actually attains. This proves the global optimum, including all the prescribed ruler marks because \(3.9\) is one of them.
+
+For Figure 4 I use the equivalent endpoint form
 \[W(n)=\min\{V(n-0.1),V(n+0.1)\}.\]
-This endpoint formula is valid because \(V\) has only one turning point on the relevant actual-cut range, and that point is a maximum. The graph illustrates the proved result; I did not use its pixel resolution to establish optimality.`,
-  interpretation:R`The preferred nominal setting occurs at the boundary \(n=3.9\), even though the original continuous exact-volume problem had an interior optimum. The height restriction together with positive setting error creates this new feasible boundary. The answer happens to match the nearest permitted mark to \(c_*\), but rounding alone could not establish the guarantee: the bound proves that every feasible setting performs no better.`,
-  limitations:R`The conclusion is a guarantee within my defined model, not a guarantee that a real tray will hold this volume. Unknown card thickness and unequal folds could alter both capacity and clearance. I have optimised volume, not stiffness or ease of assembly.`,
+The braces ask for the smaller of two numbers. This works throughout the feasible range: \(V\) increases then decreases, with no interior minimum, so the least value on any error interval occurs at an endpoint.
+
+The graph displays an absolute-value expression for this same function. To trace it, let \(A=V(n-0.1)\) and \(B=V(n+0.1)\). Then
+\[\min(A,B)=\frac{A+B-|A-B|}{2}.\]
+If \(A\le B\), the absolute difference is \(B-A\), and this expression reduces to \(A\); the other ordering gives \(B\). Expanding the two cubic endpoint values gives
+\[\frac{A+B}{2}=4n^3-100n^2+600.12n-1,\]
+\[\frac{B-A}{2}=1.2n^2-20n+60.004.\]
+Subtracting the absolute value of the second expression from the first therefore produces the plotted \(W\). The graph illustrates the bound already proved.`,
+  interpretation:R`My best nominal setting lies at the boundary \(n=3.9\), even though the exact-volume optimum was an interior point. Positive error reserves \(0.1\text{ cm}\) of height margin and creates this new boundary. The answer matches the nearest mark to \(c_*\), but the attained-bound argument supplies the justification that rounding could not.`,
+  limitations:R`This proof keeps the error bound fixed at \(1\text{ mm}\). It does not show that the same setting remains feasible if the bound grows: \(3.9\text{ cm}\) already uses all its permitted height margin.`,
   localTakeaway:R`For every feasible nominal setting, \(W(n)\le1055.488\text{ cm}^3\), with equality at \(n=3.9\text{ cm}\). Thus \(3.9\text{ cm}\) is the best guaranteed-volume design for the specified \(1\text{ mm}\) common error.`,
-  nextQuestion:'How much could the common error increase before no available setting could retain 99% of the ideal volume and still fit?',
-  nextWhy:'The initial 1 mm bound was an assumption. Finding a threshold shows how strongly the conclusion depends on that assumption.',
+  nextQuestion:'The fixed-error decision is now solved. I will qualify it with the 99% capacity criterion stated at the outset.',
+  nextWhy:'Allowing at most a 1% loss gives a precise way to ask how much larger the error bound could become if I also changed the nominal setting.',
   mathsInsight:'An attainable upper bound can prove a constrained optimum without differentiating a complicated minimum function.',
-  methodChangeReason:'Having solved the original design problem, I varied its error bound to test the range over which a nearly optimal design remains possible.',
-  outcomeId:'boundary'
+  methodChangeReason:'Having solved the fixed-error problem, I varied its error bound to test how much tolerance is compatible with a stated near-optimal capacity.',
+  outcomeId:'boundary',
+  unfamiliarComponent:'Defining a minimum over an error interval, proving its maximum through an attained bound, and rewriting an endpoint minimum using absolute value.',
+  knowledgeNotes:'The printed proof distinguishes a lower bound on the outcomes of one setting from an upper bound on what any setting can guarantee. It explains the inequality directions and derives the minimum identity and both polynomial parts shown in the native graph.',
+  understandingExample:R`The allowed error \(-0.1\) gives \(W(n)\le V(n-0.1)\le V(3.8)\). Since \(n=3.9\) attains that limit, no other feasible setting can guarantee more. For \(A\le B\), \((A+B-|A-B|)/2=(A+B-(B-A))/2=A\).`,
+  researchSource:''
  },
  {
   key:'tolerance-threshold',title:'Finding the error threshold for a 99% capacity target',
-  bridge:R`The original design retained more than \(99.9\%\) of the ideal volume in the least favourable case. I used a \(99\%\) target to test how much less accurate the setting could become. This percentage is my stated design criterion, not an experimentally established requirement.`,
-  purpose:R`I first found the smallest actual cut that reaches the target, then asked whether an entire error interval could fit between that cut and the height limit. Table 2 compares the nearby nominal ruler settings.`,
-  technique:'Polynomial inequality, numerical root finding and discrete choices',methodId:'optimisation',kind:'algebra',knowledge:'syllabus',
-  result:R`The target volume is
+  bridge:R`I now allow \(\delta\) to vary, while keeping the sheet, height limit and nominal marks unchanged. A different nominal setting is permitted; the requirement is that every allowed error preserves at least \(99\%\) of the ideal volume.`,
+  purpose:R`I first find the acceptable range of actual cuts. Then I fit the widest possible symmetric error interval inside that range, finally checking the prescribed ruler marks in Table 2.`,
+  technique:'Polynomial inequality, numerical root finding and discrete choices',methodId:'optimisation',kind:'algebra',knowledge:'mixed',
+  result:R`Writing \(T\) for the target volume,
 \[T=0.99V(c_*)\approx1045.7428365\text{ cm}^3.\]
-Solving \(4c^3-100c^2+600c=T\) on the increasing part of the curve gives a lower cut \(a\approx3.484198595\text{ cm}\). I checked the root by bracketing it between \(3.4841\) and \(3.4842\), where the cubic lies respectively below and above \(T\). Since \(V(4)=1056>T\), and there is just one maximum before \(4\), every actual cut in \([a,4]\) reaches the target and fits the height restriction.
+I need the lower cut at which \(V(c)\) first reaches \(T\). I name it \(a\) and solve \(V(c)-T=0\) on the increasing part of the curve. At \(c=3\) the difference is negative, and at \(c=3.9\) it is positive. I repeatedly halve this interval, evaluate the difference at the midpoint and keep the half whose endpoint signs differ. Continuity keeps a root inside each retained interval; the increasing volume makes that root unique there.
 
-An entire error interval stays in this acceptable range exactly when
+For a reproducible check, the retained crossing lies between \(3.4841\) and \(3.4842\):
+\[V(3.4841)-T\approx-0.0048156,\]
+\[V(3.4842)-T\approx+0.0000686\]
+in cubic centimetres. Continuing the calculation gives \(a\approx3.484198595\text{ cm}\). Volume rises from \(T\) at \(a\) to the maximum and then falls to \(V(4)=1056>T\). Therefore every actual cut in \([a,4]\), and no smaller positive cut, meets both the capacity target and the height restriction.
+
+The error interval \([n-\delta,n+\delta]\) stays inside \([a,4]\) exactly when
+\[n-\delta\ge a,\qquad n+\delta\le4,\]
+or equivalently
 \[a+\delta\le n\le4-\delta.\]
-With continuous choice of \(n\), this is possible only if \(2\delta\le4-a\). The largest error bound is therefore
+For any setting to satisfy both inequalities, the left bound cannot exceed the right: \(2\delta\le4-a\). At equality the interval fills the available range, so its centre gives
 \[\delta_{\rm continuous}=\frac{4-a}{2}\approx0.257900702\text{ cm},\]
-with \(n=(4+a)/2\approx3.742099298\text{ cm}\). That nominal setting is not available on my \(0.1\text{ cm}\) grid.
+\[n=\frac{4+a}{2}\approx3.742099298\text{ cm}.\]
+This proves the continuous limit, but its nominal setting is not on my \(0.1\text{ cm}\) grid.
 
-For a permitted setting \(n\), the largest error is
+For an available setting inside \([a,4]\), the two distances to the acceptable boundaries are \(n-a\) and \(4-n\). The error cannot exceed either distance, so
 \[\delta_{\max}(n)=\min\{n-a,4-n\}.\]
-This expression increases up to the midpoint and decreases afterwards, so only the adjacent grid settings \(3.7\) and \(3.8\) can win. They allow respectively \(0.215801405\text{ cm}\) and \(0.2\text{ cm}\). Thus the largest bound with the marking grid is approximately \(2.158\text{ mm}\), at \(n=3.7\text{ cm}\). A conservative limit stated to one decimal place in millimetres would be \(2.1\text{ mm}\), not \(2.2\text{ mm}\).`,
-  interpretation:R`The marking grid reduces the theoretical tolerance from about \(2.579\text{ mm}\) to \(2.158\text{ mm}\). My original \(1\text{ mm}\) assumption is comfortably inside this limit, but this does not mean I can keep the \(3.9\text{ cm}\) setting when the error increases: it has only \(1\text{ mm}\) of height margin. A less accurate process requires a smaller nominal setting. The original recommendation remains \(3.9\text{ cm}\) for the original error bound; \(3.7\text{ cm}\) solves a different, larger-tolerance question.`,
+To the left of the midpoint \((4+a)/2\), the smaller distance is \(n-a\), which increases with \(n\). To the right it is \(4-n\), which decreases. Thus every grid mark farther from the midpoint on either side loses to the adjacent mark on that side. Only \(3.7\) and \(3.8\) can win.
+
+Those settings allow respectively \(0.215801405\text{ cm}\) and \(0.2\text{ cm}\). The largest grid-compatible bound is therefore approximately \(2.158\text{ mm}\), at \(n=3.7\text{ cm}\). A conservative limit stated to one decimal place in millimetres is \(2.1\text{ mm}\), not \(2.2\text{ mm}\), because rounding the maximum upwards would permit cuts below the capacity threshold.`,
+  interpretation:R`The marking grid reduces the continuous tolerance of about \(2.579\text{ mm}\) to about \(2.158\text{ mm}\). This does not replace my original recommendation: \(3.9\text{ cm}\) maximises guaranteed volume for the fixed \(1\text{ mm}\) bound, while \(3.7\text{ cm}\) maximises the bound I can tolerate after accepting a \(1\%\) capacity loss. Keeping \(3.9\text{ cm}\) when the error increases would breach the height limit.`,
   limitations:R`The threshold remains conditional on the common-error model. I have not assigned probabilities to errors or claimed that \(99\%\) of actual trays will succeed: \(99\%\) refers to retained capacity, and the claim concerns every error in the specified interval.`,
-  localTakeaway:R`A \(0.1\text{ cm}\) nominal-setting grid permits at most about \(2.158\text{ mm}\) common error while guaranteeing \(99\%\) of the ideal capacity and height at most \(4\text{ cm}\). The unrestricted continuous bound is larger and is not an available ruler setting.`,
-  nextQuestion:'How would independent corner errors and nonzero card thickness change the feasible geometry and the guaranteed capacity?',
-  nextWhy:'Those effects could invalidate the rectangular-prism and common-setting assumptions, so they are the most relevant extension beyond the model I have solved.',
+  localTakeaway:R`A \(0.1\text{ cm}\) nominal-setting grid permits at most about \(2.158\text{ mm}\) common error while guaranteeing \(99\%\) of ideal capacity and height at most \(4\text{ cm}\). The unrestricted continuous bound is larger and is not an available ruler setting.`,
+  nextQuestion:'I can now conclude: the original setting is proved best for the specified error, and the tolerance calculation states how that decision changes when less capacity is acceptable.',
+  nextWhy:'Both parts of my design question are answered within the stated geometry and common-error assumptions.',
   mathsInsight:'The best continuous tolerance need not be attainable when the decision variable is restricted to a discrete set.',
   methodChangeReason:'I separated the continuous benchmark from the actual marking grid; treating them as interchangeable would overstate the allowable error.',
-  outcomeId:'real-world'
+  outcomeId:'real-world',
+  unfamiliarComponent:'Using a sign-changing numerical bracket to locate the capacity threshold, then proving a continuous interval limit and the best discrete setting.',
+  knowledgeNotes:'The printed working explains interval halving and why continuity and increase identify the unique root. It derives both endpoint constraints, the continuous midpoint limit, and why only the two adjacent ruler marks need comparison. The 99% capacity preference is separate from a success probability.',
+  understandingExample:R`The opposite signs at \(3.4841\) and \(3.4842\) enclose \(a\). At \(n=3.7\), the volume margin is about \(0.215801405\text{ cm}\), smaller than the \(0.3\text{ cm}\) height margin. At \(n=3.8\), the \(0.2\text{ cm}\) height margin is limiting, so \(3.7\) permits the larger error.`,
+  researchSource:''
  }
 ];
 
@@ -175,7 +206,7 @@ Object.assign(sheet,{
 const graph=(title,number,expression,xMin,xMax,yMin,yMax,caption,xSymbol='c',ySymbol='V')=>({...newGraphDraft(),
  kind:'function',title,figureNumber:String(number),expression,xMin:String(xMin),xMax:String(xMax),yMin:String(yMin),yMax:String(yMax),
  xLabel:xSymbol==='n'?'Nominal setting, n':'Actual cut size, c',yLabel:ySymbol==='W'?'Guaranteed volume, W':'Modelled volume, V',
- xSymbol,ySymbol,xUnit:'cm',yUnit:R`\mathrm{cm}^{3}`,xUnitMode:'unit',yUnitMode:'unit',
+ xSymbol,ySymbol,xUnit:'cm',yUnit:'cm³',xUnitMode:'unit',yUnitMode:'unit',
  sourceKind:'theoretical',sourceText:provenance,showPoints:false,showGrid:true,showLegend:false,caption
 });
 const table=(title,number,columns,rows,units,note)=>({...newTableDraft(),title,number:String(number),
@@ -209,8 +240,8 @@ export const TRAY_OPTIMISATION_SPEC={
   readinessImprovement:'My inputs are fully specified. I need to keep the continuous optimum separate from the nominal marking grid and from the actual cut.',
   permissionNeed:'no',permissionDetails:'I am investigating a defined geometry; I will not collect participant data or claim to have built or tested the tray.',
   practicalBlocker:'no',dataAvailability:'in-hand',timelineWeeks:'6',timelineEarly:'yes',
-  mathsOutside:'syllabus',course:'AA SL',courseSuitability:'yes',
-  mathsRevisedWhy:'I will add the interval argument because an exact maximum alone does not address the stated setting error.',
+  mathsOutside:'outside',course:'AA SL',courseSuitability:'yes',
+  mathsRevisedWhy:'Polynomial modelling and differentiation provide the course core. I will explain the additional interval-minimum argument, attained bound, absolute-value graph expression, numerical bracketing and discrete midpoint comparison in the investigation itself.',
   prediction:R`I expect a cut near \(4\text{ cm}\) to give a large volume, but a slightly smaller nominal setting may be better once the \(4\text{ cm}\) height limit and positive setting error are included.`,
   predictionWhy:'Tiny cuts give little height, while large cuts leave a narrow base; an intermediate cut should balance the two effects.',
   predictionImplication:'If the volume is fairly flat near its maximum, I may be able to gain clearance with little loss of capacity.',
@@ -220,23 +251,24 @@ export const TRAY_OPTIMISATION_SPEC={
   teacherSafeAction:'I can define the model and check its algebra without claiming a teacher has approved its scope.',
   universalTeacherQuestion:'Does the final guarantee make clear which geometric assumptions it depends on?'
  },
- introduction:R`I am interested in whether a mathematically optimal design is also a useful design to make. A cut reported to several decimal places seems less helpful if a small setting error changes whether the object fits its space. I chose an open storage tray because increasing its height necessarily reduces its base, giving a trade-off I could describe mathematically.
+ introduction:R`I am interested in whether a mathematically optimal design is also useful to make. Reporting a cut to several decimal places seems unhelpful if a small error changes whether the finished object fits its space. I chose an open tray because increasing its height necessarily reduces its base, creating a trade-off I can describe geometrically.
 
-I constructed a design scenario with a \(30\text{ cm}\times20\text{ cm}\) sheet and a maximum tray height of \(4.0\text{ cm}\). My aim is to choose the nominal corner-cut setting that gives the greatest guaranteed volume when a common setting error can be as large as \(1\text{ mm}\). Nominal settings are available in \(1\text{ mm}\) steps. These are defined inputs, not measurements from a tray I have manufactured.
+My constructed scenario uses a \(30\text{ cm}\times20\text{ cm}\) sheet and permits a tray height at or below \(4.0\text{ cm}\), including equality. I want the nominal corner-cut setting that gives the greatest guaranteed volume when one common setting error can be as large as \(1\text{ mm}\) in either direction. Nominal settings are available in \(1\text{ mm}\) steps. These are specified inputs, not measurements from a tray I have manufactured.
 
-I expected an intermediate cut near \(4\text{ cm}\) to be useful: a very small cut gives little height, while a large one leaves little base. I also expected the height restriction to favour a setting below the exact capacity optimum. I wanted to find how much capacity that margin would cost and how strongly my answer depended on the assumed accuracy.`,
- dataNotes:R`I removed equal squares of side \(c\) conceptually from all four corners and folded the remaining sides at right angles. In my zero-thickness model, this produces a rectangular prism. The original sheet dimensions and height limit are exact specifications of the problem, not quantities whose uncertainty I estimated from a ruler.
+After choosing the best setting for that error bound, I will ask how large the error could become if I were willing to retain at least \(99\%\) of the ideal capacity and could change the setting. I chose \(99\%\) to give “nearly optimal” a precise meaning: I am willing to trade at most \(1\%\) of capacity for greater tolerance. This is my design preference, not an established requirement or a claim about the percentage of trays that succeed.`,
+ dataNotes:[R`I conceptually remove equal corner squares and fold the remaining sides at right angles. Negligible sheet thickness and vertical walls make the result a rectangular prism. The sheet dimensions and height limit are exact specifications within this model; I have not estimated them from a ruler.`,
+ definitions,
+ R`One common setting controls all four corners, so the same error changes every cut equally. I separately assume the initial error bound \(\delta=0.1\text{ cm}\); the \(0.1\text{ cm}\) spacing of marks does not establish that accuracy. I have not assigned probabilities to the possible errors or assumed that four independent cutting mistakes would be identical.
 
-My error model is a shared setting error: if the nominal setting is \(n\), all four cuts use the same actual value \(c=n+\varepsilon\). Initially I take \(|\varepsilon|\le0.1\text{ cm}\). The \(0.1\text{ cm}\) spacing of permitted nominal marks is a separate restriction. I have not assumed that four independent cuts would make identical errors, and I have not assigned probabilities to the possible error values.
+I retain unrounded calculations when comparing designs, display rounded results with approximation signs and report final volumes to \(0.1\text{ cm}^3\). An allowable error will be rounded down if it must be stated on a coarser scale, so reporting does not enlarge the proved limit.`].join('\n\n'),
 
-I keep full calculator precision for comparisons and use approximation signs when displaying rounded results. The sheet diagram, graphs and short tables are generated from this model.`,
  completion:{
   ...sourceFields,changedSincePlanning:'I kept the sheet, height limit and common-error model fixed. I extended the final calculation to distinguish continuous settings from the prescribed marking grid.',
   permissionStatus:'not-needed',permissionNotes:'No participant data, restricted source or physical trial is used in this mathematical design scenario.',
-  courseConcern:'My work uses polynomial algebra, differentiation, inequalities and numerical equation solving. I have not recorded teacher approval or a predicted mark.',
+  courseConcern:'The tailored guarantee and discrete tolerance arguments extend the routine optimisation. I define their notation and derive each step in the printed narrative so that the reader can follow them without prior knowledge of these methods.',
   firstMathsBridgePlacement:'before',
   firstPurpose:R`How does the actual common cut \(c\) determine the tray volume and its feasible domain?`,
-  firstMethodEvaluation:'A labelled geometric diagram makes the dependencies clearer than a table of volumes alone. I used the diagram to derive the function before graphing it, so the curve has a stated geometric meaning.',
+  firstMethodEvaluation:'The diagram checks which lengths belong in the model. The graphs will show the resulting shape, while the derivative and interval arguments must establish the decisions between plotted values.',
   firstType:'diagram',firstDefinitions:definitions,
   firstPresentation:'Figure 1 identifies the sheet and fold lines. The first calculation derives the volume and tests three cut sizes.',
   accuracyQuantity:'Common cut setting',accuracySymbol:'c',accuracyUnit:'cm',
@@ -253,19 +285,20 @@ I keep full calculator precision for comparisons and use approximation signs whe
   technologyTool:'Graph plotter and numerical equation solver',technologyInput:R`I plotted \(V(c)=c(30-2c)(20-2c)\) and solved \(V(c)=0.99V(c_*)\) on \(3<c<c_*\).`,
   technologyOutcome:R`The lower target-volume solution was \(c\approx3.484198595\text{ cm}\). I verified its bracket and used it in the interval inequalities.`,
   technologyInterpretation:'The graph illustrated the derived function; the derivative and inequality argument established the optima. The numerical root supplied the boundary of the acceptable actual-cut interval.',
-  courseWhy:'The substantial mathematics is polynomial modelling and differentiation, developed through a justified tolerance and domain analysis.',
-  mathsLearning:'I found that maximising the worst permitted outcome changes the mathematical objective, and that a discrete setting grid can reduce the tolerance achievable by a continuous model.',
+  courseWhy:'The core is polynomial modelling and differentiation. I develop it through explicitly derived interval bounds and a discrete tolerance decision, explaining the additional arguments where they are used.',
+  mathsLearning:'I distinguish a lower bound on the outcomes of one setting from an upper bound on every setting’s guarantee. I derive the absolute-value minimum, explain numerical bracketing, and use increasing and decreasing boundary margins to justify the discrete tolerance choice.',
   notationIssue:'I used c only for the actual cut, n for the nominal setting and δ for the error bound. I kept cm and cm³ distinct and used ≈ for rounded values.',
-  presentationIssue:'I placed the fold diagram with the volume derivation and the short comparison tables with the decisions they support. Each graph has a defined domain and labelled quantities.',
+  presentationIssue:'All six native figures and their placement are retained. I inspected the desktop and phone reader, every page of the 17-page PDF and 18-page Word document, and all refreshed pages and figure views after correcting the volume-unit labels to cm³.',
   referencesIssue:'All starting values are disclosed as design assumptions. The numerical output is calculated from the displayed model, so I have not supplied invented measurement dates or source URLs.',
   draftComplete:'ready',
+  finalProofread:'I independently recalculated the principal values and completed the reader and all-page PDF and Word proofread. After correcting the volume-unit labels, I reinspected all four changed pages in each export; the remaining page images are pixel-identical to the fully reviewed versions. I have not recorded a peer, teacher or school-format review.',
  },
  stages,
  figures:[
   {id:'geometry-tray-folds',tool:'geometry',stage:0,draft:sheet,after:'purpose'},
   {id:'figure-tray-full-volume',tool:'graph',stage:1,after:'result',draft:graph('Volume across the geometric domain',2,'x*(30-2*x)*(20-2*x)',0,10,0,1120,'The ideal model has an interior maximum; c = 0 and c = 10 are limiting degenerate cases.')},
   {id:'figure-tray-near-maximum',tool:'graph',stage:2,after:'result',draft:graph('Volume near the ideal maximum',3,'x*(30-2*x)*(20-2*x)',3.5,4.2,1045,1058,'The enlarged scale shows the shallow maximum. Feasibility also requires the actual height c to be at most 4 cm.')},
-  {id:'table-tray-settings',tool:'table',stage:2,after:'interpretation',draft:table('Settings under a 1 mm common error',1,['Nominal setting','Actual cut range','Minimum volume','Maximum height','Fits height limit'],comparisonRows,['cm','cm',R`\mathrm{cm}^{3}`,'cm',''],'The error is common to all cuts; the 4.0 cm setting is infeasible at its upper endpoint.')},
+  {id:'table-tray-settings',tool:'table',stage:2,after:'interpretation',draft:table('Settings under a 1 mm common error',1,['Nominal setting','Actual cut range','Minimum volume','Maximum height','Fits height limit'],comparisonRows,['cm','cm','cm³','cm',''],'The error is common to all cuts; the 4.0 cm setting is infeasible at its upper endpoint.')},
   {id:'figure-tray-guaranteed',tool:'graph',stage:3,after:'result',draft:graph('Guaranteed volume on the feasible settings',4,'4*x^3-100*x^2+600.12*x-1-abs(1.2*x^2-20*x+60.004)',3.5,3.9,1040,1060,'W is the minimum over the full ±0.1 cm common-error interval, not the nominal volume.','n','W')},
   {id:'table-tray-threshold',tool:'table',stage:4,after:'result',draft:table('Error bounds for a 99% capacity target',2,['Setting n','Volume bound','Height bound','Allowed error'],thresholdRows,['cm','mm','mm','mm'],'Displayed bounds are rounded; I used unrounded values to compare the settings.')}
  ],
@@ -284,26 +317,27 @@ I keep full calculator precision for comparisons and use approximation signs whe
   ],sourceText:'Values supporting the derivations; this working record is not a long table inserted in the IA.'}
  ],
  conclusion:{
-  mainConclusion:R`For my specified \(30\text{ cm}\times20\text{ cm}\) sheet, \(4.0\text{ cm}\) height limit and common setting error bounded by \(1\text{ mm}\), I would choose a nominal cut of \(3.9\text{ cm}\). The nominal tray dimensions are \(22.2\text{ cm}\times12.2\text{ cm}\times3.9\text{ cm}\). Every allowed common error keeps the actual height at or below \(4.0\text{ cm}\), and the model guarantees approximately \(1055.5\text{ cm}^3\), or \(99.9226\%\) of the ideal maximum. The attainable-bound argument shows that no other feasible setting can guarantee more under these assumptions.
+  mainConclusion:R`For the specified \(30\text{ cm}\times20\text{ cm}\) sheet, height at most \(4.0\text{ cm}\) and common error bounded by \(1\text{ mm}\), I would choose \(n=3.9\text{ cm}\). Its nominal dimensions are \(22.2\text{ cm}\times12.2\text{ cm}\times3.9\text{ cm}\). Every allowed cut lies between \(3.8\) and \(4.0\text{ cm}\), and the smallest modelled volume is \(1055.488\text{ cm}^3\), approximately \(1055.5\text{ cm}^3\) or \(99.9226\%\) of the ideal maximum. No other feasible setting can guarantee more, because the bound on every design is attained by this one.
 
-The exact optimum, approximately \(3.9237\text{ cm}\), established a useful benchmark. Its nearest permitted mark is \(3.9\text{ cm}\), but the interval argument was needed to establish that this same setting maximises guaranteed capacity. The convenient whole-centimetre trial of \(4.0\text{ cm}\) preserves almost all nominal capacity but could breach the height limit.`,
-  conclusionBenefit:R`My investigation showed why the meaning of “best” matters: finding an exact maximum, comparing permitted settings and maximising guaranteed capacity require different arguments. It also quantified the importance of the error assumption. Retaining at least \(99\%\) of ideal capacity is possible with a common error up to about \(2.158\text{ mm}\) on the prescribed marking grid, provided I change the nominal setting to \(3.7\text{ cm}\). That threshold is smaller than the continuous benchmark of about \(2.579\text{ mm}\).
+The exact optimum \(c_*\approx3.9237\text{ cm}\) provided the capacity benchmark. Rounding it suggested the same nominal mark, but only the interval argument established feasibility and the greatest guaranteed capacity. The \(4.0\text{ cm}\) whole-centimetre trial was close in nominal volume yet could produce a tray that was too tall.`,
+  conclusionBenefit:R`The sensitivity calculation qualifies this recommendation. If I accept at most a \(1\%\) loss from ideal capacity, the prescribed marks permit a common error bound of about \(2.158\text{ mm}\), provided I choose \(n=3.7\text{ cm}\). A conservatively reported limit is \(2.1\text{ mm}\). The continuous benchmark of about \(2.579\text{ mm}\) is unavailable on this marking grid. Thus the setting for greatest guaranteed volume at the original accuracy differs from the setting for greatest tolerance at the relaxed capacity target.
 
-These are mathematical guarantees inside a zero-thickness, rectangular-tray, common-error model. They do not measure the reliability of a cutting process or establish the usable capacity of a physical tray. In particular, I cannot transfer the result unchanged to four independent corner errors.`,
-  conclusionExtension:R`I would next model unequal corner errors and finite card thickness. The first question would be whether the four sides can still meet at right angles; only after resolving that geometry would it make sense to optimise interior capacity. Measuring a few constructed trays could then test whether the common-setting model and its stated error bound are adequate for actual use.`
+These are mathematical guarantees within an exact-sheet, zero-thickness, rectangular-tray and common-error model. They neither establish how accurate a physical cutting process is nor measure a manufactured tray’s usable capacity. In particular, the result cannot be transferred unchanged to independent corner errors.`,
+  conclusionExtension:R`A focused next investigation would replace the one common cut with four independently bounded corner cuts. I would first determine which combinations permit compatible rectangular folds; only after resolving that geometry could I define and optimise an interior volume. This would test the assumption most directly responsible for reducing the present problem to one variable.`
  },
+
  reviews:[
   {id:'D01',location:'Introduction, five mathematical sections and conclusion',note:'I have included the defined design, worked mathematics, interpretation, figures and a conclusion answering the original decision.',action:'My content review does not claim a school submission or teacher approval.'},
-  {id:'D02',location:'Transitions between the five mathematical sections',note:'Each question follows from the preceding result: model, ideal maximum, error interval, guaranteed optimum and tolerance threshold.',action:'I removed repeated summaries from the mathematical working and kept the final recommendation in the conclusion.'},
-  {id:'D03',location:'Definitions and all equations, graphs and tables',note:'I distinguished actual cut c, nominal setting n and error bound δ; I stated domains and used cm³ for volume.',action:'I checked exact equalities separately from rounded numerical values and identified the enlarged graph scales.'},
+  {id:'D02',location:'Transitions between the five mathematical sections',note:'The narrative follows the actual findings from geometry to an exact benchmark, an interval guarantee, its optimum and the 99% tolerance qualification.',action:'I use connected statements at the section boundaries and close the final stage before one focused extension in the conclusion.'},
+  {id:'D03',location:'Starting-material definitions and all equations, graphs and tables',note:'I define c, n, ε, δ, V and W in the printed investigation, then explain the minimum notation, absolute-value identity and numerical bracket where they first appear.',action:'I distinguish actual from nominal lengths, state the inclusive height restriction, and separate exact values from approximations.'},
   {id:'D04',location:'Choice of objective and final tolerance comparison',note:'My decision to optimise a guaranteed volume, then compare continuous and discrete settings, establishes both a justified design and its allowable error.',action:'I distinguish the 4.0 cm whole-centimetre trial from the nearest permitted mark of 3.9 cm, and explain why 3.7 cm belongs only to the larger-tolerance question.'},
   {id:'D05',location:'Interpretations after each result',note:'I connect the shallow optimum, height margin and marking-grid restriction to their consequences for the design.',action:'I keep the common-error limitation beside the first interval calculation and again qualify the final guarantee.'},
-  {id:'D06',location:'Derivative, attainable-bound proof and target-volume inequality',note:'The polynomial algebra, differentiation and inequalities all answer the stated design question. I checked the geometric domain before choosing an optimum.',action:'I checked the second derivative, the monotonicity argument and the two grid settings surrounding the continuous tolerance optimum.'},
-  {id:'D07',location:'Complete reader, PDF and Word document',note:'I checked the equations, fold diagram, function plots and short comparison tables at normal reading size. The figures appear with the calculations they support, and the table headings distinguish the volume and height bounds.',action:'I checked the exported pages for clipped equations and captions and used concise table headings so the four columns remain readable.',status:'checked'},
+  {id:'D06',location:'Derivative, attained-bound proof and target-volume inequality',note:'The polynomial model, derivative and tailored interval arguments answer the two stated design decisions. The additional methods are explained in the main narrative.',action:'I independently recalculated the endpoint volumes, root bracket, continuous limit and grid choices; I also checked the algebra behind the plotted minimum.'},
+  {id:'D07',location:'Complete reader, PDF and Word document',note:'The full review covers every PDF and Word page: 17 PDF pages and 18 Word pages. I inspected the reader and all six figures at desktop and phone widths, then reinspected every changed page and figure view after the volume-unit correction. The remaining page images are pixel-identical to the fully reviewed versions.',action:'The additional explanations, equations, numerical bracket, native figures, tables, captions and page breaks are clear. All four corrected labels display cm³ without raw TeX, clipping or overlap.',status:'checked'},
   {id:'D09',location:'Starting-material paragraph and source note',note:'The sheet, clearance and tolerance are explicitly constructed inputs. My equations and figures are derived from them, with no external dataset or borrowed image.',action:'I have not added fictional measurement dates, references or source URLs.'},
-  {id:'D11',location:'All five mathematical sections',note:'I have shown the volume derivation, derivative roots, interval calculations, proof of the guaranteed optimum and numerical threshold with its bracket.',action:'I checked that each result is completed mathematics rather than a promise to calculate it later.'},
+  {id:'D11',location:'All five mathematical sections',note:'I show the volume derivation, derivative roots, interval calculations, attained-bound proof, absolute-value graph identity and numerical threshold with its bracket.',action:'The continuous and discrete tolerance arguments are derived in printed fields rather than left only in learning notes.'},
   {id:'D19',location:'Figures 1–4 and Tables 1–2',note:'The figures sit with their mathematical explanations, and the displayed tables contain only the settings needed for the two decisions.',action:'The longer working-results record is available as project data rather than inserted as a large table.'},
-  {id:'D20',location:'Volume graphs and final numerical root',note:'I state the function and numerical equation entered, interpret the outputs and check the threshold by a sign-changing bracket.',action:'The proofs establish the optima; I do not treat a software graph or solver output as a proof.'}
+  {id:'D20',location:'Volume graphs and final numerical root',note:'I trace the plotted minimum back to its endpoint volumes and explain repeated interval halving for the target-volume crossing.',action:'The proofs establish the optima; the graph and numerical solver support the calculations without replacing those arguments.'}
  ],
  references:[{label:'Design and mathematical source',value:'My explicitly constructed tray scenario and the derivations displayed in this investigation. No external measurements, illustrations, quotations or datasets are used.'}]
 };
