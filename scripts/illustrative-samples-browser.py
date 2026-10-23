@@ -17,7 +17,9 @@ CATALOGUE=json.loads(subprocess.check_output(["node","--input-type=module","-e",
  const samples=SAMPLE_CHOICES.map(({id})=>{
   const spec=referenceSampleSpec(id),model=illustrativeIAPagesModel(createIllustrativeSample(id));
   const prose=[model.provenance,...model.sections.flatMap(section=>section.rows.map(row=>row.value))];
+  const last=model.sections.at(-1);
   return {id,stages:spec.stages.length,sections:model.sections.length,sectionTitles:model.sections.map(section=>section.title),
+   mlaWorks:last.blocks.filter(block=>block.field?.startsWith('worksCited[')).map(block=>block.value),
    maths:prose.reduce((n,text)=>n+mixedMathTokens(text).filter(token=>token.type==='math').length,0),
    figures:spec.figures.map(({id,tool,stage})=>({id,tool,stage})),dataSets:spec.dataSets.length};
  });
@@ -138,6 +140,11 @@ def check_exports(page,kind,sample,figure_count):
  assert "FICTIONAL" in text
  assert "Starting material and mathematical approach" in text
  assert "Conclusion" in text
+ for work in EXPECTED[kind]["mlaWorks"]:
+  short=work[:48]
+  assert comparable(short) in comparable(text),"PDF omitted MLA reference: "+short
+ if EXPECTED[kind]["mlaWorks"]:
+  assert "Works Cited" in text,"PDF missing Works Cited heading"
  assert "My method and why I chose it" not in text,"field labels leaked into the IA"
  assert sum(len(part.images) for part in pdf.pages)>=figure_count
  # Normalize punctuation in extracted PDF text as well as narrative probes.
@@ -166,6 +173,11 @@ def check_exports(page,kind,sample,figure_count):
   assert "Starting material and mathematical approach" in text
   assert "About this fictional example" in text
   assert "About this full working record" not in text
+  for work in EXPECTED[kind]["mlaWorks"]:
+   short=work[:48]
+   assert comparable(short) in comparable(text),"Word omitted MLA reference: "+short
+  if EXPECTED[kind]["mlaWorks"]:
+   assert "Works Cited" in text,"Word missing Works Cited heading"
   assert comparable(concluding_words) in comparable(text)
   assert len([name for name in archive.namelist() if name.startswith("word/media/")])>=figure_count
   assert "customXml/iaPathfinderPlan.xml" in archive.namelist()
@@ -198,6 +210,12 @@ def check(page,kind,width):
  assert reader.locator(".math-preview-equation").count()==expected["maths"]
  assert reader.locator(".math-preview-invalid").count()==0
  assert reader.locator(".sample-reader-error").count()==0
+ assert reader.locator(".sample-reader-mla-entry").count()==len(expected["mlaWorks"])
+ assert reader.locator(".sample-reader-mla-source-link").count()==len(expected["mlaWorks"])
+ assert not re.search(r'\[(?:M[1-4]|D1)\]',reader.inner_text()),"Old citation marker remains in sample reader"
+ for link in reader.locator(".sample-reader-mla-source-link").all():
+  assert link.get_attribute("href").startswith("https://")
+  assert link.get_attribute("rel")=="noopener noreferrer"
  assert reader.locator('[data-action="math-edit-existing"]').count()==0
  assert page.locator(".sample-reader-drawer").evaluate("(e)=>e.scrollWidth<=e.clientWidth+1")
  assert page.evaluate("document.documentElement.scrollWidth<=innerWidth+1")
