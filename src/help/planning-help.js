@@ -219,9 +219,10 @@ const CARDS=Object.freeze([
   "Return to the relevant Planning choice or make an explicitly provisional plan.",
   "Planning completion never means the teacher has approved the method or the data.")
 ]);
+export const PLANNING_RECOVERY_CARDS=CARDS;
 const byId=new Map(CARDS.map(x=>[x.id,x]));
 /** Only author bubbles at places with genuinely actionable repairs. */
-const SPOTS=Object.freeze({
+export const PLANNING_RECOVERY_SPOTS=Object.freeze({
  "N00B:page":{title:"Finding a mathematical direction",ids:["interest-to-maths","interest-too-specific","data-to-question","data-not-verifiable"]},
  "N00C:page":{title:"Choosing between ideas",ids:["compare-options","interest-to-maths"]},
  "N01:aim":{title:"Shaping my mathematical aim",ids:["aim-unfocused","aim-method-list"]},
