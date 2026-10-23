@@ -15,6 +15,18 @@ test("a visible-on-focus skip link precedes all header controls and targets a la
  assert.equal((html.match(/class="skip-link"/g)||[]).length,1);
 });
 
+test("browser-file inputs are trigger-only, never invisible keyboard tab stops",()=>{
+ const html=read("index.html");
+ const files=[...html.matchAll(/<input id="(?:importFile|reportImportFile|graphCsvFile|statCsvFile|tableCsvFile|voronoiCsvFile|voronoiMapFile|imageTraceFile)"[^>]*>/g)];
+ assert.equal(files.length,8);
+ for(const match of files){
+  assert(match[0].includes('class="visually-hidden"'));
+  assert(match[0].includes('tabindex="-1"'),match[0]);
+  assert(match[0].includes("aria-label="),match[0]);
+ }
+ assert(!html.includes('<svg class="icon">'),"Static decorative SVGs require aria-hidden");
+});
+
 test("navigation announcements are screen-change-only and focus remains with student input on previews",()=>{
  const app=read("app.js");
  assert.match(app,/let lastAccessibleScreen=""/);
