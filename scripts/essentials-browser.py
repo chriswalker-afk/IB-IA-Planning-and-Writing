@@ -133,7 +133,7 @@ with sync_playwright() as pw:
   p.locator('[data-action="open-panel"][data-panel="help"]:visible').first.click()
   p.locator('.drawer [data-action="open-stuck"]').click()
   topic=p.locator('.drawer [data-action="stuck-topic"][data-topic="writing"]')
-  if not topic.is_visible():p.locator('.drawer .stuck-browse > summary').click()
+  if not topic.is_visible():p.locator('.drawer .stuck-legacy-browse > summary').click()
   topic.click();p.locator('.drawer [data-action="stuck-work"]').click()
   assert p.locator('[data-source-node="C96"]').count()==1
   p.locator('[data-guidance-event="write-now"]').first.click();field=p.locator('[data-bind="completion.guidanceUi.noteDraft"]');assert field.is_visible()
