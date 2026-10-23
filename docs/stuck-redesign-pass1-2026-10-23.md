@@ -26,6 +26,61 @@ The committed `src/help/contextual-support-plan.js` is **an editorial registry o
 
 **Important navigation audit:** `src/help/stuck.js` still proposes `N05V`, `N05`, `N03J` and `N04R` for some destinations. These were deliberately retired/redirected during 22 October cleanup. The current first mathematical work is `C30`; current Planning uses `N01P`, `N03D`, `N04S`, `N06T` and its other live nodes. Do not treat source-workbook node lists as proof of a live page. In addition, the old support state's origin route allowlist omits `checking`, so a supported help return should retain actual route and field identity. `C61`-`C64` are redirects to the unified `C60`; `C95*` and `C10E` remain compatibility mechanisms, not new help screens.
 
+## Non-negotiable role boundary: stuck help is a repair, not a lesson
+
+These three systems may appear near the same field, but they must have **different jobs**:
+
+| Support | The student is asking | The system should do | It must not do |
+| --- | --- | --- | --- |
+| Green Criteria bubbles | "What does the appropriate IB criterion look for here?" | Explain assessment relevance, avoiding promises of marks | Diagnose a missing result as an assessment failure |
+| Purple Writer's Field Guide | "How can I communicate my mathematical thinking more effectively?" | Teach reusable writing craft, with illustrative weaker/stronger approaches | Pretend to solve a mathematical difficulty merely by asking for clearer prose |
+| Amber "I am stuck" | "I cannot do this particular thing. What is going wrong, and what can I try now?" | Clarify the student's chosen obstacle; give a bounded corrective action and a way to check whether it worked | Repeat criterion language, copy generic writing advice, or offer a vague "read more" link as the only next step |
+
+**Editorial rejection rule:** Do not release an "I am stuck" card unless it could genuinely help a blocked student take their next action. "State a limitation", "write coherently", "explain the method" and "link to your aim" are writing/assessment guidance **until** the card identifies a precise source of difficulty and a specific way to resolve it.
+
+### Every help card must be a small recovery path
+
+1. **Recognisable first-person difficulty:** Something a student would actively select, not a judgement made by the site because a field is blank.
+2. **Tiny diagnostic:** Ask a single, discriminating question *only if* different answers would change the remedy. Example: is the source mismatch a unit mismatch or a mismatch in what each row represents?
+3. **One immediate action:** A task the student can realistically attempt without finishing a whole IA stage. Prefer inspecting one value, labelling one object, comparing one assumption or checking one calculation.
+4. **Concrete success check:** State how the student will know the immediate problem has been reduced. Do not just say "check your work" or rely on an unexplained software output.
+5. **Useful stopping point:** A small output in the student's own notes or mathematical work, not generated IA prose.
+6. **Fallback:** If the action fails, offer one credible alternative, an existing tool/tutorial, or a focused teacher question. Never trap a student in a support loop.
+
+The required schema and the worked exemplars are in `src/help/contextual-support-plan.js` as `SUPPORT_BLOCKER_STANDARD` and `SUPPORT_RECOVERY_EXEMPLARS`. They are a **content-review standard**, not live auto-diagnosis.
+
+### Side-by-side test of genuine distinctness
+
+**Student has plotted data and sees a curve, but Pearson's r is small.** The Writer's Field Guide can teach the student to explain association appropriately. A Criteria bubble can explain mathematical understanding/reflection where applicable. **Stuck help instead asks them to examine the actual paired scatter and distinguish curved association from weak *linear* association.** It offers a concrete interpretation check and what to do if they still cannot classify the pattern; no unperformed model fitting is asserted.
+
+**Student cannot connect two mathematical stages.** The Field Guide can teach synthesis into continuous prose. The criterion guidance may explain coherent mathematical development. **Stuck help asks the student to identify the previous real finding, the gap that remains, and the specific job of the proposed next mathematics.** If there is no genuine gap, it recommends considering a conclusion rather than manufacturing a bridge. Only after that mathematical decision should the Field Guide be suggested for prose.
+
+**Student cannot choose a topic or distinguish population from sampling frame.** General personal engagement, sampling reflection or writing tips do not unblock the decision. Stuck help prompts a choice of mathematical lens and a first plausible calculation, or helps the student separate the population, actual list of selectable units and individual observation. The small resulting decision can then be used in their real work.
+
+**Student's probability tree branches are inconsistent.** Do not send them only to the diagram generator instructions. Help them find the first node whose mutually exclusive outgoing probabilities do not sum to one, identify the condition on that node and check the corrected branches.
+
+**Student cannot cite an image or dataset because the origin is unknown.** Direct them to recover the original source identity and verify attribution, then to the existing MLA tutorial for formatting. Merely repeating "remember to cite sources" is not stuck help.
+
+### Bubble placement and relevance gate
+
+The placement register is a **candidate coverage map, not instructions to attach 57 icons**. Show the bubble only where at least one specific *student-selectable* blocker and credible recovery path has been authored for the task. Presence of a field, an empty answer, a low score or a plan is never itself a diagnosis that the student is struggling. If only generic advice is available, use existing Field Guide/Criteria links and **do not add a stuck bubble**.
+
+A bubble should open a small menu such as "I don't know how to start / I don't understand this result / I tried but it isn't working" tailored to that exact task. It can skip the question when the student's selected concern already defines the problem. Do not force a checklist or quiz before helping. Use saved, still-valid context to make options and actions specific, but avoid guessing the cause of the problem from free-text input.
+
+The intervention belongs in the student's **current** mathematical or planning task; opening, closing and returning should leave progress and authored work unchanged. When a problem is genuinely resolved, a link to the Field Guide, Criterion help or specific tutorial may be useful as an *optional next step*, not as the substance of the repair.
+
+### Quality gate for Passes 2–5
+
+Before merging each new help family, review at least one **realistic student-blocker scenario** per new bubble, including insufficient data, no actual result, theoretical mathematics and an adverse mathematical outcome. For each candidate card, reviewers should be able to answer all of these questions:
+
+- What exactly is the student unable to do?
+- What new actionable information does this offer **that the Writer's Field Guide and Criteria bubbles do not**?
+- What one specific action can the student take right now?
+- How will the student know whether that action helped?
+- What happens if it still fails, or if the relevant source/result is not genuinely available?
+
+**Reject or revise** any card that only offers encouragement, general writing advice, an assessment criterion, multiple unrelated tasks, an unnecessary extra mathematical method or a compulsory trip to another screen.
+
 ## Content expansion: editorial rules
 
 For each problem write a **specific obstacle** (not "students are failing"), **exactly one immediate next action**, **why it matters mathematically**, **a bounded stopping point**, **an illustrative worked thinking move if genuinely useful**, **a warning that prevents a false claim**, **up to two alternatives**, and an **explicit valid return/action**. Short copy in the pop-in, deeper examples hidden under disclosure; library text remains available in Reduce advice.
