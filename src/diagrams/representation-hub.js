@@ -209,7 +209,7 @@ export function renderRepresentationSwitcher(state,icon,e){
  return '<div class="representation-workspace-header" data-representation-workspace data-representation-switcher>'+
   '<div class="representation-workspace-bar">'+
   '<div class="representation-workspace-identity"><span class="representation-workspace-mark">'+
-    icon(active?.icon||"layers")+'</span><span><small>'+(fromLibrary?e("Tools & tutorials · Figure creator"):e("IA Studio · Explore & explain"))+</small>'+
+    icon(active?.icon||"layers")+'</span><span><small>'+(fromLibrary?e("Tools & tutorials · Figure creator"):e("IA Studio · Explore & explain"))+'</small>'+
     '<strong>'+e(active?.title||"Mathematical workspace")+'</strong></span></div>'+
   '<div class="representation-workspace-actions">'+
    '<button type="button" class="btn btn-secondary btn-sm" data-action="representation-back">'+
