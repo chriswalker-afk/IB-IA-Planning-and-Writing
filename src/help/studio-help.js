@@ -571,7 +571,6 @@ export function studioHelpFor(state,spot){
     "One verified gap or a defensible decision that the aim is answered.",
     "Return to your confirmed finding and review its assumptions before choosing a new technique.",
     "This direction is optional and rests on your selected ACTUAL outcome; it is not evidence of another result."),...choices.slice(1)];
-  }
   }else if(advice.status==="stale"||advice.status==="review")
    choices=[asCard("result-needs-review"),...choices];
  }
