@@ -157,7 +157,8 @@ test("six source-grounded diagrams all expose usable controls on the smallest la
   assert.match(html,/data-stat-preview/);
   assert.match(html,/data-stat-quality/);
   assert.match(html,/data-figure-handover="stat"/);
-  assert.match(html,/Save and link to this mathematical stage/);
+  assert.match(html,/Save &amp; link to this mathematical stage/);
+   assert.match(html,/data-action="stat-save"/);
   assert.match(html,/data-action="stat-svg"/);
   assert.match(html,/data-action="stat-png"/);
   assert.match(html,/data-action="stat-csv"/);
