@@ -32,7 +32,6 @@ def topic(p,t):
  el=p.locator('.drawer [data-action="stuck-topic"][data-topic="'+t+'"]')
  if not el.is_visible():
   group=p.locator('.drawer .stuck-legacy-browse')
-  if group.count() and not group.is_visible():pass
   if group.count() and not group.get_attribute('open'):
    group.locator('summary').first.click()
   if not el.is_visible():
@@ -165,9 +164,7 @@ with sync_playwright() as pw:
   assert chosen.is_visible(), 'Specific MLA two-way troubleshooting should be searchable'
   chosen.click()
   assert 'How to check whether it helped' in p.locator('.stuck-recovery').inner_text()
-  assert 'Text' not in p.locator('.stuck-next').get_attribute('class') if False else True
   action(p,'stuck-work')
-  node(p,'C04') if False else None
   assert p.locator('#checking-review-draft-D09[open]').count()==1
   assert p.locator('.stuck-return-banner').count()==1
   action(p,'stuck-return')
