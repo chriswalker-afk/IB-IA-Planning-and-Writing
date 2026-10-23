@@ -118,7 +118,7 @@ export function renderImageTracer(state,icon,e){
   '<header class="trace-studio-header"><div><div class="intro-writing-guide-eyebrow">'+icon("image")+' IMAGE & COORDINATE STUDIO</div>'+
   '<h2>Turn your photograph into mathematics</h2>'+
   '<p>Trace an actual object, geometry or trajectory, using your own origin and scale. The photograph remains distinct from the mathematical coordinate plot.</p></div>'+
-  '<button type="button" class="btn btn-quiet btn-sm" data-action="trace-close">'+icon("x")+' Close tracer</button></header>'+
+  '<button type="button" class="btn btn-quiet btn-sm representation-studio-close" aria-label="Browse all diagram tools" data-action="trace-close">'+icon("grid-2x2")+' All tools</button></header>'+
   (advice?'<aside class="trace-journey-advice"><strong>Based on your investigative pathway:</strong> '+e(advice)+'</aside>':"")+
   '<div class="trace-studio-columns"><div class="trace-control-stack">'+
   '<section class="trace-control-card" data-representation-step="create"><h3><span class="trace-step-index">1</span> Import a real image</h3>'+
