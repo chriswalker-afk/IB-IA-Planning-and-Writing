@@ -111,7 +111,7 @@ test('Explicit Planning routes and edited aims take priority over old Idea Lab s
  assert.equal(writing(s),'');
  chooseMathRoute(s,'growth');
  assert.equal(ideaLabPlanningContext(s).status,'superseded');
- assert(cue(s,'maths').includes('later explicit choice takes priority'));
+ assert(cue(s,'maths').includes('explicit choice is preserved until you change it'));
  assert.equal(cue(s,'evidence'),'');
  assert.equal(cue(s,'first'),'');
  assert.equal(writing(s),'');
