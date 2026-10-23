@@ -95,9 +95,9 @@ export function renderIdeaLabPlanningCue(state,placement,{e,icon}){
  if(ctx.status==='superseded'){
   if(reduced||placement!=='maths')return '';
   return shell('superseded','<span class="idea-lab-handoff-kicker">'+icon('route')+
-   ' YOUR ROUTE HAS CHANGED</span><p>Idea Lab suggested <strong>'+
-   e(ctx.lensLabel)+'</strong>, but you subsequently saved <strong>'+
-   e(ctx.selectedPlanningTitle)+'</strong> in Planning. Your later explicit choice takes priority.</p>');
+   ' A DIFFERENT ROUTE IS SAVED</span><p>Idea Lab suggested <strong>'+
+   e(ctx.lensLabel)+'</strong>, but Planning currently has <strong>'+
+   e(ctx.selectedPlanningTitle)+'</strong> saved as a provisional route. Check that it still serves your current aim. Your explicit choice is preserved until you change it.</p>');
  }
  if(placement==='maths'){
   return shell('maths',
