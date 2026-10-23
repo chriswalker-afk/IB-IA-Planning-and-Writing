@@ -1,5 +1,6 @@
 /** Accessible, compact student-facing advice. Never writes the IA for students. */
 import {presentationSparks,presentationDiagnostics,figureCaption,handoverQuestions,contextualRepresentationAdvice,suggestedDiagramMode} from "./presentation-coach-core.js";
+import {renderCitationReminder} from "../resources/citation-prompts.js";
 
 const sparkIcon={aim:"target",planned:"sparkles",confirmed:"check-circle"};
 export function renderPresentationCoach(state,type,draft,icon,e){
@@ -60,6 +61,7 @@ export function renderFigureHandover(state,type,draft,icon,e,{id="",linked=false
   (id?' data-presentation-id="'+e(id)+'"':"")+'>'+
    icon("copy")+' Copy label and source</button>'+
   '<small>Review numbering, original citation, mathematical notation and your school style before pasting into Word or Google Docs.</small></div>'+
+  renderCitationReminder(state,"figure",icon,e,{type,draft})+
   '<div class="ia-handover-journey"><span class="ia-coach-kicker">THE FOUR PARTS TO WRITE IN YOUR OWN WORDS</span>'+
   '<ol><li><strong>Introduce before showing it</strong><p>'+e(questions.before)+'</p></li>'+
    '<li><strong>Interpret after the output</strong><p>'+e(questions.after)+'</p></li>'+
