@@ -111,8 +111,11 @@ test("Hub surfaces genuine mathematics problems across all sixteen routes",()=>{
 test("All seven generators are searchable without creating any figures",()=>{
  const s=fixture("completing","C31");
  const before=JSON.stringify([s.entries,s.graphStudio,s.statStudio,s.probabilityStudio]);
- for(const tool of REPRESENTATION_TOOLS)
-  assert(availableHubIssues(s).some(x=>x.id==="fix:studio:tool-"+tool.id));
+ for(const tool of REPRESENTATION_TOOLS){
+  const issue=availableHubIssues(s).find(x=>x.id==="fix:studio:tool-"+tool.id);
+  assert(issue,tool.id);
+  assert.deepEqual(issue.target,{route:"completing",node:"C31",tool:tool.id},tool.id);
+ }
  assert.equal(JSON.stringify([s.entries,s.graphStudio,s.statStudio,s.probabilityStudio]),before);
 });
 test("A confirmed outcome unlocks a specific repair only after real completed mathematics",()=>{
