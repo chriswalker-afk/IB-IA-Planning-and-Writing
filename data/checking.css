@@ -142,3 +142,35 @@
  .checking-item-inner .field{font-size:16px}
  .checking-intro h2{font-size:18px}
 }
+
+/* Pass 3: MLA cross-check integrates with D09/D12, never a second checklist. */
+.checking-mla-spotlight{display:flex;align-items:center;justify-content:space-between;gap:17px;padding:15px 19px;border:1px solid #bbdbcf;border-radius:15px;background:#f5fbf8;margin:12px 0 21px;min-width:0}
+.checking-mla-spotlight-copy{flex:1;min-width:0}
+.checking-mla-spotlight-copy strong{display:flex;align-items:center;gap:9px;font-size:14px;color:#24574d}
+.checking-mla-spotlight-copy strong .icon{width:17px;height:17px;flex:none}
+.checking-mla-spotlight-copy p{margin:5px 0 0;font-size:12px;line-height:1.6;color:#57766c}
+.checking-mla-actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.checking-mla-actions .btn,.checking-mla-audit .btn{min-height:40px;font-size:12px;white-space:normal;text-align:left}
+.checking-mla-guide{display:inline-flex;align-items:center;gap:7px}
+.checking-mla-guide .icon{width:14px;height:14px;flex:none}
+.checking-mla-audit,.checking-authenticity-audit{margin:5px 0 13px;border:1px solid #d7e7df;border-radius:12px;padding:13px 14px;background:#fbfefc;min-width:0}
+.checking-mla-audit h5{font-size:14px;margin:0 0 9px;color:#255e51}
+.checking-mla-audit ol{margin:7px 0 13px;padding-left:22px;display:grid;gap:9px}
+.checking-mla-audit ol li,.checking-authenticity-audit li{font-size:12px;line-height:1.65;color:#3d615c}
+.checking-mla-audit li::marker,.checking-authenticity-audit li::marker{color:#347d69}
+.checking-mla-example{background:#edf6f2;border-left:3px solid #78af9d;padding:10px 11px;margin:10px 0;border-radius:7px;font-size:12px;line-height:1.6;color:#355a53}
+.checking-mla-pointers{margin:12px 0;padding:10px 11px;background:#fff;border:1px solid #e0e9e4;border-radius:10px}
+.checking-mla-pointers>strong{font-size:12px;color:#2c5b52}
+.checking-mla-pointers>p,.checking-mla-empty,.checking-mla-evidence{font-size:12px;color:#5a7471;line-height:1.65;margin:7px 0 11px}
+.checking-mla-pointers ul{display:grid;gap:7px;list-style:none;padding:0;margin:10px 0}
+.checking-mla-pointers li{border-top:1px solid #e9efeb;padding-top:8px;min-width:0;overflow-wrap:anywhere}
+.checking-mla-pointers li span{font-size:10px;letter-spacing:.03em;color:#6a8680;display:block}
+.checking-mla-pointers li strong{display:block;font-size:12px;font-weight:700;color:#31554e;margin:3px 0}
+.checking-mla-pointers li small{display:block;font-size:11px;color:#667e77;line-height:1.6;overflow-wrap:anywhere}
+.checking-mla-audit .checking-mla-guide{margin:7px 0 2px}
+.checking-authenticity-audit>strong{display:block;font-size:13px;color:#28594e}
+.checking-authenticity-audit ul{padding-left:20px;display:grid;gap:7px;margin:10px 0}
+.checking-authenticity-audit>p{font-size:12px;line-height:1.65;color:#5b7470;margin-bottom:0}
+.checking-item[id^="checking-audit-"]:focus-visible{outline:3px solid #14836a;outline-offset:3px}
+@media(max-width:900px){.checking-mla-spotlight{align-items:flex-start;flex-direction:column}.checking-mla-actions{width:100%}}
+@media(max-width:480px){.checking-mla-spotlight{padding:13px;gap:10px}.checking-mla-actions .btn{flex:1 1 135px}.checking-mla-audit,.checking-authenticity-audit{padding:11px 10px}.checking-mla-audit ol{padding-left:20px}}

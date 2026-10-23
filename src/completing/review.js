@@ -34,13 +34,19 @@ export function actualTechnologyUsed(state){
 }
 export function reviewChecksFor(state,mode){
  return REVIEW_CHECKS.filter(x=>
-  (x.timing==="Both reviews"&&mode!=="feedback"||x.timing==="Before teacher draft"&&mode==="draft"||x.timing==="Before final"&&mode==="final"||x.timing==="During feedback"&&mode==="feedback")&&
+  (x.timing==="Both reviews"&&mode!=="feedback"||x.timing==="Before teacher draft"&&mode==="draft"||x.timing==="Before final"&&mode==="final"||x.timing==="During feedback"&&mode==="feedback"||
+   // Authorship also needs a fresh final-file review; the historic source sheet remains unchanged.
+   x.id==="D12"&&mode==="final")&&
   (x.id!=="D20"||actualTechnologyUsed(state)));
 }
 export function setReviewStatus(state,mode,id,status){
  if(!modes.includes(mode)||!statuses.includes(status)||!reviewChecksFor(state,mode).some(x=>x.id===id))return{ok:false,error:"That check does not belong to this review."};
  const r=state.completion.review.records[mode+"-"+id];
  if(status==="checked"&&!str(r.location||r.note))return{ok:false,error:"Record your own evidence or the location you checked before marking this checked."};
+ if(status==="checked"&&["D09","D12"].includes(id)&&!str(r.note))return{ok:false,error:id==="D09"?
+  "Describe the two-way in-text citation and Works Cited check you actually made in your IA.":
+  "Describe how you checked authorship, permitted assistance and acknowledgement in your actual IA."};
+ if(status==="not-applicable"&&id==="D12")return{ok:false,error:"Academic integrity applies to every IA. Check your own work, or mark Needs work if something remains uncertain."};
  if(status==="not-applicable"&&!str(r.note))return{ok:false,error:"Briefly record why this check does not apply."};
  r.status=status;r.checkedAt=status==="checked"?new Date().toISOString():"";
  return{ok:true};

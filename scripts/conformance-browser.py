@@ -164,5 +164,55 @@ with sync_playwright() as pw:
   assert 'linked precision inputs' in p.locator('#main').inner_text().lower()
  s=state('C90F');s['route']='report';s['completion']['review']['records']['final-D05']['location']='After the final calculation'
  run('readable-working-report',s,report)
+ def citation_draft(p):
+  assert p.locator('[data-checking-mla-spotlight]').count()==1
+  assert p.locator('[data-checking-mla-spotlight] [data-resource-id="mla-citations"]').count()==1
+  p.locator('[data-checking-mla-spotlight] a[href="#checking-audit-draft"]').click()
+  card=p.locator('#checking-audit-draft')
+  assert card.count()==1 and card.is_visible()
+  card.locator('#checking-review-draft-D09 > summary').click()
+  audit=card.locator('[data-checking-mla-audit]')
+  assert audit.is_visible()
+  assert 'Text → Works Cited' in audit.inner_text()
+  assert 'Works Cited → text' in audit.inner_text()
+  # Merely knowing a page number does not claim a successful source-by-source audit.
+  fill(p,'completion.review.records.draft-D09.location','Body pages 3-10 and Works Cited')
+  action(p,'conformance-review-status','[data-mode="draft"][data-id="D09"][data-status="checked"]')
+  assert saved(p)['completion']['review']['records']['draft-D09']['status']=='unchecked'
+  fill(p,'completion.review.records.draft-D09.note','I traced all used external data and methods in both directions, checked their original details and removed one unused saved source.')
+  action(p,'conformance-review-status','[data-mode="draft"][data-id="D09"][data-status="checked"]')
+  assert saved(p)['completion']['review']['records']['draft-D09']['status']=='checked'
+  action(p,'resource-open','[data-resource-id="mla-citations"]')
+  assert p.locator('[data-resource-detail="mla-citations"]').count()==1
+  assert 'Works Cited' in p.locator('[data-resource-detail="mla-citations"]').inner_text()
+  action(p,'close-drawer')
+  assert saved(p)['completion']['review']['records']['draft-D09']['status']=='checked'
+  assert p.locator('#checking-audit-draft').count()==1
+ s=state('C80D');s['route']='checking';s['ui']['checkingMode']='draft'
+ for id in ('D09','D12'):
+  s['completion']['review']['records']['draft-'+id].update(status='unchecked',location='',note='')
+ run('checking-mla-draft-source-audit',s,citation_draft,True)
+ def citation_final(p):
+  assert p.locator('[data-checking-mla-spotlight]').count()==1
+  assert p.locator('#checking-audit-final').count()==1
+  assert p.locator('[data-checking-item="D12"]').count()==1
+  auth=p.locator('[data-checking-item="D12"]')
+  assert auth.locator('[data-status="not-applicable"]').count()==0
+  auth.locator('#checking-review-final-D12 > summary').click()
+  assert auth.locator('[data-checking-authenticity-audit]').is_visible()
+  assert 'AI-generated material' in auth.inner_text()
+  action(p,'conformance-review-status','[data-mode="final"][data-id="D12"][data-status="checked"]')
+  assert saved(p)['completion']['review']['records']['final-D12']['status']=='unchecked'
+  fill(p,'completion.review.records.final-D12.note','I read my completed mathematical analysis and checked all acknowledged assistance and consent-related material in the final document.')
+  action(p,'conformance-review-status','[data-mode="final"][data-id="D12"][data-status="checked"]')
+  assert saved(p)['completion']['review']['records']['final-D12']['status']=='checked'
+  assert saved(p)['completion']['review']['records']['draft-D12']['status']=='unchecked'
+  p.reload(wait_until='networkidle')
+  assert saved(p)['completion']['review']['records']['final-D12']['status']=='checked'
+ s=state('C90F');s['route']='checking';s['ui']['checkingMode']='final';s['ui']['adviceMode']='reduced'
+ for mode in ('draft','final'):
+  for id in ('D09','D12'):
+   s['completion']['review']['records'][mode+'-'+id].update(status='unchecked',location='',note='')
+ run('checking-mla-final-authorship',s,citation_final,False)
  browser.close()
 (OUT/'results.json').write_text(json.dumps({'results':results,'browser_errors':errors},indent=2));print(json.dumps(results,indent=2));assert all(x['status']=='passed' for x in results)
