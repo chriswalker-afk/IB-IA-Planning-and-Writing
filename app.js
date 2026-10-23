@@ -1499,7 +1499,9 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
           // A C35/C96 destination must refer to the result the student asked about.
           state.completion.activeEntryIndex=x.index;if(x.index>=0)state.ui.mathIndex=x.index;
           if(t.node==="C96")setCompletionNode(state,x.node,{history:false});
+          if(t.tool&&representationTool(t.tool))rememberMathEditorOrigin();
           setCompletionNode(state,t.node);
+          if(t.tool&&representationTool(t.tool))activateRepresentationTool(state,t.tool);
           if(x.entry)state.completion.nextFromEntryId=x.entry.id;
         }
         nav(t.route);
