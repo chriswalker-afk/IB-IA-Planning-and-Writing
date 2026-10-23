@@ -115,7 +115,7 @@ function createHarness(savedValue,{welcome=false}={}){
   const script=read("../app.js").replace(/^import\s+.*;\s*$/gm,"");
   // The real browser suite exercises the independent native-dialog controller.
   const globals={createSamplePreview,createIllustrativeSample,SAMPLE_CHOICES,sampleIAWritingWords,supportsMathInField,mathFieldTools,STATUS_LABELS,resumeRoute,rememberCheckpoint,C_MAJOR_STAGES,completionStage,structuredClone,captureReturn:()=>({scroll:0,attributes:[]}),restoreReturn:()=>{},createEssentialsController:()=>({open(){}}),createCriterionBadgeController:()=>({}),editCriterionReview:()=>false,createExampleController:()=>({}),ideaAction,ideaInput,ideaDifficultyInput,chooseTopic,
-     attachIdeaMapGraph:()=>()=>{},insightCapture,planningLearningTrail,resourceDrawer,resourceList,resourceAction,resourceFilter,resourcePreference,newResourceSession,PRACTICE_PAIRS,createStuckViews,createPlanningHelpController:()=>({close(){}}),captureStuckOrigin,isStuckNode,stuckAction,stuckContext,
+     attachIdeaMapGraph:()=>()=>{},insightCapture,planningLearningTrail,resourceDrawer,resourceList,resourceAction,resourceFilter,resourcePreference,newResourceSession,PRACTICE_PAIRS,createStuckViews,createPlanningHelpController:()=>({close(){}}),createStudioHelpController:()=>({close(){}}),attachStudioHelpFieldBubbles:()=>0,captureStuckOrigin,isStuckNode,stuckAction,stuckContext,
     conformanceAction,reviewEditChanged,document,window,localStorage:storage,console,clearTimeout(){},setTimeout(){return 1;},
     createProjectState,normalizeProjectState,persistProjectState,assessmentFramework,assessmentBanner,
     newState:createProjectState,normalise:normalizeProjectState,
