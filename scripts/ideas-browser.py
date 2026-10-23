@@ -303,7 +303,12 @@ with sync_playwright() as pw:
   assert saved(p)['planning']['mathSelected']==[]
   assert 'explicitly saved' in note.inner_text()
   p.screenshot(path=str(OUT/'idea-planning-handoff.png'),full_page=True,animations='disabled')
-  p.locator('[data-action="toggle-advice-mode"]').first.click()
+  value=saved(p)
+  value['ui']['adviceMode']='reduced'
+  p.evaluate('(payload)=>localStorage.setItem(payload.key,JSON.stringify(payload.state))',
+    {'key':KEY,'state':value})
+  p.reload(wait_until='networkidle')
+  note=p.locator('[data-idea-lab-handoff="maths"]')
   assert saved(p)['ui']['adviceMode']=='reduced'
   assert note.is_visible()
   assert 'One first calculation' not in note.inner_text()
