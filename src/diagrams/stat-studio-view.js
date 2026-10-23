@@ -228,7 +228,7 @@ export function renderStatStudio(state,icon,e){
  return '<section class="stat-studio representation-studio" data-stat-studio aria-label="Statistical diagram Studio">'+
  '<header class="stat-studio-head"><div><span class="intro-writing-guide-eyebrow">'+icon("chart")+' STATISTICAL DIAGRAM STUDIO</span>'+
  '<h2>Help your data tell a mathematical story</h2><p>Build clear, honest diagrams from your actual measurements and compare their limitations.</p></div>'+
- '<button type="button" class="btn btn-quiet btn-sm" data-action="stat-close">'+icon("x")+' Close studio</button></header>'+
+ '<button type="button" class="btn btn-quiet btn-sm representation-studio-close" aria-label="Browse all diagram tools" data-action="stat-close">'+icon("grid-2x2")+' All tools</button></header>'+
  routeEcho(state,e)+
  '<div class="stat-type-switch" role="group" aria-label="Statistical diagram type">'+STAT_TYPES.map(([kind,label,desc])=>
   '<button type="button" class="stat-type'+(d.kind===kind?" selected":"")+'" data-action="stat-kind" data-stat-value="'+kind+'" aria-pressed="'+(d.kind===kind)+'"><strong>'+e(label)+'</strong><small>'+e(desc)+'</small></button>').join("")+'</div>'+
