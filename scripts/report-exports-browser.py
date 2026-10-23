@@ -109,6 +109,14 @@ def project_content(value):
     value.get('handover', {}).pop('lastExportAt', None)
     return value
 
+def open_files_from_any_route(page):
+    desktop=page.locator('[data-action="open-panel"][data-panel="files"]')
+    if desktop.count() and desktop.is_visible():
+        desktop.click()
+    else:
+        page.locator('.mobile-nav [data-nav="home"]:visible').first.click()
+        page.locator('[data-action="open-files"]').first.click()
+
 results = []
 with sync_playwright() as p:
     browser = p.chromium.launch(headless=True)
@@ -231,7 +239,7 @@ console.log(JSON.stringify(s));
         item={'site':name+'-idea-lab','format':'full-pdf'}
         try:
             page.goto(url,wait_until='networkidle',timeout=45000)
-            page.locator('[data-action="open-files"]').first.click()
+            open_files_from_any_route(page)
             before=project_content(page.evaluate('localStorage.getItem('+json.dumps(KEY)+')'))
             with page.expect_download(timeout=45000) as event:
                 page.locator('[data-action="export-full-pdf"]').first.click()
@@ -256,7 +264,7 @@ console.log(JSON.stringify(s));
         item={'site':name+'-stale-module','format':'full-pdf-recovery'}
         try:
             page.goto(url,wait_until='networkidle',timeout=45000)
-            page.locator('[data-action="open-files"]').first.click()
+            open_files_from_any_route(page)
             before=project_content(page.evaluate('localStorage.getItem('+json.dumps(KEY)+')'))
             page.route('**/chunks/*.js',lambda route:route.abort())
             page.locator('[data-action="export-full-pdf"]').first.click()
