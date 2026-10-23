@@ -54,8 +54,8 @@ def map_nature(p):
  node(p,'N00B')
  p.locator('[data-action="idea-map-root"][data-root="world"]').click()
  p.locator('[data-action="idea-map-topic"][data-topic="nature"]').click()
- p.locator('[data-action="idea-map-leaf"][data-subtopic="Leaves"]').click()
- p.locator('[data-action="idea-explore"][data-seed="leaf-outline"]').click()
+ p.locator('[data-action="idea-map-route"][data-route-id="images"]').click()
+ p.locator('[data-action="idea-explore"][data-seed="math-nature-outline"]').click()
 
 def read_error(p):
  return p.locator('#toast').inner_text() if p.locator('#toast').count() else p.locator('body').inner_text()[:100]
@@ -224,9 +224,12 @@ with sync_playwright() as pw:
   p.screenshot(path=str(OUT/'idea-organic-interests-desktop.png'),full_page=True,animations='disabled')
   do(p,'map-topic','[data-topic="sport"]')
   check_bubbles(p)
-  do(p,'map-leaf','[data-subtopic="Badminton"]')
+  assert p.locator('[data-action="idea-map-route"]').count()==5
+  assert p.locator('[data-action="idea-map-leaf"]').count()==0
+  do(p,'map-route','[data-route-id="optimisation"]')
   check_bubbles(p)
   assert p.locator('[data-idea-card]').count()>0
+  assert 'Where should a player or object be positioned' in p.locator('[data-idea-card]').first.inner_text()
   p.screenshot(path=str(OUT/'idea-organic-expanded-desktop.png'),full_page=True,animations='disabled')
   do(p,'map-mode','[data-mode="data"]')
   assert p.locator('[data-idea-map-network]').get_attribute('data-idea-map-mode')=='data'
@@ -234,6 +237,11 @@ with sync_playwright() as pw:
   do(p,'map-access','[data-branch="survey"]')
   check_bubbles(p)
   assert 'school permission' in p.locator('.idea-map-survey-warning').inner_text()
+  assert p.locator('[data-action="idea-map-route"]').count()==3
+  do(p,'map-route','[data-route-id="categorical"]')
+  check_bubbles(p)
+  assert p.locator('[data-seed="evidence-record-survey-categorical"]').count()==1
+  assert p.locator('[data-idea-card]').count()>=1
   p.screenshot(path=str(OUT/'idea-organic-data-desktop.png'),full_page=True,animations='disabled')
  run('idea-organic-mindmap-desktop',state('N00B'),organic_desktop,1440,900)
 
@@ -243,17 +251,39 @@ with sync_playwright() as pw:
   check_bubbles(p)
   do(p,'map-topic','[data-topic="sport"]')
   check_bubbles(p)
-  do(p,'map-leaf','[data-subtopic="Badminton"]')
+  do(p,'map-route','[data-route-id="optimisation"]')
   check_bubbles(p)
   p.screenshot(path=str(OUT/'idea-organic-expanded-phone.png'),full_page=True,animations='disabled')
   do(p,'map-mode','[data-mode="data"]')
   do(p,'map-root','[data-root="find"]')
   do(p,'map-access','[data-branch="image"]')
   check_bubbles(p)
+  do(p,'map-route','[data-route-id="trajectories"]')
+  check_bubbles(p)
+  assert p.locator('[data-seed="evidence-find-image-trajectories"]').count()==1
   assert p.locator('.idea-map-root').first.evaluate("(node)=>getComputedStyle(node,'::before').animationName")=='ideaBubbleFloat'
   p.emulate_media(reduced_motion='reduce')
   assert p.locator('.idea-map-root').first.evaluate("(node)=>getComputedStyle(node,'::before').animationName")=='none'
  run('idea-organic-mindmap-mobile',state('N00B'),organic_mobile,390,844)
+
+
+ def old_map_preserved(p):
+  check_bubbles(p)
+  assert saved(p)['ideaExplorer']['map']['subtopic']=='Football'
+  assert p.locator('.idea-map-legacy-note').is_visible()
+  do(p,'map-route','[data-route-id="optimisation"]')
+  assert saved(p)['ideaExplorer']['map']['subtopic']=='Football'
+  assert saved(p)['ideaExplorer']['map']['mathRoute']=='optimisation'
+  do(p,'explore','[data-seed="math-sport-optimise"]')
+  assert p.locator('[data-idea-input="question"]').input_value()==''
+  assert 'Possible first mathematics' in p.locator('.idea-map-starter').inner_text()
+  do(p,'browse')
+  assert p.locator('.idea-map-legacy-note').is_visible()
+  assert saved(p)['ideaExplorer']['drafts']['sport-trajectory']['question']=='Earlier recorded aim'
+ old=state('N00B')
+ old['ideaExplorer']['map'].update(mode='interests',root='hobbies',topic='sport',subtopic='Football')
+ old['ideaExplorer']['drafts']['sport-trajectory']={'seedId':'sport-trajectory','question':'Earlier recorded aim','clarity':4,'quickStart':4}
+ run('idea-legacy-map-selection-remains-unchanged',old,old_map_preserved,390,844)
 
  browser.close()
 

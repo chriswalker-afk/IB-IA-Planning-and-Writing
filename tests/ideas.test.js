@@ -3,8 +3,9 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createProjectState,normalizeProjectState} from '../src/core/project-state.js';
 import {IDEA_TOPICS,IDEA_SEEDS,IDEA_DIFFICULTIES} from '../src/ideas/catalog.js';
-import {IDEA_DATA_PROMISE,IDEA_THEORY_CAUTION,ideaMapIdeas} from '../src/ideas/mindmap.js';
+import {IDEA_DATA_PROMISE,IDEA_THEORY_CAUTION,ideaMapMathLenses,ideaMapMathStarters} from '../src/ideas/mindmap.js';
 import {normalizeIdeaState,MAX_IDEAS} from '../src/ideas/state.js';
+import {ideaMathStarterById,ideaMathEvidenceEntry} from '../src/ideas/math-pathways.js';
 import {ideaAction,ideaInput,ideaDifficultyInput,chooseTopic,ideaChoices,beginIdea,saveIdea,requestIdeaUse,confirmIdeaUse} from '../src/ideas/engine.js';
 import {ideaExplorerView,ideaComparisonView,ideaFooter} from '../src/ideas/views.js';
 import {planAutoAdvance,setPlanCurrent} from '../src/planning/engine.js';
@@ -57,8 +58,8 @@ test('The direct one-idea route stays separate from the optional evaluator',()=>
 });
 test('Starting a mind-map idea produces one blank question and a helpful, non-copyable prompt',()=>{
  const s=make();ideaAction(s,'idea-map-root',{root:'world'});
- ideaAction(s,'idea-map-topic',{topic:'nature'});ideaAction(s,'idea-map-leaf',{subtopic:'Leaves'});
- assert(ideaAction(s,'idea-explore',{seed:'leaf-outline',map:'true'}).ok);
+ ideaAction(s,'idea-map-topic',{topic:'nature'});ideaAction(s,'idea-map-route',{routeId:'images'});
+ assert(ideaAction(s,'idea-explore',{seed:'math-nature-outline',map:'true'}).ok);
  const html=ideaExplorerView(s);
  assert.equal((html.match(/data-idea-input="question"/g)||[]).length,1);
  assert(html.includes('Something to get you thinking'));
@@ -70,7 +71,8 @@ test('Starting a mind-map idea produces one blank question and a helpful, non-co
  assert(!html.includes('QUESTION STARTER · NOT A TITLE TO COPY'));
  assert(!html.includes('data-idea-input="detail"'));
  assert(!html.includes('data-idea-input="trialNote"'));
- assert.equal(s.ideaExplorer.drafts['leaf-outline'].question,'');
+ assert.equal(s.ideaExplorer.drafts['math-nature-outline'].question,'');
+ assert(ideaExplorerView(s).includes('Possible first mathematics:'));
 });
 test('Manual entry from comparison opens the same evaluator, without the thinking prompt',()=>{
  const s=make('N00C');assert(ideaAction(s,'idea-own').ok);
@@ -260,7 +262,7 @@ test('Saved evaluations, archived ratings and map selections survive a JSON roun
  const rejectedId=s.ideaExplorer.shortlist[0].id;
  ideaAction(s,'idea-remove',{id:rejectedId});
  ideaAction(s,'idea-map-open');ideaAction(s,'idea-map-root',{root:'world'});
- ideaAction(s,'idea-map-topic',{topic:'nature'});ideaAction(s,'idea-map-leaf',{subtopic:'Leaves'});
+ ideaAction(s,'idea-map-topic',{topic:'nature'});ideaAction(s,'idea-map-route',{routeId:'images'});
  const restored=normalizeProjectState(clone(s));
  assert.deepEqual(restored.ideaExplorer.rejected,s.ideaExplorer.rejected);
  assert.deepEqual(restored.ideaExplorer.shortlist,s.ideaExplorer.shortlist);
@@ -307,10 +309,12 @@ test('Mind map remains connected and does not offer theory-heavy patterns as eas
  assert(!html.includes('id="idea-topic"'));
  assert(ideaAction(s,'idea-map-root',{root:'world'}).ok);
  assert(ideaAction(s,'idea-map-topic',{topic:'nature'}).ok);
- assert(ideaAction(s,'idea-map-leaf',{subtopic:'Leaves'}).ok);
+ assert(ideaAction(s,'idea-map-route',{routeId:'images'}).ok);
  const connected=ideaExplorerView(s);
- for(const [child,parent] of [['topic-nature','root-world'],['leaf-nature-0','topic-nature'],['seed-leaf-outline','leaf-nature-0']])
+ for(const [child,parent] of [['topic-nature','root-world'],['leaf-images','topic-nature'],['seed-math-nature-outline','leaf-images']])
   assert(connected.includes('data-idea-node="'+child+'" data-idea-parent="'+parent+'"'),child);
+ assert(connected.includes('Measure a shape'));
+ assert(!connected.includes('data-action="idea-map-leaf"'));
  assert(!ideaAction(s,'idea-map-topic',{topic:'patterns'}).ok);
 });
 test('Data-first mind map includes a genuine survey-permission warning',()=>{
@@ -318,7 +322,14 @@ test('Data-first mind map includes a genuine survey-permission warning',()=>{
  ideaAction(s,'idea-map-root',{root:'record'});ideaAction(s,'idea-map-access',{branch:'survey'});
  assert(ideaExplorerView(s).includes('school permission, consent and privacy'));
  ideaAction(s,'idea-map-root',{root:'find'});ideaAction(s,'idea-map-access',{branch:'image'});
- assert(ideaMapIdeas(s.ideaExplorer.map).some(x=>x.id==='sport-trajectory'));
+ assert(ideaMapMathLenses(s.ideaExplorer.map).some(x=>x.routeId==='trajectories'));
+ assert(ideaAction(s,'idea-map-route',{routeId:'trajectories'}).ok);
+ const html=ideaExplorerView(s);
+ assert(html.includes('Start with your evidence'));
+ assert(html.includes('Possible context'));
+ assert(html.includes('Quick evidence check'));
+ assert(ideaMapMathStarters(s.ideaExplorer.map).includes('evidence-find-image-trajectories'));
+ assert(ideaMathEvidenceEntry('find','image').firstCheck.includes('rights'));
 });
 test('Earlier dropdown selections migrate into a corresponding mind-map branch',()=>{
  const old={topic:'sport',subtopic:'Badminton',focus:'My unusual sport'};
@@ -326,8 +337,72 @@ test('Earlier dropdown selections migrate into a corresponding mind-map branch',
  assert.equal(converted.map.root,'hobbies');
  assert.equal(converted.map.topic,'sport');
  assert.equal(converted.map.subtopic,'Badminton');
+ assert.equal(converted.map.mathRoute,'');
+ assert(ideaExplorerView({...make(),ideaExplorer:converted}).includes('Your earlier context'));
  assert.equal(normalizeIdeaState({...old,topic:'patterns'}).map.root,'');
 });
+test('Interest-led Sport offers mathematical questions instead of forcing a specific sport',()=>{
+ const s=make();
+ assert(ideaAction(s,'idea-map-root',{root:'hobbies'}).ok);
+ assert(ideaAction(s,'idea-map-topic',{topic:'sport'}).ok);
+ const first=ideaExplorerView(s);
+ for(const title of ['Find the best','Check consistency','Model movement','Explore chance'])assert(first.includes(title),title);
+ assert(!first.includes('data-subtopic="Football"'));
+ assert(!ideaAction(s,'idea-map-route',{routeId:'finance'}).ok);
+ assert(ideaAction(s,'idea-map-route',{routeId:'optimisation'}).ok);
+ const expanded=ideaExplorerView(s);
+ assert(expanded.includes('Where should a player or object be positioned'));
+ assert(expanded.includes('data-seed="math-sport-optimise"'));
+ assert(ideaAction(s,'idea-explore',{seed:'math-sport-optimise',map:'true'}).ok);
+ const detail=ideaExplorerView(s);
+ for(const text of ['Where the mathematics could lead','What you would need','Important limitation'])
+  assert(detail.includes(text),text);
+ assert.equal(s.ideaExplorer.drafts['math-sport-optimise'].question,'');
+ assert(s.ideaExplorer.drafts['math-sport-optimise'].focus.includes('Find the best'));
+ assert.equal(ideaMathStarterById(s.ideaExplorer.active).routeId,'optimisation');
+});
+test('Evidence-led mathematics can be changed without erasing saved ideas',()=>{
+ const s=make();
+ add(s,'own','My existing possibility is safe',[4,4]);
+ assert(ideaAction(s,'idea-map-mode',{mode:'data'}).ok);
+ assert(ideaAction(s,'idea-map-root',{root:'measure'}).ok);
+ assert(ideaAction(s,'idea-map-access',{branch:'shape'}).ok);
+ assert.deepEqual(ideaMapMathLenses(s.ideaExplorer.map).map(x=>x.routeId),
+  ['images','triangulation','optimisation','fitted-models']);
+ assert(ideaAction(s,'idea-map-route',{routeId:'images'}).ok);
+ const starters=ideaMapMathStarters(s.ideaExplorer.map);
+ assert.equal(starters[0],'evidence-measure-shape-images');
+ assert(starters.some(x=>x.startsWith('math-')));
+ assert(ideaAction(s,'idea-explore',{seed:starters[0],map:'true'}).ok);
+ assert(ideaExplorerView(s).includes('Something to get you thinking'));
+ assert(ideaAction(s,'idea-browse').ok);
+ assert(ideaAction(s,'idea-map-route',{routeId:'optimisation'}).ok);
+ assert.equal(ideaMapMathStarters(s.ideaExplorer.map)[0],'evidence-measure-shape-optimisation');
+ assert.equal(s.ideaExplorer.shortlist.length,1);
+ assert.equal(s.ideaExplorer.shortlist[0].question,'My existing possibility is safe');
+ assert(!ideaAction(s,'idea-explore',{seed:'evidence-measure-shape-images',map:'true'}).ok);
+});
+test('Legacy activities and new mathematics remain distinct across imports',()=>{
+ const previous=normalizeIdeaState({map:{mode:'interests',root:'hobbies',topic:'sport',
+  subtopic:'Football',dataBranch:''},drafts:{
+   'sport-trajectory':{seedId:'sport-trajectory',question:'My written older question',clarity:4,quickStart:3}
+  },active:'sport-trajectory'});
+ assert.equal(previous.map.mathRoute,'');
+ assert.equal(previous.map.subtopic,'Football');
+ assert.equal(previous.drafts['sport-trajectory'].question,'My written older question');
+ const s=make();s.ideaExplorer=previous;
+ assert(ideaExplorerView(s).includes('My written older question'));
+ assert(ideaAction(s,'idea-browse').ok);
+ assert(ideaExplorerView(s).includes('Your earlier context'));
+ assert(ideaAction(s,'idea-map-route',{routeId:'trajectories'}).ok);
+ assert.equal(s.ideaExplorer.map.subtopic,'Football');
+ const restored=normalizeIdeaState(clone(s.ideaExplorer));
+ assert.equal(restored.map.mathRoute,'trajectories');
+ assert.equal(restored.map.subtopic,'Football');
+ assert(!ideaAction(s,'idea-explore',{seed:'math-money-budget',map:'true'}).ok);
+ assert.equal(ideaMathStarterById('__proto__'),null);
+});
+
 test('UI adds responsive neutral rating and comparison styles with reduced motion',()=>{
  const css=readFileSync(new URL('../data/idea-map.css',import.meta.url),'utf8');
  assert(css.includes('.idea-evaluation-scale'));

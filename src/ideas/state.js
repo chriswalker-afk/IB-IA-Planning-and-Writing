@@ -1,8 +1,9 @@
 import {IDEA_TOPICS,IDEA_SEEDS,IDEA_CHECKS,IDEA_DIFFICULTIES} from './catalog.js';
-import {ideaMapRoots,ideaMapRoot,ideaMapTopics,ideaMapBranches} from './mindmap.js';
+import {ideaMapRoots,ideaMapRoot,ideaMapTopics,ideaMapBranches,ideaMapMathLenses} from './mindmap.js';
+import {IDEA_MATH_STARTER_IDS} from './math-pathways.js';
 const text=(v,n=1600)=>typeof v==='string'?v.slice(0,n):'';
 const plain=v=>v&&typeof v==='object'&&!Array.isArray(v);
-const ids=new Set(['own',...IDEA_SEEDS.map(s=>s.id)]);
+const ids=new Set(['own',...IDEA_SEEDS.map(s=>s.id),...IDEA_MATH_STARTER_IDS]);
 const topicIds=new Set(['','other',...IDEA_TOPICS.map(s=>s.id)]);
 export const MAX_IDEAS=3;
 export function blankChecks(){return Object.fromEntries(IDEA_CHECKS.map(c=>[c.id,'']));}
@@ -17,7 +18,7 @@ export function cleanDraft(raw={}){
   difficulties:[...new Set(Array.isArray(raw.difficulties)?raw.difficulties.filter(id=>difficultyIds.has(id)):[])].slice(0,IDEA_DIFFICULTIES.length)};
 }
 export function createIdeaState(){return {topic:'',subtopic:'',focus:'',offset:0,active:'',drafts:{},shortlist:[],rejected:[],selectedId:'',editorReturn:'N00B',nextId:1,pending:null,history:[],
- map:{mode:'interests',root:'',topic:'',subtopic:'',dataBranch:''}};}
+ map:{mode:'interests',root:'',topic:'',subtopic:'',dataBranch:'',mathRoute:''}};}
 export function normalizeIdeaState(raw){
  const s=createIdeaState();if(!plain(raw))return s;
  const m=plain(raw.map)?raw.map:{};
@@ -27,6 +28,9 @@ export function normalizeIdeaState(raw){
   s.map.topic=ideaMapTopics(ideaMapRoot(s.map.mode,s.map.root)).find(x=>x.id===m.topic)?.id||'';
   s.map.subtopic=IDEA_TOPICS.find(x=>x.id===s.map.topic)?.subtopics.includes(m.subtopic)?m.subtopic:'';
  }else s.map.dataBranch=ideaMapBranches(ideaMapRoot(s.map.mode,s.map.root)).find(x=>x.id===m.dataBranch)?.id||'';
+ // Never guess an equivalent mathematics route from an old activity label.
+ // A saved "Football" or "Leaves" stays as a legacy value until the student explicitly chooses.
+ s.map.mathRoute=ideaMapMathLenses(s.map).some(x=>x.routeId===m.mathRoute)?m.mathRoute:'';
  s.topic=topicIds.has(raw.topic)?raw.topic:'';
  s.subtopic=IDEA_TOPICS.find(t=>t.id===s.topic)?.subtopics.includes(raw.subtopic)?raw.subtopic:'';
  // Old dropdown-based projects are carried into the nearest equivalent branch.

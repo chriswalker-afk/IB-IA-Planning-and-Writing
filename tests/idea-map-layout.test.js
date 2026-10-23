@@ -82,7 +82,8 @@ const layoutNodes=(width,mode,stage)=>{
  const compact=width<=800,phone=width<=380;
  const rootW=compact?(phone?130:138):176;
  const branchW=compact?(phone?136:145):157;
- const leafW=compact?(phone?129:139):143;
+ const leafW=compact?(phone?129:139):168;
+ const leafH=compact?(phone?117:113):110;
  const seedW=compact?width-30:Math.min(width*.4,348);
  const roots=mode==='data'?['measure','record','find']:['hobbies','daily','world'];
  const active=mode==='data'?'root-record':'root-hobbies';
@@ -91,29 +92,31 @@ const layoutNodes=(width,mode,stage)=>{
  if(stage==='roots')return nodes;
  const branches=mode==='data'?['compare','survey','repeat']:['sport','music','games','food','design'];
  nodes.push(...branches.map(id=>({
-  id:(mode==='data'?'access-':'topic-')+id,parent:active,width:mode==='data'?(compact?(phone?136:145):174):branchW,
+  id:(mode==='data'?'access-':'topic-')+id,parent:active,
+  width:mode==='data'?(compact?(phone?136:145):174):branchW,
   height:mode==='data'?106:86
  })));
  if(stage==='branches')return nodes;
+ const routes=mode==='data'?['groups','variation','relationships','categorical']:
+  ['variation','trajectories','chance','optimisation','relationships'];
+ nodes.push(...routes.map(id=>({
+  id:'leaf-'+id,parent:mode==='data'?'access-compare':'topic-sport',
+  width:leafW,height:leafH
+ })));
+ if(stage==='leaves')return nodes;
  if(mode==='data'){
-  nodes.push(...['sport-consistency','wildlife-observations','school-queue'].map(id=>({
-   id:'seed-'+id,parent:'access-compare',width:seedW,height:190
+  nodes.push(...['evidence-record-compare-groups','math-school-event','math-sport-consistency'].map(id=>({
+   id:'seed-'+id,parent:'leaf-groups',width:seedW,height:255
   })));
  }else{
-  nodes.push(...['Badminton','Football','Running','Swimming'].map((_,i)=>({
-   id:'leaf-sport-'+i,parent:'topic-sport',width:leafW,height:74
-  })));
-  if(stage==='leaves')return nodes;
-  nodes.push(...['sport-position','sport-consistency'].map(id=>({
-   id:'seed-'+id,parent:'leaf-sport-0',width:seedW,height:193
-  })));
+  nodes.push({id:'seed-math-sport-optimise',parent:'leaf-optimisation',width:seedW,height:265});
  }
  return nodes;
 };
 test('free-form Idea Lab avoids bubble collisions and clipping across both modes',()=>{
  for(const mode of ['interests','data']){
   for(const width of [320,375,390,600,760,800,801,1050,1440]){
-   for(const stage of (mode==='data'?['roots','branches','seeds']:['roots','branches','leaves','seeds'])){
+   for(const stage of ['roots','branches','leaves','seeds']){
     const nodes=layoutNodes(width,mode,stage);
     const {height,positions}=computeIdeaMapPositions(nodes,width);
     assert.equal(positions.size,nodes.length,mode+' '+width+' '+stage);

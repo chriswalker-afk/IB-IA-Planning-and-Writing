@@ -46,8 +46,8 @@ export function computeIdeaMapPositions(input,width){
     add(n,x,start+Math.floor(i/2)*gap+smallVariation(n.id));
    });
   };
-  stagger(branches,115,96);
-  stagger(leaves,110,99);
+  stagger(branches,Math.max(115,...branches.map(n=>n.height+24)),96);
+  stagger(leaves,Math.max(145,...leaves.map(n=>n.height+28)),110);
  }else{
   const grow=items=>{
    const siblingGroups=new Map();

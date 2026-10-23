@@ -5,8 +5,8 @@
  * methods, completed aims, marks or results. Reuse the existing 16-route
  * Planning library rather than maintaining another mathematical taxonomy.
  *
- * IMPORTANT: This is an editorial catalogue for Pass 2, not yet a change to
- * the live mind-map choices or to any student's saved selections.
+ * Pass 2 presents this content as optional routes in the interactive Idea Lab.
+ * No selection here is a completed method, result or approved research aim.
  */
 import {INVESTIGATIVE_ROUTES,routeCourseMath} from '../planning/investigative-routes.js';
 import {IDEA_MATH_DIRECTION_CARDS} from './math-direction-cards.js';
@@ -98,6 +98,17 @@ export const IDEA_DATA_MATH_ENTRYPOINTS=Object.freeze([
 ]);
 const evidenceById=new Map(IDEA_DATA_MATH_ENTRYPOINTS.map(x=>[x.id,x]));
 const cardById=new Map(IDEA_MATH_DIRECTION_CARDS.map(x=>[x.id,x]));
+const DATA_EXAMPLE_TOPICS=Object.freeze({
+ 'measure.time':['travel','school','food','sport','music'],
+ 'measure.shape':['nature','design','food','sport','school'],
+ 'measure.change':['nature','food','environment','technology'],
+ 'record.compare':['sport','school','travel','environment','nature'],
+ 'record.survey':['school','travel','money','games'],
+ 'record.repeat':['sport','games','travel','school'],
+ 'find.weather':['environment','nature','travel'],
+ 'find.published':['money','travel','technology','school','environment'],
+ 'find.image':['sport','design','nature','technology']
+});
 
 /** Cards retain a route ID and optional old seed references for Pass 2.
  * Choosing a route does not choose a technique or populate Planning answers.
@@ -150,3 +161,49 @@ export function ideaMathCoursePreview(cardOrId,course){
     (course==='AA HL'?'AA HL mathematical scope must be discussed separately. ':'')+reviewMessage
  });
 }
+
+
+/** IDs are finite catalogue keys, never student-entered HTML or an IA title.
+ * Legacy seed IDs remain recognised independently by the original catalogue.
+ */
+export const ideaMathStarterId=id=>'math-'+id;
+export const ideaMathEvidenceStarterId=(root,branch,routeId)=>
+ 'evidence-'+root+'-'+branch+'-'+routeId;
+export const ideaMathExampleCards=(root,branch,routeId)=>{
+ const entry=ideaMathEvidenceEntry(root,branch);
+ if(!entry?.routeIds.includes(routeId))return [];
+ const topics=DATA_EXAMPLE_TOPICS[entry.id]||[];
+ // Spread across genuinely different contexts; no context is compulsory.
+ const cards=topics.flatMap(topicId=>ideaMathDirectionsForTopic(topicId))
+  .filter(card=>card.routeId===routeId);
+ return cards.slice(0,3);
+};
+export const ideaMathStarterById=id=>{
+ if(typeof id!=='string'||id.length>120)return null;
+ if(id.startsWith('math-')){
+  const c=ideaMathCardById(id.slice(5));
+  if(!c)return null;
+  return {id,topic:c.topicId,title:c.title,question:c.question,
+   material:c.evidence,first:c.first,narrow:c.personalise,maths:c.maths,
+   caution:c.caution,resources:[],tags:[],routeId:c.routeId,review:c.review};
+ }
+ for(const entry of IDEA_DATA_MATH_ENTRYPOINTS){
+  for(const routeId of entry.routeIds){
+   if(id!==ideaMathEvidenceStarterId(entry.root,entry.branch,routeId))continue;
+   const lens=ideaMathLens(routeId),route=ideaMathRoute(routeId);
+   if(!lens||!route)return null;
+   return {id,topic:'other',title:lens.label,
+    question:lens.invitation,
+    material:entry.firstCheck,first:route.first[1],
+    narrow:'Which data could you genuinely obtain? What exact quantity or decision would make this mathematical approach worth investigating?',
+    maths:route.title, caution:entry.caution+' '+route.caution,resources:[],tags:[],
+    routeId,review:route.teacher?'specialist':'standard'};
+  }
+ }
+ return null;
+};
+export const IDEA_MATH_STARTER_IDS=Object.freeze([
+ ...IDEA_MATH_DIRECTION_CARDS.map(c=>ideaMathStarterId(c.id)),
+ ...IDEA_DATA_MATH_ENTRYPOINTS.flatMap(entry=>entry.routeIds.map(routeId=>
+  ideaMathEvidenceStarterId(entry.root,entry.branch,routeId)))
+]);
