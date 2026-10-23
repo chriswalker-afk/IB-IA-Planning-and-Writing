@@ -391,7 +391,8 @@ export function createCriterionBadgeController({getState,openRubric=()=>{},openR
   if(dialog)return;
   dialog=document.createElement('dialog');
   dialog.id='criterionBadgeDialog';
-  dialog.className='criterion-popin';
+  dialog.className='criterion-popin guidance-surface';
+  dialog.dataset.guidanceKind='criteria';
   dialog.setAttribute('aria-labelledby','criterionBadgeTitle');
   dialog.setAttribute('aria-describedby','criterionBadgeSummary');
   document.body.appendChild(dialog);
@@ -414,12 +415,12 @@ export function createCriterionBadgeController({getState,openRubric=()=>{},openR
   const strong=planned?'First complete and check a genuine graph, calculation or argument. Then explain what that specific result means for your aim; do not invent findings.':p.strong;
   const level=p.criterion==='E'?courseLevel(state):'';
   const alternative=criterionAlternativeOpportunities(state,key,p);
-  dialog.innerHTML='<div class="criterion-popin-header"><div class="criterion-popin-heading">'+
+  dialog.innerHTML='<div class="criterion-popin-header guidance-surface-header"><div class="criterion-popin-heading">'+
    '<span class="criterion-popin-letter'+(multi?' criterion-popin-letter-multi':'')+'" aria-hidden="true">'+(multi?'A–E':p.criterion)+'</span><div>'+
-   '<p class="criterion-popin-eyebrow">RELEVANT HERE · '+escapeHtml(p.stage)+'</p>'+
-   '<h2 id="criterionBadgeTitle">'+(multi?'Criteria A–E · '+(p.reviewMode==='draft'?'draft':'final')+' review':'Criterion '+p.criterion+' · '+escapeHtml(c.name))+'</h2></div></div>'+
-   '<button type="button" class="criterion-popin-close" data-criterion-badge-close aria-label="Close criterion guidance">×</button></div>'+
-   '<div class="criterion-popin-body"><p class="criterion-popin-location" id="criterionBadgeSummary">'+escapeHtml(p.location)+'</p>'+
+   '<p class="criterion-popin-eyebrow guidance-surface-eyebrow">RELEVANT HERE · '+escapeHtml(p.stage)+'</p>'+
+   '<h2 id="criterionBadgeTitle" class="guidance-surface-title">'+(multi?'Criteria A–E · '+(p.reviewMode==='draft'?'draft':'final')+' review':'Criterion '+p.criterion+' · '+escapeHtml(c.name))+'</h2></div></div>'+
+   '<button type="button" class="criterion-popin-close guidance-surface-close" data-criterion-badge-close aria-label="Close criterion guidance">×</button></div>'+
+   '<div class="criterion-popin-body guidance-surface-body"><p class="criterion-popin-location" id="criterionBadgeSummary">'+escapeHtml(p.location)+'</p>'+
    block('Why this matters here',why)+
    block('What a strong response looks like',strong)+
    block('Avoid this',p.avoid)+
@@ -435,7 +436,7 @@ export function createCriterionBadgeController({getState,openRubric=()=>{},openR
    '<p class="criterion-popin-disclaimer">A badge is guidance, not evidence, a score or a predicted mark. IB criteria use best-fit judgement across the actual exploration.</p>'+
    (multi?'<div class="criterion-popin-rubric-links"><span>Read a criterion in full:</span>'+
     p.criteria.map(id=>'<button type="button" class="criterion-popin-rubric-link" data-criterion-badge-rubric="'+id+'">'+id+'</button>').join('')+'</div>':'')+
-   '<div class="criterion-popin-actions">'+(multi?
+   '<div class="criterion-popin-actions guidance-surface-actions">'+(multi?
     '<button class="btn btn-secondary" type="button" data-criterion-badge-review="'+p.reviewMode+'">Open my existing '+(p.reviewMode==='draft'?'draft':'final')+' A–E evidence review</button>':
     '<button class="btn btn-secondary" type="button" data-criterion-badge-rubric="'+p.criterion+'">Read the full Criterion '+p.criterion+' rubric</button>')+
    '<button class="btn btn-quiet" type="button" data-criterion-badge-close>Return to my work</button></div></div>';

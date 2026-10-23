@@ -338,13 +338,13 @@ function stageWritingLibrary(icon,e,state){
 export function renderWriterGuidePopin(icon,e,guide){
  const t=guide?.tip;
  if(!t)return "";
- return '<section class="writer-guide-popin writer-family-'+e(t.family)+'" role="dialog" aria-modal="false" aria-labelledby="writer-guide-popin-title" tabindex="-1" data-guide-popin-tip="'+e(t.id)+'">'+
-   '<div class="writer-guide-popin-head"><span class="writer-guide-popin-symbol">'+icon("book")+'</span>'+
-   '<div class="writer-guide-popin-head-copy"><span class="writer-guide-popin-eyebrow">WRITER\u2019S FIELD GUIDE \u00b7 FOR THIS STEP</span>'+
-   '<h2 id="writer-guide-popin-title">'+e(guide.stage||t.title)+'</h2></div>'+
-   '<button type="button" class="writer-guide-popin-close" data-action="writer-guide-popin-close" aria-label="Close this writing tip">'+icon("x")+'</button></div>'+
-   '<div class="writer-guide-popin-body">'+
-    '<div class="writer-guide-popin-focus"><strong>What matters in this box</strong><p>'+e(guide.cue||t.hook)+'</p></div>'+
+ return '<section class="writer-guide-popin guidance-surface writer-family-'+e(t.family)+'" role="dialog" aria-modal="false" aria-labelledby="writer-guide-popin-title" aria-describedby="writer-guide-popin-focus" tabindex="-1" data-guidance-kind="writing" data-guide-popin-tip="'+e(t.id)+'">'+
+   '<div class="writer-guide-popin-head guidance-surface-header"><span class="writer-guide-popin-symbol">'+icon("book")+'</span>'+
+   '<div class="writer-guide-popin-head-copy"><span class="writer-guide-popin-eyebrow guidance-surface-eyebrow">WRITER\u2019S FIELD GUIDE \u00b7 FOR THIS STEP</span>'+
+   '<h2 id="writer-guide-popin-title" class="guidance-surface-title">'+e(guide.stage||t.title)+'</h2></div>'+
+   '<button type="button" class="writer-guide-popin-close guidance-surface-close" data-action="writer-guide-popin-close" aria-label="Close this writing tip">'+icon("x")+'</button></div>'+
+   '<div class="writer-guide-popin-body guidance-surface-body">'+
+    '<div class="writer-guide-popin-focus" id="writer-guide-popin-focus"><strong>What matters in this box</strong><p>'+e(guide.cue||t.hook)+'</p></div>'+
     (guide.note?'<p class="writer-guide-popin-note">'+e(guide.note)+'</p>':"")+
     (guide.question?'<p class="writer-guide-popin-question">'+e(guide.question)+'</p>':"")+
     '<div class="writer-guide-popin-lesson"><h3>'+e(t.title)+'</h3><p>'+e(t.explanation)+'</p></div>'+
@@ -353,7 +353,7 @@ export function renderWriterGuidePopin(icon,e,guide){
     '<p class="writer-guide-popin-when"><strong>Remember this:</strong> '+e(t.moment)+'</p>'+
     '<p class="writer-guide-popin-disclaimer">These are fictional teaching examples, not text to copy. Use your own genuine mathematical decisions and results.</p>'+
    '</div>'+
-   '<div class="writer-guide-popin-footer">'+
+   '<div class="writer-guide-popin-footer guidance-surface-actions">'+
     '<button type="button" class="writer-guide-popin-full" data-action="writer-guide-popin-full">'+icon("book")+' Open this tip in the full guide '+icon("arrow-up-right")+'</button>'+
     '<button type="button" class="writer-guide-popin-done" data-action="writer-guide-popin-close">Back to my writing</button>'+
    '</div></section>';

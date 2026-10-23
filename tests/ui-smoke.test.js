@@ -24,6 +24,7 @@ import {runInNewContext} from "node:vm";
 import {createProjectState,normalizeProjectState,persistProjectState} from "../src/core/project-state.js";
 import {readRecordValue,updateRecordValue} from "../src/core/record-access.js";
 import {icon,escapeHtml,cleanUrl,button} from "../src/ui/primitives.js";
+import {guidanceChoices} from "../src/ui/guidance-interface.js";
 import {referenceNodeForPrototypeStep} from "../src/core/prototype-bridge.js";
 import {createPlanningViews} from "../src/ui/planning-views.js";
 import {planningMove,planAutoAdvance,planningBack,planningEdit,applyPlanningField,toggleMath,selectedMaths,exploreMathRoute,chooseMathRoute,syncPlanningToProject,setPlanCurrent,planningFlags} from "../src/planning/engine.js";
@@ -120,7 +121,7 @@ function createHarness(savedValue,{welcome=false}={}){
     createProjectState,normalizeProjectState,persistProjectState,assessmentFramework,assessmentBanner,
     newState:createProjectState,normalise:normalizeProjectState,
     KEY:"ia-pathfinder-prototype-v1",
-    readRecordValue,updateRecordValue,icon,escapeHtml,cleanUrl,button,
+    readRecordValue,updateRecordValue,icon,escapeHtml,cleanUrl,button,guidanceChoices,
     referenceNodeForPrototypeStep,createPlanningViews,createLegacyMathHelpers,createCompletingViews,createCheckingViews,renderWriterFieldGuide,renderWriterGuideWelcome,shouldShowWriterGuideWelcome,renderWriterGuidePopin,writingGuideRecommendation,createProjectViews,
     newGraphDraft,saveGraphFigure,renderGraphSvg,graphData,splitHeading,analyseGraph,renderGraphModelSummary,renderModelComparison,renderResidualPanelContents,addGraphModel,toggleGraphModel,removeGraphModel,updateGraphModelExpression,updateGraphModelOption,renderGraphQuality,renderGraphActions,graphSourceChoices,
     updateGraphField,chooseGraphType,importGraphTable,loadSavedGraph,freshGraph,saveAndLinkGraph,saveGraphDraft,exportGraphFigure,

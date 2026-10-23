@@ -5,11 +5,12 @@ import {stylePaths} from "../scripts/build-styles.mjs";
 const read=path=>readFileSync(new URL("../"+path,import.meta.url),"utf8");
 const html=read("index.html"),base=read("styles.css"),ui=read("data/release-design-system.css");
 
-test("shared release layer loads last and keeps 33 source styles in deploy order",()=>{
+test("release design layers preserve 35 ordered source styles for production bundling",()=>{
  const paths=stylePaths(html);
- assert.equal(paths.length,34);
+ assert.equal(paths.length,35);
  assert(paths.includes("data/release-design-system.css"));
- assert.equal(paths.at(-1),"data/workspace-navigation.css");
+ assert(paths.includes("data/workspace-navigation.css"));
+ assert.equal(paths.at(-1),"data/release-guidance.css");
  for(const path of ["data/idea-map.css","data/stuck-contextual.css","data/criteria-badges.css","data/writer-guide-popin.css","data/graph-studio.css","data/probability-studio.css","data/sample-reader.css"])
   assert(paths.includes(path),path);
 });

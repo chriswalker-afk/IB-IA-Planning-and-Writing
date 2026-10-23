@@ -1,6 +1,7 @@
 import {createSamplePreview} from "./src/core/sample-preview.js";
 import {createIllustrativeSample,SAMPLE_CHOICES} from "./src/core/illustrative-samples.js";
 import {captureReturn,restoreReturn} from "./src/ui/return-context.js";
+import {guidanceChoices} from "./src/ui/guidance-interface.js";
 import {STATUS_LABELS,resumeRoute,rememberCheckpoint} from "./src/ui/journey.js";
 import {insightCapture} from "./src/ui/insight-threads.js";
 import {planningLearningTrail} from "./src/ui/living-journey.js";
@@ -1123,15 +1124,17 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     }else if(panel==="writer-guide-intro"){
       body=renderWriterGuideWelcome(icon,e);
     }else if(panel==="help"){
-      body='<section><p>Pathfinder is a thinking and writing companion. You remain the author of your mathematics and explanations.</p><div class="panel-list">'+
-        '<button class="panel-link" data-action="open-stuck">I am stuck '+icon("arrow-right")+'</button>'+
-        '<button class="panel-link" data-action="resource-browse">Tools &amp; tutorials '+icon("arrow-right")+'</button>'+
-        '<button class="panel-link" data-action="writer-guide-open">Writer\'s Field Guide '+icon("arrow-right")+'</button>'+
-        '<button class="panel-link" data-action="go-path">How do I see my journey? '+icon("arrow-right")+'</button>'+
-        '<button class="panel-link" data-action="open-files">How do I keep my work safe? '+icon("arrow-right")+'</button>'+
-        '<button class="panel-link" data-action="open-demos">Try an illustrative sample '+icon("arrow-right")+'</button></div></section>'+
+      body='<section class="guidance-help-panel">'+
+        '<p>Pathfinder helps you think and write; it does not write or grade your IA. Choose the support that matches what you need now.</p>'+
+        guidanceChoices(icon,e)+
+        '<p class="guidance-help-where">On Planning and IA Studio pages, the amber, purple and green bubbles show these kinds of help at the moment they are useful.</p>'+
+        '<h3>Other useful places</h3><div class="panel-list">'+
+        '<button type="button" class="panel-link" data-action="resource-browse">Tools &amp; tutorials '+icon("arrow-right")+'</button>'+
+        '<button type="button" class="panel-link" data-action="go-path">My path &amp; Discovery Trail '+icon("arrow-right")+'</button>'+
+        '<button type="button" class="panel-link" data-action="open-files">Save &amp; export my work '+icon("arrow-right")+'</button>'+
+        '<button type="button" class="panel-link" data-action="open-demos">Try an illustrative sample '+icon("arrow-right")+'</button></div></section>'+
         '<section><h3>A useful rhythm</h3><p>Ask a mathematical question → do real mathematics → interpret the result in context → choose what genuinely follows. Repeat only when there is a reason.</p></section>'+
-        '<p class="drawer-footer">Planning and document handover are available. Use I am stuck for a specific obstacle, or the writing helper for where an explanation belongs. Pathfinder does not calculate marks, validate sources, or approve permissions.</p>';
+        '<p class="drawer-footer">I am stuck helps with a specific obstacle; the Writer\'s Field Guide helps you communicate mathematics; the IB criteria explain assessment relevance. Nothing here calculates marks, validates sources, or approves permissions.</p>';
     }else if(panel==="import-preview"){
       body=pendingImport?handoverViews.preview(pendingImport,importSelected):
         handoverViews.manual("No planning document has been selected.");
@@ -1150,7 +1153,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     }else if(panel==="stuck"){
       body=stuckViews.render();
     }
-    const titles={resources:"Tools & tutorials",project:"My project",files:"Save & export",help:"Here to help","writer-guide":"The IA Writer's Field Guide","writer-guide-intro":"Your Writer's Field Guide",demos:"Choose a sample","sample-reading":"Complete illustrative IA",stuck:"Find a way forward", "import-preview":"Review planning import","import-manual":"Recover a plan",handover:"Confirm your starting plan"};
+    const titles={resources:"Tools & tutorials",project:"My project",files:"Save & export",help:"Help & guidance","writer-guide":"Writer's Field Guide","writer-guide-intro":"Your Writer's Field Guide",demos:"Choose a sample","sample-reading":"Complete illustrative IA",stuck:"Find a way forward", "import-preview":"Review planning import","import-manual":"Recover a plan",handover:"Confirm your starting plan"};
     layer.hidden=false;document.body.classList.add("dialog-open");
     document.querySelectorAll(".topbar,.app-grid,.mobile-nav").forEach(el=>el.inert=true);
     layer.innerHTML='<aside class="drawer'+(panel==="resources"?" resource-drawer":"")+(panel==="sample-reading"?" sample-reader-drawer":"")+(panel==="writer-guide"?" writer-guide-drawer":panel==="writer-guide-intro"?" writer-guide-drawer writer-guide-welcome-drawer":"")+'" role="dialog" aria-modal="true" aria-labelledby="drawerTitle" tabindex="-1"><div class="drawer-header"><h2 id="drawerTitle">'+titles[panel]+'</h2>'+
