@@ -33,7 +33,8 @@ test("production deployment retains its independent validation, permissions and 
 });
 
 test("all browser workflows share pinned cached setup without duplicating full unit tests",()=>{
- assert.equal(workflows.size,25,"Check the complete known workflow inventory");
+ assert.equal(workflows.size,26,"Check the complete known workflow inventory");
+ assert(workflows.has("release-accessibility-browser.yml"),"Release keyboard and reflow QA must remain part of CI");
  for(const [name,content] of workflows){
   if(nonBrowser.has(name))continue;
   assert.match(content,/uses: \.\/\.github\/actions\/setup-ci-node/,name);

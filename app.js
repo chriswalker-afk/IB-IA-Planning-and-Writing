@@ -132,6 +132,15 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   if(resumedPreview)state=resumedPreview;
   const main = $("#main");
   const layer = $("#drawerLayer");
+  document.querySelector(".skip-link")?.addEventListener("click",evt=>{
+    // Native anchors vary across browsers when the destination has tabindex=-1.
+    // Focus the actual workspace landmark so keyboard and screen-reader users
+    // can begin their work immediately rather than tabbing past the header.
+    if(!layer.hidden)return;
+    evt.preventDefault();
+    main.scrollIntoView({block:"start",behavior:"auto"});
+    main.focus({preventScroll:true});
+  });
   const guidePopinHost = document.querySelector("#writerGuidePopinLayer") || {hidden:true,innerHTML:"",querySelector:()=>null};
   let guidePopinOrigin=null;
   let guidePopinRecommendation=null;
@@ -980,7 +989,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     state.completion.conclusionWarningOpen=true;
     save();render();
     const warning=document.querySelector?.("[data-conclusion-gate]");
-    warning?.scrollIntoView?.({block:"start",behavior:"smooth"});
+    warning?.scrollIntoView?.({block:"start",behavior:preferredScrollBehavior()});
     warning?.focus?.({preventScroll:true});
   }
   function returnToShowingFirstMaths(reason){
@@ -1001,7 +1010,18 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     document.querySelector?.('[data-show-first-part="show"]')?.scrollIntoView?.({block:"start",behavior:"auto"});
   }
   let detachIdeaMapGraph=()=>{};
+  let lastAccessibleScreen="";
+  const preferredScrollBehavior=()=>window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches?"auto":"smooth";
+  function accessibleScreenIdentity(){
+    const stage=state.route==="planning"?state.planning?.current:
+      state.route==="completing"?state.completion?.current:
+      state.route==="checking"?state.ui?.checkingMode||"draft":"";
+    const figure=state.route==="completing"&&stage==="C31"?activeRepresentationTool(state)?.id||"":"";
+    return [state.route,stage,figure,preview.active?"sample":"personal"].join(":");
+  }
   function render(opts={}) {
+    const previouslyFocused=document.activeElement;
+    const hadFocusInsideMain=!!previouslyFocused&&main.contains(previouslyFocused);
     if(state.ui.resourceCreatorReturnRoute&&(state.route!=="completing"||state.completion.current!=="C31"))
       clearResourceCreatorReturn();
     closeGuidePopin(false);
@@ -1033,6 +1053,18 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     if(state.probabilityStudio?.zoomed){
       const zoomPreview=main.querySelector("[data-prob-preview]");
       if(zoomPreview)zoomPreview.scrollLeft=(zoomPreview.scrollWidth-zoomPreview.clientWidth)/2;
+    }
+    const screen=accessibleScreenIdentity();
+    if(screen!==lastAccessibleScreen){
+      lastAccessibleScreen=screen;
+      const title=main.querySelector?.(".task-shell h1,.task-shell h2,.page-top h1,.checking-page h1,.representation-studio h2,.page h1,h1,h2");
+      const region=document.querySelector("#screenAnnouncement");
+      if(region)region.textContent=(title?.textContent||"Your IA workspace").replace(/\s+/g," ").trim()+" — "+state.route.replace("completing","IA Studio");
+      // Rerendering a different task can remove the button that had keyboard
+      // focus. Focus the landmark only in that case; ordinary field editing,
+      // previews and overlay focus must remain undisturbed.
+      if(!opts.top&&hadFocusInsideMain&&layer.hidden&&!document.querySelector("dialog[open]"))
+        main.focus({preventScroll:true});
     }
     if(opts.top){window.scrollTo({top:0,behavior:"auto"});main.focus({preventScroll:true})}
     // Show only at the first entry to C00; never for example previews or other stages.
@@ -1929,7 +1961,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       case "representation-jump":{
         const step=el.dataset.representationStep;
         if(!["create","refine","use"].includes(step))break;
-        main.querySelector('[data-representation-step="'+step+'"]')?.scrollIntoView({block:"start",behavior:"smooth"});
+        main.querySelector('[data-representation-step="'+step+'"]')?.scrollIntoView({block:"start",behavior:preferredScrollBehavior()});
         break;
       }
       case "representation-back":{
@@ -2425,7 +2457,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       case "trace-mode":{
         if(!setTraceTool(state.imageTracer,el.dataset.traceValue))break;
         save();render();
-        document.querySelector?.("[data-trace-preview]")?.scrollIntoView?.({block:"center",behavior:"smooth"});
+        document.querySelector?.("[data-trace-preview]")?.scrollIntoView?.({block:"center",behavior:preferredScrollBehavior()});
         break;
       }
       case "trace-view":{
@@ -2636,7 +2668,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         save();render();
         document.querySelector('[data-bind="'+(prior.phase==="first"?
           "completion.fields.nextReason":"entries."+index+".nextWhy")+'"]')?.
-          scrollIntoView?.({block:"center",behavior:"smooth"});
+          scrollIntoView?.({block:"center",behavior:preferredScrollBehavior()});
         toast("Mathematical possibility selected","Now write why this follows from your specific result, in your own words.");
         break;
       }
@@ -2644,7 +2676,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         const created=addMathematicalStage(state);
         if(!created.ok){
           toast("Before adding another stage",created.error);
-          document.querySelector?.('[data-show-first-part="show"]')?.scrollIntoView?.({block:"center",behavior:"smooth"});
+          document.querySelector?.('[data-show-first-part="show"]')?.scrollIntoView?.({block:"center",behavior:preferredScrollBehavior()});
           break;
         }
         const position=state.entries.slice(0,state.completion.activeEntryIndex+1).filter(x=>x.phase==="substantial").length;

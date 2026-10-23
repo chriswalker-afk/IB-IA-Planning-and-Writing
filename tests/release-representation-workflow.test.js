@@ -125,8 +125,9 @@ test("switcher gives truthful return context and preserves the seven-tool choose
 
 test("pass 4 keeps production styles and existing safety boundaries",()=>{
  const paths=stylePaths(read("index.html"));
- assert.equal(paths.length,36);
- assert.equal(paths.at(-1),"data/release-representation.css");
+ assert.equal(paths.length,37);
+ assert(paths.includes("data/release-representation.css"));
+ assert.equal(paths.at(-1),"data/release-accessibility.css");
  for(const path of ["data/representation-workspace.css","data/release-design-system.css",
   "data/release-guidance.css","data/graph-studio.css","data/probability-studio.css"])
   assert(paths.includes(path),path);
