@@ -17,6 +17,8 @@ import {newResourceSession} from './src/resources/state.js';
 import {PRACTICE_PAIRS} from './src/resources/catalog.js';
 import {createStuckViews} from './src/help/stuck-views.js';
 import {createPlanningHelpController} from './src/help/planning-help.js';
+import {createStudioHelpController} from './src/help/studio-help-popin.js';
+import {attachStudioHelpFieldBubbles} from './src/help/studio-help.js';
 import {captureStuckOrigin,isStuckNode} from './src/help/stuck-state.js';
 import {stuckAction} from './src/help/stuck-actions.js';
 import {stuckContext} from './src/help/stuck.js';
@@ -165,6 +167,18 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     onNavigate:node=>{
       const result=setPlanCurrent(state,node);
       if(result.ok)nav("planning");else toast(result.error||"That Planning step is not available.");
+    }
+  });
+  const studioHelpController=createStudioHelpController({
+    getState:()=>state,escapeHtml:e,
+    onHub:trigger=>{
+      captureStuckOrigin(state,{scrollY:window.scrollY||0,focusId:trigger?.id||""});
+      lastFocus=trigger;save();openDrawer("stuck");
+    },
+    onNavigate:node=>{
+      const result=setCompletionNode(state,node,{reason:"student-requested-stuck-help"});
+      if(result?.ok!==false)nav("completing");
+      else toast(result.error||"That mathematical stage is not currently available.");
     }
   });
   const handoverViews=createHandoverViews({getState:()=>state,icon,e,button,field});
@@ -945,12 +959,14 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       clearResourceCreatorReturn();
     closeGuidePopin(false);
     planningHelpController.close(false);
+    studioHelpController.close(false);
     detachIdeaMapGraph();
     const map={home:viewHome,planning:viewPlanning,completing:viewCompleting,checking:viewChecking,path:viewPath,report:viewReport};
     document.body.classList.toggle("representation-focus-active",representationFocusActive(state));
     document.body.classList.toggle("route-completing",state.route==="completing");
     main.dataset.assessmentFramework=assessmentFramework(state);
     main.innerHTML=previewBanner()+assessmentBanner(state,e)+stuckViews.returnBanner()+map[state.route]();
+    attachStudioHelpFieldBubbles(state,main,e);
     refreshMathPreviews(main);
     refreshDiagramValuePreviews(main);
     detachIdeaMapGraph=attachIdeaMapGraph(main);
@@ -1014,6 +1030,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   }
   function openDrawer(panel,guide=null) {
     closeGuidePopin(false);
+    studioHelpController.close(false);
     if(layer.hidden){
       const active=document.activeElement;
       if(active?.matches?.('button,input,textarea,select,summary,a'))drawerReturn=captureReturn(active);
@@ -1790,7 +1807,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         state.ui.adviceMode=state.ui.adviceMode==="reduced"?"guided":"reduced";
         save();render();restoreReturn(where);
         toast(state.ui.adviceMode==="reduced"?
-         "Essential instructions only. Green, purple and orange help bubbles remain available.":"Full contextual advice restored.");
+         "Essential instructions only. Green, purple and amber help bubbles remain available.":"Full contextual advice restored.");
         break;
       }
       case "route-coach-next":{
