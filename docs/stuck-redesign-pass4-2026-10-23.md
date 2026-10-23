@@ -18,6 +18,8 @@ Passes 2 and 3 already introduced properly authored recovery cards at selected P
 
 `src/help/hub-issues.js` is the shared index for the pre-existing live Planning and IA Studio recovery cards and the new Checking cards. It does not rewrite their advice separately.
 
+When a student reaches the hub from a contextual amber bubble, the saved help origin also includes that **specific part or check** (e.g. `C30:part:show` or `D09:check:D09`). Suggestions prioritise that obstacle; returning to work restores the original focus where available.
+
 The hub now presents:
 1. **Likely difficulties at this step:** up to four selectable, first-person problems, derived from the source chapter and saved entry/outcome/source state. Being shown a choice does **not** mean the site thinks the student has made that mistake.
 2. **Find another problem:** local, immediate text search and six task filters — Ideas & planning; Data, sources & methods; Doing mathematics; Understanding results; Checking & improving; Practical help. Source-backed cards are grouped into collapsible sections so a long catalogue never dominates the first screen.
