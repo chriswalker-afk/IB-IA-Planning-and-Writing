@@ -126,21 +126,30 @@ def check_story_method_switch(page,width):
  example=page.locator("#main [data-story-synthesis]")
  bridge=page.locator('[data-bind="entries.1.bridge"]')
  saved_bridge=bridge.input_value()
- original_example=example.locator(".math-story-passage").inner_text()
+ def visible_passage():
+  # Both advice-mode and method changes rebuild the closed disclosure.
+  # Read what the student sees after expanding it, not a hidden innerText.
+  if not example.evaluate("e=>e.open"):
+   example.locator("summary").click()
+  passage=example.locator(".math-story-passage")
+  expect(passage).to_be_visible()
+  return passage.inner_text()
+ original_example=visible_passage()
  original_choice=choice.inner_text()
  expect(method).to_have_value("linear-regression")
  method.select_option("finance-break-even")
  expect(choice).to_have_attribute("data-story-route","finance")
  expect(example).to_have_attribute("data-story-route","finance")
  assert choice.inner_text()!=original_choice
- assert example.locator(".math-story-passage").inner_text()!=original_example
- assert "profit" in example.locator(".math-story-passage").inner_text().lower()
+ finance_example=visible_passage()
+ assert finance_example!=original_example
+ assert "profit" in finance_example.lower()
  expect(bridge).to_have_value(saved_bridge)
  # Explicit Other must beat both the old planned journey and legacy technique.
  method.select_option("other")
  expect(choice).to_have_attribute("data-story-route","general")
  expect(example).to_have_attribute("data-story-route","general")
- assert "sequence" in example.locator(".math-story-passage").inner_text().lower()
+ assert "sequence" in visible_passage().lower()
  expect(bridge).to_have_value(saved_bridge)
  assert page.evaluate("k=>JSON.parse(localStorage.getItem(k)).planning.routeExplorer.selectedRoute",KEY)=="relationships"
  assert page.evaluate("k=>JSON.parse(localStorage.getItem(k)).entries[1].technique",KEY)=="Straight-line regression"
