@@ -270,7 +270,7 @@ export function planningHelpFor(state,spot){
 export function planningHelpBadge(state,spot,escapeHtml=x=>String(x)){
  const help=planningHelpFor(state,spot);if(!help)return "";
  const key=help.node+":"+spot;
- return '<button type="button" class="stuck-help-badge" data-stuck-help="'+escapeHtml(key)+
+ return '<button type="button" class="stuck-help-badge" id="stuck-badge-'+escapeHtml(help.node+'-'+spot)+'" data-stuck-help="'+escapeHtml(key)+
   '" aria-label="I am stuck: '+escapeHtml(help.title)+'" aria-haspopup="dialog" '+
   'title="Stuck with this? Try a small next step"><span aria-hidden="true">?</span></button>';
 }
