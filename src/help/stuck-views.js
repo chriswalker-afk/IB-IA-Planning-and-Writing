@@ -20,8 +20,10 @@ export function applyStuckBrowseFilter(root){
  }
  for(const section of root.querySelectorAll("[data-stuck-group-section]")){
   section.hidden=![...section.querySelectorAll("[data-stuck-search-item]")].some(x=>!x.hidden);
-  if(query&&!section.hidden)section.open=true;
+  if((query||selected!=="all")&&!section.hidden)section.open=true;
  }
+ const suggested=root.querySelector(".stuck-suggested");
+ if(suggested)suggested.hidden=!!query||selected!=="all";
  const count=root.querySelector("[data-stuck-search-count]");
  if(count)count.textContent=visible+" matching problem"+(visible===1?"":"s")+
   (query?" for “"+query.slice(0,50)+"”":"");
@@ -85,7 +87,7 @@ export function createStuckViews({getState,e,icon,field}){
     const issues=all.filter(issue=>issue.group===group.id);
     const visible=issues.filter(issue=>matches.has(issue.id)).length;
     return issues.length?'<details class="stuck-topic-group" data-stuck-group-section="'+e(group.id)+'"'+
-     (visible===0?' hidden':searchQuery?' open':'')+'>'+
+     (visible===0?' hidden':searchQuery||selectedGroup!=="all"?' open':'')+'>'+
       '<summary>'+e(group.label)+' <span>'+issues.length+'</span></summary><div class="stuck-group-issues">'+
       issues.map(item=>'<div data-stuck-search-group="'+e(group.id)+
        '" data-stuck-search-item="'+e([item.label,item.question,item.action,item.check].join(" ").toLowerCase())+
@@ -98,7 +100,7 @@ export function createStuckViews({getState,e,icon,field}){
     '<p class="stuck-intro">What is getting in your way? Choose the problem closest to yours; no answer or mathematics will be changed by opening help.</p>'+
     '<p class="stuck-context">'+e(context.slice(0,220))+'</p>'+
     saved+
-    '<section class="stuck-suggested" aria-label="Specific help for your current task"><h3>Likely difficulties at this step</h3>'+
+    '<section class="stuck-suggested" aria-label="Specific help for your current task"'+(searchQuery||selectedGroup!=="all"?" hidden":"")+'><h3>Likely difficulties at this step</h3>'+
     '<p class="stuck-caption">These are optional starting points from your recorded stage—not assumptions that something is wrong.</p>'+
     '<div class="stuck-topics">'+(suggestions.length?suggestions.map(item=>pick(item)).join(""):
      suggestedTopics(state).slice(0,3).map(basicPick).join(""))+'</div></section>'+
