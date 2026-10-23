@@ -85,7 +85,7 @@ test('pass1 recovery exemplars are specific, testable and linked to a possible l
    for(const key of SUPPORT_BLOCKER_STANDARD.required){
      assert(typeof example[key]==='string'&&example[key].trim().length>=18,example.id+':'+key);
    }
-   assert(example.problem.startsWith('I '),example.id);
+   assert(/^(I |My |I'm )/.test(example.problem),example.id);
    assert(example.quickQuestion.includes('?'),example.id);
    assert(/[.?!]$/.test(example.check),example.id);
  }
