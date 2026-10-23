@@ -13,6 +13,10 @@ The root [README](../README.md) describes the current student-facing website. Th
 
 - ["I am stuck" redesign — Pass 1 audit](stuck-redesign-pass1-2026-10-23.md) and [Pass 2 contextual Planning pop-ins](stuck-redesign-pass2-2026-10-23.md) and [Pass 3 mathematical IA Studio recovery](stuck-redesign-pass3-2026-10-23.md) and [Pass 4 hub and Checking repair](stuck-redesign-pass4-2026-10-23.md) and [Pass 5 cross-site quality audit](stuck-redesign-pass5-2026-10-23.md); [original 15 October help implementation](help-2026-10-15.md) retained as history.
 
+## Release-readiness polish
+
+- [Pass 1: shared visual design system](release-polish-pass1-2026-10-23.md): consistent surface, type, control and responsive tokens while preserving specialist mathematical tools and contextual advice palettes.
+
 ## Cleanup and production maintenance
 
 1. [Pass 1: screen inventory and restore compatibility](pass1-cleanup-audit-2026-10-22.md) and [complete source-node register](pass1-screen-register-2026-10-22.md).

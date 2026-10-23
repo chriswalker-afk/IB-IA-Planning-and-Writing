@@ -1,0 +1,118 @@
+/* IA Pathfinder release polish / Pass 1.
+ * Final, intentionally narrow shared-component layer. Source features retain
+ * their individual palettes and responsive layouts. Tokens live in styles.css.
+ * Do not apply generic input styles to maths grid cells, sliders or checkboxes.
+ */
+
+/* Typography and page rhythm across Planning, IA Studio and Checking. */
+:where(.page-intro,.task-intro,.checking-intro p){max-width:var(--ui-reading-width);line-height:var(--ui-line-height-reading)}
+:is(.page-top,.checking-section-head){column-gap:var(--ui-space-4)}
+:is(.task-section,.checking-document-section){scroll-margin-top:calc(79px + var(--ui-space-6))}
+:is(.field-label,.graph-form-field>span,.stat-form-field>span,.ia-table-form-field>span,.trace-field>span,.voronoi-field>span){
+  font-family:var(--ui-font-body);font-size:var(--ui-type-label);line-height:1.45;font-weight:700
+}
+:where(.field-hint,.graph-form-field small,.stat-form-field small,.ia-table-form-field small){line-height:1.55;overflow-wrap:anywhere}
+:where(.page,.task-shell,.checking-page,.representation-hub,.representation-studio){overflow-wrap:break-word}
+
+/* Shared cards: keep their authored backgrounds and any contextual colour accents. */
+:is(.task-shell,.content-card,.resume-card,.feature-card,.journey-tile){
+  border-color:var(--ui-line);box-shadow:var(--ui-shadow-card)
+}
+:is(.content-card,.feature-card,.journey-tile){border-radius:var(--ui-radius-card)}
+.task-shell{border-radius:var(--ui-radius-shell)}
+:is(.graph-control-card,.graph-preview-card,.graph-quality-card,.stat-control-card,.stat-quality-card,
+ .stat-output-card,.ia-table-control-card,.ia-table-quality-card,.ia-table-output-card,
+ .trace-control-card,.trace-working-card,.trace-quality-card,.trace-output-card,
+ .geometry-construction-card,.voronoi-panel){
+  border-radius:var(--ui-radius-card);border-color:var(--ui-line)
+}
+:is(.feature-card,.journey-tile,.representation-card){transition:box-shadow var(--ui-duration) var(--ease),border-color var(--ui-duration) var(--ease),background var(--ui-duration) var(--ease)}
+.journey-tile:hover{box-shadow:var(--ui-shadow-hover)}
+:is(.field-group,.graph-form-field,.stat-form-field,.ia-table-form-field){min-width:0}
+
+/* One action hierarchy. Tiny icon tools retain their authored compact layouts. */
+.btn{border-radius:var(--ui-radius-control);min-height:var(--ui-control-height);font-family:var(--ui-font-body);line-height:1.35;letter-spacing:0}
+.btn-sm{min-height:var(--ui-control-height-compact);font-size:var(--ui-type-compact);padding:8px 12px}
+.btn-primary{background:var(--ui-action);color:#fff}
+.btn-primary:hover:not(:disabled){background:var(--ui-action-hover)}
+.btn-secondary{border-color:var(--ui-line-strong);background:var(--surface)}
+.btn-secondary:hover:not(:disabled){background:var(--surface-soft);border-color:var(--ui-line-hover)}
+.btn-light{background:var(--teal-pale)}
+.btn-danger{border-color:var(--ui-danger-line)}
+.btn:active:not(:disabled){transform:translateY(0)}
+:is(.graph-buttons,.graph-actions-primary,.stat-data-actions,.stat-output-buttons,
+ .ia-table-import-actions,.ia-table-export-buttons,.trace-buttons,.trace-output-options,
+ .geometry-buttons,.probability-buttons,.representation-workspace-actions) .btn{
+  min-height:var(--ui-control-height-compact);border-radius:var(--ui-radius-control);font-size:var(--ui-type-compact);line-height:1.4
+}
+:is(.choice,.graph-type,.stat-type,.ia-table-type,.checking-mode-tab,.representation-filter,.idea-map-mode-button){
+  transition:border-color var(--ui-duration) var(--ease),background var(--ui-duration) var(--ease),box-shadow var(--ui-duration) var(--ease)
+}
+:is(.choice.selected,.graph-type.selected,.stat-type.selected,.ia-table-type.selected,.checking-mode-tab.active){
+  border-color:var(--ui-action)
+}
+
+/* Standard authoring inputs, without taking over chart grids or mathematical palettes. */
+.field{border-color:var(--ui-line-strong);border-radius:var(--ui-radius-control);background:var(--ui-control-surface);min-height:var(--ui-control-height)}
+.field:focus{border-color:var(--ui-action);box-shadow:0 0 0 3px var(--ui-focus-halo)}
+:is(.graph-form-field,.stat-form-field,.ia-table-form-field,.trace-field,.voronoi-field,.geometry-field,.probability-field)
+ :is(input:not([type]),input[type="text"],input[type="number"],input[type="search"],select,textarea){
+  min-width:0;max-width:100%;border-radius:var(--ui-radius-control);border-color:var(--ui-line-strong);background:var(--ui-control-surface)
+}
+:is(.graph-form-field,.stat-form-field,.ia-table-form-field,.trace-field,.voronoi-field,.geometry-field,.probability-field)
+ :is(input:not([type]),input[type="text"],input[type="number"],input[type="search"],select,textarea):focus-visible{
+  border-color:var(--ui-action);outline:3px solid var(--ui-focus-halo);outline-offset:1px
+}
+:is(.field,.graph-studio input,.stat-studio input,.ia-table-studio input,.trace-studio input,
+ .geometry-studio input,.probability-studio input,.voronoi-studio input)[aria-invalid="true"]{
+  border-color:var(--ui-danger);box-shadow:0 0 0 2px var(--ui-danger-halo)
+}
+:is(.field,.btn,.choice):disabled{cursor:not-allowed}
+
+/* Navigation, pills and selectors share touch, focus and selected-state conventions. */
+:is(.side-link,.icon-button,.representation-filter,.checking-mode-tab){border-radius:var(--ui-radius-control)}
+:is(.meta-pill,.status-tag){border-radius:var(--ui-radius-pill)}
+:is(.btn,.field,.choice,.side-link,.mobile-nav-link,.icon-button,.representation-card,
+ .representation-filter,.representation-workspace-tool,.graph-type,.stat-type,.ia-table-type,
+ .checking-mode-tab,.idea-map-mode-button):focus-visible{
+  outline:3px solid var(--ui-focus);outline-offset:2px
+}
+:where(.btn,.choice,.side-link,.journey-tile,.representation-card){-webkit-tap-highlight-color:transparent}
+
+/* Shared pop-in geometry, while keeping amber, purple and green meanings. */
+:is(.criterion-popin,.stuck-context-dialog,.writer-guide-popin){
+  box-shadow:var(--ui-shadow-popin);border-radius:var(--ui-radius-dialog)
+}
+:is(.criterion-popin-close,.stuck-context-close,.writer-guide-popin-close){
+  min-width:44px;min-height:44px;display:inline-flex;align-items:center;justify-content:center;flex:none;
+  border-radius:var(--ui-radius-control)
+}
+:is(.criterion-popin-body,.stuck-context-body,.writer-guide-popin-body){overflow-wrap:anywhere}
+:where(.criterion-popin,.stuck-context-dialog,.writer-guide-popin) :is(button,a):focus-visible{
+  outline-offset:2px
+}
+:is(.stuck-help-badge,.criterion-badge,.writer-guide-field-bubble):focus-visible{outline-width:3px;outline-offset:2px}
+
+/* Accessible small screens without changing specialised tool layout maths. */
+@media(max-width:760px){
+  .btn-sm{min-height:44px}
+  :is(.field,.checking-item-inner .field){font-size:16px}
+  :is(.graph-buttons,.graph-actions-primary,.stat-data-actions,.stat-output-buttons,
+   .ia-table-import-actions,.ia-table-export-buttons,.trace-buttons,.trace-output-options,
+   .geometry-buttons,.probability-buttons,.representation-workspace-actions) .btn{min-height:44px}
+  :is(.page-intro,.task-intro){max-width:100%}
+}
+@media(max-width:700px){
+  .writer-guide-popin{border-radius:var(--ui-radius-dialog) var(--ui-radius-dialog) 0 0}
+}
+@media(prefers-contrast:more){
+  :is(.task-shell,.content-card,.resume-card,.feature-card,.journey-tile){border-color:var(--ui-line-hover)}
+  :is(.field,.btn-secondary){border-width:2px}
+}
+@media(prefers-reduced-motion:reduce){
+  :is(.page,.btn,.choice,.feature-card,.journey-tile,.representation-card,.representation-filter,
+   .graph-type,.stat-type,.ia-table-type,.checking-mode-tab,.idea-map-mode-button){animation:none!important;transition:none!important}
+}
+@media print{
+  :is(.task-shell,.content-card,.feature-card,.journey-tile){box-shadow:none!important}
+}

@@ -13,8 +13,9 @@ test("Pass 3 compiles every original stylesheet in DOM order into one minified f
  const original=await read("index.html");
  const paths=stylePaths(original);
  assert.equal(paths[0],"styles.css");
- assert.equal(paths.at(-1),"data/sample-reader.css");
- assert.equal(paths.length,32);
+ assert(paths.includes("data/sample-reader.css"),"Preserve the continuous IA sample reader");
+ assert.equal(paths.at(-1),"data/release-design-system.css");
+ assert.equal(paths.length,33);
  assert(paths.includes("data/stuck-contextual.css"),"Keep contextual stuck pop-in styling in the published CSS bundle");
  const scratch=await mkdtemp(path.join(tmpdir(),"ia-pass3-css-"));
  try{
