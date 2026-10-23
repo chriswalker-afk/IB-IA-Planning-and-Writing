@@ -252,7 +252,7 @@ const noData=new Set(["availability","primary-procedure","primary-precision","po
 const safe=v=>typeof v==="string"?v.trim():"";
 export function planningHelpFor(state,spot){
  if(state?.route!=="planning")return null;
- const node=state.planning?.current||"",spec=Object.hasOwn(PLANNING_RECOVERY_SPOTS,node+":"+spot)?SPOTS[node+":"+spot]:null;
+ const node=state.planning?.current||"",spec=Object.hasOwn(PLANNING_RECOVERY_SPOTS,node+":"+spot)?PLANNING_RECOVERY_SPOTS[node+":"+spot]:null;
  if(!spec)return null;
  const p=state.planning.fields||{},mode=state.ideaExplorer?.map?.mode||"interests",theory=p.kind==="theoretical"||p.dataSource==="theoretical";
  let ids=spec.ids;
@@ -327,7 +327,7 @@ export function createPlanningHelpController({getState,escapeHtml,onHub,onNaviga
    '<div class="stuck-context-choices" role="group" aria-label="What are you stuck with?">'+active.choices.map((x,i)=>
     '<button type="button" data-stuck-context-choice="'+i+'" aria-pressed="'+(selected===i)+'" class="stuck-context-choice'+(selected===i?' selected':'')+'">'+e(x.label)+'</button>').join("")+'</div>'+
    '<section class="stuck-context-recovery" aria-live="polite"><h3>First, ask yourself</h3><p>'+e(card.question)+'</p>'+
-   '<h3 id="stuckContextAction">Try this now</h3>'+
+   '<h3 id="stuckContextAction" tabindex="-1">Try this now</h3>'+
    '<p>'+e(card.action)+'</p>'+
    '<h3>How to tell whether it helped</h3><p>'+e(card.check)+'</p>'+
    '<p class="stuck-context-stop"><strong>A useful stopping point:</strong> '+e(card.stop)+'</p>'+
