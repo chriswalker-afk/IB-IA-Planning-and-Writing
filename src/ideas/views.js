@@ -80,7 +80,7 @@ function ideaMapBranchesView(state){
  const entry=access?ideaMathEvidenceEntry(root.id,access.id):null;
  const required=access?.warning?'<p class="idea-map-survey-warning" role="note">'+icon('info')+' '+e(access.warning)+'</p>':'';
  const evidence=entry?'<p class="idea-map-evidence-first"><strong>A question your evidence could help explore:</strong> '+e(entry.question)+'</p>'+'<p class="idea-map-evidence-first"><strong>Quick evidence check:</strong> '+e(entry.firstCheck)+'</p>':'';
- const course=selected?'<details class="idea-map-course-note"><summary>'+icon('info')+' Course and mathematical depth</summary>'+
+ const course=selected&&state.ui?.adviceMode!=='reduced'?'<details class="idea-map-course-note"><summary>'+icon('info')+' Course and mathematical depth</summary>'+
   '<p>'+e(IDEA_MATH_COURSE_NOTE)+'</p></details>':'';
  const legacy=m.mode==='interests'&&m.subtopic?
   '<p class="idea-map-legacy-note" role="note">Your earlier context, <strong>'+e(m.subtopic)+'</strong>, is still remembered. It does not choose a mathematical direction for you.</p>':'';
