@@ -7,6 +7,7 @@ import {renderConclusionWorkspace} from './conclusion-workspace.js';
 import {isStudioWritingNode,renderStudioWritingStage} from './studio-writing-stages.js';
 import {firstMathsContext} from "./first-maths-bridge.js";
 import {renderJourneyWritingAdvice} from "./first-maths-writing-guidance.js";
+import {renderIdeaLabWritingCue} from "../planning/idea-lab-bridge.js";
 import {renderShowingMathsContext} from "./showing-first-maths.js";
 import {MATHEMATICAL_LINK_HINT,renderConsequentialChoice,renderStorySynthesis} from "./mathematical-story-guidance.js";
 import {renderGraphStudio} from "../diagrams/graph-view.js";
@@ -655,6 +656,7 @@ export function createCompletingViews(ctx){
    const methodPart=writingPart("method","2a","Introduce and justify your mathematical method",
     "In your actual IA, name the mathematics you are about to use and explain why you selected it. Assume your reader already knows the course mathematics.",
     renderJourneyWritingAdvice(s,"method",icon,e,{reduced:isAdviceReduced(s)})+
+    renderIdeaLabWritingCue(s,{e,icon,reduced:isAdviceReduced(s)})+
     (f.chosenMethod?smallSummary("Earlier named method (editable in the optional Methods step)",f.chosenMethod):"")+
     '<div class="first-maths-primary-writing-field">'+criterionMarkedWritingBox(
       F("methodReason","My method and why I chose it",
