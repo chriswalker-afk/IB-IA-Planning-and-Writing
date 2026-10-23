@@ -7,7 +7,7 @@ import {PLANNING_RECOVERY_CARDS,PLANNING_RECOVERY_SPOTS,planningHelpFor} from ".
 import {STUDIO_RECOVERY_CARDS,STUDIO_RECOVERY_SPOTS,ROUTE_RECOVERY,TOOL_RECOVERY,studioHelpFor} from "./studio-help.js";
 import {CHECKING_RECOVERY_CARDS,CHECKING_RECOVERY_SPOTS,checkingHelpFor} from "./checking-help.js";
 import {selectedInvestigativeRoute,outcomeRouteForEntry,actualMathematics} from "../completing/adaptive-journey.js";
-import {completeEntry} from "../completing/engine.js";
+import {completeEntry,isPearsonResult,scatterForNext} from "../completing/engine.js";
 import {REPRESENTATION_TOOLS,activeRepresentationTool} from "../diagrams/representation-registry.js";
 import {STUCK_TOPICS} from "./stuck-catalog.js";
 
@@ -75,7 +75,8 @@ const targetFor=(view,surface,card)=>{
   const spots=Object.entries(STUDIO_RECOVERY_SPOTS).filter(([,arr])=>arr.includes(card.id));
   const current=view.completion.current;
   const match=spots.find(([key])=>key.startsWith(current+":"))||spots[0];
-  const node=card.targetNode||match?.[0].split(":")[0]||(["C40","C50"].includes(current)?current:"C30");
+  const node=card.id==="selected-outcome-help"?current:
+   card.targetNode||match?.[0].split(":")[0]||(["C40","C50"].includes(current)?current:"C30");
   return{route:"completing",node};
  }
  if(surface==="checking"){
@@ -108,7 +109,8 @@ export function availableHubIssues(state){
   // Route overlays are meaningful only for the relevant chosen route or stage.
   cards=cards.filter(c=>!c.id.startsWith("route-")||c.id==="route-"+activeRoute);
   // Never offer Pearson-specific repairs from a title or a planned PMCC.
-  if(!(entry&&actualMathematics(entry)))cards=cards.filter(c=>c.id!=="pmcc-curved");
+  if(!(entry&&actualMathematics(entry)&&isPearsonResult(entry)&&scatterForNext(view)))
+   cards=cards.filter(c=>c.id!=="pmcc-curved");
   if(view.planning.fields.kind==="theoretical")
    cards=cards.filter(c=>!["sample-relevance","source-precision"].includes(c.id));
   // All tools remain searchable; put the open tool first in contextual suggestions.
@@ -160,6 +162,16 @@ export function suggestedHubIssues(state){
    const h=checkingHelpFor(view,key==="feedback"?"feedback":"check:"+key);
    if(h)for(const card of h.choices)push(all.find(x=>x.cardId===card.id));
   }
+ }
+ // Safety-critical work remains the first option even if source/syllabus
+ // conditions would otherwise point to attractive mathematics.
+ const pending=view.teacher?.pendingApproval===true||
+  ["pending","unsure"].includes(view.completion.fields.permissionStatus)||
+  ["yes","unsure"].includes(view.planning.fields.permissionNeed);
+ const theoretical=(view.planning.fields.kind||view.project.kind)==="theoretical";
+ if(pending&&!theoretical){
+  const issue=hubLegacyTopics(state).find(x=>x.id==="permission");
+  if(issue)return[issue,...selected.filter(x=>x.id!=="permission")].slice(0,4);
  }
  return selected.slice(0,4);
 }
