@@ -70,7 +70,7 @@ with sync_playwright() as pw:
   help_button.click();action(p,'resource-browse');assert p.locator('.drawer').is_visible();p.keyboard.press('Escape')
   assert not p.locator('.drawer').count();assert help_button.evaluate('(el)=>el===document.activeElement');assert raw(p)==before
   help_button.click();action(p,'open-stuck');topic=p.locator('.drawer [data-action="stuck-topic"][data-topic="calculation"]');
-  if not topic.is_visible():p.locator('.drawer .stuck-browse > summary').click()
+  if not topic.is_visible():p.locator('.drawer .stuck-legacy-browse > summary').click()
   topic.click();p.locator('.drawer [data-action="resource-browse"]').first.click();p.keyboard.press('Escape');assert p.locator('.drawer').is_visible();assert 'My calculation or software' in p.locator('.drawer').inner_text();p.keyboard.press('Escape');assert not p.locator('.drawer').count();assert help_button.evaluate('(el)=>el===document.activeElement')
  run('consistent-support-return-and-nested-escape',OWN,support,390,844)
  def preview(p):
