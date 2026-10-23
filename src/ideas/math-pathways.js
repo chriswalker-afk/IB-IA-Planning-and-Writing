@@ -153,7 +153,7 @@ export function ideaMathCoursePreview(cardOrId,course){
  return Object.freeze({
   course:isKnown?course:'',
   status:'provisional',
-  teacherReview:specialist||!isKnown,
+  teacherReview:specialist||!isKnown||course==='AA HL',
   techniqueExamples:Object.freeze(techniques),
   note:(isKnown&&course!=='AA HL'&&techniques.length?
     'Possible starting points in the existing '+course+' reference list (not a required method): '+techniques.join('; ')+'. ':
