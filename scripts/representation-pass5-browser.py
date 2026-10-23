@@ -68,6 +68,8 @@ def chooser(browser,width):
   assert p.locator("[data-probability-studio]").is_visible()
   assert p.locator('[data-action="representation-return"]').count()==1
   assert p.locator("[data-prob-quality]").count()==1
+  assert p.locator('[data-representation-workflow="probability"]').count()==1
+  assert "Back to first mathematics" in p.locator('.representation-workspace-tool-back').inner_text()
   nav=p.locator("[data-representation-switcher]")
   tabs=nav.locator('[data-action="representation-switch"]')
   assert set(tabs.evaluate_all("(nodes)=>nodes.map(x=>x.dataset.representationTool)"))==ALL
@@ -86,6 +88,18 @@ def chooser(browser,width):
    assert p.locator('[data-representation-switcher] [aria-current="page"]').count()==1
    assert p.locator('[data-representation-tool="'+tool+'"][aria-current="page"]').count()==1
    assert p.locator('[data-action="representation-return"]').count()==1
+   workflow=p.locator('[data-representation-workflow="'+tool+'"]')
+   assert workflow.count()==1,tool+" workflow missing"
+   assert workflow.locator('[data-workflow-step]').count()==4
+   panel=p.locator('[data-representation-actions="'+tool+'"]')
+   assert panel.count()==1,tool+" action panel missing"
+   assert panel.locator('.representation-figure-use [data-action]').count()==1
+   assert panel.locator('.representation-figure-save [data-action]').count()==1
+   assert panel.locator('.representation-figure-export [data-action]').count()>=2
+   assert "Save editable draft" in panel.inner_text()
+   assert "Save & link to this mathematical stage" in panel.inner_text()
+   assert "does not save your draft" in panel.inner_text()
+   if tool=="table":assert panel.locator('[data-action="table-save"]').count()==1
    width_ok(p)
    if tool=="geometry":
     p.locator('[data-geometry-field="title"]').fill("QA edited geometry construction")
@@ -143,6 +157,7 @@ def later(browser,width,node,index):
   p.locator('[data-representation-tool="table"]').click()
   assert p.locator("[data-table-studio]").is_visible()
   assert saved(p)["completion"]["editorReturnNode"]==node
+  assert "Back to later mathematics" in p.locator('.representation-workspace-tool-back').inner_text()
   p.locator('[data-action="representation-return"]').first.click()
   assert p.locator('[data-source-node="'+node+'"]').count()==1
   assert saved(p)["completion"]["activeEntryIndex"]==index
