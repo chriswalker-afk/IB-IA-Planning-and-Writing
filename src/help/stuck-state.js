@@ -12,7 +12,8 @@ export function normalizeStuckState(v){
  if(v.origin&&routes.includes(v.origin.route)){
   const o=v.origin;s.origin={route:o.route,planNode:/^N\d{2}[A-Z]?$/.test(o.planNode)?o.planNode:'N00',
    node:/^C\d{2}[A-Z]?$/.test(o.node)?o.node:'C04',entryId:str(o.entryId,160),nextFromEntryId:str(o.nextFromEntryId,160),
-   scrollY:Math.max(0,Math.min(100000,Number(o.scrollY)||0)),focusId:str(o.focusId,180)};
+   scrollY:Math.max(0,Math.min(100000,Number(o.scrollY)||0)),focusId:str(o.focusId,180),
+   checkMode:['draft','feedback','final'].includes(o.checkMode)?o.checkMode:'draft'};
  }
  s.selected=accepted(v.selected)?v.selected:'';s.browse=v.browse===true;s.more=v.more===true;s.returnPending=!!s.origin&&v.returnPending===true;
  for(const id of TOPIC_IDS)if(v.drafts?.[id])s.drafts[id]={action:str(v.drafts[id].action,1000),note:str(v.drafts[id].note)};
@@ -26,8 +27,9 @@ export function captureStuckOrigin(state,{scrollY=0,focusId=''}={}){
  const c=state.completion,s=c.support;
  if(isStuckNode(c.current)&&state.route==='completing'&&s.origin)return s.origin;
  const origin={route:state.route,planNode:state.planning.current,node:c.current,
-  entryId:state.entries[c.activeEntryIndex]?.id||'',nextFromEntryId:c.nextFromEntryId||'',scrollY,focusId};
+  entryId:state.entries[c.activeEntryIndex]?.id||'',nextFromEntryId:c.nextFromEntryId||'',scrollY,focusId,
+  checkMode:state.route==='checking'&&['draft','feedback','final'].includes(state.ui?.checkingMode)?state.ui.checkingMode:'draft'};
  const old=s.origin;
- if(!old||['route','planNode','node','entryId','nextFromEntryId'].some(k=>old[k]!==origin[k])){s.selected='';s.browse=false;s.more=false;}
+ if(!old||['route','planNode','node','entryId','nextFromEntryId','checkMode'].some(k=>old[k]!==origin[k])){s.selected='';s.browse=false;s.more=false;}
  s.origin=origin;s.returnPending=false;return origin;
 }
