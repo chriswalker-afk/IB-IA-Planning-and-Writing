@@ -80,6 +80,12 @@ with sync_playwright() as pw:
   assert [b.get_attribute('data-action') for b in choices.all()]==['open-stuck','writer-guide-open','essentials-open']
   assert all(b.is_visible() for b in choices.all())
   assert 'without predicting a mark' in choices.nth(2).inner_text()
+  choices.nth(2).click()
+  criterion_dialog=p.locator('#essentialsDialog[open]')
+  assert criterion_dialog.is_visible()
+  assert criterion_dialog.locator('[data-essentials-tab="rubric"]').get_attribute('aria-current')=='page'
+  criterion_dialog.locator('[data-essentials-close]').click()
+  assert p.locator('.drawer .guidance-choice').count()==3
   p.locator('.drawer [data-action="open-stuck"]').click()
   node(p,'N01');assert p.locator('.drawer .stuck-topic').count()>5
   p.keyboard.press('Escape');assert not p.locator('#drawerLayer').is_visible();node(p,'N01')
