@@ -1057,7 +1057,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     const screen=accessibleScreenIdentity();
     if(screen!==lastAccessibleScreen){
       lastAccessibleScreen=screen;
-      const title=main.querySelector(".task-shell h1,.task-shell h2,.page-top h1,.checking-page h1,.representation-studio h2,.page h1,h1,h2");
+      const title=main.querySelector?.(".task-shell h1,.task-shell h2,.page-top h1,.checking-page h1,.representation-studio h2,.page h1,h1,h2");
       const region=document.querySelector("#screenAnnouncement");
       if(region)region.textContent=(title?.textContent||"Your IA workspace").replace(/\s+/g," ").trim()+" — "+state.route.replace("completing","IA Studio");
       // Rerendering a different task can remove the button that had keyboard
