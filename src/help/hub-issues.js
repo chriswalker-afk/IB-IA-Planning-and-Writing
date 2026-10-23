@@ -69,13 +69,15 @@ const targetFor=(view,surface,card)=>{
   // The source step is preferred to any generic destination.
   const matching=spots.find(([key])=>key.startsWith(view.planning.current+":"))||spots[0];
   const node=card.targetNode||matching?.[0].split(":")[0]||view.planning.current;
-  return{route:"planning",node,focusField:card.focusField||""};
+  const spot=matching?.[0].split(":").slice(1).join(":")||"";
+  return{route:"planning",node,focusField:card.focusField||(spot!=="page"?spot:"")};
  }
  if(surface==="studio"){
   const spots=Object.entries(STUDIO_RECOVERY_SPOTS).filter(([,arr])=>arr.includes(card.id));
   const current=view.completion.current;
   const match=spots.find(([key])=>key.startsWith(current+":"))||spots[0];
-  const node=card.id==="selected-outcome-help"?current:
+  const node=(card.id==="selected-outcome-help"||
+   card.id==="not-yet-result"&&["C40","C50"].includes(current))?current:
    card.targetNode||match?.[0].split(":")[0]||(["C40","C50"].includes(current)?current:"C30");
   return{route:"completing",node};
  }
