@@ -419,3 +419,16 @@ h1,h2,h3,h4,p {margin-top:0} h1,h2,h3,h4 {font-family:Manrope, 'DM Sans', sans-s
 .idea-explorer :focus-visible{outline:3px solid #397f73;outline-offset:3px}
 @media(max-width:1000px){.idea-grid{grid-template-columns:1fr}.idea-card{padding:18px}.idea-card>.btn{align-self:flex-start}.idea-saved-actions{flex-direction:row;flex-wrap:wrap}}
 @media(max-width:520px){.idea-start{padding:15px}.idea-primary-actions>.btn{width:100%;justify-content:center;white-space:normal}.idea-toolbar .btn{flex:1 1 135px;white-space:normal}.idea-compare-change{grid-template-columns:1fr}.idea-saved-actions .btn{width:100%}.idea-footer .btn{white-space:normal}.idea-grid{gap:12px}}
+
+/* Full project export failures keep the independent JSON recovery visible.
+   A stale-tab warning must be persistent, not only a vanishing toast. */
+.export-recovery{
+  margin:12px 0 16px;padding:14px 15px;
+  border:1px solid #d4b778;border-radius:12px;background:#fffaf0;
+  color:#293e42;display:grid;gap:8px;font-size:.88rem;line-height:1.5;
+}
+.export-recovery[hidden]{display:none!important}
+.export-recovery strong{font-weight:750}
+.export-recovery p{margin:0}
+.export-recovery .btn{width:100%;white-space:normal;min-height:43px}
+@media(max-width:480px){.export-recovery{padding:12px;margin:9px 0 13px}}
