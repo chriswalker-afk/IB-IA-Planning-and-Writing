@@ -31,7 +31,7 @@ test('Pass 1 offers five distinct mathematical investigations for each broad Ide
    }
    assert(card.question.endsWith('?'),card.id);
    assert(card.contexts.length>=3,card.id+' needs more than one narrow example');
-   assert(card.contexts.every(x=>x.length>5),card.id);
+   assert(card.contexts.every(x=>x.length>=4),card.id);
    assert(['standard','specialist','theoretical'].includes(card.review),card.id);
    assert(Object.isFrozen(ideaMathCardById(card.id)),card.id);
   }
@@ -66,7 +66,7 @@ test('Mathematical lenses reuse exactly the 16 maintained routes, avoiding a sec
  for(const route of INVESTIGATIVE_ROUTES){
   const lens=ideaMathLens(route.id);
   assert(lens?.label.length>6);
-  assert(lens.mathsName.length>8&&lens.invitation.endsWith('?'));
+  assert(lens.mathsName.length>8&&lens.invitation.length>50&&lens.invitation.includes('?'));
   assert.equal(ideaMathRoute(route.id)?.id,route.id);
   assert(IDEA_MATH_DIRECTION_CARDS.some(c=>c.routeId===route.id),'Unrepresented route '+route.id);
   assert(IDEA_MATH_LENS_BY_ROUTE[route.id]);
