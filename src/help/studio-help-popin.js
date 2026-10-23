@@ -11,7 +11,8 @@ export function createStudioHelpController({getState,escapeHtml,onHub,onNavigate
   if(dialog)return;
   dialog=document.createElement("dialog");
   dialog.id="studioStuckDialog";
-  dialog.className="stuck-context-dialog stuck-studio-dialog";
+  dialog.className="stuck-context-dialog stuck-studio-dialog guidance-surface";
+  dialog.dataset.guidanceKind="recovery";
   dialog.setAttribute("aria-labelledby","studioStuckTitle");
   dialog.setAttribute("aria-describedby","studioStuckIntro");
   document.body.append(dialog);
@@ -83,11 +84,13 @@ export function createStudioHelpController({getState,escapeHtml,onHub,onNavigate
    active.method?"Recorded method: "+bounded(active.method):"",
    active.selectedOutcome?"Student-confirmed outcome: "+bounded(active.selectedOutcome):""
   ].filter(Boolean);
-  dialog.innerHTML='<div class="stuck-context-top"><span class="stuck-context-icon" aria-hidden="true">?</span>'+
-   '<div><p class="stuck-context-eyebrow">I AM STUCK · '+(source==="checking"?"CHECKING":"IA STUDIO")+'</p>'+
-   '<h2 id="studioStuckTitle" tabindex="-1">'+e(active.title)+'</h2></div>'+
-   '<button type="button" class="stuck-context-close" data-studio-stuck-close aria-label="Close help">×</button></div>'+
-   '<div class="stuck-context-body"><p id="studioStuckIntro">Which specific mathematical obstacle is holding you up? Choose the closest. Nothing in your IA is changed by reading this advice.</p>'+
+  dialog.innerHTML='<div class="stuck-context-top guidance-surface-header"><span class="stuck-context-icon" aria-hidden="true">?</span>'+
+   '<div><p class="stuck-context-eyebrow guidance-surface-eyebrow">I AM STUCK · '+(source==="checking"?"CHECKING":"IA STUDIO")+'</p>'+
+   '<h2 id="studioStuckTitle" class="guidance-surface-title" tabindex="-1">'+e(active.title)+'</h2></div>'+
+   '<button type="button" class="stuck-context-close guidance-surface-close" data-studio-stuck-close aria-label="Close help">×</button></div>'+
+   '<div class="stuck-context-body guidance-surface-body"><p id="studioStuckIntro">'+
+   (source==="checking"?"Which part of checking your IA is preventing you from moving forward? Choose the closest. Reading this help does not change your review.":"Which specific mathematical obstacle is holding you up? Choose the closest. Reading this help does not change your mathematics.")+
+   '</p>'+
    '<p class="stuck-context-selection">'+e(active.source)+
      (active.course?' · '+e(active.course):'')+'</p>'+
    (tags.length?'<div class="stuck-context-factual" role="note">'+tags.map(t=>'<span>'+e(t)+'</span>').join('')+'</div>':"")+
@@ -103,7 +106,7 @@ export function createStudioHelpController({getState,escapeHtml,onHub,onNavigate
    '<p class="stuck-context-stop"><strong>A useful stopping point:</strong> '+e(chosen.stop)+'</p>'+
    '<details><summary>If I am still stuck</summary><p>'+e(chosen.fallback)+'</p>'+
    '<p class="stuck-context-boundary">'+e(chosen.boundary)+'</p></details></section>'+
-   '<div class="stuck-context-actions"><button type="button" class="btn btn-primary" data-studio-stuck-go>'+
+   '<div class="stuck-context-actions guidance-surface-actions"><button type="button" class="btn btn-primary" data-studio-stuck-go>'+
     e(source==="checking"?"Open this document check":
       chosen.targetNode?chosen.targetLabel||"Go to the relevant mathematical work":
       active.spot.startsWith("field:")?"Return to this question":
