@@ -114,7 +114,7 @@
 @keyframes ideaBubbleFloat{0%,100%{transform:translateY(0) rotate(var(--idea-tilt,0deg))}
  50%{transform:translateY(-1.8px) rotate(calc(var(--idea-tilt,0deg) + .4deg))}}
 @keyframes ideaWireAppear{from{opacity:0}to{opacity:.74}}
-@media(max-width:720px){
+@media(max-width:800px){
  .idea-map-network{border-radius:20px}
  .idea-map-centre{width:152px;min-height:96px}
  .idea-map-centre strong{font-size:15px}
