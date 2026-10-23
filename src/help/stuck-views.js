@@ -114,7 +114,7 @@ export function createStuckViews({getState,e,icon,field}){
        '" aria-pressed="'+(g.id===selectedGroup)+'">'+e(g.label)+'</button>').join("")+'</div>'+
       '<p class="stuck-caption" role="status" aria-live="polite" data-stuck-search-count>'+
        matches.size+' matching problems</p>'+
-      '<p class="stuck-caption" data-stuck-no-results'+(matches.size?" hidden":"")+'>'No problems match this search. Try fewer words or choose an earlier general help topic below.</p>'+
+      '<p class="stuck-caption" data-stuck-no-results'+(matches.size?" hidden":"")+'>'+'No problems match this search. Try fewer words or choose an earlier general help topic below.</p>'+
       '<div class="stuck-browse-groups">'+groups+'</div></div></details>'+
     '<details class="stuck-legacy-browse"><summary>More general difficulties and earlier help topics</summary>'+
      '<p class="stuck-caption">These 24 established topics remain available for returning students and saved projects.</p>'+
