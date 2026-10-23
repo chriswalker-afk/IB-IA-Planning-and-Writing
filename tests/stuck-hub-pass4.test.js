@@ -187,3 +187,33 @@ test("Help remains read-only in Checking, with source contents safely escaped",(
  assert(!html.includes("<img"));
  assert.equal(JSON.stringify([s.entries,s.completion.review,s.planning]),before);
 });
+
+test("Opening hub from a specific mathematics part prioritises that exact difficulty",()=>{
+ const s=fixture("completing","C30");
+ s.entries=[{id:"x",phase:"first",status:"planned",result:""}];
+ s.completion.activeEntryIndex=0;
+ captureStuckOrigin(s,{helpSpot:"C30:part:show",focusId:"studio-stuck-C30-part-show"});
+ const suggestions=suggestedHubIssues(s);
+ assert.equal(suggestions[0].cardId,"show-which");
+ assert.equal(s.completion.support.origin.helpSpot,"C30:part:show");
+ const copy=normalizeProjectState(JSON.parse(JSON.stringify(s)));
+ assert.equal(copy.completion.support.origin.focusId,"studio-stuck-C30-part-show");
+ assert.equal(copy.completion.support.origin.helpSpot,"C30:part:show");
+});
+test("Opening hub from MLA or authorship bubbles prioritises the corresponding real check",()=>{
+ const s=fixture("checking");
+ captureStuckOrigin(s,{helpSpot:"D12:check:D12",focusId:"checking-stuck-draft-D12-check"});
+ const first=suggestedHubIssues(s)[0];
+ assert(first&&first.cardId==="authorship-own");
+ captureStuckOrigin(s,{helpSpot:"D09:check:D09"});
+ assert(suggestedHubIssues(s)[0].cardId.startsWith("mla-"));
+});
+test("Incomplete later mathematical stage returns to that same stage through hub",()=>{
+ const s=fixture("completing","C40");
+ s.entries=[{id:"first",phase:"first",status:"completed",result:"One real value"},
+  {id:"later",phase:"substantial",fromEntryId:"first",status:"planned",result:""}];
+ s.completion.activeEntryIndex=1;captureStuckOrigin(s);
+ const issue=hubIssueFor(s,"fix:studio:not-yet-result");
+ assert(issue);
+ assert.equal(issue.target.node,"C40");
+});
