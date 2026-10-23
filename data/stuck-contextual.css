@@ -1,0 +1,44 @@
+/* Contextual "I am stuck" — amber for a specific obstacle, not criteria or writing craft. */
+.stuck-page-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;min-width:0}
+.stuck-page-header>.task-heading,.stuck-page-header>.criterion-title-row{flex:1;min-width:0}
+.stuck-page-header .criterion-title-row{margin:0}
+.stuck-field-header{display:flex;align-items:center;gap:10px;justify-content:space-between;min-width:0;margin-bottom:6px}
+.stuck-field-header>.field-label{margin:0;flex:1;min-width:0}
+.stuck-field-header+textarea,.stuck-field-header+input,.stuck-field-header+select{margin-top:0}
+.stuck-help-badge{width:34px;height:34px;min-width:34px;flex:none;display:inline-grid;place-items:center;border:1.5px solid #d29837;border-radius:999px;background:#fff5df;color:#80500e;font:bold 19px/1 Manrope,'DM Sans',sans-serif;box-shadow:0 1px 4px #6e450512;cursor:pointer;transition:background .14s ease,transform .14s ease}
+.stuck-help-badge:hover,.stuck-help-badge:focus-visible{background:#ffe5ad;transform:translateY(-1px)}
+.stuck-help-badge:focus-visible{outline:3px solid #a66a17;outline-offset:2px}
+.stuck-field-header .stuck-help-badge{width:29px;height:29px;min-width:29px;font-size:17px}
+.stuck-context-dialog{position:fixed;inset:0;width:min(94vw,610px);max-height:min(87vh,880px);overflow:auto;margin:auto;padding:0;border:1px solid #e4c18b;border-radius:22px;background:#fffdf8;color:var(--ink);box-shadow:0 25px 80px #221b0d44}
+.stuck-context-dialog::backdrop{background:rgba(12,27,31,.57)}
+.stuck-context-top{display:flex;align-items:center;gap:12px;padding:21px 24px 16px;border-bottom:1px solid #f3e5c9;background:#fff6e5}
+.stuck-context-top h2{font-size:clamp(19px,2.5vw,24px);margin:3px 0 0;line-height:1.25}
+.stuck-context-icon{display:inline-grid;place-items:center;width:39px;height:39px;min-width:39px;border-radius:50%;background:#ffdf9e;color:#70420d;font-weight:800;font-size:22px}
+.stuck-context-eyebrow{font-size:11px;color:#865314;font-weight:800;letter-spacing:.09em;margin:0}
+.stuck-context-close{background:transparent;border:0;border-radius:9px;color:#735736;font-size:29px;line-height:1;padding:5px 9px;margin-left:auto}
+.stuck-context-close:hover{background:#f9e7ca}
+.stuck-context-body{padding:19px 24px 24px}
+.stuck-context-body>p:first-child{font-size:14px;color:var(--muted);margin-bottom:14px}
+.stuck-context-choices{display:grid;gap:8px;margin-bottom:19px}
+.stuck-context-choice{width:100%;text-align:left;padding:12px 15px;border-radius:12px;border:1px solid #e4d9c5;background:#fff;color:var(--ink);font-weight:650;line-height:1.45}
+.stuck-context-choice:hover{background:#fff8eb}
+.stuck-context-choice.selected{background:#fff0d0;border-color:#d1942f;box-shadow:inset 3px 0 #ca8520}
+.stuck-context-recovery{border-top:1px solid #ecdfcb;padding-top:18px}
+.stuck-context-recovery h3{font-size:15px;font-weight:800;margin:0 0 7px}
+.stuck-context-recovery h3:not(:first-child){margin-top:16px}
+.stuck-context-recovery p{font-size:14px;line-height:1.65;margin:0 0 10px}
+.stuck-context-stop{background:#f5f8f4;border-radius:10px;padding:10px 13px;border:1px solid #e4e9e1}
+.stuck-context-recovery details{margin:10px 0 0;border-top:1px solid #eee5d7;padding-top:10px}
+.stuck-context-recovery summary{font-size:14px;font-weight:700;color:#76501b;cursor:pointer;margin-bottom:10px}
+.stuck-context-boundary{font-size:13px!important;color:#6a5945}
+.stuck-context-actions{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin-top:20px}
+.stuck-context-actions .btn{max-width:100%}
+@media(max-width:700px){
+ .stuck-context-dialog{inset:auto 0 0;width:100%;max-height:91dvh;min-height:0;margin:0;border-radius:19px 19px 0 0;border-bottom:0;padding-bottom:env(safe-area-inset-bottom)}
+ .stuck-context-top{padding:17px 17px 13px}.stuck-context-body{padding:16px 17px 20px}
+ .stuck-context-actions{flex-direction:column;align-items:stretch}
+ .stuck-context-actions .btn{width:100%;white-space:normal}
+ .stuck-page-header{align-items:flex-start;gap:8px}
+ .stuck-help-badge{width:33px;min-width:33px;height:33px}
+}
+@media(prefers-reduced-motion:reduce){.stuck-help-badge{transition:none;transform:none!important}}

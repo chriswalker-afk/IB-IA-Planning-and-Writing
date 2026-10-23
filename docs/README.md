@@ -11,7 +11,7 @@ The root [README](../README.md) describes the current student-facing website. Th
 - Complete illustrative student investigations: [Pass 1 and the 16 briefs](illustrative-samples-pass1-2026-10-22.md), [Pass 2 statistics investigations](illustrative-samples-pass2-2026-10-22.md), and the [current field contract](illustrative-sample-field-contract.md).
 - [Full-project export](full-project-export-2026-10-15.md), [report repair](report-export-fix-2026-10-15.md), and [source coverage register](coverage.md).
 
-- ["I am stuck" redesign — current Pass 1 audit and implementation contract](stuck-redesign-pass1-2026-10-23.md); [original 15 October help implementation](help-2026-10-15.md) retained as history.
+- ["I am stuck" redesign — Pass 1 audit](stuck-redesign-pass1-2026-10-23.md) and [Pass 2 contextual Planning pop-ins](stuck-redesign-pass2-2026-10-23.md); [original 15 October help implementation](help-2026-10-15.md) retained as history.
 
 ## Cleanup and production maintenance
 

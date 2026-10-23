@@ -1,7 +1,7 @@
 /** Small, private support state. No help action is a mathematical result. */
 import {TOPIC_IDS} from './stuck-catalog.js';
 const str=(v,n=3000)=>typeof v==='string'?v.slice(0,n):'';
-const routes=['home','planning','completing','path','report'];
+const routes=['home','planning','completing','checking','path','report'];
 export const isStuckNode=n=>/^C95(?:D|A|L|Q|N)?$/.test(n||'');
 export function createStuckState(){return{origin:null,selected:'',browse:false,more:false,returnPending:false,
  drafts:Object.fromEntries(TOPIC_IDS.map(id=>[id,{action:'',note:''}])),task:null};}

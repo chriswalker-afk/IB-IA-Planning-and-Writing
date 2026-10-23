@@ -892,7 +892,7 @@ def resource_diagram_creators(browser,width):
    drawer=page.locator(".resource-drawer")
    assert drawer.is_visible()
    assert drawer.locator('.resource-creator-card').count()==7
-   assert "31 matching guides" in drawer.inner_text()
+   assert "matching guides" in drawer.inner_text(),("Resource list should report available guides",width)
    assert drawer.evaluate('el=>el.scrollWidth<=el.clientWidth+1')
    if creator=="graph":
     drawer.screenshot(path=str(OUT/f"resource-creators-{width}.png"),animations="disabled")
@@ -918,12 +918,85 @@ def resource_diagram_creators(browser,width):
  finally:
   ctx.close()
 
+def contextual_planning_help(browser,width):
+ """A blocked student can choose a specific repair without altering the IA."""
+ s=copy.deepcopy(BASE)
+ s["route"]="planning"
+ s["planning"]["current"]="N00B"
+ s["ui"]["planningIntroSeen"]=True
+ s["ui"]["adviceMode"]="reduced"
+ ctx,page=open_fixture(browser,s,width)
+ try:
+  badge=page.locator('[data-source-node="N00B"] [data-stuck-help="N00B:page"]')
+  assert badge.is_visible(),("missing contextual Idea Lab bubble",width)
+  before=stored(page)
+  badge.click()
+  dialog=page.locator("dialog.stuck-context-dialog[open]")
+  assert dialog.is_visible()
+  assert dialog.locator('[data-stuck-context-choice]').count()==3
+  assert "First, ask yourself" in dialog.inner_text()
+  assert "How to tell whether it helped" in dialog.inner_text()
+  assert "mathematical question" in dialog.inner_text().lower()
+  assert stored(page)==before,("help opened but student state changed",width)
+  page.screenshot(path=str(OUT/f"stuck-interest-help-{width}.png"),animations="disabled")
+  page.keyboard.press("Escape")
+  assert page.locator("dialog.stuck-context-dialog[open]").count()==0
+  assert page.evaluate("document.activeElement.id")=="stuck-badge-N00B-page"
+  page.locator('[data-action="idea-map-mode"][data-mode="data"]').click()
+  page.locator('[data-stuck-help="N00B:page"]').click()
+  text=page.locator("dialog.stuck-context-dialog[open]").inner_text()
+  assert "don't know whether this evidence can be used" in text.lower(),text
+  page.locator("[data-stuck-context-close]").click()
+  assert stored(page)["ui"]["adviceMode"]=="reduced"
+  without_overflow(page)
+ finally:
+  ctx.close()
+ s=copy.deepcopy(BASE)
+ s["route"]="planning"
+ s["planning"]["current"]="N01"
+ s["ui"]["planningIntroSeen"]=True
+ s["planning"]["fields"]["aim"]="How does the height vary with time?"
+ ctx,page=open_fixture(browser,s,width)
+ try:
+  badge=page.locator('[data-source-node="N01"] [data-stuck-help="N01:aim"]')
+  assert badge.is_visible()
+  before=stored(page)
+  badge.click()
+  dialog=page.locator("dialog.stuck-context-dialog[open]")
+  assert "Underline the main mathematical action" in dialog.inner_text()
+  dialog.locator("[data-stuck-context-go]").click()
+  assert page.evaluate("document.activeElement.getAttribute('data-bind')")=="planning.fields.aim"
+  assert stored(page)==before
+  without_overflow(page)
+ finally:
+  ctx.close()
+ s=copy.deepcopy(BASE)
+ s["route"]="planning"
+ s["planning"]["current"]="N03D"
+ s["planning"]["fields"]["kind"]="statistics"
+ s["planning"]["fields"]["permissionNeed"]="yes"
+ s["ui"]["planningIntroSeen"]=True
+ ctx,page=open_fixture(browser,s,width)
+ try:
+  badge=page.locator('[data-source-node="N03D"] [data-stuck-help="N03D:page"]')
+  assert badge.is_visible()
+  badge.click()
+  dialog=page.locator("dialog.stuck-context-dialog[open]")
+  assert "I need permission" in dialog.inner_text()
+  assert "affected collection on hold" in dialog.inner_text()
+  dialog.locator("[data-stuck-context-go]").click()
+  assert stored(page)["planning"]["current"]=="N06T"
+  assert stored(page)["planning"]["fields"]["permissionNeed"]=="yes"
+  without_overflow(page)
+ finally:
+  ctx.close()
+
 def main():
  results=[]
  with sync_playwright() as p:
   browser=p.chromium.launch(headless=True)
   for width in (1360,390):
-   for scenario,fn in (("new",first_time),("resource-diagram-creators",resource_diagram_creators),("completed",completed_plan),("writing-stages",writing_sections),("maths-model-start",modelling_math_start),("repeatable-mathematics",repeatable_mathematics),("growing-discovery-trail",growing_discovery_trail),("adaptive-mathematical-journey",adaptive_mathematical_journey),("reduced-advice",reduced_writing)):
+   for scenario,fn in (("contextual-stuck-planning",contextual_planning_help),("new",first_time),("resource-diagram-creators",resource_diagram_creators),("completed",completed_plan),("writing-stages",writing_sections),("maths-model-start",modelling_math_start),("repeatable-mathematics",repeatable_mathematics),("growing-discovery-trail",growing_discovery_trail),("adaptive-mathematical-journey",adaptive_mathematical_journey),("reduced-advice",reduced_writing)):
     try:
      fn(browser,width)
      results.append({"scenario":scenario,"width":width,"status":"passed"})

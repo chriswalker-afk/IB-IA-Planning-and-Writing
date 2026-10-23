@@ -16,6 +16,7 @@ import {resourceAction,resourceFilter,resourcePreference} from './src/resources/
 import {newResourceSession} from './src/resources/state.js';
 import {PRACTICE_PAIRS} from './src/resources/catalog.js';
 import {createStuckViews} from './src/help/stuck-views.js';
+import {createPlanningHelpController} from './src/help/planning-help.js';
 import {captureStuckOrigin,isStuckNode} from './src/help/stuck-state.js';
 import {stuckAction} from './src/help/stuck-actions.js';
 import {stuckContext} from './src/help/stuck.js';
@@ -155,6 +156,17 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       (supportsMathInField(path,type,opts)?mathFieldTools(path):"")+ '</div>';
   };
   const stuckViews=createStuckViews({getState:()=>state,e,icon,field});
+  const planningHelpController=createPlanningHelpController({
+    getState:()=>state,escapeHtml:e,
+    onHub:trigger=>{
+      captureStuckOrigin(state,{scrollY:window.scrollY||0,focusId:trigger?.id||""});
+      lastFocus=trigger;save();openDrawer("stuck");
+    },
+    onNavigate:node=>{
+      const result=setPlanCurrent(state,node);
+      if(result.ok)nav("planning");else toast(result.error||"That Planning step is not available.");
+    }
+  });
   const handoverViews=createHandoverViews({getState:()=>state,icon,e,button,field});
 
   // MathJax is split out of the initial page load. Existing writing stays
@@ -932,6 +944,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     if(state.ui.resourceCreatorReturnRoute&&(state.route!=="completing"||state.completion.current!=="C31"))
       clearResourceCreatorReturn();
     closeGuidePopin(false);
+    planningHelpController.close(false);
     detachIdeaMapGraph();
     const map={home:viewHome,planning:viewPlanning,completing:viewCompleting,checking:viewChecking,path:viewPath,report:viewReport};
     document.body.classList.toggle("representation-focus-active",representationFocusActive(state));
@@ -1777,7 +1790,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         state.ui.adviceMode=state.ui.adviceMode==="reduced"?"guided":"reduced";
         save();render();restoreReturn(where);
         toast(state.ui.adviceMode==="reduced"?
-         "Essential instructions only. All green and purple help bubbles remain available.":"Full contextual advice restored.");
+         "Essential instructions only. Green, purple and orange help bubbles remain available.":"Full contextual advice restored.");
         break;
       }
       case "route-coach-next":{
