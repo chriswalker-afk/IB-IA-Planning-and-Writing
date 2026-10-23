@@ -1,5 +1,6 @@
 /** The same authored answers feed the fields, continuous reader and exports. */
 import {referenceSampleSpec} from './sample-library.js';
+import {sampleWorksActuallyCited} from './samples/mla-references.js';
 import {collectProjectFigures,figureForEntry} from '../handover/figure-report.js';
 import {mixedMathPreview,escapeMixedHtml} from '../math/mixed-math.js';
 
@@ -58,8 +59,20 @@ export function referenceIAPagesModel(state){
   textBlock(f.conclusionBenefit,'completion.fields.conclusionBenefit'),
   textBlock(f.conclusionExtension,'completion.fields.conclusionExtension')
  ]));
- if(spec.references?.length)sections.push(section((state.entries.length+4)+' · Sources and provenance',
-  spec.references.map((item,index)=>textBlock([item.label,item.value].filter(Boolean).join(': '),'references['+index+']'))));
+ // The constructed-data recipe is disclosed in Starting material and
+ // in the sample provenance header. It is not a fictitious outside publication.
+ const shown=sections.flatMap(part=>part.blocks.filter(b=>b.type==='text').map(b=>b.value)).join('\n');
+ const works=sampleWorksActuallyCited(spec,shown);
+ if(works.length){
+  const entries=works.map(item=>({...textBlock(item.work,'worksCited['+item.id+']'),url:item.url}));
+  sections.push(section((state.entries.length+4)+' · Works Cited',entries));
+ }else{
+  const original=spec.references||[];
+  const notes=original.length?original.map(item=>[item.label,item.value].filter(Boolean).join(': ')):
+   [spec.provenance||'Original constructed mathematical scenario'];
+  sections.push(section((state.entries.length+4)+' · Constructed inputs and provenance (no external Works Cited)',
+    notes.map((content,index)=>textBlock(content,'references['+index+']'))));
+ }
  return {
   title:value(state.planning.fields.provisionalTitle)||spec.title,
   aim:value(state.planning.fields.aim),course:state.planning.fields.course,
@@ -80,7 +93,12 @@ export function renderIllustrativeIAReading(model){
  const e=escapeMixedHtml,prose=text=>'<div class="sample-reader-prose">'+mixedMathPreview(text,{editable:false})+'</div>';
  const body=model.sections.map((part,index)=>'<section class="sample-reader-section" id="sample-section-'+index+'">'+
   '<h3>'+e(part.title)+'</h3>'+(part.blocks||part.rows.map(row=>({type:'text',value:row.value}))).map(block=>{
-   if(block.type==='text')return prose(block.value);
+   if(block.type==='text'){
+    if(block.field?.startsWith('worksCited['))
+     return '<div class="sample-reader-mla-entry">'+prose(block.value)+
+      (block.url&&/^https:\/\/[^\s]+$/.test(block.url)?'<a class="sample-reader-mla-source-link" href="'+e(block.url)+'" target="_blank" rel="noopener noreferrer" referrerpolicy="no-referrer">Open original source ↗</a>':'')+'</div>';
+    return prose(block.value);
+   }
    const figure=block.figure;
    if(figure.error)return '<p class="sample-reader-error">'+e(figure.error)+'</p>';
    return '<figure class="sample-reader-figure" data-sample-figure="'+e(figure.id)+'" aria-label="'+e(figure.title)+'">'+inlineFigureSvg(figure)+'</figure>';

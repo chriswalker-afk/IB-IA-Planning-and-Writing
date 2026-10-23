@@ -15,3 +15,10 @@
 .sample-reader-figure>svg{display:block;width:100%;height:auto;max-width:100%}
 .sample-reader-error{padding:16px;border:1px solid #af583f;border-radius:8px}
 @media(max-width:600px){.sample-reader{padding:6px 4px 32px}.sample-reader-prose{font-size:.95rem;line-height:1.75}.sample-reader-figure{padding:4px;border-radius:6px}.sample-reader-section{padding-top:24px}}
+
+/* Pass 4: genuine MLA Works Cited entries are distinct from constructed data. */
+.sample-reader .sample-reader-mla-entry{margin:15px 0 21px;padding-left:1.75rem;text-indent:-1.75rem;overflow-wrap:anywhere}
+.sample-reader .sample-reader-mla-entry .sample-reader-prose{margin:0;line-height:1.75}
+.sample-reader .sample-reader-mla-source-link{font-size:11px;font-weight:600;color:var(--teal-dark);display:inline-block;text-indent:0;margin:5px 0 0 1px}
+.sample-reader .sample-reader-mla-source-link:focus-visible{outline:3px solid #14836a;outline-offset:3px;border-radius:2px}
+@media(max-width:480px){.sample-reader .sample-reader-mla-entry{padding-left:1.25rem;text-indent:-1.25rem}}
