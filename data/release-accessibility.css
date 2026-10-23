@@ -12,7 +12,7 @@
  border-radius:var(--ui-radius-control);font-size:15px;font-weight:800;
  box-shadow:0 8px 23px #17353c40;
  transform:translateY(calc(-100% - 16px));
- transition:transform var(--ui-duration) var(--ease);
+ transition:none; /* Keyboard focus must reveal the skip link immediately. */
 }
 .skip-link:focus,.skip-link:focus-visible{
  transform:translateY(0);outline:3px solid #b8863b;outline-offset:3px
