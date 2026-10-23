@@ -16,6 +16,7 @@ The root [README](../README.md) describes the current student-facing website. Th
 ## Release-readiness polish
 
 - [Pass 1: shared visual design system](release-polish-pass1-2026-10-23.md): consistent surface, type, control and responsive tokens while preserving specialist mathematical tools and contextual advice palettes.
+- [Pass 2: navigation and page hierarchy](release-polish-pass2-2026-10-23.md): coherent workspace location, cross-chapter return navigation, tablet Checking parity and accessible current-page states.
 
 ## Cleanup and production maintenance
 

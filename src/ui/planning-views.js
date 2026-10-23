@@ -1,4 +1,5 @@
 import {planningLearningTrail} from './living-journey.js';
+import {workspaceHeader} from './workspace-navigation.js';
 import {renderCitationReminder} from '../resources/citation-prompts.js';
 import {planningScreenTitle} from '../planning/screen-labels.js';
 import {earlyMathRecommendations} from '../planning/math-recommendations.js';
@@ -545,9 +546,10 @@ export function createPlanningViews(ctx){
   return '<div class="page planning-page">'+tabletNav()+
    '<div class="planning-page-layout">'+planningLearningTrail(state,{support:kickoff?'':criteriaPanel(state)})+
    '<div class="planning-page-main">'+
-   '<div class="progress-top"><span class="progress-overview">'+icon("compass")+' Guided Planning</span>'+
-   '<span class="progress-counter">1. Planning · '+e(welcome?"How Pathfinder works":PROGRESS_GROUPS[stageI]?.label||"Review")+'</span>'+
-   (welcome?'':'<button type="button" class="chapter-guide-reopen" data-action="planning-intro-open">'+icon("circle-help")+' How this works</button>')+'</div>'+
+   workspaceHeader(state,{route:"planning",
+    focus:welcome?"How Pathfinder works":PROGRESS_GROUPS[stageI]?.label||"Review",
+    tools:welcome?"":'<button type="button" class="chapter-guide-reopen" data-action="planning-intro-open">'+icon("circle-help")+' How this works</button>'
+   })+
    '<div class="task-shell'+(welcome?' chapter-onboarding-shell':'')+(kickoff&&!welcome?' planning-kickoff':'')+(titleStep?' planning-title-step':'')+(n==="N07"?' planning-finish':'')+'" data-source-node="'+e(n)+'"'+(welcome?' data-planning-intro="true"':'')+'>'+
    '<div class="stuck-page-header">'+criterionPageHeading(welcome?screen.title:planningScreenTitle(n,state),"planning",n)+
    (welcome?'':planningHelpBadge(state,'page',e))+'</div><p class="task-intro">'+e(screen.intro)+'</p>'+

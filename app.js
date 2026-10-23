@@ -912,8 +912,16 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   // The permanent sidebar is navigation only. Chapter progress belongs in
   // the single Discovery Trail displayed by the active workspace.
   function refreshPathCount(){
-    const badge=$("#pathCount");
-    if(badge)badge.textContent=String(state.entries.length);
+    // This number counts saved mathematical work records, not complete chapters.
+    const count=state.entries.length,badge=$("#pathCount");
+    if(badge){
+      badge.textContent=String(count);
+      badge.hidden=count===0;
+      badge.title=count+" mathematical work "+(count===1?"record":"records")+" (including planned work)";
+    }
+    const pathLink=document.querySelector('.side-link[data-nav="path"]');
+    pathLink?.setAttribute?.("aria-label",count?
+      "My path, "+count+" mathematical work "+(count===1?"record":"records")+", including planned work":"My path");
   }
   function refreshProgress(){
     refreshPathCount();
@@ -1002,7 +1010,12 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     detachIdeaMapGraph=attachIdeaMapGraph(main);
     if(preview.active)setSaveStatus("Sample preview only");
     filterMathOptions();
-    document.querySelectorAll("[data-nav]").forEach(b=>b.classList.toggle("active",b.dataset.nav===state.route));
+    document.querySelectorAll('.side-link[data-nav],.mobile-nav-link[data-nav],.tablet-nav [data-nav]').forEach(b=>{
+      const current=b.dataset.nav===state.route;
+      b.classList.toggle("active",current);
+      if(current)b.setAttribute("aria-current","page");
+      else b.removeAttribute("aria-current");
+    });
     refreshPathCount();
     if(state.geometryStudio?.zoomed){
       const zoomPreview=main.querySelector("[data-geometry-preview]");

@@ -6,6 +6,7 @@ import {reviewChecksFor} from '../completing/review.js';
 import {renderCitationSpotlight,renderCitationAudit,renderAuthenticityAudit} from './reference-audit.js';
 import {CHECKING_CRITERIA,CHECKING_DETAILS,CHECKING_MODES,reviewCounts} from './checklist.js';
 import {chapterRibbon} from '../ui/living-journey.js';
+import {workspaceHeader} from '../ui/workspace-navigation.js';
 import {criterionBadge} from '../essentials/criteria-badges.js';
 import {checkingHelpBadge} from '../help/checking-help.js';
 import {isRevisedAssessment,REVISED_2029_CRITERIA} from '../essentials/assessment-cohorts.js';
@@ -130,7 +131,9 @@ export function createCheckingViews(ctx){
   const checks=reviewChecksFor(s,mode).filter(x=>!revised||!['D02','D03','D04','D05','D06','D16'].includes(x.id));
   const counts=reviewCounts(s,mode,checks);
   const stages=[['C70','Review notation and presentation'],['C80','Teacher draft & feedback records'],['C90','Final communication and submission notes']];
-  return '<div class="page wide checking-page">'+tabletNav()+chapterRibbon(s)+
+  return '<div class="page wide checking-page">'+tabletNav()+
+   workspaceHeader(s,{route:"checking",focus:CHECKING_MODES.find(x=>x.id===mode)?.title||"Review my IA"})+
+   chapterRibbon(s)+
    sheetTitle('CHECK YOUR IA','Checking',revised?
       'Review your actual IA document using the published 2029 criteria overview. Older A–E bubbles and self-marks do not apply to this cohort.':
       'A final look at the mathematics and the writing in your own IA document. Criterion bubbles explain which assessment expectation is relevant.')+

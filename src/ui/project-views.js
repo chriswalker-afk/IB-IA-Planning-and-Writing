@@ -200,8 +200,8 @@ export function createProjectViews(ctx){
   function tabletNav() {
     const state = ctx.getState();
     return '<nav class="tablet-nav" aria-label="Quick navigation">'+
-      [["home","Home","home"],["planning","Planning","compass"],["completing","IA Studio","pencil"],["path","My path","route"]].map(([id,label,ic])=>
-      '<button type="button" class="'+(state.route===id?"active":"")+'" data-nav="'+id+'">'+icon(ic)+label+'</button>').join("")+'</nav>';
+      [["home","Home","home"],["planning","Planning","compass"],["completing","IA Studio","pencil"],["checking","Checking","clipboard"],["path","My path","route"]].map(([id,label,ic])=>
+      '<button type="button" class="'+(state.route===id?"active":"")+'" data-nav="'+id+'"'+(state.route===id?' aria-current="page"':'')+'>'+icon(ic)+label+'</button>').join("")+'</nav>';
   }
 
   return {viewHome,viewPath,viewReport,tabletNav};
