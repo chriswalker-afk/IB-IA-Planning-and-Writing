@@ -61,7 +61,8 @@ export function hubOriginalView(state){
  const completion=o?{...state.completion,current:o.node,
   activeEntryIndex:state.entries.findIndex(e=>e.id===o.entryId),
   nextFromEntryId:o.nextFromEntryId}:state.completion;
- return {...state,route,planning,completion,ui:o?.route==="checking"?{...state.ui,checkingMode:o.checkMode||"draft"}:state.ui};
+ return {...state,route,planning,completion,helpSpot:o?.helpSpot||"",
+  ui:o?.route==="checking"?{...state.ui,checkingMode:o.checkMode||"draft"}:state.ui};
 }
 const targetFor=(view,surface,card)=>{
  if(surface==="planning"){
@@ -137,17 +138,24 @@ export function suggestedHubIssues(state){
  const selected=[],push=x=>{if(x&&!selected.some(y=>y.id===x.id))selected.push(x);};
  if(surface==="planning"){
   const node=view.planning.current;
-  const keys=Object.keys(PLANNING_RECOVERY_SPOTS).filter(k=>k.startsWith(node+":"))
-   .map(x=>x.slice(node.length+1)).sort((a,b)=>Number(b==="page")-Number(a==="page"));
+  const hinted=view.helpSpot.startsWith(node+":")?view.helpSpot.slice(node.length+1):"";
+  const keys=[...new Set([hinted,...Object.keys(PLANNING_RECOVERY_SPOTS)
+   .filter(k=>k.startsWith(node+":"))
+   .map(x=>x.slice(node.length+1))
+   .sort((a,b)=>Number(b==="page")-Number(a==="page"))])].filter(Boolean);
   for(const key of keys){
    const h=planningHelpFor(view,key);
    if(h)for(const card of h.choices)push(all.find(x=>x.cardId===card.id));
   }
  }else if(surface==="completing"){
   const node=view.completion.current;
-  const spots=node==="C30"||node==="C40"||node==="C50"?
-   ["part:next","part:reflect","page","part:show","part:introduce"]:
+  const entry=completeEntry(view),actual=!!entry&&actualMathematics(entry);
+  const hinted=view.helpSpot.startsWith(node+":")?view.helpSpot.slice(node.length+1):"";
+  const typical=node==="C30"||node==="C40"||node==="C50"?
+   actual?["part:next","part:reflect","page","part:show","part:introduce"]:
+    ["part:show","page","part:introduce","part:reflect","part:next"]:
    ["page","field:interpretation","part:next"];
+  const spots=[...new Set([hinted,...typical])].filter(Boolean);
   for(const spot of spots){
    const h=studioHelpFor(view,spot);
    if(h)for(const card of h.choices)push(all.find(x=>x.cardId===card.id));
@@ -157,9 +165,12 @@ export function suggestedHubIssues(state){
   const records=view.completion.review?.records||{};
   const urgent=Object.keys(CHECKING_RECOVERY_SPOTS)
    .filter(k=>/^D\d\d$/.test(k)&&records[mode+"-"+k]?.status==="needs-work");
-  const checks=mode==="feedback"?["feedback",...urgent,"D13","D15","D09"]:
+  const hinted=view.helpSpot.startsWith("feedback:")?"feedback":
+   /^D\d{2}:/.test(view.helpSpot)?view.helpSpot.slice(0,3):"";
+  const checks=[...new Set([hinted,...(mode==="feedback"?
+   ["feedback",...urgent,"D13","D15","D09"]:
    mode==="final"?[...urgent,"D09","D12","D17","D21"]:
-   [...urgent,"D09","D11","D12","D01"];
+   [...urgent,"D09","D11","D12","D01"])] )].filter(Boolean);
   for(const key of checks){
    const h=checkingHelpFor(view,key==="feedback"?"feedback":"check:"+key);
    if(h)for(const card of h.choices)push(all.find(x=>x.cardId===card.id));
