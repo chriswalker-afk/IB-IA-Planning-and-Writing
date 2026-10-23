@@ -13,6 +13,11 @@ function controls(state){
 const mapAction=(act,label,attrs='',css='')=>'<button type="button" class="'+css+'" data-action="idea-'+act+'" '+attrs+'>'+label+'</button>';
 const mapAttrs=(id,parent)=>' data-idea-node="'+e(id)+'" data-idea-parent="'+e(parent)+'"';
 const leafId=(topic,i)=>'leaf-'+topic+'-'+i;
+const IDEA_TOPIC_ICONS={sport:'flag',music:'sparkles',games:'grid-2x2',food:'flask',
+ design:'pencil',school:'book',travel:'route',money:'calculator',technology:'mouse-pointer-click',
+ nature:'image',environment:'map',patterns:'chart'};
+const IDEA_DATA_ICONS={time:'clock',shape:'ruler',change:'chart',compare:'bar-chart',
+ survey:'clipboard',repeat:'refresh',weather:'sparkles',published:'book',image:'image'};
 const mapRoot=(r,selected)=>mapAction('map-root',
  '<span class="idea-map-root-icon">'+icon(r.icon)+'</span><strong>'+e(r.label)+'</strong><small>'+e(r.description)+'</small>'+
  '<span class="idea-map-root-arrow" aria-hidden="true">'+icon('chevron-right')+'</span>',
@@ -25,12 +30,12 @@ function ideaMapBranchesView(state){
  const access=ideaMapBranches(root).find(x=>x.id===m.dataBranch);
  const topTier=m.mode==='interests'?
   ideaMapTopics(root).map(x=>mapAction('map-topic',
-    '<span class="idea-map-node-icon">'+icon('layers')+'</span><strong>'+e(x.label)+'</strong>'+
+    '<span class="idea-map-node-icon">'+icon(IDEA_TOPIC_ICONS[x.id]||'lightbulb')+'</span><strong>'+e(x.label)+'</strong>'+
     '<span class="idea-map-node-arrow">'+icon('chevron-right')+'</span>',
     'id="idea-map-topic-'+e(x.id)+'" data-topic="'+e(x.id)+'" aria-pressed="'+(topic?.id===x.id)+'"'+mapAttrs('topic-'+x.id,'root-'+root.id),
     'idea-map-branch-node'+(topic?.id===x.id?' selected':''))).join(''):
   ideaMapBranches(root).map(x=>mapAction('map-access',
-    '<span class="idea-map-node-icon">'+icon('calculator')+'</span><strong>'+e(x.label)+'</strong><small>'+e(x.desc)+'</small>'+
+    '<span class="idea-map-node-icon">'+icon(IDEA_DATA_ICONS[x.id]||'calculator')+'</span><strong>'+e(x.label)+'</strong><small>'+e(x.desc)+'</small>'+
     '<span class="idea-map-node-arrow">'+icon('chevron-right')+'</span>',
     'id="idea-map-access-'+e(x.id)+'" data-branch="'+e(x.id)+'" aria-pressed="'+(access?.id===x.id)+'"'+mapAttrs('access-'+x.id,'root-'+root.id),
     'idea-map-branch-node idea-map-access-node'+(access?.id===x.id?' selected':''))).join('');
@@ -45,14 +50,14 @@ function ideaMapBranchesView(state){
  const activeParent=topic&&m.subtopic?leafId(topic.id,topic.subtopics.indexOf(m.subtopic)):
   access?'access-'+access.id:'';
  const ideas=activeParent?ideaMapIdeas(m):[];
- const directionTier=activeParent?'<div class="idea-map-tier idea-map-seeds" id="idea-map-directions-heading" tabindex="-1" data-idea-map-level="3" aria-label="Directions growing from the chosen detail">'+
-  ideas.map(seed=>mapAction('explore',
+ const directionTier=activeParent?'<div class="idea-map-tier idea-map-seeds" data-idea-map-level="3" aria-label="Directions growing from the chosen detail">'+
+  ideas.map((seed,i)=>mapAction('explore',
     '<span class="idea-map-direction-icon">'+icon('lightbulb')+'</span>'+
     '<span class="idea-map-direction-content"><strong class="idea-map-direction-title">'+e(seed.title)+'</strong>'+
     '<span class="idea-map-personal"><b>Make it personal</b><span>'+e(seed.narrow)+'</span></span>'+
     '<span class="idea-map-first-test">'+icon('clock')+' First try: '+e(seed.first)+'</span>'+
     '<span class="idea-map-customise">Shape my idea '+icon('arrow-right')+'</span></span>',
-    'data-seed="'+e(seed.id)+'" data-map="true" data-idea-card="'+e(seed.id)+'"'+mapAttrs('seed-'+seed.id,activeParent),
+    (i===0?'id="idea-map-directions-heading" ':'')+'data-seed="'+e(seed.id)+'" data-map="true" data-idea-card="'+e(seed.id)+'"'+mapAttrs('seed-'+seed.id,activeParent),
     'idea-map-direction-node')).join('')+'</div>':'';
  const warning=access?.warning?'<p class="idea-map-survey-warning" role="note">'+icon('info')+' '+e(access.warning)+'</p>':'';
  const selected=m.mode==='data'?access?.label:m.subtopic||topic?.label||root.label;
