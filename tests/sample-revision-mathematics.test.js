@@ -147,7 +147,8 @@ test("independent arithmetic and numerical integration confirm chi-squared, df, 
  assert(base.statistic>9.487729036781154);
  assert.match(sample.stages[2].result,/14\.54330179/);
  assert.match(sample.stages[2].result,/0\.005748497/);
- assert.match(sample.stages[2].result,/e\^\{-x\/2\}\(1\+x\/2\)/);
+ assert.match(sample.stages[2].result,/p\\approx P\(X\\ge14\.54330179\)/);
+ assert.match(sample.stages[2].result,/nine counts, excluding the total row and column/);
  assert.match(sample.stages[2].interpretation,/conditional on those assumptions/);
  assert.match(sample.stages[2].interpretation,/not the probability that independence is true/);
  assert.match(sample.conclusion.conclusionBenefit,/constructed cases and conditional response model/);
@@ -241,6 +242,36 @@ test("all 480 possible one-slot format changes reduce to the 18 exhaustively che
  // These remain hypothetical: neither the raw slots nor primary chart change.
  assert.deepEqual(countRecords(REVISION_RESPONSES),counts);
  assert.deepEqual(figure("stat-revision-percentages").draft.matrix.map(row=>row.slice(1).map(Number)),counts);
+});
+
+test("one-slot corrections rebuild the expected counts but cannot give a year-based rule majority coverage",()=>{
+ const worked=independentAnalysis(alteredCounts(0,0,2));
+ assert.deepEqual(worked.columns,[69,73,98]);
+ close(worked.expected[0][0],17.25);
+ close((26-worked.expected[0][0])**2/worked.expected[0][0],4.438405797101449);
+
+ // Enumerate every rule independently for every possible reclassification.
+ // Moving one response changes a fixed rule's match count by at most one,
+ // even if a different rule becomes optimal after the correction.
+ const bestCounts=[],gains=[];
+ for(let year=0;year<3;year++)for(let from=0;from<3;from++)for(let to=0;to<3;to++){
+  if(from===to)continue;
+  const changed=alteredCounts(year,from,to),matches=[];
+  for(let a=0;a<3;a++)for(let b=0;b<3;b++)for(let c=0;c<3;c++){
+   const before=counts[0][a]+counts[1][b]+counts[2][c];
+   const after=changed[0][a]+changed[1][b]+changed[2][c];
+   assert(Math.abs(after-before)<=1);
+   matches.push(after);
+  }
+  const best=Math.max(...matches);
+  const bestCommon=Math.max(...independentAnalysis(changed).columns);
+  assert(best<=109+1);
+  assert(best<Math.floor(base.n/2)+1,"Strict majority needs at least 121 of 240 matches.");
+  bestCounts.push(best);gains.push(best-bestCommon);
+ }
+ assert.equal(bestCounts.length,18);
+ assert.deepEqual([Math.min(...bestCounts),Math.max(...bestCounts)],[108,110]);
+ assert.deepEqual([Math.min(...gains),Math.max(...gains)],[10,14]);
 });
 
 test("the directed four-record scenario crosses the threshold without proving independence or improving the recommendation",()=>{
