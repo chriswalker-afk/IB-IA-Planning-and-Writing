@@ -43,7 +43,7 @@ function graphDraft({title,number,rows,yLabel="Standing reach",ySymbol="R",capti
  return {...newGraphDraft(),kind:"scatter",columns,matrix:rows.map(row=>row.map(String)),
   raw:rawTable(columns,rows),xLabel:"Height",xSymbol:"H",xUnit:"cm",xUnitMode:"unit",
   yLabel,ySymbol,yUnit:"cm",yUnitMode:"unit",title,figureNumber:String(number),
-  sourceKind:"secondary",sourceText,caption,models,
+  sourceKind:"secondary",sourceText:"Standing Reach Design Cases v1: 24 fixed constructed pairs; no real participants or published measurements.",caption,models,
   xMin:"150",xMax:"195",yMin:residual?"-6":"195",yMax:residual?"6":"260",
   includeZeroY:residual,showLegend:models.length>0,showGrid:true,equationPlacement:"legend"};
 }
