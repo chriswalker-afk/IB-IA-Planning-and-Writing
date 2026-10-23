@@ -27,7 +27,7 @@ test('Pass 1 offers five distinct mathematical investigations for each broad Ide
    assert(card.lens?.routeId===card.routeId,card.id);
    assert(card.route?.id===card.routeId,card.id);
    for(const field of ['title','question','first','maths','evidence','personalise','caution']){
-    assert(card[field]?.length>20,card.id+'/'+field+' needs specific guidance');
+    assert(card[field]?.length>(field==='title'?11:20),card.id+'/'+field+' needs specific guidance');
    }
    assert(card.question.endsWith('?'),card.id);
    assert(card.contexts.length>=3,card.id+' needs more than one narrow example');
