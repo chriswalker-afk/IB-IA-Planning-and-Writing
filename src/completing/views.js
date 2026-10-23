@@ -1,4 +1,5 @@
 import {chapterRibbon} from '../ui/living-journey.js';
+import {workspaceHeader} from '../ui/workspace-navigation.js';
 import {renderFieldGuideTeaser} from './writer-field-guide.js';
 import {studioHelpBadge} from '../help/studio-help.js';
 import {writerGuideFieldBubble} from './writer-guide-context.js';
@@ -1356,12 +1357,17 @@ export function createCompletingViews(ctx){
    }):screen.html+(screen.extra||"");
   // The Studio overview shows its own illustrated Discovery Trail.
   // Focused IA-writing screens retain the small five-chapter ribbon.
-  return '<div class="page narrow completing-page">'+tabletNav()+(writingIntro||node==="C04"?"":chapterRibbon(s))+
-    '<div class="completion-topline"><span>'+icon("route")+' '+e(node==="C04"?"Your IA Studio":(JOURNEY_GROUPS.indexOf(currentGroup(s))+1)+'. '+currentGroup(s).name)+'</span>'+
-    '<div class="completion-top-actions">'+(writingIntro?"":'<button type="button" class="chapter-guide-reopen" data-action="writing-intro-open">'+icon("info")+' How writing works</button>')+
-    '<button type="button" class="advice-mode-toggle" data-action="toggle-advice-mode" aria-pressed="'+isAdviceReduced(s)+'" aria-label="'+(isAdviceReduced(s)?"Show full advice":"Reduce optional advice")+'">'+
-      icon(isAdviceReduced(s)?"eye":"eye-off")+' '+(isAdviceReduced(s)?"Show full advice":"Reduce advice")+'</button>'+
-    (writingIntro||node==="C04"?"":'<button class="btn btn-quiet btn-sm" data-action="completion-open" data-node="C04">'+icon("layers")+' My stages</button>')+'</div></div>'+
+  return '<div class="page narrow completing-page">'+tabletNav()+
+    workspaceHeader(s,{route:"completing",overview:writingIntro||node==="C04",
+      focus:writingIntro?"How writing works":node==="C04"?"My mathematical stages":currentGroup(s).name,
+      tools:'<div class="completion-top-actions">'+
+       (writingIntro?"":'<button type="button" class="chapter-guide-reopen" data-action="writing-intro-open">'+icon("info")+' How writing works</button>')+
+       '<button type="button" class="advice-mode-toggle" data-action="toggle-advice-mode" aria-pressed="'+isAdviceReduced(s)+'" aria-label="'+(isAdviceReduced(s)?"Show full advice":"Reduce optional advice")+'">'+
+         icon(isAdviceReduced(s)?"eye":"eye-off")+' '+(isAdviceReduced(s)?"Show full advice":"Reduce advice")+'</button>'+
+       (writingIntro||node==="C04"?"":'<button class="btn btn-quiet btn-sm" data-action="completion-open" data-node="C04">'+icon("layers")+' My stages</button>')+
+       '</div>'
+    })+
+    (writingIntro||node==="C04"?"":chapterRibbon(s))+
     (writingIntro?"":topWarnings)+
     (!writingIntro&&c.conclusionWarningOpen&&node!=="C60"?conclusionReadiness(s):"")+
     (!writingIntro&&node!=="C00"&&node!=="C04"&&node!=="C10"&&!studioWriting&&!isStuckNode(node)?'<p class="studio-ia-writing-reminder">'+icon("pencil")+

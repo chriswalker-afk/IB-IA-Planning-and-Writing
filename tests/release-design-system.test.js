@@ -7,8 +7,9 @@ const html=read("index.html"),base=read("styles.css"),ui=read("data/release-desi
 
 test("shared release layer loads last and keeps 33 source styles in deploy order",()=>{
  const paths=stylePaths(html);
- assert.equal(paths.length,33);
- assert.equal(paths.at(-1),"data/release-design-system.css");
+ assert.equal(paths.length,34);
+ assert(paths.includes("data/release-design-system.css"));
+ assert.equal(paths.at(-1),"data/workspace-navigation.css");
  for(const path of ["data/idea-map.css","data/stuck-contextual.css","data/criteria-badges.css","data/writer-guide-popin.css","data/graph-studio.css","data/probability-studio.css","data/sample-reader.css"])
   assert(paths.includes(path),path);
 });

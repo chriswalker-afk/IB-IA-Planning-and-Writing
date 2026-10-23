@@ -40,6 +40,7 @@
    <link rel="stylesheet" href="./data/sample-reader.css">
   <!-- Shared release component finishes must load last, after authored tool themes. -->
   <link rel="stylesheet" href="./data/release-design-system.css">
+  <link rel="stylesheet" href="./data/workspace-navigation.css">
   <!-- Also support static/source hosting: browsers cannot resolve npm package names. -->
   <script type="importmap">
     {"imports":{
@@ -130,11 +131,11 @@
       <aside class="sidebar" aria-label="Main navigation">
         <p class="rail-kicker">YOUR SPACE</p>
         <nav class="side-links">
-          <button data-nav="home" class="side-link active" type="button"><svg class="icon"><use href="#i-home"></use></svg><span>Home</span></button>
+          <button data-nav="home" class="side-link active" type="button" aria-current="page"><svg class="icon"><use href="#i-home"></use></svg><span>Home</span></button>
           <button data-nav="planning" class="side-link" type="button"><svg class="icon"><use href="#i-compass"></use></svg><span>Planning</span></button>
           <button data-nav="completing" class="side-link" type="button"><svg class="icon"><use href="#i-pencil"></use></svg><span>IA Studio</span></button>
            <button data-nav="checking" class="side-link" type="button"><svg class="icon"><use href="#i-clipboard"></use></svg><span>Checking</span></button>
-          <button data-nav="path" class="side-link" type="button"><svg class="icon"><use href="#i-route"></use></svg><span>My path</span><span class="side-link-end" id="pathCount">0</span></button>
+          <button data-nav="path" class="side-link" type="button"><svg class="icon"><use href="#i-route"></use></svg><span>My path</span><span class="side-link-end" id="pathCount" hidden aria-hidden="true">0</span></button>
           <button type="button" class="side-link" data-action="essentials-open"><svg class="icon" aria-hidden="true"><use href="#i-book"></use></svg><span>IA essentials</span></button>
           <button data-action="example-open" data-example-browse="true" class="side-link" type="button"><svg class="icon" aria-hidden="true"><use href="#i-book"></use></svg><span>Examples</span></button>
         </nav>
@@ -146,7 +147,7 @@
       <main id="main" class="main" tabindex="-1"></main>
     </div>
     <nav class="mobile-nav" aria-label="Main navigation">
-      <button data-nav="home" class="mobile-nav-link active" type="button"><svg class="icon"><use href="#i-home"></use></svg><span>Home</span></button>
+      <button data-nav="home" class="mobile-nav-link active" type="button" aria-current="page"><svg class="icon"><use href="#i-home"></use></svg><span>Home</span></button>
       <button data-nav="planning" class="mobile-nav-link" type="button"><svg class="icon"><use href="#i-compass"></use></svg><span>Plan</span></button>
       <button data-nav="completing" class="mobile-nav-link" type="button"><svg class="icon"><use href="#i-pencil"></use></svg><span>Studio</span></button>
        <button data-nav="checking" class="mobile-nav-link" type="button"><svg class="icon"><use href="#i-clipboard"></use></svg><span>Check</span></button>
