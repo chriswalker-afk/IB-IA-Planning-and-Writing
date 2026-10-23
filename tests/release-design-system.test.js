@@ -7,11 +7,12 @@ const html=read("index.html"),base=read("styles.css"),ui=read("data/release-desi
 
 test("release design layers preserve 35 ordered source styles for production bundling",()=>{
  const paths=stylePaths(html);
- assert.equal(paths.length,36);
+ assert.equal(paths.length,37);
  assert(paths.includes("data/release-design-system.css"));
  assert(paths.includes("data/workspace-navigation.css"));
  assert(paths.includes("data/release-guidance.css"));
- assert.equal(paths.at(-1),"data/release-representation.css");
+ assert(paths.includes("data/release-representation.css"));
+ assert.equal(paths.at(-1),"data/release-accessibility.css");
  for(const path of ["data/idea-map.css","data/stuck-contextual.css","data/criteria-badges.css","data/writer-guide-popin.css","data/graph-studio.css","data/probability-studio.css","data/sample-reader.css"])
   assert(paths.includes(path),path);
 });
