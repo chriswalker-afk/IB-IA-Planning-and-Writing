@@ -265,7 +265,10 @@ export function planningHelpFor(state,spot){
  if(p.kind==="statistics")ids=ids.filter(id=>id!=="theory-no-start");
  const choices=ids.map(id=>byId.get(id)).filter(Boolean).slice(0,3);
  if(!choices.length)return null;
- return Object.freeze({node,spot,title:spec.title,choices});
+ const selection=node==="N02M"||node==="N04S"||node==="N04"?safe(p.course):
+  node==="N03"||node==="N03B"||node==="N03D"?safe(p.dataSource):
+  node==="N02"||node==="N02U"?safe(p.kind):"";
+ return Object.freeze({node,spot,title:spec.title,context:selection,choices});
 }
 export function planningHelpBadge(state,spot,escapeHtml=x=>String(x)){
  const help=planningHelpFor(state,spot);if(!help)return "";
@@ -319,12 +322,15 @@ export function createPlanningHelpController({getState,escapeHtml,onHub,onNaviga
    '<h2 id="stuckContextTitle">'+e(active.title)+'</h2></div>'+
    '<button type="button" class="stuck-context-close" data-stuck-context-close aria-label="Close help">×</button></div>'+
    '<div class="stuck-context-body"><p id="stuckContextIntro">Choose what is preventing your next step. These are possible difficulties, not judgements about your work.</p>'+
+    (active.context?'<p class="stuck-context-selection">Your recorded selection: '+e(active.context)+'</p>':'')+
    '<div class="stuck-context-choices" role="group" aria-label="What are you stuck with?">'+active.choices.map((x,i)=>
     '<button type="button" data-stuck-context-choice="'+i+'" aria-pressed="'+(selected===i)+'" class="stuck-context-choice'+(selected===i?' selected':'')+'">'+e(x.label)+'</button>').join("")+'</div>'+
-   '<section class="stuck-context-recovery" aria-live="polite"><h3 id="stuckContextAction">Try this now</h3>'+
+   '<section class="stuck-context-recovery" aria-live="polite"><h3>First, ask yourself</h3><p>'+e(card.question)+'</p>'+
+   '<h3 id="stuckContextAction">Try this now</h3>'+
    '<p>'+e(card.action)+'</p>'+
    '<h3>How to tell whether it helped</h3><p>'+e(card.check)+'</p>'+
    '<p class="stuck-context-stop"><strong>A useful stopping point:</strong> '+e(card.stop)+'</p>'+
+   (card.id==="consent-waiting"?'<p class="stuck-context-boundary" role="note">'+e(card.boundary)+'</p>':'')+
    '<details><summary>If I am still stuck</summary><p>'+e(card.fallback)+'</p>'+
    '<p class="stuck-context-boundary">'+e(card.boundary)+'</p></details></section>'+
    '<div class="stuck-context-actions"><button type="button" class="btn btn-primary" data-stuck-context-go>'+
