@@ -133,7 +133,7 @@ function potentialQuestions(state,e,icon){
    '<p>Choose only one that genuinely adds value, explain why, or leave the extension out.</p></details>';
 }
 export function renderConclusionWorkspace({state,e,icon,field,F,criterionMarkedWritingBox,
- criteriaField,currentAim,plannedPrediction,currentBenefit,savedLimitations=()=>""}){
+ criteriaField,currentAim,plannedPrediction,currentBenefit,stuckBubble=()=>"",savedLimitations=()=>""}){
  const p=state.planning?.fields||{},f=state.completion?.fields||{};
  const aim=currentAim(),previous=previousWriting(state,field,F,e);
  const limits=savedLimitations(),shelf=renderSparkShelf(state,"C60",{surface:"studio",hideHeading:true});
@@ -156,7 +156,7 @@ export function renderConclusionWorkspace({state,e,icon,field,F,criterionMarkedW
   '<section class="conclusion-writing-part" data-conclusion-part="answer">'+
    '<div class="conclusion-part-title"><span class="conclusion-part-number">1</span><div>'+
      '<h3>What is your best-supported mathematical answer?</h3>'+
-     '<p>Use your most decisive results or proof, with specific values or references where helpful. An uncertain or negative finding is legitimate.</p></div></div>'+
+     '<p>Use your most decisive results or proof, with specific values or references where helpful. An uncertain or negative finding is legitimate.</p></div>'+stuckBubble("part:answer")+'</div>'+
    criterionMarkedWritingBox(F("mainConclusion","My answer to the investigation question",
     "What have I established mathematically? Which actual results support this answer?",
     {type:"textarea",rows:5}),["completing:C61:mainConclusion"])+
@@ -164,7 +164,7 @@ export function renderConclusionWorkspace({state,e,icon,field,F,criterionMarkedW
   '<section class="conclusion-writing-part" data-conclusion-part="meaning">'+
    '<div class="conclusion-part-title"><span class="conclusion-part-number">2</span><div>'+
      '<h3>What does that answer mean, and where does it apply?</h3>'+
-     '<p>Explain the significance for your original question or purpose. Include only the assumptions, uncertainty or domain restrictions that change the conclusion.</p></div></div>'+
+     '<p>Explain the significance for your original question or purpose. Include only the assumptions, uncertainty or domain restrictions that change the conclusion.</p></div>'+stuckBubble("part:meaning")+'</div>'+
    criterionMarkedWritingBox(F("conclusionBenefit","My interpretation and the important limits",
     "What can I responsibly conclude, and what does the mathematics NOT establish?",
     {type:"textarea",rows:5}),["completing:C60:meaningAndLimits"])+
@@ -174,7 +174,7 @@ export function renderConclusionWorkspace({state,e,icon,field,F,criterionMarkedW
   '<section class="conclusion-writing-part conclusion-potential" data-conclusion-part="next">'+
    '<div class="conclusion-part-title"><span class="conclusion-part-number">3</span><div>'+
     '<h3>Potential next steps</h3><span class="conclusion-part-optional">OPTIONAL</span>'+
-    '<p>Is there one or two worthwhile mathematical questions that your findings leave open? Say what you would investigate and why it could help. No speculative extension is required.</p></div></div>'+
+    '<p>Is there one or two worthwhile mathematical questions that your findings leave open? Say what you would investigate and why it could help. No speculative extension is required.</p></div>'+stuckBubble("part:next")+'</div>'+
    criteriaField(F("conclusionExtension","A worthwhile future mathematical question (if any)",
     "My result raises the question of … . Investigating this could …",
     {type:"textarea",rows:3}),"completing:C63:extension")+
