@@ -30,7 +30,7 @@ def writing_help(p):
  open_stuck(p)
  topic=p.locator('.drawer [data-action="stuck-topic"][data-topic="writing"]').first
  if not topic.is_visible():
-  browse=p.locator('.drawer .stuck-browse')
+  browse=p.locator('.drawer .stuck-legacy-browse')
   assert browse.count(),'Writing help topic is unavailable'
   if browse.first.get_attribute('open') is None:browse.first.locator('summary').first.click()
  topic.click()
