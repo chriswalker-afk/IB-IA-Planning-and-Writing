@@ -100,6 +100,15 @@ export function renderIdeaLabPlanningCue(state,placement,{e,icon}){
    e(ctx.selectedPlanningTitle)+'</strong> saved as a provisional route. Check that it still serves your current aim. Your explicit choice is preserved until you change it.</p>');
  }
  if(placement==='maths'){
+  const node=state?.planning?.current||'';
+  const hasExplorer=node==='N04S'||(node==='N02M'&&!!trimmed(state?.planning?.fields?.course));
+  const link=hasExplorer?
+   '<button type="button" class="idea-lab-handoff-link" data-action="math-open-route" data-route-id="'+e(ctx.routeId)+'">'+
+    'Explore this route (does not select it) '+icon('arrow-right')+'</button>':
+   node==='N04T'?
+    '<button type="button" class="idea-lab-handoff-link" data-action="plan-edit" data-node="N02M">'+
+    'Return to route exploration '+icon('arrow-right')+'</button>':
+   '<span class="idea-lab-handoff-status">Choose your course above to explore mathematical routes. Your earlier idea stays optional.</span>';
   return shell('maths',
    '<span class="idea-lab-handoff-kicker">'+icon('sparkles')+' FROM YOUR SELECTED IDEA LAB POSSIBILITY</span>'+
    '<h4>'+e(ctx.sourceLabel)+' → '+e(ctx.lensLabel)+'</h4>'+
@@ -113,9 +122,7 @@ export function renderIdeaLabPlanningCue(state,placement,{e,icon}){
     (ctx.evidenceReview?'<p class="idea-lab-handoff-caution">Your current evidence-source choice differs from the earlier Idea Lab starting material. Check what you can actually obtain.</p>':'')+
     (ctx.coursePreview?.teacherReview?'<p class="idea-lab-handoff-caution">Teacher check recommended: the course, scope or mathematical depth is not confirmed.</p>':''):'')+
    '<div class="idea-lab-handoff-actions">'+
-   (ctx.hasPlannedRoute?'<span class="idea-lab-handoff-status">You have explicitly saved this route provisionally in Planning.</span>':
-    '<button type="button" class="idea-lab-handoff-link" data-action="math-open-route" data-route-id="'+e(ctx.routeId)+'">'+
-    'Explore this route (does not select it) '+icon('arrow-right')+'</button>')+
+   (ctx.hasPlannedRoute?'<span class="idea-lab-handoff-status">You have explicitly saved this route provisionally in Planning.</span>':link)+
    '</div>');
  }
  if(placement==='evidence'){
