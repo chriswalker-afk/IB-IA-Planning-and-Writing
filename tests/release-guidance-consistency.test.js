@@ -89,8 +89,9 @@ test("Help drawer labels distinguish recovery, writing craft and criteria withou
 test("final contextual guidance stylesheet keeps responsive, keyboard and accessibility provisions",()=>{
  const html=read("index.html");
  const paths=stylePaths(html);
- assert.equal(paths.length,35);
- assert.equal(paths.at(-1),"data/release-guidance.css");
+ assert.equal(paths.length,36);
+ assert(paths.includes("data/release-guidance.css"));
+ assert.equal(paths.at(-1),"data/release-representation.css");
  assert(paths.includes("data/stuck-contextual.css"));
  assert(paths.includes("data/criteria-badges.css"));
  assert(paths.includes("data/writer-guide-popin.css"));
