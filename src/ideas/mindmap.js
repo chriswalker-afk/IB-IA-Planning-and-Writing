@@ -3,6 +3,10 @@
  * Existing seed catalogue provides the optional mathematical directions.
  */
 import {IDEA_SEEDS,IDEA_TOPICS} from './catalog.js';
+import {
+ ideaMathDirectionsForTopic,ideaMathEvidenceEntry,ideaMathLens,
+ ideaMathExampleCards,ideaMathStarterId,ideaMathEvidenceStarterId
+} from './math-pathways.js';
 
 export const IDEA_MAP_ROOTS=Object.freeze({
  interests:[
@@ -44,4 +48,37 @@ export const ideaMapIdeas=({mode,topic,subtopic,dataBranch,root})=>{
  if(mode==='data')return (ideaMapBranches(ideaMapRoot(mode,root)).find(x=>x.id===dataBranch)?.seeds||[]).map(id=>IDEA_SEEDS.find(x=>x.id===id)).filter(Boolean);
  if(!topic||!subtopic)return [];
  return IDEA_SEEDS.filter(x=>x.topic===topic&&x.topic!=='patterns'&&x.tags.includes(subtopic));
+};
+
+
+/** Pass 2 mathematical choices for both routes. All IDs are shared with
+ * Planning's existing 16-route library, not a separate syllabus.
+ */
+export const ideaMapMathLenses=map=>{
+ const root=ideaMapRoot(map?.mode,map?.root);
+ if(!root)return [];
+ if(map.mode==='data'){
+  const access=ideaMapBranches(root).find(x=>x.id===map.dataBranch);
+  if(!access)return [];
+  return (ideaMathEvidenceEntry(root.id,access.id)?.routeIds||[])
+   .map(ideaMathLens).filter(Boolean);
+ }
+ const topic=ideaMapTopics(root).find(x=>x.id===map.topic);
+ if(!topic)return [];
+ const ids=[...new Set(ideaMathDirectionsForTopic(topic.id).map(c=>c.routeId))];
+ return ids.map(ideaMathLens).filter(Boolean);
+};
+export const ideaMapMathCards=map=>{
+ if(!ideaMapMathLenses(map).some(x=>x.routeId===map?.mathRoute))return [];
+ if(map.mode==='interests')
+  return ideaMathDirectionsForTopic(map.topic).filter(c=>c.routeId===map.mathRoute);
+ return ideaMathExampleCards(map.root,map.dataBranch,map.mathRoute);
+};
+export const ideaMapMathStarters=map=>{
+ if(!ideaMapMathLenses(map).some(x=>x.routeId===map?.mathRoute))return [];
+ if(map.mode==='interests')return ideaMapMathCards(map).map(c=>ideaMathStarterId(c.id));
+ const e=ideaMathEvidenceEntry(map.root,map.dataBranch);
+ if(!e)return [];
+ return [ideaMathEvidenceStarterId(e.root,e.branch,map.mathRoute),
+  ...ideaMapMathCards(map).map(c=>ideaMathStarterId(c.id))];
 };
