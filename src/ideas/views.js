@@ -13,6 +13,11 @@ function controls(state){
 const mapAction=(act,label,attrs='',css='')=>'<button type="button" class="'+css+'" data-action="idea-'+act+'" '+attrs+'>'+label+'</button>';
 const mapAttrs=(id,parent)=>' data-idea-node="'+e(id)+'" data-idea-parent="'+e(parent)+'"';
 const leafId=(topic,i)=>'leaf-'+topic+'-'+i;
+const IDEA_TOPIC_ICONS={sport:'flag',music:'sparkles',games:'grid-2x2',food:'flask',
+ design:'pencil',school:'book',travel:'route',money:'calculator',technology:'mouse-pointer-click',
+ nature:'image',environment:'map',patterns:'chart'};
+const IDEA_DATA_ICONS={time:'clock',shape:'ruler',change:'chart',compare:'bar-chart',
+ survey:'clipboard',repeat:'refresh',weather:'sparkles',published:'book',image:'image'};
 const mapRoot=(r,selected)=>mapAction('map-root',
  '<span class="idea-map-root-icon">'+icon(r.icon)+'</span><strong>'+e(r.label)+'</strong><small>'+e(r.description)+'</small>'+
  '<span class="idea-map-root-arrow" aria-hidden="true">'+icon('chevron-right')+'</span>',
@@ -20,17 +25,17 @@ const mapRoot=(r,selected)=>mapAction('map-root',
  'idea-map-root idea-map-root-'+e(r.id)+(selected?' selected':''));
 function ideaMapBranchesView(state){
  const m=ideaState(state).map,root=ideaMapRoot(m.mode,m.root);
- if(!root)return '';
+ if(!root)return {nodes:'',guidance:'<div class="idea-map-guidance"><p class="idea-map-first-prompt" aria-live="polite">Choose one of the three bubbles to grow your mind map.</p></div>'};
  const topic=ideaMapTopics(root).find(x=>x.id===m.topic);
  const access=ideaMapBranches(root).find(x=>x.id===m.dataBranch);
  const topTier=m.mode==='interests'?
   ideaMapTopics(root).map(x=>mapAction('map-topic',
-    '<span class="idea-map-node-icon">'+icon('layers')+'</span><strong>'+e(x.label)+'</strong>'+
+    '<span class="idea-map-node-icon">'+icon(IDEA_TOPIC_ICONS[x.id]||'lightbulb')+'</span><strong>'+e(x.label)+'</strong>'+
     '<span class="idea-map-node-arrow">'+icon('chevron-right')+'</span>',
     'id="idea-map-topic-'+e(x.id)+'" data-topic="'+e(x.id)+'" aria-pressed="'+(topic?.id===x.id)+'"'+mapAttrs('topic-'+x.id,'root-'+root.id),
     'idea-map-branch-node'+(topic?.id===x.id?' selected':''))).join(''):
   ideaMapBranches(root).map(x=>mapAction('map-access',
-    '<span class="idea-map-node-icon">'+icon('calculator')+'</span><strong>'+e(x.label)+'</strong><small>'+e(x.desc)+'</small>'+
+    '<span class="idea-map-node-icon">'+icon(IDEA_DATA_ICONS[x.id]||'calculator')+'</span><strong>'+e(x.label)+'</strong><small>'+e(x.desc)+'</small>'+
     '<span class="idea-map-node-arrow">'+icon('chevron-right')+'</span>',
     'id="idea-map-access-'+e(x.id)+'" data-branch="'+e(x.id)+'" aria-pressed="'+(access?.id===x.id)+'"'+mapAttrs('access-'+x.id,'root-'+root.id),
     'idea-map-branch-node idea-map-access-node'+(access?.id===x.id?' selected':''))).join('');
@@ -45,45 +50,46 @@ function ideaMapBranchesView(state){
  const activeParent=topic&&m.subtopic?leafId(topic.id,topic.subtopics.indexOf(m.subtopic)):
   access?'access-'+access.id:'';
  const ideas=activeParent?ideaMapIdeas(m):[];
- const directionTier=activeParent?'<div class="idea-map-tier idea-map-seeds" id="idea-map-directions-heading" tabindex="-1" data-idea-map-level="3" aria-label="Directions growing from the chosen detail">'+
-  ideas.map(seed=>mapAction('explore',
+ const directionTier=activeParent?'<div class="idea-map-tier idea-map-seeds" data-idea-map-level="3" aria-label="Directions growing from the chosen detail">'+
+  ideas.map((seed,i)=>mapAction('explore',
     '<span class="idea-map-direction-icon">'+icon('lightbulb')+'</span>'+
     '<span class="idea-map-direction-content"><strong class="idea-map-direction-title">'+e(seed.title)+'</strong>'+
     '<span class="idea-map-personal"><b>Make it personal</b><span>'+e(seed.narrow)+'</span></span>'+
     '<span class="idea-map-first-test">'+icon('clock')+' First try: '+e(seed.first)+'</span>'+
     '<span class="idea-map-customise">Shape my idea '+icon('arrow-right')+'</span></span>',
-    'data-seed="'+e(seed.id)+'" data-map="true" data-idea-card="'+e(seed.id)+'"'+mapAttrs('seed-'+seed.id,activeParent),
+    (i===0?'id="idea-map-directions-heading" ':'')+'data-seed="'+e(seed.id)+'" data-map="true" data-idea-card="'+e(seed.id)+'"'+mapAttrs('seed-'+seed.id,activeParent),
     'idea-map-direction-node')).join('')+'</div>':'';
  const warning=access?.warning?'<p class="idea-map-survey-warning" role="note">'+icon('info')+' '+e(access.warning)+'</p>':'';
  const selected=m.mode==='data'?access?.label:m.subtopic||topic?.label||root.label;
- return tierTwo+subtopicTier+directionTier+warning+
+ return {nodes:tierTwo+subtopicTier+directionTier,guidance:
+  '<div class="idea-map-guidance">'+warning+
   '<p class="idea-map-branch-hint" role="status" aria-live="polite">'+
   (ideas.length?'You have reached some possible directions from '+e(selected)+
     '. Add your own detail to turn one into your question.':
-   'The new nodes are connected to '+e(selected)+'. Choose another node to grow the map.')+'</p>';
+   'These bubbles grew from '+e(selected)+'. Choose another to grow the map further.')+'</p></div>'};
 }
 export function ideaExplorerView(state){
  const s=ideaState(state);
  if(s.pending)return ideaConfirmationView(state);
  if(s.active)return ideaDetailView(state);
  const m=s.map||{mode:'interests',root:'',topic:'',subtopic:'',dataBranch:''},roots=ideaMapRoots(m.mode);
+ const branches=ideaMapBranchesView(state);
  return '<section class="idea-explorer idea-mindmap" aria-label="Explore an IA idea">'+
   '<div class="idea-map-head"><span class="idea-map-overline">'+icon('route')+' IDEA LAB</span>'+
   '<h3 id="idea-map-heading" tabindex="-1">Grow an idea from a starting point</h3>'+
-  '<p>Tap a bubble to make connected branches appear. Follow the branches that interest you, then make the idea your own.</p></div>'+
+  '<p>Explore the bubbles in any direction. Tap one to grow new ideas, follow what catches your interest, then shape a question of your own.</p></div>'+
   '<div class="idea-map-mode" role="group" aria-label="Choose how to start exploring ideas">'+
   mapAction('map-mode',icon('layers')+' Start with my world','data-mode="interests" aria-pressed="'+(m.mode==='interests')+'"','idea-map-mode-button'+(m.mode==='interests'?' selected':''))+
   mapAction('map-mode',icon('calculator')+' Start with data I can get','data-mode="data" aria-pressed="'+(m.mode==='data')+'"','idea-map-mode-button'+(m.mode==='data'?' selected':''))+'</div>'+
   '<div class="idea-map-quickstart">'+icon('clock')+' <p><strong>Make a quick start.</strong> '+e(IDEA_DATA_PROMISE)+'</p></div>'+
-  '<div class="idea-map-network" data-idea-map-network>'+
+  '<div class="idea-map-network" data-idea-map-network data-idea-map-mode="'+e(m.mode)+'">'+
   '<svg class="idea-map-connectors" data-idea-map-connectors aria-hidden="true" focusable="false"></svg>'+
   '<div class="idea-map-tier idea-map-hub-tier"><div class="idea-map-centre" data-idea-node="hub">'+
   icon('compass')+'<strong>Start with you</strong><small>Find your maths</small></div></div>'+
   '<div class="idea-map-tier idea-map-roots" aria-label="Three possible starting points">'+
   roots.map(root=>mapRoot(root,m.root===root.id)).join('')+'</div>'+
-  ideaMapBranchesView(state)+
-  (!m.root?'<p class="idea-map-first-prompt" aria-live="polite">Choose one of the three bubbles to grow your mind map.</p>':'')+
-  '</div>'+
+  branches.nodes+
+  '</div>'+branches.guidance+
   '<p class="idea-map-draft-note">These are paths to explore, not finished IA titles. You decide the question, starting material and mathematics.</p>'+
   '<div class="idea-map-lower"><div class="idea-map-own"><span>'+icon('pencil')+'</span><div><strong>Got something different in mind?</strong>'+
   '<p>Start with a real observation even if none of the branches fits.</p></div>'+

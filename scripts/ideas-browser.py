@@ -188,6 +188,73 @@ with sync_playwright() as pw:
   assert len(saved(p)['ideaExplorer']['shortlist'])==3
   assert 'three active ideas' in read_error(p).lower()
  run('idea-three-active-limit-and-draft-safety',state(),three,1280,900)
+
+ # The mind map is a genuinely spatial canvas, not three tiers painted to
+ # look organic. Verify its actual in-browser geometry and both starting modes.
+ def check_bubbles(p):
+  graph=p.locator('[data-idea-map-network]')
+  p.wait_for_function("document.querySelector('[data-idea-map-network]')?.dataset.ideaMapReady === 'true'")
+  results=p.evaluate("""() => {
+   const graph=document.querySelector('[data-idea-map-network]'),r=graph.getBoundingClientRect();
+   const nodes=[...graph.querySelectorAll('[data-idea-node]')].map(node=>{
+    const b=node.getBoundingClientRect();
+    return {id:node.dataset.ideaNode,left:b.left-r.left,top:b.top-r.top,
+      right:b.right-r.left,bottom:b.bottom-r.top,cy:b.top+b.height/2};
+   });
+   return {width:r.width,height:r.height,nodes,
+      lines:graph.querySelectorAll('[data-edge-to]').length};
+  }""")
+  assert results['lines']==len(results['nodes'])-1,results
+  assert results['height']>=350,results
+  for i,a in enumerate(results['nodes']):
+   assert a['left']>=-8 and a['right']<=results['width']+8,('bubble clipped horizontally',a,results)
+   assert a['top']>=-8 and a['bottom']<=results['height']+8,('bubble clipped vertically',a,results)
+   for b in results['nodes'][i+1:]:
+    if a['right']>b['left']+6 and b['right']>a['left']+6 and a['bottom']>b['top']+6 and b['bottom']>a['top']+6:
+     raise AssertionError(('overlapping Idea Lab bubbles',a,b))
+  return results
+
+ def organic_desktop(p):
+  initial=check_bubbles(p)
+  roots=[x for x in initial['nodes'] if x['id'].startswith('root-')]
+  assert max(x['cy'] for x in roots)-min(x['cy'] for x in roots)>100,'Roots still line up like a hierarchy'
+  do(p,'map-root','[data-root="hobbies"]')
+  after=check_bubbles(p)
+  assert sum(x['id'].startswith('topic-') for x in after['nodes'])==5
+  p.screenshot(path=str(OUT/'idea-organic-interests-desktop.png'),full_page=True,animations='disabled')
+  do(p,'map-topic','[data-topic="sport"]')
+  check_bubbles(p)
+  do(p,'map-leaf','[data-subtopic="Badminton"]')
+  check_bubbles(p)
+  assert p.locator('[data-idea-card]').count()>0
+  p.screenshot(path=str(OUT/'idea-organic-expanded-desktop.png'),full_page=True,animations='disabled')
+  do(p,'map-mode','[data-mode="data"]')
+  assert p.locator('[data-idea-map-network]').get_attribute('data-idea-map-mode')=='data'
+  do(p,'map-root','[data-root="record"]')
+  do(p,'map-access','[data-branch="survey"]')
+  check_bubbles(p)
+  assert 'school permission' in p.locator('.idea-map-survey-warning').inner_text()
+  p.screenshot(path=str(OUT/'idea-organic-data-desktop.png'),full_page=True,animations='disabled')
+ run('idea-organic-mindmap-desktop',state('N00B'),organic_desktop,1440,900)
+
+ def organic_mobile(p):
+  check_bubbles(p)
+  do(p,'map-root','[data-root="hobbies"]')
+  check_bubbles(p)
+  do(p,'map-topic','[data-topic="sport"]')
+  check_bubbles(p)
+  do(p,'map-leaf','[data-subtopic="Badminton"]')
+  check_bubbles(p)
+  p.screenshot(path=str(OUT/'idea-organic-expanded-phone.png'),full_page=True,animations='disabled')
+  do(p,'map-mode','[data-mode="data"]')
+  do(p,'map-root','[data-root="find"]')
+  do(p,'map-access','[data-branch="image"]')
+  check_bubbles(p)
+  assert p.locator('.idea-map-root').first.evaluate("(node)=>getComputedStyle(node,'::before').animationName")=='ideaBubbleFloat'
+  p.emulate_media(reduced_motion='reduce')
+  assert p.locator('.idea-map-root').first.evaluate("(node)=>getComputedStyle(node,'::before').animationName")=='none'
+ run('idea-organic-mindmap-mobile',state('N00B'),organic_mobile,390,844)
+
  browser.close()
 
 (OUT/'ideas-results.json').write_text(json.dumps(RESULTS,indent=2))
