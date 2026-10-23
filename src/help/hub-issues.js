@@ -74,6 +74,13 @@ const targetFor=(view,surface,card)=>{
   return{route:"planning",node,focusField:card.focusField||(spot!=="page"?spot:"")};
  }
  if(surface==="studio"){
+  // Search results for a specific registered representation must open that
+  // actual editor while retaining the mathematical stage to return to.
+  if(card.id.startsWith("tool-")){
+   const toolId=card.id.slice(5);
+   if(REPRESENTATION_TOOLS.some(tool=>tool.id===toolId))
+    return{route:"completing",node:"C31",tool:toolId};
+  }
   const spots=Object.entries(STUDIO_RECOVERY_SPOTS).filter(([,arr])=>arr.includes(card.id));
   const current=view.completion.current;
   const match=spots.find(([key])=>key.startsWith(current+":"))||spots[0];
