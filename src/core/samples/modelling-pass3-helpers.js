@@ -132,7 +132,7 @@ export function buildModellingPass3(d){
    unit:d.accuracyUnit,resolution:d.accuracyResolution,policy:d.accuracyPolicy,
    reason:d.accuracyReason}],
   conclusion:d.conclusion,reviews:authoredReviews(d),
-  references:[{label:'[D1] Constructed case record',value:d.provenance},
+  references:d.references||[{label:'[D1] Constructed case record',value:d.provenance},
     {label:'[M1] Calculations',value:'All model parameters, residuals, comparisons and scenario values are derived from the editable dataset and mathematics shown in this investigation. No external dataset, observational study or experimental validation is claimed.'}]
  };
 }
