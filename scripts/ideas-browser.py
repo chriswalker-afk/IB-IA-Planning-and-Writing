@@ -250,8 +250,9 @@ with sync_playwright() as pw:
   do(p,'map-root','[data-root="find"]')
   do(p,'map-access','[data-branch="image"]')
   check_bubbles(p)
+  assert p.locator('.idea-map-root').first.evaluate("(node)=>getComputedStyle(node,'::before').animationName")=='ideaBubbleFloat'
   p.emulate_media(reduced_motion='reduce')
-  assert p.locator('.idea-map-root').first.evaluate("(node)=>getComputedStyle(node).animationName")=='none'
+  assert p.locator('.idea-map-root').first.evaluate("(node)=>getComputedStyle(node,'::before').animationName")=='none'
  run('idea-organic-mindmap-mobile',state('N00B'),organic_mobile,390,844)
 
  browser.close()
