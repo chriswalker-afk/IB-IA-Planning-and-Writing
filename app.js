@@ -1500,7 +1500,12 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
           setCompletionNode(state,t.node);
           if(x.entry)state.completion.nextFromEntryId=x.entry.id;
         }
-        nav(t.route);return;
+        nav(t.route);
+        if(t.route==="planning"&&t.focusField){
+          const safe=String(t.focusField).replace(/[^a-z0-9_-]/gi,"");
+          document.getElementById("field-planning-fields-"+safe)?.focus({preventScroll:true});
+        }
+        return;
       }
       save();
       if(support.stay)render();
