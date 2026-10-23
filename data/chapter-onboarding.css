@@ -951,6 +951,27 @@
 .math-stage-optional-method>summary .icon:last-child{margin-left:auto;width:15px;height:15px}
 .math-stage-optional-method[open]{padding-bottom:14px}
 .math-stage-optional-method[open]>*:not(summary){margin-left:14px;margin-right:14px}
+/* Optional help for turning saved notes into a connected mathematical argument. */
+.math-story-choice{display:flex;align-items:flex-start;gap:9px;margin:13px 0;padding:11px 13px;border-left:3px solid #8bb9ab;border-radius:0 9px 9px 0;background:#f1f8f5;color:#385d56;font-size:12px;line-height:1.65;overflow-wrap:anywhere}
+.math-story-choice>.icon{width:17px;height:17px;flex:none;margin-top:2px}
+.math-story-choice p{margin:0}
+.math-story-synthesis{margin:14px 0;border:1px solid #cbded7;border-radius:12px;background:#fff;min-width:0;overflow-wrap:anywhere}
+.math-story-synthesis>summary{display:flex;align-items:center;gap:9px;padding:13px 14px;color:#326b63;font-size:12px;font-weight:750;line-height:1.5;cursor:pointer;list-style:none}
+.math-story-synthesis>summary::-webkit-details-marker{display:none}
+.math-story-synthesis>summary>.icon{width:18px;height:18px;flex:none}
+.math-story-synthesis>summary>.icon:last-child{margin-left:auto;width:15px;height:15px}
+.math-story-synthesis[open]>summary>.icon:last-child{transform:rotate(90deg)}
+.math-story-synthesis>summary:focus-visible{outline:3px solid #87b8ab;outline-offset:2px;border-radius:10px}
+.math-story-synthesis-body{padding:0 14px 14px;color:#36534d;font-size:12px;line-height:1.7;min-width:0}
+.math-story-example-label{margin:0 0 11px;color:#62776f;font-size:11px;font-weight:700}
+.math-story-notes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:0 0 13px}
+.math-story-notes>div{min-width:0;padding:10px 11px;border:1px solid #e0eae5;border-radius:9px;background:#f7faf8}
+.math-story-notes dt{font-weight:800;color:#326b63;margin:0 0 5px}
+.math-story-notes dd{margin:0}
+.math-story-passage-label{margin:0 0 6px;font-size:12px;font-weight:800;color:#326b63}
+.math-story-passage{margin:0;padding:13px 15px;border-left:3px solid #85b5a4;border-radius:0 9px 9px 0;background:#edf6f1;font-size:13px;line-height:1.8}
+.math-story-writing-note{margin:11px 0 0;color:#62776f;font-size:11px;line-height:1.65}
+@media(max-width:640px){.math-story-notes{grid-template-columns:minmax(0,1fr)}.math-story-synthesis-body{padding:0 12px 12px}.math-story-passage{padding:11px 12px}}
 .math-conclusion-gate{display:grid;gap:13px;margin:12px 0 20px;padding:22px 24px;border:2px solid #e5c995;border-radius:20px;background:linear-gradient(132deg,#fffaf0,#fffdf9);box-shadow:0 16px 36px rgba(100,67,17,.11);scroll-margin-top:40px}
 .math-conclusion-gate:focus{outline:none}
 .math-conclusion-gate-top{display:flex;align-items:flex-start;gap:13px}

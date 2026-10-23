@@ -129,7 +129,8 @@ export function guidanceFingerprint(ctx,sourceId){
  return (h>>>0).toString(36);
 }
 export function hypotheticalExample(id){
- if(/^W(?:14|20|21|39|50)$/.test(id))return "Illustrative structure (not your findings): “The previous result leaves [a mathematical question] unanswered. I will use [a suitable method] because it could show [what is missing].” Replace every bracket with your own genuine reasoning.";
+ if(id==="W14")return "Illustrative structure (not your findings): “To investigate [a specific part of my aim], I will use [a representation or calculation] to examine [a relevant mathematical feature].” Explain the reason once beside the work; do not repeat a connection already clear in your Introduction.";
+ if(/^W(?:20|21|39|50)$/.test(id))return "Illustrative synthesis (not your findings): “[A specific established finding] leaves [a precise question] unresolved. Since [reason this method fits], I will use [method] to examine it.” Combine these ideas in your own passage. Give the shared reason once across the earlier conclusion, bridge and method introduction. If the aim is already answered, explain why you can stop.";
  if(/^W(?:16|18|26|38|48|64)$/.test(id))return "Illustrative structure: “The actual result suggests [a feature], which matters because [link to my aim]. However, it cannot establish [unsupported claim].” Use only what your own calculation supports.";
  if(/^W(?:60|61|62|63|65)$/.test(id))return "An appropriate first-use explanation might state what an unfamiliar parameter means, why the method applies under its conditions and one genuine mathematical step that illustrates your understanding. Do not copy a formula you cannot explain.";
  if(/^W(?:17|25|46|47|49|51|52|53|55|56|57)$/.test(id))return "Illustrative example: an exact value 2/3 stays 2/3; if rounded, write 2/3 ≈ 0.67. Measured input precision must be considered separately when it actually affects the final interpretation.";

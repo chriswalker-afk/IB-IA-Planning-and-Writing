@@ -3,11 +3,12 @@ import assert from "node:assert/strict";
 import {createProjectState} from "../src/core/project-state.js";
 import {createCompletingViews} from "../src/completing/views.js";
 import {C_NODE_IDS,setCompletionNode,startFirstRepresentation,setCompletionField,addMathematicalStage} from "../src/completing/engine.js";
+import {MATHEMATICAL_LINK_HINT} from "../src/completing/mathematical-story-guidance.js";
 const e=v=>String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");
 function fixture(){
  const state=createProjectState(),ctx={
   getState:()=>state,e,icon:()=>"",button:(label,action)=>'<button data-action="'+action+'">'+e(label)+'</button>',
-  field:(path,label)=>'<label data-path="'+e(path)+'">'+e(label)+'</label>',
+  field:(path,label,hint="")=>'<label data-path="'+e(path)+'" data-hint="'+e(hint)+'">'+e(label)+'</label>',
   choose:(path,opts)=>'<div data-choice-path="'+e(path)+'">'+opts.map(x=>e(x.title)).join(",")+'</div>',
   summary:(label,value)=>'<p>'+e(label)+": "+e(value)+'</p>',
   sheetTitle:(_,title)=>'<h1>'+e(title)+'</h1>',tabletNav:()=>"",
@@ -392,4 +393,43 @@ test("returning to the first maths after creating later stages retains direct li
  assert(html.includes("Mathematical stage 2"));
  assert(html.includes("Mathematical stage 3"));
  assert(html.includes('aria-current="page"'));
+});
+
+test("story guidance is optional while mathematical writing and its help survive Reduce advice",()=>{
+ const cases=[
+  {node:"C20",index:0,choices:1,examples:0,fields:["completion.fields.methodReason","completion.fields.firstMethodEvaluation"],spot:"completing:C20:methodIntroduction"},
+  {node:"C30",index:0,choices:1,examples:1,fields:["entries.0.purpose","entries.0.result","entries.0.interpretation","completion.fields.nextQuestion","completion.fields.nextReason"],spot:"completing:C30:nextD"},
+  {node:"C35",index:0,choices:0,examples:1,fields:["completion.fields.nextQuestion","completion.fields.nextReason"],spot:"completing:C35:nextReason"},
+  {node:"C40",index:1,choices:1,examples:1,fields:["entries.1.bridge","entries.1.purpose","entries.1.result","entries.1.interpretation","entries.1.nextQuestion","entries.1.nextWhy"],spot:"completing:C40:bridgeA"},
+  {node:"C50",index:2,choices:1,examples:1,fields:["entries.2.bridge","entries.2.purpose","entries.2.result","entries.2.interpretation","entries.2.nextQuestion","entries.2.nextWhy"],spot:"completing:C50:bridgeA"}
+ ];
+ for(const probe of cases){
+  const {state,view}=fixture();state.route="completing";
+  state.planning.fields.kind="statistics";
+  state.planning.fields.dataSource="secondary";
+  state.planning.routeExplorer.selectedRoute="relationships";
+  state.entries=[
+   {id:"first",phase:"first",status:"completed",methodId:"pmcc",title:"Association",result:"The coefficient is 0.91.",interpretation:"The data show a positive linear association."},
+   {id:"second",phase:"substantial",fromEntryId:"first",status:"completed",methodId:"linear-regression",title:"Fitted line",result:"The fitted errors vary across the domain.",bridge:"My existing explanation."},
+   {id:"third",phase:"substantial",fromEntryId:"second",status:"planned",methodId:"linear-regression",title:"Check the model",result:"",bridge:"My next explanation."}
+  ].slice(0,probe.index+1);
+  state.completion.activeEntryIndex=probe.index;
+  setCompletionNode(state,probe.node);
+  const saved=JSON.stringify({entries:state.entries,fields:state.completion.fields,scratch:state.scratch});
+  state.ui.adviceMode="guided";
+  const guided=view.viewCompleting();
+  assert.equal((guided.match(/data-story-choice(?:\s|=|>)/g)||[]).length,probe.choices,probe.node+" should show one relevant reminder");
+  assert.equal((guided.match(/data-story-synthesis(?:\s|=|>)/g)||[]).length,probe.examples,probe.node+" should not duplicate the worked example");
+  state.ui.adviceMode="reduced";
+  const reduced=view.viewCompleting();
+  assert(!reduced.includes("data-story-choice"),probe.node+" should hide the optional reminder");
+  assert(!reduced.includes("data-story-synthesis"),probe.node+" should hide the optional example");
+  for(const html of [guided,reduced]){
+   for(const path of probe.fields)assert(html.includes('data-path="'+path+'"'),probe.node+" lost "+path);
+   assert(html.includes('data-criterion-badge="'+probe.spot+'"'),probe.node+" lost criterion help");
+   assert(html.includes('data-guide-spot="'+probe.spot+'"'),probe.node+" lost writing help");
+   if(probe.node!=="C20")assert(html.includes(e(MATHEMATICAL_LINK_HINT)),probe.node+" lost the concise linking hint");
+  }
+  assert.equal(JSON.stringify({entries:state.entries,fields:state.completion.fields,scratch:state.scratch}),saved,probe.node+" changed saved writing or mathematics");
+ }
 });

@@ -9,10 +9,15 @@ on:
       - 'src/completing/first-maths-bridge.js'
       - 'src/completing/showing-first-maths.js'
       - 'src/completing/studio-writing-stages.js'
+      - 'src/completing/mathematical-story-guidance.js'
+      - 'src/completing/views.js'
       - 'app.js'
       - 'data/writer-guide-popin.css'
+      - 'data/chapter-onboarding.css'
       - 'scripts/writer-advice-browser.py'
       - 'tests/writer-stage-advice.test.js'
+      - 'tests/mathematical-story-guidance.test.js'
+      - 'tests/completing-views.test.js'
       - '.github/workflows/writer-advice-browser.yml'
       - '.github/actions/setup-ci-node/action.yml'
       - '.github/actions/setup-ci-browser/action.yml'
@@ -24,10 +29,15 @@ on:
       - 'src/completing/first-maths-bridge.js'
       - 'src/completing/showing-first-maths.js'
       - 'src/completing/studio-writing-stages.js'
+      - 'src/completing/mathematical-story-guidance.js'
+      - 'src/completing/views.js'
       - 'app.js'
       - 'data/writer-guide-popin.css'
+      - 'data/chapter-onboarding.css'
       - 'scripts/writer-advice-browser.py'
       - 'tests/writer-stage-advice.test.js'
+      - 'tests/mathematical-story-guidance.test.js'
+      - 'tests/completing-views.test.js'
       - '.github/actions/setup-ci-node/action.yml'
       - '.github/actions/setup-ci-browser/action.yml'
 permissions:
@@ -45,7 +55,7 @@ jobs:
       - uses: ./.github/actions/setup-ci-node
       - name: Build and verify lossless writing advice
         run: |
-          node --test tests/writer-stage-advice.test.js tests/writer-field-guide.test.js
+          node --test tests/writer-stage-advice.test.js tests/writer-field-guide.test.js tests/mathematical-story-guidance.test.js tests/completing-views.test.js
           npm run build
       - uses: ./.github/actions/setup-ci-browser
       - name: Verify focused Writer Guide and complete tip library
