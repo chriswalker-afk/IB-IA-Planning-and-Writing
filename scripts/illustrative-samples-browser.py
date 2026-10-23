@@ -140,6 +140,9 @@ def check_exports(page,kind,sample,figure_count):
  assert "FICTIONAL" in text
  assert "Starting material and mathematical approach" in text
  assert "Conclusion" in text
+ # Normalize punctuation in extracted PDF text as well as narrative probes.
+ def comparable(value):
+  return " ".join(value.translate(str.maketrans({"–":"-","—":"-","−":"-","‘":"'","’":"'","“":'"',"”":'"',"…":"..."})).split())
  for work in EXPECTED[kind]["mlaWorks"]:
   short=work[:48]
   assert comparable(short) in comparable(text),"PDF omitted MLA reference: "+short
@@ -147,9 +150,6 @@ def check_exports(page,kind,sample,figure_count):
   assert "Works Cited" in text,"PDF missing Works Cited heading"
  assert "My method and why I chose it" not in text,"field labels leaked into the IA"
  assert sum(len(part.images) for part in pdf.pages)>=figure_count
- # Normalize punctuation in extracted PDF text as well as narrative probes.
- def comparable(value):
-  return " ".join(value.translate(str.maketrans({"–":"-","—":"-","−":"-","‘":"'","’":"'","“":'"',"”":'"',"…":"..."})).split())
  # Check the full conclusion, without padding the narrative to a page quota.
  prose=re.split(r'\\\([\s\S]*?\\\)|\\\[[\s\S]*?\\\]',sample["completion"]["fields"]["mainConclusion"])
  concluding_words=max(prose,key=len).strip()[:70]
