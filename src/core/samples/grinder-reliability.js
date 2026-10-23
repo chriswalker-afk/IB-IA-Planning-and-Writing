@@ -476,7 +476,7 @@ export const GRINDER_RELIABILITY_SPEC={
     "id": "D07",
     "status": "checked",
     "location": "Whole exported reader, PDF and Word document",
-    "note": "I inspected the refreshed desktop and phone reader views, both changed PDF pages and all four changed Word pages. The other 17 PDF pages and 18 Word pages are pixel-identical to the previously reviewed exports.",
+    "note": "The full review covers every PDF and Word page. I inspected the refreshed desktop and phone reader views, both changed PDF pages and all four changed Word pages. The other 17 PDF pages and 18 Word pages are pixel-identical to the previously reviewed exports.",
     "action": "The two scoped claims, equations, tables, captions, source notes and page breaks remain clear in the regenerated documents."
   },
   {
