@@ -130,7 +130,10 @@ export function withSampleMla(spec){
  });
  const works=[...new Set(Object.values(mapping))].map(id=>({id,...sources[id]}))
    .sort((a,b)=>(a.author||a.title).localeCompare(b.author||b.title,'en')||a.title.localeCompare(b.title,'en'));
- const references=(spec.references||[]).filter(ref=>!isExternalReference(ref));
+ const references=(spec.references||[]).filter(ref=>!isExternalReference(ref)).map(ref=>({
+  label:String(ref.label||'').replace(/^\[D1\]\s*/,'Constructed input: '),
+  value:rewriteLine(ref.value,mapping)
+ }));
  const result={...spec,stages,
   introduction:rewriteLine(spec.introduction,mapping),dataNotes:rewriteLine(spec.dataNotes,mapping),
   planning:rewriteFields(spec.planning,mapping),completion:rewriteFields(spec.completion,mapping),
