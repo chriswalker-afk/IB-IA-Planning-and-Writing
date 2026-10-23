@@ -309,7 +309,7 @@ test('Mind map remains connected and does not offer theory-heavy patterns as eas
  assert(!html.includes('id="idea-topic"'));
  assert(ideaAction(s,'idea-map-root',{root:'world'}).ok);
  assert(ideaAction(s,'idea-map-topic',{topic:'nature'}).ok);
- assert(ideaAction(s,'idea-map-leaf',{subtopic:'Leaves'}).ok);
+ assert(ideaAction(s,'idea-map-route',{routeId:'images'}).ok);
  const connected=ideaExplorerView(s);
  for(const [child,parent] of [['topic-nature','root-world'],['leaf-images','topic-nature'],['seed-math-nature-outline','leaf-images']])
   assert(connected.includes('data-idea-node="'+child+'" data-idea-parent="'+parent+'"'),child);
