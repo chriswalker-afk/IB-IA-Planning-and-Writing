@@ -112,7 +112,7 @@ def check_story_guidance(page,node,width):
  bubble.click()
  popin=page.locator("#writerGuidePopinLayer .writer-guide-popin")
  expect(popin).to_be_visible()
- popin.locator('[data-action="writer-guide-popin-close"]').click()
+ popin.get_by_role("button",name="Close this writing tip",exact=True).click()
  assert authored_content(page)==saved,(width,node,"reduced advice or help changed saved work")
  toggle.click()
  expect(toggle).to_have_attribute("aria-pressed","false")
