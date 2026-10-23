@@ -132,6 +132,15 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   if(resumedPreview)state=resumedPreview;
   const main = $("#main");
   const layer = $("#drawerLayer");
+  document.querySelector(".skip-link")?.addEventListener("click",evt=>{
+    // Native anchors vary across browsers when the destination has tabindex=-1.
+    // Focus the actual workspace landmark so keyboard and screen-reader users
+    // can begin their work immediately rather than tabbing past the header.
+    if(!layer.hidden)return;
+    evt.preventDefault();
+    main.scrollIntoView({block:"start",behavior:"auto"});
+    main.focus({preventScroll:true});
+  });
   const guidePopinHost = document.querySelector("#writerGuidePopinLayer") || {hidden:true,innerHTML:"",querySelector:()=>null};
   let guidePopinOrigin=null;
   let guidePopinRecommendation=null;
