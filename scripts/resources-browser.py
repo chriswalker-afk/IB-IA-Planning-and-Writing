@@ -70,6 +70,52 @@ with sync_playwright() as pw:
    try:p.screenshot(path=str(OUT/(name+'-failure.png')),animations='disabled')
    except Exception:pass
   c.close()
+ def contextual_mla(p):
+  before=unchanged_fields(saved(p))
+  note=p.locator('#main [data-citation-moment="first-maths"]')
+  assert note.count()==1 and note.is_visible()
+  assert note.locator('[data-resource-id="mla-citations"]').count()==1
+  note.locator('[data-resource-id="mla-citations"]').click()
+  assert overlay(p).is_visible()
+  assert 'MLA (8th ed.)' in overlay(p).inner_text()
+  close(p)
+  assert unchanged_fields(saved(p))==before
+ def secondary_first():
+  s=state(node='C20')
+  s['planning']['fields']['dataSource']='secondary'
+  return s
+ run('resources-contextual-mla-first-maths',secondary_first(),contextual_mla,390,844)
+ def figure_mla(p):
+  before=unchanged_fields(saved(p))
+  note=p.locator('#main [data-citation-moment="figure"]')
+  assert note.count()==1
+  assert 'original source' in note.inner_text().lower()
+  note.locator('[data-resource-id="mla-citations"]').click()
+  assert overlay(p).is_visible()
+  close(p)
+  assert unchanged_fields(saved(p))==before
+ def figure_source():
+  s=state(node='C31')
+  s['graphStudio']['open']=True
+  s['graphStudio']['draft']['kind']='scatter'
+  s['graphStudio']['draft']['sourceKind']='secondary'
+  s['graphStudio']['draft']['sourceText']='Published source to verify'
+  return s
+ run('resources-contextual-mla-figure-source',figure_source(),figure_mla,390,844)
+ def planning_mla(p):
+  before=unchanged_fields(saved(p))
+  note=p.locator('#main [data-citation-moment="planning-secondary"]')
+  assert note.count()==1
+  note.locator('[data-resource-id="mla-citations"]').click()
+  assert overlay(p).is_visible()
+  close(p)
+  assert unchanged_fields(saved(p))==before
+ def planned_secondary():
+  s=state(route='planning')
+  s['planning']['current']='N03S'
+  s['planning']['fields']['dataSource']='secondary'
+  return s
+ run('resources-contextual-mla-planning',planned_secondary(),planning_mla,390,844)
  def planning(p):
   before=unchanged_fields(saved(p));open_library(p);assert p.locator('[data-source-node="N01"]').count()==1
   p.locator('#resource-search').fill('PMCC');detail(p,'sheets-pmcc');assert 'Library preview' in overlay(p).inner_text();assert '=CORREL(A2:A7,B2:B7)' in overlay(p).inner_text();close(p)

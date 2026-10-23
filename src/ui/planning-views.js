@@ -1,4 +1,5 @@
 import {planningLearningTrail} from './living-journey.js';
+import {renderCitationReminder} from '../resources/citation-prompts.js';
 import {planningScreenTitle} from '../planning/screen-labels.js';
 import {earlyMathRecommendations} from '../planning/math-recommendations.js';
 import {renderInvestigativeRoutes} from './investigative-routes-view.js';
@@ -269,7 +270,8 @@ export function createPlanningViews(ctx){
       F("theoreticalAim","What mathematical question will the model investigate?","A precise design, optimisation or modelling question",{type:"textarea",rows:3})+
       F("theoreticalCase","Which starting quantities, assumptions and constraints will define the model?","State dimensions, units and restrictions; distinguish assumed values from observations",{type:"textarea",rows:3})+
       callout("Define the starting material","Assumed dimensions or tolerances can define a useful model. Identify them as assumptions and check what the conclusions depend on."):
-      callout("Permissions matter","If you may collect personal or sensitive information, check school requirements before any affected activity.")),
+      callout("Permissions matter","If you may collect personal or sensitive information, check school requirements before any affected activity."))+
+    renderCitationReminder(state,"planning-choice",icon,e),
     "<h4>Planning your starting material</h4><p>Record what you intend to use here. In IA Studio you will explain what you actually obtained or defined and how it supports the mathematics.</p>",
     modellingAssumptions?"Continue to prediction":"Continue");
    case "N03B":return stepBody("Plan both evidence sources.","Answer each question set. They can be provisional, but both must be addressed before they join.",
@@ -295,6 +297,7 @@ export function createPlanningViews(ctx){
     "Check what published values represent and their original precision. A table's decimal places do not prove measurement accuracy.",
     F("secondaryUrl","Source link (optional while searching)","https://…",{type:"url"})+
     F("secondaryPublisher","Who published the source?","Organisation or publisher")+
+    renderCitationReminder(state,"planning-secondary",icon,e)+
     F("secondaryVariables","Which variables and units will you use?","Specify relevant columns, units and definitions",{type:"textarea",rows:2})+
     F("secondaryScope","Which dates, population or subset are relevant?","Describe which observations actually connect to your aim",{type:"textarea",rows:2})+
     F("secondarySamplingOrigin","How were the published observations selected? (if known)",
