@@ -50,10 +50,11 @@ export const CHECKING_DETAILS=Object.freeze({
   'Ask a peer to explain the path from one stage to the next',
   'If available, ask a non-specialist whether the main narrative makes sense',
   'Identify the exact place the reader lost the thread and rewrite in your own words'],'JIS Guide, p. 40'),
- D09:row([],'Are external sources identifiable and consistently cited?',[
-  'Cite all external data, illustrations, quotations, outside mathematics and borrowed ideas',
-  'Use a consistent in-text citation style and full source list',
-  'JIS 2025 guidance suggests MLA through Google Docs; confirm any updated school preference'],'IB academic-integrity guidance; JIS Guide, pp. 4–6',"Credit and traceability are essential for academic integrity. References and bibliographies are not directly assessed for marks under A–E."),
+ D09:row([],'Can I trace every borrowed source through MLA citations and Works Cited?',[
+  'Scan the actual IA for borrowed datasets, images, quotations, paraphrases and independently researched mathematical methods',
+  'For each MLA in-text citation, check the matching Works Cited entry and confirm that it leads to the original material',
+  'Check the other direction: every Works Cited entry should match a source actually cited in the text; Google Docs may list unused saved sources',
+  'Verify author or organisation, title, publication date, URL and any page numbers; rebuild the bibliography if sources changed'],'IB academic-integrity guidance; JIS Guide, pp. 4–6; MLA tutorial',"Correct source attribution is required for academic integrity. Source lists do not earn additional A–E marks."),
  D10:row([],'Have I checked the current school formatting requirements?',[
   'Title and page numbering are clear; typography and margins are readable',
   'JIS 2025 guide recommends approximately 12–20 pages and double line spacing',
@@ -62,10 +63,11 @@ export const CHECKING_DETAILS=Object.freeze({
   'Show actual equations, calculations, reasoning and/or purposeful figures',
   'Explain what each key result establishes before continuing',
   'Do not mistake a planned technique, predicted result or blank diagram for completed mathematics'],'JIS Guide, pp. 27–31, 40'),
- D12:row([],'Is this clearly my own, appropriately credited exploration?',[
-  'The mathematical explanations and reflection are genuinely your own',
-  'External calculations, sources and figures are acknowledged',
-  'Follow school policies for ethical data and permitted support'],'IB academic-integrity expectations; JIS Guide, pp. 3–4, 40',"Authenticity and correct attribution are obligations, not automatic evidence of Criterion C personal engagement. Engagement must be visible in the actual mathematics."),
+ D12:row([],'Is this version authentically mine, with permitted and acknowledged support?',[
+  'Explain the mathematical choices, calculations, interpretations and conclusions in my own words',
+  'Distinguish my original work from credited data, figures, derivations and outside methods',
+  'Check any AI-generated material against current school permissions and IB acknowledgement requirements; citation alone does not make a prohibited use acceptable',
+  'Check consent, ethical data use and participant privacy where relevant'],'IB academic-integrity expectations; JIS Guide, pp. 3–4, 40',"Authenticity, ethical use and attribution are mandatory obligations, not automatic Criterion C marks. Student engagement must be demonstrated by actual mathematical decisions."),
  D13:row([],'Am I using the permitted teacher-written feedback opportunity correctly?',[
   'The JIS 2025 guide describes one teacher-written feedback opportunity',
   'Submit a complete draft when required; do not request another written correction round here',
@@ -84,7 +86,7 @@ export const CHECKING_DETAILS=Object.freeze({
   'E: relevant and understood mathematics at an appropriate course level'],'JIS Guide, pp. 42–52'),
  D17:row(['A','B'],'Have I carefully read the actual final PDF/document?',[
   'Correct grammar, spelling, page numbers and unusual line breaks',
-  'Check typeset notation, figure legibility, source links and captions at reading size',
+  'Check typeset notation, figure legibility, source links, Works Cited and captions at reading size',
   'Reopen the exact file intended for submission after making any changes'],'IB IA Checklist, Criteria A–B; JIS Guide, p. 40'),
  D18:row([],'Have I checked the correct submission identity and cover instructions?',[
   'Follow current school rules for title, candidate identification and file naming',

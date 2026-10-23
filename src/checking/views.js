@@ -3,6 +3,7 @@
  * Criterion bubbles open shared contextual advice then the full rubric; no automatic grading.
  */
 import {reviewChecksFor} from '../completing/review.js';
+import {renderCitationSpotlight,renderCitationAudit,renderAuthenticityAudit} from './reference-audit.js';
 import {CHECKING_CRITERIA,CHECKING_DETAILS,CHECKING_MODES,reviewCounts} from './checklist.js';
 import {chapterRibbon} from '../ui/living-journey.js';
 import {criterionBadge} from '../essentials/criteria-badges.js';
@@ -27,13 +28,14 @@ export function createCheckingViews(ctx){
   const key=mode+'-'+check.id,record=s.completion.review.records[key]||{},current=stateStatus(s,mode,check.id);
   const stem='completion.review.records.'+key+'.',attrs='data-mode="'+mode+'" data-id="'+check.id+'"';
   const options=s.entries.map(x=>[x.id,x.title||'Mathematical stage']).filter(x=>x[0]);
-  return '<article class="checking-item '+current+'" data-checking-item="'+e(check.id)+'">'+
+  return '<article class="checking-item '+current+'" data-checking-item="'+e(check.id)+'"'+
+   (check.id==='D09'?' id="checking-audit-'+mode+'" tabindex="-1"':'')+'>'+
    '<div class="checking-item-top">'+badges(details.criteria,revised)+
     '<span class="checking-item-status '+current+'">'+e(statusText[current]||'Not checked')+'</span></div>'+
    '<h4>'+e(details.focus)+'</h4>'+
    '<p class="checking-item-question">'+e(check.question)+'</p>'+
    '<div class="checking-item-actions" role="group" aria-label="Review '+e(check.area)+'">'+
-    [['checked','I checked this'],['needs-work','Needs work'],['not-applicable','Not relevant']].map(([v,label])=>
+    [['checked','I checked this'],['needs-work','Needs work'],...(check.id==='D12'?[]:[['not-applicable','Not relevant']])].map(([v,label])=>
      '<button type="button" data-action="conformance-review-status" '+attrs+' data-status="'+v+
       '" class="checking-status-action '+(current===v?'is-selected':'')+'" aria-pressed="'+(current===v)+'">'+
       (v==='checked'?icon('check-circle'):v==='needs-work'?icon('alert-circle'):icon('x-circle'))+' '+label+'</button>').join('')+
@@ -43,11 +45,17 @@ export function createCheckingViews(ctx){
       (record.location||record.note?'<span class="checking-has-evidence">'+icon('check')+' Evidence noted</span>':'')+icon('chevron-right')+'</summary>'+
     '<div class="checking-item-inner">'+
       (tips.length?'<ul class="checking-look-for">'+tips.map(v=>'<li>'+e(v)+'</li>').join('')+'</ul>':'')+
+      (check.id==='D09'?renderCitationAudit(s,icon,e):check.id==='D12'?renderAuthenticityAudit(icon):'')+
       '<p class="checking-source-note">'+e(revised?'Earlier-cohort checking guidance: confirm current IB and school expectations.':details.source)+'</p>'+
       (details.processNote?'<p class="checking-process-explanation"><strong>Important process requirement:</strong> '+e(revised?'This is an essential document, integrity or submission check, not an additional score under the 2029 assessment criteria.':details.processNote)+'</p>':'')+
-      '<p class="checking-evidence-reminder">To mark a check as done, record where you checked in your actual IA or what you verified. For “Not relevant”, explain why. Your Word/PDF is not inspected automatically.</p>'+
-      field(stem+'location','Where in my actual IA?','Page, section, figure or equation')+
-      field(stem+'note','My evidence, or why this is not relevant','What I actually checked',{type:'textarea',rows:2})+
+      '<p class="checking-evidence-reminder">'+(check.id==='D09'?
+        'Before marking checked, verify citations against the original sources in your actual IA, then record the two-way check in the note below. Pathfinder does not inspect your file.':
+        check.id==='D12'?'Check the actual latest IA for student authorship and permitted support. Record what you verified; this cannot be marked not relevant.':
+        'To mark a check as done, record where you checked in your actual IA or what you verified. For “Not relevant”, explain why. Your Word/PDF is not inspected automatically.')+'</p>'+
+      field(stem+'location',check.id==='D09'?'Where did I check in the IA?':'Where in my actual IA?',check.id==='D09'?'Pages, figures and Works Cited location':'Page, section, figure or equation')+
+      field(stem+'note',check.id==='D09'?'What did I verify in both directions?':check.id==='D12'?'What did I verify about my own work and support?':'My evidence, or why this is not relevant',
+       check.id==='D09'?'Name the citations and Works Cited checks actually completed':check.id==='D12'?'My own mathematics, appropriate acknowledgement and ethical use':'What I actually checked',
+       {type:'textarea',rows:2})+
       field(stem+'action','My specific correction, if needed','One useful change to my own document',{type:'textarea',rows:2})+
       (options.length?field(stem+'entryId','Related mathematical stage (optional)','',{type:'select',options:[['','No specific stage'],...options]}):'')+
       action('conformance-review-repair',icon('arrow-left')+' Return to the affected work',attrs)+
@@ -136,7 +144,7 @@ export function createCheckingViews(ctx){
     '<div class="checking-progress-track" role="progressbar" aria-label="Student-recorded checks resolved (not an IB mark)" aria-valuenow="'+counts.done+
     '" aria-valuemin="0" aria-valuemax="'+Math.max(1,counts.total)+'"><span style="width:'+(counts.total?100*counts.done/counts.total:0)+'%"></span></div>'+
     '<p>These counts record your own '+(revised?'document':'document and criterion')+' checks, not a predicted IA mark. You can revisit or revise them at any time.</p></div>'+
-   evidenceInfo(s)+
+   evidenceInfo(s)+renderCitationSpotlight(mode,icon)+
    (mode==='feedback'?'<div class="checking-feedback-phase">'+criteria(s,checks,mode)+feedbackPanel(s)+'</div>':criteria(s,checks,mode))+
    '<section class="checking-next"><h3>Useful next actions</h3>'+
    '<p>Keep working on your actual IA, then come back to check the revised file. Your progress and evidence notes are stored locally.</p>'+
