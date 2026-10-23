@@ -8,7 +8,8 @@ import {PLANNING_NODE_IDS} from '../src/planning/engine.js';
 import {C_NODE_IDS} from '../src/completing/engine.js';
 import {
  SUPPORT_FAMILIES,SUPPORT_FACTS,SUPPORT_LEGACY_AUDIT,SUPPORT_NEW_INTENTS,
- SUPPORT_PLACEMENTS,SUPPORT_JOURNEY_OVERLAYS,SUPPORT_SELECTION_POLICY
+ SUPPORT_PLACEMENTS,SUPPORT_JOURNEY_OVERLAYS,SUPPORT_SELECTION_POLICY,
+ SUPPORT_ROLE_BOUNDARIES,SUPPORT_BLOCKER_STANDARD,SUPPORT_RECOVERY_EXEMPLARS
 } from '../src/help/contextual-support-plan.js';
 
 test('pass1 audits all durable help topic IDs with no change to existing saved IDs',()=>{
@@ -60,4 +61,33 @@ test('pass1 remains offers-only and retains access when advice is reduced',()=>{
  assert.equal(SUPPORT_SELECTION_POLICY.automaticPopups,false);
  assert.equal(SUPPORT_SELECTION_POLICY.reducedAdviceKeepsAccess,true);
  assert.equal(SUPPORT_SELECTION_POLICY.readOnlyUntilExplicitAction,true);
+});
+
+test('the three help roles have deliberately different goals and deliverables',()=>{
+ const roles=SUPPORT_ROLE_BOUNDARIES;
+ assert.deepEqual(Object.keys(roles).sort(),['criteria','stuck','writersGuide']);
+ assert.equal(new Set(Object.values(roles).map(x=>x.question)).size,3);
+ assert.equal(new Set(Object.values(roles).map(x=>x.output)).size,3);
+ assert.match(roles.stuck.output,/diagnosis.*action.*check.*fallback/);
+ assert.match(roles.criteria.question,/IB assessment/);
+ assert.match(roles.writersGuide.question,/communicated/);
+ assert.equal(SUPPORT_BLOCKER_STANDARD.genericCriteriaOrWritingAdviceIsNotEnough,true);
+ assert.equal(SUPPORT_BLOCKER_STANDARD.noCopyReadyIAParagraph,true);
+ assert.equal(SUPPORT_BLOCKER_STANDARD.oneImmediateAction,true);
+});
+test('pass1 recovery exemplars are specific, testable and linked to a possible live placement',()=>{
+ const placements=new Set(SUPPORT_PLACEMENTS.map(x=>x.id));
+ const seen=new Set();
+ assert(SUPPORT_RECOVERY_EXEMPLARS.length>=9);
+ for(const example of SUPPORT_RECOVERY_EXEMPLARS){
+   assert(!seen.has(example.id),example.id);seen.add(example.id);
+   assert(placements.has(example.placementId),example.id);
+   for(const key of SUPPORT_BLOCKER_STANDARD.required){
+     const minLength=['id','placementId'].includes(key)?1:18;
+     assert(typeof example[key]==='string'&&example[key].trim().length>=minLength,example.id+':'+key);
+   }
+   assert(/^(I |My |I'm )/.test(example.problem),example.id);
+   assert(example.quickQuestion.includes('?'),example.id);
+   assert(/[.?!]$/.test(example.check),example.id);
+ }
 });
