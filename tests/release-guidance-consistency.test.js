@@ -17,6 +17,7 @@ test("Help offers three independent jobs with real existing destinations",()=>{
  assert.match(html,/data-action="open-stuck"/);
  assert.match(html,/data-action="writer-guide-open"/);
  assert.match(html,/data-action="essentials-open"/);
+ assert.match(html,/data-action="essentials-open" data-essentials-tab="rubric"/);
  assert.match(html,/cannot move forward/i);
  assert.match(html,/explaining my mathematical thinking/i);
  assert.match(html,/without predicting a mark/i);
