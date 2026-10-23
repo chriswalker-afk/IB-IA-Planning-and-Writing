@@ -30,6 +30,9 @@ export function applyStuckBrowseFilter(root){
  return visible;
 }
 export function createStuckViews({getState,e,icon,field}){
+ // Browse choices survive a trip into a help card within the same open
+ // session, without adding new fields to student project backups.
+ let searchQuery="",selectedGroup="all",browseOpened=false;
  const action=(name,label,extra="",primary=false)=>'<button type="button" class="btn '+
   (primary?"btn-primary":"btn-secondary")+'" data-action="stuck-'+name+'" '+extra+'>'+e(label)+'</button>';
  const pick=(issue,{compact=false}={})=>'<button type="button" class="stuck-topic'+
@@ -55,7 +58,7 @@ export function createStuckViews({getState,e,icon,field}){
   const state=getState(),s=state.completion.support,x=stuckContext(state),
    a=hubIssueFor(state,s.selected)||adviceFor(state,s.selected),origin=hubOriginalView(state),
    suggestions=suggestedHubIssues(state),all=hubFilteredIssues(state),legacy=hubLegacyTopics(state);
-  const route=origin.route,mode=state.ui?.checkingMode||"draft";
+  const route=origin.route,mode=origin.ui?.checkingMode||"draft";
   const context=route==="checking"?"Checking · "+(mode==="feedback"?"feedback and revisions":mode==="final"?"final document":"draft review"):
    route==="planning"?"Planning · "+(state.planning.fields.aim||"developing your investigation"):
    (x.entry?"IA Studio · "+(x.entry.title||"selected mathematical step"):
@@ -69,18 +72,24 @@ export function createStuckViews({getState,e,icon,field}){
    notes.map(([k,v])=>'<p><strong>'+e(k)+':</strong> '+e(v)+'</p>').join("")+'</details>':"";
   const footer=oldNotes+'<div class="stuck-footer">'+action("return","Return to my work")+
    action("backup","Download full backup")+'</div>';
+  const resumeValid=s.task?.issue&&(hubIssueFor(state,s.task.issue)||availableTopics(state).some(t=>t.id===s.task.issue));
   const saved=s.task?.status==="pending"?'<details class="stuck-saved"><summary>'+
    icon("bookmark")+' My saved next action</summary><p>'+e(s.task.action)+'</p>'+
    (s.task.note?'<p class="stuck-caption">'+e(s.task.note)+'</p>':"")+
-   action("resume","Review this action")+action("resolved","This got me moving")+'</details>':"";
+   (resumeValid?action("resume","Review this action"):
+    '<p class="stuck-caption">This earlier issue is not relevant to your current work, but the saved action is still here. Choose a problem below if you need new advice.</p>')+
+   action("resolved","This got me moving")+'</details>':"";
   if(!a){
+   const matches=new Set(hubFilteredIssues(state,{query:searchQuery,group:selectedGroup}).map(issue=>issue.id));
    const groups=HUB_GROUPS.map(group=>{
     const issues=all.filter(issue=>issue.group===group.id);
-    return issues.length?'<details class="stuck-topic-group" data-stuck-group-section="'+e(group.id)+'">'+
+    const visible=issues.filter(issue=>matches.has(issue.id)).length;
+    return issues.length?'<details class="stuck-topic-group" data-stuck-group-section="'+e(group.id)+'"'+
+     (visible===0?' hidden':searchQuery?' open':'')+'>'+
       '<summary>'+e(group.label)+' <span>'+issues.length+'</span></summary><div class="stuck-group-issues">'+
       issues.map(item=>'<div data-stuck-search-group="'+e(group.id)+
        '" data-stuck-search-item="'+e([item.label,item.question,item.action,item.check].join(" ").toLowerCase())+
-       '">'+pick(item)+'</div>').join("")+'</div></details>':"";
+       '"'+(matches.has(item.id)?"":" hidden")+'>'+pick(item)+'</div>').join("")+'</div></details>':"";
    }).join("");
    const oldGroups=[...new Set(legacy.map(t=>t.group))].map(group=>
     '<div class="stuck-topic-group"><h3>'+e(group)+'</h3>'+
@@ -93,19 +102,19 @@ export function createStuckViews({getState,e,icon,field}){
     '<p class="stuck-caption">These are optional starting points from your recorded stage—not assumptions that something is wrong.</p>'+
     '<div class="stuck-topics">'+(suggestions.length?suggestions.map(item=>pick(item)).join(""):
      suggestedTopics(state).slice(0,3).map(basicPick).join(""))+'</div></section>'+
-    '<details class="stuck-browse"'+(s.browse?' open':'')+'><summary>'+icon("search")+
+    '<details class="stuck-browse"'+(browseOpened||s.browse?' open':'')+'><summary>'+icon("search")+
      ' Find another problem · browse or search</summary>'+
     '<div class="stuck-browse-inner">'+
       '<label class="field-label" for="stuck-hub-search">Search by what is difficult</label>'+
       '<input id="stuck-hub-search" type="search" autocomplete="off" data-stuck-search '+
-      'placeholder="e.g. data source, residual, citation, feedback">'+
+      'placeholder="e.g. data source, residual, citation, feedback" value="'+e(searchQuery)+'">'+
       '<div class="stuck-group-filters" role="group" aria-label="Filter problems by task">'+
       [{id:"all",label:"All"},...HUB_GROUPS].map(g=>
        '<button type="button" class="stuck-filter" data-stuck-group-filter="'+e(g.id)+
-       '" aria-pressed="'+(g.id==="all")+'">'+e(g.label)+'</button>').join("")+'</div>'+
+       '" aria-pressed="'+(g.id===selectedGroup)+'">'+e(g.label)+'</button>').join("")+'</div>'+
       '<p class="stuck-caption" role="status" aria-live="polite" data-stuck-search-count>'+
-       all.length+' matching problems</p>'+
-      '<p class="stuck-caption" data-stuck-no-results hidden>No problems match this search. Try fewer words or choose an earlier general help topic below.</p>'+
+       matches.size+' matching problems</p>'+
+      '<p class="stuck-caption" data-stuck-no-results'+(matches.size?" hidden":"")+'>'No problems match this search. Try fewer words or choose an earlier general help topic below.</p>'+
       '<div class="stuck-browse-groups">'+groups+'</div></div></details>'+
     '<details class="stuck-legacy-browse"><summary>More general difficulties and earlier help topics</summary>'+
      '<p class="stuck-caption">These 24 established topics remain available for returning students and saved projects.</p>'+
@@ -158,6 +167,7 @@ export function createStuckViews({getState,e,icon,field}){
    action("return","Return to my previous work")+action("stay","Keep working here")+'</div>':"";}
  const searchListener=event=>{
   if(!event.target?.matches?.("[data-stuck-search]"))return;
+  searchQuery=String(event.target.value||"").slice(0,120);browseOpened=true;
   applyStuckBrowseFilter(event.target.closest("[data-stuck-hub]"));
  };
  const filterListener=event=>{
@@ -165,6 +175,7 @@ export function createStuckViews({getState,e,icon,field}){
   if(!button)return;
   event.preventDefault();event.stopImmediatePropagation();
   const root=button.closest("[data-stuck-hub]");
+  selectedGroup=button.dataset.stuckGroupFilter||"all";browseOpened=true;
   root?.querySelectorAll("[data-stuck-group-filter]").forEach(el=>
     el.setAttribute("aria-pressed",String(el===button)));
   applyStuckBrowseFilter(root);
