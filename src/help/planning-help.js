@@ -305,12 +305,18 @@ export function createPlanningHelpController({getState,escapeHtml,onHub,onNaviga
    if(event.target.closest("[data-stuck-context-hub]")){const trigger=origin;close(false);onHub?.(trigger);return;}
    if(event.target.closest("[data-stuck-context-go]")){
     const picked=active?.choices[selected];if(!picked)return;
-    const target=picked.targetNode;
-    close(!target);
+    const target=picked.targetNode,buttonOrigin=origin;
+    // Do not restore focus to the badge when the student's requested action
+    // is to edit this exact field. Spark shelf editors can share a data-bind,
+    // so prefer the visible, labelled main Planning field by its stable ID.
+    close(false);
     if(target)onNavigate?.(target);
     else if(picked.focusField){
-     const input=document.querySelector('[data-bind="planning.fields.'+picked.focusField+'"]');
-     input?.focus({preventScroll:true});
+     const selector='[data-bind="planning.fields.'+picked.focusField+'"]';
+     const input=document.getElementById('field-planning-fields-'+picked.focusField)||
+       [...document.querySelectorAll(selector)].find(el=>el.getClientRects().length);
+     if(input)input.focus({preventScroll:true});
+     else if(buttonOrigin?.isConnected)buttonOrigin.focus({preventScroll:true});
     }
    }
   });
