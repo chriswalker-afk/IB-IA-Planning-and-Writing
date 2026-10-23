@@ -94,6 +94,48 @@ def check(p,width):
  assert state(p)["planning"]["routeExplorer"]["selectedRoute"]==""
  assert state(p)["planning"]["mathSelected"]==["AI05"]
 
+
+def handoff(p,width):
+ # A rated Idea Lab possibility has been explicitly selected as the aim.
+ # Its route must be a hint, not a saved mathematical decision.
+ fresh=plan()
+ fresh["ideaExplorer"]["shortlist"]=[{
+  "id":"idea-1","savedId":"idea-1","seedId":"math-sport-trajectory",
+  "question":fresh["planning"]["fields"]["aim"],
+  "focus":"Sport & performance → Model movement",
+  "fromMap":True,"clarity":4,"quickStart":3,"difficulties":[],
+  "mapOrigin":{"mode":"interests","root":"hobbies","topic":"sport",
+               "dataBranch":"","mathRoute":"trajectories"}
+ }]
+ fresh["ideaExplorer"]["selectedId"]="idea-1"
+ p.evaluate("(payload)=>localStorage.setItem(payload.key,JSON.stringify(payload.state))",
+  {"key":KEY,"state":fresh})
+ p.reload(wait_until="networkidle")
+ note=p.locator('[data-idea-lab-handoff="maths"]')
+ assert note.is_visible()
+ assert "Model movement" in note.inner_text()
+ assert state(p)["planning"]["routeExplorer"]["selectedRoute"]==""
+ assert state(p)["planning"]["mathSelected"]==[]
+ assert p.locator('.idea-lab-handoff [data-action="plan-toggle-math"]').count()==0
+ note.locator('[data-action="math-open-route"][data-route-id="trajectories"]').click()
+ assert p.locator("#journey-detail-title").inner_text()=="Movement and trajectories"
+ assert state(p)["planning"]["routeExplorer"]["selectedRoute"]==""
+ action(p,"math-select-route",route_id="trajectories")
+ assert state(p)["planning"]["routeExplorer"]["selectedRoute"]=="trajectories"
+ assert state(p)["planning"]["mathSelected"]==[]
+ assert "explicitly saved" in p.locator('[data-idea-lab-handoff="maths"]').inner_text()
+ p.screenshot(path=str(OUT/f"idea-lab-to-planning-{width}.png"),full_page=True,animations="disabled")
+ # Reduced advice hides optional detail without erasing saved work.
+ value=state(p)
+ value["ui"]["adviceMode"]="reduced"
+ p.evaluate("(payload)=>localStorage.setItem(payload.key,JSON.stringify(payload.state))",
+  {"key":KEY,"state":value})
+ p.reload(wait_until="networkidle")
+ assert p.locator('[data-idea-lab-handoff="maths"]').is_visible()
+ assert "One first calculation" not in p.locator('[data-idea-lab-handoff="maths"]').inner_text()
+ assert state(p)["planning"]["routeExplorer"]["selectedRoute"]=="trajectories"
+ assert p.evaluate("document.documentElement.scrollWidth <= window.innerWidth+1")
+
 with sync_playwright() as pw:
  browser=pw.chromium.launch(headless=True,args=["--no-sandbox"])
  for width,height in [(1440,900),(390,844)]:
@@ -109,6 +151,7 @@ with sync_playwright() as pw:
   try:
    p.goto(URL,wait_until="networkidle",timeout=28000)
    check(p,width)
+   handoff(p,width)
    assert not errors,errors
    RESULTS.append({"viewport":f"{width}x{height}","status":"passed"})
   except Exception as ex:
