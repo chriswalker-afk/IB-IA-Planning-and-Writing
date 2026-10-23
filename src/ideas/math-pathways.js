@@ -193,7 +193,7 @@ export const ideaMathStarterById=id=>{
    const lens=ideaMathLens(routeId),route=ideaMathRoute(routeId);
    if(!lens||!route)return null;
    return {id,topic:'other',title:lens.label,
-    question:entry.question+' '+lens.invitation,
+    question:lens.invitation,
     material:entry.firstCheck,first:route.first[1],
     narrow:'Which data could you genuinely obtain? What exact quantity or decision would make this mathematical approach worth investigating?',
     maths:route.title, caution:entry.caution+' '+route.caution,resources:[],tags:[],
