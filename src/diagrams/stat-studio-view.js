@@ -1,4 +1,4 @@
-import {representationEmpty} from "./workspace-ui.js";
+import {representationEmpty,representationOutputActions} from "./workspace-ui.js";
 import {renderNativeDataGrid} from "./native-data-view.js";
 import {renderPresentationCoach,renderFigureHandover} from "./presentation-coach-view.js";
 /** One consistent student-facing interface for all four statistical pathways. */
@@ -173,17 +173,20 @@ export function statQualityHtml(studio,icon,e){
   '<p class="stat-quality-note">These checks improve communication, but they are not an IB grade. Interpret results in the context of your aim, sampling and measurement limitations.</p>';
 }
 export function statOutputHtml(studio,icon,e){
- const q=statAnalysis(studio.draft),disabled=q.ready?"":' disabled title="Fix the required mathematical and presentation checks first"';
- return '<button type="button" class="btn btn-primary" data-action="stat-use"'+disabled+'>'+icon("check-circle")+' Save and link to this mathematical stage</button>'+
- (["histogram","ogive","polygon"].includes(q.draft.kind)?'<div class="stat-table-transfer"><button type="button" class="btn btn-secondary btn-sm" data-action="stat-to-table"'+disabled+
- '>'+icon("table")+' Create matching grouped-frequency table</button>'+
- '<small>Copies the source measurements or grouped classes and their boundaries without altering either saved generator.</small></div>':"")+
- '<div class="stat-output-buttons">'+
- '<button type="button" class="btn btn-secondary btn-sm" data-action="stat-save"'+disabled+'>'+icon("layers")+' Save draft</button>'+
- '<button type="button" class="btn btn-secondary btn-sm" data-action="stat-copy"'+disabled+'>'+icon("copy")+' Copy PNG</button>'+
- '<button type="button" class="btn btn-secondary btn-sm" data-action="stat-png"'+disabled+'>'+icon("download")+' PNG</button>'+
- '<button type="button" class="btn btn-secondary btn-sm" data-action="stat-svg"'+disabled+'>'+icon("download")+' SVG</button>'+
- '<button type="button" class="btn btn-secondary btn-sm" data-action="stat-csv"'+disabled+'>'+icon("table")+' '+(q.draft.kind==="box"?"Calculations CSV":"Summary CSV")+'</button></div>';
+ const q=statAnalysis(studio.draft),ready=q.ready;
+ return representationOutputActions(icon,e,{
+  type:"stat",ready,saveAction:"stat-save",linkAction:"stat-use",
+  disabledReason:"Resolve the required statistical diagram checks first.",
+  exportGroupClass:"stat-output-buttons",
+  formats:[["stat-copy","Copy PNG","copy"],["stat-png","Download PNG","download"],
+   ["stat-svg","Download SVG","download"],["stat-csv",
+   q.draft.kind==="box"?"Download calculations CSV":"Download summary CSV","table"]]
+ })+
+ (["histogram","ogive","polygon"].includes(q.draft.kind)?
+  '<div class="stat-table-transfer"><button type="button" class="btn btn-secondary btn-sm" data-action="stat-to-table"'+
+   (ready?"":' disabled aria-disabled="true" title="Resolve the diagram checks first"')+
+  '>'+icon("table")+' Create matching grouped-frequency table</button>'+
+  '<small>Copies the source measurements or grouped classes and their boundaries without altering either saved generator.</small></div>':"");
 }
 function selectedControls(d,e){
  if(!d.columns.length)return '<p class="stat-placeholder-inline">Paste and read your source values first to select columns.</p>';
