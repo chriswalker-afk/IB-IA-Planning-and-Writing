@@ -25,6 +25,7 @@ import {stuckContext} from './src/help/stuck.js';
 import {conformanceAction} from "./src/completing/conformance-actions.js";
 import {reviewEditChanged} from "./src/completing/review.js";
 import {createPlanningEnvelope,getFieldDiff,mergePlanningEnvelope} from "./src/handover/schema.js";
+import {fullProjectExportRecovery} from "./src/handover/export-recovery.js";
 import {modelFromEnvelope,suggestedFilename} from "./src/handover/report-model.js";
 import {createHandoverViews} from "./src/ui/handover-views.js";
 import {createCheckingViews} from "./src/checking/views.js";
@@ -119,6 +120,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   let pendingImport = null;
   let importSelected = new Set();
   let exportBusy = false;
+  let fullExportFailure = null;
   let toastHandle = null;
   try {
     const saved = localStorage.getItem(KEY);
@@ -1080,6 +1082,10 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         '</section><div class="panel-list">'+button("Review my plan","go-planning","btn-secondary")+button("See my journey","go-path","btn-light")+'</div>';
     }else if(panel==="files"){
       body='<section><h3>Whole project · Planning and IA Studio</h3>'+
+        '<div class="export-recovery" data-export-recovery role="alert"'+(fullExportFailure?'':' hidden')+'>'+
+        '<strong data-export-recovery-title>'+e(fullExportFailure?.title||'')+'</strong>'+
+        '<p data-export-recovery-message>'+e(fullExportFailure?.message||'')+'</p>'+
+        button("Download full JSON backup","export-json","btn-secondary","", "download")+'</div>'+
         '<p>Download a readable record of your Planning, mathematical steps, results, interpretations, sources, accuracy decisions, limitations, reflections and review notes. These are working records, not your finished IA.</p>'+
         '<div class="panel-list">'+button("Download full project PDF","export-full-pdf","btn-primary","", "download")+
         button("Download editable full project Word","export-full-docx","btn-secondary","", "download")+
@@ -1162,6 +1168,17 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     } catch(err) {toast("Backup could not be created. Please try again.");console.error(err);}
   }
 
+  function updateFullExportFailure(){
+    const notice=layer.querySelector?.("[data-export-recovery]");
+    if(!notice)return;
+    if(!fullExportFailure){notice.hidden=true;return;}
+    const title=notice.querySelector("[data-export-recovery-title]");
+    const message=notice.querySelector("[data-export-recovery-message]");
+    if(title)title.textContent=fullExportFailure.title;
+    if(message)message.textContent=fullExportFailure.message;
+    notice.hidden=false;
+    notice.scrollIntoView?.({block:"nearest",behavior:"auto"});
+  }
   async function exportFullProjectDocument(format){
     if(exportBusy){toast("An export is already being prepared.");return;}
     exportBusy=true;
@@ -1170,12 +1187,15 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       const mod=await import("./src/handover/full-export.js");
       const result=await mod.createFullProjectExport(state,format);
       downloadFile(result.bytes,(preview.active?"sample-":"")+result.name,result.mime);
+      fullExportFailure=null;updateFullExportFailure();
       setSaveStatus("Saved on this device");
       toast(format==="zip"?"Complete project bundle downloaded, including the restorable backup.":format==="pdf"?"Full working record PDF downloaded.":"Editable full working record downloaded.");
     }catch(error){
       console.error("Full project export failed",error);
+      fullExportFailure=fullProjectExportRecovery(error);
+      updateFullExportFailure();
       setSaveStatus("Export failed — your existing work is unchanged",true);
-      toast("Could not create that full project export. Your work is unchanged; you can still download JSON.");
+      toast(fullExportFailure.toast);
     }finally{exportBusy=false;}
   }
 

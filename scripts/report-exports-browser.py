@@ -109,6 +109,14 @@ def project_content(value):
     value.get('handover', {}).pop('lastExportAt', None)
     return value
 
+def open_files_from_any_route(page):
+    desktop=page.locator('[data-action="open-panel"][data-panel="files"]')
+    if desktop.count() and desktop.is_visible():
+        desktop.click()
+    else:
+        page.locator('.mobile-nav [data-nav="home"]:visible').first.click()
+        page.locator('[data-action="open-files"]').first.click()
+
 results = []
 with sync_playwright() as p:
     browser = p.chromium.launch(headless=True)
@@ -216,10 +224,72 @@ console.log(JSON.stringify(await read(await readFile(file))));
             (OUT / (label + '-console.json')).write_text(json.dumps(logs, indent=2))
             print(label, json.dumps(logs, indent=2), flush=True)
             context.close()
+        # A real Idea Lab state has not yet produced any mathematical result
+        # or saved figure. Cover its direct Save & export entry explicitly.
+        idea=json.loads(subprocess.check_output(['node','--input-type=module','-e',r'''
+import {createProjectState} from './src/core/project-state.js';
+const s=createProjectState();s.route='planning';s.planning.current='N00B';
+s.ideaExplorer.map={mode:'interests',root:'hobbies',topic:'sport',subtopic:'',
+ dataBranch:'',mathRoute:''};
+console.log(JSON.stringify(s));
+'''],text=True))
+        idea_context=browser.new_context(accept_downloads=True,viewport={'width':1280,'height':850})
+        idea_context.add_init_script('localStorage.setItem('+json.dumps(KEY)+','+json.dumps(json.dumps(idea))+');')
+        page=idea_context.new_page()
+        item={'site':name+'-idea-lab','format':'full-pdf'}
+        try:
+            page.goto(url,wait_until='networkidle',timeout=45000)
+            open_files_from_any_route(page)
+            before=project_content(page.evaluate('localStorage.getItem('+json.dumps(KEY)+')'))
+            with page.expect_download(timeout=45000) as event:
+                page.locator('[data-action="export-full-pdf"]').first.click()
+            result=event.value
+            target=OUT/(name+'-idea-lab-full.pdf')
+            result.save_as(str(target))
+            assert target.read_bytes().startswith(b'%PDF-')
+            assert before==project_content(page.evaluate('localStorage.getItem('+json.dumps(KEY)+')'))
+            assert page.locator('[data-export-recovery]:visible').count()==0
+            item.update(bytes=target.stat().st_size,state_preserved=True)
+        except Exception as err:
+            item.update(error=str(err),toast=page.locator('#toast').inner_text())
+        results.append(item)
+        idea_context.close()
+
+        # An old tab can lose its lazily imported export chunk when GitHub
+        # Pages deploys a new build. Force that failure and verify the UI
+        # exposes an independent JSON backup and actionable reload advice.
+        stale_context=browser.new_context(accept_downloads=True,viewport={'width':390,'height':844})
+        stale_context.add_init_script('localStorage.setItem('+json.dumps(KEY)+','+json.dumps(json.dumps(idea))+');')
+        page=stale_context.new_page()
+        item={'site':name+'-stale-module','format':'full-pdf-recovery'}
+        try:
+            page.goto(url,wait_until='networkidle',timeout=45000)
+            open_files_from_any_route(page)
+            before=project_content(page.evaluate('localStorage.getItem('+json.dumps(KEY)+')'))
+            page.route('**/chunks/*.js',lambda route:route.abort())
+            page.locator('[data-action="export-full-pdf"]').first.click()
+            alert=page.locator('[data-export-recovery]:visible')
+            alert.wait_for(timeout=12000)
+            assert 'The export files could not load' in alert.inner_text()
+            assert 'JSON backup' in alert.inner_text()
+            assert 'reload' in alert.inner_text()
+            with page.expect_download(timeout=12000) as event:
+                alert.locator('[data-action="export-json"]').click()
+            result=event.value
+            target=OUT/(name+'-stale-module-backup.json')
+            result.save_as(str(target))
+            backup=json.loads(target.read_text())
+            assert backup['planning']['current']=='N00B'
+            assert before==project_content(page.evaluate('localStorage.getItem('+json.dumps(KEY)+')'))
+            item.update(backup_downloaded=True,state_preserved=True)
+        except Exception as err:
+            item.update(error=str(err),toast=page.locator('#toast').inner_text())
+        results.append(item)
+        stale_context.close()
     browser.close()
 for server in servers:
     server.shutdown()
 (OUT / ('live-results.json' if args.live else 'results.json')).write_text(json.dumps(results, indent=2))
 print(json.dumps(results, indent=2))
-assert len(results) == len(sites) * 15
+assert len(results) == len(sites) * 17
 assert all('error' not in row for row in results), 'Report downloads failed'
