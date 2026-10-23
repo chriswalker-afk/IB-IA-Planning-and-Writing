@@ -43,6 +43,7 @@
   <link rel="stylesheet" href="./data/workspace-navigation.css">
   <link rel="stylesheet" href="./data/release-guidance.css">
   <link rel="stylesheet" href="./data/release-representation.css">
+  <link rel="stylesheet" href="./data/release-accessibility.css">
   <!-- Also support static/source hosting: browsers cannot resolve npm package names. -->
   <script type="importmap">
     {"imports":{
@@ -116,6 +117,7 @@
   </svg>
   <div class="app">
     <header class="topbar">
+      <a class="skip-link" href="#main">Skip to main content</a>
       <button class="brand" type="button" data-nav="home" aria-label="IA Pathfinder home">
         <span class="brand-mark"><svg class="icon" aria-hidden="true"><use href="#i-compass"></use></svg></span>
         <span class="brand-label">IA <strong>Pathfinder</strong><small>Make your maths meaningful.</small></span>
@@ -146,8 +148,9 @@
           <span class="prototype-label">IA PATHFINDER · YOUR JOURNEY</span>
         </div>
       </aside>
-      <main id="main" class="main" tabindex="-1"></main>
+      <main id="main" class="main" tabindex="-1" aria-label="Current IA Pathfinder workspace"></main>
     </div>
+    <div id="screenAnnouncement" class="visually-hidden" role="status" aria-live="polite" aria-atomic="true"></div>
     <nav class="mobile-nav" aria-label="Main navigation">
       <button data-nav="home" class="mobile-nav-link active" type="button" aria-current="page"><svg class="icon"><use href="#i-home"></use></svg><span>Home</span></button>
       <button data-nav="planning" class="mobile-nav-link" type="button"><svg class="icon"><use href="#i-compass"></use></svg><span>Plan</span></button>
