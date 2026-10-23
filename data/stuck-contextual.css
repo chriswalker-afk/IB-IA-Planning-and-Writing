@@ -60,3 +60,53 @@
  .stuck-studio-dialog .stuck-context-factual{display:block}
  .stuck-studio-dialog .stuck-context-factual span{display:inline-block;margin:2px}
 }
+
+/* Pass 4: compact triage-first hub and searchable topic categories.
+   Amber recovery remains visually distinct from assessment and writing craft. */
+.stuck-hub .stuck-suggested{margin:16px 0 10px}
+.stuck-hub .stuck-suggested h3{font-size:1rem;line-height:1.4;margin:0 0 5px}
+.stuck-hub .stuck-suggested>.stuck-caption{margin:0 0 13px}
+.stuck-hub .stuck-topic-specific{background:#fffdf7;border-color:#ecdbb9}
+.stuck-hub .stuck-topic-specific:hover{background:#fff6e5;border-color:#ce982d}
+.stuck-support [hidden]{display:none!important}
+.stuck-support .stuck-topic{min-width:0}
+.stuck-support .stuck-topic span{min-width:0;display:grid;gap:3px}
+.stuck-support .stuck-topic strong{font-weight:680;font-size:.89rem;line-height:1.35}
+.stuck-support .stuck-topic small{font-weight:450;line-height:1.45;font-size:.75rem;color:var(--muted,#536c77)}
+.stuck-support .stuck-topic-group summary{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.stuck-support .stuck-topic-group summary span{font-size:.72rem;color:var(--muted,#536c77)}
+.stuck-support .stuck-browse-inner{padding:6px 0 12px;min-width:0}
+.stuck-support .stuck-browse-inner>label{display:block;margin:8px 0 5px}
+.stuck-support [data-stuck-search]{display:block;width:100%;min-width:0;padding:11px 12px;
+ border:1px solid var(--line,#dce6e2);border-radius:12px;background:var(--paper,#fff);
+ color:inherit;font:inherit;font-size:.88rem}
+.stuck-support [data-stuck-search]:focus-visible,
+.stuck-support .stuck-filter:focus-visible{outline:3px solid #ad751c;outline-offset:2px}
+.stuck-support .stuck-group-filters{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0 9px}
+.stuck-support .stuck-filter{padding:7px 10px;border:1px solid var(--line,#dce6e2);
+ border-radius:999px;color:var(--ink,#172b30);background:var(--paper,#fff);
+ font:inherit;font-size:.73rem;font-weight:650;cursor:pointer}
+.stuck-support .stuck-filter[aria-pressed="true"]{background:#fff0d1;color:#734706;border-color:#d9a34a}
+.stuck-support .stuck-browse-groups{display:grid;gap:6px;margin:12px 0}
+.stuck-support .stuck-browse-groups>.stuck-topic-group{margin:0;padding:8px 0 2px}
+.stuck-support .stuck-group-issues{display:grid;gap:8px;padding:10px 0 5px}
+.stuck-support .stuck-legacy-browse>.stuck-topic-group{margin-top:12px}
+.stuck-support .stuck-legacy-browse .stuck-topic{background:transparent}
+.stuck-support .stuck-quick-links{display:grid;gap:9px;margin-top:12px}
+.stuck-support .stuck-quick-links .stuck-topic{background:transparent}
+.stuck-support .stuck-practical{font-size:.83rem}
+.stuck-focused .stuck-recovery{background:#fffbf2;border:1px solid #ead9b9}
+.stuck-focused .stuck-recovery h4:not(:first-child){margin-top:17px}
+.stuck-focused .stuck-recovery .btn{display:inline-flex;align-items:center;margin:6px 5px 0 0}
+.stuck-focused .stuck-outcome{background:#f4f8f3;border-radius:9px;padding:10px 12px}
+.stuck-focused .stuck-saved{margin:12px 0}
+.checking-item-top>.stuck-help-badge{width:30px;min-width:30px;height:30px;font-size:17px;margin-left:auto}
+.checking-section-head>.stuck-help-badge{width:33px;min-width:33px;height:33px;margin-left:auto;flex:none}
+.checking-page .stuck-help-badge{vertical-align:middle}
+@media(max-width:600px){
+ .stuck-support .stuck-group-filters{gap:5px}
+ .stuck-support .stuck-filter{padding:6px 9px;font-size:.7rem}
+ .stuck-focused .stuck-recovery{padding:13px}
+ .stuck-hub .stuck-topic small{font-size:.74rem}
+ .stuck-support .stuck-footer .btn{flex:1;min-width:130px}
+}
