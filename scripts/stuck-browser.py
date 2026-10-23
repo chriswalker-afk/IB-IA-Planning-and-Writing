@@ -73,7 +73,15 @@ with sync_playwright() as pw:
   action(p,'stuck-return');node(p,'N01');assert saved(p)['planning']['fields']['aim']==before
  run('help-stays-in-planning',project(),planning)
  def help_menu(p):
-  action(p,'open-panel','[data-panel="help"]');p.locator('.drawer [data-action="open-stuck"]').click();node(p,'N01');assert p.locator('.drawer .stuck-topic').count()>5
+  action(p,'open-panel','[data-panel="help"]')
+  choices=p.locator('.drawer .guidance-choice')
+  assert choices.count()==3,'Help should offer exactly three distinct guidance purposes'
+  assert choices.locator('.guidance-choice-copy strong').all_inner_texts()==['I am stuck',"Writer's Field Guide",'IB criteria']
+  assert [b.get_attribute('data-action') for b in choices.all()]==['open-stuck','writer-guide-open','essentials-open']
+  assert all(b.is_visible() for b in choices.all())
+  assert 'without predicting a mark' in choices.nth(2).inner_text()
+  p.locator('.drawer [data-action="open-stuck"]').click()
+  node(p,'N01');assert p.locator('.drawer .stuck-topic').count()>5
   p.keyboard.press('Escape');assert not p.locator('#drawerLayer').is_visible();node(p,'N01')
  run('existing-help-menu',project(),help_menu,922,544)
  def returns(p):
@@ -151,6 +159,9 @@ with sync_playwright() as pw:
   badge.click()
   modal=p.locator('#studioStuckDialog[open]')
   assert modal.is_visible()
+  assert modal.get_attribute('data-guidance-kind')=='recovery'
+  assert modal.locator('.guidance-surface-close').count()==1
+  assert 'Which part of checking your IA' in modal.locator('#studioStuckIntro').inner_text()
   assert 'I AM STUCK · CHECKING' in modal.inner_text()
   assert 'Works Cited' in modal.inner_text()
   assert 'not read it' in modal.inner_text()
