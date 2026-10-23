@@ -8,7 +8,7 @@
  * IMPORTANT: This is an editorial catalogue for Pass 2, not yet a change to
  * the live mind-map choices or to any student's saved selections.
  */
-import {INVESTIGATIVE_ROUTES} from '../planning/investigative-routes.js';
+import {INVESTIGATIVE_ROUTES,routeCourseMath} from '../planning/investigative-routes.js';
 import {IDEA_MATH_DIRECTION_CARDS} from './math-direction-cards.js';
 
 const lens=(routeId,label,mathsName,invitation)=>({routeId,label,mathsName,invitation});
@@ -120,3 +120,33 @@ export const ideaMathDirectionsForEvidence=(root,branch,topicId='')=>{
   contextualCards:cards.filter(card=>card.routeId===routeId)
  }));
 };
+
+
+/**
+ * Review, not approval: course labels only surface already-authored catalogue
+ * starting points. A method appearing here does not make a whole IA adequate.
+ * AA HL has no dedicated sheet-derived map, so never substitute AA SL silently.
+ */
+export function ideaMathCoursePreview(cardOrId,course){
+ const card=typeof cardOrId==='string'?ideaMathCardById(cardOrId):cardOrId;
+ const route=ideaMathRoute(card?.routeId);
+ if(!route)return null;
+ const isKnown=['AI SL','AA SL','AA HL'].includes(course);
+ const specialist=card.review!=='standard'||route.teacher||
+  (route.id==='voronoi'&&course!=='AI SL');
+ const reviewMessage=card.review==='theoretical'?
+  'Discuss whether this proof- or recursion-heavy exploration belongs in a Mathematics IA rather than an Extended Essay.':
+  specialist?'Discuss this route, its scope and mathematical depth with your teacher before choosing a technique.':
+  'Compare the mathematical depth with your course and chosen aim before committing.';
+ const techniques=isKnown&&course!=='AA HL'?routeCourseMath(route,course).map(m=>m.label||m.name||m.id):[];
+ return Object.freeze({
+  course:isKnown?course:'',
+  status:'provisional',
+  teacherReview:specialist||!isKnown,
+  techniqueExamples:Object.freeze(techniques),
+  note:(isKnown&&course!=='AA HL'&&techniques.length?
+    'Possible starting points in the existing '+course+' reference list (not a required method): '+techniques.join('; ')+'. ':
+    'No automatic technique recommendation is available for this course and route. ')+
+    (course==='AA HL'?'AA HL mathematical scope must be discussed separately. ':'')+reviewMessage
+ });
+}
