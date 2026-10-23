@@ -26,7 +26,7 @@
  radial-gradient(circle,#e3eae5 .85px,transparent .95px),
  radial-gradient(ellipse at 47% 40%,#eef6f3 0%,#fffcfa 70%);background-size:24px 24px,100% 100%}
 .idea-map-connectors{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;overflow:visible}
-.idea-map-wire{fill:none;stroke:#c6b9d2;stroke-width:2.5;stroke-linecap:round;opacity:.74;animation:ideaWireAppear .35s ease-out both}
+.idea-map-wire{fill:none;stroke:#c6b9d2;stroke-width:2.5;stroke-linecap:round;opacity:.74;animation:ideaWireAppear .35s ease-out}
 .idea-map-wire.is-active{stroke:#7798b2;stroke-width:3.3;opacity:.96}
 .idea-map-tier{display:contents}
 .idea-map-network [data-idea-node]{position:absolute;z-index:1;box-sizing:border-box}
@@ -108,12 +108,27 @@
 .idea-map-first-step small{font-size:10px;line-height:1.5}
 .idea-map-theory-note{font-size:12px;line-height:1.55;color:#785d39;background:#fff9ee;padding:13px;border-left:3px solid #d3a76a}
 
-/* Barely perceptible bobbing: less than 2px, slow, varied phases, no jitter. */
-.idea-map-network[data-idea-map-ready] [data-idea-node]:not(.idea-map-direction-node){
- transform-origin:50% 50%;animation:ideaBubbleFloat var(--idea-float-duration,8.6s) ease-in-out var(--idea-float-delay,0s) infinite}
+/* The visual bubble floats, NOT its real interactive HTML button.
+   Stationary hit areas keep clicks, touch and keyboard focus dependable. */
+.idea-map-centre{--idea-bubble-bg:#dcd1f4;--idea-bubble-border:#a99acc;--idea-bubble-shadow:0 10px 26px #7566a32b}
+.idea-map-root{--idea-bubble-bg:#d9efea;--idea-bubble-border:#a9d1c7;--idea-bubble-shadow:0 7px 17px #3e66631b}
+.idea-map-root:nth-child(2){--idea-bubble-bg:#ffe2d1;--idea-bubble-border:#eec4a8}
+.idea-map-root:nth-child(3){--idea-bubble-bg:#f9dce5;--idea-bubble-border:#ebb8cd}
+.idea-map-branch-node,.idea-map-subtopic{--idea-bubble-bg:#f0e2fb;--idea-bubble-border:#d5c2e7;--idea-bubble-shadow:0 5px 14px #5c4d6a14}
+.idea-map-branch-node:nth-child(3n+2),.idea-map-subtopic:nth-child(3n+2){--idea-bubble-bg:#e0f0fb;--idea-bubble-border:#bdd9ed}
+.idea-map-branch-node:nth-child(3n),.idea-map-subtopic:nth-child(3n){--idea-bubble-bg:#ffecd2;--idea-bubble-border:#eed3aa}
+.idea-map-network [data-idea-node]:not(.idea-map-direction-node){isolation:isolate;background:transparent;border-color:transparent;box-shadow:none;transform:none}
+.idea-map-network [data-idea-node]:not(.idea-map-direction-node)::before{
+ content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;border-radius:inherit;
+ background:var(--idea-bubble-bg);border:2px solid var(--idea-bubble-border);
+ box-shadow:var(--idea-bubble-shadow);transform-origin:center}
+.idea-map-network[data-idea-map-ready] [data-idea-node]:not(.idea-map-direction-node)::before{
+ animation:ideaBubbleFloat var(--idea-float-duration,8.6s) ease-in-out var(--idea-float-delay,0s) infinite}
+.idea-map-network :is(.idea-map-root,.idea-map-branch-node,.idea-map-subtopic):is(:hover,.selected)::before{
+ border-color:#678daa;box-shadow:0 8px 20px #456b9622}
 @keyframes ideaBubbleFloat{0%,100%{transform:translateY(0) rotate(var(--idea-tilt,0deg))}
- 50%{transform:translateY(-1.8px) rotate(calc(var(--idea-tilt,0deg) + .4deg))}}
-@keyframes ideaWireAppear{from{opacity:0}to{opacity:.74}}
+ 50%{transform:translateY(-1.5px) rotate(calc(var(--idea-tilt,0deg) + .35deg))}}
+@keyframes ideaWireAppear{from{opacity:0}to{opacity:1}}
 @media(max-width:800px){
  .idea-map-network{border-radius:20px}
  .idea-map-centre{width:152px;min-height:96px}
@@ -140,7 +155,7 @@
  .idea-map-quickstart p{font-size:11px}
 }
 @media(prefers-reduced-motion:reduce){
- .idea-map-network,.idea-map-network [data-idea-node],.idea-map-wire{animation:none!important;transition:none!important}
+ .idea-map-network,.idea-map-network [data-idea-node],.idea-map-network [data-idea-node]::before,.idea-map-wire{animation:none!important;transition:none!important}
  .idea-map-network [data-idea-node]{transform:none!important}
 }
 @media print{
