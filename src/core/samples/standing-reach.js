@@ -57,41 +57,46 @@ function tableDraft({title,number,columns,rows,units,note,purpose}){
 const sourceFields={
  dataStatus:"ready",actualSourceType:"secondary",actualSource:sourceText,
  sourceCitation:"Standing Reach Design Cases v1, supplied as the editable 24-case dataset in this sample project. Original constructed teaching data.",
- actualMethod:"I used the fixed paired-case table without alteration. I reserved cases 4, 8, 12, 16, 20 and 24 before fitting; the other 18 cases formed my development set.",
+ actualMethod:"I used the fixed paired-case table without alteration. Before fitting, I kept the supplied every-fourth-case allocation: cases 4, 8, 12, 16, 20 and 24 for validation, and the other 18 for development.",
  statisticalPopulation:"My conclusions concern the 24 constructed cases and the stated design conditions. They do not estimate a school population.",
  sampleOrCensus:"census",samplingMethod:"I included all 24 supplied cases: 18 for model development and six for a separate prediction check. This is a partition of a fixed design set, not random sampling of people.",
- samplingRationale:"Keeping every fourth case for validation gives me six unused reach values spread across the height range. I fixed that allocation before calculating a model.",
+ samplingRationale:"The fixed every-fourth-case allocation leaves 18 pairs for fitting and six unused reaches for checking, with validation heights spread inside the development range. Keeping the allocation unchanged prevents me from choosing validation cases because they happen to fit well; it does not make the cases a random population sample.",
  sampleSize:"24 cases: 18 development, six reserved validation.",
  pairing:"I kept height and standing reach under the same case ID; I never sorted one column separately.",
  responseBias:"There are no survey responses. The important source limitation is how the constructed cases represent variation in body proportions.",
  dataCleaning:"I checked that each case has one numerical height and reach in centimetres, retained every case and made no substitutions or exclusions.",
  modelEvidence:"The 18 development pairs supply the fit; the six reserved pairs test its predictions.",
  modelInputs:"H is height in cm and R is standing reach in cm. Development H ranges from 154 to 192; reserved H ranges from 158 to 189.",
- modelAssumptions:"I treat the conditional trend as approximately linear over 155–190 cm. I do not assume that two cases with the same height must have identical reach.",
+ modelAssumptions:"I test an approximately linear height–reach trend over 155–190 cm, inside the development range. The model predicts reach from height but allows individual cases to depart from its line.",
  methodLimitation:"A narrow scatter around a line can coexist with individual prediction errors that exceed my five-centimetre tolerance."
 };
 
 // The saved source and its editor share the same authored values.
 const completionFields={
   ...sourceFields,
-  changedSincePlanning:"My expectation of a useful initial setting remained reasonable, but the unused-case errors changed my view of individual accuracy. I concluded that the final target should use a direct reach measurement.",
+  changedSincePlanning:"The development fit supported my expectation of a positive linear trend, but four reserved reach predictions exceeded my tolerance. I therefore rejected the tested height rule as a substitute for standing reach when choosing the final marker. I did not establish whether a preliminary height estimate offers any practical advantage.",
   permissionStatus:"not-needed",permissionNotes:"My investigation uses only the declared constructed dataset; I have no participant data.",
   dataStatusSummary:"I analysed all 24 cases under the original allocation: 18 development and six validation. I retained every supplied value.",
-  dataAimLink:String.raw`My aim asks whether a target can be placed within \(5\text{ cm}\) of the position based on standing reach. I therefore need paired values of height \(H\) and reach \(R\), with both quantities in centimetres. Plotting \(R\) vertically against \(H\) lets me inspect the direction, shape and spread before treating height as a predictor. A coefficient alone would not tell me how many centimetres a proposed target might be wrong.`,
+  dataAimLink:String.raw`The target rule gives me a direct way to judge a reach prediction. Let the ideal marker be \(T^*=R+25\) and the unrounded height-based marker be \(\widetilde T=\widehat R+25\), where \(\widehat R\) is predicted standing reach. Their difference is
+\[
+ \widetilde T-T^*=(\widehat R+25)-(R+25)=\widehat R-R=-e,
+ \qquad e=R-\widehat R.
+\]
+Thus every centimetre of reach-prediction error becomes a centimetre of target error, with the opposite sign. A positive \(e\) would place the marker too low; a negative \(e\) would place it too high. Before apparatus rounding, my success condition is exactly \(|e|\le5\text{ cm}\). The common extra \(25\text{ cm}\) cancels, so choosing another fixed extra reach would not remove a prediction error.`,
   chosenMethod:"A paired scatter, least-squares regression of R on H, residual and single-case sensitivity checks, followed by reserved-case validation.",
-  methodReason:String.raw`I chose a scatter diagram first because my cases contain two numerical quantities. I kept \(H\) on the horizontal axis because it is the value available when I make a prediction. If the plot supports a linear trend, a regression of \(R\) on \(H\) can supply the predicted reach needed for my target rule. I did not begin by selecting a polynomial degree.`,
-  firstPurpose:String.raw`I want my first plot to show whether the 18 development cases support a linear prediction across my proposed domain \(155\le H\le190\). I am looking for the overall direction and for departures large enough to make an individual prediction unreliable.`,
-  firstMethodEvaluation:"I considered showing a table of reach-to-height ratios, but that would obscure how the pairs are distributed across the range. I also considered a line joining the cases, but there is no time sequence joining one case to the next. A scatter preserves the individual pairs. Its limitation is that a visually tight pattern does not quantify a five-centimetre prediction error; I will need a fitted rule and separate validation.",
+  methodReason:String.raw`I therefore need a method that predicts \(R\) from \(H\) and lets me examine errors in centimetres of reach. I put \(H\) on the horizontal axis because it is the proposed input to the rule, and \(R\) on the vertical axis because it is the quantity to be predicted. A scatter diagram lets the development pairs determine whether a straight line is a reasonable first candidate.`,
+  firstPurpose:String.raw`I want to decide whether a straight line is a defensible candidate for predicting standing reach over \(155\le H\le190\), and to identify any visible variation that might threaten the \(5\text{ cm}\) target tolerance.`,
+  firstMethodEvaluation:"A list of reach-to-height ratios would hide where large discrepancies occur across the height range, while joining the points would imply a sequence between different cases. I chose an unconnected scatter to preserve that information. It can guide the choice of a model, but the error identity means that its success must eventually be judged numerically on the reserved reaches.",
   firstMathsBridgePlacement:"before",firstType:"scatter",
-  firstDefinitions:String.raw`I use \(H\) for height and \(R\) for the vertical distance from the floor to the fingertips with one arm extended upwards. Both are in cm. The proposed target is \(25\text{ cm}\) above standing reach. My acceptable error is at most \(5\text{ cm}\), including equality.`,
+  firstDefinitions:String.raw`I use \(H\) for height and \(R\) for standing reach, both in cm. Predicted reach is \(\widehat R\), and \(e=R-\widehat R\). The ideal target is \(T^*=R+25\), while \(\widetilde T=\widehat R+25\) is the unrounded prediction-based target. Since \(\widetilde T-T^*=-e\), my tolerance requires \(|e|\le5\), including equality. After rounding to a permitted marker setting, I use \(T\) for the actual chosen target.`,
   firstPresentation:"Figure 1 plots the 18 development pairs. The axes are labelled with the quantities and centimetres; a break indicates the truncated height and reach scales.",
   accuracyForResult:"I retain unrounded fitted coefficients for all predictions. Two decimal places in the results describe my arithmetic, not the physical accuracy of a measurement.",
-  variableDefinitions:String.raw`\(H\): height (cm); \(R\): standing reach (cm); \(\widehat R\): predicted reach (cm); \(e=R-\widehat R\): prediction error or development residual (cm); \(T\): chosen target setting (cm). I use \(r\), in lower case, only for Pearson's coefficient.`,
-  specialistTerms:"Standing reach is the floor-to-fingertip height with one arm extended upwards. A target's extra reach is its height minus standing reach. My five-centimetre tolerance is a design choice for this investigation.",
+  variableDefinitions:String.raw`\(H\): height; \(R\): standing reach; \(\widehat R\): predicted reach; \(e=R-\widehat R\): prediction error or development residual; \(T^*=R+25\): ideal target; \(\widetilde T=\widehat R+25\): unrounded prediction-based target; \(T\): rounded marker setting. All these quantities are in cm. I use lower-case \(r\) only for Pearson's dimensionless correlation coefficient.`,
+  specialistTerms:"Standing reach is the floor-to-fingertip height with one arm extended upwards. Extra reach is marker height minus standing reach. In this model, a target 25 cm above reach with a ±5 cm tolerance permits extra reaches from 20 to 30 cm; it does not define equal effort or jumping difficulty.",
   modelValidation:"I fixed cases 4, 8, 12, 16, 20 and 24 as validation cases before fitting. I evaluated the development equation once on these six cases without refitting.",
-  modelAlternative:"I considered measuring standing reach directly. I did not fit extra curves after seeing the validation errors because that would turn the reserved cases into model-development data.",
+  modelAlternative:"I compared the height rule with setting the marker from standing reach itself. I did not fit another curve after seeing the validation errors, because those same six cases would then no longer provide an unused check of that new choice.",
   modelDomain:"155≤H≤190 cm; the development set spans 154–192 cm.",
-  limitationConsequence:"A high correlation cannot ensure a fair individual target: different reaches at similar heights translate directly into different amounts to reach above standing position.",
+  limitationConsequence:"The target-error identity makes individual prediction error decisive. A high correlation describes the overall linear pattern but cannot ensure that a particular case's extra reach lies between 20 and 30 cm.",
   limitationMitigation:"I separated fit from validation, retained every case, and made the final recommendation conditional on the calculated errors.",
   limitationAcceptable:"The data answer my stated design question for these fixed cases. They do not establish a population success rate.",
   accuracyQuantity:"Height H and standing reach R",accuracySymbol:"H, R",accuracyUnit:"cm",
@@ -101,15 +106,15 @@ const completionFields={
   pairedDataType:"paired-numerical",
   scatterPattern:"linear",scatterDetail:"rough-linear",scatterAimRelevance:"yes",pmccSignal:"meaningful-linear",
   pmccInterpretation:String.raw`I obtained \(r\approx0.98614\), a strong positive linear association in my development set. It measures how closely the pairs follow a line; it is not the fraction of individual targets that will be accurate.`,
-  predictionComparison:"The positive trend matched my initial expectation. The validation errors did not support using height alone for every individual target within ±5 cm.",
-  benefitFinding:"A height rule gives an initial estimate, but a direct reach measurement is needed to choose an individual setting under my stated tolerance.",
+  predictionComparison:"The positive trend matched my initial expectation. The reserved errors and the two failing rounded settings did not support using this fitted height rule for every individual target within ±5 cm.",
+  benefitFinding:"I can calculate a possible preliminary estimate from height, but its convenience has not been tested. For the fixed cases, using standing reach itself removes the height-to-reach prediction error and leaves only the specified marker rounding to assess.",
   technologyTool:"I used the graph generator for scatter and fitted-line figures and a spreadsheet-style calculation for regression, residuals and the 18 single-case refits.",
   technologyInput:"Development cases 1–3, 5–7, 9–11, 13–15, 17–19 and 21–23, with H as predictor and R as response; validation cases were excluded from fitting.",
   technologyOutcome:String.raw`My 18-case fit is \(\widehat R\approx9.78323485+1.25788857H\). The development RMSE is \(2.40368\text{ cm}\), while the reserved-case RMSE is \(5.45906\text{ cm}\).`,
   technologyInterpretation:"I checked the software's fitted coefficients against the centred-sum calculation and checked a reserved-case error by substitution. The difference between fitted and validation RMSE changed my conclusion.",
   courseWhy:"I used correlation and linear regression as the core methods, then algebra and numerical comparisons to connect their outputs to the target decision.",
   courseConcern:"My investigation uses a small constructed dataset, so I have kept claims about practical use conditional rather than presenting a real-population recommendation.",
-  mathsLearning:"I initially associated a very high correlation with a reliable individual estimate. The error calculations showed me why a strong overall relationship can still be too inaccurate for a particular decision.",
+  mathsLearning:"I expected the positive height–reach relationship to help with target setting. Writing the target error in terms of the reach error showed me what the model actually had to achieve; validation then showed why strong association and a stable fitted line were insufficient for that individual decision.",
   notationIssue:"I used upper-case R for reach and lower-case r for correlation throughout. I distinguished exact definitions from rounded outputs with an approximation sign.",
   presentationIssue:"I placed the scatter beside its interpretation, the residual graph beside the diagnostic discussion, and the two six-row decision tables beside their calculations. The complete case table remains in the editable dataset.",
   referencesIssue:"I identified the constructed case table in the source record and figure source notes. I used no external participant data or borrowed images.",
@@ -126,21 +131,21 @@ export const STANDING_REACH_SPEC={
  planning:{
   planIdentifier:"Standing reach and basketball target design",ideaStatus:"yes",
   provisionalTitle:"Can height alone set a fair basketball reach target?",
-  idea:"I want to predict standing reach from height so that I can choose an initial setting for an adjustable basketball drill.",
+  idea:"I want to test whether predicting standing reach from height is accurate enough to choose an individual marker setting for an adjustable basketball reach drill.",
   aim:"To investigate whether height can predict standing reach accurately enough to set a target 25 cm above reach, within a tolerance of ±5 cm, for the constructed cases with heights between 155 and 190 cm.",
-  motivation:"Measuring height is convenient, but the quantity that determines the extra reach needed is standing reach. I want to know whether the convenience of a height rule is worth its prediction error.",
-  beneficiaryType:"me",beneficiary:"I would use the result when designing an initial target setting for my proposed drill.",
+  motivation:"A height-based rule seems a possible shortcut, but the distance a person must reach above their starting position depends on standing reach. I want to find out whether the prediction error makes that shortcut unsuitable before assuming it is helpful.",
+  beneficiaryType:"me",beneficiary:"I would use the result to decide whether my modelled drill should set its marker from height or from standing reach itself.",
   intendedUse:"I will compare the target given by my height rule with the target that uses the case's stated standing reach.",
   kind:"statistics",statisticsContext:"Paired numerical",dataSource:"secondary",course:"AA SL",
-  prediction:"I expect an approximately positive linear relationship. I predict that height will give a useful starting setting, but I am less certain that every prediction will be within 5 cm.",
+  prediction:"I expect an approximately positive linear relationship, so height may supply a reasonable candidate prediction. I am less certain that its individual errors will stay within 5 cm, which is the condition I need to test.",
   predictionWhy:"Taller cases are likely to have greater reach, while different arm and torso proportions could create differences at similar heights.",
-  predictionImplication:"If the errors are small enough, a height rule could provide an individual setting; if they are too large, I would still need a direct reach measurement.",
+  predictionImplication:"If the resulting marker errors meet my tolerance, the rule would remain a candidate for these cases. If they are too large, I will compare it with using standing reach directly rather than treating a strong correlation as sufficient.",
   courseSuitability:"yes",mathsOutside:"syllabus",
   mathsRevisedWhy:"If a fitted line looks convincing, I will still test predictions because the aim concerns individual accuracy rather than the visual strength of a trend.",
   permissionNeed:"no",permissionDetails:"I will use only the supplied constructed cases. There is no personal information or proposed collection from participants.",
   practicalBlocker:"no",
   firstAction:"I will plot R against H for the development set, keeping the six reserved reaches out of model fitting.",
-  firstAccuracy:"I will retain full coefficient precision in calculations and round displayed predictions to 0.01 cm. Final apparatus settings will use 5 cm intervals.",
+  firstAccuracy:"I will retain full coefficient precision and display predictions to 0.01 cm. I will stipulate marker positions at multiples of 5 cm, assess their rounding separately from prediction error, and not treat integer input values as evidence of measured instrument accuracy.",
   teacherNeed:"I would discuss whether my explanation of model checking and the practical error criterion gives the investigation an appropriate scope.",
   teacherQuestion:"Have I made the difference between association, fitted error and individual prediction accuracy clear enough?",
   teacherSafeAction:"I can finish checking the arithmetic and the links between my figures, equations and conclusions.",
@@ -154,46 +159,44 @@ export const STANDING_REACH_SPEC={
   secondaryVerified:"yes",secondaryStatus:"ready",
   secondarySamplingOrigin:"The cases were constructed, not sampled from a human population. Every fourth case is reserved before fitting.",
   dataAvailability:"in-hand",
-  alternativeMethod:"A direct reach measurement would avoid the height-to-reach prediction. I will compare the benefit of that information with the convenience of the height rule.",
+  alternativeMethod:"Using standing reach directly would avoid height-to-reach prediction error. I will compare the resulting marker error with the height rule; the investigation will not measure whether either procedure saves time.",
   readinessImprovement:"I have recorded the split and error threshold in advance so that I cannot adjust them after seeing a favourable fit."
  },
  completion:completionFields,
- introduction:String.raw`I became interested in the fairness of a basketball reach drill in which each person tries to touch a marker above their head. I use “fair” to mean equal extra reach above standing reach in this model; it does not establish equal effort or jumping difficulty. A single marker height gives different extra reaches to people of different sizes. My first thought was to adjust the marker using height, but the starting point for the movement is standing reach rather than the top of the head. Two people of similar height could therefore need different settings.
+ introduction:String.raw`In a basketball reach drill, a marker at one fixed height does not ask everyone to reach the same distance above their standing position. I wanted to investigate a rule that adjusts the marker for each person. Height seemed a possible input, but the movement begins at standing reach: the height of the fingertips with one arm extended upwards. Two people of similar height can have different standing reaches, so a rule based on height needs more justification than the observation that taller people generally reach higher.
 
-My aim is to investigate whether height can predict standing reach accurately enough to set a target \(25\text{ cm}\) above reach, within a tolerance of \(\pm5\text{ cm}\), for heights between \(155\) and \(190\text{ cm}\). I chose the extra \(25\text{ cm}\) as a fixed design condition and \(5\text{ cm}\) as the largest setting error I am willing to accept. These choices make “accurate enough” a question I can answer numerically.
+My aim is to investigate whether height can predict standing reach accurately enough to set a marker \(25\text{ cm}\) above reach, with a target error of at most \(5\text{ cm}\), for heights between \(155\) and \(190\text{ cm}\). The extra \(25\text{ cm}\) is a stipulated challenge for this design, not a recommended jumping height. I chose the \(\pm5\text{ cm}\) tolerance to make the acceptable extra reach explicit: it must lie between \(20\) and \(30\text{ cm}\), including the endpoints. This is the limited meaning of “fair” that I will test; equal extra reach would not establish equal effort or equal difficulty.
 
-I expect a strong positive relationship between height and reach. However, the variation in body proportions makes me less confident about an individual prediction. My investigation uses the declared set of 24 constructed cases. I can judge my proposed rule on these cases, while its performance for real players would require separate evidence. The distinction that matters to me is whether a convenient initial estimate is also good enough to choose the final setting.`,
- dataNotes:String.raw`I define height as \(H\) and standing reach as \(R\), both in centimetres. Standing reach is the vertical distance from the floor to the fingertips with one arm extended upwards. I keep each pair under its supplied case ID. The integers in the case table are the given values; I do not interpret them as evidence that a measuring instrument is accurate to \(1\text{ cm}\).
+I use 24 supplied, deliberately constructed height–reach pairs. I expect their overall relationship to be positive and roughly linear, but that does not tell me whether an individual's marker will meet my tolerance. My decision will depend on the size of the resulting target errors, rather than on how convincing a fitted line looks. The answer will concern these cases and the stated design conditions; a real-player claim would need separate evidence.`,
+ dataNotes:String.raw`I denote height by \(H\) and standing reach by \(R\), both in centimetres, and keep each supplied pair under its case ID. The integer values are fixed inputs to this numerical investigation; they do not establish the accuracy of a physical measuring instrument. I retain all 24 pairs in the editable working dataset.
 
-Before fitting any model, I allocated cases \(4,8,12,16,20,24\) to a reserved validation set. I used the remaining 18 pairs to develop and check the model. This every-fourth-case allocation gives validation heights from \(158\) to \(189\text{ cm}\), inside the development range of \(154\) to \(192\text{ cm}\). I fixed the allocation rather than choosing cases according to how closely they fitted.
+Before fitting any model, I kept the supplied allocation of every fourth case, \(4,8,12,16,20,24\), for validation. This leaves 18 development pairs with which to choose and check a model, and six reaches that will not influence its coefficients. The allocation gives validation heights from \(158\) to \(189\text{ cm}\), spread inside the development range of \(154\) to \(192\text{ cm}\). It provides a separate numerical check without selecting cases according to their later errors; it is not random sampling of people.
 
-I defined success in advance as \(\lvert R-\widehat R\rvert\le5\text{ cm}\), where \(\widehat R\) is predicted reach. I also specified that an actual marker can be set only at multiples of \(5\text{ cm}\). These are two separate checks: first I will assess the numerical prediction, then the setting that would actually be used. I retained all 24 cases in the working dataset, and used compact figures and result tables in the investigation.`,
+I restrict the proposed rule to \(155\le H\le190\), convenient whole-five-centimetre limits inside that development range. Keeping the bracketing development cases lets me test predictions within the observed range instead of extending a line beyond it. I also stipulate that the marker has positions only at multiples of \(5\text{ cm}\). This describes the hypothetical apparatus, not a measurement result. It means I must distinguish the error in a continuous prediction from the error after choosing an available marker position.`,
  stages:[
   {
-   key:"inspect-pairs",title:"Inspect the height–reach relationship",
-   bridge:"My target decision needs a prediction of reach from height. I first examined whether the development pairs supported a useful numerical relationship.",
-   purpose:String.raw`I plotted the 18 development cases as Figure 1. I used height \(H\) on the horizontal axis because height is the information available when the target is first chosen. I did not include the reserved reaches in this initial assessment.`,
+   key:"inspect-pairs",title:"What the height–reach pattern allows me to predict",
+   bridge:"A height rule is worth developing only if the paired values show a pattern that a simple model can represent. My first decision was therefore about the form of that pattern, before calculating any coefficients.",
+   purpose:String.raw`Figure 1 shows the 18 development pairs. I used truncated axes to make their vertical spread visible and marked the non-zero starts explicitly. The reserved reaches remain outside this model-development step.`,
    technique:"Paired scatter and contextual comparison",methodId:"other",kind:"scatter",knowledge:"syllabus",
    observation:"linear",
    observationText:"I see an approximately straight rising band across the 18 development pairs, with no separated group. The nearby heights 162 and 164 cm have reaches 209 and 218 cm, so the general trend still leaves individual variation relevant to my five-centimetre target tolerance.",
-   result:String.raw`The development heights run from \(154\) to \(192\text{ cm}\), and reaches from \(202\) to \(252\text{ cm}\). Figure 1 shows a clear rising band without a visible bend or separated group. A straight line therefore seems a reasonable first model over my proposed domain.
+   result:String.raw`The development heights run from \(154\) to \(192\text{ cm}\), and reaches from \(202\) to \(252\text{ cm}\). Figure 1 shows a rising band without a clear bend or a separated group. This supports a straight line as a candidate over my proposed domain.
 
-The points do not lie exactly on a line. For example, cases 13 and 17 have \((H,R)=(162,209)\) and \((164,218)\). Their heights differ by \(2\text{ cm}\), but their reaches differ by \(9\text{ cm}\). I cannot interpret that pair as a local growth rate: these are different constructed cases. It does show why an overall trend cannot determine every individual reach.
-
-I kept the scatter unconnected because there is no continuous journey from one case to the next. The non-zero axis starts allow me to see the spread clearly; the marked breaks make those truncated scales explicit.`,
-   interpretation:"The direction agrees with my prediction, and the approximate shape gives me a reason to calculate a linear model. The nine-centimetre difference between two nearby heights also keeps my original five-centimetre criterion relevant. I need the actual vertical discrepancies, not only a description such as “strong relationship”.",
-   limitations:"The development set has only 18 constructed cases. Its appearance does not establish a universal human relationship, and an apparently straight pattern might conceal individual differences that matter for my target.",
+The spread matters as well as the direction. Cases 13 and 17 have \((H,R)=(162,209)\) and \((164,218)\): a height difference of \(2\text{ cm}\) accompanies a reach difference of \(9\text{ cm}\). These are different cases, so dividing those differences would not give a person's growth rate. The comparison instead shows why a predicted trend cannot be treated as an exact reach for each case.`,
+   interpretation:"The positive direction agrees with my expectation. The roughly straight band gives me a reason to try a line with a slope and intercept; nothing here requires the reach-to-height ratio to be constant or the line to pass through the origin. My data are far from zero height, so forcing that additional condition would need a separate justification.",
+   limitations:"The nearby pair does not by itself establish that a fitted rule will fail the tolerance: the error depends on where that rule places each prediction. I must calculate the vertical discrepancies before judging the individual settings.",
    localTakeaway:"A linear prediction is a defensible candidate, but visible case-to-case variation means that its accuracy must be tested.",
-   nextQuestion:"What fitted reach does a given height predict, and how strong is the linear association?",
-   nextWhy:"The plot suggests a line, while my target formula requires a numerical predicted reach.",
+   nextQuestion:"My next question was which straight line to use to predict standing reach from a given height.",
+   nextWhy:"That would turn the visible pattern into a numerical rule whose errors I could compare with the target tolerance. I would also calculate correlation to describe the pattern, keeping that description separate from the accuracy decision.",
    mathsInsight:"I separated the choice of a plausible model from the later judgement that its errors are small enough.",
    methodChangeReason:"The approximately straight rising band gave me a specific reason to fit a line.",
    outcomeId:"linear"
   },
   {
-   key:"fit-reach",title:"Calculate and interpret the regression",
-   bridge:"Figure 1 supports a linear candidate. I next needed its equation so that a height could produce a target estimate.",
-   purpose:String.raw`I fitted \(\widehat R=a+bH\) by least squares using the 18 development pairs. This minimises the sum of squared vertical discrepancies in reach, which is the quantity my rule must predict. Figure 2 shows the resulting line on the same pairs.`,
+   key:"fit-reach",title:"Turning the pattern into a prediction rule",
+   bridge:String.raw`The identity \(\widetilde T-T^*=-e\) tells me which direction of error matters: vertical error in reach becomes error in the proposed marker height. I therefore fitted reach on height, rather than reversing the two variables.`,
+   purpose:String.raw`I used least squares to choose \(a\) and \(b\) in \(\widehat R=a+bH\). It minimises \(\sum(R_i-a-bH_i)^2\), so positive and negative discrepancies cannot cancel and larger ones receive greater weight. This gives a defined way to select one line from the candidates suggested by Figure 1. Figure 2 shows that line on the development pairs.`,
    technique:"Pearson correlation and least-squares linear regression",methodId:"linear-regression",kind:"model",knowledge:"syllabus",
    result:String.raw`For the development data I obtained \(\sum H=3125\), \(\sum R=4107\), \(\sum H^2=544857\) and \(\sum HR=715942\). Thus \(\bar H=3125/18\approx173.6111\) and \(\bar R=4107/18\approx228.1667\). I used the centred sums
 \[
@@ -214,19 +217,21 @@ Using \(S_{RR}=3778.5\), I also calculated
  r=\frac{S_{HR}}{\sqrt{S_{HH}S_{RR}}}\approx0.986142.
 \]
 At \(H=175\), my unrounded coefficients give \(\widehat R\approx229.91\text{ cm}\). I used the full coefficients in subsequent calculations; the displayed decimal approximation is not a new rounded model.`,
-   interpretation:String.raw`Within this range, an extra centimetre of height corresponds to about \(1.26\text{ cm}\) of predicted reach. I cannot interpret the intercept as the reach of a zero-height person because \(H=0\) is far outside my domain. The coefficient \(r\) shows a strong positive linear association, but it does not say that \(98.6\%\) of my predictions will be accurate. The prediction at \(175\text{ cm}\) gives me an initial target near \(254.91\text{ cm}\), but I have not yet established its reliability.`,
-   limitations:"Least squares makes this line perform as well as possible on the development pairs under its squared-error criterion. That fitted performance can be optimistic for cases not used to choose the coefficients.",
+   interpretation:String.raw`Within my height range, increasing the input by \(1\text{ cm}\) increases the fitted reach by about \(1.26\text{ cm}\). The intercept locates this line; it is not a meaningful prediction for a zero-height person. The correlation confirms a strong positive linear association, but \(r\approx0.98614\) does not mean that \(98.6\%\) of individual predictions meet my tolerance.
+
+For the illustrative height \(175\text{ cm}\), the continuous target would be \(\widetilde T\approx229.91+25=254.91\text{ cm}\). This shows how the equation would set a target, but there is no supplied reach at exactly that height with which to establish its error.`,
+   limitations:"Least squares optimises the total squared error on the development cases; my aim requires an acceptable target for each individual case. Those are different criteria. A line can be the best least-squares fit and still have errors larger than 5 cm, particularly on cases that did not help determine its coefficients.",
    localTakeaway:"The fitted line supplies the prediction I need, but the high correlation does not settle the target-accuracy question.",
-   nextQuestion:"Do residuals or a single influential case undermine this fitted rule?",
-   nextWhy:"Before using the reserved cases, I want to check whether the line is missing a visible shape or depends heavily on one development pair.",
+   nextQuestion:"Before testing the reserved cases, I asked whether the development errors revealed a reason to reconsider this particular line.",
+   nextWhy:"A systematic bend in the residuals would challenge its shape, while a large prediction change after omitting one pair would show that the rule depended strongly on that pair. Both can be checked without using the reserved reaches to choose a model.",
    mathsInsight:"A regression slope, an intercept and a correlation coefficient answer different questions; I interpreted each in relation to my variables.",
    methodChangeReason:"The fitted equation made its discrepancies calculable, so I could examine the part of each reach that height did not explain.",
    outcomeId:"fits"
   },
   {
-   key:"check-development",title:"Check residuals and sensitivity",
-   bridge:"The development fit is strong, but I need to know what its numerical success conceals before treating it as a useful rule.",
-   purpose:String.raw`I defined the residual \(e_i=R_i-\widehat R_i\). Figure 3 plots these discrepancies against height. I then repeated the fit with each development case omitted in turn, using the omissions only to diagnose sensitivity.`,
+   key:"check-development",title:"Checking the fitted errors and prediction stability",
+   bridge:"I used the development data for two different checks: whether the line missed a visible pattern, and whether its predictions were sensitive to any one supplied pair. Neither check could yet answer how it would perform on unused reaches.",
+   purpose:String.raw`Figure 3 plots the residuals \(e_i=R_i-\widehat R_i\) against height. A pattern here would be information that the straight-line model had left unexplained. I also recalculated the line 18 times, omitting one development pair at a time, and compared the resulting reach predictions across my proposed domain.`,
    technique:"Residual analysis and one-case-at-a-time regression sensitivity",methodId:"linear-regression",kind:"model",knowledge:"syllabus",
    result:String.raw`The residuals fall on both sides of zero, without a clear curved pattern. Their range is approximately \(-4.56\) to \(3.83\text{ cm}\). For case 13,
 \[
@@ -238,22 +243,24 @@ I obtained a squared-residual sum of about \(103.99785\text{ cm}^2\), giving
  =\sqrt{\frac{\sum e_i^2}{18}}
  \approx2.40\text{ cm}.
 \]
-Every development residual meets my five-centimetre criterion. I used division by 18 because I am describing the mean squared prediction discrepancy on these 18 cases, rather than estimating an error variance with a degrees-of-freedom correction.
+Every development residual has magnitude below \(5\text{ cm}\), so all 18 continuous reach predictions meet the preliminary error check. This is not yet a check of rounded marker positions. RMSE gives the overall discrepancy in centimetres and gives larger errors more weight; it does not replace the case-by-case comparison with \(5\). I divide by 18 because I am describing errors on these 18 cases, not estimating an error variance with a degrees-of-freedom correction.
 
-For the sensitivity check I calculated 18 additional lines. The gradients ranged from about \(1.23216\), with case 13 omitted, to \(1.28582\), with case 9 omitted. Table 1 shows those two extreme-gradient diagnostics alongside the original fit. Across all 18 refits, the largest prediction change anywhere from \(H=155\) to \(190\) was about \(0.765\text{ cm}\). I checked the interval endpoints because the difference between two fitted lines is linear; its greatest absolute value on a closed interval occurs at an endpoint.`,
-   interpretation:"The residual plot gives me no clear mathematical reason to add curvature. The single-case check suggests that one development case is not controlling the predictions in my chosen range. I retained all 18 pairs in the final equation. These results justify testing the existing line; they do not establish accuracy on new cases.",
-   limitations:"Single-case omission tests the influence of one supplied pair at a time. It does not test a different case population, systematic changes to several values, or the omission of a relevant variable such as arm length.",
-   localTakeaway:"The development model is locally stable and fits its own cases within tolerance; its performance on unused cases remains unknown.",
-   nextQuestion:"Does the unchanged equation meet my tolerance on the six reserved cases?",
-   nextWhy:"A stable fitted line can still give inaccurate predictions, so the original validation set is the next direct test of my aim.",
+The sensitivity refits gave gradients from about \(1.23216\), with case 13 omitted, to \(1.28582\), with case 9 omitted. A change in gradient alone is difficult to judge because the intercept changes too. I therefore compared predicted reaches, the quantities that enter my target rule. Table 1 shows the original fit and those two extreme-gradient refits; the full set of 18 refits remains in the working dataset.
+
+Across all 18 omissions, the largest change in a continuous reach prediction anywhere from \(H=155\) to \(190\) was about \(0.765\text{ cm}\). For each refit I checked only those two endpoint heights: the difference between two fitted lines is linear, so its greatest absolute value on a closed interval occurs at an endpoint. This covers the whole stated domain rather than just the three heights displayed in Table 1.`,
+   interpretation:"There is no clear residual curvature suggesting that I should add a quadratic term. Omitting a single pair changes the continuous predictions by less than 1 cm, small compared with my 5 cm tolerance. I retained all 18 pairs in the final equation: the omissions diagnosed influence and were not a way of selecting a more favourable fit.",
+   limitations:"This stability concerns continuous reach predictions under one-case omissions. It does not establish that the later rounded marker choices stay unchanged, nor does it test a different collection of cases or simultaneous changes to several values.",
+   localTakeaway:"The line has no clear curved residual pattern, its development reach errors meet the preliminary tolerance, and its continuous predictions change by less than 0.77 cm under any single-case omission. Unused-case accuracy and rounded target performance remain to be checked.",
+   nextQuestion:"The unresolved question was now whether the same equation would predict the six reserved reaches closely enough.",
+   nextWhy:"The development results gave me a reason to keep this candidate, not to lower the standard it had to meet. I fixed the coefficients and carried the original five-centimetre criterion into the reserved-case test.",
    mathsInsight:"I checked sensitivity through changes to predicted reach, because unstable-looking coefficients matter only through their effect on the decision.",
    methodChangeReason:"The development diagnostics did not justify changing the model, so I kept it fixed for validation.",
    outcomeId:"fits"
   },
   {
-   key:"validate-reach",title:"Test the six reserved predictions",
-   bridge:"My development checks were encouraging. I now used the six reaches that had played no part in fitting the line.",
-   purpose:"I substituted each reserved height into the unchanged 18-case equation. Table 2 shows every reserved case, its predicted reach and the error R−predicted reach.",
+   key:"validate-reach",title:"Testing predictions that did not help determine the line",
+   bridge:"This check could change my judgement even if the equation and its correlation remained exactly the same. Its purpose was to test prediction on the unused reaches, rather than obtain a better fit to the values I had already analysed.",
+   purpose:"I substituted each reserved height into the unchanged 18-case equation. Table 2 includes all six cases, their supplied and predicted reaches, and the errors R−predicted reach. I judged each absolute error against 5 cm before summarising the set.",
    technique:"Reserved-case prediction errors, RMSE and absolute error",methodId:"linear-regression",kind:"model",knowledge:"syllabus",
    result:String.raw`The result was less successful than the development fit suggested. For case 12, \(H=172\) and \(R=233\), so
 \[
@@ -267,43 +274,47 @@ Only cases 4 and 16 have \(\lvert e\rvert\le5\text{ cm}\): \(2\) of the \(6\) re
  \mathrm{RMSE}_{\mathrm{val}}
  =\sqrt{\frac{\sum_{i=1}^{6}e_i^2}{6}}\approx5.46\text{ cm}.
 \]
-The mean signed error is only about \(-0.037\text{ cm}\). That small mean is misleading if used as an accuracy measure: positive and negative errors nearly cancel. I need the absolute or squared discrepancies because either direction can make my proposed target unfair.`,
-   interpretation:"My equation captures the overall association but does not satisfy my individual-accuracy requirement on four reserved cases. The validation RMSE is more than twice the development RMSE. I therefore changed my judgement: the fitted model is useful as an initial estimate, but the evidence here does not support trusting it to set every individual's final target.",
-   limitations:"Six reserved cases give a limited diagnostic, and they are constructed rather than randomly sampled. The observed 2/6 success count is a description of these cases, not a prediction that exactly one third of future players would meet the tolerance. I did not use these errors to search for a more flattering curve.",
+MAE describes the average magnitude of the reach error; RMSE gives extra weight to the larger discrepancies and can be compared with the development RMSE. Neither average tells me that every case is acceptable. The mean signed error is only about \(-0.037\text{ cm}\), because the positive and negative errors nearly cancel. That cancellation cannot make an individual's target correct: the identity \(\widetilde T-T^*=-e\) shows that either sign can breach my tolerance.`,
+   interpretation:"The continuous prediction fails the five-centimetre requirement on four reserved cases, despite the strong correlation and the small changes under single-case refits. The validation RMSE is also more than twice the development RMSE. I therefore cannot use the fitted appearance or stability of the line as evidence that it gives sufficiently accurate individual targets. The apparatus rounding still needs its own check before I make the final decision.",
+   limitations:"The 2/6 count describes these six fixed cases; it is not an estimate that one third of future players would meet the tolerance. It is enough to identify failures of this candidate rule, but not to prove that every possible height-based model would fail. Trying another curve because of these errors would use the reserved cases to develop that alternative, so it would need a fresh check.",
    localTakeaway:"The reserved-case test weakens the case for an individual height-only setting despite the very high development correlation.",
-   nextQuestion:"What happens when the predicted reach becomes an actual target at a five-centimetre setting?",
-   nextWhy:"My aim concerns the marker that would be used, so I need to include its rounding rule and assess the resulting extra reach.",
+   nextQuestion:"The last part of my original question concerned the available marker positions, rather than the continuous predictions alone.",
+   nextWhy:"Rounding might move a marker towards its ideal position or away from it. I therefore needed to apply the stipulated five-centimetre setting rule to every reserved case and judge the actual extra reach it produced.",
    mathsInsight:"A nearly zero average signed error can coexist with substantial individual errors because opposite errors cancel.",
-   methodChangeReason:"The prediction errors changed the proposed use of the model and made the final apparatus setting the relevant quantity to examine.",
+   methodChangeReason:"The reserved errors ruled out treating fitted performance as evidence of individual accuracy. I then completed the preplanned marker-rounding check before deciding whether the actual target rule met the aim.",
    outcomeId:"uncertain"
   },
   {
-   key:"choose-target",title:"Translate prediction error into the drill setting",
-   bridge:"Height alone did not predict every reserved reach accurately enough. I checked the consequence for the target rather than stopping at an error statistic.",
-   purpose:String.raw`I defined the ideal target as \(T^*=R+25\). My height-based apparatus rule rounds the predicted target to the nearest multiple of \(5\text{ cm}\):
+   key:"choose-target",title:"Judging the marker settings against the original aim",
+   bridge:String.raw`The continuous target error is \(-e\), but a marker at \(\widetilde T=\widehat R+25\) may not be an available setting. I now included that final design restriction, using the same cases and the same tolerance.`,
+   purpose:String.raw`My apparatus rule rounds the predicted target to the nearest multiple of \(5\text{ cm}\):
 \[
  T=5\,\operatorname{round}\!\left(\frac{\widehat R+25}{5}\right).
 \]
-I compared \(T\) with \(T^*\) for all six reserved cases in Table 3.`,
+Table 3 compares the setting \(T\) with the ideal \(T^*=R+25\), and also gives the actual extra reach \(T-R\). These express the same acceptance test in two ways: \(|T-T^*|\le5\) is equivalent to \(20\le T-R\le30\).`,
    technique:"Algebraic error propagation and practical rounding",methodId:"linear-regression",kind:"model",knowledge:"syllabus",
    result:String.raw`The six settings are \(235,240,250,260,270,275\text{ cm}\), in the reserved-case order. Their errors \(T-T^*\) are \(-1,3,-8,4,-5,9\text{ cm}\). Four meet the original \(\pm5\text{ cm}\) criterion, including the boundary value \(-5\).
 
-This improvement from \(2/6\) to \(4/6\) is incidental. Let \(q=T-(\widehat R+25)\) be the rounding adjustment, for which \(|q|\le2.5\). Since \(e=R-\widehat R\),
+This improvement from \(2/6\) to \(4/6\) is incidental to the six particular predictions, rather than evidence that rounding corrects the model. Let \(q=T-\widetilde T\) be the rounding adjustment. Rounding to the nearest multiple of \(5\) gives \(|q|\le2.5\text{ cm}\). Extending the earlier error identity gives
 \[
  T-T^*=-e+q.
 \]
-Rounding can oppose an existing error or reinforce it. Case 8 changes from a \(5.33\text{ cm}\) overestimate of its ideal unrounded target to a \(3\text{ cm}\) overestimate after rounding, while case 24 worsens from about \(6.52\) to \(9\text{ cm}\). For cases 12 and 24 the actual extra reaches are only \(250-233=17\text{ cm}\) and \(275-241=34\text{ cm}\), rather than my intended \(25\text{ cm}\).
+Rounding can oppose an existing error or reinforce it. Case 8 changes from a \(5.33\text{ cm}\) overestimate of its ideal target to a \(3\text{ cm}\) overestimate after rounding, while case 24 worsens from about \(6.52\) to \(9\text{ cm}\). The two failing cases, 12 and 24, have actual extra reaches of \(250-233=17\text{ cm}\) and \(275-241=34\text{ cm}\). Both lie outside the original \(20\)–\(30\text{ cm}\) interval.
 
-I also considered a hypothetical height-reading error of \(\pm0.5\text{ cm}\), holding the fitted coefficients fixed. Before target rounding this changes predicted reach by
+I then asked whether a small change in the supplied height could alter this decision. I chose \(\pm0.5\text{ cm}\), half the table's one-centimetre input step, as a sensitivity scenario rather than an estimate of instrument error. Holding the fitted coefficients fixed, the continuous change obeys
 \[
  |\Delta\widehat R|=|b\,\Delta H|\le1.25788857(0.5)\approx0.629\text{ cm}.
 \]
-That is smaller than the main reserved-case discrepancies. The rounded setting can still jump by \(5\text{ cm}\) near a rounding boundary, so I would not treat \(0.629\text{ cm}\) as a bound on the final marker change.`,
-   interpretation:"I would use the height rule to position the marker approximately, then measure standing reach to choose the individual setting. Within my design, rounding the directly measured ideal target R+25 to the nearest 5 cm would introduce at most 2.5 cm of setting error before any measurement uncertainty. That directly addresses the source of the two large failures in Table 3.",
-   limitations:"The height-error calculation is a scenario based on an assumed ±0.5 cm input change, not an estimated instrument uncertainty. A direct reach measurement would also need a consistent posture and a checked measurement method in any real use.",
-   localTakeaway:"The proposed height rule provides an initial setting, but it cannot replace a direct reach measurement under my individual-error criterion.",
-   nextQuestion:"Would adding a second body measurement reduce the prediction error enough to justify the extra measurement?",
-   nextWhy:"The remaining discrepancy is variation in reach at a given height. A second relevant measurement could address that source of variation, but would require a new dataset and a fresh validation set.",
+That continuous change is smaller than the main reserved-case discrepancies. The rounded setting can still jump by \(5\text{ cm}\) near a rounding boundary: increasing case 8's height input from \(165\) to \(165.5\text{ cm}\) moves its setting from \(240\) to \(245\text{ cm}\), turning a \(3\text{ cm}\) target error into \(8\text{ cm}\). Thus neither the small input sensitivity nor the earlier stable continuous refits guarantee stable rounded decisions.`,
+   interpretation:String.raw`For these cases, the direct alternative is to use the supplied standing reach and choose
+\[
+ T_R=5\,\operatorname{round}\!\left(\frac{R+25}{5}\right).
+\]
+This removes the reach-prediction term: \(T_R-(R+25)\) is only a rounding error, of magnitude at most \(2.5\text{ cm}\). With the given \(R\) values treated as exact inputs, the extra reach must therefore lie between \(22.5\) and \(27.5\text{ cm}\), inside my acceptable interval. This is a reason to prefer standing reach itself for the final setting in the defined model.`,
+   limitations:"In real use, standing reach would have measurement uncertainty as well. The 2.5 cm bound applies to rounding an accurate reach value, not to the complete physical procedure. My constructed inputs let me compare the two mathematical rules, but do not establish either procedure's measurement accuracy or convenience.",
+   localTakeaway:"The tested height rule fails the final target criterion on two reserved cases. Using the fixed standing reaches directly removes prediction error and keeps marker-rounding error within 2.5 cm; physical measurement accuracy remains outside the supplied evidence.",
+   nextQuestion:"I can now answer the original target-setting question: the tested height rule has two explicit failures after all the stipulated setting steps are included.",
+   nextWhy:"I stopped here because the model, its unused-case predictions and the actual marker choices have all been judged against the same criterion. Adding a new predictor or relaxing the tolerance would change the investigation rather than repair this result.",
    mathsInsight:"A practical rounding rule changes individual errors in both directions, and an input-precision calculation must distinguish the continuous prediction from the stepped final setting.",
    methodChangeReason:"I converted the numerical finding into the actual decision required by my aim, while keeping the original tolerance unchanged.",
    outcomeId:"uncertain"
@@ -373,30 +384,30 @@ That is smaller than the main reserved-case discrepancies. The rounded setting c
    sourceText:"My 18 diagnostic refits of the development data. The original all-case model remains the final prediction rule."}
  ],
  conclusion:{
-  mainConclusion:String.raw`For these constructed cases, height alone gave a useful initial reach estimate but did not meet my requirement for every individual target. My development equation was \(\widehat R\approx9.78323+1.25789H\), with \(r\approx0.98614\). Despite that strong association, only \(2/6\) reserved reach predictions were within \(5\text{ cm}\), and their RMSE was about \(5.46\text{ cm}\).
+  mainConclusion:String.raw`The linear height-based rule I developed does not meet my target-setting requirement on all the checked cases. Its equation, \(\widehat R\approx9.78323+1.25789H\), captures a strong development association, with \(r\approx0.98614\). Nevertheless, only \(2/6\) reserved reach predictions were within \(5\text{ cm}\), and their RMSE was about \(5.46\text{ cm}\). The development correlation therefore did not provide the individual accuracy my aim required.
 
-After applying the specified target rule, four of the six rounded settings were within tolerance. The other two were \(8\text{ cm}\) too low and \(9\text{ cm}\) too high, producing extra reaches of \(17\) and \(34\text{ cm}\) instead of \(25\text{ cm}\). I would therefore use the height equation to choose an initial position and use a direct standing-reach measurement for the final individual setting.`,
-  conclusionBenefit:"The most consequential limitation is variation in reach at similar heights, rather than a single influential development point: the single-case refits changed predictions by less than 0.77 cm across my domain. I also learned that a small mean signed error can hide substantial individual inaccuracies, and that rounding does not consistently improve them. My original positive-trend prediction was supported, while confidence in precise individual settings was reduced. These conclusions apply to the fixed cases and design conditions; the small reserved set does not establish a population success rate.",
-  conclusionExtension:"I would next investigate whether a second measurement, such as arm span, reduces the discrepancy in reach predictions enough to justify measuring it. I would first specify the new model and practical tolerance, then collect or construct a separately justified development set and a fresh validation set. Reusing the six cases that shaped my present conclusion would weaken that new test."
+The decisive check is the marker that would actually be chosen. After rounding to the stipulated \(5\text{ cm}\) positions, four of the six settings met the tolerance, but two were \(8\text{ cm}\) too low and \(9\text{ cm}\) too high. Their extra reaches of \(17\) and \(34\text{ cm}\) lie outside my original \(20\)–\(30\text{ cm}\) interval. I would therefore base the final individual setting on a direct standing-reach measurement, whose own accuracy would need checking. For the exact reaches supplied here, setting the marker from \(R+25\) leaves at most \(2.5\text{ cm}\) of rounding error and satisfies the design criterion.`,
+  conclusionBenefit:"The investigation gave me a numerical way to distinguish a convincing fit from an acceptable target-setting rule. A strong association and continuous predictions that changed by less than 0.77 cm under single-case omissions made it a defensible candidate to test; neither established that its final targets were acceptable. The error identity connected every reach discrepancy to the marker decision, while the reserved cases and rounding calculation exposed the failures. My expectation of a positive linear pattern was supported, but I cannot justify replacing standing reach with this fitted rule. Height could still supply a preliminary estimate, but I have not demonstrated an advantage to doing so. These conclusions concern the fixed cases and design assumptions, and do not establish a population success rate or rule out every other height-based model.",
+  conclusionExtension:"A focused extension would investigate the accuracy needed when standing reach itself is measured. I would use repeated measurements under a consistent posture to justify a reach-error bound, then examine how that bound combines with the five-centimetre marker spacing. That would test whether the direct-setting alternative can meet the same extra-reach criterion in physical use, where the exact-input assumption of this investigation no longer holds."
  },
  reviews:[
   {id:"D01",location:"Introduction, five mathematical stages and conclusion",
-   note:"My draft contains a defined practical aim, the completed regression, numerical diagnostics, reserved-case validation, six purposeful figures/tables and an answer to the original target-setting question.",
+   note:"My draft defines the target criterion, derives its connection to reach-prediction error, develops and checks a regression, tests reserved cases, and judges the rounded markers. The six figures/tables support those decisions, and the conclusion answers the original setting question.",
    action:"I will keep school-specific submission checks separate from the mathematical completeness of this draft."},
   {id:"D02",location:"The final paragraph of each stage and the opening paragraph of the next",
-   note:"My sequence follows the unresolved question at each point: shape, prediction equation, fitted-model checks, unused-case accuracy and the actual target. The conclusion returns to the original ±5 cm criterion.",
-   action:"I retained the same aim and tolerance throughout and removed any need for a separate unrelated technique."},
+   note:"Each stage resolves a question needed for the next: whether a line is plausible, which line predicts reach, whether development diagnostics justify keeping it, how it performs on unused reaches, and what the rounded markers require. The final stage explains why I can conclude, and the future extension appears once in the conclusion.",
+   action:"I read the selected answer fields as continuous prose, gave adjoining paragraphs different jobs and kept the original target criterion unchanged."},
   {id:"D03",location:"Variable definitions, Figures 1–3 and Tables 1–3",
-   note:"I distinguish reach R from correlation r, use e=R−predicted reach consistently, and state the opposite sign convention for target error. Axes and table columns carry centimetres where appropriate, and rounded numerical results use approximation signs.",
+   note:"I distinguish reach R from correlation r, define ideal, continuous and rounded targets, and derive why reach error and unrounded target error have opposite signs. Axes and table columns carry centimetres where appropriate, and rounded numerical results use approximation signs.",
    action:"I will recheck those symbols and units if I change a figure or export layout."},
   {id:"D04",location:"Introduction, data allocation, validation and target-setting stage",
-   note:"My own decisions shape the investigation: I chose a 25 cm challenge and ±5 cm tolerance, fixed a validation allocation, retained the original fit after diagnostic omissions and changed its proposed use when the errors were too large.",
-   action:"I have explained the reasons for those decisions at the point where they affect the mathematics."},
+   note:"I explain the stipulated 25 cm challenge, interpret the ±5 cm tolerance as an extra-reach interval, justify the interpolation domain, and preserve the supplied validation allocation. The target-error identity motivates regression in reach, and the observed failures determine my final judgement.",
+   action:"I distinguish design choices from measured facts and do not claim that the height rule has a demonstrated practical advantage as a preliminary setting."},
   {id:"D05",location:"Interpretations after regression, sensitivity, validation and target rounding",
-   note:"I compare the strong correlation with individual accuracy, explain the nearly cancelling signed errors, and show why rounding helps some cases while worsening another. My recommendation changes because of the calculated errors.",
+   note:"I distinguish least-squares fit from the individual acceptance criterion, interpret the error summaries, and limit the omission check to continuous predictions. Rounding helps some reserved cases but worsens another; a small input change can cross a marker boundary. Those calculations lead to the direct-reach comparison.",
    action:"I kept the consequential limitations next to the results they restrict and condensed them in the conclusion."},
   {id:"D06",location:"Regression derivation and all error calculations",
-   note:"I checked the coefficients from the centred sums, the 18-case residual RMSE, every reserved prediction and the rounded settings. The endpoint argument justifies the sensitivity bound without searching arbitrary points.",
+   note:"I checked the coefficients from the centred sums, the 18-case residual RMSE, every reserved prediction and the rounded settings. The endpoint argument covers the full continuous sensitivity interval, while the target-error identities and nearest-setting bound justify the final comparison.",
    action:"I will rerun the arithmetic if any supplied value or design condition changes."},
   {id:"D07",status:"checked",location:"Complete reader, PDF and Word document",
    note:"I used short captions and at most six rows in each displayed result table. Each saved figure is placed with the paragraph that introduces or interprets it, and the complete input dataset remains available separately.",
@@ -405,7 +416,7 @@ After applying the specified target rule, four of the six rounded settings were 
    note:"I have identified Standing Reach Design Cases v1 as constructed data and retained the complete inputs. My figures use that dataset and my calculations; I have not attributed the values to a real study or participants.",
    action:"No external source is used in this draft; I will add a full reference if an extension uses published material."},
   {id:"D11",location:"Regression, residual, validation and target-setting results",
-   note:"The draft includes actual equations, a worked residual, a worked reserved prediction, two error summaries and all six rounded target outcomes. The results are completed calculations rather than a list of planned methods.",
+   note:"The draft includes the target-error identity, regression calculation, a worked residual, a worked reserved prediction, two error summaries, all six rounded target outcomes and the direct-reach rounding bound. Each result has a role in the stated decision.",
    action:"I checked that the conclusion quotes the reserved-case results, not only the development fit."},
   {id:"D19",location:"Figure 1 and Tables 1–3; editable working datasets",
    note:"I show every reserved case in the main argument because all six determine the accuracy judgement. Table 1 shows the explicitly identified extreme-gradient diagnostics, with all 18 sensitivity calculations retained in the working dataset.",
@@ -419,3 +430,4 @@ After applying the specified target rule, four of the six rounded settings were 
   {label:"Calculation record",value:"Single-case sensitivity calculations, version 1. My 18 refits of the stated development dataset, retained with the project. All graphs and tables in the investigation are generated from these inputs."}
  ]
 };
+
