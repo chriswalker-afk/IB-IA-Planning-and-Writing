@@ -42,11 +42,11 @@ export function adviceFor(state,id){
  const x=stuckContext(state),e=x.entry,p=state.planning.fields,stage=(plan,comp)=>({route:x.planning?'planning':'completing',node:x.planning?plan:comp});
  const target={
   idea:{route:'planning',node:'N00B'},aim:stage('N01','C02'),method:stage(['AA SL','AI SL'].includes(p.course)?'N04S':'N04T',e?'C40D':'C31'),
-  prediction:{route:'planning',node:'N01P'},'no-data':stage('N03','C20'),source:stage('N03','C20'),partial:stage('N03J','C20'),permission:stage('N02T','C03'),
-  first:stage('N05V','C31'),calculation:stage('N05V',e?'C40T':'C31'),interpret:stage('N05V',x.real?'C34B':e?.phase==='first'?'C33':e?'C40':'C31'),
-  next:stage('N05V',x.real?'C35':'C31'),unexpected:stage('N01P',x.real?'C34U':'C31'),understanding:stage('N04T',e?'C40D':'C31'),
-  proof:stage('N05V',e?e.phase==='first'?'C33':'C40':'C31'),precision:stage('N05','C24'),limitations:stage('N03J',x.real&&e?.phase!=='first'?'C40':'C23'),
-  writing:stage('N01',e?'C96':'C10'),story:stage('N06','C70'),conclusion:stage('N06',state.entries.some(done)?'C61':'C30'),feedback:stage('N06T','C80D'),
+  prediction:{route:'planning',node:'N01P'},'no-data':stage('N03','C20'),source:stage('N03','C20'),partial:stage('N03D','C20'),permission:stage('N02T','C03'),
+  first:stage('N04S','C30'),calculation:stage('N04S',e?'C40T':'C30'),interpret:stage('N04S',x.real?'C34B':e?.phase==='first'?'C33':e?'C40':'C30'),
+  next:stage('N04S',x.real?'C35':'C30'),unexpected:stage('N01P',x.real?'C34U':'C30'),understanding:stage('N04T',e?'C40D':'C30'),
+  proof:stage('N04S',e?e.phase==='first'?'C33':'C40':'C30'),precision:stage('N03D','C24'),limitations:stage('N03D',x.real&&e?.phase!=='first'?'C40':'C23'),
+  writing:stage('N01',e?'C96':'C10'),story:stage('N06','C70'),conclusion:stage('N06',state.entries.some(done)?'C60':'C30'),feedback:stage('N06T','C80D'),
   overwhelmed:stage('N03H','C04'),restore:{panel:'files'},unsure:{route:'planning',node:'N06T'}
  }[id];
  const buttons={idea:'Explore one idea',aim:'Refine my aim',method:'Review possible mathematics',prediction:'Revisit my tentative prediction','no-data':'Review my source plan',source:'Check my source',partial:'Review the available evidence',permission:'Review permission questions',first:'Plan my first mathematical move',calculation:'Check the mathematical task',interpret:'Interpret my selected result',next:'Choose what follows',unexpected:'Investigate the surprising result',understanding:'Check my understanding',proof:'Work on the mathematical case',precision:'Review accuracy decisions',limitations:'Review relevant limitations',writing:e?'Find the right writing location':'Work on my introduction',story:'Review the mathematical story',conclusion:'Review my conclusion',feedback:'Work through one feedback action',overwhelmed:'Review my next task',restore:'Open backups and import',unsure:'Prepare a teacher question'};
