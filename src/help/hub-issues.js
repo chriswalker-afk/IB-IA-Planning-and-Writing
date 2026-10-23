@@ -179,7 +179,11 @@ export function suggestedHubIssues(state){
 }
 export function hubFilteredIssues(state,{query="",group="all"}={}){
  const q=normalize(query).slice(0,120),g=group==="all"||HUB_GROUPS.some(x=>x.id===group)?group:"all";
- return availableHubIssues(state).filter(x=>(g==="all"||x.group===g)&&
+ const practical=hubLegacyTopics(state)
+  .filter(x=>["overwhelmed","restore","unsure"].includes(x.id))
+  .map(x=>({id:x.id,label:x.label,question:x.reason,action:x.action,
+   check:x.outcome,fallback:x.example,group:"practical",origin:"legacy"}));
+ return [...availableHubIssues(state),...practical].filter(x=>(g==="all"||x.group===g)&&
   (!q||normalize([x.label,x.question,x.action,x.check,x.fallback].join(" ")).includes(q)));
 }
 export function hubLegacyTopics(state){
