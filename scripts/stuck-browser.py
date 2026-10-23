@@ -203,6 +203,78 @@ with sync_playwright() as pw:
   assert saved(p)['completion']['support']['task'] is None
   p.screenshot(animations='disabled',path=str(OUT/'stuck-browse-search-desktop.png'))
  run('pass4-search-filter-mobile-safe',project('completing','C30'),search_all,1440,920)
+ def pass5_search_resume(p):
+  open_help(p)
+  browse=p.locator('.drawer .stuck-browse');browse.locator('summary').first.click()
+  p.locator('[data-stuck-group-filter="checking"]').click()
+  p.locator('[data-stuck-search]').fill('Works Cited')
+  assert p.locator('.drawer .stuck-browse [data-topic="fix:checking:mla-match"]:visible').count()==1
+  p.locator('.drawer .stuck-browse [data-topic="fix:checking:mla-match"]').click()
+  assert 'How to check whether it helped' in p.locator('.stuck-recovery').inner_text()
+  action(p,'stuck-menu')
+  # Students should not lose a carefully chosen browse/search when they
+  # inspect a problem and then return to the hub.
+  assert p.locator('.drawer .stuck-browse[open]').count()==1
+  assert p.locator('[data-stuck-search]').input_value()=='Works Cited'
+  assert p.locator('[data-stuck-group-filter="checking"]').get_attribute('aria-pressed')=='true'
+  assert p.locator('.drawer .stuck-browse [data-topic="fix:checking:mla-match"]:visible').count()==1
+  assert p.locator('[data-stuck-search-count]').is_visible()
+  assert saved(p)['completion']['review']['records']['draft-D09']['status']=='unchecked'
+  overflow(p)
+  p.screenshot(path=str(OUT/'stuck-pass5-search-resume-320.png'),animations='disabled')
+ run('pass5-search-retains-query-and-filter-small-phone',project('checking','D09'),pass5_search_resume,320,690)
+ def pass5_revised_cohort(p):
+  assert p.locator('.checking-revised-overview').count()==1
+  assert p.locator('[data-checking-item="D02"]').count()==0
+  assert p.locator('[data-checking-item="D09"]').count()==1
+  badge=p.locator('[data-checking-stuck="D09:check:D09"]')
+  assert badge.is_visible()
+  before=saved(p)
+  badge.click()
+  dialog=p.locator('#studioStuckDialog[open]')
+  assert dialog.is_visible()
+  assert 'Works Cited' in dialog.inner_text()
+  p.keyboard.press('Escape')
+  assert not dialog.is_visible()
+  assert p.evaluate('document.activeElement.getAttribute("data-checking-stuck")')=='D09:check:D09'
+  badge.click()
+  dialog.locator('[data-studio-stuck-hub]').click()
+  browse=p.locator('.drawer .stuck-browse');browse.locator('summary').first.click()
+  assert p.locator('[data-topic="fix:checking:personal-choice"]').count()==0
+  # This is checking support, not a second copy of an obsolete 2026 criterion.
+  assert 'A–E' not in p.locator('.drawer .stuck-suggested').inner_text()
+  assert saved(p)['completion']['review']==before['completion']['review']
+  overflow(p)
+  p.screenshot(path=str(OUT/'stuck-pass5-2029-checking-390.png'),animations='disabled')
+ s=project('checking','D09');s['planning']['fields']['assessmentFramework']='revised2029'
+ run('pass5-revised-2029-checking-popin-and-hub',s,pass5_revised_cohort)
+ def pass5_sampling_origin(p):
+  node(p,'N03P2')
+  open_help(p)
+  original=saved(p)
+  assert original['completion']['support']['origin']['planNode']=='N03P2'
+  suggestion=p.locator('.drawer [data-topic="fix:planning:population-frame"]:visible')
+  assert suggestion.count()>0
+  suggestion.first.click()
+  action(p,'stuck-work')
+  node(p,'N03P2')
+  assert p.locator('.stuck-return-banner').count()==1
+  action(p,'stuck-return')
+  node(p,'N03P2')
+  assert not saved(p)['completion']['support']['returnPending']
+  overflow(p)
+ run('pass5-sampling-return-preserves-original-n03p2',project('planning','N03P2'),pass5_sampling_origin)
+ def pass5_no_phantom_result(p):
+  open_help(p)
+  assert p.locator('.drawer [data-topic="fix:studio:not-yet-result"]').count()>0
+  browse=p.locator('.drawer .stuck-browse');browse.locator('summary').first.click()
+  assert p.locator('.drawer [data-topic="fix:studio:meaning-units"]').count()==0
+  assert p.locator('.drawer [data-topic="fix:studio:next-gap"]').count()==0
+  assert p.locator('.drawer [data-topic="fix:studio:selected-outcome-help"]').count()==0
+  assert saved(p)['entries'][0]['status']=='planned'
+  overflow(p)
+ s=project('completing','C30');s['entries'][0].update(status='planned',result='',journeyOutcome='')
+ run('pass5-planned-result-does-not-unblock-interpretation',s,pass5_no_phantom_result)
  browser.close()
 (OUT/'stuck-results.json').write_text(json.dumps(results,indent=2));print(json.dumps(results,indent=2))
 assert all(r['status']=='passed' for r in results)
