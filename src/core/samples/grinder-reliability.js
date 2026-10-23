@@ -180,10 +180,10 @@ const completionFields={
  courseConcern:"The descriptive statistics and normal probabilities provide the familiar core. The squared-error decomposition, exhaustive window proof, affine transformation and numerical threshold reasoning are additional mathematical explanations included in the narrative. I have made no teacher-approval claim, and the probability conclusions remain conditional on the stated model.",
  mathsLearning:"The target-error expansion shows why a mean correction cannot remove spread. The sorted-window proof distinguishes maximising a finite tolerance count from centering. The joint scenario and offset bracket then show why a favourable spread requirement depends on how closely the mean is controlled.",
  notationIssue:"I distinguish the sample variance with denominator 59 from the descriptive mean squared deviation with denominator 60. In N(mu,sigma squared), the second parameter is variance. Percentages describe individual model masses, never a confidence interval for the mean.",
- presentationIssue:"All seven native figures and five editable datasets are retained. The revised complete reader and every fresh PDF and Word page still require visual inspection before the presentation review can be marked complete.",
+ presentationIssue:"All seven native figures and five editable datasets are retained. I inspected the desktop and phone reader views, every PDF and Word page, and all seven figures at both widths. Shortening three passages removed their isolated page-break fragments.",
  referencesIssue:"The data source explicitly says constructed, and its generation recipe is retained. I cite NIST's run-sequence and normal-distribution pages where those methods enter the argument; neither is the source of my masses or chosen tolerance.",
  draftComplete:"ready",
- finalProofread:"The revised mathematical narrative is complete, but its new reader and exported pages have not yet been visually checked. I have not recorded a peer, teacher or school-format review.",
+ finalProofread:"I checked the revised mathematics, the reader views and every PDF and Word page, including all pages changed by the final wording corrections. I have not recorded a peer, teacher or school-format review.",
 };
 
 export const GRINDER_RELIABILITY_SPEC={
@@ -474,10 +474,10 @@ export const GRINDER_RELIABILITY_SPEC={
   },
   {
     "id": "D07",
-    "status": "unchecked",
+    "status": "checked",
     "location": "Whole exported reader, PDF and Word document",
-    "note": "The revised complete reader and every fresh PDF and Word page require visual review. All seven figures and five datasets are retained; no completed presentation check is claimed for this revision.",
-    "action": "I will inspect equations, tables, figures, source notes and page breaks at desktop and phone widths and on every exported page."
+    "note": "I visually inspected every PDF and Word page, the desktop and phone reader views, and all seven figures at both widths. Unchanged page images match the reviewed exports; I rechecked every page altered by the final wording corrections.",
+    "action": "I corrected the short page-break fragments and checked the regenerated equations, tables, figures, captions, source notes and references."
   },
   {
     "id": "D09",
