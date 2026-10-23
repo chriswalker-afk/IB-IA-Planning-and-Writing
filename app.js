@@ -161,7 +161,8 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   const planningHelpController=createPlanningHelpController({
     getState:()=>state,escapeHtml:e,
     onHub:trigger=>{
-      captureStuckOrigin(state,{scrollY:window.scrollY||0,focusId:trigger?.id||""});
+      captureStuckOrigin(state,{scrollY:window.scrollY||0,focusId:trigger?.id||"",
+        helpSpot:trigger?.dataset?.stuckHelp||trigger?.dataset?.studioStuck||trigger?.dataset?.checkingStuck||""});
       lastFocus=trigger;save();openDrawer("stuck");
     },
     onNavigate:node=>{
@@ -172,15 +173,42 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   const studioHelpController=createStudioHelpController({
     getState:()=>state,escapeHtml:e,
     onHub:trigger=>{
-      captureStuckOrigin(state,{scrollY:window.scrollY||0,focusId:trigger?.id||""});
+      captureStuckOrigin(state,{scrollY:window.scrollY||0,focusId:trigger?.id||"",
+        helpSpot:trigger?.dataset?.stuckHelp||trigger?.dataset?.studioStuck||trigger?.dataset?.checkingStuck||""});
       lastFocus=trigger;save();openDrawer("stuck");
     },
     onNavigate:node=>{
       const result=setCompletionNode(state,node,{reason:"student-requested-stuck-help"});
       if(result?.ok!==false)nav("completing");
       else toast(result.error||"That mathematical stage is not currently available.");
-    }
+    },
+    onCheckingTarget:check=>focusCheckingRepair(check)
   });
+  /** Open the SAME document check, never mark it verified or change its notes. */
+  function focusCheckingRepair(checkId){
+    const safe=/^D\d{2}$/.test(checkId)?checkId:"D09";
+    if(state.route!=="checking")state.route="checking";
+    const find=()=>document.querySelector('.checking-page [data-checking-item="'+safe+'"]');
+    let item=find();
+    if(!item){
+      const original=state.ui.checkingMode;
+      for(const mode of ["draft","feedback","final"]){
+        state.ui.checkingMode=mode;render();
+        item=find();if(item)break;
+      }
+      if(!item){
+        state.ui.checkingMode=original;render();
+        toast("This check is not available in your current assessment framework.");
+        return;
+      }
+      save();
+    }
+    const details=item.querySelector("details.checking-item-details");
+    if(details)details.open=true;
+    item.scrollIntoView?.({block:"start",behavior:"auto"});
+    const heading=item.querySelector("h4");
+    if(heading){heading.setAttribute("tabindex","-1");heading.focus({preventScroll:true});}
+  }
   const handoverViews=createHandoverViews({getState:()=>state,icon,e,button,field});
 
   // MathJax is split out of the initial page load. Existing writing stays
@@ -1450,6 +1478,8 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
           state.completion.activeEntryIndex=state.entries.findIndex(e=>e.id===o.entryId);
           if(state.completion.activeEntryIndex>=0)state.ui.mathIndex=state.completion.activeEntryIndex;
           state.completion.nextFromEntryId=o.nextFromEntryId;state.route=o.route;
+          if(o.route==="checking"&&["draft","feedback","final"].includes(o.checkMode))
+            state.ui.checkingMode=o.checkMode;
         }else if(isStuckNode(state.completion.current)){setCompletionNode(state,"C04");}
         save();render();window.scrollTo({top:o?.scrollY||0,behavior:"auto"});
         const focus=o?.focusId?document.querySelector('[id="'+o.focusId.replace(/[^a-z0-9_-]/gi,"")+'"]'):null;
@@ -1460,14 +1490,26 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         closeDrawer(false);
         if(t.panel){save();render();openDrawer(t.panel);return;}
         if(t.route==="planning")setPlanCurrent(state,t.node);
+        else if(t.route==="checking"){
+          state.route="checking";save();render();
+          focusCheckingRepair(t.check||"D09");
+          return;
+        }
         else if(t.route==="completing"){
           // A C35/C96 destination must refer to the result the student asked about.
           state.completion.activeEntryIndex=x.index;if(x.index>=0)state.ui.mathIndex=x.index;
           if(t.node==="C96")setCompletionNode(state,x.node,{history:false});
+          if(t.tool&&representationTool(t.tool))rememberMathEditorOrigin();
           setCompletionNode(state,t.node);
+          if(t.tool&&representationTool(t.tool))activateRepresentationTool(state,t.tool);
           if(x.entry)state.completion.nextFromEntryId=x.entry.id;
         }
-        nav(t.route);return;
+        nav(t.route);
+        if(t.route==="planning"&&t.focusField){
+          const safe=String(t.focusField).replace(/[^a-z0-9_-]/gi,"");
+          document.getElementById("field-planning-fields-"+safe)?.focus({preventScroll:true});
+        }
+        return;
       }
       save();
       if(support.stay)render();

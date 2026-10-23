@@ -7,6 +7,7 @@ import {renderCitationSpotlight,renderCitationAudit,renderAuthenticityAudit} fro
 import {CHECKING_CRITERIA,CHECKING_DETAILS,CHECKING_MODES,reviewCounts} from './checklist.js';
 import {chapterRibbon} from '../ui/living-journey.js';
 import {criterionBadge} from '../essentials/criteria-badges.js';
+import {checkingHelpBadge} from '../help/checking-help.js';
 import {isRevisedAssessment,REVISED_2029_CRITERIA} from '../essentials/assessment-cohorts.js';
 const statusText={'unchecked':'Not checked','needs-work':'Needs work','checked':'Checked in my IA','not-applicable':'Not relevant here'};
 const scoreKeys=['A','B','C','D','E'];
@@ -31,7 +32,8 @@ export function createCheckingViews(ctx){
   return '<article class="checking-item '+current+'" data-checking-item="'+e(check.id)+'"'+
    (check.id==='D09'?' id="checking-audit-'+mode+'" tabindex="-1"':'')+'>'+
    '<div class="checking-item-top">'+badges(details.criteria,revised)+
-    '<span class="checking-item-status '+current+'">'+e(statusText[current]||'Not checked')+'</span></div>'+
+    '<span class="checking-item-status '+current+'">'+e(statusText[current]||'Not checked')+'</span>'+
+    checkingHelpBadge(s,"check:"+check.id,e)+'</div>'+
    '<h4>'+e(details.focus)+'</h4>'+
    '<p class="checking-item-question">'+e(check.question)+'</p>'+
    '<div class="checking-item-actions" role="group" aria-label="Review '+e(check.area)+'">'+
@@ -73,7 +75,8 @@ export function createCheckingViews(ctx){
   const entries=s.entries.map(x=>[x.id,x.title||'Mathematical stage']).filter(x=>x[0]);
   return '<section class="checking-feedback">'+
    '<div class="checking-section-head"><div><h3>Record the advice you actually received</h3>'+
-   '<p>The JIS guide describes one teacher-written feedback opportunity. You can record verbal suggestions and the permitted written feedback without implying approval.</p></div></div>'+
+   '<p>The JIS guide describes one teacher-written feedback opportunity. You can record verbal suggestions and the permitted written feedback without implying approval.</p></div>'+
+    checkingHelpBadge(s,"feedback",e)+'</div>'+
    '<div class="checking-feedback-form">'+
    field(p+'feedbackKind','How was the advice given?','',{type:'select',options:[['written','Written feedback (permitted teacher round)'],['verbal','Verbal advice']]})+
    field(p+'feedbackNote','What feedback did you receive?','An actual comment from your teacher',{type:'textarea',rows:3})+

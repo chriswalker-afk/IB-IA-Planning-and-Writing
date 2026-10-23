@@ -605,7 +605,7 @@ export function studioHelpFor(state,spot){
 export function studioHelpBadge(state,spot,e=x=>String(x)){
  const help=studioHelpFor(state,spot);if(!help)return "";
  const key=help.node+":"+spot;
- return '<button type="button" class="stuck-help-badge" data-studio-stuck="'+e(key)+
+ return '<button type="button" class="stuck-help-badge" id="studio-stuck-'+e(help.node+'-'+spot.replace(/[^a-z0-9-]/gi,"-"))+'" data-studio-stuck="'+e(key)+
   '" aria-label="I am stuck: '+e(help.title)+'" aria-haspopup="dialog" '+
   'title="Stuck with this mathematics? Try a small next step"><span aria-hidden="true">?</span></button>';
 }

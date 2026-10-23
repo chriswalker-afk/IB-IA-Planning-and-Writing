@@ -29,8 +29,21 @@ def open_help(p):
   action(p,'open-stuck')
  assert p.get_by_role('dialog').is_visible()
 def topic(p,t):
- el=p.locator('.drawer [data-action="stuck-topic"][data-topic="'+t+'"]')
- if not el.is_visible():p.locator('.drawer .stuck-browse > summary').click()
+ # Original 24 topics remain in the legacy browse section, distinct from
+ # contextual suggestions that can intentionally use the same topic ID.
+ group=p.locator('.drawer .stuck-legacy-browse')
+ el=group.locator('[data-action="stuck-topic"][data-topic="'+t+'"]').first
+ if el.count():
+  if group.get_attribute('open') is None:group.locator('summary').first.click()
+  el.click()
+  return
+ browse=p.locator('.drawer .stuck-browse')
+ if browse.get_attribute('open') is None:browse.locator('summary').first.click()
+ el=browse.locator('[data-action="stuck-topic"][data-topic="'+t+'"]').first
+ category=el.locator('xpath=ancestor::*[@data-stuck-group-section][1]')
+ if category.count() and category.get_attribute('open') is None:
+  category.locator('summary').first.click()
+ assert el.is_visible(),t
  el.click()
 def node(p,n):assert p.locator('[data-source-node="'+n+'"]').count()==1,n
 def overflow(p):assert p.evaluate('document.documentElement.scrollWidth<=innerWidth+1')
@@ -52,8 +65,8 @@ with sync_playwright() as pw:
   # N01 now captures the provisional idea/title; the earlier saved aim is
   # represented in project state and must not be changed by asking for help.
   before=saved(p)['planning']['fields']['aim'];open_help(p);node(p,'N01')
-  assert p.locator('.drawer .stuck-topics').first.locator('button').count()<=5
-  assert p.locator('.drawer .stuck-topics').first.locator('button').first.get_attribute('data-topic')=='aim'
+  assert p.locator('.drawer .stuck-topics').first.locator('button').count()<=4
+  assert p.locator('.drawer .stuck-topics').first.locator('button').first.get_attribute('data-topic').startswith('fix:planning:')
   p.screenshot(animations='disabled',path=str(OUT/'stuck-planning-phone.png'))
   topic(p,'aim');assert not p.locator('.stuck-example p').first.is_visible();assert p.locator('.drawer .btn-primary').count()==1
   p.locator('.stuck-example > summary').click();assert p.locator('.stuck-example p').first.is_visible()
@@ -131,6 +144,65 @@ with sync_playwright() as pw:
   assert p.locator('#stuck-alternatives [data-action="stuck-topic"]').count()<=2
   p.screenshot(animations='disabled',path=str(OUT/'stuck-advice-small-phone.png'),full_page=True)
  run('help-small-phone-expanded',project(),small,360,740)
+ def checking_bubble(p):
+  badge=p.locator('[data-checking-item="D09"] [data-checking-stuck="D09:check:D09"]')
+  assert badge.count()==1
+  before=saved(p)
+  badge.click()
+  modal=p.locator('#studioStuckDialog[open]')
+  assert modal.is_visible()
+  assert 'I AM STUCK · CHECKING' in modal.inner_text()
+  assert 'Works Cited' in modal.inner_text()
+  assert 'not read it' in modal.inner_text()
+  assert saved(p)==before
+  modal.locator('[data-studio-stuck-go]').click()
+  assert p.locator('#checking-review-draft-D09[open]').count()==1
+  assert saved(p)['completion']['review']['records'].get('draft-D09',{}).get('status','unchecked')=='unchecked'
+  p.screenshot(animations='disabled',path=str(OUT/'stuck-checking-mla-phone.png'))
+ run('pass4-checking-mla-bubble',project('checking','D09'),checking_bubble)
+ def checking_search(p):
+  open_help(p)
+  p.locator('.drawer .stuck-browse > summary').click()
+  p.locator('[data-stuck-search]').fill('Works Cited')
+  assert 'matching problem' in p.locator('[data-stuck-search-count]').inner_text()
+  chosen=p.locator('.drawer .stuck-browse [data-topic="fix:checking:mla-match"]').first
+  assert chosen.is_visible(), 'Specific MLA two-way troubleshooting should be searchable'
+  chosen.click()
+  assert 'How to check whether it helped' in p.locator('.stuck-recovery').inner_text()
+  action(p,'stuck-work')
+  assert p.locator('#checking-review-draft-D09[open]').count()==1
+  assert p.locator('.stuck-return-banner').count()==1
+  action(p,'stuck-return')
+  assert p.locator('.checking-page').count()==1
+  assert saved(p)['ui']['checkingMode']=='draft'
+  assert not saved(p)['completion']['support']['returnPending']
+ run('pass4-contextual-search-and-checking-return',project('checking','D09'),checking_search,1440,900)
+ def feedback_bubble(p):
+  badge=p.locator('[data-checking-stuck="feedback:feedback"]')
+  assert badge.count()==1 and badge.is_visible()
+  before=saved(p)
+  badge.click();modal=p.locator('#studioStuckDialog[open]')
+  assert 'I have not received permitted written feedback' in modal.inner_text()
+  assert saved(p)==before
+  p.keyboard.press('Escape')
+  assert not modal.is_visible()
+  assert p.evaluate("document.activeElement.getAttribute('data-checking-stuck')")=="feedback:feedback"
+ run('pass4-feedback-no-fabrication',dict(project('checking','D13'),ui={
+  **project('checking','D13')['ui'],'checkingMode':'feedback'}),feedback_bubble)
+ def search_all(p):
+  open_help(p)
+  p.locator('.drawer .stuck-browse > summary').click()
+  p.locator('[data-stuck-group-filter="maths"]').click()
+  assert p.locator('[data-stuck-group-filter="maths"]').get_attribute('aria-pressed')=='true'
+  p.locator('[data-stuck-search]').fill('optimum')
+  assert p.locator('[data-stuck-search-count]').is_visible()
+  p.locator('[data-stuck-search]').fill('unlikely_unmatched_querystuff')
+  assert p.locator('[data-stuck-no-results]').is_visible()
+  p.locator('[data-stuck-group-filter="all"]').click()
+  assert p.locator('.drawer [data-topic="aim"]').count()==1
+  assert saved(p)['completion']['support']['task'] is None
+  p.screenshot(animations='disabled',path=str(OUT/'stuck-browse-search-desktop.png'))
+ run('pass4-search-filter-mobile-safe',project('completing','C30'),search_all,1440,920)
  browser.close()
 (OUT/'stuck-results.json').write_text(json.dumps(results,indent=2));print(json.dumps(results,indent=2))
 assert all(r['status']=='passed' for r in results)

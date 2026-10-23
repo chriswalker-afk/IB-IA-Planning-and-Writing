@@ -1,11 +1,12 @@
 /** Read-only, keyboard-accessible IA Studio troubleshooting pop-in (Pass 3). */
 import {studioHelpFor} from "./studio-help.js";
+import {checkingHelpFor} from "./checking-help.js";
 const fieldSelector=key=>'[data-bind="completion.fields.'+key+'"]';
 const within=key=>'[data-bind$=".'+key+'"]';
 const bounded=x=>typeof x==="string"?x.slice(0,250):"";
-export function createStudioHelpController({getState,escapeHtml,onHub,onNavigate}){
+export function createStudioHelpController({getState,escapeHtml,onHub,onNavigate,onCheckingTarget}){
  const e=escapeHtml;
- let dialog=null,origin=null,active=null,selected=0;
+ let dialog=null,origin=null,active=null,selected=0,source='studio';
  function ensure(){
   if(dialog)return;
   dialog=document.createElement("dialog");
@@ -32,12 +33,21 @@ export function createStudioHelpController({getState,escapeHtml,onHub,onNavigate
    if(event.target.closest("[data-studio-stuck-hub]")){
     const trigger=origin;close(false);onHub?.(trigger);return;
    }
+   if(event.target.closest("[data-studio-stuck-resource]")){
+    // The registered resource action proceeds on the document's delegated
+    // click handler. Release the modal first so the guide is usable.
+    close(false);return;
+   }
    if(event.target.closest("[data-studio-stuck-go]")){
     const choice=active?.choices[selected],prior=origin;
     if(!choice)return;
     const target=choice.targetNode;
-    const spot=active.spot,node=active.node;
+    const spot=active.spot,node=active.node,context=source;
     close(false);
+    if(context==="checking"){
+     onCheckingTarget?.(choice.targetCheck||node);
+     return;
+    }
     if(target&&target!==node){onNavigate?.(target);return;}
     if(target===node){
      document.querySelector('[data-source-node="'+node+'"]')?.scrollIntoView?.({block:"start",behavior:"auto"});
@@ -74,7 +84,7 @@ export function createStudioHelpController({getState,escapeHtml,onHub,onNavigate
    active.selectedOutcome?"Student-confirmed outcome: "+bounded(active.selectedOutcome):""
   ].filter(Boolean);
   dialog.innerHTML='<div class="stuck-context-top"><span class="stuck-context-icon" aria-hidden="true">?</span>'+
-   '<div><p class="stuck-context-eyebrow">I AM STUCK · IA STUDIO</p>'+
+   '<div><p class="stuck-context-eyebrow">I AM STUCK · '+(source==="checking"?"CHECKING":"IA STUDIO")+'</p>'+
    '<h2 id="studioStuckTitle" tabindex="-1">'+e(active.title)+'</h2></div>'+
    '<button type="button" class="stuck-context-close" data-studio-stuck-close aria-label="Close help">×</button></div>'+
    '<div class="stuck-context-body"><p id="studioStuckIntro">Which specific mathematical obstacle is holding you up? Choose the closest. Nothing in your IA is changed by reading this advice.</p>'+
@@ -94,19 +104,25 @@ export function createStudioHelpController({getState,escapeHtml,onHub,onNavigate
    '<details><summary>If I am still stuck</summary><p>'+e(chosen.fallback)+'</p>'+
    '<p class="stuck-context-boundary">'+e(chosen.boundary)+'</p></details></section>'+
    '<div class="stuck-context-actions"><button type="button" class="btn btn-primary" data-studio-stuck-go>'+
-    e(chosen.targetNode?chosen.targetLabel||"Go to the relevant mathematical work":
+    e(source==="checking"?"Open this document check":
+      chosen.targetNode?chosen.targetLabel||"Go to the relevant mathematical work":
       active.spot.startsWith("field:")?"Return to this question":
       active.spot.startsWith("part:")?"Return to this mathematical part":
       "Return to my mathematics")+'</button>'+
+   (chosen.resourceId?'<button type="button" class="btn btn-secondary" data-studio-stuck-resource data-action="resource-open" data-resource-id="'+e(chosen.resourceId)+'" data-resource-help="true">Open related tutorial</button>':"")+
    '<button type="button" class="btn btn-quiet" data-studio-stuck-hub>More problems in I am stuck</button></div>'+
    '</div>';
  }
- function open(key,trigger){
+ function open(key,trigger,kind="studio"){
   if(typeof key!=="string")return false;
   const split=key.indexOf(":"),node=key.slice(0,split),spot=key.slice(split+1);
-  if(split<0||getState()?.route!=="completing"||node!==getState().completion?.current)return false;
-  const help=studioHelpFor(getState(),spot);if(!help)return false;
-  ensure();if(dialog.open)dialog.close();active=help;selected=0;origin=trigger;
+  if(split<0)return false;
+  const state=getState();
+  if(kind==="checking"&&state?.route!=="checking")return false;
+  if(kind==="studio"&&(state?.route!=="completing"||node!==state.completion?.current))return false;
+  const help=kind==="checking"?checkingHelpFor(state,spot):studioHelpFor(state,spot);
+  if(!help||help.node!==node)return false;
+  ensure();if(dialog.open)dialog.close();active=help;selected=0;origin=trigger;source=kind;
   render();dialog.showModal();
   dialog.querySelector("#studioStuckTitle")?.focus({preventScroll:true});
   return true;
@@ -118,10 +134,12 @@ export function createStudioHelpController({getState,escapeHtml,onHub,onNavigate
   if(restore&&old?.isConnected)old.focus({preventScroll:true});
  }
  const click=event=>{
-  const button=event.target?.closest?.("[data-studio-stuck]");
+  const button=event.target?.closest?.("[data-studio-stuck],[data-checking-stuck]");
   if(!button)return;
   event.preventDefault();event.stopImmediatePropagation();
-  open(button.dataset.studioStuck,button);
+  const checking=button.hasAttribute("data-checking-stuck");
+  open(checking?button.dataset.checkingStuck:button.dataset.studioStuck,
+   button,checking?"checking":"studio");
  };
  document.addEventListener("click",click,true);
  return{open,close,destroy(){
