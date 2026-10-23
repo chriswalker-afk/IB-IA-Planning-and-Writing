@@ -27,6 +27,7 @@ export const TOOLS = {
     "url": "https://automeris.io",
     "device": "Best on a computer; check the current product/access options."
   },
+  "docs": {"name":"Google Docs","url":"https://docs.google.com/document/","device":"Use a computer for Tools > Citations; the built-in citation sidebar is not available in mobile apps."},
   "general": {
     "name": "Choose a tool",
     "url": "",
@@ -35,6 +36,55 @@ export const TOOLS = {
 };
 
 export const RESOURCES = [
+{
+  "id": "mla-citations",
+  "title": "Cite your sources with MLA in Google Docs",
+  "category": "Writing and checking",
+  "tool": "docs",
+  "when": "When your Maths IA uses published data, an external mathematical method, someone else's image or borrowed words or ideas.",
+  "steps": [
+    "On a computer, open your IA in Google Docs. Select Tools > Citations and choose MLA (8th ed.), the MLA option offered by Google Docs.",
+    "Select + Add citation source. Choose the correct source type and how you accessed it, then fill in available author or organisation, title, publisher, date and URL details.",
+    "Place your cursor after the relevant borrowed idea, dataset or method. In the Citations sidebar, hover over the source and select Cite. Replace any # placeholder with a real page number, or remove it when no page number applies.",
+    "At the end of your actual IA, use Insert bibliography to create the list, and label it Works Cited.",
+    "Review each in-text citation against the actual source and Works Cited. Remove entries you never cited and recreate the bibliography after editing sources."
+  ],
+  "check": "Can the reader find the original source for each borrowed dataset, image, technique or quotation, using the citation and Works Cited entry? Do not assume Google Docs verifies details automatically.",
+  "after": "Add sources at the point of use in Google Docs, rather than leaving them to the final review. Source credit is required for academic integrity, not a separate assessed criterion.",
+  "sources": [
+    {
+      "publisher": "Google Docs Editors Help",
+      "url": "https://support.google.com/docs/answer/10090962?hl=en",
+      "title": "Add citations and a bibliography",
+      "checkedAt": "2026-10-23",
+      "verification": "Google's official instructions"
+    },
+    {
+      "publisher": "MLA Style Center",
+      "url": "https://style.mla.org/",
+      "title": "Official MLA Style Center",
+      "checkedAt": "2026-10-23",
+      "verification": "Original MLA guidance"
+    },
+    {
+      "publisher": "International Baccalaureate",
+      "url": "https://www.ibo.org/programmes/diploma-programme/assessment-and-exams/academic-integrity/",
+      "title": "Academic integrity",
+      "checkedAt": "2026-10-23",
+      "verification": "IB guidance"
+    },
+    {
+      "publisher": "World Bank Open Data",
+      "url": "https://data.worldbank.org/indicator/SP.POP.TOTL",
+      "title": "Population, total: worked citation example",
+      "checkedAt": "2026-10-23",
+      "verification": "Real data page; demonstration only"
+    }
+  ],
+  "videos": [],
+  "snippets": [],
+  "related": []
+},
   {
     "id": "organise",
     "title": "Organise data without losing the pairs",
