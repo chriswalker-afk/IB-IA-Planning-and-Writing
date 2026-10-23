@@ -180,10 +180,10 @@ const completionFields={
  courseConcern:"The descriptive statistics and normal probabilities provide the familiar core. The squared-error decomposition, exhaustive window proof, affine transformation and numerical threshold reasoning are additional mathematical explanations included in the narrative. I have made no teacher-approval claim, and the probability conclusions remain conditional on the stated model.",
  mathsLearning:"The target-error expansion shows why a mean correction cannot remove spread. The sorted-window proof distinguishes maximising a finite tolerance count from centering. The joint scenario and offset bracket then show why a favourable spread requirement depends on how closely the mean is controlled.",
  notationIssue:"I distinguish the sample variance with denominator 59 from the descriptive mean squared deviation with denominator 60. In N(mu,sigma squared), the second parameter is variance. Percentages describe individual model masses, never a confidence interval for the mean.",
- presentationIssue:"All seven native figures and five editable datasets are retained. The two scope corrections now require fresh inspection of the affected reader, PDF and Word pages.",
+ presentationIssue:"All seven native figures and five editable datasets are retained. I inspected the fresh desktop and phone reader views and every changed page in the 19-page PDF and 22-page Word document. All other page images match the previously reviewed exports.",
  referencesIssue:"The data source explicitly says constructed, and its generation recipe is retained. I cite NIST's run-sequence and normal-distribution pages where those methods enter the argument; neither is the source of my masses or chosen tolerance.",
  draftComplete:"ready",
- finalProofread:"I have reviewed the scope of the revised claims. Final proofreading of the refreshed reader and affected PDF and Word pages is pending. I have not recorded a peer, teacher or school-format review.",
+ finalProofread:"I checked the revised claims in the complete paper and inspected the refreshed reader and every changed PDF and Word page. Unchanged pages are pixel-identical to the fully reviewed versions. I have not recorded a peer, teacher or school-format review.",
 };
 
 export const GRINDER_RELIABILITY_SPEC={
@@ -474,10 +474,10 @@ export const GRINDER_RELIABILITY_SPEC={
   },
   {
     "id": "D07",
-    "status": "unchecked",
+    "status": "checked",
     "location": "Whole exported reader, PDF and Word document",
-    "note": "Earlier exports were fully reviewed. The two scope corrections now require fresh inspection of the affected reader, PDF and Word pages.",
-    "action": "I will compare the refreshed exports with the reviewed versions and inspect every changed page."
+    "note": "I inspected the refreshed desktop and phone reader views, both changed PDF pages and all four changed Word pages. The other 17 PDF pages and 18 Word pages are pixel-identical to the previously reviewed exports.",
+    "action": "The two scoped claims, equations, tables, captions, source notes and page breaks remain clear in the regenerated documents."
   },
   {
     "id": "D09",

@@ -1577,14 +1577,14 @@ const STUDY={
     "purpose": "The stipulated 3.2 m level creates a hypothetical threshold question around the fourth crest. It is not a real access requirement, and the known construction is used to examine information lost by simplification.",
     "limits": "The sampled maximum is not promoted into a continuous bound. The exact-function proof, hourly rounding allowance, reserved-domain boundary and next-crest possible portion are explained where they affect the conclusion.",
     "calculations": "I recomputed the three coefficient sums, completed-square minimum, phase and amplitude, fitting and reserved errors, continuous 0.236035384 m bound, and three inverse-cosine intervals. Two native-table duration cells were corrected to use unrounded crossings before rounding.",
-    "presentation": "The labels now distinguish twelve-hour observation blocks from the fitted sinusoid's cycles. The revised reader, figure labels and affected PDF and Word pages are awaiting fresh visual inspection.",
-    "presentationChecked": false,
+    "presentation": "I inspected the refreshed desktop and phone reader views, all four relabelled graphs at both widths and every changed page of the 17-page PDF and 20-page Word document. The other page images match the previously reviewed exports; the revised labels, equations, captions and references fit clearly.",
+    "presentationChecked": true,
     "sources": "The constructed recipe is identified as [D1]. NIST supports the least-squares criterion [M1], OTexts supplies the error measure and separate-checking distinction [M2], and OpenStax supplies the cosine identity [M3]; the displayed derivations are my own working.",
     "figures": "All graph definitions, source rows, working rows and crossing endpoints are retained. Only the guaranteed and possible duration cells change from 1.794 and 4.286 to correctly rounded 1.793 and 4.285 h.",
     "technology": "Technology evaluates disclosed scalar sums and radian inverse trigonometric functions. The printed mathematics explains their purpose and meaning without requiring unexplained matrices or a black-box fit."
   },
   "completionExtra": {
-    "finalProofread": "The mathematical argument and calculations are unchanged. Final proofreading of the revised labels and affected PDF and Word pages is pending."
+    "finalProofread": "I checked the consistent block terminology in the complete paper and visually inspected all six changed PDF pages and all six changed Word pages. Unchanged page images are pixel-identical to the fully reviewed versions. No teacher or school-format review is claimed."
   },
   "planningExtra": {
     "mathsOutside": "outside",

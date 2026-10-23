@@ -206,7 +206,7 @@ Object.assign(sheet,{
 const graph=(title,number,expression,xMin,xMax,yMin,yMax,caption,xSymbol='c',ySymbol='V')=>({...newGraphDraft(),
  kind:'function',title,figureNumber:String(number),expression,xMin:String(xMin),xMax:String(xMax),yMin:String(yMin),yMax:String(yMax),
  xLabel:xSymbol==='n'?'Nominal setting, n':'Actual cut size, c',yLabel:ySymbol==='W'?'Guaranteed volume, W':'Modelled volume, V',
- xSymbol,ySymbol,xUnit:'cm',yUnit:R`\mathrm{cm}^{3}`,xUnitMode:'unit',yUnitMode:'unit',
+ xSymbol,ySymbol,xUnit:'cm',yUnit:'cm³',xUnitMode:'unit',yUnitMode:'unit',
  sourceKind:'theoretical',sourceText:provenance,showPoints:false,showGrid:true,showLegend:false,caption
 });
 const table=(title,number,columns,rows,units,note)=>({...newTableDraft(),title,number:String(number),
@@ -298,7 +298,7 @@ I retain unrounded calculations when comparing designs, display rounded results 
   {id:'geometry-tray-folds',tool:'geometry',stage:0,draft:sheet,after:'purpose'},
   {id:'figure-tray-full-volume',tool:'graph',stage:1,after:'result',draft:graph('Volume across the geometric domain',2,'x*(30-2*x)*(20-2*x)',0,10,0,1120,'The ideal model has an interior maximum; c = 0 and c = 10 are limiting degenerate cases.')},
   {id:'figure-tray-near-maximum',tool:'graph',stage:2,after:'result',draft:graph('Volume near the ideal maximum',3,'x*(30-2*x)*(20-2*x)',3.5,4.2,1045,1058,'The enlarged scale shows the shallow maximum. Feasibility also requires the actual height c to be at most 4 cm.')},
-  {id:'table-tray-settings',tool:'table',stage:2,after:'interpretation',draft:table('Settings under a 1 mm common error',1,['Nominal setting','Actual cut range','Minimum volume','Maximum height','Fits height limit'],comparisonRows,['cm','cm',R`\mathrm{cm}^{3}`,'cm',''],'The error is common to all cuts; the 4.0 cm setting is infeasible at its upper endpoint.')},
+  {id:'table-tray-settings',tool:'table',stage:2,after:'interpretation',draft:table('Settings under a 1 mm common error',1,['Nominal setting','Actual cut range','Minimum volume','Maximum height','Fits height limit'],comparisonRows,['cm','cm','cm³','cm',''],'The error is common to all cuts; the 4.0 cm setting is infeasible at its upper endpoint.')},
   {id:'figure-tray-guaranteed',tool:'graph',stage:3,after:'result',draft:graph('Guaranteed volume on the feasible settings',4,'4*x^3-100*x^2+600.12*x-1-abs(1.2*x^2-20*x+60.004)',3.5,3.9,1040,1060,'W is the minimum over the full ±0.1 cm common-error interval, not the nominal volume.','n','W')},
   {id:'table-tray-threshold',tool:'table',stage:4,after:'result',draft:table('Error bounds for a 99% capacity target',2,['Setting n','Volume bound','Height bound','Allowed error'],thresholdRows,['cm','mm','mm','mm'],'Displayed bounds are rounded; I used unrounded values to compare the settings.')}
  ],
