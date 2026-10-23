@@ -22,7 +22,7 @@ export function guidanceChoices(icon,escapeHtml){
  return '<div class="guidance-choice-list" role="group" aria-label="Choose the kind of help you need">'+
   GUIDANCE_CHOICES.map(choice=>
    '<button type="button" class="panel-link guidance-choice guidance-choice-'+choice.id+
-   '" data-action="'+choice.action+'">'+
+   '" data-action="'+choice.action+'"'+(choice.id==="criteria"?' data-essentials-tab="rubric"':"")+">'+
    '<span class="guidance-choice-icon">'+icon(choice.icon)+'</span>'+
    '<span class="guidance-choice-copy"><strong>'+e(choice.title)+'</strong><small>'+e(choice.purpose)+'</small></span>'+
    icon("arrow-right")+'</button>'
