@@ -17,8 +17,9 @@ test("Pass 3 compiles every original stylesheet in DOM order into one minified f
  assert(paths.includes("data/release-design-system.css"));
  assert(paths.includes("data/workspace-navigation.css"));
  assert(paths.includes("data/release-guidance.css"));
- assert.equal(paths.at(-1),"data/release-representation.css");
- assert.equal(paths.length,36);
+ assert(paths.includes("data/release-representation.css"));
+ assert.equal(paths.at(-1),"data/release-accessibility.css");
+ assert.equal(paths.length,37);
  assert(paths.includes("data/stuck-contextual.css"),"Keep contextual stuck pop-in styling in the published CSS bundle");
  const scratch=await mkdtemp(path.join(tmpdir(),"ia-pass3-css-"));
  try{
