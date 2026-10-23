@@ -1,10 +1,11 @@
 import {IDEA_SEEDS,IDEA_TOPICS,IDEA_CHECKS,IDEA_DIFFICULTIES,seedById,OWN_PROMPT} from './catalog.js';
 import {createIdeaState,cleanDraft,MAX_IDEAS} from './state.js';
-import {ideaMapRoot,ideaMapTopics,ideaMapBranches,ideaMapIdeas} from './mindmap.js';
+import {ideaMapRoot,ideaMapTopics,ideaMapBranches,ideaMapIdeas,ideaMapMathLenses,ideaMapMathStarters} from './mindmap.js';
+import {ideaMathStarterById,ideaMathLens} from './math-pathways.js';
 import {planningMove,setPlanCurrent,applyPlanningField} from '../planning/engine.js';
 const clone=v=>JSON.parse(JSON.stringify(v));
 export function ideaState(state){return state.ideaExplorer||(state.ideaExplorer=createIdeaState());}
-export function currentSeed(state){return seedById(ideaState(state).active)||OWN_PROMPT;}
+export function currentSeed(state){const id=ideaState(state).active;return ideaMathStarterById(id)||seedById(id)||OWN_PROMPT;}
 export function ideaChoices(state){
  const s=ideaState(state);
  if(s.topic==='other')return {items:[],total:0};
@@ -17,8 +18,19 @@ export function ideaChoices(state){
  return {items:[...candidates.slice(start),...candidates.slice(0,start)].slice(0,3),total:candidates.length};
 }
 export function beginIdea(state,id,{fromMap=false,fresh=false}={}){
- const s=ideaState(state),seed=id==='own'?OWN_PROMPT:seedById(id);if(!seed)return false;
- if(fresh||!s.drafts[id])s.drafts[id]=cleanDraft({seedId:id,question:fromMap?'':seed.question,focus:s.focus||s.map?.subtopic||s.subtopic,fromMap});
+ const s=ideaState(state),seed=id==='own'?OWN_PROMPT:ideaMathStarterById(id)||seedById(id);
+ if(!seed)return false;
+ const map=s.map||{};
+ const interest=IDEA_TOPICS.find(t=>t.id===map.topic)?.label||'';
+ const root=ideaMapRoot(map.mode,map.root);
+ const access=ideaMapBranches(root).find(x=>x.id===map.dataBranch);
+ const lens=ideaMathLens(map.mathRoute);
+ const branchFocus=lens?[map.mode==='interests'?interest:access?.label,lens.label].filter(Boolean).join(' → '):
+  map.subtopic||s.subtopic||'';
+ if(fresh||!s.drafts[id])s.drafts[id]=cleanDraft({
+  seedId:id,question:fromMap?'':seed.question,
+  focus:fromMap?branchFocus:s.focus||branchFocus,fromMap
+ });
  else if(fromMap)s.drafts[id].fromMap=true;
  s.active=id;s.pending=null;return true;
 }
@@ -116,36 +128,44 @@ export function ideaAction(state,action,data={}){
   case 'idea-map-mode':{
    if(!['interests','data'].includes(data.mode))return{ok:false,error:'That map is unavailable.'};
    if(s.map.mode===data.mode)return{ok:true};
-   s.map={mode:data.mode,root:'',topic:'',subtopic:'',dataBranch:''};s.active='';s.pending=null;
+   s.map={mode:data.mode,root:'',topic:'',subtopic:'',dataBranch:'',mathRoute:''};s.active='';s.pending=null;
    return{ok:true,render:true,focus:'idea-map-heading'};
   }
   case 'idea-map-root':{
    const root=ideaMapRoot(s.map.mode,data.root);if(!root)return{ok:false,error:'Choose a starting branch.'};
-   s.map.root=s.map.root===root.id?'':root.id;s.map.topic='';s.map.subtopic='';s.map.dataBranch='';
+   s.map.root=s.map.root===root.id?'':root.id;s.map.topic='';s.map.subtopic='';s.map.dataBranch='';s.map.mathRoute='';
    return{ok:true,render:true,focus:'idea-map-root-'+root.id};
   }
   case 'idea-map-topic':{
    if(!ideaMapTopics(ideaMapRoot(s.map.mode,s.map.root)).some(x=>x.id===data.topic))return{ok:false,error:'Choose a branch on your map.'};
-   s.map.topic=data.topic;s.map.subtopic='';s.topic=data.topic;s.subtopic='';
+   s.map.topic=data.topic;s.map.subtopic='';s.map.mathRoute='';s.topic=data.topic;s.subtopic='';
    return{ok:true,render:true,focus:'idea-map-topic-'+data.topic};
   }
+  case 'idea-map-route':{
+   const route=ideaMapMathLenses(s.map).find(x=>x.routeId===data.routeId);
+   if(!route)return{ok:false,error:'Choose one of the mathematical possibilities visible on your map.'};
+   s.map.mathRoute=s.map.mathRoute===route.routeId?'':route.routeId;
+   return{ok:true,render:true,focus:'idea-map-route-'+route.routeId};
+  }
+  // Compatibility for old backups/tests: retain an explicitly chosen activity
+  // without treating it as a mathematical method or an approved IA aim.
   case 'idea-map-leaf':{
    const topic=IDEA_TOPICS.find(x=>x.id===s.map.topic);
-   if(!topic?.subtopics.includes(data.subtopic))return{ok:false,error:'Choose a visible detail to grow this branch.'};
-   s.map.subtopic=data.subtopic;s.subtopic=data.subtopic;
-   return{ok:true,render:true,focus:'idea-map-directions-heading'};
+   if(!topic?.subtopics.includes(data.subtopic))return{ok:false,error:'That earlier context is unavailable.'};
+   s.map.subtopic=data.subtopic;s.subtopic=data.subtopic;s.map.mathRoute='';
+   return{ok:true,render:true,focus:'idea-map-heading'};
   }
   case 'idea-map-access':{
    if(!ideaMapBranches(ideaMapRoot(s.map.mode,s.map.root)).some(x=>x.id===data.branch))return{ok:false,error:'Choose a visible data direction.'};
-   s.map.dataBranch=data.branch;
-   return{ok:true,render:true,focus:'idea-map-directions-heading'};
+   s.map.dataBranch=data.branch;s.map.mathRoute='';
+   return{ok:true,render:true,focus:'idea-map-access-'+data.branch};
   }
   case 'idea-map-reset':{
-   s.map.root='';s.map.topic='';s.map.subtopic='';s.map.dataBranch='';
+   s.map.root='';s.map.topic='';s.map.subtopic='';s.map.dataBranch='';s.map.mathRoute='';
    return{ok:true,render:true,focus:'idea-map-heading'};
   }
   case 'idea-explore':{
-   if(data.map==='true'&&!ideaMapIdeas({...s.map}).some(x=>x.id===data.seed))return{ok:false,error:'That branch is no longer open.'};
+   if(data.map==='true'&&!ideaMapMathStarters(s.map).includes(data.seed))return{ok:false,error:'Choose an idea shown for your current mathematical direction.'};
    if(!beginIdea(state,data.seed,{fromMap:data.map==='true'}))return{ok:false,error:'That starting direction is unavailable.'};
    s.editorReturn='N00B';
    return{ok:true,render:true,focus:'idea-detail-heading'};
