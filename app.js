@@ -1171,14 +1171,13 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   function updateFullExportFailure(){
     const notice=layer.querySelector?.("[data-export-recovery]");
     if(!notice)return;
-    notice.hidden=!fullExportFailure;
-    if(fullExportFailure){
-      const title=notice.querySelector("[data-export-recovery-title]");
-      const message=notice.querySelector("[data-export-recovery-message]");
-      if(title)title.textContent=fullExportFailure.title;
-      if(message)message.textContent=fullExportFailure.message;
-      notice.scrollIntoView?.({block:"nearest",behavior:"auto"});
-    }
+    if(!fullExportFailure){notice.hidden=true;return;}
+    const title=notice.querySelector("[data-export-recovery-title]");
+    const message=notice.querySelector("[data-export-recovery-message]");
+    if(title)title.textContent=fullExportFailure.title;
+    if(message)message.textContent=fullExportFailure.message;
+    notice.hidden=false;
+    notice.scrollIntoView?.({block:"nearest",behavior:"auto"});
   }
   async function exportFullProjectDocument(format){
     if(exportBusy){toast("An export is already being prepared.");return;}
