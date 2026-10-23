@@ -1,4 +1,5 @@
-import {representationEmpty} from "./workspace-ui.js";
+import {representationEmpty,representationOutputActions} from "./workspace-ui.js";
+import {escapeHtml} from "../ui/primitives.js";
 import {renderPresentationCoach,renderFigureHandover} from "./presentation-coach-view.js";
 /** One coherent, student-readable Voronoi authoring surface, with no invented sites. */
 import {analyzeVoronoi,MAX_VORONOI_FIGURES} from "./voronoi-core.js";
@@ -143,15 +144,15 @@ export function voronoiQualityHtml(studio,icon,e){
  '<p class="voronoi-muted">This checks diagram integrity, not an IB mark or the suitability of the full exploration. A constructed diagram does not prove that a site is optimal.</p>';
 }
 export function voronoiOutputHtml(studio,icon){
- const disabled=analyzeVoronoi(studio.draft).ready?"":' disabled title="Complete the mathematical and source checks before saving or exporting"';
- return '<button type="button" class="btn btn-primary" data-action="voronoi-use"'+disabled+'>'+
-  icon("check-circle")+' Save and link to my first mathematics</button>'+
-  '<div class="voronoi-exports">'+
-  [["voronoi-save","Save editable figure","layers"],["voronoi-svg","Download SVG","download"],
-    ["voronoi-png","Download PNG","download"],["voronoi-csv","Sites + areas CSV","table"],
-    ["voronoi-copy","Copy PNG","copy"]].map(([action,label,i])=>
-   '<button type="button" class="btn btn-secondary btn-sm" data-action="'+action+'"'+disabled+'>'+icon(i)+label+'</button>').join("")+
-  '</div><p>Place the figure <strong>after</strong> introducing it in your IA. Describe the coordinates, perpendicular-bisector principle, study boundary, limitations and what the construction reveals about your aim.</p>';
+ const ready=analyzeVoronoi(studio.draft).ready;
+ return representationOutputActions(icon,escapeHtml,{
+  type:"voronoi",ready,saveAction:"voronoi-save",linkAction:"voronoi-use",
+  disabledReason:"Complete the Voronoi coordinate and source checks first.",
+  exportGroupClass:"voronoi-exports",
+  formats:[["voronoi-svg","Download SVG","download"],["voronoi-png","Download PNG","download"],
+   ["voronoi-csv","Download sites and areas CSV","table"],["voronoi-copy","Copy PNG","copy"]]
+ })+
+ '<p>Introduce the diagram before it appears in your IA. Interpret the coordinates, perpendicular bisectors, boundary, assumptions and what the construction actually reveals.</p>';
 }
 function siteEditor(studio,e,icon){
  const d=studio.draft;
