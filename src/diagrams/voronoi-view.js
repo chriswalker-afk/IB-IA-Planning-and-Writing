@@ -197,7 +197,7 @@ export function renderVoronoiStudio(state,icon,e){
  '<header class="voronoi-header"><div><span class="intro-writing-guide-eyebrow">'+icon("map")+' VORONOI STUDIO</span>'+
  '<h2>Which site is nearest — and what does that really mean?</h2>'+
  '<p>Build mathematically accurate Voronoi cells from real Cartesian coordinates, then explore distances and justified hypothetical sites.</p></div>'+
- '<button type="button" class="btn btn-quiet btn-sm" data-action="voronoi-close">'+icon("x")+' Back to representation choices</button></header>'+
+ '<button type="button" class="btn btn-quiet btn-sm representation-studio-close" aria-label="Browse all diagram tools" data-action="voronoi-close">'+icon("grid-2x2")+' All tools</button></header>'+
  (groups[route]?'<aside class="voronoi-context"><strong>From your investigative pathway:</strong> '+e(groups[route])+
   '. A straight-line nearest-site region is a model, not automatically a road catchment, population distribution or optimal solution.</aside>':"")+
  '<div class="voronoi-layout"><div class="voronoi-controls">'+
