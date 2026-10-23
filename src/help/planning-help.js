@@ -292,7 +292,8 @@ export function createPlanningHelpController({getState,escapeHtml,onHub,onNaviga
  function ensure(){
   if(dialog)return;
   dialog=document.createElement("dialog");
-  dialog.className="stuck-context-dialog";
+  dialog.className="stuck-context-dialog guidance-surface";
+  dialog.dataset.guidanceKind="recovery";
   dialog.setAttribute("aria-labelledby","stuckContextTitle");
   dialog.setAttribute("aria-describedby","stuckContextIntro");
   document.body.append(dialog);
@@ -317,18 +318,18 @@ export function createPlanningHelpController({getState,escapeHtml,onHub,onNaviga
        [...document.querySelectorAll(selector)].find(el=>el.getClientRects().length);
      if(input)input.focus({preventScroll:true});
      else if(buttonOrigin?.isConnected)buttonOrigin.focus({preventScroll:true});
-    }
+    }else if(buttonOrigin?.isConnected)buttonOrigin.focus({preventScroll:true});
    }
   });
  }
  function render(){
   if(!dialog||!active)return;
   const card=active.choices[selected]||active.choices[0];if(!card)return;
-  dialog.innerHTML='<div class="stuck-context-top"><span class="stuck-context-icon" aria-hidden="true">?</span>'+
-   '<div><p class="stuck-context-eyebrow">I AM STUCK · PLANNING</p>'+
-   '<h2 id="stuckContextTitle">'+e(active.title)+'</h2></div>'+
-   '<button type="button" class="stuck-context-close" data-stuck-context-close aria-label="Close help">×</button></div>'+
-   '<div class="stuck-context-body"><p id="stuckContextIntro">Choose what is preventing your next step. These are possible difficulties, not judgements about your work.</p>'+
+  dialog.innerHTML='<div class="stuck-context-top guidance-surface-header"><span class="stuck-context-icon" aria-hidden="true">?</span>'+
+   '<div><p class="stuck-context-eyebrow guidance-surface-eyebrow">I AM STUCK · PLANNING</p>'+
+   '<h2 id="stuckContextTitle" class="guidance-surface-title">'+e(active.title)+'</h2></div>'+
+   '<button type="button" class="stuck-context-close guidance-surface-close" data-stuck-context-close aria-label="Close help">×</button></div>'+
+   '<div class="stuck-context-body guidance-surface-body"><p id="stuckContextIntro">Choose what is preventing your next step. These are possible difficulties, not judgements about your work.</p>'+
     (active.context?'<p class="stuck-context-selection">Your recorded selection: '+e(active.context)+'</p>':'')+
    '<div class="stuck-context-choices" role="group" aria-label="What are you stuck with?">'+active.choices.map((x,i)=>
     '<button type="button" data-stuck-context-choice="'+i+'" aria-pressed="'+(selected===i)+'" class="stuck-context-choice'+(selected===i?' selected':'')+'">'+e(x.label)+'</button>').join("")+'</div>'+
@@ -340,7 +341,7 @@ export function createPlanningHelpController({getState,escapeHtml,onHub,onNaviga
    (card.id==="consent-waiting"?'<p class="stuck-context-boundary" role="note">'+e(card.boundary)+'</p>':'')+
    '<details><summary>If I am still stuck</summary><p>'+e(card.fallback)+'</p>'+
    '<p class="stuck-context-boundary">'+e(card.boundary)+'</p></details></section>'+
-   '<div class="stuck-context-actions"><button type="button" class="btn btn-primary" data-stuck-context-go>'+
+   '<div class="stuck-context-actions guidance-surface-actions"><button type="button" class="btn btn-primary" data-stuck-context-go>'+
      e(card.targetNode?card.targetLabel||"Go to this Planning step":card.focusField?"Return to that question":"Return to my task")+'</button>'+
    '<button type="button" class="btn btn-quiet" data-stuck-context-hub>More problems in I am stuck</button>'+
    '</div></div>';
