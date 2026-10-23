@@ -1,0 +1,133 @@
+/* Release polish Pass 5 — responsive access and keyboard use.
+ * The specialist diagrams, mathematical tables, and pop-in colour themes
+ * retain their own geometry; this sheet targets navigation and ordinary controls.
+ */
+
+/* The first Tab reaches a visible jump over the repeated navigation. */
+.skip-link{
+ position:fixed;top:8px;left:12px;z-index:120;
+ display:inline-flex;align-items:center;justify-content:center;
+ max-width:calc(100vw - 24px);min-height:46px;padding:11px 16px;
+ color:#fff;background:#17353c;border:3px solid #fff;
+ border-radius:var(--ui-radius-control);font-size:15px;font-weight:800;
+ box-shadow:0 8px 23px #17353c40;
+ transform:translateY(calc(-100% - 16px));
+ transition:transform var(--ui-duration) var(--ease);
+}
+.skip-link:focus,.skip-link:focus-visible{
+ transform:translateY(0);outline:3px solid #b8863b;outline-offset:3px
+}
+#main{scroll-margin-top:calc(79px + 12px);outline-offset:-3px}
+#main:focus:not(:focus-visible){outline:none}
+:where(.task-shell,.checking-page,.representation-studio,.representation-hub,
+ .resource-library,.drawer,.page,.completing-page){min-width:0;max-width:100%}
+:where(.page,.task-shell,.content-card,.drawer,.representation-studio)
+ :where(p,li,small){overflow-wrap:anywhere}
+
+/* A visible focus ring for all directly operable objects, not just .btn. */
+:where(.app) :is(a[href],button,summary,input,select,textarea,[tabindex="0"]):focus-visible{
+ outline:3px solid var(--ui-focus);outline-offset:3px
+}
+:where(.app) :is(button,summary):disabled{cursor:not-allowed}
+/* Consistent minimum physical targets in global navigation and assistance. */
+:where(.topbar-actions) :is(.icon-button,.writer-guide-header-button,.ess-header-button){
+ min-height:44px;min-width:44px
+}
+:where(.drawer-header) button,
+:where(.guidance-surface) .guidance-surface-close,
+:where(.resource-library) summary,
+:where(.representation-workspace) button{min-height:44px}
+:where(.drawer-header,.resource-library,.guidance-surface) :is(button,a,summary){scroll-margin-top:12px}
+:where(.checking-item,.task-section,.representation-studio) :where([tabindex="-1"]){scroll-margin-top:85px}
+/* The small status labels are supplementary; no meaning is colour alone. */
+:where(.workspace-wayfinding,.representation-workflow,.guidance-surface)
+ :where(strong,small,span,p){overflow-wrap:anywhere}
+
+/* Reflow page chrome at 200–400% zoom and on narrow physical screens.
+ * Keep true mathematical canvases horizontally scrollable as authored. */
+@media(max-width:1100px){
+ .tablet-nav{min-width:0}
+ .tablet-nav button{min-height:44px;white-space:normal;text-align:left}
+ .topbar-actions{min-width:0;flex-shrink:0}
+}
+@media(max-width:760px){
+ #main{scroll-margin-top:75px}
+ .topbar{gap:8px;padding-inline:11px;min-width:0}
+ .topbar .brand{min-width:0;gap:7px;padding-inline:0}
+ .topbar .brand-label{min-width:0;white-space:normal}
+ .topbar .icon-button{width:44px;height:44px;min-width:44px}
+ .topbar-actions{gap:5px}
+ .mobile-nav{
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px));
+  gap:2px
+ }
+ .mobile-nav-link{
+  min-width:0;min-height:52px;padding:7px 2px;
+  font-size:11.5px;line-height:1.25;gap:4px;overflow-wrap:anywhere
+ }
+ .mobile-nav-link .icon{width:21px;height:21px}
+ .main{padding-bottom:calc(112px + env(safe-area-inset-bottom,0px))}
+ body.representation-focus-active .main{padding-bottom:calc(112px + env(safe-area-inset-bottom,0px))}
+ .page-top{min-width:0}
+ .page-top>div{min-width:0}
+ .drawer{
+  max-width:100vw;padding:20px 15px calc(30px + env(safe-area-inset-bottom,0px));
+  overscroll-behavior:contain
+ }
+ .drawer-header{gap:9px;flex-wrap:wrap}
+ .drawer-header .btn{min-height:44px;max-width:100%;white-space:normal}
+ :where(.field,textarea.field,input.field,select.field,
+  .graph-form-field input,.stat-form-field input,.ia-table-form-field input,
+  .trace-field input,.voronoi-field input,.geometry-field input,.probability-field input){
+  font-size:16px
+ }
+ :where(.task-footer,.completion-footer,.guidance-surface-actions,.button-row){
+  min-width:0;max-width:100%
+ }
+ :where(.resource-filters,.resource-grid,.resource-creator-grid,.idea-grid,
+  .checking-layout,.planning-context-examples){min-width:0}
+}
+@media(max-width:400px){
+ .topbar{padding-inline:8px}
+ .topbar-actions{gap:3px}
+ .topbar .brand-label{font-size:15px}
+ .topbar .brand-mark{width:35px;height:35px;min-width:35px}
+ .save-status{margin-right:0}
+ .main{padding-inline:11px}
+ .mobile-nav-link{font-size:11px}
+ .drawer{padding-inline:12px}
+ :where(.page-top,.workspace-wayfinding,.drawer-header){overflow-wrap:anywhere}
+}
+/* CSS cannot override JavaScript smooth scrolling: the script also consults
+ * matchMedia before any user-triggered animated navigation. */
+@media(prefers-reduced-motion:reduce){
+ html{scroll-behavior:auto!important}
+ .skip-link{transition:none!important}
+ :where(.app,.app *)::before,:where(.app,.app *)::after,
+ :where(.app *){
+  animation-duration:.01ms!important;animation-iteration-count:1!important;
+  transition-duration:.01ms!important
+ }
+}
+/* Windows high-contrast users need borders and visible selected states even
+ * when backgrounds and brand colours are suppressed by the OS. */
+@media(forced-colors:active){
+ .skip-link{background:Canvas;color:CanvasText;border:2px solid LinkText}
+ .skip-link:focus-visible{outline:3px solid Highlight}
+ :where(.app) :is(button,a,summary,input,select,textarea):focus-visible{
+  outline:3px solid Highlight;outline-offset:2px
+ }
+ :where(.side-link,.tablet-nav button,.mobile-nav-link,
+  .representation-workspace-tool,.choice,.representation-filter){
+  border:1px solid ButtonText
+ }
+ :where(.side-link,.tablet-nav button,.mobile-nav-link,
+  .representation-workspace-tool)[aria-current="page"],
+ :where(.choice,.representation-filter)[aria-pressed="true"]{
+  border:3px solid Highlight
+ }
+}
+@media print{
+ .skip-link,#screenAnnouncement{display:none!important}
+}
