@@ -190,7 +190,7 @@ export function checkingHelpFor(state,spot){
 export function checkingHelpBadge(state,spot,e=x=>String(x)){
  const help=checkingHelpFor(state,spot);if(!help)return "";
  const key=help.node+":"+spot;
- return '<button type="button" class="stuck-help-badge" data-checking-stuck="'+e(key)+
+ return '<button type="button" class="stuck-help-badge" id="checking-stuck-'+e(state.ui?.checkingMode||"draft")+'-'+e(help.node)+'-'+e(spot==="feedback"?"feedback":"check")+'" data-checking-stuck="'+e(key)+
   '" aria-haspopup="dialog" aria-label="I am stuck: '+e(help.title)+'" '+
   'title="Get one precise, checkable way forward"><span aria-hidden="true">?</span></button>';
 }
