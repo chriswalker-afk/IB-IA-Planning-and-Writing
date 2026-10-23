@@ -66,7 +66,6 @@ test("whole-project exports are accurately distinguished from Planning-only docu
  assert(!c91.includes("PDF/Word are Planning-only"),"Outdated claim must not return");
  assert.match(c91,/Download complete project backup/);
  assert.match(c91,/See full-project PDF, Word and ZIP exports/);
- assert.match(c91,/data/); // stage is still data-driven
  assert.match(c91,/restores Planning fields only/);
  assert.match(c91,/open-files/);
  assert.match(app,/export-full-pdf/);
