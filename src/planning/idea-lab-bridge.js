@@ -9,7 +9,7 @@
  */
 import {IDEA_TOPICS} from '../ideas/catalog.js';
 import {
- ideaMathStarterById,ideaMathLens,ideaMathCoursePreview,
+ ideaMathStarterById,ideaMathLens,ideaMathCoursePreview,ideaMathEvidenceEntry,
  IDEA_DATA_MATH_ENTRYPOINTS,ideaMathEvidenceStarterId
 } from '../ideas/math-pathways.js';
 import {ideaMapRoot,ideaMapBranches} from '../ideas/mindmap.js';
@@ -35,8 +35,11 @@ export function ideaLabPlanningContext(state){
  const stale=!actualAim||!same(actualAim,chosen.question);
  const selected=routeById(state?.planning?.routeExplorer?.selectedRoute);
  const superseded=!!selected&&selected.id!==route.id;
- const evidenceEntry=IDEA_DATA_MATH_ENTRYPOINTS.find(x=>
-  ideaMathEvidenceStarterId(x.root,x.branch,x.routeIds.includes(route.id)?route.id:'')===chosen.seedId) || null;
+ const recorded=chosen.mapOrigin?.mode==='data'?
+  ideaMathEvidenceEntry(chosen.mapOrigin.root,chosen.mapOrigin.dataBranch):null;
+ const evidenceEntry=recorded?.routeIds.includes(route.id)?recorded:
+  IDEA_DATA_MATH_ENTRYPOINTS.find(x=>x.routeIds.includes(route.id)&&
+   ideaMathEvidenceStarterId(x.root,x.branch,route.id)===chosen.seedId)||null;
  const sourceRoot=evidenceEntry?ideaMapRoot('data',evidenceEntry.root):null;
  const sourceBranch=evidenceEntry?ideaMapBranches(sourceRoot).find(x=>x.id===evidenceEntry.branch):null;
  const topic=IDEA_TOPICS.find(x=>x.id===seed.topic);
