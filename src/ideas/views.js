@@ -1,7 +1,8 @@
 import {IDEA_TOPICS,IDEA_CHECKS,IDEA_DIFFICULTIES,IDEA_RATING_LABELS,seedById,topicById,OWN_PROMPT} from './catalog.js';
 import {ideaState,ideaChoices,currentSeed} from './engine.js';
-import {IDEA_MAP_ROOTS,DATA_BRANCHES,IDEA_DATA_PROMISE,IDEA_THEORY_CAUTION,ideaMapRoots,ideaMapRoot,ideaMapTopics,ideaMapBranches,ideaMapIdeas} from './mindmap.js';
+import {IDEA_MAP_ROOTS,DATA_BRANCHES,IDEA_DATA_PROMISE,IDEA_THEORY_CAUTION,ideaMapRoots,ideaMapRoot,ideaMapTopics,ideaMapBranches,ideaMapMathLenses,ideaMapMathCards,ideaMapMathStarters} from './mindmap.js';
 import {escapeHtml as e,icon} from '../ui/primitives.js';
+import {ideaMathStarterById,ideaMathEvidenceEntry,ideaMathCoursePreview,IDEA_MATH_COURSE_NOTE} from './math-pathways.js';
 const button=(action,label,attrs='',primary=false)=>'<button type="button" class="btn '+(primary?'btn-primary':'btn-secondary')+'" data-action="idea-'+action+'" '+attrs+'>'+e(label)+'</button>';
 const input=(key,label,value,{rows=2,savedId='',placeholder=''}={})=>'<div class="field-group"><label class="field-label" for="idea-'+e(savedId?savedId+'-'+key:key)+'">'+e(label)+'</label><textarea class="field" id="idea-'+e(savedId?savedId+'-'+key:key)+'" data-idea-input="'+e(key)+'"'+(savedId?' data-idea-saved="'+e(savedId)+'"':'')+' rows="'+rows+'" maxlength="1600" placeholder="'+e(placeholder)+'">'+e(value||'')+'</textarea></div>';
 const select=(key,label,value,options,attrs='')=>'<label class="idea-select" for="idea-'+e(key)+'"><span>'+e(label)+'</span><select class="field" id="idea-'+e(key)+'" '+attrs+'>'+options.map(([v,t])=>'<option value="'+e(v)+'"'+(value===v?' selected':'')+'>'+e(t)+'</option>').join('')+'</select></label>';
@@ -12,7 +13,6 @@ function controls(state){
 
 const mapAction=(act,label,attrs='',css='')=>'<button type="button" class="'+css+'" data-action="idea-'+act+'" '+attrs+'>'+label+'</button>';
 const mapAttrs=(id,parent)=>' data-idea-node="'+e(id)+'" data-idea-parent="'+e(parent)+'"';
-const leafId=(topic,i)=>'leaf-'+topic+'-'+i;
 const IDEA_TOPIC_ICONS={sport:'flag',music:'sparkles',games:'grid-2x2',food:'flask',
  design:'pencil',school:'book',travel:'route',money:'calculator',technology:'mouse-pointer-click',
  nature:'image',environment:'map',patterns:'chart'};
@@ -25,59 +25,83 @@ const mapRoot=(r,selected)=>mapAction('map-root',
  'idea-map-root idea-map-root-'+e(r.id)+(selected?' selected':''));
 function ideaMapBranchesView(state){
  const m=ideaState(state).map,root=ideaMapRoot(m.mode,m.root);
- if(!root)return {nodes:'',guidance:'<div class="idea-map-guidance"><p class="idea-map-first-prompt" aria-live="polite">Choose one of the three bubbles to grow your mind map.</p></div>'};
+ if(!root)return {nodes:'',guidance:
+  '<div class="idea-map-guidance"><p class="idea-map-first-prompt" aria-live="polite">Choose one of the three starting bubbles. Your own question will come later.</p></div>'};
  const topic=ideaMapTopics(root).find(x=>x.id===m.topic);
  const access=ideaMapBranches(root).find(x=>x.id===m.dataBranch);
  const topTier=m.mode==='interests'?
   ideaMapTopics(root).map(x=>mapAction('map-topic',
-    '<span class="idea-map-node-icon">'+icon(IDEA_TOPIC_ICONS[x.id]||'lightbulb')+'</span><strong>'+e(x.label)+'</strong>'+
+   '<span class="idea-map-node-icon">'+icon(IDEA_TOPIC_ICONS[x.id]||'lightbulb')+'</span><strong>'+e(x.label)+'</strong>'+
     '<span class="idea-map-node-arrow">'+icon('chevron-right')+'</span>',
-    'id="idea-map-topic-'+e(x.id)+'" data-topic="'+e(x.id)+'" aria-pressed="'+(topic?.id===x.id)+'"'+mapAttrs('topic-'+x.id,'root-'+root.id),
-    'idea-map-branch-node'+(topic?.id===x.id?' selected':''))).join(''):
+   'id="idea-map-topic-'+e(x.id)+'" data-topic="'+e(x.id)+'" aria-pressed="'+(topic?.id===x.id)+'"'+mapAttrs('topic-'+x.id,'root-'+root.id),
+   'idea-map-branch-node'+(topic?.id===x.id?' selected':''))).join(''):
   ideaMapBranches(root).map(x=>mapAction('map-access',
-    '<span class="idea-map-node-icon">'+icon(IDEA_DATA_ICONS[x.id]||'calculator')+'</span><strong>'+e(x.label)+'</strong><small>'+e(x.desc)+'</small>'+
-    '<span class="idea-map-node-arrow">'+icon('chevron-right')+'</span>',
-    'id="idea-map-access-'+e(x.id)+'" data-branch="'+e(x.id)+'" aria-pressed="'+(access?.id===x.id)+'"'+mapAttrs('access-'+x.id,'root-'+root.id),
-    'idea-map-branch-node idea-map-access-node'+(access?.id===x.id?' selected':''))).join('');
+   '<span class="idea-map-node-icon">'+icon(IDEA_DATA_ICONS[x.id]||'calculator')+'</span><strong>'+e(x.label)+'</strong><small>'+e(x.desc)+'</small>',
+   'id="idea-map-access-'+e(x.id)+'" data-branch="'+e(x.id)+'" aria-pressed="'+(access?.id===x.id)+'"'+mapAttrs('access-'+x.id,'root-'+root.id),
+   'idea-map-branch-node idea-map-access-node'+(access?.id===x.id?' selected':''))).join('');
  const tierTwo='<div class="idea-map-tier idea-map-topics" data-idea-map-level="1" aria-label="'+
-  (m.mode==='interests'?'Branches from '+e(root.label):'Ways to obtain starting material')+'">'+topTier+'</div>';
- const subtopicTier=topic?'<div class="idea-map-tier idea-map-leaves" data-idea-map-level="2" aria-label="Details branching from '+e(topic.label)+'">'+
-  topic.subtopics.map((name,i)=>mapAction('map-leaf',
-   '<span class="idea-map-node-icon">'+icon('compass')+'</span><strong>'+e(name)+'</strong>'+
-   '<span class="idea-map-node-arrow">'+icon('chevron-right')+'</span>',
-   'id="idea-map-leaf-'+i+'" data-subtopic="'+e(name)+'" aria-pressed="'+(m.subtopic===name)+'"'+mapAttrs(leafId(topic.id,i),'topic-'+topic.id),
-   'idea-map-subtopic'+(m.subtopic===name?' selected':''))).join('')+'</div>':'';
- const activeParent=topic&&m.subtopic?leafId(topic.id,topic.subtopics.indexOf(m.subtopic)):
-  access?'access-'+access.id:'';
- const ideas=activeParent?ideaMapIdeas(m):[];
- const directionTier=activeParent?'<div class="idea-map-tier idea-map-seeds" data-idea-map-level="3" aria-label="Directions growing from the chosen detail">'+
-  ideas.map((seed,i)=>mapAction('explore',
-    '<span class="idea-map-direction-icon">'+icon('lightbulb')+'</span>'+
-    '<span class="idea-map-direction-content"><strong class="idea-map-direction-title">'+e(seed.title)+'</strong>'+
-    '<span class="idea-map-personal"><b>Make it personal</b><span>'+e(seed.narrow)+'</span></span>'+
-    '<span class="idea-map-first-test">'+icon('clock')+' First try: '+e(seed.first)+'</span>'+
-    '<span class="idea-map-customise">Shape my idea '+icon('arrow-right')+'</span></span>',
-    (i===0?'id="idea-map-directions-heading" ':'')+'data-seed="'+e(seed.id)+'" data-map="true" data-idea-card="'+e(seed.id)+'"'+mapAttrs('seed-'+seed.id,activeParent),
-    'idea-map-direction-node')).join('')+'</div>':'';
- const warning=access?.warning?'<p class="idea-map-survey-warning" role="note">'+icon('info')+' '+e(access.warning)+'</p>':'';
- const selected=m.mode==='data'?access?.label:m.subtopic||topic?.label||root.label;
- return {nodes:tierTwo+subtopicTier+directionTier,guidance:
-  '<div class="idea-map-guidance">'+warning+
-  '<p class="idea-map-branch-hint" role="status" aria-live="polite">'+
-  (ideas.length?'You have reached some possible directions from '+e(selected)+
-    '. Add your own detail to turn one into your question.':
-   'These bubbles grew from '+e(selected)+'. Choose another to grow the map further.')+'</p></div>'};
+   (m.mode==='interests'?'Interests from '+e(root.label):'Ways to obtain suitable starting material')+'">'+topTier+'</div>';
+ const parent=topic?'topic-'+topic.id:access?'access-'+access.id:'';
+ const lenses=ideaMapMathLenses(m);
+ const selected=lenses.find(x=>x.routeId===m.mathRoute);
+ const lensTier=parent?'<div class="idea-map-tier idea-map-leaves" data-idea-map-level="2" aria-label="Mathematical possibilities you could investigate">'+
+  lenses.map(lens=>mapAction('map-route',
+   '<span class="idea-map-node-icon">'+icon(lens.routeId==='optimisation'?'target':
+    lens.routeId==='chance'?'grid-2x2':lens.routeId==='variation'?'bar-chart':
+    lens.routeId==='images'?'image':lens.routeId==='cycles'?'refresh':
+    lens.routeId==='triangulation'?'ruler':lens.routeId==='proof'?'check-circle':'chart')+'</span>'+
+   '<strong>'+e(lens.label)+'</strong><small>'+e(lens.mathsName)+'</small>',
+   'id="idea-map-route-'+e(lens.routeId)+'" data-route-id="'+e(lens.routeId)+'" aria-pressed="'+(m.mathRoute===lens.routeId)+'"'+
+     mapAttrs('leaf-'+lens.routeId,parent),
+   'idea-map-subtopic idea-map-math-lens'+(m.mathRoute===lens.routeId?' selected':''))).join('')+'</div>':'';
+ const starterIds=selected?ideaMapMathStarters(m):[];
+ const cards=starterIds.map((id,i)=>{
+  const seed=ideaMathStarterById(id);
+  if(!seed)return '';
+  const contextual=id.startsWith('math-');
+  const selectedCourse=state.planning?.fields?.course||state.project?.course||'';
+  const note=ideaMathCoursePreview({routeId:seed.routeId,review:seed.review},selectedCourse);
+  return mapAction('explore',
+   '<span class="idea-map-direction-icon">'+icon('lightbulb')+'</span>'+
+   '<span class="idea-map-direction-content">'+
+   '<small class="idea-map-direction-eyebrow">'+e(m.mode==='data'?(contextual?'Possible context':'Start with your evidence'):'Possible investigation')+'</small>'+
+   '<strong class="idea-map-direction-title">'+e(seed.title)+'</strong>'+
+   '<span class="idea-map-direction-question">'+e(seed.question)+'</span>'+
+   '<span class="idea-map-first-test">'+icon('clock')+' <b>First maths:</b> '+e(seed.first)+'</span>'+
+   '<span class="idea-map-personal"><b>Make it your own</b><span>'+e(seed.narrow)+'</span></span>'+
+   (note?.teacherReview?'<span class="idea-map-review-flag">'+icon('info')+' Check the mathematical scope with your teacher</span>':'')+
+   '<span class="idea-map-customise">Shape my idea '+icon('arrow-right')+'</span></span>',
+   (i===0?'id="idea-map-directions-heading" ':'')+
+   'data-seed="'+e(id)+'" data-map="true" data-idea-card="'+e(id)+'"'+
+    mapAttrs('seed-'+id,'leaf-'+m.mathRoute),
+   'idea-map-direction-node');
+ }).join('');
+ const cardTier=starterIds.length?'<div class="idea-map-tier idea-map-seeds" data-idea-map-level="3" aria-label="Possible mathematical investigations">'+cards+'</div>':'';
+ const entry=access?ideaMathEvidenceEntry(root.id,access.id):null;
+ const required=access?.warning?'<p class="idea-map-survey-warning" role="note">'+icon('info')+' '+e(access.warning)+'</p>':'';
+ const evidence=entry?'<p class="idea-map-evidence-first"><strong>Quick evidence check:</strong> '+e(entry.firstCheck)+'</p>':'';
+ const course=selected?'<details class="idea-map-course-note"><summary>'+icon('info')+' Course and mathematical depth</summary>'+
+  '<p>'+e(IDEA_MATH_COURSE_NOTE)+'</p></details>':'';
+ const legacy=m.mode==='interests'&&m.subtopic?
+  '<p class="idea-map-legacy-note" role="note">Your earlier context, <strong>'+e(m.subtopic)+'</strong>, is still remembered. It does not choose a mathematical direction for you.</p>':'';
+ const hint=selected?
+  'Explore a question below, or tap another mathematical bubble. These are possible directions, not completed IA titles.':
+  parent?'Choose a mathematical possibility to find a question worth investigating. You can come back and explore another.':
+  'Choose a bubble that interests you and find out what mathematics might help.';
+ return {nodes:tierTwo+lensTier+cardTier,guidance:
+  '<div class="idea-map-guidance">'+required+evidence+legacy+
+  '<p class="idea-map-branch-hint" role="status" aria-live="polite">'+e(hint)+'</p>'+course+'</div>'};
 }
 export function ideaExplorerView(state){
  const s=ideaState(state);
  if(s.pending)return ideaConfirmationView(state);
  if(s.active)return ideaDetailView(state);
- const m=s.map||{mode:'interests',root:'',topic:'',subtopic:'',dataBranch:''},roots=ideaMapRoots(m.mode);
+ const m=s.map||{mode:'interests',root:'',topic:'',subtopic:'',dataBranch:'',mathRoute:''},roots=ideaMapRoots(m.mode);
  const branches=ideaMapBranchesView(state);
  return '<section class="idea-explorer idea-mindmap" aria-label="Explore an IA idea">'+
   '<div class="idea-map-head"><span class="idea-map-overline">'+icon('route')+' IDEA LAB</span>'+
   '<h3 id="idea-map-heading" tabindex="-1">Grow an idea from a starting point</h3>'+
-  '<p>Explore the bubbles in any direction. Tap one to grow new ideas, follow what catches your interest, then shape a question of your own.</p></div>'+
+  '<p>Start with an interest or with evidence you can obtain. Explore different mathematics, then turn one promising direction into your own question.</p></div>'+
   '<div class="idea-map-mode" role="group" aria-label="Choose how to start exploring ideas">'+
   mapAction('map-mode',icon('layers')+' Start with my world','data-mode="interests" aria-pressed="'+(m.mode==='interests')+'"','idea-map-mode-button'+(m.mode==='interests'?' selected':''))+
   mapAction('map-mode',icon('calculator')+' Start with data I can get','data-mode="data" aria-pressed="'+(m.mode==='data')+'"','idea-map-mode-button'+(m.mode==='data'?' selected':''))+'</div>'+
@@ -129,7 +153,19 @@ export function ideaDetailView(state){
   '<p class="idea-evaluation-intro">Your question can change. You are deciding whether this could be a manageable starting point, not proving it will earn a particular mark.</p>'+
   (fromMap&&d.focus?'<p class="idea-evaluation-origin">'+icon('route')+' Your starting branch: <strong>'+e(d.focus)+'</strong></p>':'')+
   (fromMap?'<div class="idea-map-starter"><span>'+icon('lightbulb')+' Something to get you thinking</span>'+
-   '<p>'+e(seed.question)+'</p><small>You can use this prompt, change it, or ignore it entirely.</small></div>':'')+
+   '<p>'+e(seed.question)+'</p><small>You can use this prompt, change it, or ignore it entirely.</small>'+
+   (seed.routeId?'<div class="idea-map-starter-support">'+
+    '<p><strong>Possible first mathematics:</strong> '+e(seed.first)+'</p>'+
+    '<p><strong>Where the mathematics could lead:</strong> '+e(seed.maths)+'</p>'+
+    '<p><strong>What you would need:</strong> '+e(seed.material)+'</p>'+
+    '<p><strong>Make it personal:</strong> '+e(seed.narrow)+'</p>'+
+    '</div>'+
+    '<p class="idea-map-starter-caution"><strong>Important limitation:</strong> '+e(seed.caution)+'</p>'+
+    (state.ui?.adviceMode==='reduced'?'':('<details class="idea-map-course-note"><summary>'+icon('info')+
+     ' Mathematics and course fit</summary><p>'+
+     e(ideaMathCoursePreview({routeId:seed.routeId,review:seed.review},state.planning?.fields?.course||state.project?.course||'')?.note||IDEA_MATH_COURSE_NOTE)+
+     '</p></details>')):'')+
+   '</div>':'')+
   '<div class="idea-evaluation-aim"><p>Either using the thinking prompt or otherwise, write your own possible aim here.</p>'+
   input('question','Your possible investigation aim',d.question,{rows:3,placeholder:'I would like to investigate…'})+'</div>'+
   '<div class="idea-evaluation-ratings"><h4>How promising does this idea feel?</h4>'+
