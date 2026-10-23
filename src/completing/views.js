@@ -34,6 +34,7 @@ import {examplePrompt,exampleInline} from "../examples/views.js";
 import {criteriaPanel,essentialsNudge} from "../essentials/views.js";
 import {criterionPageHeading,criterionMarkedField,criterionMarkedWritingBox as baseCriterionMarkedWritingBox} from "../essentials/criteria-badges.js";
 import {resourcePrompt} from "../resources/views.js";
+import {renderCitationReminder} from "../resources/citation-prompts.js";
 import {createStuckViews} from '../help/stuck-views.js';
 import {isStuckNode} from '../help/stuck-state.js';
 /**
@@ -615,7 +616,7 @@ export function createCompletingViews(ctx){
      sparks:renderIntroductionSparkPrompt(s,icon,e)+renderSparkShelf(s,"C10",{surface:"studio",libraryOnly:true}),
      task,
      examples:renderIntroductionOptionalExamples(icon)
-    })+
+    })+renderCitationReminder(s,"introduction",icon,e)+
     '<div class="intro-first-maths-next"><div><strong>Ready for the first piece of mathematics?</strong>'+
       '<p>Your Introduction opens the story. Next, connect your first purposeful mathematical step to your aim, using the choices you made in Planning.</p></div>'+
       '<button type="button" class="btn btn-primary" data-action="completion-open" data-node="C20">'+
@@ -730,7 +731,7 @@ export function createCompletingViews(ctx){
     '<button type="button" class="btn btn-primary" data-action="completion-open" data-node="C30">'+
     'Begin first mathematics '+icon("arrow-right")+'</button></div>';
    return{intro:"Introduce one purposeful mathematical step that connects naturally to your aim. Use your saved source and route choices, but do not treat a plan as a result.",
-    html:introFields+proceed+sourceDetails};
+    html:introFields+renderCitationReminder(s,"first-maths",icon,e)+proceed+sourceDetails};
   }
   case "C21S":return{intro:"If you have actual observations, record how the population or sample was defined and what can responsibly be inferred.",
    html:F("statisticalPopulation","Population or group the analysis could describe","The true target population, not every person in general")+
@@ -906,7 +907,7 @@ export function createCompletingViews(ctx){
     html:'<div class="show-first-sequence" data-show-first-sequence>'+
       mathematicalPageLinks(s,s.completion.activeEntryIndex)+
       '<p class="show-first-sequence-lead">Four parts of your <strong>actual IA writing</strong>. The boxes below save planning and reflection notes; they do not insert text, tables or calculations into your IA.</p>'+
-      first+second+third+fourth+'</div>'};
+      first+renderCitationReminder(s,"show-first",icon,e,{entry})+second+third+fourth+'</div>'};
   }
   case "C31":{
    const returnNode=representationReturnNode(s);
@@ -1179,7 +1180,7 @@ export function createCompletingViews(ctx){
       pageNavigation+
       '<p class="show-first-sequence-lead">A separate four-part mathematical page, saved as stage '+stageNumber+
       '. Your earlier stages remain available above; none of these notes are inserted into your IA automatically.</p>'+
-      first+second+third+fourth+'</div>'};
+      first+renderCitationReminder(state,"mathematical-stage",icon,e,{entry:substantial})+second+third+fourth+'</div>'};
   }
   case "C40T":return{intro:"Technology can assist calculations, but your IA should show what mathematical meaning you have understood.",
    html:F("technologyTool","Which software, GDC, code or spreadsheet was actually used?","Name the tool")+
@@ -1208,6 +1209,7 @@ export function createCompletingViews(ctx){
    html:(st&&st.knowledge==="syllabus"?info("Routine syllabus mathematics","Apply the technique and interpret it; detailed exposition is unnecessary."):"")+
     (st?entryField("researchSource","Mathematics source I actually used (if any)","Reference to a book/article or teacher-approved resource")+entryField("unfamiliarComponent","Exactly what part was new/outside my course?","Do not label routine course techniques advanced without checking")+entryField("understandingExample","A real mathematical explanation or step showing my own understanding","Relevant only if this idea is genuinely unfamiliar",{type:"textarea",rows:3}):"")+
     F("researchedMethod","Which new mathematical idea did I use?","Technique or theorem, and how you found it")+
+    renderCitationReminder(s,"unfamiliar-maths",icon,e,{entry:st})+
     criteriaField(F("researchedUnderstanding","What have I learned about how it works?","Definitions, assumptions, a demonstration or small explanation",{type:"textarea",rows:4}),"completing:C40L:title")+
     F("mathsLearning","What did learning this change about my investigation?","A genuine mathematical insight",{type:"textarea",rows:2})+
     info("Use regular course techniques directly","If your technique is on your course, there is usually no need to teach it to the reader.")
