@@ -6,6 +6,7 @@ import {methodFamilies} from "./method-identity.js";
 import {adaptiveNextDirections} from "./adaptive-journey.js";
 import {renderSparkShelf} from "../ui/insight-threads.js";
 import {renderConclusionReasoningThread,recordedDecisionNotes} from "./reasoning-thread.js";
+import {renderConclusionValidityAid} from "./mathematical-validity.js";
 
 const has=value=>typeof value==="string"&&!!value.trim();
 const short=(s,max=215)=>{
@@ -155,6 +156,7 @@ export function renderConclusionWorkspace({state,e,icon,field,F,criterionMarkedW
   '<p class="conclusion-workspace-lead">Three ideas: <strong>answer</strong> your aim, explain its <strong>meaning and limits</strong>, then consider <strong>potential next steps</strong>. Write only what your mathematics supports.</p>'+
   context+
   renderConclusionReasoningThread(state,{icon,e,reduced:state.ui?.adviceMode==="reduced"})+
+  renderConclusionValidityAid(state,{icon,e,reduced:state.ui?.adviceMode==="reduced"})+
   '<section class="conclusion-writing-part" data-conclusion-part="answer">'+
    '<div class="conclusion-part-title"><span class="conclusion-part-number">1</span><div>'+
      '<h3>What is your best-supported mathematical answer?</h3>'+

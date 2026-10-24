@@ -209,3 +209,68 @@
 @media(max-width:730px){.reasoning-thread-parts{grid-template-columns:1fr}.reasoning-thread-choices{grid-template-columns:1fr}}
 @media(max-width:600px){.math-reasoning-body,.conclusion-reasoning-body{padding:11px}.math-reasoning-disclosure>summary strong,.conclusion-reasoning>details>summary strong{font-size:12px}}
 @media(prefers-reduced-motion:reduce){.math-reasoning-disclosure>summary>.icon:last-child,.conclusion-reasoning>details>summary>.icon:last-child{transition:none}}
+
+
+/* Pass 4 · Mathematical validity and course understanding. Read-only, optional
+   disclosures; use the existing understated Spark and writing-page palette. */
+.math-validity-aid,.math-course-aid,.conclusion-validity-aid{min-width:0;margin:11px 0 17px}
+.math-validity-aid>details,.math-course-aid>details,.conclusion-validity-aid>details{
+ border:1px solid #d4e2d9;border-radius:13px;background:#fbfdfb;overflow:hidden
+}
+.math-validity-aid>details>summary,.math-course-aid>details>summary,.conclusion-validity-aid>details>summary{
+ display:flex;align-items:center;gap:10px;padding:12px 14px;list-style:none;cursor:pointer;color:#285d51
+}
+.math-validity-aid>details>summary::-webkit-details-marker,.math-course-aid>details>summary::-webkit-details-marker,.conclusion-validity-aid>details>summary::-webkit-details-marker{display:none}
+.math-validity-aid>details>summary>.icon:first-child,.math-course-aid>details>summary>.icon:first-child,.conclusion-validity-aid>details>summary>.icon:first-child{width:18px;height:18px;flex:none;color:#3b8b78}
+.math-validity-aid>details>summary>span,.math-course-aid>details>summary>span,.conclusion-validity-aid>details>summary>span{display:grid;gap:3px;min-width:0;flex:1}
+.math-validity-aid>details>summary strong,.math-course-aid>details>summary strong,.conclusion-validity-aid>details>summary strong{font-size:12px;line-height:1.5}
+.math-validity-aid>details>summary small,.math-course-aid>details>summary small,.conclusion-validity-aid>details>summary small{font-size:11px;line-height:1.4;color:#6e8278}
+.math-validity-aid>details>summary>.icon:last-child,.math-course-aid>details>summary>.icon:last-child,.conclusion-validity-aid>details>summary>.icon:last-child{width:15px;height:15px;flex:none;transition:transform .16s}
+.math-validity-aid>details[open]>summary,.math-course-aid>details[open]>summary,.conclusion-validity-aid>details[open]>summary{background:#eff7f2}
+.math-validity-aid>details[open]>summary>.icon:last-child,.math-course-aid>details[open]>summary>.icon:last-child,.conclusion-validity-aid>details[open]>summary>.icon:last-child{transform:rotate(90deg)}
+.math-validity-aid>details>summary:hover,.math-course-aid>details>summary:hover,.conclusion-validity-aid>details>summary:hover{background:#f2f8f4}
+.math-validity-aid>details>summary:focus-visible,.math-course-aid>details>summary:focus-visible,.conclusion-validity-aid>details>summary:focus-visible{outline:3px solid #79ad9c;outline-offset:-3px}
+.math-validity-body,.math-course-body{padding:13px 15px;border-top:1px solid #e0eae2;color:#385f51}
+.math-validity-row{padding:10px 0;border-bottom:1px solid #e5eee8}
+.math-validity-row:last-of-type{border-bottom:0}
+.math-validity-row strong,.math-validity-figures>strong,.math-validity-confirmed>strong,.math-validity-models>strong{font-size:11px;color:#2f6959;line-height:1.45}
+.math-validity-row p,.math-course-body>p{margin:5px 0 0;font-size:12px;line-height:1.65;overflow-wrap:anywhere;white-space:pre-wrap}
+.math-validity-linked{list-style:none;padding:0;margin:8px 0 12px;display:grid;gap:8px}
+.math-validity-linked>li{border:1px solid #dbe9e0;border-radius:9px;background:#fff;padding:9px 11px;min-width:0}
+.math-validity-linked>li>strong{font-size:11px;color:#2c6151}
+.math-validity-linked>li>small{font-size:10px;color:#688176;margin-left:5px}
+.math-validity-linked>li>p{font-size:11px;line-height:1.6;margin:5px 0 0;overflow-wrap:anywhere;white-space:pre-wrap}
+.math-validity-models{padding:8px 10px;border-radius:8px;background:#f3f8f5;margin-top:8px}
+.math-validity-models ul,.math-validity-confirmed ul{padding-left:18px;margin:6px 0;font-size:11px;line-height:1.6;overflow-wrap:anywhere}
+.math-validity-models p{font-size:11px;line-height:1.5;margin:6px 0}
+.math-validity-warning{padding:8px 10px;border-left:3px solid #c99952;background:#fff9f0;color:#7e602f;font-size:11px;line-height:1.6;margin:9px 0}
+.math-validity-honesty{font-size:10px;line-height:1.6;color:#708279;margin:12px 0 0}
+.math-validity-figures,.math-validity-confirmed{margin:12px 0}
+.math-validity-conclusion-result{margin:0 0 9px;padding:10px 12px;border:1px solid #dce8df;background:#fff;border-radius:9px}
+.math-validity-conclusion-result>strong{font-size:12px;color:#305f51}
+.math-validity-conclusion-result p{font-size:11px;line-height:1.6;margin:6px 0;overflow-wrap:anywhere}
+.math-validity-conclusion-result small{display:inline-block;margin-right:8px;font-size:10px;color:#688176}
+.spark-validity-recall{margin:11px 0;padding:10px 12px;border:1px solid #d9e7dd;border-radius:10px;background:#f6faf7}
+.spark-validity-recall strong{display:block;font-size:11px;color:#326554}
+.spark-validity-recall p{font-size:11px;line-height:1.55;margin:6px 0 0;overflow-wrap:anywhere}
+.spark-validity-recall small{display:block;margin-top:6px;font-size:10px;color:#6d8278}
+.math-validity-aid.is-reduced>details>summary,.math-course-aid.is-reduced>details>summary,.conclusion-validity-aid.is-reduced>details>summary{padding:10px 12px}
+@media(max-width:650px){
+ .math-validity-body,.math-course-body{padding:10px 11px}
+ .math-validity-aid>details>summary,.math-course-aid>details>summary,.conclusion-validity-aid>details>summary{gap:8px}
+ .math-validity-aid>details>summary strong,.math-course-aid>details>summary strong,.conclusion-validity-aid>details>summary strong{font-size:12px}
+}
+@media(prefers-reduced-motion:reduce){
+ .math-validity-aid>details>summary>.icon:last-child,.math-course-aid>details>summary>.icon:last-child,.conclusion-validity-aid>details>summary>.icon:last-child{transition:none}
+}
+
+/* First mathematical step: a single optional point to record syllabus scope. */
+.math-first-course-choice{margin:12px 0 15px;border:1px solid #d9e5dc;border-radius:11px;background:#f9fcf9}
+.math-first-course-choice>summary{cursor:pointer;padding:11px 13px;font-size:12px;font-weight:650;color:#365d50;list-style:none;display:flex;align-items:center;gap:8px}
+.math-first-course-choice>summary::-webkit-details-marker{display:none}
+.math-first-course-choice>summary>.icon{width:16px;height:16px;flex:none}
+.math-first-course-choice>summary>.icon:last-child{margin-left:auto}
+.math-first-course-choice>div{padding:10px 13px 13px;border-top:1px solid #e0eae2}
+.math-first-course-choice>summary:focus-visible{outline:3px solid #79ad9c;outline-offset:-3px}
+
+.math-course-earlier{border-left:3px solid #a8cbb6;background:#f3f9f4;padding:8px 10px;border-radius:0 8px 8px 0}
