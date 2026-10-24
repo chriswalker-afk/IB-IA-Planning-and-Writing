@@ -33,7 +33,8 @@ test("workshop maths: all seven methods have labelled accessible display equatio
   }
   const html=workshopLessonFormula(lesson);
   assert.equal((html.match(/class="workshop-formula-row"/g)||[]).length,rows.length);
-  assert.equal((html.match(/role="img"/g)||[]).length,rows.length);
+  assert.equal((html.match(/<span class="workshop-typeset-math is-display" role="img"/g)||[]).length,rows.length);
+  assert.equal((html.match(/<svg aria-hidden="true"/g)||[]).length,rows.length);
   assert(html.includes("aria-label="));
   assert(!html.includes("<script"));
  }
