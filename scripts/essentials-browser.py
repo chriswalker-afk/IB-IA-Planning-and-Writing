@@ -90,8 +90,8 @@ with sync_playwright() as pw:
   p.reload(wait_until='networkidle');p.locator('.ess-review-access [data-essentials-mode="draft"]').click();assert p.locator('#ess-draft-A-location').input_value()=='Pages 2 and 4';assert p.locator('#ess-draft-A-mark').input_value()=='0';close_ess(p)
   p.locator('[data-action="open-panel"][data-panel="files"]').first.click()
   backup_button=p.locator('.drawer [data-action="export-json"][data-backup-primary="true"]:visible')
-   assert backup_button.count()==1 and backup_button.is_visible(), "Expected a single visible full-project backup action"
-   with p.expect_download() as dl:backup_button.click()
+  assert backup_button.count()==1 and backup_button.is_visible(), "Expected a single visible full-project backup action"
+  with p.expect_download() as dl:backup_button.click()
   path=OUT/'essentials-full-backup.json';dl.value.save_as(str(path));backup=json.loads(path.read_text());assert backup['completion']['review']['records']['draft-D02']['selfMark']=='0';assert backup['completion']['review']['records']['final-D02']['location']=='Page 5 revised'
  run('essentials-shared-review-save-reload-backup',fixture('C80D'),review)
  def phones(p):
