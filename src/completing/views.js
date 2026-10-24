@@ -739,7 +739,7 @@ export function createCompletingViews(ctx){
       "Do not perform affected restricted collection without meeting consent or school requirements.",true):"")+
     routeChecks+'</div></details>';
    const proceed='<div class="first-maths-continue"><div><strong>Ready to show the mathematics?</strong>'+
-    '<p>Move to your first real diagram, graph, model, calculation or theoretical case. If the data is not available, prepare the step without inventing results.</p></div>'+
+    '<p>Review the optional source, sampling or accuracy details above if they affect your mathematics. Then move to a genuine diagram, graph, model, calculation or theoretical case. If the data is not available, prepare the step without inventing results.</p></div>'+
     '<button type="button" class="btn btn-primary" data-action="completion-open" data-node="C30">'+
     'Begin first mathematics '+icon("arrow-right")+'</button></div>';
    return{intro:"Introduce one purposeful mathematical step that connects naturally to your aim. Use your saved source and route choices, but do not treat a plan as a result.",
@@ -975,16 +975,17 @@ export function createCompletingViews(ctx){
    };
   }
   case "C32":return{intro:"Optional first-output details. If you have already introduced your mathematics in the four-part writing screen, do not write the same explanation again.",
-   html:actualRecord()+graphEntryPanel()+traceEntryPanel()+statEntryPanel()+tableEntryPanel()+voronoiEntryPanel()+geometryEntryPanel()+probabilityEntryPanel()+
+   html:actualRecord()+
     entryField("title","A short title for this step","e.g. Inspect a scatter graph")+
     '<details class="representation-prelude"><summary>Review or adjust the purpose (optional, not another IA paragraph)</summary>'+
     criteriaField(entryField("purpose","Mathematical purpose BEFORE it","What question should this graph/calculation help answer?",{type:"textarea",rows:3}),"completing:C32:purpose")+
     '</details>'+
     entryField("technique","Mathematical technique being used","e.g. plot observed paired values")+
-    entryField("resultRef","Where will the figure or work appear in my IA?","e.g. Figure 1 in my Word document")+
-    F("firstDefinitions","Variables, units or assumptions the reader needs here","Only what is not already defined",{type:"textarea",rows:2})+
     entryField("methodId","Identify an actual method for relevant help (optional)","",{type:"select",options:METHOD_OPTIONS})+
+    F("firstDefinitions","Variables, units or assumptions the reader needs here","Only what is not already defined",{type:"textarea",rows:2})+
     preflight(st)+
+    graphEntryPanel()+traceEntryPanel()+statEntryPanel()+tableEntryPanel()+voronoiEntryPanel()+geometryEntryPanel()+probabilityEntryPanel()+
+    entryField("resultRef","Where will the figure or work appear in my IA?","e.g. Figure 1 in my Word document")+
     accuracySelector()+accuracyNote()
   };
   case "C33":return{intro:"Create the actual figure or short calculation in your IA document. Describe what you did here without copying an invented result.",
