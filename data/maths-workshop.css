@@ -13,7 +13,7 @@
 .maths-workshop .workshop-filters label{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:700;min-width:0}
 .maths-workshop .workshop-filters input,.maths-workshop .workshop-filters select{
  min-width:0;max-width:100%;width:100%;border-radius:10px;border:1px solid var(--line);
- background:var(--surface);color:var(--text);font:inherit;font-size:14px;padding:10px 11px;min-height:44px
+ background:var(--surface);color:var(--ink);font:inherit;font-size:14px;padding:10px 11px;min-height:44px
 }
 .maths-workshop .workshop-section{border-top:1px solid var(--line);padding-top:15px;margin-top:20px}
 .maths-workshop .workshop-section h3,.maths-workshop .workshop-section h4{margin:0 0 9px}
