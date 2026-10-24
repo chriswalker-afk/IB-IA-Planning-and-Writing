@@ -150,11 +150,11 @@ test('An updated prediction does not suppress existing true results or reset Pla
  assert.equal(s.planning.completed,false);
 });
 
-test('writing stages use a reusable advice / sparks / writing / optional examples order',()=>{
+test('guided writing puts saved context and the task before optional craft guidance and examples',()=>{
  const html=renderWritingStageFlow({advice:'ADVICE-ONE',sparks:'SPARKS-TWO',task:'WRITE-THREE',examples:'EXAMPLES-FOUR'});
- assert(html.indexOf('ADVICE-ONE')<html.indexOf('SPARKS-TWO'));
  assert(html.indexOf('SPARKS-TWO')<html.indexOf('WRITE-THREE'));
- assert(html.indexOf('WRITE-THREE')<html.indexOf('EXAMPLES-FOUR'));
+ assert(html.indexOf('WRITE-THREE')<html.indexOf('ADVICE-ONE'));
+ assert(html.indexOf('ADVICE-ONE')<html.indexOf('EXAMPLES-FOUR'));
  assert.equal((html.match(/data-writing-stage-part=/g)||[]).length,4);
  assert(renderWritingStageFlow({advice:'ONE'}).includes('ONE'));
 });
