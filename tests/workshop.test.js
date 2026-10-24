@@ -19,8 +19,8 @@ const snapshot=s=>JSON.stringify({entries:s.entries,planning:s.planning,completi
 const approx=(a,b,eps=1e-9)=>assert(Math.abs(a-b)<eps,String(a)+' differs from '+String(b));
 
 test('workshop: canonical glossary and pilot IDs are unique and never blank',()=>{
- assert.equal(WORKSHOP_DEFINITIONS.length,57);
- assert.equal(WORKSHOP_LESSONS.length,7);
+ assert.equal(WORKSHOP_DEFINITIONS.length,80);
+ assert.equal(WORKSHOP_LESSONS.length,12);
  assert.equal(new Set(WORKSHOP_DEFINITIONS.map(d=>d.id)).size,WORKSHOP_DEFINITIONS.length);
  assert.equal(new Set(WORKSHOP_LESSONS.map(l=>l.id)).size,WORKSHOP_LESSONS.length);
  for(const d of WORKSHOP_DEFINITIONS){
@@ -42,7 +42,7 @@ test('workshop: all sixteen routes map only to real shared definitions and optio
  }
 });
 test('workshop: complete pilot schema supports definitions, full worked methods and standalone practice',()=>{
- const expected=['descriptive','pearson','optimisation','sampling','distributions','two-way-proportions','measurement'];
+ const expected=['descriptive','pearson','optimisation','sampling','distributions','two-way-proportions','measurement','spearman','linear-regression','nonlinear-fitting','residual-diagnostics','model-comparison'];
  assert.deepEqual(WORKSHOP_LESSONS.map(l=>l.id),expected);
  for(const l of WORKSHOP_LESSONS){
   assert(l.when&&l.avoid&&l.formula&&l.skill&&l.ia,l.id);
@@ -77,6 +77,12 @@ test('workshop: independent examples and optimisation answers are arithmetically
 test('workshop: selected method lookup is explicit, never inferred from title or prose',()=>{
  assert.equal(workshopLessonForEntry({methodId:'pmcc',title:'My data'}),'pearson');
  assert.equal(workshopLessonForEntry({methodId:'optimisation'}),'optimisation');
+ assert.equal(workshopLessonForEntry({methodId:'spearman'}),'spearman');
+ assert.equal(workshopLessonForEntry({methodId:'linear-regression'}),'linear-regression');
+ assert.equal(workshopLessonForEntry({methodId:'quadratic-fit'}),'nonlinear-fitting');
+ assert.equal(workshopLessonForEntry({methodId:'exponential'}),'nonlinear-fitting');
+ assert.equal(workshopLessonForEntry({methodId:'power'}),'nonlinear-fitting');
+ assert.equal(workshopLessonForEntry({methodId:'sinusoidal'}),'');
  assert.equal(workshopLessonForEntry({kind:'distribution',methodId:''}),'descriptive');
  assert.equal(workshopLessonForEntry({methodId:'normal',title:'PMCC calculations'}),'');
  assert.equal(workshopLessonForEntry({kind:'table',methodId:''}),'' ,'A plain table does not establish that data are categorical');

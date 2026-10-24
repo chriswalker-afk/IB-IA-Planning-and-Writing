@@ -3,6 +3,7 @@
  * Practice uses invented values and never touches a student's mathematics or project.
  */
 import {BATCH1_DEFINITIONS,BATCH1_LESSONS} from './batch-1.js';
+import {BATCH2_DEFINITIONS,BATCH2_LESSONS} from './batch-2.js';
 const define=(id,category,title,meaning,example,notation="")=>
  Object.freeze({id,category,title,meaning,example,notation});
 export const WORKSHOP_DEFINITIONS=Object.freeze([
@@ -33,7 +34,8 @@ export const WORKSHOP_DEFINITIONS=Object.freeze([
  define("iteration","Reasoning","Iteration","Repeatedly applying a stated mathematical rule to obtain the next value.","xₙ₊₁ = (xₙ + 2/xₙ)/2, from a positive starting value."),
  define("convergence","Reasoning","Convergence","A sequence approaches a finite limit as the term number increases.","Values appearing to settle numerically suggest, but do not prove, convergence.")
 ,
- ...BATCH1_DEFINITIONS
+ ...BATCH1_DEFINITIONS,
+ ...BATCH2_DEFINITIONS
 ]);
 export const DEFINITION_BY_ID=new Map(WORKSHOP_DEFINITIONS.map(d=>[d.id,d]));
 export const definitionById=id=>DEFINITION_BY_ID.get(id)||null;
@@ -112,7 +114,8 @@ export const WORKSHOP_LESSONS=Object.freeze([
   existingGuide:"derivatives",
   ia:"Define the variables, derive the objective and constraints, show the differentiation and candidate checks, and interpret whether the mathematical optimum is a feasible real design."
  }),
- ...BATCH1_LESSONS
+ ...BATCH1_LESSONS,
+ ...BATCH2_LESSONS
 ]);
 export const LESSON_BY_ID=new Map(WORKSHOP_LESSONS.map(l=>[l.id,l]));
 export const lessonById=id=>LESSON_BY_ID.get(id)||null;
@@ -121,19 +124,19 @@ export const lessonById=id=>LESSON_BY_ID.get(id)||null;
  * A pathway with no pilot lesson still has precise definitions and is queued for later batches.
  */
 export const PATHWAY_LEARNING=Object.freeze({
- relationships:{terms:["paired-data","correlation","residual","model","sample","sampling-frame","selection-bias"],lessons:["pearson","sampling"]},
+ relationships:{terms:["paired-data","correlation","residual","model","sample","sampling-frame","selection-bias","rank","tied-rank","spearman-rho","monotonic-association","regression-line","residual-plot","rmse"],lessons:["pearson","spearman","linear-regression","residual-diagnostics","model-comparison","sampling"]},
  groups:{terms:["population","sample","mean","median","standard-deviation","stratified-sample","sampling-frame","selection-bias","quartile","interquartile-range","box-plot"],lessons:["sampling","descriptive","distributions"]},
  categorical:{terms:["population","sample","probability","categorical-variable","two-way-table","conditional-proportion","percentage-point","nonresponse-bias"],lessons:["sampling","two-way-proportions"]},
  variation:{terms:["mean","median","standard-deviation","uncertainty","instrument-resolution","repeated-measurement","rounding-interval","random-error","systematic-error","quartile","interquartile-range","histogram"],lessons:["descriptive","distributions","measurement"]},
- "fitted-models":{terms:["model","parameter","domain","residual","extrapolation"],lessons:[]},
- growth:{terms:["model","parameter","domain","extrapolation"],lessons:[]},
- cycles:{terms:["model","parameter","domain"],lessons:[]},
- trajectories:{terms:["model","scale-factor","derivative","stationary-point"],lessons:[]},
+ "fitted-models":{terms:["model","parameter","domain","residual","extrapolation","regression-line","least-squares","gradient","intercept","centred-sums","fitted-value","nonlinear-regression","quadratic-model","sum-squared-errors","residual-plot","residual-pattern","rmse","r-squared","holdout-data","overfitting","influential-observation"],lessons:["linear-regression","nonlinear-fitting","residual-diagnostics","model-comparison"]},
+ growth:{terms:["model","parameter","domain","extrapolation","exponential-model","log-transformation","transformed-regression","nonlinear-regression","residual-plot","holdout-data","rmse"],lessons:["nonlinear-fitting","residual-diagnostics","model-comparison"]},
+ cycles:{terms:["model","parameter","domain","residual-plot","residual-pattern","rmse","holdout-data"],lessons:["residual-diagnostics","model-comparison"]},
+ trajectories:{terms:["model","scale-factor","derivative","stationary-point","quadratic-model","residual","residual-plot","domain","rmse"],lessons:["nonlinear-fitting","residual-diagnostics","model-comparison"]},
  optimisation:{terms:["objective-function","constraint","derivative","stationary-point","domain"],lessons:["optimisation"]},
  images:{terms:["scale-factor","model","uncertainty","domain","instrument-resolution","sensitivity-analysis"],lessons:["measurement"]},
  triangulation:{terms:["scale-factor","uncertainty","euclidean-distance","rounding-interval","sensitivity-analysis"],lessons:["measurement"]},
  voronoi:{terms:["voronoi-cell","euclidean-distance","model"],lessons:[]},
- finance:{terms:["model","parameter","constraint","extrapolation","sensitivity-analysis"],lessons:["measurement"]},
+ finance:{terms:["model","parameter","constraint","extrapolation","sensitivity-analysis","exponential-model","nonlinear-regression","rmse","holdout-data"],lessons:["measurement","nonlinear-fitting","model-comparison"]},
  chance:{terms:["probability","expected-value","sample"],lessons:[]},
  proof:{terms:["conjecture","counterexample","domain"],lessons:[]},
  iteration:{terms:["iteration","convergence","parameter","domain"],lessons:[]}
@@ -141,6 +144,9 @@ export const PATHWAY_LEARNING=Object.freeze({
 export const workshopLessonForEntry=entry=>{
  if(!entry)return "";
  if(entry.methodId==="pmcc")return "pearson";
+ if(entry.methodId==="spearman")return "spearman";
+ if(entry.methodId==="linear-regression")return "linear-regression";
+ if(["quadratic-fit","exponential","power"].includes(entry.methodId))return "nonlinear-fitting";
  if(entry.methodId==="optimisation")return "optimisation";
  if(!entry.methodId&&entry.kind==="distribution")return "descriptive";
  return "";

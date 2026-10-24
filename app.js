@@ -1523,7 +1523,9 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         if(workshopAction){
           const panel=$(".drawer",layer);
           if(panel)panel.scrollTop=priorScroll;
-          const match=action==='resource-workshop-choice'?$('#workshop-choice-'+el.dataset.workshopChoice,layer):
+          const match=action==='resource-workshop-choice'?
+            [...layer.querySelectorAll('[data-action="resource-workshop-choice"]')]
+              .find(candidate=>candidate.dataset.workshopChoice===el.dataset.workshopChoice):
             action==='resource-workshop-step'?layer.querySelector('.workshop-tab.active'):null;
           (match||layer.querySelector('.workshop-lesson h3'))?.focus({preventScroll:true});
         }

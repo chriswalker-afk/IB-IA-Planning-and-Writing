@@ -252,7 +252,7 @@ with sync_playwright() as pw:
   open_library(p)
   p.locator('.resource-workshop-entry [data-action="resource-workshop"]').click()
   p.locator('[data-action="resource-workshop-home"]').first.click() if not p.locator('[data-workshop-home="true"]').count() else None
-  assert p.locator('#resource-results .workshop-lesson-card').count()==7
+  assert p.locator('#resource-results .workshop-lesson-card').count()==12
   p.locator('[data-action="resource-workshop-lesson"][data-workshop-id="two-way-proportions"]').first.click()
   assert p.locator('[data-workshop-lesson="two-way-proportions"]').count()==1
   assert p.locator('.workshop-data-table').count()==1
@@ -315,5 +315,66 @@ with sync_playwright() as pw:
   p.locator('[data-action="close-drawer"]').click()
   assert unchanged_fields(saved(p))==before
  run('workshop-mathematical-notation-phone',state(),workshop_math_phone,360,740)
+ def batch2_spearman_phone(p):
+  before=unchanged_fields(saved(p))
+  open_library(p)
+  p.locator('.resource-workshop-entry [data-action="resource-workshop"]').click()
+  if not p.locator('[data-workshop-home="true"]').count():p.locator('[data-action="resource-workshop-home"]').first.click()
+  assert p.locator('#resource-results .workshop-lesson-card').count()==12
+  p.locator('#workshop-route').select_option('relationships')
+  assert 'Spearman' in p.locator('#resource-results').inner_text()
+  p.locator('[data-action="resource-workshop-lesson"][data-workshop-id="spearman"]').first.click()
+  assert p.locator('[data-workshop-lesson="spearman"]').count()==1
+  assert p.locator('.workshop-data-table').count()==1
+  assert p.locator('.workshop-formula-equation svg').count()==3
+  assert overlay(p).evaluate('(el)=>el.scrollWidth<=el.clientWidth+1')
+  p.locator('.workshop-formula').screenshot(path=str(OUT/'workshop-batch2-spearman-phone.png'),animations='disabled')
+  p.locator('.workshop-lesson-tabs [data-workshop-step="help"]').click()
+  assert 'Checkpoint 1 of 2' in overlay(p).inner_text()
+  p.locator('[data-workshop-choice="2.5"]').click()
+  assert "That's right" in overlay(p).inner_text()
+  p.locator('[data-action="resource-workshop-checkpoint"][data-workshop-direction="1"]').click()
+  p.locator('[data-workshop-choice="correl"]').click()
+  assert "That's right" in overlay(p).inner_text()
+  p.locator('.workshop-lesson-tabs [data-workshop-step="turn"]').click()
+  p.locator('.workshop-reveal > summary').click()
+  assert p.locator('.workshop-reveal [aria-label*="-0.7"]').count()>=1
+  p.locator('.workshop-technology [data-action="resource-open"]').click()
+  assert p.locator('[data-resource-detail="organise"]').count()==1
+  p.locator('[data-action="resource-workshop"][data-workshop-resume="true"]').click()
+  assert p.locator('[data-workshop-lesson="spearman"]').count()==1
+  p.locator('[data-action="close-drawer"]').click()
+  assert unchanged_fields(saved(p))==before
+ run('workshop-batch2-spearman-phone',state(),batch2_spearman_phone,360,740)
+ def batch2_models_desktop(p):
+  before=unchanged_fields(saved(p))
+  open_library(p)
+  p.locator('.resource-workshop-entry [data-action="resource-workshop"]').click()
+  if not p.locator('[data-workshop-home="true"]').count():p.locator('[data-action="resource-workshop-home"]').first.click()
+  p.locator('#workshop-route').select_option('fitted-models')
+  assert 'Compare models fairly' in p.locator('#resource-results').inner_text()
+  assert 'Calculate residuals' in p.locator('#resource-results').inner_text()
+  p.locator('[data-action="resource-workshop-lesson"][data-workshop-id="model-comparison"]').first.click()
+  assert p.locator('[data-workshop-lesson="model-comparison"]').count()==1
+  assert p.locator('.workshop-data-table').count()==1
+  assert p.locator('.workshop-formula-equation svg').count()==3
+  assert 'held-out' in overlay(p).inner_text()
+  p.locator('.workshop-lesson-tabs [data-workshop-step="help"]').click()
+  p.locator('[data-workshop-choice="1"]').click()
+  assert "That's right" in overlay(p).inner_text()
+  p.locator('[data-action="resource-workshop-checkpoint"][data-workshop-direction="1"]').click()
+  p.locator('[data-workshop-choice="evaluate"]').click()
+  assert "That's right" in overlay(p).inner_text()
+  p.locator('.workshop-lesson-tabs [data-workshop-step="turn"]').click()
+  p.locator('.workshop-reveal > summary').click()
+  assert p.locator('.workshop-reveal [aria-label*="1.118"]').count()>=1
+  overlay(p).screenshot(path=str(OUT/'workshop-batch2-model-comparison-desktop.png'),animations='disabled')
+  p.locator('[data-action="resource-workshop-home"]').first.click()
+  p.locator('[data-action="resource-workshop-lesson"][data-workshop-id="residual-diagnostics"]').first.click()
+  assert p.locator('[data-workshop-lesson="residual-diagnostics"]').count()==1
+  assert p.locator('.workshop-formula-equation svg').count()==3
+  p.locator('[data-action="close-drawer"]').click()
+  assert unchanged_fields(saved(p))==before
+ run('workshop-batch2-models-desktop',state(),batch2_models_desktop,1440,1000)
  browser.close()
 (OUT/'resources-results.json').write_text(json.dumps(results,indent=2));print(json.dumps(results,indent=2));assert all(r['status']=='passed' for r in results)
