@@ -18,8 +18,10 @@ export function resourceAction(state,session,action,data={},parent=''){
    const ctx=resourceContext(state,{help:session.help});
    session.workshopId=lessonById(chosen)?chosen:(id?'':workshopLessonForEntry(ctx.entry));
    session.workshopTerm='';
+   session.workshopStep='show';session.workshopCheckpoint=0;session.workshopChoice='';
   }
-  session.workshopStep='show';session.workshopCheckpoint=0;session.workshopChoice='';session.workshopReturn=true;
+  // Returning from a software tutorial preserves the current study checkpoint.
+  session.workshopReturn=true;
   return {ok:true,open:true};
  }
  if(action==='resource-workshop-tools'){session.mode='tools';session.id='';return {ok:true,open:true};}
