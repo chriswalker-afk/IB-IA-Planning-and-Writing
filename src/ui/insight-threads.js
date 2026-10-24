@@ -198,7 +198,11 @@ export function insightForCurrent(s,node){
  const related=kind=>all.filter(x=>x.id.startsWith(kind+':')&&active&&(
   kind==='accuracy'?linkedAccuracy(s,active).some(a=>'accuracy:'+a.id===x.id):
   linkedSources(s,active).some(a=>'source:'+a.id===x.id)));
- const latestResult=get('discovery').filter(x=>!x.planned&&!x.needsReview).at(-1);
+ const chosenConclusionIds=Array.isArray(s?.completion?.conclusionResultIds)?
+  s.completion.conclusionResultIds:[];
+ const selectedConclusionResult=chosenConclusionIds.map(id=>all.find(x=>x.id==='result:'+id&&!x.needsReview)).find(Boolean);
+ const latestResult=/^C6/.test(node)&&chosenConclusionIds.length?
+  selectedConclusionResult:get('discovery').filter(x=>!x.planned&&!x.needsReview).at(-1);
  const focus=entries(s).find(x=>x.id===s?.completion?.nextFromEntryId&&done(x))||
   (done(active)?active:entries(s).filter(done).at(-1));
  const focusId=focus?.id||'',activeId=active?.id||'';
@@ -415,9 +419,11 @@ export function featuredSparkItems(s,node){
  };
  const linked=insightForCurrent(s,node);
  const active=entries(s)[s?.completion?.activeEntryIndex];
- const chosenConclusionResult=(s?.completion?.conclusionResultIds||[])
-  .map(id=>all.find(x=>x.id==='result:'+id&&!x.needsReview)).find(Boolean);
- const latestResult=chosenConclusionResult||
+ const selectedConclusionIds=Array.isArray(s?.completion?.conclusionResultIds)?
+  s.completion.conclusionResultIds:[];
+ const chosenConclusionResult=selectedConclusionIds.map(id=>
+  all.find(x=>x.id==='result:'+id&&!x.needsReview)).find(Boolean);
+ const latestResult=selectedConclusionIds.length?chosenConclusionResult:
   all.filter(x=>x.id.startsWith('result:')&&!x.needsReview).at(-1);
  const accuracy=source=>{prefix('accuracy:');prefix('planned-accuracy:',source);};
  if(node==='N01'||node==='N01A'){id('working-title');id('aim');}
