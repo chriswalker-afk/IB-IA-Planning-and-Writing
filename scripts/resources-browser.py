@@ -229,10 +229,10 @@ with sync_playwright() as pw:
   p.locator('.resource-workshop-entry [data-action="resource-workshop"]').click()
   assert p.locator('[data-workshop-lesson="pearson"]').count()==1
   assert 'r = 0.8' in overlay(p).inner_text()
-  p.locator('[data-action="resource-workshop-step"][data-workshop-step="help"]').click()
+  p.locator('.workshop-lesson-tabs .workshop-tab[data-workshop-step="help"]').click()
   p.locator('[data-action="resource-workshop-choice"][data-workshop-choice="negative"]').click()
   assert "That's right" in p.locator('.workshop-feedback.correct').inner_text()
-  p.locator('[data-action="resource-workshop-step"][data-workshop-step="turn"]').click()
+  p.locator('.workshop-lesson-tabs .workshop-tab[data-workshop-step="turn"]').click()
   assert 'Independent practice' in overlay(p).inner_text()
   p.locator('.workshop-reveal > summary').click()
   assert '0.837' in overlay(p).inner_text()
