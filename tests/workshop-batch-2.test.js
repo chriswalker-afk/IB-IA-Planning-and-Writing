@@ -13,7 +13,7 @@ test('batch 2: new glossary, lessons and existing guides have complete schemas',
  assert.equal(BATCH2_DEFINITIONS.length,23);
  assert.equal(BATCH2_LESSONS.length,5);
  assert.equal(WORKSHOP_DEFINITIONS.length,80);
- assert.equal(WORKSHOP_LESSONS.length,12);
+ assert.equal(WORKSHOP_LESSONS.length,13);
  assert.deepEqual(BATCH2_LESSONS.map(l=>l.id),['spearman','linear-regression','nonlinear-fitting','residual-diagnostics','model-comparison']);
  const resourceIds=new Set(RESOURCES.map(r=>r.id));
  for(const l of BATCH2_LESSONS){
