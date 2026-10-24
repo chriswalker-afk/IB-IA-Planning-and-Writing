@@ -32,7 +32,7 @@ A **read-only mathematical learning library** inside the existing Tools & Tutori
 | src/resources/views.js | Entry point and cross-linking with existing software guides |
 | src/ui/investigative-routes-view.js | Optional pathway-contextual Workshop button |
 | src/completing/views.js | Compact optional method-selector link; respects Reduce Advice |
-| data/maths-workshop.css | Scoped desktop/phone styling and accessible targets |
+| styles.css | Scoped desktop/phone Workshop styling and accessible targets, retaining the existing CSS bundle contract |
 | tests/workshop.test.js | Coverage, arithmetic, safety and session behaviour |
 | scripts/resources-browser.py | Practical phone and desktop browser checks |
 
