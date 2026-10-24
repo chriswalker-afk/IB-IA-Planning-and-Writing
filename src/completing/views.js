@@ -828,7 +828,7 @@ export function createCompletingViews(ctx){
     context("introduce")+priorNotes+
     (f.methodReason?smallSummary("Method justified on the previous screen",f.methodReason):"")+
     (f.firstPurpose?smallSummary("Your starting mathematical question",f.firstPurpose):"")+
-    (entry?'<details class="math-first-course-choice"><summary>'+icon("book-open")+
+    (entry?'<details class="math-first-course-choice"><summary>'+icon("book")+
      ' Identify this mathematics and its course scope (optional) '+icon("chevron-right")+'</summary><div>'+
       entryField("methodId","Technique actually used, or being considered","",{type:"select",options:METHOD_OPTIONS})+
       entryChoice("knowledge",[
