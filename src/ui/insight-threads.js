@@ -540,10 +540,11 @@ const sparkFullBody=(s,node,x,{featured=false}={})=>
  '<p class="spark-shelf-full-value">'+e(x.value)+'</p>'+
  (x.details?.length?'<dl class="spark-reasoning-details">'+x.details.map(d=>
   '<div><dt>'+e(d.label)+'</dt><dd>'+e(d.value)+'</dd></div>').join('')+'</dl>':'')+
- discoveryInterpretation(s,x)+
- (x.type==='discovery'&&x.entryId?
-  renderDiscoveryValidityRecall(s,entries(s).find(v=>v.id===x.entryId),{e}):'')+
- '<p class="spark-shelf-guidance">'+e(insightMeaning(s,node,x))+'</p>'+
+ (x.type==='discovery'&&x.entryId?'<div class="spark-maths-reading" aria-label="Reading and checking this mathematical result">'+
+  discoveryInterpretation(s,x)+
+  renderDiscoveryValidityRecall(s,entries(s).find(v=>v.id===x.entryId),{e})+
+  '</div>':'')+
+ (x.type==='discovery'&&x.entryId?'':'<p class="spark-shelf-guidance">'+e(insightMeaning(s,node,x))+'</p>')+
  '<div class="spark-shelf-source">'+(x.planned?'Provisional · ':'')+
   e(x.needsReview?'Needs review · '+x.where:x.where)+'</div>'+
  (node==='C10'&&x.id==='prediction'?
@@ -609,7 +610,8 @@ export function insightToolkit(s,{compact=false}={}){
  const preview=compact?[...pinned,...(pinned.length<5?
   forHome.filter(x=>!pinned.includes(x)).slice(-(5-pinned.length)):[])]:[];
  const uniquePreview=[...new Map(preview.map(x=>[x.id,x])).values()].slice(0,5);
- const card=x=>'<button type="button" class="insight-toolkit-card insight-'+e(x.type)+'"'+jumpAttrs(x)+'>'+
+ const card=x=>'<button type="button" class="insight-toolkit-card insight-'+e(x.type)+
+  '" data-toolkit-spark-id="'+e(x.id)+'"'+jumpAttrs(x)+'>'+
   insightToken(x,{compact:true})+'<strong>'+e(short(x.title,62))+'</strong>'+
   '<span class="insight-toolkit-value">'+e(short(x.value,115))+'</span>'+
   '<span class="insight-toolkit-card-footer"><small>'+
