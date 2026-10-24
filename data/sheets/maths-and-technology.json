@@ -70,7 +70,7 @@
         "Use actual observation, current goal and active technique",
         "Both AI SL/AA SL; methods aren't rewarded for complexity alone",
         "Don't insert routine maths without purpose or recite how to draw charts",
-        "JIS Guide slides 27–28",
+        "Pathfinder practical mathematical communication advice",
         "Working draft"
       ]
     },
@@ -85,7 +85,7 @@
         "Existing variable meanings and mathematical relations",
         "All courses; equation editor is presentation guidance, not an automatic score",
         "Avoid raw calculator syntax such as x^2/3 in place of a clearly typeset fraction when clarity matters",
-        "JIS Guide slide 28; Checklist Criterion B",
+        "Pathfinder practical mathematical communication advice",
         "Working draft"
       ]
     },
@@ -115,7 +115,7 @@
         "C25 definitions, actual quantity and units",
         "All courses; common x/y not forbidden, but meaningless by default",
         "Don't create a glossary of all possible future variables",
-        "JIS Guide slide 27; Checklist B",
+        "Pathfinder practical mathematical communication advice",
         "Working draft"
       ]
     },
@@ -145,7 +145,7 @@
         "Active tool and mathematical method, actual data type",
         "Use only when technology is ACTUALLY used",
         "Do not describe a long sequence of menu clicks or substitute a screenshot for reasoning",
-        "JIS Guide slide 28",
+        "Pathfinder practical mathematical communication advice",
         "Working draft"
       ]
     },
@@ -175,7 +175,7 @@
         "Active fitted technique, real inputs and limitations",
         "Technique-specific concerns only after technique is active",
         "No automated list of PMCC issues while only collecting data",
-        "JIS Guide slides 27–32",
+        "Pathfinder practical mathematical communication advice",
         "Working draft"
       ]
     },
@@ -190,7 +190,7 @@
         "Student's confirmed course (AA SL, AI SL, etc.), actual selected method, stated novelty, previous result and aim",
         "AI SL / AA SL specific; other/HL = teacher review",
         "Independent research does NOT automatically mean beyond syllabus. Don't classify by a generic list or award marks for complexity.",
-        "JIS Guide slide 27; Criterion E",
+        "Pathfinder practical mathematical communication advice",
         "Working draft"
       ]
     },
@@ -235,7 +235,7 @@
         "Actual mathematics and course topics",
         "Both; suitability determined in context by teacher",
         "Don't assume that drawing a chart or evaluating a mean alone forms strong Criterion E work",
-        "JIS Guide slide 27; Criterion E",
+        "Pathfinder practical mathematical communication advice",
         "Working draft"
       ]
     },
@@ -250,7 +250,7 @@
         "Actual technique, student's verified course, independently studied concept, worked steps/source, aim",
         "Teacher review, not automatic rejection or praise",
         "No automatic extra marks for outside maths; don't paste a textbook/tutorial or present advanced mathematics not understood.",
-        "JIS Guide slide 27; Criterion E",
+        "Pathfinder practical mathematical communication advice",
         "Working draft"
       ]
     },
@@ -265,7 +265,7 @@
         "Student's real alternatives and data",
         "AI/AA course choice and actual context",
         "Don't demand arbitrary comparison for every simple equation",
-        "JIS Guide slides 27, 30, 32",
+        "Pathfinder practical mathematical communication advice",
         "Working draft"
       ]
     },
@@ -295,7 +295,7 @@
         "Observed data and actively used method",
         "AI/AA depending on syllabus; choose suitable interpretation",
         "Never infer cause from correlation or claim a hypothesis is proven by a single result",
-        "JIS Guide Criterion E; bivariate mini project",
+        "Pathfinder practical mathematical communication advice",
         "Working draft"
       ]
     },
@@ -310,7 +310,7 @@
         "Student-confirmed course, actual symbolic work and any new/unfamiliar term",
         "No technology prompt if none used",
         "No mandatory method explanation merely because the work is done by hand; preserve mathematical reasoning and interpretation.",
-        "JIS Guide slides 27–28",
+        "Pathfinder practical mathematical communication advice",
         "Working draft"
       ]
     },
@@ -469,7 +469,7 @@
     {
       "row": 50,
       "cells": [
-        "SOURCE ALIGNMENT: JIS SL Maths IA Guide 2025 slides 27–28, 43–47; IB IA Checklist B/E; IB IA Lesson Starters slide 5. This is guidance to design the future student site, not an implemented checker."
+        "EDITORIAL ALIGNMENT: IB IA Checklist B/E and practical mathematical communication guidance. This note describes design guidance, not an automated assessment checker."
       ]
     },
     {
@@ -510,7 +510,7 @@
         "Selected course and syllabus/version; technique ID; prior mathematical question",
         "Private method setup; not automatic IA prose",
         "Never decide solely from topic name or claim research automatically makes it beyond syllabus",
-        "JIS IA Guide Criterion E; teacher check",
+        "Pathfinder practical mathematical communication advice",
         "Working draft"
       ]
     },
@@ -525,7 +525,7 @@
         "Verified course status, active method, prior result, meaningful variable symbols",
         "Purpose before use; normal maths; interpretation after result",
         "Do not explain steps for calculating PMCC, drawing routine plots or basic differentiation as if teaching a class",
-        "JIS IA Guide Criterion E/communication",
+        "Pathfinder practical mathematical communication advice",
         "Working draft"
       ]
     },
@@ -540,7 +540,7 @@
         "Confirmed novelty, actual method/working, teacher suitability, research source, aim",
         "Immediately BEFORE/AT FIRST substantial use, alongside maths",
         "No copied tutorial, unexplained equation, or complexity for its own sake",
-        "JIS IA Guide B/E; independent sources",
+        "Pathfinder practical mathematical communication advice",
         "Working draft"
       ]
     },
@@ -555,7 +555,7 @@
         "Course context, known base technique, actual extension and research source",
         "Immediately before new extension appears",
         "Don't re-teach all prerequisite syllabus mathematics",
-        "JIS IA Guide B/E",
+        "Pathfinder practical mathematical communication advice",
         "Working draft"
       ]
     },
@@ -600,7 +600,7 @@
         "Actual formula/approach, current model, course status and citation",
         "Next to first use of unfamiliar method",
         "No full textbook lecture, copied proof or unexplained button-press result",
-        "JIS IA Guide B/E",
+        "Pathfinder practical mathematical communication advice",
         "Working draft"
       ]
     },
@@ -615,7 +615,7 @@
         "Real tool output, course status, input data, chosen algorithm",
         "At first mathematical use / beside output; no software tutorial",
         "No black-box formula, screenshot-only maths or click instructions",
-        "JIS IA Guide B/E; student source",
+        "Pathfinder practical mathematical communication advice",
         "Working draft"
       ]
     },
@@ -630,7 +630,7 @@
         "Actual resultRef and existing aim-linked explanation; authentic learning and previous understanding",
         "Immediately beside result, AFTER the essential aim-link",
         "Do not invent a 'what I learned' paragraph or repeat unrelated generic reflection",
-        "JIS IA Guide reflection/engagement context",
+        "Pathfinder practical mathematical communication advice",
         "Working draft"
       ]
     },
@@ -645,7 +645,7 @@
         "Real maths and prior course knowledge, observed result and aim",
         "After mathematical result, when relevant",
         "Still no tutorial for syllabus method; no artificial claims of discovery",
-        "JIS IA Guide reflection context",
+        "Pathfinder practical mathematical communication advice",
         "Working draft"
       ]
     },
@@ -660,7 +660,7 @@
         "Proposed/actual technique, current syllabus, evidence, teacher review flag",
         "Private choice before use, not mandatory IA confession",
         "Don't reject beyond-course maths categorically or reward complexity without comprehension",
-        "JIS IA Guide Criterion E",
+        "Pathfinder practical mathematical communication advice",
         "Working draft"
       ]
     },
@@ -675,7 +675,7 @@
         "Actual course classification, explanations, citations, current maths and resultRefs",
         "Edit original passage, not extra conclusion paragraph",
         "No automatic rewording of student's IA or stock personal engagement sentences",
-        "JIS IA Guide B/C/D/E; student owns prose",
+        "Pathfinder practical mathematical communication advice",
         "Working draft"
       ]
     },
