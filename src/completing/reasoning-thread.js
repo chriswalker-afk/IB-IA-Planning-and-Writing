@@ -131,14 +131,19 @@ export function renderPriorDecisionLink(state,entry,{icon=defaultIcon,e=escapeHt
  */
 export function renderConclusionReasoningThread(state,{icon=defaultIcon,e=escapeHtml,reduced=false}={}){
  const results=(state?.entries||[]).filter(confirmed);
- if(!results.length)return"";
+ const selectedIds=Array.isArray(state?.completion?.conclusionResultIds)?state.completion.conclusionResultIds.filter(x=>typeof x==='string'&&x.trim()):[];
+ if(!results.length&&!selectedIds.length)return"";
  const safe=results.filter(x=>x.reviewNeeded!=="yes");
  // Never echo a flagged recent result as if it were the last usable finding.
- const last=safe.at(-1)||results.at(-1);
+ const chosen=safe.filter(x=>selectedIds.includes(x.id));
+ const missing=selectedIds.filter(id=>!safe.some(x=>x.id===id));
+ if(selectedIds.length&&!chosen.length)return '<section class="conclusion-reasoning'+(reduced?' is-reduced':'')+'" data-conclusion-reasoning="pending"><details><summary>'+icon('git-branch')+' Selected evidence needs review</summary><p role="note">Your selected mathematical findings are incomplete, missing or marked for review. No other finding has been substituted. Check the original evidence or revise the selection before drawing a conclusion.</p></details></section>';
+ const last=selectedIds.length?(chosen.at(-1)||results.find(x=>selectedIds.includes(x.id))||results.at(-1)):(safe.at(-1)||results.at(-1));
+ if(!last)return '<section class="conclusion-reasoning" data-conclusion-reasoning="pending"><p role="note">Selected mathematical evidence is unavailable. Review your conclusion evidence; no substitute result has been used.</p></section>';
  const t=mathematicalReasoningThread(state,last);
- const open=!!t?.question,flagged=results.length-safe.length;
- const eligible=safe.length;
- const summary=flagged?flagged+' mathematical result'+(flagged===1?'':'s')+' need review before a final claim':
+ const open=!!t?.question&&(!selectedIds.length||chosen.length>0),flagged=results.length-safe.length;
+ const eligible=selectedIds.length?chosen.length:safe.length;
+ const summary=missing.length?'Selected evidence needs review before a final claim':flagged?flagged+' mathematical result'+(flagged===1?'':'s')+' need review before a final claim':
   open?'An earlier question may remain open — that can be acknowledged':'Decide what your confirmed findings justify';
  return '<section class="conclusion-reasoning'+(reduced?' is-reduced':'')+
   '" data-conclusion-reasoning="'+e(t.entryId)+'">'+
@@ -146,10 +151,11 @@ export function renderConclusionReasoningThread(state,{icon=defaultIcon,e=escape
    '<small>'+e(summary)+'</small></span>'+icon("chevron-right")+'</summary>'+
   '<div class="conclusion-reasoning-body">'+
    (t.aim?'<p><strong>Investigation aim:</strong> '+e(short(t.aim,400))+'</p>':'')+
-   (eligible?'<p><strong>Most recent recorded mathematical result:</strong> '+e(short(t.finding,500))+'</p>':
+   (eligible?'<p><strong>'+(selectedIds.length?'Selected mathematical finding:':'Most recent recorded mathematical result:')+'</strong> '+e(short(t.finding,500))+'</p>':
     '<p>There are no review-free confirmed findings. Do not present flagged mathematics as settled evidence.</p>')+
    (open?'<p><strong>Previously recorded unanswered question:</strong> '+e(t.question)+'</p>':'')+
-   (t.reason?'<p><strong>Why another step might help:</strong> '+e(t.reason)+'</p>':'')+
+   (open&&t.reason?'<p><strong>Why another step might help:</strong> '+e(t.reason)+'</p>':'')+
+   (missing.length?'<p class="reasoning-prior-review" role="note">'+missing.length+' selected result(s) are missing, incomplete or require review. No unrelated result has been substituted.</p>':'')+
    (flagged?'<p class="reasoning-prior-review">'+flagged+' mathematical record'+(flagged===1?'':'s')+
     ' need review before supporting the final claim.</p>':'')+
    '<div class="reasoning-conclusion-questions"><strong>Before deciding that more mathematics is unnecessary, ask:</strong>'+

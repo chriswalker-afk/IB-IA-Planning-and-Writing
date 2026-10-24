@@ -285,7 +285,7 @@ test("conclusion recalls only selected review-free mathematical work and never f
  s.entries[2].reviewNeeded="yes";
  assert.equal(renderConclusionValidityAid(s,{e,icon}).includes("General argument"),false);
  s.entries[0].status="planned";
- assert.equal(renderConclusionValidityAid(s,{e,icon}),"");
+ assert(renderConclusionValidityAid(s,{e,icon}).includes("No other result has been substituted"));
 });
 
 test("real writing screens and saved project round trips keep validity checks without adding fields",()=>{

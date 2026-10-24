@@ -260,15 +260,24 @@ export function renderDiscoveryValidityRecall(state,entry,{e=escapeHtml}={}){
  * or to the latest review-free result where no explicit selection exists. */
 export function renderConclusionValidityAid(state,{icon=defaultIcon,e=escapeHtml,reduced=false}={}){
  const all=(state?.entries||[]).filter(x=>actual(x)&&x.reviewNeeded!=="yes");
- if(!all.length)return"";
- const selectedIds=state?.completion?.conclusionResultIds||[];
+ const selectedIds=Array.isArray(state?.completion?.conclusionResultIds)?
+  state.completion.conclusionResultIds.filter(x=>typeof x==="string"&&x.trim()):[];
  const selected=all.filter(x=>selectedIds.includes(x.id));
- const targets=(selected.length?selected:all.slice(-1)).slice(0,3);
+ // An explicit evidence choice must never fall back to a different, unrelated
+ // result when the chosen entry has become planned, deleted or review-needed.
+ const needsReview=selectedIds.filter(id=>!all.some(x=>x.id===id));
+ const targets=(selectedIds.length?selected:all.slice(-1)).slice(0,3);
+ if(!targets.length&&!needsReview.length)return"";
  return '<aside class="conclusion-validity-aid'+(reduced?' is-reduced':'')+
   '" data-conclusion-validity><details><summary>'+icon("shield")+
   '<span><strong>Do the mathematical limitations change my conclusion?</strong>'+
-  '<small>Review conditions for '+targets.length+' recorded result'+(targets.length===1?'':'s')+'</small></span>'+
+  '<small>'+(needsReview.length?'Review selected evidence · ':'')+
+   (targets.length?'Conditions for '+targets.length+' recorded result'+(targets.length===1?'':'s'):
+    'No selected result is ready')+'</small></span>'+
   icon("chevron-right")+'</summary><div class="math-validity-body">'+
+  (needsReview.length?'<p class="math-validity-warning" role="note">'+
+   needsReview.length+' selected mathematical result'+(needsReview.length===1?'':'s')+
+   ' cannot currently support your conclusion. Review the original mathematics or change the selection. No other result has been substituted.</p>':'')+
   targets.map(entry=>{
    const v=mathematicalValidityContext(state,entry);
    return '<div class="math-validity-conclusion-result" data-validity-result="'+e(v.entryId)+'">'+
