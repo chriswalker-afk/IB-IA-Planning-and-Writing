@@ -70,7 +70,7 @@ export function primaryQuantitiesView(state,{F,select,e,icon}){
  '<p class="primary-accuracy-target">Recording: <strong>'+e(draft)+(f.primaryAccuracyUnit?' ('+e(f.primaryAccuracyUnit)+')':'')+'</strong>'+
  (selected?' · copied from your quantity list':' · previously saved quantity')+'</p>'+
  select('primaryAccuracyBasis','How will you record it?',primaryBasis)+
- (f.primaryAccuracyBasis?'<p class="data-quality-basis-note">'+icon('info')+' '+e(basisReminder[f.primaryAccuracyBasis]||'')+'</p>':'')+
+ (f.primaryAccuracyBasis?'<p class="data-quality-basis-note">'+icon('info')+'<span class="inline-notice-copy">'+' '+e(basisReminder[f.primaryAccuracyBasis]||'')+'</span></p>':'')+
  (f.primaryAccuracyBasis!=='exact'?F('primaryAccuracyResolution','Recording increment or rounding','e.g. nearest 0.1 cm'):'')+
  '<details class="primary-step-extra primary-uncertainty-more"><summary>Other uncertainty to check (optional) '+icon('chevron-down')+'</summary>'+
  '<div class="primary-step-extra-content">'+
@@ -137,7 +137,7 @@ export function primaryDataSampling(state,{F,select,e,icon}){
   ['maybe','Possibly — I need to check access or timing'],
   ['no','Not easily — I may need a smaller plan']])+
  (f.primarySamplingFrame==='no'&&['simple-random','systematic','stratified','cluster'].includes(f.primarySamplingMethod)?
-  '<p class="data-quality-warning">'+icon('info')+' This method normally needs a suitable sampling frame. You might need a different approach or keep the plan uncertain.</p>':'')+
+  '<p class="data-quality-warning">'+icon('info')+'<span class="inline-notice-copy">'+' This method normally needs a suitable sampling frame. You might need a different approach or keep the plan uncertain.</span></p>':'')+
  '<details class="primary-step-extra"><summary>'+icon('pencil')+' Explain or refine my sampling decision (optional) '+icon('chevron-down')+'</summary>'+
  '<div class="primary-step-extra-content">'+
  F('primarySamplingFrameDetails','Describe the frame or difficulty','e.g. a class list, or no complete list')+
