@@ -451,3 +451,7 @@ h1,h2,h3,h4,p {margin-top:0} h1,h2,h3,h4 {font-family:Manrope, 'DM Sans', sans-s
 .export-recovery p{margin:0}
 .export-recovery .btn{width:100%;white-space:normal;min-height:43px}
 @media(max-width:480px){.export-recovery{padding:12px;margin:9px 0 13px}}
+
+/* Keep icon + message notices as two flex items: the complete prose (including
+   inline emphasis and links) must wrap within ONE text column. */
+.inline-notice-copy{display:block;flex:1 1 auto;min-width:0;overflow-wrap:anywhere;word-break:normal}
