@@ -112,3 +112,52 @@
 .spark-shelf-featured.insight-method,.spark-shelf-featured.insight-direction{background:#f5f9fc;border-color:#d2e0e8}
 .spark-shelf-featured.insight-method .motivation-aim-symbol,.spark-shelf-featured.insight-direction .motivation-aim-symbol{background:#e7f0f7;color:#426983}
 .spark-shelf-featured.insight-method .motivation-aim-copy strong,.spark-shelf-featured.insight-direction .motivation-aim-copy strong{color:#355d73}
+
+
+/* Interpretation Insights: an optional mathematical reading aid beside the actual result.
+   It belongs to the existing Spark system, but never claims to have interpreted the result. */
+.result-interpretation-aid{margin:12px 0 17px;min-width:0}
+.result-interpretation-disclosure{border:1px solid #cbded7;border-radius:14px;background:#fbfdfb;overflow:hidden;box-shadow:0 2px 8px #234a3408}
+.result-interpretation-disclosure>summary{display:flex;align-items:center;gap:11px;padding:12px 14px;list-style:none;cursor:pointer;color:#24564c}
+.result-interpretation-disclosure>summary::-webkit-details-marker{display:none}
+.result-interpretation-disclosure>summary>.icon:first-child{flex:none;width:19px;height:19px;color:#268574}
+.result-interpretation-disclosure>summary>span{min-width:0;flex:1;display:grid;gap:3px}
+.result-interpretation-disclosure>summary strong{font-size:13px;line-height:1.4}
+.result-interpretation-disclosure>summary small{font-size:11px;color:#668579}
+.result-interpretation-disclosure>summary>.icon:last-child{width:16px;height:16px;flex:none;transition:transform .16s}
+.result-interpretation-disclosure[open]>summary{background:#f0f7f3}
+.result-interpretation-disclosure[open]>summary>.icon:last-child{transform:rotate(90deg)}
+.result-interpretation-disclosure>summary:hover{background:#f3f9f5}
+.result-interpretation-disclosure>summary:focus-visible{outline:3px solid #7eafa0;outline-offset:-3px}
+.result-interpretation-body{padding:12px 15px 16px;border-top:1px solid #dce9e1}
+.result-interpretation-origin{margin:0 0 11px;font-size:11px;color:#60776e;line-height:1.5}
+.result-insight-anchor{padding:9px 11px;margin:0 0 8px;border-left:3px solid #a5c5b6;background:#f4f8f5;border-radius:0 8px 8px 0}
+.result-insight-anchor strong{display:block;margin:0 0 4px;font-size:10px;color:#34685b;letter-spacing:.02em}
+.result-insight-anchor p{margin:0;font-size:12px;line-height:1.55;color:#294c42;white-space:pre-wrap;overflow-wrap:anywhere}
+.result-interpretation-steps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:12px 0}
+.result-insight-step{border:1px solid #dce9df;border-radius:10px;background:#fff;padding:11px 12px;min-width:0}
+.result-insight-step strong{display:block;font-size:11px;color:#216b5a;line-height:1.4}
+.result-insight-step p{margin:6px 0 0;font-size:12px;line-height:1.6;color:#38574e}
+.result-interpretation-outcome{padding:10px 12px;border:1px solid #dddfc6;border-radius:9px;background:#fbfaf1}
+.result-interpretation-outcome strong{font-size:11px;color:#735c29}
+.result-interpretation-outcome p{margin:5px 0 0;font-size:12px;line-height:1.55}
+.result-interpretation-warning{font-size:12px;line-height:1.55;color:#815d22;border-left:3px solid #cf9b48;padding:7px 10px;background:#fffcf6}
+.result-interpretation-honesty{font-size:11px;line-height:1.6;margin:12px 0 0;color:#647a70}
+.result-interpretation-aid.is-reduced{margin:9px 0 13px}
+.result-interpretation-aid.is-reduced .result-interpretation-disclosure>summary{padding:10px 12px}
+@media(max-width:650px){
+ .result-interpretation-steps{grid-template-columns:1fr}
+ .result-interpretation-disclosure>summary{gap:8px}
+ .result-interpretation-disclosure>summary strong{font-size:12px}
+ .result-interpretation-body{padding:10px 11px 13px}
+}
+@media(prefers-reduced-motion:reduce){
+ .result-interpretation-disclosure>summary>.icon:last-child{transition:none}
+}
+
+/* Saved Discovery Sparks reuse the same reading guidance as the active task. */
+.spark-math-interpretation{margin:11px 0;padding:10px 12px;background:#f2f8f5;border:1px solid #d6e6db;border-radius:10px;color:#36584d}
+.spark-math-interpretation>strong{display:block;font-size:11px;line-height:1.5;color:#246a58}
+.spark-math-interpretation p{margin:7px 0;font-size:11px;line-height:1.55}
+.spark-math-interpretation small{font-size:10px;line-height:1.45;color:#617d70}
+.spark-math-interpretation .spark-reading-review{color:#8b6328}
