@@ -21,6 +21,10 @@ The optional **Maths Workshop** lives in Tools & Tutorials. It includes **26 qui
 
 **Batch 1** extends the searchable glossary with 31 terms and five additional guided lessons on sampling and bias, descriptive distributions, histogram frequency density, two-way proportions and measurement uncertainty. Each has worked mathematics, two checkpoints, independent practice, and optional links to native Statistical Diagram Studio, Table Studio and existing tutorials. **Batch 2** adds relationships and model evaluation. The combined Workshop now has **80 definitions and 13 lessons**. Practice remains fictional and never changes student IA work. See the [Batch 1 coverage notes](docs/maths-workshop-batch-1-2026-10-24.md) and [Batch 2 notes](docs/maths-workshop-batch-2-2026-10-24.md).
 
+### Maths Workshop — Batch 3 functions and calculus
+
+Batch 3 adds **20 definitions** and **five new Show me → Help me → My turn lessons** on quadratics, exponential/logarithmic functions, periodic sine models, derivatives and rates, and definite integration. The Workshop now includes **100 definitions and 18 lessons**, all read-only teaching examples with contextual course cautions. See [Batch 3 notes](docs/maths-workshop-batch-3-2026-10-24.md); Batch 4 will focus on geometry and measurement.
+
 ### Complete illustrative investigations
 
 The sample picker contains **five complete fictional student investigations**: standing reach, paper-helicopter groups, revision-format preferences, coffee-grinder reliability and tray optimisation. Each uses connected first-person writing, checked mathematics, stated constructed data or assumptions, and editable native figures. The same answers appear in the Planning, Writing and Checking fields and in a continuous IA reader with separate PDF and Word downloads. Samples open in an isolated preview; exploring or editing them does not replace the student's own project.
