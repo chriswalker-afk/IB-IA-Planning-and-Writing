@@ -150,13 +150,32 @@ test('An updated prediction does not suppress existing true results or reset Pla
  assert.equal(s.planning.completed,false);
 });
 
-test('guided writing puts saved context and the task before optional craft guidance and examples',()=>{
- const html=renderWritingStageFlow({advice:'ADVICE-ONE',sparks:'SPARKS-TWO',task:'WRITE-THREE',examples:'EXAMPLES-FOUR'});
+test('Guided IA writing teaches briefly before recalling Sparks and asking students to write',()=>{
+ const parts={advice:'ADVICE-ONE',sparks:'SPARKS-TWO',task:'WRITE-THREE',examples:'EXAMPLES-FOUR'};
+ const html=renderWritingStageFlow(parts);
+ const names=[...html.matchAll(/data-writing-stage-part="([^"]+)"/g)].map(m=>m[1]);
+ assert.deepEqual(names,['advice','sparks','task','examples']);
+ assert(html.indexOf('ADVICE-ONE')<html.indexOf('SPARKS-TWO'));
  assert(html.indexOf('SPARKS-TWO')<html.indexOf('WRITE-THREE'));
- assert(html.indexOf('WRITE-THREE')<html.indexOf('ADVICE-ONE'));
- assert(html.indexOf('ADVICE-ONE')<html.indexOf('EXAMPLES-FOUR'));
- assert.equal((html.match(/data-writing-stage-part=/g)||[]).length,4);
+ assert(html.indexOf('WRITE-THREE')<html.indexOf('EXAMPLES-FOUR'));
+ assert.equal((html.match(/ADVICE-ONE|SPARKS-TWO|WRITE-THREE|EXAMPLES-FOUR/g)||[]).length,4,
+  'Reordering should not duplicate any stage content');
  assert(renderWritingStageFlow({advice:'ONE'}).includes('ONE'));
+});
+test('Reduce advice remains task-first, keeping saved context accessible but not forcing the guide',()=>{
+ const html=renderWritingStageFlow({
+  advice:'OPTIONAL-ADVICE',sparks:'CANONICAL-SPARK',task:'ORIGINAL-INPUT',examples:'OPTIONAL-EXAMPLE',
+  reduced:true
+ });
+ assert.deepEqual([...html.matchAll(/data-writing-stage-part="([^"]+)"/g)].map(m=>m[1]),
+  ['task','sparks']);
+ assert(html.indexOf('ORIGINAL-INPUT')<html.indexOf('CANONICAL-SPARK'));
+ assert(html.includes('<details class="writing-stage-reduced-reference"'));
+ assert(html.includes('Review my saved ideas (optional)'));
+ assert(html.includes('CANONICAL-SPARK'));
+ assert(!html.includes('OPTIONAL-ADVICE'));
+ assert(!html.includes('OPTIONAL-EXAMPLE'));
+ assert(!html.includes(' open>'),'Saved-context disclosure should start closed');
 });
 test('one field can display contextual A/C bubbles without a second criterion panel',()=>{
  const textarea='<div class="field-group"><label>My working notes</label><textarea></textarea></div>';
