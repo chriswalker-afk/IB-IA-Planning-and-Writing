@@ -6,6 +6,8 @@ import {BATCH1_DEFINITIONS,BATCH1_LESSONS} from './batch-1.js';
 import {BATCH2_DEFINITIONS,BATCH2_LESSONS} from './batch-2.js';
 import {HISTOGRAM_LESSON} from './histogram-lesson.js';
 import {BATCH3_DEFINITIONS,BATCH3_LESSONS} from './batch-3.js';
+import {BATCH4_DEFINITIONS} from './batch-4-definitions.js';
+import {BATCH4_LESSONS} from './batch-4-lessons.js';
 const define=(id,category,title,meaning,example,notation="")=>
  Object.freeze({id,category,title,meaning,example,notation});
 export const WORKSHOP_DEFINITIONS=Object.freeze([
@@ -38,7 +40,8 @@ export const WORKSHOP_DEFINITIONS=Object.freeze([
 ,
  ...BATCH1_DEFINITIONS,
  ...BATCH2_DEFINITIONS,
- ...BATCH3_DEFINITIONS
+ ...BATCH3_DEFINITIONS,
+ ...BATCH4_DEFINITIONS
 ]);
 export const DEFINITION_BY_ID=new Map(WORKSHOP_DEFINITIONS.map(d=>[d.id,d]));
 export const definitionById=id=>DEFINITION_BY_ID.get(id)||null;
@@ -120,7 +123,8 @@ export const WORKSHOP_LESSONS=Object.freeze([
  ...BATCH1_LESSONS,
  ...BATCH2_LESSONS,
  HISTOGRAM_LESSON,
- ...BATCH3_LESSONS
+ ...BATCH3_LESSONS,
+ ...BATCH4_LESSONS
 ]);
 export const LESSON_BY_ID=new Map(WORKSHOP_LESSONS.map(l=>[l.id,l]));
 export const lessonById=id=>LESSON_BY_ID.get(id)||null;
@@ -132,15 +136,15 @@ export const PATHWAY_LEARNING=Object.freeze({
  relationships:{terms:["paired-data","correlation","residual","model","sample","sampling-frame","selection-bias","rank","tied-rank","spearman-rho","monotonic-association","regression-line","residual-plot","rmse"],lessons:["pearson","spearman","linear-regression","residual-diagnostics","model-comparison","sampling"]},
  groups:{terms:["population","sample","mean","median","standard-deviation","stratified-sample","sampling-frame","selection-bias","quartile","interquartile-range","box-plot"],lessons:["sampling","descriptive","distributions"]},
  categorical:{terms:["population","sample","probability","categorical-variable","two-way-table","conditional-proportion","percentage-point","nonresponse-bias"],lessons:["sampling","two-way-proportions"]},
- variation:{terms:["mean","median","standard-deviation","uncertainty","instrument-resolution","repeated-measurement","rounding-interval","random-error","systematic-error","quartile","interquartile-range","histogram","frequency-density"],lessons:["descriptive","distributions","histograms","measurement"]},
+ variation:{terms:["mean","median","standard-deviation","uncertainty","instrument-resolution","repeated-measurement","rounding-interval","random-error","systematic-error","quartile","interquartile-range","histogram","frequency-density","worst-case-bounds","sensitivity-check"],lessons:["descriptive","distributions","histograms","measurement","geometry-sensitivity"]},
  "fitted-models":{terms:["model","parameter","domain","residual","extrapolation","regression-line","least-squares","gradient","intercept","centred-sums","fitted-value","nonlinear-regression","quadratic-model","sum-squared-errors","residual-plot","residual-pattern","rmse","r-squared","holdout-data","overfitting","influential-observation","vertex-form","quadratic-roots","discriminant","feasible-domain","doubling-time","logarithm"],lessons:["linear-regression","nonlinear-fitting","residual-diagnostics","model-comparison","quadratic-functions","exponential-logarithms"]},
  growth:{terms:["model","parameter","domain","extrapolation","exponential-model","log-transformation","transformed-regression","nonlinear-regression","residual-plot","holdout-data","rmse","doubling-time","half-life","logarithm"],lessons:["nonlinear-fitting","residual-diagnostics","model-comparison","exponential-logarithms"]},
  cycles:{terms:["model","parameter","domain","residual-plot","residual-pattern","rmse","holdout-data","amplitude","period","midline","phase-shift","angular-frequency"],lessons:["residual-diagnostics","model-comparison","sinusoidal-functions"]},
- trajectories:{terms:["model","scale-factor","derivative","stationary-point","quadratic-model","residual","residual-plot","domain","rmse","vertex-form","instantaneous-rate","average-rate","second-derivative"],lessons:["nonlinear-fitting","residual-diagnostics","model-comparison","quadratic-functions","derivatives-motion"]},
- optimisation:{terms:["objective-function","constraint","derivative","stationary-point","domain","vertex-form","feasible-domain","global-extremum"],lessons:["optimisation","quadratic-functions"]},
- images:{terms:["scale-factor","model","uncertainty","domain","instrument-resolution","sensitivity-analysis","definite-integral","signed-area"],lessons:["measurement","integrals-accumulation"]},
- triangulation:{terms:["scale-factor","uncertainty","euclidean-distance","rounding-interval","sensitivity-analysis"],lessons:["measurement"]},
- voronoi:{terms:["voronoi-cell","euclidean-distance","model"],lessons:[]},
+ trajectories:{terms:["model","scale-factor","derivative","stationary-point","quadratic-model","residual","residual-plot","domain","rmse","vertex-form","instantaneous-rate","average-rate","second-derivative","calibration-factor","pixel-coordinate","perspective-distortion"],lessons:["nonlinear-fitting","residual-diagnostics","model-comparison","quadratic-functions","derivatives-motion","image-calibration"]},
+ optimisation:{terms:["objective-function","constraint","derivative","stationary-point","domain","vertex-form","feasible-domain","global-extremum","composite-region","triangle-area","cross-section-volume","dimensional-units","sensitivity-check"],lessons:["optimisation","quadratic-functions","geometric-areas","geometry-sensitivity"]},
+ images:{terms:["scale-factor","model","uncertainty","domain","instrument-resolution","sensitivity-analysis","definite-integral","signed-area","pixel-coordinate","image-origin","reference-length","calibration-factor","perspective-distortion","area-scale","composite-region","dimensional-units","sensitivity-check"],lessons:["measurement","integrals-accumulation","image-calibration","geometric-areas","geometry-sensitivity"]},
+ triangulation:{terms:["scale-factor","uncertainty","euclidean-distance","rounding-interval","sensitivity-analysis","baseline","bearing","interior-angle","sine-rule","cosine-rule","triangle-area","calibration-factor","worst-case-bounds"],lessons:["measurement","triangulation","image-calibration","geometry-sensitivity"]},
+ voronoi:{terms:["voronoi-cell","euclidean-distance","model","perpendicular-bisector","locus","voronoi-boundary","voronoi-vertex","distance-metric","reference-length","pixel-coordinate"],lessons:["voronoi-regions","image-calibration"]},
  finance:{terms:["model","parameter","constraint","extrapolation","sensitivity-analysis","exponential-model","nonlinear-regression","rmse","holdout-data","doubling-time","logarithm"],lessons:["measurement","nonlinear-fitting","model-comparison","exponential-logarithms"]},
  chance:{terms:["probability","expected-value","sample"],lessons:[]},
  proof:{terms:["conjecture","counterexample","domain"],lessons:[]},
@@ -155,6 +159,9 @@ export const workshopLessonForEntry=entry=>{
  if(entry.methodId==="optimisation")return "optimisation";
  if(entry.methodId==="derivatives")return "derivatives-motion";
  if(entry.methodId==="integration")return "integrals-accumulation";
+ if(entry.methodId==="geometric-model")return "geometric-areas";
+ if(entry.methodId==="triangulation")return "triangulation";
+ if(entry.methodId==="voronoi")return "voronoi-regions";
  if(!entry.methodId&&entry.kind==="distribution")return "descriptive";
  return "";
 };
