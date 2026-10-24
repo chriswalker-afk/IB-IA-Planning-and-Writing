@@ -841,8 +841,7 @@ export function createCompletingViews(ctx){
        entryField("knowledgeNotes","My explanation of how that idea works","Definition, conditions and the step that matters here",{type:"textarea",rows:3})+
        entryField("understandingExample","A real worked step demonstrating understanding (optional)","Only if useful",{type:"textarea",rows:2})+
        entryField("researchSource","Original mathematics source (if relevant)","A resource to cite in the IA"):"")+
-      renderCourseUnderstandingAid(s,entry,{icon,e,reduced})+
-     '</div></details>':'')+
+     '</div></details>'+renderCourseUnderstandingAid(s,entry,{icon,e,reduced}):'')+
     '<div class="show-first-writing-field" data-show-first-writing-box="introduce">'+
     criterionMarkedWritingBox(
       (entry?entryField("purpose","My words to introduce this figure, table or calculation",
