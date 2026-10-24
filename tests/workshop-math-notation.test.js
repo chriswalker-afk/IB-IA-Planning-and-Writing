@@ -17,7 +17,7 @@ const allText = l=>[
  l.ia,l.skill
 ].filter(v=>typeof v==="string");
 
-test("workshop maths: all thirteen methods have labelled accessible display equations",()=>{
+test("workshop maths: all eighteen methods have labelled accessible display equations",()=>{
  assert.deepEqual(Object.keys(WORKSHOP_LESSON_FORMULAS).sort(),WORKSHOP_LESSONS.map(l=>l.id).sort());
  let n=0;
  for(const lesson of WORKSHOP_LESSONS){
