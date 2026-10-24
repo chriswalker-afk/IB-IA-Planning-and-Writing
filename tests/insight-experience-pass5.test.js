@@ -133,12 +133,12 @@ test("compact Toolkit is bounded, does not repeat pinned cards and links to the 
  assert(compact.includes('data-nav="path"')||ids.length===all.length);
  assert(!compact.includes('class="insight-toolkit-categories"'));
 });
-test("guided writing now shows concise saved context then actual task; extra advice follows",()=>{
+test("guided writing gives concise preparatory advice and saved context before the writing task",()=>{
  const s=sample(),before=JSON.stringify(s);
  for(const node of ["C20","C30","C40","C50","C34A","C60"]){
   const html=view(s,node),parts=[...html.matchAll(/data-writing-stage-part="([^"]+)"/g)].map(x=>x[1]);
-  assert.deepEqual(parts,node==="C60"?["task","advice","examples"]:
-   ["sparks","task","advice","examples"],node);
+  assert.deepEqual(parts,node==="C60"?["advice","task","examples"]:
+   ["advice","sparks","task","examples"],node);
   assert(html.includes("studio-stage-quick-help"),node);
   assert(html.includes('data-action="writer-guide-open"'),node);
   assert(html.includes('data-action="open-stuck"'),node);
