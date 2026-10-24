@@ -103,3 +103,12 @@
 }
 
 .spark-library-featured-hint{margin:8px 0 0;color:#5d786c;font-size:11px;line-height:1.5;font-style:italic}
+
+/* Pass 1: structured recall from the student's original mathematical record. */
+.spark-reasoning-details{display:grid;gap:8px;margin:12px 0;padding:11px 12px;border-radius:10px;background:#f3f8f5}
+.spark-reasoning-details>div{min-width:0}
+.spark-reasoning-details dt{font-size:10px;font-weight:800;color:#31685d;line-height:1.4}
+.spark-reasoning-details dd{margin:3px 0 0;font-size:12px;line-height:1.55;color:#2d4e46;white-space:pre-wrap;overflow-wrap:anywhere}
+.spark-shelf-featured.insight-method,.spark-shelf-featured.insight-direction{background:#f5f9fc;border-color:#d2e0e8}
+.spark-shelf-featured.insight-method .motivation-aim-symbol,.spark-shelf-featured.insight-direction .motivation-aim-symbol{background:#e7f0f7;color:#426983}
+.spark-shelf-featured.insight-method .motivation-aim-copy strong,.spark-shelf-featured.insight-direction .motivation-aim-copy strong{color:#355d73}
