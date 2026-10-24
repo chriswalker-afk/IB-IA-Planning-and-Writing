@@ -176,7 +176,7 @@ export function renderConclusionWorkspace({state,e,icon,field,F,criterionMarkedW
     "What can I responsibly conclude, and what does the mathematics NOT establish?",
     {type:"textarea",rows:5}),["completing:C60:meaningAndLimits"])+
    '<p class="conclusion-specific-tip">'+icon("lightbulb")+
-    ' <strong>Mathematical reminder:</strong> '+e(mathematicalTip(state))+'</p>'+
+    '<span class="inline-notice-copy"><strong>Mathematical reminder:</strong> '+e(mathematicalTip(state))+'</span></p>'+
   '</section>'+
   '<section class="conclusion-writing-part conclusion-potential" data-conclusion-part="next">'+
    '<div class="conclusion-part-title"><span class="conclusion-part-number">3</span><div>'+

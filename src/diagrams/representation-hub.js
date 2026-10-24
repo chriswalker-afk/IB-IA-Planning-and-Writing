@@ -174,7 +174,7 @@ export function renderRepresentationHub(state,icon,e){
  (remaining.length?catalog:'<p class="representation-filter-note">'+
   (total?"All matching tools are already featured above.":"No tools match this category.")+'</p>')+
  '<p class="representation-writing-reminder">'+icon("info")+
- ' <strong>Use in your IA:</strong> introduce each relevant figure before showing it, and interpret the actual mathematics afterwards. Saving a figure does not automatically establish a result.</p>'+
+ '<span class="inline-notice-copy"><strong>Use in your IA:</strong> introduce each relevant figure before showing it, and interpret the actual mathematics afterwards. Saving a figure does not automatically establish a result.</span></p>'+
  '</section>';
 }
 /** A larger canvas is activated only in C31 while one tool is open. */
@@ -217,6 +217,6 @@ export function renderRepresentationSwitcher(state,icon,e){
   '<nav class="representation-workspace-tools" aria-label="Diagram creators and return navigation">'+
    back+tools+'</nav>'+
   renderRepresentationWorkflow(representationWorkflowState(state),icon,e)+
-  '<p class="representation-workspace-guidance">'+icon("info")+
-   ' Save an editable draft to keep a figure for later; Save &amp; link associates it with this mathematical stage. Downloads are separate files and do not write your IA.</p></div>';
+  '<p class="representation-workspace-guidance">'+icon("info")+'<span class="inline-notice-copy">'+
+   ' Save an editable draft to keep a figure for later; Save &amp; link associates it with this mathematical stage. Downloads are separate files and do not write your IA.</span></p></div>';
 }

@@ -95,7 +95,7 @@ export function createPlanningViews(ctx){
      '<strong>'+e(x.label)+'</strong><span class="math-route-topic">'+e(x.topic)+'</span>'+
      '<span class="math-route-why">'+e(x.why)+'</span>'+
      '<span class="math-route-first"><b>Try first:</b> '+e(x.first)+'</span>'+
-     (x.caution?'<span class="math-route-caution">'+icon('info')+' '+e(x.caution)+'</span>':'')+
+     (x.caution?'<span class="math-route-caution">'+icon('info')+'<span class="inline-notice-copy">'+' '+e(x.caution)+'</span></span>':'')+
      '<span class="math-route-select">'+icon(isSelected?'check-circle':'plus-circle')+
       '<span data-math-route-status>'+(isSelected?'Added to my plan':'Add this possibility')+'</span></span>'+
      '</button>';
@@ -116,8 +116,8 @@ export function createPlanningViews(ctx){
    F("otherMaths","Another technique I might use (optional)","Describe a different or researched technique",{type:"textarea",rows:2})+
    '<p class="field-hint">You can leave all techniques unselected. Adding more mathematics does not make an investigation better.</p>';
   const foreignNotice=foreign.length?callout("Course changed",e("Previously selected mathematics from a different course: "+foreign.map(x=>x.label).join(", ")+". These choices are preserved, but check your current syllabus before relying on them."),true):"";
-  return (suggested?'<p class="math-review-note">'+icon('refresh-cw')+
-    ' Revisit, do not restart. Your earlier selections are retained; a prediction is not a confirmed pattern.</p>':'')+
+  return (suggested?'<p class="math-review-note">'+icon('refresh-cw')+'<span class="inline-notice-copy">'+
+    ' Revisit, do not restart. Your earlier selections are retained; a prediction is not a confirmed pattern.</span></p>':'')+
    foreignNotice+
    (collapsed?selectedSummary+
     '<details class="math-catalog-more"><summary>'+icon('book-open')+' Browse all '+e(course)+' mathematics'+icon('chevron-down')+'</summary>'+

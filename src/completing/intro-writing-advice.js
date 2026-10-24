@@ -107,7 +107,7 @@ function predictionEditor(state,icon,e){
    '<textarea rows="2" class="field" id="intro-prediction-value" data-bind="planning.fields.prediction" placeholder="I think … / I suspect … / I hope to find out whether …">'+e(prediction)+'</textarea></div>'+
    '<div class="field-group"><label class="field-label" for="intro-prediction-why">Why do I expect or hope this?</label>'+
    '<textarea rows="2" class="field" id="intro-prediction-why" data-bind="planning.fields.predictionWhy" placeholder="An observation, a mathematical pattern, my experience or an honest question …">'+e(why)+'</textarea></div></div>'+
-  '<p class="intro-prediction-note">'+icon("sparkles")+' These edits save directly to your original Planning spark, not to your IA document. A prediction is <strong>not a mathematical result</strong>, and you never need to manufacture one: write what you genuinely hope to learn if a prediction is not yet sensible.</p>'+
+  '<p class="intro-prediction-note">'+icon("sparkles")+'<span class="inline-notice-copy">These edits save directly to your original Planning spark, not to your IA document. A prediction is <strong>not a mathematical result</strong>, and you never need to manufacture one: write what you genuinely hope to learn if a prediction is not yet sensible.</span></p>'+
   '</details>';
 }
 /** Read only except the explicitly bound, user-editable original prediction spark. */

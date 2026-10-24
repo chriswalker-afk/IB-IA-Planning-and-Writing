@@ -270,13 +270,13 @@ export function createCompletingViews(ctx){
       '<span>'+icon("flag")+' Continue to Conclusion</span>'+icon("arrow-right")+'</button>'+
    '</div>'+
    (!latest?'<p class="math-stage-branch-note">'+icon("info")+
-    ' You are reviewing an earlier stage. Open the latest mathematical page before extending the chain.</p>':
+    '<span class="inline-notice-copy">You are reviewing an earlier stage. Open the latest mathematical page before extending the chain.</span></p>':
     !confirmed?'<p class="math-stage-branch-note">'+icon("info")+
-    ' To add another stage, confirm the actual mathematical result in Section 2. You may still conclude.</p>':
+    '<span class="inline-notice-copy">To add another stage, confirm the actual mathematical result in Section 2. You may still conclude.</span></p>':
     !ready?'<p class="math-stage-branch-note">'+icon("info")+
-    ' Confirm what your result establishes in Section 3, then write your question and mathematical justification in Section 4. An uncertain result is valid.</p>':
+    '<span class="inline-notice-copy">Confirm what your result establishes in Section 3, then write your question and mathematical justification in Section 4. An uncertain result is valid.</span></p>':
     '<p class="math-stage-branch-note">'+icon("info")+
-    ' Only continue when the result raises a worthwhile question; concluding is equally valid.</p>')+
+    '<span class="inline-notice-copy">Only continue when the result raises a worthwhile question; concluding is equally valid.</span></p>')+
    '</nav>';
  };
  const conclusionReadiness=state=>{
@@ -1405,8 +1405,8 @@ export function createCompletingViews(ctx){
     (writingIntro||node==="C04"?"":chapterRibbon(s))+
     (writingIntro?"":topWarnings)+
     (!writingIntro&&c.conclusionWarningOpen&&node!=="C60"?conclusionReadiness(s):"")+
-    (!writingIntro&&node!=="C00"&&node!=="C04"&&node!=="C10"&&!studioWriting&&!isStuckNode(node)?'<p class="studio-ia-writing-reminder">'+icon("pencil")+
-      ' WRITE IN YOUR IA · Use these prompts to develop your own document; nothing is inserted automatically.</p>':'')+
+    (!writingIntro&&node!=="C00"&&node!=="C04"&&node!=="C10"&&!studioWriting&&!isStuckNode(node)?'<p class="studio-ia-writing-reminder">'+icon("pencil")+'<span class="inline-notice-copy">'+
+      ' WRITE IN YOUR IA · Use these prompts to develop your own document; nothing is inserted automatically.</span></p>':'')+
     '<div class="task-shell'+(writingIntro||node==="C00"?' chapter-onboarding-shell':'')+'" data-source-node="'+e(node)+'">'+
     '<div class="stuck-page-header">'+
     criterionPageHeading(writingIntro?"Welcome to Writing.":label,"completing",writingIntro?"":(fieldBadgeInsteadOfTitle?"":node))+
