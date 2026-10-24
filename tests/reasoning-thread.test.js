@@ -85,7 +85,7 @@ test('the first four-part screen and the What next pages write to the same canon
  setCompletionField(s,'nextReason','My previous optimum depends on a feasibility check.');
  assert.equal(first.nextQuestion,'Are both endpoints feasible?');
  assert.equal(first.nextWhy,'My previous optimum depends on a feasibility check.');
- assert(insightItems(s).find(x=>x.id==='direction:step-one').details.some(x=>x.value==='Are both endpoints feasible?'));
+ assert.equal(insightItems(s).find(x=>x.id==='direction:step-one').value,'Are both endpoints feasible?');
  assert(featuredSparkItems(s,'C35').some(x=>x.id==='direction:step-one'));
  assert(insightCapture(s,'C35').includes('Your possible next mathematical question'));
 });
