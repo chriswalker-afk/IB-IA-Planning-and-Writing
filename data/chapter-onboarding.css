@@ -1169,3 +1169,76 @@
 .completing-page .chapter-guide-reopen{color:#65518b}
 @media(max-width:760px){.chapter-onboarding-writing-actions{align-items:stretch;flex-direction:column}.chapter-onboarding-writing-actions .btn{width:100%}}
 @media print{.chapter-onboarding-writing-actions{display:none!important}}
+
+
+/* Pass 5: student task follows only the useful saved context. General writing
+   tips and examples follow the work, while in-task bubbles stay in place. */
+.writing-stage-flow[data-advice-mode="guided"]{gap:13px}
+.writing-stage-flow[data-advice-mode="guided"]>.writing-stage-sparks{order:0}
+.writing-stage-flow[data-advice-mode="guided"]>.writing-stage-task{order:1}
+.writing-stage-flow[data-advice-mode="guided"]>.writing-stage-advice{order:2}
+.writing-stage-flow[data-advice-mode="guided"]>.writing-stage-examples{order:3}
+.writing-stage-flow[data-advice-mode="guided"] .studio-stage-sparks{
+ padding:12px 15px;background:#f7fbf8;border-color:#d6e6dc
+}
+.writing-stage-flow[data-advice-mode="guided"] .studio-stage-sparks-head{
+ margin-bottom:9px;align-items:center;gap:9px
+}
+.writing-stage-flow[data-advice-mode="guided"] .studio-stage-sparks-head>.icon{
+ width:19px;height:19px
+}
+.writing-stage-flow[data-advice-mode="guided"] .studio-stage-sparks-head h2{
+ font-size:14px;line-height:1.35;margin:1px 0 1px
+}
+.writing-stage-flow[data-advice-mode="guided"] .studio-stage-sparks-head p{
+ font-size:10.5px;line-height:1.5
+}
+.writing-stage-flow[data-advice-mode="guided"]>.writing-stage-advice .studio-stage-advice{
+ padding:12px 15px;border-color:#e5deec;background:#fcfbfd
+}
+.writing-stage-flow[data-advice-mode="guided"]>.writing-stage-advice .studio-stage-advice-head h2{
+ font-size:14px
+}
+.writing-stage-flow[data-advice-mode="guided"]>.writing-stage-advice .studio-stage-icon{
+ width:32px;height:32px;border-radius:10px
+}
+.writing-stage-flow[data-advice-mode="guided"]>.writing-stage-advice .studio-stage-icon>.icon{
+ width:18px;height:18px
+}
+.studio-stage-quick-help{display:flex;align-items:center;flex-wrap:wrap;gap:7px;margin:-4px 0 13px}
+.studio-stage-quick-help button{
+ display:inline-flex;align-items:center;justify-content:center;gap:6px;
+ min-height:41px;padding:8px 11px;border-radius:9px;cursor:pointer;
+ font:inherit;font-size:11px;font-weight:750;line-height:1.35
+}
+.studio-stage-quick-help .icon{width:15px;height:15px;flex:none}
+.studio-stage-quick-guide{border:1px solid #dfd3ed;background:#f8f4fc;color:#705193}
+.studio-stage-quick-stuck{border:1px solid #e6d5ad;background:#fffaf0;color:#795b28}
+.studio-stage-quick-guide:hover{background:#f0e7fa}
+.studio-stage-quick-stuck:hover{background:#fff1d4}
+.studio-stage-quick-help button:focus-visible{outline:3px solid #9877bd;outline-offset:2px}
+.first-maths-extra-context{margin-top:13px;border:1px solid #cfe1d7;border-radius:11px;background:#fff;overflow:hidden}
+.first-maths-extra-context>summary{
+ display:flex;align-items:center;gap:10px;min-height:45px;padding:10px 12px;
+ list-style:none;cursor:pointer;color:#275f52
+}
+.first-maths-extra-context>summary::-webkit-details-marker{display:none}
+.first-maths-extra-context>summary>.icon:first-child{flex:none;width:17px;height:17px}
+.first-maths-extra-context>summary>.icon:last-child{flex:none;width:15px;height:15px;margin-left:auto;transition:transform .15s}
+.first-maths-extra-context>summary>span{flex:1;min-width:0;display:grid;gap:3px}
+.first-maths-extra-context>summary strong{font-size:12px}
+.first-maths-extra-context>summary small{font-size:10.5px;line-height:1.45;color:#6b8275}
+.first-maths-extra-context[open]>summary>.icon:last-child{transform:rotate(90deg)}
+.first-maths-extra-context-body{padding:12px;border-top:1px solid #dbe9e2}
+.first-maths-extra-context>summary:focus-visible{outline:3px solid #569c85;outline-offset:-3px}
+.first-maths-extra-context .spark-library{margin-top:12px}
+@media(max-width:600px){
+ .writing-stage-flow[data-advice-mode="guided"]{gap:10px}
+ .writing-stage-flow[data-advice-mode="guided"] .studio-stage-sparks{padding:11px}
+ .studio-stage-quick-help{gap:6px;margin:-1px 0 12px}
+ .studio-stage-quick-help button{flex:1 1 auto;min-height:44px;white-space:normal}
+ .first-maths-extra-context-body{padding:9px}
+}
+@media(prefers-reduced-motion:reduce){
+ .first-maths-extra-context>summary>.icon:last-child{transition:none}
+}

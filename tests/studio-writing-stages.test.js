@@ -26,7 +26,7 @@ test('four-part layout is consistently present through all three writing section
  for(const [group,nodes] of Object.entries(STUDIO_WRITING_GROUPS)){
   for(const node of nodes){
    const html=stage(s,node);
-   const sections=node==='C60'?['advice','task','examples']:['advice','sparks','task','examples'];
+   const sections=node==='C60'?['task','advice','examples']:['sparks','task','advice','examples'];
    const order=sections.map(k=>html.indexOf('data-writing-stage-part="'+k+'"'));
    assert(order.every(x=>x>=0),node+' missing one part');
    assert(order.every((x,i)=>i===0||x>order[i-1]),node+' not logically ordered');

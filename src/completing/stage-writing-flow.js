@@ -16,6 +16,9 @@ export function renderWritingStageFlow({advice="",sparks="",task="",examples="",
   return '<div class="writing-stage-flow is-reduced" data-writing-stage-flow data-advice-mode="reduced">'+
    section("task",task)+section("sparks",references)+'</div>';
  }
+ // Existing field-level criteria, stuck and method help remain on the task.
+ // Show the relevant saved context first, let students write next, and move
+ // supplementary craft/exemplars after the work rather than repeating a wall.
  return '<div class="writing-stage-flow" data-writing-stage-flow data-advice-mode="guided">'+
-  section("advice",advice)+section("sparks",sparks)+section("task",task)+section("examples",examples)+'</div>';
+  section("sparks",sparks)+section("task",task)+section("advice",advice)+section("examples",examples)+'</div>';
 }

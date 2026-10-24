@@ -229,14 +229,20 @@ export function renderFirstMathsSparks(state,icon,e){
      '<p>'+e(ctx.source.intro)+'</p>'+
      (ctx.sourceDetails?'<p class="first-maths-plan-specific">'+e(ctx.sourceDetails)+'</p>':'')+
     '</div>'+planningLink(icon,'Review source choices',ctx.kind==="theoretical"?'N02M':'N03')+'</div>'+
+  '<details class="first-maths-extra-context" data-first-maths-extra-context>'+
+  '<summary>'+icon("layers")+' <span><strong>More from my Planning choices</strong>'+
+   '<small>Techniques considered, suggested starting routes and all saved Sparks · optional</small></span>'+
+   icon("chevron-right")+'</summary>'+
+  '<div class="first-maths-extra-context-body">'+
   (topicHtml?'<div class="first-maths-planned-techniques"><strong>Mathematics you considered in Planning</strong>'+topicHtml+
     '<p>These are possibilities, not a checklist or evidence of mathematics already done.</p></div>':'')+
   renderSelectedMathematicsAdvice(state,icon,e)+
-  (ctx.mismatched?'<p class="first-maths-plan-review" role="status">Your earlier journey belongs to a different investigation type. Review it before treating its first move as relevant.</p>':'')+
-  (all.length&&maths.length<all.length?'<p class="first-maths-plan-review">Some selected mathematics belongs to a different course from the one now recorded. Check suitability; it is not automatically part of your IA.</p>':'')+
   (route&&!ctx.selected.length?'<aside class="first-maths-question"><strong>'+icon("lightbulb")+' One mathematical question to consider</strong><p>'+e(route.question)+'</p>'+
     '<small>A starting suggestion — write and decide your own mathematical question.</small></aside>':'')+
   renderSparkShelf(state,"C20",{surface:"studio",libraryOnly:true})+
+  '</div></details>'+
+  (ctx.mismatched?'<p class="first-maths-plan-review" role="status">Your earlier journey belongs to a different investigation type. Review it before treating its first move as relevant.</p>':'')+
+  (all.length&&maths.length<all.length?'<p class="first-maths-plan-review">Some selected mathematics belongs to a different course from the one now recorded. Check suitability; it is not automatically part of your IA.</p>':'')+
  '</section>';
 }
 export function firstMathsExampleTopic(state){

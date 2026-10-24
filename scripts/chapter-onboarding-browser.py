@@ -197,7 +197,7 @@ def first_time(browser,width):
   assert "Turn your sparks into an opening" in page.locator('.intro-spark-brief').inner_text()
   assert page.locator('.writing-stage-flow [data-writing-stage-part]').count()==4
   parts=page.locator('.writing-stage-flow [data-writing-stage-part]')
-  assert [parts.nth(i).get_attribute("data-writing-stage-part") for i in range(4)]==["advice","sparks","task","examples"]
+  assert [parts.nth(i).get_attribute("data-writing-stage-part") for i in range(4)]==["sparks","task","advice","examples"]
   assert page.locator('.criterion-marked-writing-box .criterion-writing-bubbles .criterion-badge').count()==2
   assert page.locator('.intro-criteria-mini').count()==0
   assert page.locator('.spark-shelf-featured').count()==0
@@ -342,8 +342,8 @@ def writing_sections(browser,width):
    assert main.count()==1,node
    parts=main.locator('[data-writing-stage-part]')
    names=[parts.nth(i).get_attribute('data-writing-stage-part') for i in range(parts.count())]
-   assert names==(['advice','task','examples'] if node=='C60' else
-    ['advice','sparks','task','examples']),(node,names)
+   assert names==(['task','advice','examples'] if node=='C60' else
+    ['sparks','task','advice','examples']),(node,names)
    assert main.locator('.studio-stage-examples').count()==1,node
    badge=main.locator('.studio-stage-writing-task .writer-guide-field-bubble:visible')
    assert badge.count()>=1,(node,'Missing field-level book bubble')
@@ -465,10 +465,14 @@ def writing_sections(browser,width):
    if node=="C20":
     assert "Introducing your first mathematics" in main.inner_text()
     assert main.locator('[data-first-maths-context]').count()==1
+    extra=main.locator('[data-first-maths-extra-context]')
+    assert extra.count()==1 and extra.get_attribute('open') is None
     assert "Primary + secondary data" in main.inner_text()
     assert "Official public height dataset" in main.inner_text()
     assert "Relationships between two variables" in main.inner_text()
     assert "Plot paired measurements" in main.inner_text()
+    extra.locator('summary').first.click()
+    assert extra.get_attribute('open') is not None
     assert main.locator('[data-first-maths-starting-guidance]').count()==1
     assert main.locator('[data-technique-start-guide="AI14"]').count()==1
     assert main.locator('[data-technique-start-guide="AI15"]').count()==1
@@ -562,6 +566,8 @@ def modelling_math_start(browser,width):
  try:
   main=page.locator('[data-source-node="C20"]')
   assert main.count()==1
+  assert main.locator('[data-first-maths-extra-context]').count()==1
+  main.locator('[data-first-maths-extra-context]>summary').click()
   card=main.locator('[data-technique-start-guide="AI05"]')
   assert card.count()==1
   assert "Quadratic or cubic models" in card.inner_text()
