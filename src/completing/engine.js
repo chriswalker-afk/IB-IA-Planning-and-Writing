@@ -340,7 +340,9 @@ export function setCompletionNode(state,id,{history=true,reason="revisit"}={}){
   // When "What next?" switches between different confirmed results, show
   // that result's own recorded question/justification, not the last stage's.
   const current=sourceResultForNext(state);
-  if(current&&original!==current.id){
+  const returningFromDifferentFirstPage=previous==="C30"&&
+   state.entries[c.activeEntryIndex]?.id!==current?.id;
+  if(current&&(original!==current.id||returningFromDifferentFirstPage)){
    c.fields.nextQuestion=str(current.nextQuestion);
    c.fields.nextReason=str(current.nextWhy);
    c.fields.nextMethod="";
