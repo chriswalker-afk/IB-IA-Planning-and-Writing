@@ -8,12 +8,12 @@ export function resourceAction(state,session,action,data={},parent=''){
  if(!action.startsWith('resource-'))return null;
  const help=data.resourceHelp==='true';
  if(action==='resource-workshop'){
-  const returning=parent==='resources'&&session.workshopReturn;
+  const returning=parent==='resources'&&data.workshopResume==='true'&&session.workshopReturn;
   if(parent!=='resources')Object.assign(session,newResourceSession(),{help,parent:parent==='stuck'?'stuck':''});
   session.mode='workshop';session.id='';
   const id=String(data.workshopRoute||'');
-  if(id&&Object.hasOwn(PATHWAY_LEARNING,id))session.workshopRoute=id;
   if(!returning){
+   session.workshopRoute=id&&Object.hasOwn(PATHWAY_LEARNING,id)?id:'';
    const chosen=String(data.workshopId||'');
    const ctx=resourceContext(state,{help:session.help});
    session.workshopId=lessonById(chosen)?chosen:(id?'':workshopLessonForEntry(ctx.entry));
