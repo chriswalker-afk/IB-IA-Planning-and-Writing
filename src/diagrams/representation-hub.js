@@ -217,6 +217,6 @@ export function renderRepresentationSwitcher(state,icon,e){
   '<nav class="representation-workspace-tools" aria-label="Diagram creators and return navigation">'+
    back+tools+'</nav>'+
   renderRepresentationWorkflow(representationWorkflowState(state),icon,e)+
-  '<p class="representation-workspace-guidance">'+icon("info")+
-   ' Save an editable draft to keep a figure for later; Save &amp; link associates it with this mathematical stage. Downloads are separate files and do not write your IA.</p></div>';
+  '<p class="representation-workspace-guidance">'+icon("info")+'<span class="inline-notice-copy">'+
+   ' Save an editable draft to keep a figure for later; Save &amp; link associates it with this mathematical stage. Downloads are separate files and do not write your IA.</span></p></div>';
 }
