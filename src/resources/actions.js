@@ -2,10 +2,50 @@ import {resourceById,TOOLS,RESOURCES} from './catalog.js';
 import {resourceContext} from './context.js';
 import {newResourceSession,setResourcePreference,normalizeResourceState} from './state.js';
 import {REPRESENTATION_TOOLS} from '../diagrams/representation-registry.js';
+import {PATHWAY_LEARNING,lessonById,definitionById,workshopLessonForEntry} from '../workshop/catalog.js';
 /** Returns UI intents; never updates an entry, source, approval or mathematical stage. */
 export function resourceAction(state,session,action,data={},parent=''){
  if(!action.startsWith('resource-'))return null;
  const help=data.resourceHelp==='true';
+ if(action==='resource-workshop'){
+  const returning=parent==='resources'&&session.workshopReturn;
+  if(parent!=='resources')Object.assign(session,newResourceSession(),{help,parent:parent==='stuck'?'stuck':''});
+  session.mode='workshop';session.id='';
+  const id=String(data.workshopRoute||'');
+  if(id&&Object.hasOwn(PATHWAY_LEARNING,id))session.workshopRoute=id;
+  if(!returning){
+   const chosen=String(data.workshopId||'');
+   const ctx=resourceContext(state,{help:session.help});
+   session.workshopId=lessonById(chosen)?chosen:(id?'':workshopLessonForEntry(ctx.entry));
+   session.workshopTerm='';
+  }
+  session.workshopStep='show';session.workshopChoice='';session.workshopReturn=true;
+  return {ok:true,open:true};
+ }
+ if(action==='resource-workshop-tools'){session.mode='tools';session.id='';return {ok:true,open:true};}
+ if(action==='resource-workshop-home'){session.mode='workshop';session.workshopId='';session.workshopTerm='';session.workshopChoice='';return {ok:true,open:true};}
+ if(action==='resource-workshop-lesson'){
+  const id=String(data.workshopId||'');
+  if(!lessonById(id))return {ok:false,error:'That mathematical lesson is not available.'};
+  session.mode='workshop';session.workshopId=id;session.workshopTerm='';session.workshopStep='show';session.workshopChoice='';
+  return {ok:true,open:true};
+ }
+ if(action==='resource-workshop-term'){
+  const id=String(data.workshopId||'');
+  if(!definitionById(id))return {ok:false,error:'That mathematical definition is not available.'};
+  session.mode='workshop';session.workshopId='';session.workshopTerm=id;
+  return {ok:true,open:true};
+ }
+ if(action==='resource-workshop-step'){
+  const step=String(data.workshopStep||'');
+  if(!lessonById(session.workshopId)||!['show','help','turn'].includes(step))return {ok:false,error:'That practice step is not available.'};
+  session.workshopStep=step;session.workshopChoice='';return {ok:true,open:true};
+ }
+ if(action==='resource-workshop-choice'){
+  const l=lessonById(session.workshopId),choice=String(data.workshopChoice||'');
+  if(session.workshopStep!=='help'||!l?.guided.options.some(([id])=>id===choice))return {ok:false,error:'Choose one of the practice answers.'};
+  session.workshopChoice=choice;return {ok:true,open:true};
+ }
  if(action==='resource-creator-open'){
   const creator=String(data.resourceCreator||"");
   if(!REPRESENTATION_TOOLS.some(tool=>tool.id===creator))
@@ -16,6 +56,8 @@ export function resourceAction(state,session,action,data={},parent=''){
  if(action==='resource-open'||action==='resource-browse'){
   if(action==='resource-open'&&!resourceById(data.resourceId))return {ok:false,error:'That tutorial is not available.'};
   if(parent!=='resources')Object.assign(session,newResourceSession(),{help,parent:parent==='stuck'?'stuck':''});
+  if(action==='resource-open'&&session.mode==='workshop')session.workshopReturn=true;
+  session.mode='tools';
   session.id=action==='resource-open'?data.resourceId:'';
   return {ok:true,open:true};
  }
@@ -34,6 +76,12 @@ export function resourceAction(state,session,action,data={},parent=''){
  return {ok:false,error:'That tutorial action is not available.'};
 }
 export function resourceFilter(session,key,value){
+ if(['workshopQuery','workshopRoute'].includes(key)){
+  const next=String(value).slice(0,120);
+  if(key==='workshopRoute'&&next!==''&&!Object.hasOwn(PATHWAY_LEARNING,next))return false;
+  if(session[key]===next)return false;
+  session[key]=next;return true;
+ }
  if(!['query','tool','category'].includes(key))return false;
  if(key==='tool'&&value!==''&&!Object.hasOwn(TOOLS,value))return false;
  if(key==='category'&&value!==''&&!RESOURCES.some(r=>r.category===value))return false;
