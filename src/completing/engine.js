@@ -349,9 +349,20 @@ export function setCompletionNode(state,id,{history=true,reason="revisit"}={}){
  if(c.current!==id&&history)c.history.push(c.current);
  c.history=c.history.slice(-350);
  c.current=id;
- if(id==="C30"&&state.entries[c.activeEntryIndex]?.phase!=="first"){
-  const firstIndex=state.entries.findLastIndex(x=>x.phase==="first");
-  if(firstIndex>=0)c.activeEntryIndex=firstIndex;
+ if(id==="C30"){
+  if(state.entries[c.activeEntryIndex]?.phase!=="first"){
+   const firstIndex=state.entries.findLastIndex(x=>x.phase==="first");
+   if(firstIndex>=0)c.activeEntryIndex=firstIndex;
+  }
+  // Returning from a later mathematical stage should reopen the FIRST
+  // stage's own follow-up notes, not the later source's shared C35 fields.
+  const first=state.entries[c.activeEntryIndex];
+  if(previous!=="C30"&&first?.phase==="first"&&
+    state.entries.some(x=>x?.phase==="substantial")){
+   c.fields.nextQuestion=str(first.nextQuestion);
+   c.fields.nextReason=str(first.nextWhy);
+   c.fields.nextMethod="";
+  }
  }
  if(previous!==id&&c.guidanceUi&&!helperHop){
   c.guidanceUi.quietNode="";
