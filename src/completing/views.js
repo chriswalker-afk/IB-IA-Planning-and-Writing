@@ -12,6 +12,7 @@ import {renderJourneyWritingAdvice} from "./first-maths-writing-guidance.js";
 import {renderIdeaLabWritingCue} from "../planning/idea-lab-bridge.js";
 import {renderShowingMathsContext} from "./showing-first-maths.js";
 import {MATHEMATICAL_LINK_HINT,renderConsequentialChoice,renderStorySynthesis} from "./mathematical-story-guidance.js";
+import {renderResultInterpretationAid} from './result-interpretation.js';
 import {renderGraphStudio} from "../diagrams/graph-view.js";
 import {renderGraphSvg} from "../diagrams/graph-core.js";
 import {renderImageTracer} from "../diagrams/image-tracer-view.js";
@@ -886,6 +887,7 @@ export function createCompletingViews(ctx){
       '<p class="show-first-draft-note">'+icon("info")+
        ' <strong>Interpret real results.</strong> You can prepare your explanation, but Section 2 must contain a genuine mathematical output confirmed as produced before it becomes evidence for later guidance. A prediction or saved draft is not a finding.</p>')+
     journeyOutcomePicker(entry)+
+    renderResultInterpretationAid(s,entry,{icon,e,reduced})+
     '<div class="show-first-writing-field" data-show-first-writing-box="reflect">'+
     criterionMarkedWritingBox(
       (entry?entryField("interpretation","My reflection on what this result means",
@@ -997,7 +999,9 @@ export function createCompletingViews(ctx){
     info("Avoid repeated precision essays","Once justified, apply the decision again only where relevant. Revisit C24 if the underlying source changes.")
   };
   case "C34B":return{intro:"Relate this actual result to your aim, your earlier prediction and its intended benefit.",
-   html:entryReviewAlert()+actualRecord()+coachBlock(st,{allowChoices:false})+smallSummary("Your current aim",currentAim())+
+   html:entryReviewAlert()+actualRecord()+coachBlock(st,{allowChoices:false})+
+    renderResultInterpretationAid(s,st,{icon,e,reduced:isAdviceReduced(s)})+
+    smallSummary("Your current aim",currentAim())+
     smallSummary("Original prediction or hope (tentative)",plannedPrediction())+
     smallSummary("Why I expected or hoped this",p.predictionWhy||s.project.predictionWhy)+
     smallSummary("Possible beneficiary",currentBenefit())+
@@ -1054,6 +1058,7 @@ export function createCompletingViews(ctx){
   };
   case "C35P":return{intro:"Use this only after you have actually calculated Pearson's correlation coefficient.",
    html:bridgeFromPrior()+coachBlock(sourceResultForNext(s),{allowChoices:false})+
+    renderResultInterpretationAid(s,sourceResultForNext(s),{icon,e,reduced:isAdviceReduced(s)})+
     criteriaField(F("pmccInterpretation","What value or finding did I calculate and what does it mean?","Describe actual direction and strength of LINEAR association",{type:"textarea",rows:3}),"completing:C35P:title")+
     (f.scatterPattern?smallSummary("Observed scatter shape",f.scatterPattern):"")+
     F("nextQuestion","My next question, if another is needed","A model, outlier check, different explanation, or no further calculation",{type:"textarea",rows:2})+
@@ -1158,6 +1163,7 @@ export function createCompletingViews(ctx){
      '<p class="show-first-draft-note">'+icon("info")+
       ' Write conclusions from actual work only. Section 2 must be completed and confirmed before later stages treat this as a finding.</p>')+
     coachBlock(substantial,{allowChoices:false})+journeyOutcomePicker(substantial)+
+    renderResultInterpretationAid(state,substantial,{icon,e,reduced:isAdviceReduced(state)})+
     '<div class="show-first-writing-field">'+
      criterionMarkedWritingBox(entryField("interpretation","What does this result mean for my aim?",
       "What has the mathematics established, and what can I responsibly infer?",{type:"textarea",rows:5}),
