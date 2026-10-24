@@ -17,6 +17,10 @@ IA Pathfinder supports students through the **planning, mathematics, writing and
 
 The optional **Maths Workshop** lives in Tools & Tutorials. It includes **26 quick mathematical definitions**, three worked **Show me → Help me → My turn** lessons (mean and standard deviation, Pearson's correlation coefficient, and optimisation by differentiation), technology shortcuts, and learning links for all **16 investigative pathways**. Students can open it from Help, route details and relevant IA Studio method selectors; Reduce Advice keeps the optional inline prompts quiet. Practice is fictional and read-only, never recorded as student work or assigned an IA grade. See [the Batch 0 release notes](docs/maths-workshop-batch-0-2026-10-24.md) for coverage, safety and the Batch 1 backlog.
 
+### Maths Workshop — Batch 1: Data essentials
+
+Batch 1 adds **31 definitions** (57 overall) and **five guided lessons** (eight overall): fair sampling and bias, comparing distributions, histogram frequency density, conditional percentages from two-way tables, and measurement uncertainty. The new lessons have two optional guided checkpoints each, worked and independent practice, course-scope cautions and direct links to existing Stat/Table creators or tutorials. All examples are fictional and do not update student IA work. See [Batch 1 notes](docs/maths-workshop-batch-1-2026-10-24.md); Batch 2 will cover relationships, regression and model evaluation.
+
 ### Complete illustrative investigations
 
 The sample picker contains **five complete fictional student investigations**: standing reach, paper-helicopter groups, revision-format preferences, coffee-grinder reliability and tray optimisation. Each uses connected first-person writing, checked mathematics, stated constructed data or assumptions, and editable native figures. The same answers appear in the Planning, Writing and Checking fields and in a continuous IA reader with separate PDF and Word downloads. Samples open in an isolated preview; exploring or editing them does not replace the student's own project.
