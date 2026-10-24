@@ -147,14 +147,14 @@ function pathCard(state,entries,entry,index,byId){
    '</div></div>':
    isOther?'<p class="math-journey-link-note">The earlier linked record is not available. Review this connection.</p>':"";
  const provenance=action.origin==="planning"?
-  '<span class="math-journey-source-note">'+icon("info")+
-   ' Starting idea from Planning — check that this matches the mathematics you used.</span>':
+  '<span class="math-journey-source-note">'+icon("info")+'<span class="inline-notice-copy">'+
+   ' Starting idea from Planning — check that this matches the mathematics you used.</span></span>':
   action.origin==="question"?
-  '<span class="math-journey-source-note">'+icon("info")+
-   ' Suggested by your question — confirm the technique in this stage.</span>':
+  '<span class="math-journey-source-note">'+icon("info")+'<span class="inline-notice-copy">'+
+   ' Suggested by your question — confirm the technique in this stage.</span></span>':
   action.origin==="missing"?
-  '<span class="math-journey-source-note">'+icon("pencil")+
-   ' Choose or name the technique on this stage’s writing page.</span>':"";
+  '<span class="math-journey-source-note">'+icon("pencil")+'<span class="inline-notice-copy">'+
+   ' Choose or name the technique on this stage’s writing page.</span></span>':"";
  const currentNext=text(entry?.nextQuestion);
  return '<div class="math-journey-step '+status+'" data-math-journey-step="'+index+'">'+lead+
   '<button type="button" class="math-journey-step-card" data-action="completion-edit-entry" data-index="'+index+
