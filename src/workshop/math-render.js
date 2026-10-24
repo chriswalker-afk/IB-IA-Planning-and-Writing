@@ -10,7 +10,7 @@ function equation(source,{spoken="",display=false}={}){
   const rendered=mathSvg(source,{display});
   const label=spoken||"Mathematical expression: "+source;
   return '<span class="workshop-typeset-math'+(display?' is-display':' is-inline')+
-   '" role="img" aria-label="'+e(label)+'">'+rendered.svg+'</span>';
+   '" role="img" aria-label="'+e(label)+'">'+rendered.svg.replace("<svg ","<svg aria-hidden=\"true\" focusable=\"false\" ")+'</span>';
  }catch(error){
   // TeX must never blank a definition, question or worked answer.
   return '<span class="workshop-math-fallback" title="'+e(error?.message||"Check the mathematical notation")+
