@@ -91,7 +91,7 @@ export const C_NODES=Object.freeze([
   {
     "id": "C70",
     "label": "Clarity, presentation and referencing",
-    "purpose": "Presentation checks include appropriate diagram placement and source, defined variables/units, clearly typeset equations using an editor, consistent mathematical language, '=' for exact equality versus '≈' for justified rounding, and appropriate reporting accuracy. Technology-generated results must be interpreted in the student's own mathematical reasoning. Appendix preference: avoid lengthy raw tables but the JIS guide permits justified supporting material.\nEDITORIAL PRECISION CHECK: Verify that figures, derived results and model predictions consistently apply the student's earlier C24 decisions (or an explicit justified revision). Check units, meaningful digits, '=' versus '≈' and any causal/scope statements in their ORIGINAL locations; do not create a final accuracy essay.",
+    "purpose": "Presentation checks include appropriate diagram placement and source, defined variables/units, clearly typeset equations using an editor, consistent mathematical language, '=' for exact equality versus '≈' for justified rounding, and appropriate reporting accuracy. Technology-generated results must be interpreted in the student's own mathematical reasoning. Appendix advice: avoid lengthy raw tables in the main discussion, while allowing necessary, clearly referenced supporting data.\nEDITORIAL PRECISION CHECK: Verify that figures, derived results and model predictions consistently apply the student's earlier C24 decisions (or an explicit justified revision). Check units, meaningful digits, '=' versus '≈' and any causal/scope statements in their ORIGINAL locations; do not create a final accuracy essay.",
     "notes": "C70N is an optional notation/technology checklist. Use only at student request or genuine communication issue, not as a long interruption after every graph. Verify current school requirements for references and formatting; Pathfinder's no-long-tables preference is NOT an IB prohibition.\nWRITING MOMENT: prompt corrections at the ORIGINAL mathematical/figure/citation location. Presentation review is not a new IA paragraph.",
     "status": "Working draft",
     "sourceRow": 47
@@ -292,7 +292,7 @@ export const C_NODES=Object.freeze([
     "id": "C10E",
     "label": "Compare introductions: optional examples",
     "purpose": "Only on request, show 2–3 short illustrative weak-versus-effective introduction pairs. Ask what makes authentic, concise purpose clearer; return directly to own draft.",
-    "notes": "Don't prescribe an IA template or generate a student introduction. Source: JIS IA Introduction—using sample IAs. Natural first person, not forced every sentence.",
+    "notes": "Don't prescribe an IA template or generate a student introduction. An authentic first-person voice is natural when describing genuine choices, not obligatory in every sentence.",
     "status": "Working draft",
     "sourceRow": 73
   },
