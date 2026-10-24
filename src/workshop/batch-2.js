@@ -612,5 +612,290 @@ export const BATCH2_LESSONS=Object.freeze([
       "ia": "Show the original scatterplot, compare relevant model families, state what each parameter means, report the fitting method and which error scale was minimised, and inspect residuals and domain. Do not mistake an artificial exact curve, log-transformed fit or larger R-squared for genuine explanatory power."
     }
   }
+,
+
+  {
+    "id": "residual-diagnostics",
+    "category": "Functions & modelling",
+    "title": "Calculate residuals and recognise model weaknesses",
+    "definitionIds": [
+      "residual",
+      "fitted-value",
+      "residual-plot",
+      "residual-pattern",
+      "sum-squared-errors",
+      "rmse",
+      "quadratic-model",
+      "model",
+      "influential-observation"
+    ],
+    "details": {
+      "skill": "Calculate a few residuals to know the sign; use a spreadsheet for all observations and diagnostic plots",
+      "when": "After fitting any candidate model, to see which information it still fails to explain and whether its assumptions seem reasonable.",
+      "avoid": "Residuals are observed minus predicted, not the other way around. A low average residual does not guarantee a good fit: positive and negative errors may cancel. A visible curve or changing spread is a warning, not automatic proof of a particular alternative.",
+      "formula": "For each point: e_i = observed y_i - model-predicted y_i. SSE = sum(e_i squared); RMSE = sqrt(SSE/n) on the stated evaluation data.",
+      "worked": {
+        "context": "A fictional numerical dataset x = 0, 1, 2, 3, 4 has observed y = 4, 1, 0, 1, 4. A least-squares straight line with intercept here is the horizontal model y-hat = 2, because the data are symmetric.",
+        "table": {
+          "caption": "Residuals of the horizontal least-squares line",
+          "headers": [
+            "x",
+            "observed y",
+            "prediction ŷ = 2",
+            "residual e = y − ŷ"
+          ],
+          "rows": [
+            [
+              "0",
+              "4",
+              "2",
+              "+2"
+            ],
+            [
+              "1",
+              "1",
+              "2",
+              "−1"
+            ],
+            [
+              "2",
+              "0",
+              "2",
+              "−2"
+            ],
+            [
+              "3",
+              "1",
+              "2",
+              "−1"
+            ],
+            [
+              "4",
+              "4",
+              "2",
+              "+2"
+            ]
+          ]
+        },
+        "steps": [
+          "Record which variable is the input, keep the original five pairs and evaluate the candidate \\(\\hat{y}=2\\) at each \\(x\\).",
+          "Subtract prediction from observation: \\(e_i=y_i-\\hat{y}_i\\). For \\(x=2\\), \\(e=0-2=-2\\); at \\(x=4\\), \\(e=4-2=+2\\).",
+          "Plot residuals against the input \\(x\\). The ordered residuals \\(+2,-1,-2,-1,+2\\) form a U-shaped pattern, not random scatter about zero.",
+          "The residual sum is \\(2-1-2-1+2=0\\), yet this DOES NOT establish a good fit; the signed errors simply cancel.",
+          "Calculate \\(\\mathrm{SSE}=2^2+(-1)^2+(-2)^2+(-1)^2+2^2=14\\) and \\(\\mathrm{RMSE}=\\sqrt{\\frac{14}{5}}\\approx1.673\\) response units.",
+          "A quadratic might address the curvature: the exact artificial expression \\(\\hat{y}=(x-2)^2\\) has zero residual on these made-up observations, but a perfect training fit alone says nothing about future data or the real process."
+        ],
+        "answer": "For the line \\(\\hat{y}=2\\): residuals \\((2,-1,-2,-1,2)\\), \\(\\mathrm{SSE}=14\\), and \\(\\mathrm{RMSE}\\approx1.673\\) y-units.",
+        "interpretation": "The U-shaped residuals reveal systematic missing curvature in this fictional straight-line model. Report the actual pattern and what it implies for the next mathematical step, rather than merely saying the model fits badly."
+      },
+      "guided": {
+        "parts": [
+          {
+            "question": "At one observation, measured \\(y=5\\) but fitted \\(\\hat{y}=3.5\\). What is the signed residual?",
+            "options": [
+              [
+                "positive",
+                "\\(e=+1.5\\)"
+              ],
+              [
+                "negative",
+                "\\(e=-1.5\\)"
+              ],
+              [
+                "unsigned",
+                "\\(e=8.5\\)"
+              ]
+            ],
+            "correct": "positive",
+            "hint": "Residual = actual observed response minus predicted response.",
+            "feedback": "\\(e=5-3.5=+1.5\\). A positive residual means the model underpredicted that observation."
+          },
+          {
+            "question": "Residuals are mostly positive at small and large x, but negative in the middle. What is the most justified next step?",
+            "options": [
+              [
+                "curvature",
+                "Investigate missing curvature and compare a justified nonlinear model"
+              ],
+              [
+                "perfect",
+                "Conclude the original straight-line model has no limitations"
+              ],
+              [
+                "delete",
+                "Delete the middle observations to flatten the pattern"
+              ]
+            ],
+            "correct": "curvature",
+            "hint": "A systematic curve in residuals suggests that the model has left an organised pattern unexplained.",
+            "feedback": "Check an appropriate curved alternative and evaluate it on the original data. Do not automatically delete observations or choose a complex curve solely to maximise fit."
+          }
+        ]
+      },
+      "independent": {
+        "question": "For four fictional observations x = 0, 1, 2, 3, the observed y-values are 1, 2, 2, 5. Evaluate the candidate line y-hat = 1+x: find the residuals, SSE and RMSE, then describe one limitation.",
+        "answer": "Predictions \\(1,2,3,4\\) give residuals \\(0,0,-1,+1\\); \\(\\mathrm{SSE}=2\\) and \\(\\mathrm{RMSE}=\\sqrt{\\frac24}\\approx0.707\\) response units.",
+        "reasoning": "This is a proposed candidate line, not necessarily a newly refitted least-squares line. The signed residuals sum to zero by coincidence here; inspect the pattern and avoid claiming that four observations establish predictive reliability."
+      },
+      "technology": [
+        {
+          "name": "Google Sheets — residual column",
+          "command": "=B2-C2",
+          "why": "After computing the model's predicted response in C, subtract it from the corresponding observed response in B. Copy the formula down without breaking row pairs."
+        },
+        {
+          "name": "Google Sheets — descriptive RMSE",
+          "command": "=SQRT(SUMSQ(D2:D6)/COUNT(D2:D6))",
+          "why": "If D contains the residuals and valid numeric rows, this reports the evaluation set's root mean squared error in y-units. It is not a confidence interval."
+        }
+      ],
+      "existingGuide": "model-check",
+      "ia": "Provide a labelled residual plot or a short residual table and describe the actual pattern, not just the coefficient or R-squared. Explain what is still unexplained and why the next method addresses that gap. Keep the original y units, specify whether residuals come from training or unseen observations and address influential points."
+    }
+  },
+  {
+    "id": "model-comparison",
+    "category": "Functions & modelling",
+    "title": "Compare models fairly: RMSE, R² and validation",
+    "definitionIds": [
+      "model",
+      "least-squares",
+      "sum-squared-errors",
+      "rmse",
+      "r-squared",
+      "holdout-data",
+      "overfitting",
+      "extrapolation",
+      "influential-observation",
+      "sensitivity-analysis"
+    ],
+    "details": {
+      "skill": "Calculate a few common-scale errors by hand; use software to compare many predictions and test stability",
+      "when": "When more than one mathematically plausible model could describe an observed pattern and you need to justify which serves your aim better.",
+      "avoid": "Compare errors on the SAME observations, response units and scale. A model with more parameters can give smaller training SSE or larger in-sample R² yet generalise worse. R² requires a stated mean-response baseline; log-scale and original-scale measures are not directly interchangeable.",
+      "formula": "On the same y observations, SSE = sum(y - y-hat)^2; RMSE = sqrt(SSE/n). With y-mean baseline and positive total variation, R² = 1 - SSE/SST. Check withheld values and model assumptions.",
+      "worked": {
+        "context": "Four fictional training observations are x = 0, 1, 2, 3 and y = 1, 3, 5, 8. Compare two PRE-SPECIFIED candidate models on this SAME training set: A, y-hat = 1+2x; B, y-hat = 1+2x+0.1x². Then test a separately held-out point (4,9). These are illustrative candidates, not necessarily least-squares-optimal fits.",
+        "table": {
+          "caption": "Same observed response for both candidate models",
+          "headers": [
+            "x",
+            "actual y",
+            "model A ŷ",
+            "model B ŷ",
+            "A residual",
+            "B residual"
+          ],
+          "rows": [
+            [
+              "0",
+              "1",
+              "1",
+              "1",
+              "0",
+              "0"
+            ],
+            [
+              "1",
+              "3",
+              "3",
+              "3.1",
+              "0",
+              "−0.1"
+            ],
+            [
+              "2",
+              "5",
+              "5",
+              "5.4",
+              "0",
+              "−0.4"
+            ],
+            [
+              "3",
+              "8",
+              "7",
+              "7.9",
+              "+1",
+              "+0.1"
+            ]
+          ]
+        },
+        "steps": [
+          "Declare the fitting/evaluation domain and the same response variable. Model A is \\(\\hat{y}_A=1+2x\\) and model B is \\(\\hat{y}_B=1+2x+0.1x^2\\); B has an additional curved term.",
+          "On these four training points, model A residuals are \\((0,0,0,+1)\\), so \\(\\mathrm{SSE}_A=1\\) and \\(\\mathrm{RMSE}_A=\\sqrt{\\frac14}=0.5\\).",
+          "Model B residuals are \\((0,-0.1,-0.4,+0.1)\\), so \\(\\mathrm{SSE}_B=0.01+0.16+0.01=0.18\\) and \\(\\mathrm{RMSE}_B=\\sqrt{\\frac{0.18}{4}}\\approx0.212\\). B fits these TRAINING points better by RMSE.",
+          "The observed mean is \\(\\bar{y}=4.25\\), and \\(\\mathrm{SST}=\\sum(y_i-\\bar{y})^2=26.75\\). Thus \\(R_A^2=1-\\frac{1}{26.75}\\approx0.963\\) and \\(R_B^2=1-\\frac{0.18}{26.75}\\approx0.993\\).",
+          "For a separate held-out observation \\((4,9)\\), A predicts \\(\\hat{y}_A=9\\) (error \\(0\\)), but B predicts \\(\\hat{y}_B=10.6\\) (error \\(-1.6\\)). B's higher training \\(R^2\\) did not guarantee a better holdout prediction.",
+          "This one holdout cannot settle which model always wins either. Consider the underlying process, parameter count, assumptions, prediction range, repeated validation where feasible and sensitivity to unusual observations."
+        ],
+        "answer": "On the training set, model B has the smaller RMSE (\\(0.212\\) versus \\(0.5\\)) and higher \\(R^2\\) (\\(0.993\\) versus \\(0.963\\)); on the held-out point, model A happens to predict more accurately.",
+        "interpretation": "The best model for an IA is the most defensible one for the mathematical aim and evidence, not merely the one displaying the largest fit statistic. Training fit, validation performance, plausibility and honest limitations each contribute."
+      },
+      "guided": {
+        "parts": [
+          {
+            "question": "Two models are tested on the same 9 observations. Model A has SSE = 9. What is its descriptive RMSE?",
+            "options": [
+              [
+                "1",
+                "\\(\\mathrm{RMSE}=1\\)"
+              ],
+              [
+                "3",
+                "\\(\\mathrm{RMSE}=3\\)"
+              ],
+              [
+                "9",
+                "\\(\\mathrm{RMSE}=9\\)"
+              ]
+            ],
+            "correct": "1",
+            "hint": "Compute \\(\\sqrt{\\frac{\\mathrm{SSE}}{n}}\\), with \\(n=9\\).",
+            "feedback": "\\(\\sqrt{\\frac99}=1\\) response unit. Use the same set and response scale when comparing errors."
+          },
+          {
+            "question": "Model B has a slightly larger training R² than A, but uses extra terms and predicts a held-out observation less accurately. Which conclusion is sound?",
+            "options": [
+              [
+                "evaluate",
+                "B fits training data better, but it is not automatically the better predictive model"
+              ],
+              [
+                "best",
+                "B must be the best model because its R² is larger"
+              ],
+              [
+                "delete",
+                "The withheld point should be discarded to favour B"
+              ]
+            ],
+            "correct": "evaluate",
+            "hint": "Ask whether the higher score measures new predictive information or simply a closer fit to points already seen.",
+            "feedback": "Report both training and held-out performance, parameter complexity and domain. A larger training R² cannot prove generalisation."
+          }
+        ]
+      },
+      "independent": {
+        "question": "Fictional responses for x = 0, 1, 2, 3 are y = 1, 2, 5, 9. Compare candidate A: y-hat = 1+2x, with B: y-hat = 1+x². Calculate each training SSE and RMSE, then say what you still cannot conclude.",
+        "answer": "Model A predictions \\(1,3,5,7\\) give \\(\\mathrm{SSE}_A=5\\), \\(\\mathrm{RMSE}_A=\\sqrt{\\frac54}\\approx1.118\\). Model B predictions \\(1,2,5,10\\) give \\(\\mathrm{SSE}_B=1\\), \\(\\mathrm{RMSE}_B=\\sqrt{\\frac14}=0.5\\).",
+        "reasoning": "B fits the observed training points more closely on the original y scale. This alone cannot establish which model generalises or is physically reasonable. Check residual patterns, meaningful domain, model complexity and unseen data."
+      },
+      "technology": [
+        {
+          "name": "Google Sheets — RMSE from residuals",
+          "command": "=SQRT(SUMSQ(E2:E5)/COUNT(E2:E5))",
+          "why": "Place each model's residuals in a separate column and calculate on the same retained evaluation rows. The reported value has the original y units."
+        },
+        {
+          "name": "Google Sheets — descriptive R² on this response scale",
+          "command": "=1-SUMSQ(E2:E5)/DEVSQ(B2:B5)",
+          "why": "For ordinary y predictions with a nonconstant observed response and matching rows, this uses the mean-response baseline. Check transformations and model definitions before comparing R²."
+        }
+      ],
+      "existingGuide": "model-check",
+      "ia": "Show each candidate and its rationale, define the same training/evaluation data and error measure, and use a compact table of predictions or residuals. Interpret any R² and RMSE in context; include held-out or sensitivity evidence where possible. Do not declare the largest score the winner without examining complexity, domain and limitations."
+    }
+  }
 
 ]);
