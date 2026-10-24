@@ -471,7 +471,7 @@ export const BATCH2_LESSONS=Object.freeze([
         },
         {
           "name": "Desmos — regression table",
-          "command": "y_1 ~ a x_1 + b",
+          "command": "y_1 ~ a + b x_1",
           "why": "Fit a line to the recorded table, check coefficient meaning and view the residuals. Do not automatically extend the model beyond observations."
         }
       ],
