@@ -156,3 +156,58 @@ test('the introduction keeps two featured sparks while a saved prediction and ra
  assert(!library.includes('data-spark-editor="prediction"')); // A single editor in the Introduction avoids contradictory copies.
  assert(library.includes('Why I thought or hoped this'));
 });
+
+test('canonical mathematical reasoning is recalled without storing duplicate notes',()=>{
+ const s=sample(),entry=s.entries[0];
+ entry.purpose='I chose volume because the aim concerns capacity.';
+ entry.interpretation='The volume increases as dimensions change.';
+ entry.limitations='The measured domain is small.';
+ entry.nextQuestion='Do the constraints change the maximum volume?';
+ entry.nextWhy='The earlier calculation did not test the boundary.';
+ const before=JSON.stringify(s),items=insightItems(s);
+ const result=items.find(x=>x.id==='result:math1');
+ assert(result.details.some(d=>d.label==='Mathematics I produced'&&d.value==='V = lwh'));
+ assert(result.details.some(d=>d.label==='Limitation or assumption I recorded'));
+ assert(items.some(x=>x.id==='method:math1'&&x.value===entry.purpose&&!x.planned));
+ assert(items.some(x=>x.id==='direction:math1'&&x.planned));
+ assert(items.some(x=>x.id==='limitation-note:math1'));
+ assert.deepEqual(featuredSparkItems(s,'C35').map(x=>x.id),['result:math1','direction:math1']);
+ assert.deepEqual(featuredSparkItems(s,'C32').map(x=>x.id),['method:math1','source:source-actual']);
+ const html=renderSparkShelf(s,'C35');
+ assert(html.includes('The earlier calculation did not test the boundary.'));
+ assert(html.includes('Method reasoning and next questions'));
+ assert.equal(JSON.stringify(s),before);
+});
+
+test('draft methods are plans; unrelated stages never inherit reasoning or limitations',()=>{
+ const s=sample();
+ s.entries.push({id:'draft2',phase:'substantial',status:'planned',title:'Possible new technique',
+  purpose:'I might test an alternative model.',limitations:'The proposal could be inaccurate',
+  nextQuestion:'Could another model work?',nextWhy:'It may describe the shape.'});
+ s.completion.activeEntryIndex=1;
+ const all=insightItems(s);
+ assert(!all.some(x=>x.id==='result:draft2'||x.id==='direction:draft2'));
+ assert(all.some(x=>x.id==='method:draft2'&&x.planned));
+ assert(all.some(x=>x.id==='limitation-note:draft2'&&x.planned));
+ assert(!featuredSparkItems(s,'C34B').some(x=>x.id==='limitation-note:math1'));
+ assert(featuredSparkItems(s,'C40').some(x=>x.id==='result:math1'));
+ assert(!featuredSparkItems(s,'C40').some(x=>x.id==='result:draft2'));
+});
+
+test('individual results and next-step reasons stay tied to the chosen source record',()=>{
+ const s=sample();
+ s.entries[0].nextQuestion='Should I check my dimensions?';
+ s.entries[0].nextWhy='The recorded measurements have limited resolution.';
+ s.entries.push({id:'math2',phase:'substantial',status:'completed',fromEntryId:'math1',
+  result:'A checked boundary maximum',title:'Boundary check',
+  purpose:'The first result left feasibility unresolved.',
+  interpretation:'The boundary is feasible',nextQuestion:'Is sensitivity worth testing?',
+  nextWhy:'Small dimension changes might alter the result.'});
+ s.completion.activeEntryIndex=1;
+ s.completion.nextFromEntryId='math1';
+ assert.deepEqual(featuredSparkItems(s,'C35').map(x=>x.id),['result:math1','direction:math1']);
+ s.completion.nextFromEntryId='math2';
+ assert.deepEqual(featuredSparkItems(s,'C35').map(x=>x.id),['result:math2','direction:math2']);
+ assert(featuredSparkItems(s,'C40').some(x=>x.id==='method:math2'));
+ assert(featuredSparkItems(s,'C40').some(x=>x.id==='result:math1'));
+});
