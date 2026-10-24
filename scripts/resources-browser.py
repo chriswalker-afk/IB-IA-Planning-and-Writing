@@ -228,14 +228,17 @@ with sync_playwright() as pw:
   open_library(p)
   p.locator('.resource-workshop-entry [data-action="resource-workshop"]').click()
   assert p.locator('[data-workshop-lesson="pearson"]').count()==1
-  assert 'r = 0.8' in overlay(p).inner_text()
+  assert p.locator('[data-workshop-lesson="pearson"] .workshop-formula-row').count()==3
+  assert p.locator('.workshop-answer .workshop-typeset-math').count()>=1
+  assert p.locator('.workshop-formula-equation svg').count()==3
+  p.locator('.workshop-formula').screenshot(path=str(OUT/'workshop-pearson-formulas-desktop.png'),animations='disabled')
   p.locator('.workshop-lesson-tabs .workshop-tab[data-workshop-step="help"]').click()
   p.locator('[data-action="resource-workshop-choice"][data-workshop-choice="negative"]').click()
   assert "That's right" in p.locator('.workshop-feedback.correct').inner_text()
   p.locator('.workshop-lesson-tabs .workshop-tab[data-workshop-step="turn"]').click()
   assert 'Independent practice' in overlay(p).inner_text()
   p.locator('.workshop-reveal > summary').click()
-  assert '0.837' in overlay(p).inner_text()
+  assert p.locator('.workshop-reveal [aria-label*="0.837"]').count()>=1
   p.locator('.workshop-technology [data-action="resource-open"]').click()
   assert p.locator('[data-resource-detail="sheets-pmcc"]').count()==1
   p.locator('[data-action="resource-workshop"][data-workshop-resume="true"]').click()
@@ -264,7 +267,8 @@ with sync_playwright() as pw:
   assert "That's right" in overlay(p).inner_text()
   p.locator('.workshop-lesson-tabs [data-workshop-step="turn"]').click()
   p.locator('.workshop-reveal > summary').click()
-  assert '45 percentage points' in overlay(p).inner_text()
+  assert p.locator('.workshop-reveal [aria-label*="45"]').count()>=1
+  assert 'percentage points' in p.locator('.workshop-reveal').inner_text()
   assert overlay(p).evaluate('(el)=>el.scrollWidth<=el.clientWidth+1')
   overlay(p).screenshot(path=str(OUT/'workshop-batch1-guided-phone.png'),animations='disabled')
   p.locator('.workshop-technology [data-action="resource-open"]').click()
@@ -290,5 +294,26 @@ with sync_playwright() as pw:
   p.locator('[data-action="close-drawer"]').click()
   assert unchanged_fields(saved(p))==before
  run('workshop-batch1-pathway-desktop',state(route='planning'),batch1_pathway,1440,1000)
+ def workshop_math_phone(p):
+  before=unchanged_fields(saved(p))
+  open_library(p)
+  p.locator('.resource-workshop-entry [data-action="resource-workshop"]').click()
+  if not p.locator('[data-workshop-home="true"]').count():p.locator('[data-action="resource-workshop-home"]').first.click()
+  p.locator('[data-action="resource-workshop-lesson"][data-workshop-id="descriptive"]').first.click()
+  assert p.locator('[data-workshop-lesson="descriptive"]').count()==1
+  assert p.locator('.workshop-formula-row').count()==3
+  assert 'Population standard deviation' in p.locator('.workshop-formula').inner_text()
+  assert 'Sample standard deviation' in p.locator('.workshop-formula').inner_text()
+  assert p.locator('.workshop-formula-equation svg').count()==3
+  assert p.locator('.workshop-steps .workshop-typeset-math').count()>=5
+  assert p.locator('.workshop-formula-equation').first.get_attribute('tabindex')=='0'
+  assert overlay(p).evaluate('(el)=>el.scrollWidth<=el.clientWidth+1')
+  p.locator('.workshop-formula').screenshot(path=str(OUT/'workshop-formulas-360px-phone.png'),animations='disabled')
+  p.locator('[data-action="resource-workshop-home"]').first.click()
+  p.locator('[data-action="resource-workshop-term"][data-workshop-id="standard-deviation"]').first.click()
+  assert p.locator('[data-workshop-definition="standard-deviation"] .workshop-formula-equation svg').count()==1
+  p.locator('[data-action="close-drawer"]').click()
+  assert unchanged_fields(saved(p))==before
+ run('workshop-mathematical-notation-phone',state(),workshop_math_phone,360,740)
  browser.close()
 (OUT/'resources-results.json').write_text(json.dumps(results,indent=2));print(json.dumps(results,indent=2));assert all(r['status']=='passed' for r in results)
