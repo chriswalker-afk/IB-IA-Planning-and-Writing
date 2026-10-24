@@ -18,6 +18,8 @@ export const INSIGHT_FAMILIES=Object.freeze({
  sampling:{label:'My sampling decision',icon:'layers',verb:'A provisional sampling approach to confirm with actual observations'},
  accuracy:{label:'My accuracy choices',icon:'layers',verb:'A decision to apply when relevant'},
  discovery:{label:'My discoveries',icon:'chart',verb:'A mathematical finding to build upon'},
+ method:{label:'My mathematical choice',icon:'compass',verb:'Why I chose or considered an approach'},
+ direction:{label:'My next question',icon:'git-branch',verb:'A possible direction grounded in earlier mathematics'},
  reflection:{label:'My reflections',icon:'lightbulb',verb:'Something to consider later'},
  learning:{label:'My mathematical learning',icon:'book',verb:'Mathematics independently understood'}
 });
@@ -29,6 +31,16 @@ const entries=s=>Array.isArray(s?.entries)?s.entries:[];
 const sources=s=>Array.isArray(s?.completion?.sourceRecords)?s.completion.sourceRecords:[];
 const accuracies=s=>Array.isArray(s?.completion?.accuracyDecisions)?s.completion.accuracyDecisions:[];
 const limitations=s=>Array.isArray(s?.completion?.confirmedLimitations)?s.completion.confirmedLimitations:[];
+/** A display-only view of canonical student notes. Never store a second copy of the reasoning. */
+const detailRows=(pairs,preview='')=>{
+ const seen=new Set([String(preview||'').trim()]);
+ return pairs.flatMap(([label,value])=>{
+  const v=String(value??'').trim();
+  if(!v||seen.has(v))return[];
+  seen.add(v);return[{label,value:v}];
+ });
+};
+const entryName=(x,i)=>x.title||'Mathematical step '+(i+1);
 export function insightItems(s){
  const p=s?.planning?.fields||{},c=s?.completion||{},out=[],math=entries(s);
  const aim=p.aim||s?.project?.aim;
@@ -99,16 +111,53 @@ export function insightItems(s){
    'IA Studio · Accuracy decision',{type:'completion',node:'C24'},
    {usage:connected.length?'Explicitly linked to '+connected.length+' mathematical record'+(connected.length===1?'':'s')+'.':'Use only when that quantity limits the calculation or display.',linked:connected.map(x=>x.id)}));
  }
- // Only real, explicitly recorded results get a discovery spark.
+ // The mathematical stage is the source of truth for its finding, reason and next question.
+ // A proposed choice or question does not imply that any mathematics has been performed.
  for(let i=0;i<math.length;i++){
-  const x=math[i];if(!done(x))continue;
-  const follow=math.filter(y=>y.fromEntryId&&y.fromEntryId===x.id);
-  out.push(item('discovery','result:'+x.id,x.title||'Mathematical result '+(i+1),
-   x.localTakeaway||x.interpretation||x.observationText||x.result,
-   'IA Studio · Mathematical exploration',{type:'entry',index:i},
-   {entryId:x.id,needsReview:x.reviewNeeded==='yes',
-    usage:follow.length?'Explicitly connects to '+follow.length+' later mathematical record'+(follow.length===1?'':'s')+'.':'Consider what the result actually establishes before choosing another method.',
-    linked:follow.map(y=>y.id)}));
+  const x=math[i],real=done(x),go={type:'entry',index:i},label=entryName(x,i);
+  if(real){
+   const follow=math.filter(y=>y.fromEntryId&&y.fromEntryId===x.id);
+   const takeaway=x.localTakeaway||x.interpretation||x.observationText||x.result;
+   out.push(item('discovery','result:'+x.id,label,takeaway,
+    'IA Studio · Mathematical exploration',go,
+    {entryId:x.id,needsReview:x.reviewNeeded==='yes',
+     details:detailRows([
+      ['Mathematics I produced',x.result],
+      ['My interpretation',x.interpretation],
+      ['My mathematical takeaway',x.localTakeaway],
+      ['Limitation or assumption I recorded',x.limitations],
+      ['Question left open',x.nextQuestion],
+      ['Why it may be worth investigating',x.nextWhy]
+     ],takeaway),
+     usage:follow.length?'Explicitly connects to '+follow.length+' later mathematical record'+(follow.length===1?'':'s')+'.':'Consider what the result actually establishes before choosing another method.',
+     linked:follow.map(y=>y.id)}));
+  }
+  const reason=x.purpose||x.bridge||x.methodChangeReason;
+  if(has(reason))out.push(item('method','method:'+x.id,'Reason for: '+label,reason,
+   'IA Studio · Mathematical approach',go,
+   {entryId:x.id,planned:!real,needsReview:x.reviewNeeded==='yes',
+    details:detailRows([
+     ['Why I chose this approach',x.purpose],
+     ['Bridge from the previous mathematics',x.bridge],
+     ['Why I changed method',x.methodChangeReason]
+    ],reason),
+    usage:real?'Your own recorded justification for this mathematics. Check that it still follows from the earlier finding and aim.':'This is a proposed approach and reason, not evidence that the mathematics was carried out.'}));
+  if(has(x.limitations)&&!limitations(s).some(y=>y.entryId===x.id&&String(y.explanation||'').trim()===x.limitations.trim()))
+   out.push(item('reflection','limitation-note:'+x.id,'Limitation noted in: '+label,x.limitations,
+    'IA Studio · Interpreting mathematics',go,
+    {entryId:x.id,planned:!real,needsReview:x.reviewNeeded==='yes',
+     usage:'This is your own limitation note, not a verified conclusion. Explain the particular mathematical consequence if it changes what the result establishes.'}));
+  if(real&&(has(x.nextQuestion)||has(x.nextWhy))){
+   const possible=x.nextQuestion||x.nextWhy;
+   out.push(item('direction','direction:'+x.id,'Question following: '+label,possible,
+    'IA Studio · Deciding what follows',go,
+    {entryId:x.id,planned:true,needsReview:x.reviewNeeded==='yes',
+     details:detailRows([
+      ['Mathematical question I considered',x.nextQuestion],
+      ['Why this question might help',x.nextWhy]
+     ],possible),
+     usage:'A proposed mathematical question, not proof that another calculation was done or required. Recheck the earlier result before using it.'}));
+  }
  }
  for(let i=0;i<math.length;i++){
   const x=math[i];
@@ -339,6 +388,7 @@ const sparkLibraryGroups=[
  {label:'Your question and intentions',test:x=>['title','aim','motivation','pathway'].includes(x.type)||x.id==='planned-maths'},
  {label:'Data, sources and accuracy',test:x=>['evidence','sampling','accuracy'].includes(x.type)},
  {label:'Mathematical discoveries and learning',test:x=>(x.type==='discovery'&&!x.planned)||x.type==='learning'},
+ {label:'Method reasoning and next questions',test:x=>x.type==='method'||x.type==='direction'},
  {label:'Reflections and limitations',test:x=>x.type==='reflection'}
 ];
 const inlineSparkKey=(s,x)=>{
@@ -373,6 +423,8 @@ const sparkEditor=(s,x,{preview=false}={})=>{
 };
 const sparkFullBody=(s,node,x,{featured=false}={})=>
  '<p class="spark-shelf-full-value">'+e(x.value)+'</p>'+
+ (x.details?.length?'<dl class="spark-reasoning-details">'+x.details.map(d=>
+  '<div><dt>'+e(d.label)+'</dt><dd>'+e(d.value)+'</dd></div>').join('')+'</dl>':'')+
  '<p class="spark-shelf-guidance">'+e(insightMeaning(s,node,x))+'</p>'+
  '<div class="spark-shelf-source">'+(x.planned?'Provisional · ':'')+
   e(x.needsReview?'Needs review · '+x.where:x.where)+'</div>'+
@@ -427,7 +479,7 @@ export function renderSparkShelf(s,node,{surface='planning',libraryOnly=false,hi
 export function insightEcho(s,node){return renderSparkShelf(s,node,{surface:'studio'});}
 export function insightToolkit(s,{compact=false}={}){
  const all=insightItems(s);
- const forHome=all.filter(x=>!x.planned||x.id==='investigative-route'||x.id==='sampling-plan'||x.id.startsWith('planned-accuracy:'));
+ const forHome=all.filter(x=>!x.planned||x.type==='direction'||x.id==='investigative-route'||x.id==='sampling-plan'||x.id.startsWith('planned-accuracy:'));
  const pinned=forHome.filter(x=>x.id==='working-title'||x.id==='aim'||x.id==='investigative-route'||x.id==='sampling-plan'||
   (x.id.startsWith('planned-accuracy:')&&x.id===forHome.find(y=>y.id.startsWith('planned-accuracy:'))?.id)).slice(0,5);
  const visible=compact?[...pinned,...forHome.filter(x=>!['working-title','aim'].includes(x.id)).slice(-(5-pinned.length))]:all.slice(-10);
