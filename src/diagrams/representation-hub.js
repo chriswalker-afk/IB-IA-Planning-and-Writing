@@ -174,7 +174,7 @@ export function renderRepresentationHub(state,icon,e){
  (remaining.length?catalog:'<p class="representation-filter-note">'+
   (total?"All matching tools are already featured above.":"No tools match this category.")+'</p>')+
  '<p class="representation-writing-reminder">'+icon("info")+
- ' <strong>Use in your IA:</strong> introduce each relevant figure before showing it, and interpret the actual mathematics afterwards. Saving a figure does not automatically establish a result.</p>'+
+ '<span class="inline-notice-copy"><strong>Use in your IA:</strong> introduce each relevant figure before showing it, and interpret the actual mathematics afterwards. Saving a figure does not automatically establish a result.</span></p>'+
  '</section>';
 }
 /** A larger canvas is activated only in C31 while one tool is open. */
