@@ -204,5 +204,45 @@ with sync_playwright() as pw:
  def preview(p):
   open_library(p);p.locator('#resource-search').fill('inference');detail(p,'inference');assert 'Library preview' in overlay(p).inner_text();assert 'not syllabus approval' in overlay(p).inner_text();assert saved(p)['entries'][0]['methodId']=='pmcc'
  run('resources-library-does-not-select-test',state(),preview)
+ def workshop_phone(p):
+  before=unchanged_fields(saved(p))
+  open_library(p)
+  p.locator('.resource-workshop-entry [data-action="resource-workshop"]').click()
+  assert p.locator('[data-workshop-home="true"]').count()==1
+  assert p.locator('#workshop-route option').count()==17
+  p.locator('#workshop-route').select_option('voronoi')
+  assert 'Voronoi cell' in p.locator('#resource-results').inner_text()
+  assert 'No pilot lessons match this selection' in p.locator('#resource-results').inner_text()
+  p.locator('#workshop-search').fill('distance')
+  assert 'Euclidean distance' in p.locator('#resource-results').inner_text()
+  assert p.locator('#workshop-search').input_value()=='distance'
+  assert overlay(p).evaluate('(e)=>e.scrollWidth<=e.clientWidth+1')
+  overlay(p).screenshot(path=str(OUT/'workshop-glossary-phone.png'),animations='disabled')
+  p.locator('[data-action="resource-workshop-tools"]').first.click()
+  assert p.locator('#resource-search').count()==1
+  p.locator('[data-action="close-drawer"]').click()
+  assert unchanged_fields(saved(p))==before
+ run('workshop-route-glossary-phone',state(route='planning'),workshop_phone,360,740)
+ def workshop_lesson(p):
+  before=unchanged_fields(saved(p))
+  open_library(p)
+  p.locator('.resource-workshop-entry [data-action="resource-workshop"]').click()
+  assert p.locator('[data-workshop-lesson="pearson"]').count()==1
+  assert 'r = 0.8' in overlay(p).inner_text()
+  p.locator('[data-action="resource-workshop-step"][data-workshop-step="help"]').click()
+  p.locator('[data-action="resource-workshop-choice"][data-workshop-choice="negative"]').click()
+  assert "That's right" in p.locator('.workshop-feedback.correct').inner_text()
+  p.locator('[data-action="resource-workshop-step"][data-workshop-step="turn"]').click()
+  assert 'Independent practice' in overlay(p).inner_text()
+  p.locator('.workshop-reveal > summary').click()
+  assert '0.837' in overlay(p).inner_text()
+  p.locator('.workshop-technology [data-action="resource-open"]').click()
+  assert p.locator('[data-resource-detail="sheets-pmcc"]').count()==1
+  p.locator('[data-action="resource-workshop"][data-workshop-resume="true"]').click()
+  assert p.locator('[data-workshop-lesson="pearson"]').count()==1
+  overlay(p).screenshot(path=str(OUT/'workshop-guided-desktop.png'),animations='disabled')
+  p.locator('[data-action="close-drawer"]').click()
+  assert unchanged_fields(saved(p))==before
+ run('workshop-guided-calculation-desktop',state(),workshop_lesson,1440,1000)
  browser.close()
 (OUT/'resources-results.json').write_text(json.dumps(results,indent=2));print(json.dumps(results,indent=2));assert all(r['status']=='passed' for r in results)
