@@ -10,13 +10,13 @@ Opening a card reveals an editable suggested starting question, one optional nar
 
 Up to three ideas can be saved, edited, compared and removed. The four optional checks are interest, access, mathematical purpose and knowing a first step. There are no numerical scores, predicted grades or automatically selected winners. A variation can be saved separately through the optional narrowing panel.
 
-## Source basis and editorial additions
+## Editorial basis and additions
 
-The requested JIS SL Maths IA Guide 2025 was supplied by the user. Page 8 prioritises easily accessible data, connections to mathematics on the course and getting started quickly. Pages 9-10 ask about everyday activities, hobbies and existing records from organisations students belong to. Page 11 supports refining an investigation instead of repeatedly restarting. Page 24 introduces a simple diagram, table or simplified problem as a starting point; page 45 describes engagement through mathematical choices and exploration.
+The idea explorer helps students begin with accessible data, relevant course mathematics, everyday activities, hobbies and existing records, while allowing them to refine an investigation instead of repeatedly restarting. A simple diagram, table or reduced problem can support a productive first step. Engagement arises from genuine mathematical decisions, not just from choosing a personal topic.
 
-Those principles informed the implementation. The twelve categories, 48 direction cards, checks and interactions are NEW Pathfinder editorial work, not quotations or prescribed titles from the JIS guide. The theoretical starting-material option continues the website's established route; it is not silently attributed to the guide's data-first graphic. The full school guide is not copied into this public repository.
+The twelve categories, 48 direction cards, checks and interactions are Pathfinder editorial work: prompts for student inquiry, not prescribed IA titles. The option to begin with theoretical mathematics complements practical data-first starting points.
 
-The guide's discussion of problems encountered and the site's later distinction between practical obstacles and mathematical limitations are not reconciled or rewritten here. This pass concerns finding and comparing ideas only.
+The distinction between practical obstacles and mathematical limitations belongs to subsequent guidance. This pass concerns finding and comparing ideas only.
 
 ## Ownership and safe adoption
 
