@@ -599,7 +599,8 @@ export function insightToolkit(s,{compact=false}={}){
  const forHome=all.filter(x=>!x.planned||x.type==='direction'||x.id==='investigative-route'||x.id==='sampling-plan'||x.id.startsWith('planned-accuracy:'));
  const pinned=forHome.filter(x=>x.id==='working-title'||x.id==='aim'||x.id==='investigative-route'||x.id==='sampling-plan'||
   (x.id.startsWith('planned-accuracy:')&&x.id===forHome.find(y=>y.id.startsWith('planned-accuracy:'))?.id)).slice(0,5);
- const preview=compact?[...pinned,...forHome.filter(x=>!pinned.includes(x)).slice(-(5-pinned.length))]:[];
+ const preview=compact?[...pinned,...(pinned.length<5?
+  forHome.filter(x=>!pinned.includes(x)).slice(-(5-pinned.length)):[])]:[];
  const uniquePreview=[...new Map(preview.map(x=>[x.id,x])).values()].slice(0,5);
  const card=x=>'<button type="button" class="insight-toolkit-card insight-'+e(x.type)+'"'+jumpAttrs(x)+'>'+
   insightToken(x,{compact:true})+'<strong>'+e(short(x.title,62))+'</strong>'+
