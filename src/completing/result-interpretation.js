@@ -200,7 +200,9 @@ export function resultInterpretationGuidance(state,entry){
  }
  if(!guide&&(!methodId||methodId==='follow-journey')){
   const route=selectedInvestigativeRoute(state);
-  if(route&&(entry.phase==='first'||methodId==='follow-journey')&&ROUTE_INTERPRETATIONS[route.id]){
+  const plannedKind=str(state?.planning?.fields?.kind);
+  const compatible=!plannedKind||plannedKind==='unsure'||route?.kinds?.includes(plannedKind);
+  if(route&&compatible&&(entry.phase==='first'||methodId==='follow-journey')&&ROUTE_INTERPRETATIONS[route.id]){
    guide=ROUTE_INTERPRETATIONS[route.id];key=route.id;origin='planned-route';
   }
  }
@@ -225,6 +227,7 @@ export function renderResultInterpretationAid(state,entry,{icon=defaultIcon,e=es
  const current=(label,body)=>'<div class="result-insight-anchor"><strong>'+e(label)+'</strong><p>'+e(preview(body))+'</p></div>';
  const part=(label,value)=>'<div class="result-insight-step"><strong>'+e(label)+'</strong><p>'+e(value)+'</p></div>';
  const descriptor=g.origin==='planned-route'?'A question suggested by your planned route, not confirmation of a method used':
+  g.origin==='general'?'General mathematical reading questions — no specific method was confirmed':
   'Method-specific support based on the mathematical work you recorded';
  return '<aside class="result-interpretation-aid'+(reduced?' is-reduced':'')+
   '" data-result-interpretation="'+e(g.key)+'" data-insight-source="'+e('result:'+g.entryId)+'">'+
