@@ -139,3 +139,27 @@ test("Untrusted student text is escaped in the consolidated conclusion",()=>{
  assert(html.includes("&lt;script&gt;"));
  assert(!html.includes('<script>alert(1)</script>'));
 });
+
+test("Conclusion gives method-specific caution and actual-result questions before asking for written decisions",()=>{
+ const s=make();
+ s.entries[1].nextQuestion="Would a quadratic model reduce the curved residuals?";
+ s.entries[1].nextWhy="Patterned residuals mean the straight-line fit may be limited";
+ const before=JSON.stringify(s),html=render(s);
+ const meaning=html.split('data-conclusion-part="meaning"')[1].split('data-conclusion-part="next"')[0];
+ const caution=meaning.indexOf('class="conclusion-specific-tip"');
+ const interpretation=meaning.indexOf('data-bind="completion.fields.conclusionBenefit"');
+ assert(caution>=0&&interpretation>caution,
+  'The mathematical reminder should be read before the interpretation task');
+ const next=html.split('data-conclusion-part="next"')[1];
+ const help=next.indexOf('class="conclusion-next-help"');
+ const extension=next.indexOf('data-bind="completion.fields.conclusionExtension"');
+ assert(help>=0&&extension>help,
+  'Optional questions grounded in the result should precede the extension box');
+ assert(next.includes("Would a quadratic model reduce the curved residuals?"));
+ assert(!html.includes("A planned calculation is evidence"));
+ const reduced=structuredClone(s);reduced.ui.adviceMode="reduced";
+ const compact=render(reduced);
+ assert(compact.indexOf('class="conclusion-specific-tip"')<
+        compact.indexOf('data-bind="completion.fields.conclusionBenefit"'));
+ assert.equal(JSON.stringify(s),before,"Changing order must not create or alter student results");
+});
