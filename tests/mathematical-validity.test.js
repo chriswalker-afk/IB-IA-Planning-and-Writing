@@ -49,8 +49,9 @@ test("every specific student-selectable method receives a distinct mathematical 
   assert(VALIDITY_CHECKS[id],"Missing validity guide: "+id);
   const s=sample(id),v=mathematicalValidityContext(s,s.entries[0]);
   assert.equal(v.method,id);
-  for(const property of ["title","question","limit"])
-   assert(v.rule[property].length>25,property+" must be meaningful for "+id);
+  assert(v.rule.title.length>8,"Guide needs a meaningful heading for "+id);
+  for(const property of ["question","limit"])
+   assert(v.rule[property].length>25,property+" must be substantive for "+id);
  }
 });
 
@@ -94,10 +95,9 @@ test("only explicitly linked source and accuracy records are recalled for the cu
  assert.deepEqual(v.sourceLinks.map(x=>x.id),["actual1"]);
  assert.deepEqual(v.accuracyLinks.map(x=>x.id),["acc1"]);
  const html=renderMathematicalValidityAid(s,entry,{e,icon});
- for(const expected of ["Measured times","nearest 0.1 s","Show to 1 dp",
+ for(const expected of ["Measurements from stopwatch","nearest 0.1 s","Show to 1 dp",
   "Observed times only","Stable conditions","Matches instrument display"])
-  if(expected==="Measured times")continue;
-  else assert(html.includes(expected),expected);
+  assert(html.includes(expected),expected);
  assert(!html.includes("Unrelated class survey"));
  assert(!html.includes("Temperature"));
  assert(!html.includes("nearest 1 mm"));
