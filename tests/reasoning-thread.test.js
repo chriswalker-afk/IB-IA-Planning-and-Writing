@@ -109,6 +109,27 @@ test('shared follow-up notes are rehydrated when C35 moves to a different comple
  assert.equal(original.nextQuestion,'Is the stationary point feasible?');
 });
 
+test('a first-stage legacy fallback cannot inherit notes from a later mathematical stage',()=>{
+ const s=make(),first=s.entries[0];
+ first.nextQuestion='';first.nextWhy='';
+ s.entries.push({id:'later',phase:'substantial',status:'completed',fromEntryId:first.id,
+  title:'Later model',result:'A measured prediction',
+  nextQuestion:'Is the prediction valid outside the range?',nextWhy:'The domain may be too narrow.'});
+ s.completion.current='C35';s.completion.nextFromEntryId='later';s.completion.activeEntryIndex=1;
+ s.completion.fields.nextQuestion='Is the prediction valid outside the range?';
+ s.completion.fields.nextReason='The domain may be too narrow.';
+ const firstNotes=recordedDecisionNotes(s,first);
+ assert.equal(firstNotes.question,'');
+ assert.equal(firstNotes.reason,'');
+ setCompletionNode(s,'C30');
+ assert.equal(s.completion.activeEntryIndex,0);
+ assert.equal(s.completion.fields.nextQuestion,'');
+ assert.equal(s.completion.fields.nextReason,'');
+ setCompletionNode(s,'C35');
+ assert.equal(s.completion.nextFromEntryId,'later');
+ assert.equal(s.completion.fields.nextQuestion,'Is the prediction valid outside the range?');
+});
+
 test('C35H and C35P amendments remain attached to the selected result',()=>{
  const s=make();s.completion.nextFromEntryId='step-one';
  for(const node of ['C35H','C35P']){
