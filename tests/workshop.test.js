@@ -79,6 +79,7 @@ test('workshop: selected method lookup is explicit, never inferred from title or
  assert.equal(workshopLessonForEntry({methodId:'optimisation'}),'optimisation');
  assert.equal(workshopLessonForEntry({kind:'distribution',methodId:''}),'descriptive');
  assert.equal(workshopLessonForEntry({methodId:'normal',title:'PMCC calculations'}),'');
+ assert.equal(workshopLessonForEntry({kind:'table',methodId:''}),'' ,'A plain table does not establish that data are categorical');
  assert.equal(workshopLessonForEntry(null),'');
 });
 test('workshop: browsing all definitions and lessons preserves existing tool library',()=>{
