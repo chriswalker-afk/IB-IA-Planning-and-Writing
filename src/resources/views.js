@@ -3,6 +3,7 @@ import {resourceContext,resourceSuggestions,filterResources} from './context.js'
 import {escapeHtml as e,icon} from '../ui/primitives.js';
 import {REPRESENTATION_TOOLS} from '../diagrams/representation-registry.js';
 import {renderMlaCitationGuide} from './mla-guide.js';
+import {renderWorkshop} from '../workshop/views.js';
 const hosts=new Set(['support.google.com','help.desmos.com','www.desmos.com','runestone.academy','www.dataspire.org','www.lehman.cuny.edu','datahelpdesk.worldbank.org','databank.worldbank.org','automeris.io','www.perkins.org','knilt.arcc.albany.edu','mathispower4u.com','www.youtube.com','sheets.google.com','forms.google.com','docs.google.com','style.mla.org','www.ibo.org','data.worldbank.org']);
 export function safeResourceUrl(value){
  try{const u=new URL(value);return u.protocol==='https:'&&hosts.has(u.hostname)&&!u.username&&!u.password?u.href:'';}catch{return '';}
@@ -14,11 +15,12 @@ const badge=r=>'<span class="resource-badge">'+e(TOOLS[r.tool].name)+'</span>';
 export function resourcePrompt(state,options={}){
  const x=resourceContext(state,options),list=resourceSuggestions(state,options),r=list[0],data='data-resource-help="'+!!options.help+'"';
  const browse=button('browse','Tools & tutorials',data);
- if(!r||state.resources?.hidden?.[x.hiddenKey])return '<div class="resource-quiet">'+browse+'</div>';
+ const learn=button('workshop','Maths Workshop: definitions & practice',data);
+ if(!r||state.resources?.hidden?.[x.hiddenKey])return '<div class="resource-quiet">'+browse+learn+'</div>';
  return '<section class="resource-prompt" aria-label="Optional tools and tutorials" data-resource-suggestion="'+e(r.id)+'">'+
   '<div class="resource-eyebrow">'+icon('book')+' TOOLS & TUTORIALS <span>Optional</span></div>'+
   '<strong>'+e(r.title)+'</strong><p>'+e(r.when)+'</p><div class="button-row">'+guideButton(r.id,r.videos.length?'Steps & video':'Read the steps',!!options.help)+
-  button('browse','Browse tools & tutorials',data)+button('hide','Hide for this task',data)+'</div></section>';
+  button('browse','Browse tools & tutorials',data)+learn+button('hide','Hide for this task',data)+'</div></section>';
 }
 function preferences(x){
  const select=(key,label,options,value)=>'<label class="resource-control" for="resource-pref-'+key+'"><span>'+e(label)+'</span><select id="resource-pref-'+key+'" data-resource-pref="'+key+'">'+options.map(([v,t])=>'<option value="'+v+'"'+(value===v?' selected':'')+'>'+e(t)+'</option>').join('')+'</select></label>';
@@ -52,9 +54,12 @@ export function resourceList(session){
   (visible.length<list.length?button('more','Show more guides'):'');
 }
 export function resourceDrawer(state,session){
+ if(session.mode==='workshop')return renderWorkshop(state,session);
  const x=resourceContext(state,{help:session.help}),r=resourceById(session.id);
  const close=button('close',session.parent==='stuck'?'Back to I am stuck':'Return to my work');
  const intro='<p class="resource-context">'+e(x.label.slice(0,160))+'</p>';
+ const workshopAction='<button type="button" class="btn btn-secondary" data-action="resource-workshop"'+
+  (session.workshopReturn?' data-workshop-resume="true"':'')+'>Maths Workshop: definitions & guided practice '+icon('arrow-right')+'</button>';
  if(r){
   const chosen=isCurrentGuide(state,session,r.id),mode=chosen?(x.planning?'Planning preview':r.id==='pmcc-meaning'||r.id==='model-check'?'Understand and check':'Learn how'):'Library preview';
   const tool=r.tool==='general'?'':link(TOOLS[r.tool].url,'Open '+TOOLS[r.tool].name);
@@ -62,7 +67,7 @@ export function resourceDrawer(state,session){
    '<div class="resource-video"><strong>'+e(v.publisher)+'</strong><p>'+e(v.find)+'</p>'+(v.duration?'<p class="resource-small">'+e(v.duration)+'</p>':'')+
    link(v.url,v.url.includes('youtube.com')?'Open external video':'Open video on publisher page')+(v.note?'<p class="resource-small">'+e(v.note)+'</p>':'')+'</div>').join('')+
    '<p class="resource-small">Publisher listings checked 15 October 2026. Videos have not been watched end to end for this library; captions and school access may vary. The written steps here are the fallback.</p></details>':'<p class="resource-small resource-no-video">Written guide available. No reviewed task-specific video is linked here yet.</p>';
-  return '<div class="resource-library" data-resource-detail="'+e(r.id)+'"><div class="button-row">'+button('list','Back to library')+close+'</div>'+intro+
+  return '<div class="resource-library" data-resource-detail="'+e(r.id)+'"><div class="button-row">'+button('list','Back to library')+workshopAction+close+'</div>'+intro+
    '<div class="resource-eyebrow">'+e(mode)+' '+badge(r)+'</div><h3 class="resource-heading" tabindex="-1">'+e(r.title)+'</h3>'+
    '<p class="resource-prerequisite"><strong>Use this when:</strong> '+e(r.when)+'</p>'+
    '<p class="resource-small">'+e(TOOLS[r.tool].device)+'</p>'+
@@ -90,6 +95,7 @@ export function resourceDrawer(state,session){
   '<details class="resource-mla-feature"><summary>Referencing made easy: MLA</summary>'+
    '<p>One Google Docs method, a worked Maths IA dataset citation and simple decisions about what to cite.</p>'+
    guideButton('mla-citations','Open MLA referencing guide',session.help)+'</details>'+
+  '<div class="resource-workshop-entry"><strong>Maths Workshop</strong><p>Need a definition, a worked calculation, or some guided practice? Learn the mathematics here; use the existing guides for software instructions.</p>'+workshopAction+'</div>'+
   resourceCreatorHub({compact:true})+'</div>';
  return '<div class="resource-library"><p>Find a guide for the next task in your IA. Written steps come first; external videos are optional.</p>'+intro+close+
   relevant+
