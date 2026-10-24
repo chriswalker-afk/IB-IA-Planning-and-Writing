@@ -304,6 +304,16 @@ test("real writing screens and saved project round trips keep validity checks wi
   setCompletionNode(s,node);
   const html=view(s);
   assert(html.includes('data-course-understanding="math2"')||html.includes('data-math-validity="math2"'),node);
+  if(["C40","C50"].includes(node)){
+   assert(html.includes('</details><aside class="math-course-aid'),
+    "The optional course panel must not be nested inside the method disclosure: "+node);
+   // Existing browser journeys target the direct summary of this disclosure.
+   // Adding another summary beneath it breaks strict-mode navigation.
+   const anchor=html.indexOf('<details class="math-stage-optional-method">');
+   const course=html.indexOf('data-course-understanding="math2"');
+   assert(anchor>=0&&course>anchor,node);
+   assert(html.lastIndexOf("</details>",course)>anchor,node);
+  }
  }
  setCompletionNode(s,"C60");
  let html=view(s);
