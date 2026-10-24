@@ -20,8 +20,9 @@ export function recordedDecisionNotes(state,entry){
  if(!entry)return {question:"",reason:""};
  const c=state?.completion||{},entries=state?.entries||[];
  const first=entry.phase==="first"&&(
-  entries[c.activeEntryIndex]?.id===entry.id||c.nextFromEntryId===entry.id||
-  entries.filter(x=>x?.phase==="first").length===1
+  (c.current==="C30"&&entries[c.activeEntryIndex]?.id===entry.id)||
+  (["C35","C35H","C35P"].includes(c.current)&&c.nextFromEntryId===entry.id)||
+  (entries.length===1&&entries[0]?.id===entry.id&&!c.nextFromEntryId)
  );
  const question=value(entry.nextQuestion)||(first?value(c.fields?.nextQuestion):"");
  const reason=value(entry.nextWhy)||(first?value(c.fields?.nextReason):"");
