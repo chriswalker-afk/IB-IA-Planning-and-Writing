@@ -1422,3 +1422,60 @@ test("Graph Studio Pass 3 surfaces advanced fitting choices through the complete
  assert(!h.html.includes('data-graph-model-period="model-1"'));
  assert.equal(h.saved.entries.length,0);
 });
+
+test("Pass 2: IA method choice, readiness and PMCC cautions appear before dependent decisions",()=>{
+ const view=node=>{
+  const s=createProjectState();s.route="completing";s.completion.current=node;
+  s.planning.fields.aim="Which mathematical model explains the observed curvature?";
+  s.entries=[{id:"first",phase:"first",kind:"scatter",methodId:"pmcc",
+    status:"completed",result:"Actual Pearson r = 0.45",localTakeaway:"Only moderate linear association"}];
+  if(["C40","C50"].includes(node)){
+   s.entries.push({id:"second",phase:"substantial",fromEntryId:"first",
+    title:"Check a better mathematical method",status:"planned",result:"",
+    purpose:"Compare a curved model",bridge:"A straight line failed to capture the curve"});
+   if(node==="C50"){
+    s.entries[1].status="completed";
+    s.entries[1].result="A quadratic gives smaller residuals";
+    s.entries.push({id:"third",phase:"substantial",fromEntryId:"second",
+     title:"Check an optimum",status:"planned",result:"",methodId:"optimisation"});
+    s.completion.activeEntryIndex=2;
+   }else s.completion.activeEntryIndex=1;
+  }
+  s.scratch.introduction="Original draft text must survive navigation";
+  return {h:createHarness(s),s};
+ };
+ const c22=view("C22").h.html;
+ const chosen=c22.indexOf("Which method did you actually choose?");
+ const alternative=c22.indexOf("Another genuinely feasible method");
+ const reason=c22.indexOf("Why is it suitable for this aim?");
+ assert(chosen>=0&&alternative>chosen&&reason>alternative,
+  "Compare alternatives only after identifying the actual chosen method");
+ const c20=view("C20").h.html;
+ const source=c20.indexOf('class="first-maths-optional-source"');
+ const proceed=c20.indexOf('class="first-maths-continue"');
+ assert(source>=0&&proceed>source,
+  "Optional source/sampling/accuracy checks must appear before the final continue control");
+ assert(c20.includes('data-node="C30"'));
+ const c35=view("C35P").h.html;
+ const warning=c35.indexOf("Association is not causation");
+ const interpretation=c35.indexOf("What value or finding did I calculate and what does it mean?");
+ const nextQuestion=c35.indexOf("My next question, if another is needed");
+ assert(warning>=0&&interpretation>warning&&nextQuestion>interpretation,
+  "The mathematical caution must inform both PMCC interpretation and follow-up decisions");
+ for(const node of ["C40","C50"]){
+  const {h}=view(node),html=h.html;
+  const start=html.indexOf('data-show-first-part="introduce"');
+  const end=html.indexOf('data-show-first-part="show"',start);
+  assert(start>=0&&end>start,node+": missing first mathematical writing section");
+  const first=html.slice(start,end);
+  const question=first.indexOf("What mathematical question is this stage investigating?");
+  const method=first.indexOf("The mathematical approach for THIS stage");
+  const bridge=first.indexOf("My bridge from the previous result");
+  const justification=first.indexOf("Why is the chosen approach appropriate here?");
+  assert(question>=0&&method>question&&bridge>method&&justification>bridge,
+   node+": identify the next question and technique before explaining why the technique works");
+  assert(h.saved.scratch.introduction==="Original draft text must survive navigation");
+  assert(!h.saved.entries.some(x=>x.status==="planned"&&x.result),
+   node+": no mathematics should be invented by rendering");
+ }
+});

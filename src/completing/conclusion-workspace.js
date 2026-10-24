@@ -172,20 +172,20 @@ export function renderConclusionWorkspace({state,e,icon,field,F,criterionMarkedW
    '<div class="conclusion-part-title"><span class="conclusion-part-number">2</span><div>'+
      '<h3>What does that answer mean, and where does it apply?</h3>'+
      '<p>Explain the significance for your original question or purpose. Include only the assumptions, uncertainty or domain restrictions that change the conclusion.</p></div>'+stuckBubble("part:meaning")+'</div>'+
+   '<p class="conclusion-specific-tip">'+icon("lightbulb")+
+    '<span class="inline-notice-copy"><strong>Mathematical reminder:</strong> '+e(mathematicalTip(state))+'</span></p>'+
    criterionMarkedWritingBox(F("conclusionBenefit","My interpretation and the important limits",
     "What can I responsibly conclude, and what does the mathematics NOT establish?",
     {type:"textarea",rows:5}),["completing:C60:meaningAndLimits"])+
-   '<p class="conclusion-specific-tip">'+icon("lightbulb")+
-    '<span class="inline-notice-copy"><strong>Mathematical reminder:</strong> '+e(mathematicalTip(state))+'</span></p>'+
   '</section>'+
   '<section class="conclusion-writing-part conclusion-potential" data-conclusion-part="next">'+
    '<div class="conclusion-part-title"><span class="conclusion-part-number">3</span><div>'+
     '<h3>Potential next steps</h3><span class="conclusion-part-optional">OPTIONAL</span>'+
     '<p>Is there one or two worthwhile mathematical questions that your findings leave open? Say what you would investigate and why it could help. No speculative extension is required.</p></div>'+stuckBubble("part:next")+'</div>'+
+   potentialQuestions(state,e,icon)+
    criteriaField(F("conclusionExtension","A worthwhile future mathematical question (if any)",
     "My result raises the question of … . Investigating this could …",
     {type:"textarea",rows:3}),"completing:C63:extension")+
-   potentialQuestions(state,e,icon)+
   '</section>'+
   previous+
   '<section class="conclusion-downloads" aria-label="Download your project">'+

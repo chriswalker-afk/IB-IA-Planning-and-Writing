@@ -121,23 +121,23 @@ export function primaryDataSampling(state,{F,select,e,icon}){
  return label(e,icon,2)+summary(state,{e,icon})+
  '<section class="primary-focus-block">'+
  '<div class="primary-section-title">'+icon('layers')+' <div><h3>Who or what will you choose?</h3>'+
- '<p>Define the group and one sampling unit, then choose a realistic method before collecting anything.</p></div></div>'+
+ '<p>Define the group and one sampling unit, check whether a complete sampling frame exists, then choose a realistic method.</p></div></div>'+
  '<div class="data-quality-pair">'+
  F('primaryPopulation','Population or objects','e.g. the Year 12 students I can access')+
  F('primarySamplingUnit','One sampling unit','e.g. one pupil, one football, or one trial')+'</div>'+
- select('primarySamplingMethod','My census or sampling approach',SAMPLING_METHODS.map(m=>[m.id,m.label]))+
- methodCard+
  select('primarySamplingFrame','Could you identify every eligible unit? (sampling frame)',[
   ['yes','Yes — I have a suitable list or way to identify units'],
   ['no','No — I cannot identify every eligible unit'],
   ['unsure','I need to check'],
   ['not-applicable','Not applicable to this investigation']])+
+ select('primarySamplingMethod','My census or sampling approach',SAMPLING_METHODS.map(m=>[m.id,m.label]))+
+ methodCard+
+ (f.primarySamplingFrame==='no'&&['simple-random','systematic','stratified','cluster'].includes(f.primarySamplingMethod)?
+  '<p class="data-quality-warning">'+icon('info')+'<span class="inline-notice-copy">'+' This method normally needs a suitable sampling frame. You might need a different approach or keep the plan uncertain.</span></p>':'')+
  select('primaryRepeatable','Could you start quickly and collect more observations later?',[
   ['yes','Yes — easy to start and repeat or extend'],
   ['maybe','Possibly — I need to check access or timing'],
   ['no','Not easily — I may need a smaller plan']])+
- (f.primarySamplingFrame==='no'&&['simple-random','systematic','stratified','cluster'].includes(f.primarySamplingMethod)?
-  '<p class="data-quality-warning">'+icon('info')+'<span class="inline-notice-copy">'+' This method normally needs a suitable sampling frame. You might need a different approach or keep the plan uncertain.</span></p>':'')+
  '<details class="primary-step-extra"><summary>'+icon('pencil')+' Explain or refine my sampling decision (optional) '+icon('chevron-down')+'</summary>'+
  '<div class="primary-step-extra-content">'+
  F('primarySamplingFrameDetails','Describe the frame or difficulty','e.g. a class list, or no complete list')+

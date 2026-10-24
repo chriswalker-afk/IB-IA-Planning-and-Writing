@@ -743,7 +743,7 @@ export function createCompletingViews(ctx){
     '<button type="button" class="btn btn-primary" data-action="completion-open" data-node="C30">'+
     'Begin first mathematics '+icon("arrow-right")+'</button></div>';
    return{intro:"Introduce one purposeful mathematical step that connects naturally to your aim. Use your saved source and route choices, but do not treat a plan as a result.",
-    html:introFields+renderCitationReminder(s,"first-maths",icon,e)+proceed+sourceDetails};
+    html:introFields+renderCitationReminder(s,"first-maths",icon,e)+sourceDetails+proceed};
   }
   case "C21S":return{intro:"If you have actual observations, record how the population or sample was defined and what can responsibly be inferred.",
    html:F("statisticalPopulation","Population or group the analysis could describe","The true target population, not every person in general")+
@@ -770,8 +770,8 @@ export function createCompletingViews(ctx){
     F("theoreticalQuestion","Anything to discuss about course suitability?","Teacher discussion remains optional but useful",{type:"textarea",rows:2})
   };
   case "C22":return{intro:"Explain why your actual approach fits the mathematical question better than one realistic alternative.",
-   html:F("alternativeMethod","Another genuinely feasible method","A different source, measurement tool or modelling assumption",{type:"textarea",rows:2})+
-    F("chosenMethod","Which method did you actually choose?","Not simply what you planned",{type:"textarea",rows:2})+
+   html:F("chosenMethod","Which method did you actually choose?","Not simply what you planned",{type:"textarea",rows:2})+
+    F("alternativeMethod","Another genuinely feasible method","A different source, measurement tool or modelling assumption",{type:"textarea",rows:2})+
     criteriaField(F("methodReason","Why is it suitable for this aim?","What makes the resulting mathematics useful, reliable or interpretable?",{type:"textarea",rows:3}),"completing:C22:methodReason")+
     info("No generic methods essay","Compare only relevant approaches; convenience alone is not a mathematical justification.")
   };
@@ -1082,12 +1082,12 @@ export function createCompletingViews(ctx){
   };
   case "C35P":return{intro:"Use this only after you have actually calculated Pearson's correlation coefficient.",
    html:bridgeFromPrior()+coachBlock(sourceResultForNext(s),{allowChoices:false})+
+    info("Association is not causation","Even a strong coefficient does not show that one variable caused another. Avoid forcing a straight-line regression on a curved pattern.")+
     renderResultInterpretationAid(s,sourceResultForNext(s),{icon,e,reduced:isAdviceReduced(s)})+
     criteriaField(F("pmccInterpretation","What value or finding did I calculate and what does it mean?","Describe actual direction and strength of LINEAR association",{type:"textarea",rows:3}),"completing:C35P:title")+
     (f.scatterPattern?smallSummary("Observed scatter shape",f.scatterPattern):"")+
     F("nextQuestion","My next question, if another is needed","A model, outlier check, different explanation, or no further calculation",{type:"textarea",rows:2})+
     F("nextReason","Why would that next step help the aim?","The actual r and graph—not a planned coefficient—drive the choice",{type:"textarea",rows:2})+
-    info("Association is not causation","Even a strong coefficient does not show that one variable caused another. Avoid forcing a straight-line regression on a curved pattern.")+
     guides.bivariateHelp(n,{reduced:isAdviceReduced(s)})
   };
 
@@ -1121,6 +1121,11 @@ export function createCompletingViews(ctx){
     smallSummary("My investigation aim",currentAim())+
     entryField("title","What mathematical question is this stage investigating?",
      "A specific mathematical question arising from the previous result",{type:"textarea",rows:2})+
+    '<div class="journey-stage-method"><strong>'+icon("compass")+
+     ' The mathematical approach for THIS stage</strong>'+
+     '<p>Choose the method you are using or have actually used. This changes the possible outcomes you can select in Section 3; it does not claim that the calculation has been completed.</p>'+
+     entryField("methodId","Mathematical method","",{type:"select",options:METHOD_OPTIONS})+
+    '</div>'+
     '<div class="show-first-writing-field">'+
      criterionMarkedWritingBox(entryField("bridge","My bridge from the previous result",
       MATHEMATICAL_LINK_HINT,{type:"textarea",rows:3}),["completing:"+n+":bridgeA"])+'</div>'+
@@ -1128,11 +1133,7 @@ export function createCompletingViews(ctx){
      "Explain how the technique answers the outstanding question. Combine this with your bridge in the IA so that the shared reason appears once.",{type:"textarea",rows:3}),"completing:"+n+":title")+
     renderConsequentialChoice(state,icon,e,{entry:substantial,phase:"later",reduced:isAdviceReduced(state)})+
     renderStorySynthesis(state,icon,e,{entry:substantial,phase:"later",reduced:isAdviceReduced(state)})+
-    '<div class="journey-stage-method"><strong>'+icon("compass")+
-     ' The mathematical approach for THIS stage</strong>'+
-     '<p>Choose the method you are using or have actually used. This changes the possible outcomes you can select in Section 3; it does not claim that the calculation has been completed.</p>'+
-     entryField("methodId","Mathematical method","",{type:"select",options:METHOD_OPTIONS})+
-    '</div>'+
+
     '<details class="math-stage-optional-method"><summary>'+icon("book")+
       ' Review mathematical technique, syllabus understanding and alternatives (optional) '+icon("chevron-right")+'</summary>'+
       entryField("technique","Mathematical technique or argument","e.g. quadratic modelling, integration or a proof")+

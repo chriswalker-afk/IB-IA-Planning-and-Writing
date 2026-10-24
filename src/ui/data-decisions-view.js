@@ -42,9 +42,6 @@ export function samplingPlanner(state,{F,select,e,icon}){
  '<div class="data-quality-pair">'+
  F('primaryPopulation','My target population','e.g. Year 12 students at my school (not all teenagers)')+
  F('primarySamplingUnit','What is one sampling unit?','e.g. one student, one football, one recorded trial')+'</div>'+
- select('primarySamplingMethod','How will you select units or obtain observations?',SAMPLING_METHODS.map(m=>[m.id,m.label]))+
- samplingSpotlight(f,e,icon)+
- guide(e,icon)+
  select('primarySamplingFrame','Can you identify every eligible sampling unit (a sampling frame)?',[
  ['yes','Yes — I have a suitable list or way to identify units'],
  ['no','No — I cannot identify all eligible units'],
@@ -52,6 +49,9 @@ export function samplingPlanner(state,{F,select,e,icon}){
  ['not-applicable','Not applicable to this investigation']])+
  (f.primarySamplingFrame?F('primarySamplingFrameDetails',
  'What is the frame, or what is the difficulty? (optional)','e.g. A current class list, a directory, or no complete list of observations'): '')+
+ select('primarySamplingMethod','How will you select units or obtain observations?',SAMPLING_METHODS.map(m=>[m.id,m.label]))+
+ samplingSpotlight(f,e,icon)+
+ guide(e,icon)+
  select('primaryRepeatable','Could you start quickly and collect follow-up observations if useful?',[
  ['yes','Yes — I can start soon and return for more data'],
  ['maybe','Possibly — I would need to check access or timing'],

@@ -7,6 +7,7 @@ import {PLANNING_ROUTES} from '../src/planning/route-table.js';
 import {addPrimaryQuantity,editPrimaryQuantity,updatePrimaryQuantity,removePrimaryQuantity,reusePrimaryQuantity} from '../src/planning/primary-quantities.js';
 import {savePlannedAccuracy} from '../src/planning/data-decisions.js';
 import {createPlanningViews} from '../src/ui/planning-views.js';
+import {samplingPlanner} from '../src/ui/data-decisions-view.js';
 import {planningLearningTrail} from '../src/ui/living-journey.js';
 import {insightCapture} from '../src/ui/insight-threads.js';
 import {createPlanningEnvelope,normalizePlanningEnvelope,getFieldDiff,mergePlanningEnvelope} from '../src/handover/schema.js';
@@ -174,4 +175,46 @@ test('responsive CSS and browser hooks exist without hiding progress or required
  const app=readFileSync(new URL('../app.js',import.meta.url),'utf8');
  for(const term of ['plan-save-quantity','plan-edit-quantity','plan-use-quantity','plan-cancel-quantity','plan-remove-quantity'])
   assert(app.includes('case "'+term+'"'),term);
+});
+
+test('Prediction is written before optional plan refinement, including when refinement is expanded',()=>{
+ const state=s();
+ state.planning.current='N01P';
+ state.planning.fields.aim='How does hydration relate to bread volume?';
+ state.planning.fields.predictionId='X01';
+ state.planning.fields.prediction='I predict a rising volume';
+ state.planning.fields.predictionWhy='A small earlier case suggested an increase';
+ for(const open of [false,true]){
+  state.planning.refinePlanOpen=open;
+  const before=JSON.stringify(state),html=view(state);
+  const prediction=html.indexOf('data-path="planning.fields.prediction"');
+  const why=html.indexOf('data-path="planning.fields.predictionWhy"');
+  const refine=html.indexOf('class="planning-prediction-refine"');
+  assert(prediction>=0&&why>prediction&&refine>why,
+   'Consider a prediction and its reason before refining the mathematical plan');
+  assert(html.includes('data-action="plan-refine-toggle"'));
+  assert.equal(JSON.stringify(state),before,'Changing presentation must not alter planning decisions');
+ }
+});
+test('Sampling frame is checked before choosing a sampling method, in both planning renderers',()=>{
+ const state=s();state.planning.current='N03P2';
+ state.planning.fields.primarySamplingFrame='no';
+ state.planning.fields.primarySamplingMethod='simple-random';
+ const before=JSON.stringify(state),html=view(state);
+ const frame=html.indexOf('data-path="planning.fields.primarySamplingFrame"');
+ const method=html.indexOf('data-path="planning.fields.primarySamplingMethod"');
+ const caution=html.indexOf('class="data-quality-warning"');
+ assert(frame>=0&&method>frame&&caution>method);
+ assert(html.includes('This method normally needs a suitable sampling frame'));
+ const facade={
+  F:key=>'<input data-test-field="'+key+'">',
+  select:key=>'<select data-test-field="'+key+'"></select>',
+  e:v=>String(v??''),icon:()=>''
+ };
+ const alternate=samplingPlanner(state,facade);
+ const frameAlt=alternate.indexOf('data-test-field="primarySamplingFrame"');
+ const methodAlt=alternate.indexOf('data-test-field="primarySamplingMethod"');
+ assert(frameAlt>=0&&methodAlt>frameAlt,'Alternative sampling UI must follow the same decision order');
+ assert(alternate.includes('Your chosen method normally needs a suitable frame'));
+ assert.equal(JSON.stringify(state),before);
 });
