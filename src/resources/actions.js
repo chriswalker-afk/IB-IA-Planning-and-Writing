@@ -19,7 +19,7 @@ export function resourceAction(state,session,action,data={},parent=''){
    session.workshopId=lessonById(chosen)?chosen:(id?'':workshopLessonForEntry(ctx.entry));
    session.workshopTerm='';
   }
-  session.workshopStep='show';session.workshopChoice='';session.workshopReturn=true;
+  session.workshopStep='show';session.workshopCheckpoint=0;session.workshopChoice='';session.workshopReturn=true;
   return {ok:true,open:true};
  }
  if(action==='resource-workshop-tools'){session.mode='tools';session.id='';return {ok:true,open:true};}
@@ -27,7 +27,7 @@ export function resourceAction(state,session,action,data={},parent=''){
  if(action==='resource-workshop-lesson'){
   const id=String(data.workshopId||'');
   if(!lessonById(id))return {ok:false,error:'That mathematical lesson is not available.'};
-  session.mode='workshop';session.workshopId=id;session.workshopTerm='';session.workshopStep='show';session.workshopChoice='';
+  session.mode='workshop';session.workshopId=id;session.workshopTerm='';session.workshopStep='show';session.workshopCheckpoint=0;session.workshopChoice='';
   return {ok:true,open:true};
  }
  if(action==='resource-workshop-term'){
@@ -39,11 +39,20 @@ export function resourceAction(state,session,action,data={},parent=''){
  if(action==='resource-workshop-step'){
   const step=String(data.workshopStep||'');
   if(!lessonById(session.workshopId)||!['show','help','turn'].includes(step))return {ok:false,error:'That practice step is not available.'};
-  session.workshopStep=step;session.workshopChoice='';return {ok:true,open:true};
+  session.workshopStep=step;session.workshopCheckpoint=0;session.workshopChoice='';return {ok:true,open:true};
+ }
+ if(action==='resource-workshop-checkpoint'){
+  const parts=lessonById(session.workshopId)?.guided?.parts;
+  const direction=Number(data.workshopDirection);
+  if(session.workshopStep!=='help'||!parts||![-1,1].includes(direction))return {ok:false,error:'Checkpoint unavailable.'};
+  const index=(session.workshopCheckpoint||0)+direction;
+  if(index<0||index>=parts.length)return {ok:false,error:'Checkpoint unavailable.'};
+  session.workshopCheckpoint=index;session.workshopChoice='';return {ok:true,open:true};
  }
  if(action==='resource-workshop-choice'){
   const l=lessonById(session.workshopId),choice=String(data.workshopChoice||'');
-  if(session.workshopStep!=='help'||!l?.guided.options.some(([id])=>id===choice))return {ok:false,error:'Choose one of the practice answers.'};
+  const exercises=l?.guided?.parts||[l?.guided];const current=exercises[session.workshopCheckpoint||0];
+  if(session.workshopStep!=='help'||!current?.options?.some(([id])=>id===choice))return {ok:false,error:'Choose one of the practice answers.'};
   session.workshopChoice=choice;return {ok:true,open:true};
  }
  if(action==='resource-creator-open'){
