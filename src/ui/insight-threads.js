@@ -643,7 +643,7 @@ export function insightToolkit(s,{compact=false}={}){
    '<div class="insight-toolkit-empty">'+icon('sparkles')+
    ' Your toolkit grows from your own decisions. Start by recording a provisional title or question.</div>'):
    full||'<div class="insight-toolkit-empty">'+icon('sparkles')+
-   ' There are no saved decisions yet. Begin in Planning to collect your first spark.</div>')+
+   ' Your toolkit grows from your own decisions. Begin in Planning to collect your first spark.</div>')+
   (compact&&all.length>uniquePreview.length?'<button type="button" class="insight-link" data-nav="path">Browse all '+all.length+' sparks on My Path '+icon('arrow-right')+'</button>':'')+
   '<p class="insight-toolkit-note">Planned choices are not performed mathematics. Sparks are student notes, not grades, verified findings or edits to your IA document.</p></section>';
 }
