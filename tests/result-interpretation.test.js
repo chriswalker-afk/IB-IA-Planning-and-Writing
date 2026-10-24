@@ -33,7 +33,8 @@ test('each selectable confirmed method has a genuinely dedicated interpretation 
   const g=resultInterpretationGuidance(s,s.entries[0]);
   assert.equal(g.key,id,'no unrelated method may replace '+id);
   assert.equal(g.origin,'method');
-  for(const key of ['title','meaning','context','boundary','check'])
+  assert(g.title.length>8,id+' needs a clear method title');
+  for(const key of ['meaning','context','boundary','check'])
    assert(g[key].length>36,id+' needs substantive '+key);
   assert(g.boundary!==g.context,id+' must distinguish meaning from scope');
  }
@@ -116,6 +117,24 @@ test('selected outcome personalises mathematical cautions without inferring an o
  html=renderResultInterpretationAid(s,s.entries[0],{icon,e});
  assert(html.includes('needs review'));
  assert(!html.includes('Your selected description of this finding'));
+});
+
+test('legacy mathematical outcome decisions also support interpretation without an invented branch',()=>{
+ const s=sample('pmcc');
+ const entry=s.entries[0];
+ entry.kind='scatter';
+ entry.observation='curved';
+ entry.resultSignal='weak-linear';
+ let g=resultInterpretationGuidance(s,entry);
+ assert(g.selected&&g.selected.title.includes('curved graph'));
+ assert.match(g.selected.check,/nonlinear|small|model/i);
+ entry.resultSignal='';
+ entry.observation='';
+ g=resultInterpretationGuidance(s,entry);
+ assert.equal(g.selected,null);
+ entry.reviewNeeded='yes';entry.resultSignal='weak-linear';
+ g=resultInterpretationGuidance(s,entry);
+ assert.equal(g.selected,null);
 });
 
 test('the interpretation aid escapes unsafe text, preserves saved projects, and invents no result',()=>{
