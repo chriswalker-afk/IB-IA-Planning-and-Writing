@@ -13,6 +13,7 @@ import {editCriterionReview} from "./src/essentials/review.js";
 import {ideaAction,ideaInput,ideaDifficultyInput,chooseTopic} from './src/ideas/engine.js';
 import {attachIdeaMapGraph} from './src/ideas/map-layout.js';
 import {resourceDrawer,resourceList} from './src/resources/views.js';
+import {workshopList} from './src/workshop/views.js';
 import {resourceAction,resourceFilter,resourcePreference} from './src/resources/actions.js';
 import {newResourceSession} from './src/resources/state.js';
 import {PRACTICE_PAIRS} from './src/resources/catalog.js';
@@ -1170,6 +1171,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         '<p class="guidance-help-where">On Planning and IA Studio pages, the amber, purple and green bubbles show these kinds of help at the moment they are useful.</p>'+
         '<h3>Other useful places</h3><div class="panel-list">'+
         '<button type="button" class="panel-link" data-action="resource-browse">Tools &amp; tutorials '+icon("arrow-right")+'</button>'+
+        '<button type="button" class="panel-link" data-action="resource-workshop">Maths Workshop · definitions and guided practice '+icon("arrow-right")+'</button>'+
         '<button type="button" class="panel-link" data-action="go-path">My path &amp; Discovery Trail '+icon("arrow-right")+'</button>'+
         '<button type="button" class="panel-link" data-action="open-files">Save &amp; export my work '+icon("arrow-right")+'</button>'+
         '<button type="button" class="panel-link" data-action="open-demos">Try an illustrative sample '+icon("arrow-right")+'</button></div></section>'+
@@ -1512,7 +1514,21 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       if(resources.creatorReturn){returnFromResourceCreator();return;}
       if(resources.save)save();
       if(resources.render){render();if(!layer.hidden&&lastDrawer==="stuck")openDrawer("stuck");return;}
-      if(resources.open){if(layer.hidden)lastFocus=el;openDrawer("resources");return;}
+      if(resources.open){
+        if(layer.hidden)lastFocus=el;
+        const workshopAction=action.startsWith('resource-workshop-')&&
+          !['resource-workshop-home','resource-workshop-tools','resource-workshop-lesson','resource-workshop-term'].includes(action);
+        const priorScroll=workshopAction?$(".drawer",layer)?.scrollTop||0:0;
+        openDrawer("resources");
+        if(workshopAction){
+          const panel=$(".drawer",layer);
+          if(panel)panel.scrollTop=priorScroll;
+          const match=action==='resource-workshop-choice'?$('#workshop-choice-'+el.dataset.workshopChoice,layer):
+            action==='resource-workshop-step'?layer.querySelector('.workshop-tab.active'):null;
+          (match||layer.querySelector('.workshop-lesson h3'))?.focus({preventScroll:true});
+        }
+        return;
+      }
       if(resources.list){const target=$("#resource-results",layer);if(target)target.innerHTML=resourceList(resourceSession);return;}
       if(resources.close){
         if(resourceSession.parent==="stuck")openDrawer("stuck");
@@ -3316,7 +3332,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     }
     if(target.dataset.resourceFilter!==undefined){
       if(resourceFilter(resourceSession,target.dataset.resourceFilter,target.value)){
-        const result=$("#resource-results",layer);if(result)result.innerHTML=resourceList(resourceSession);
+        const result=$("#resource-results",layer);if(result)result.innerHTML=resourceSession.mode==='workshop'?workshopList(resourceSession):resourceList(resourceSession);
       }
       return;
     }
@@ -3564,7 +3580,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     }
     if(target.dataset.resourceFilter!==undefined){
       if(resourceFilter(resourceSession,target.dataset.resourceFilter,target.value)){
-        const result=$("#resource-results",layer);if(result)result.innerHTML=resourceList(resourceSession);
+        const result=$("#resource-results",layer);if(result)result.innerHTML=resourceSession.mode==='workshop'?workshopList(resourceSession):resourceList(resourceSession);
       }
       return;
     }
