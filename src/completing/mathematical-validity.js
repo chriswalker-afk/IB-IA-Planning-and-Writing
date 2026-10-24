@@ -190,7 +190,7 @@ export function renderMathematicalValidityAid(state,entry,{icon=defaultIcon,e=es
   "Accuracy, assumptions & validity for this result";
  return '<aside class="math-validity-aid'+(reduced?' is-reduced':'')+
   '" data-math-validity="'+e(v.entryId)+'" data-math-validity-method="'+e(v.method)+'">'+
-  '<details><summary>'+icon("shield-check")+'<span><strong>'+e(summary)+'</strong>'+
+  '<details><summary>'+icon("shield")+'<span><strong>'+e(summary)+'</strong>'+
   '<small>Input quality · method limits · domain · numerical accuracy</small></span>'+
   icon("chevron-right")+'</summary><div class="math-validity-body">'+
   (v.needsReview?'<p class="math-validity-warning" role="note">This result was flagged for review. Check it and its linked inputs before using its interpretation in later mathematics.</p>':'')+
@@ -216,7 +216,7 @@ export function renderCourseUnderstandingAid(state,entry,{icon=defaultIcon,e=esc
  if(!c)return"";
  return '<aside class="math-course-aid'+(reduced?' is-reduced':'')+
   '" data-course-understanding="'+e(str(entry.id))+'" data-course-scope="'+e(c.scope)+'">'+
-  '<details><summary>'+icon("book-open")+'<span><strong>How much of this mathematics should I explain?</strong>'+
+  '<details><summary>'+icon("book")+'<span><strong>How much of this mathematics should I explain?</strong>'+
   '<small>'+e(c.scope==="syllabus"?"Familiar mathematics: explain use and meaning":
    c.scope==="mixed"||c.scope==="outside"?"Unfamiliar mathematics: explain the key idea":
    "Check my course and choose appropriate explanation")+'</small></span>'+
@@ -255,7 +255,7 @@ export function renderConclusionValidityAid(state,{icon=defaultIcon,e=escapeHtml
  const selected=all.filter(x=>selectedIds.includes(x.id));
  const targets=(selected.length?selected:all.slice(-1)).slice(0,3);
  return '<aside class="conclusion-validity-aid'+(reduced?' is-reduced':'')+
-  '" data-conclusion-validity><details><summary>'+icon("shield-check")+
+  '" data-conclusion-validity><details><summary>'+icon("shield")+
   '<span><strong>Do the mathematical limitations change my conclusion?</strong>'+
   '<small>Review conditions for '+targets.length+' recorded result'+(targets.length===1?'':'s')+'</small></span>'+
   icon("chevron-right")+'</summary><div class="math-validity-body">'+
