@@ -138,7 +138,8 @@ export function renderConclusionReasoningThread(state,{icon=defaultIcon,e=escape
  const t=mathematicalReasoningThread(state,last);
  const open=!!t?.question,flagged=results.length-safe.length;
  const eligible=safe.length;
- const summary=open?'An earlier question may remain open — that can be acknowledged':'Decide what your confirmed findings justify';
+ const summary=flagged?flagged+' mathematical result'+(flagged===1?'':'s')+' need review before a final claim':
+  open?'An earlier question may remain open — that can be acknowledged':'Decide what your confirmed findings justify';
  return '<section class="conclusion-reasoning'+(reduced?' is-reduced':'')+
   '" data-conclusion-reasoning="'+e(t.entryId)+'">'+
   '<details><summary>'+icon("git-branch")+' <span><strong>Does my mathematics answer the aim?</strong>'+
