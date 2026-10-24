@@ -335,6 +335,15 @@ export const WORKSHOP_DEFINITION_FORMULAS=Object.freeze({
     "tex": "R^2=1-\\frac{\\mathrm{SSE}}{\\sum_{i=1}^{n}(y_i-\\bar{y})^2}",
     "spoken": "R squared equals one minus SSE divided by the observed response total sum of squares on the same scale, when the denominator is positive."
   },
+  "vertex-form": {"tex":"y=a(x-h)^2+k","spoken":"A quadratic in vertex form has turning point h comma k."},
+  "discriminant": {"tex":"\\Delta=b^2-4ac","spoken":"The discriminant is b squared minus four a c."},
+  "doubling-time": {"tex":"T=\\frac{\\ln 2}{\\ln b}","spoken":"Doubling time equals natural log of two divided by natural log of b, for b greater than one."},
+  "logarithm": {"tex":"\\ln(e^x)=x","spoken":"Natural log and the exponential function are inverses."},
+  "period": {"tex":"T=\\frac{2\\pi}{\\lvert b\\rvert}","spoken":"A sine or cosine function with coefficient b on the input has period two pi over the absolute value of b."},
+  "angular-frequency": {"tex":"\\omega=\\frac{2\\pi}{T}","spoken":"Angular frequency is two pi over the period."},
+  "average-rate": {"tex":"\\frac{\\Delta y}{\\Delta x}","spoken":"Average rate is change in output divided by nonzero change in input."},
+  "definite-integral": {"tex":"\\int_a^b f(x)\\,dx","spoken":"The definite integral of f from a to b gives signed accumulation."},
+  "antiderivative": {"tex":"F'(x)=f(x)","spoken":"The derivative of an antiderivative F is the original function f."},
   "rmse": {
     "tex": "\\mathrm{RMSE}=\\sqrt{\\frac{1}{n}\\sum_{i=1}^{n}(y_i-\\hat{y}_i)^2}",
     "spoken": "Root mean squared error is the square root of mean squared prediction error on the evaluation dataset."
