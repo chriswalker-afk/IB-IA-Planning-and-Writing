@@ -31,6 +31,15 @@ def test_one(browser,width,height,touch):
   studio=page.locator("[data-geometry-studio]")
   assert studio.is_visible(),("Geometry editor not visible",page.locator("body").inner_text()[:700])
   assert "Not to scale" in page.locator("[data-geometry-preview]").inner_text()
+  # Only the construction SVG should scale to fill the canvas. A status
+  # icon is an ordinary inline UI glyph, not another full-width diagram.
+  valid=page.locator('[data-geometry-quality] .geometry-quality-status--ready')
+  assert valid.count()==1 and valid.is_visible(),"Valid geometry needs a compact status"
+  assert "Shape is valid" in valid.inner_text()
+  icon_box=valid.locator("svg.icon").bounding_box()
+  canvas_box=page.locator('[data-geometry-preview] > svg[data-geometry-canvas]').bounding_box()
+  assert icon_box and 10<=icon_box["width"]<=24 and 10<=icon_box["height"]<=24,(width,icon_box)
+  assert canvas_box and canvas_box["width"]>=icon_box["width"]*8,(width,canvas_box)
   assert page.locator("[data-geometry-vertex-index]").count()==3
   overflow(page)
   page.locator('[data-geometry-field="title"]').fill("QA labelled right triangle")
@@ -41,6 +50,10 @@ def test_one(browser,width,height,touch):
   assert saved(page)["geometryStudio"]["draft"]["vertices"][0]["x"] is None
   assert page.locator('[data-action="geometry-save"]').is_disabled()
   assert "Enter valid coordinates" in page.locator("[data-geometry-preview]").inner_text()
+  warning=page.locator('[data-geometry-quality] .geometry-quality-status--warning')
+  assert warning.is_visible() and "Check before saving" in warning.inner_text()
+  warning_icon=warning.locator("svg.icon").bounding_box()
+  assert warning_icon and 10<=warning_icon["width"]<=24 and 10<=warning_icon["height"]<=24,(width,warning_icon)
   page.locator('[data-geometry-vertex="0"][data-geometry-vertex-key="x"]').fill("0")
   assert page.locator('[data-action="geometry-save"]').is_enabled()
   # Exact Pythagorean example: area 6, side lengths 3/4/5.

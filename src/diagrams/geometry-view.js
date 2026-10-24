@@ -15,8 +15,8 @@ export function geometryPreviewHtml(studio){
 export function geometryQualityHtml(studio,icon,e){
  const a=geometryAnalysis(studio.draft);
  return '<div class="geometry-quality" data-geometry-quality>'+
-  (a.issues.length?'<h3>'+icon("alert-triangle")+' Check before saving</h3><ul>'+a.issues.map(x=>'<li>'+e(x)+'</li>').join("")+'</ul>':
-   '<h3>'+icon("check-circle")+' Shape is valid</h3>')+
+  (a.issues.length?'<h3 class="geometry-quality-status geometry-quality-status--warning">'+icon("alert-triangle")+' Check before saving</h3><ul>'+a.issues.map(x=>'<li>'+e(x)+'</li>').join("")+'</ul>':
+   '<h3 class="geometry-quality-status geometry-quality-status--ready">'+icon("check")+' Shape is valid</h3>')+
   '<p>'+e(a.notes[0])+'</p>'+
   (a.draft.mode==="coordinate"&&a.ready?'<p>Calculated perimeter: <strong>'+a.lengths.reduce((x,y)=>x+y,0).toFixed(3)+
    '</strong>'+(a.draft.unit?' '+e(a.draft.unit):"")+'; enclosed area: <strong>'+Math.abs(a.area).toFixed(3)+'</strong>'+

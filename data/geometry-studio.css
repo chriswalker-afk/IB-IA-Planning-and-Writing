@@ -19,15 +19,30 @@
 .geometry-preview-header h3{margin:10px 0}
 .geometry-preview-zoom{display:none;flex-wrap:wrap;gap:6px}
 .geometry-preview-zoom .btn[aria-pressed="true"]{background:#e7f5f1;border-color:#78b3a5;color:#145d50}
-.geometry-main svg{display:block;width:100%;height:auto;max-height:68vh}
+.geometry-main .geometry-preview > svg{display:block;width:100%;height:auto;max-height:68vh}
 .geometry-drag-note,.geometry-note{font-size:.83rem;color:var(--text-muted,#566c76);line-height:1.5}
 .geometry-quality{border-top:1px solid #dfebf0;margin:18px 0;padding:12px 0}
 .geometry-quality ul{padding-left:22px}
+.geometry-quality .geometry-quality-status{
+ display:inline-flex;align-items:center;gap:7px;max-width:100%;
+ margin:0 0 9px;padding:7px 11px;
+ background:var(--teal-pale,#e7f4ef);color:var(--teal-dark,#075d59);
+ border:1px solid #c7e2d6;border-radius:999px;
+ font-size:.85rem;font-weight:750;line-height:1.35;
+}
+.geometry-quality .geometry-quality-status .icon{
+ display:inline-block;width:17px;height:17px;min-width:17px;max-width:17px;max-height:17px;
+ flex:none;vertical-align:middle;
+}
+.geometry-quality .geometry-quality-status--warning{
+ background:var(--surface-warm,#fff9ef);color:#815824;border-color:#eedcbb;
+}
+.geometry-quality>p{margin:0 0 10px;line-height:1.55;}
 .geometry-output{border-top:1px solid #dfebf0;padding:14px 0}
 .geometry-saved-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px;border-top:1px solid #e4edef}
 .geometry-entry svg,.show-first-geometry-figure svg{display:block;width:100%;height:auto;background:#fff;max-width:900px}
 .geometry-studio [data-geometry-vertex-index]:focus-visible{stroke:#e89c32;stroke-width:4;outline:none}
-@media(max-width:900px){.geometry-workspace{grid-template-columns:1fr}.geometry-controls{position:static;max-height:none;overflow:visible}.geometry-main svg{max-height:none}.geometry-vertices{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:900px){.geometry-workspace{grid-template-columns:1fr}.geometry-controls{position:static;max-height:none;overflow:visible}.geometry-main .geometry-preview > svg{max-height:none}.geometry-vertices{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:560px){.geometry-vertices{grid-template-columns:1fr}.geometry-controls,.geometry-main{padding:12px}.geometry-buttons .btn{font-size:.8rem}.geometry-preview-zoom{display:flex}.geometry-preview-zoom .btn{min-height:34px;padding:5px 9px;font-size:.78rem}.geometry-main .geometry-preview{overflow-x:auto;overscroll-behavior-inline:contain;-webkit-overflow-scrolling:touch}.geometry-main .geometry-preview svg{width:100%;min-width:0;max-width:100%;height:auto;max-height:none}.geometry-main .geometry-preview.geometry-preview-detail svg{width:860px;min-width:860px;max-width:none}}
 
 
