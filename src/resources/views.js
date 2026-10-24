@@ -81,13 +81,22 @@ export function resourceDrawer(state,session){
  const cats=[...new Set(RESOURCES.map(r=>r.category))];
  const options=(values,selected)=>values.map(([v,t])=>'<option value="'+e(v)+'"'+(v===selected?' selected':'')+'>'+e(t)+'</option>').join('');
  const suggested=resourceSuggestions(state,{help:session.help});
- return '<div class="resource-library"><p>Learn the tool for the task you have chosen. Written steps come first; external videos are optional.</p>'+intro+close+
-  '<section class="resource-mla-feature"><strong>Referencing made easy: MLA</strong><p>One Google Docs method, a worked Maths IA dataset citation and simple decisions about what to cite.</p>'+guideButton('mla-citations','Open MLA referencing guide')+'</section>'+
-  resourceCreatorHub()+
-  preferences(x)+(suggested.length?'<details class="resource-current"><summary>Useful for this stage</summary>'+suggested.map(r=>resourceRow(r,session.help)).join('')+'</details>':'')+
+ const relevant=suggested.length?'<section class="resource-current" aria-label="Contextual tutorials">'+
+  '<h3>Useful for this stage</h3><p class="resource-small">These optional guides relate to the task you chose; they do not require extra mathematics.</p>'+
+  resourceRow(suggested[0],session.help)+
+  (suggested.length>1?'<details class="resource-more-relevant"><summary>Other guides for this stage ('+(suggested.length-1)+')</summary>'+
+   suggested.slice(1).map(r=>resourceRow(r,session.help)).join('')+'</details>':'')+'</section>':'';
+ const shortcuts='<div class="resource-quick-tools" aria-label="Quick access to referencing and diagram tools">'+
+  '<details class="resource-mla-feature"><summary>Referencing made easy: MLA</summary>'+
+   '<p>One Google Docs method, a worked Maths IA dataset citation and simple decisions about what to cite.</p>'+
+   guideButton('mla-citations','Open MLA referencing guide',session.help)+'</details>'+
+  resourceCreatorHub({compact:true})+'</div>';
+ return '<div class="resource-library"><p>Find a guide for the next task in your IA. Written steps come first; external videos are optional.</p>'+intro+close+
+  relevant+
   '<form class="resource-filter-form" role="search"><label class="resource-control" for="resource-search"><span>Search tasks (for example PMCC, picture or integral)</span><input id="resource-search" type="search" maxlength="120" data-resource-filter="query" value="'+e(session.query)+'" placeholder="Find a task"></label><div class="resource-filters">'+
   '<label class="resource-control" for="resource-filter-tool"><span>Filter by tool</span><select id="resource-filter-tool" data-resource-filter="tool">'+options([['','All tools'],...Object.entries(TOOLS).map(([k,v])=>[k,v.name])],session.tool)+'</select></label>'+
   '<label class="resource-control" for="resource-filter-category"><span>Topic</span><select id="resource-filter-category" data-resource-filter="category">'+options([['','All topics'],...cats.map(c=>[c,c])],session.category)+'</select></label></div>'+button('clear','Clear filters')+'</form>'+
+  preferences(x)+shortcuts+
   '<div id="resource-results">'+resourceList(session)+'</div><div class="resource-footer">'+close+'</div></div>';
 }
 function isCurrentGuide(state,session,id){return resourceSuggestions(state,{help:session.help}).some(r=>r.id===id);}

@@ -130,6 +130,18 @@ with sync_playwright() as pw:
   assert p.locator('[data-resource-suggestion="pmcc-meaning"]').count()==1;open_suggestion(p,'pmcc-meaning');assert 'Understand and check' in overlay(p).inner_text()
   assert 'does not establish' in overlay(p).inner_text();assert p.locator('[data-source-node="C35"]').count()==1
  run('resources-real-result-interpretation',state(node='C35',status='completed'),interpret)
+ def ordering(p):
+  before=unchanged_fields(saved(p));open_library(p)
+  search=p.locator('#resource-search')
+  assert search.is_visible()
+  compact=p.locator('.resource-quick-tools .resource-creators-compact')
+  assert compact.count()==1 and compact.get_attribute('open') is None
+  assert search.bounding_box()['y']<p.locator('#resource-results').bounding_box()['y']
+  compact.locator('summary').click()
+  assert compact.locator('[data-resource-creator="graph"]').is_visible()
+  assert unchanged_fields(saved(p))==before
+ run('resources-order-desktop',state(),ordering,1440,1000)
+ run('resources-order-phone',state(),ordering,390,844)
  def filtering(p):
   open_library(p);assert p.locator('#resource-results .resource-row').count()==8
   p.locator('[data-action="resource-more"]').click();assert p.locator('#resource-results .resource-row').count()==16

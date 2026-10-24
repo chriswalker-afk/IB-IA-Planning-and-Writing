@@ -174,3 +174,12 @@
 .checking-item[id^="checking-audit-"]:focus-visible{outline:3px solid #14836a;outline-offset:3px}
 @media(max-width:900px){.checking-mla-spotlight{align-items:flex-start;flex-direction:column}.checking-mla-actions{width:100%}}
 @media(max-width:480px){.checking-mla-spotlight{padding:13px;gap:10px}.checking-mla-actions .btn{flex:1 1 135px}.checking-mla-audit,.checking-authenticity-audit{padding:11px 10px}.checking-mla-audit ol{padding-left:20px}}
+
+
+/* DOM and visual order: inspect -> evidence -> confirm. */
+.checking-review-step{font-size:12px;font-weight:800;letter-spacing:.015em;color:#326978;margin:13px 0 9px;line-height:1.5}
+.checking-item-inner .checking-review-step:first-child{margin-top:0}
+.checking-item-inner .checking-item-actions{margin:7px 0 12px}
+.checking-feedback-revisions{margin-top:20px}
+.checking-feedback-revisions .checking-section-head{margin-top:10px}
+@media(max-width:690px){.checking-item-inner .checking-item-actions{gap:8px}}

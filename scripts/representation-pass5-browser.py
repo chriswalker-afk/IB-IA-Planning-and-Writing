@@ -176,6 +176,7 @@ def planning_to_creator(browser,width):
   p.locator(".chapter-onboarding-plan [data-action='resource-browse']").click()
   drawer=p.locator(".resource-drawer");assert drawer.is_visible()
   assert drawer.locator(".resource-creator-card").count()==7
+  drawer.locator(".resource-creators-compact > summary").click()
   drawer.locator('[data-resource-creator="geometry"]').click()
   assert p.locator("[data-geometry-studio]").is_visible()
   assert saved(p)["scratch"]["introduction"]=="Preserve this note"

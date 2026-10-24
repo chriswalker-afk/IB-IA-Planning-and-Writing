@@ -37,20 +37,16 @@ export function createCheckingViews(ctx){
     checkingHelpBadge(s,"check:"+check.id,e)+'</div>'+
    '<h4>'+e(details.focus)+'</h4>'+
    '<p class="checking-item-question">'+e(check.question)+'</p>'+
-   '<div class="checking-item-actions" role="group" aria-label="Review '+e(check.area)+'">'+
-    [['checked','I checked this'],['needs-work','Needs work'],...(check.id==='D12'?[]:[['not-applicable','Not relevant']])].map(([v,label])=>
-     '<button type="button" data-action="conformance-review-status" '+attrs+' data-status="'+v+
-      '" class="checking-status-action '+(current===v?'is-selected':'')+'" aria-pressed="'+(current===v)+'">'+
-      (v==='checked'?icon('check-circle'):v==='needs-work'?icon('alert-circle'):icon('x-circle'))+' '+label+'</button>').join('')+
-   '</div>'+
    '<details id="checking-review-'+mode+'-'+check.id+'" class="checking-item-details"'+(current==='needs-work'?' open':'')+'>'+
-    '<summary>'+icon('lightbulb')+' What should I look for?'+
+    '<summary>'+icon('lightbulb')+' What to check, record and confirm'+
       (record.location||record.note?'<span class="checking-has-evidence">'+icon('check')+' Evidence noted</span>':'')+icon('chevron-right')+'</summary>'+
     '<div class="checking-item-inner">'+
+      '<p class="checking-review-step">1 · What to check in your actual IA</p>'+
       (tips.length?'<ul class="checking-look-for">'+tips.map(v=>'<li>'+e(v)+'</li>').join('')+'</ul>':'')+
       (check.id==='D09'?renderCitationAudit(s,icon,e):check.id==='D12'?renderAuthenticityAudit(icon):'')+
       '<p class="checking-source-note">'+e(revised?'Earlier-cohort checking guidance: confirm current IB and school expectations.':details.source)+'</p>'+
       (details.processNote?'<p class="checking-process-explanation"><strong>Important process requirement:</strong> '+e(revised?'This is an essential document, integrity or submission check, not an additional score under the 2029 assessment criteria.':details.processNote)+'</p>':'')+
+      '<p class="checking-review-step">2 · Record what you verified</p>'+
       '<p class="checking-evidence-reminder">'+(check.id==='D09'?
         'Before marking checked, verify citations against the original sources in your actual IA, then record the two-way check in the note below. Pathfinder does not inspect your file.':
         check.id==='D12'?'Check the actual latest IA for student authorship and permitted support. Record what you verified; this cannot be marked not relevant.':
@@ -61,6 +57,13 @@ export function createCheckingViews(ctx){
        {type:'textarea',rows:2})+
       field(stem+'action','My specific correction, if needed','One useful change to my own document',{type:'textarea',rows:2})+
       (options.length?field(stem+'entryId','Related mathematical stage (optional)','',{type:'select',options:[['','No specific stage'],...options]}):'')+
+      '<p class="checking-review-step">3 · Confirm your review status</p>'+
+   '<div class="checking-item-actions" role="group" aria-label="Review '+e(check.area)+'">'+
+    [['checked','I checked this'],['needs-work','Needs work'],...(check.id==='D12'?[]:[['not-applicable','Not relevant']])].map(([v,label])=>
+     '<button type="button" data-action="conformance-review-status" '+attrs+' data-status="'+v+
+      '" class="checking-status-action '+(current===v?'is-selected':'')+'" aria-pressed="'+(current===v)+'">'+
+      (v==='checked'?icon('check-circle'):v==='needs-work'?icon('alert-circle'):icon('x-circle'))+' '+label+'</button>').join('')+
+   '</div>'+
       action('conformance-review-repair',icon('arrow-left')+' Return to the affected work',attrs)+
     '</div></details></article>';
  };
@@ -71,12 +74,12 @@ export function createCheckingViews(ctx){
    (openFeedback.length?e(openFeedback.length+' recorded feedback '+(openFeedback.length===1?'action is':'actions are')+' not yet verified.'):'' )+
    ' Check your actual document; Pathfinder flags are reminders, not proof of an error.</p></div>':'';
  };
- const feedbackPanel=(s)=>{
+ const feedbackPanel=(s,part="form")=>{
   const r=s.completion.review,p='completion.review.';
   const entries=s.entries.map(x=>[x.id,x.title||'Mathematical stage']).filter(x=>x[0]);
-  return '<section class="checking-feedback">'+
+  const entryForm='<section class="checking-feedback">'+
    '<div class="checking-section-head"><div><h3>Record the advice you actually received</h3>'+
-   '<p>The JIS guide describes one teacher-written feedback opportunity. You can record verbal suggestions and the permitted written feedback without implying approval.</p></div>'+
+   '<p>Record only the advice you actually received. Distinguish verbal advice from any written feedback allowed by your school; recording it does not imply teacher approval.</p></div>'+
     checkingHelpBadge(s,"feedback",e)+'</div>'+
    '<div class="checking-feedback-form">'+
    field(p+'feedbackKind','How was the advice given?','',{type:'select',options:[['written','Written feedback (permitted teacher round)'],['verbal','Verbal advice']]})+
@@ -85,7 +88,10 @@ export function createCheckingViews(ctx){
    field(p+'feedbackLocation','Where does this apply in your IA?','Page, section or figure')+
    (entries.length?field(p+'feedbackEntryId','Related mathematical stage','',{type:'select',options:[['','No specific stage'],...entries]}):'')+
    field(p+'feedbackNode','Which part needs revision?','',{type:'select',options:[['C40','Mathematical work'],['C34B','Interpretation'],['C20','Sources and methods'],['C10','Introduction'],['C60','Conclusion'],['C70N','Mathematical communication']]})+
-   action('conformance-feedback-add',icon('plus-circle')+' Record feedback action')+'</div>'+
+   action('conformance-feedback-add',icon('plus-circle')+' Record feedback action')+'</div></section>';
+  if(part==="form")return entryForm;
+  return '<section class="checking-feedback checking-feedback-revisions" aria-label="Review recorded feedback actions">'+
+   '<div class="checking-section-head"><div><h3>Verify the improvements</h3><p>After revising the actual IA, use your recorded feedback actions to check what changed. A note alone is not a verified revision.</p></div></div>'+
    (r.feedbackItems.length?'<h4>My feedback actions</h4>'+
     r.feedbackItems.map((item,i)=>'<article class="checking-feedback-item"><div><strong>'+e(item.action)+'</strong>'+
       '<span class="checking-feedback-state">'+e(item.status==='verified'?'I verified this revision':item.status==='implemented'?'Revised — needs checking':'Not yet revised')+'</span></div>'+
@@ -151,7 +157,7 @@ export function createCheckingViews(ctx){
     '" aria-valuemin="0" aria-valuemax="'+Math.max(1,counts.total)+'"><span style="width:'+(counts.total?100*counts.done/counts.total:0)+'%"></span></div>'+
     '<p>These counts record your own '+(revised?'document':'document and criterion')+' checks, not a predicted IA mark. You can revisit or revise them at any time.</p></div>'+
    evidenceInfo(s)+renderCitationSpotlight(mode,icon)+
-   (mode==='feedback'?'<div class="checking-feedback-phase">'+criteria(s,checks,mode)+feedbackPanel(s)+'</div>':criteria(s,checks,mode))+
+   (mode==='feedback'?'<div class="checking-feedback-phase">'+feedbackPanel(s,"form")+criteria(s,checks,mode)+feedbackPanel(s,"revisions")+'</div>':criteria(s,checks,mode))+
    '<section class="checking-next"><h3>Useful next actions</h3>'+
    '<p>Keep working on your actual IA, then come back to check the revised file. Your progress and evidence notes are stored locally.</p>'+
    '<div class="checking-next-buttons">'+

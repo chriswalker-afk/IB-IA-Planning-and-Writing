@@ -599,13 +599,12 @@ export function createCompletingViews(ctx){
    };
   }
   case "C04":return{intro:"Choose a meaningful task. A section may be revisited whenever the evidence changes; there is no required number of maths sections.",
-    html:(isAdviceReduced(s)?"":'<section class="writer-guide-overview-card" aria-labelledby="writer-guide-overview-title">'+
+    html:stageDashboard()+miniList()+(isAdviceReduced(s)?"":'<section class="writer-guide-overview-card" aria-labelledby="writer-guide-overview-title">'+
        '<span class="writer-guide-overview-icon">'+icon("book")+'</span>'+
        '<div class="writer-guide-overview-copy"><span>YOUR WRITING COMPANION</span>'+
        '<h3 id="writer-guide-overview-title">Make each mathematical step worth reading</h3>'+
        '<p>Writing advice, examples and reminders of how to communicate real mathematical thinking. Open it whenever you need it.</p></div>'+
        '<button type="button" class="writer-guide-overview-action" data-action="writer-guide-open">Open Writing Guide '+icon("arrow-right")+'</button></section>')+
-       stageDashboard()+miniList()+
       '<div class="button-row">'+sourceAction("Save progress","Save a full project backup")+
       sourceAction("I'm stuck / Something isn't working","I'm stuck")+'</div>'};
   case "C10":{

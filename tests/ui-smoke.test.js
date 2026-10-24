@@ -1235,6 +1235,15 @@ test("Reduce advice also trims the IA setup and stage dashboard without hiding t
  }
 });
 
+test("C04 dashboard puts writing stages before optional Writing Guide",()=>{
+ const s=createProjectState();s.route="completing";s.completion.current="C04";
+ const h=createHarness(s),html=h.html;
+ assert(html.indexOf('class="completion-stage-grid')>=0);
+ assert(html.indexOf('class="completion-stage-grid')<html.indexOf('class="writer-guide-overview-card'));
+ h.action("toggle-advice-mode");
+ assert(h.html.includes('class="completion-stage-grid'));
+ assert(!h.html.includes('writer-guide-overview-card'));
+});
 test("Writing welcome explains available tools, preserves saved work, and can be reopened",()=>{
  const state=createProjectState();state.route="completing";
  let h=createHarness(state,{welcome:true});
