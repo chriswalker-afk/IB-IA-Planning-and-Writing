@@ -44,7 +44,8 @@ export function toggleConclusionResult(state,id){
 }
 function mathematicalTip(state){
  const active=conclusionResults(state).filter(x=>x.valid&&!x.review);
- const chosen=active.find(x=>x.selected)?.entry||active.at(-1)?.entry;
+ const selectedIds=selectedResultIds(state);
+ const chosen=selectedIds.length?active.find(x=>x.selected)?.entry:active.at(-1)?.entry;
  if(!chosen)return "A conclusion can be provisional. Report only the mathematical results you have actually established.";
  const f=methodFamilies(chosen);
  if(f.has("pmcc")||/pearson|correlation|pmcc/i.test((chosen.technique||"")+" "+(chosen.title||"")))
@@ -121,7 +122,9 @@ function previousWriting(state,field,F,e){
    saved.map(x=>x[3]()).join("")+'</div></details>';
 }
 function potentialQuestions(state,e,icon){
- const results=conclusionResults(state),last=results.filter(x=>x.valid&&!x.review).at(-1)?.entry;
+ const results=conclusionResults(state),selectedIds=selectedResultIds(state);
+ const available=results.filter(x=>x.valid&&!x.review);
+ const last=selectedIds.length?available.find(x=>x.selected)?.entry:available.at(-1)?.entry;
  if(!last)return"";
  const advice=adaptiveNextDirections(state,last),fromResult=advice?.status==="ready"?
   (advice.directions||[]).slice(0,2).map(x=>x.question):[];
