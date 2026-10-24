@@ -224,8 +224,8 @@ test('workshop: conditional denominators and percentage points are checked',()=>
  assert(Math.abs((14/20-10/40)*100-45)<1e-10);
 });
 test('workshop: rounding-only area bounds are not sold as total uncertainty',()=>{
- assert.equal(9.95**2,99.0025);assert.equal(10.05**2,101.0025000000001);
- assert.equal(7.95**2,63.2025);assert.equal(8.05**2,64.80250000000001);
+ approx(9.95**2,99.0025);approx(10.05**2,101.0025);
+ approx(7.95**2,63.2025);approx(8.05**2,64.8025);
  const lesson=lessonById('measurement');
  assert.match(lesson.avoid,/NOT a complete measurement/);
  assert.match(lesson.worked.interpretation,/Other sources of uncertainty/);
