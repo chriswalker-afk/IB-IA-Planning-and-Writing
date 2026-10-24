@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
 import {createProjectState} from '../src/core/project-state.js';
 import {applyPlanningField} from '../src/planning/engine.js';
 import {icon,escapeHtml} from '../src/ui/primitives.js';
@@ -161,6 +162,9 @@ test('Guided IA writing teaches briefly before recalling Sparks and asking stude
  assert.equal((html.match(/ADVICE-ONE|SPARKS-TWO|WRITE-THREE|EXAMPLES-FOUR/g)||[]).length,4,
   'Reordering should not duplicate any stage content');
  assert(renderWritingStageFlow({advice:'ONE'}).includes('ONE'));
+ const css=readFileSync(new URL('../data/chapter-onboarding.css',import.meta.url),'utf8');
+ assert(!/\.writing-stage-flow\[data-advice-mode="guided"\]>\.writing-stage-(?:advice|sparks|task|examples)\s*\{\s*order\s*:/.test(css),
+  'Stale flex ordering must not make the browser disagree with DOM and keyboard reading order');
 });
 test('Reduce advice remains task-first, keeping saved context accessible but not forcing the guide',()=>{
  const html=renderWritingStageFlow({
