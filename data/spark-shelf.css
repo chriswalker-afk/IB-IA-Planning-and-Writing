@@ -263,3 +263,12 @@
 @media(prefers-reduced-motion:reduce){
  .math-validity-aid>details>summary>.icon:last-child,.math-course-aid>details>summary>.icon:last-child,.conclusion-validity-aid>details>summary>.icon:last-child{transition:none}
 }
+
+/* First mathematical step: a single optional point to record syllabus scope. */
+.math-first-course-choice{margin:12px 0 15px;border:1px solid #d9e5dc;border-radius:11px;background:#f9fcf9}
+.math-first-course-choice>summary{cursor:pointer;padding:11px 13px;font-size:12px;font-weight:650;color:#365d50;list-style:none;display:flex;align-items:center;gap:8px}
+.math-first-course-choice>summary::-webkit-details-marker{display:none}
+.math-first-course-choice>summary>.icon{width:16px;height:16px;flex:none}
+.math-first-course-choice>summary>.icon:last-child{margin-left:auto}
+.math-first-course-choice>div{padding:10px 13px 13px;border-top:1px solid #e0eae2}
+.math-first-course-choice>summary:focus-visible{outline:3px solid #79ad9c;outline-offset:-3px}
