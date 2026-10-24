@@ -187,7 +187,26 @@ export function insightForCurrent(s,node){
   kind==='accuracy'?linkedAccuracy(s,active).some(a=>'accuracy:'+a.id===x.id):
   linkedSources(s,active).some(a=>'source:'+a.id===x.id)));
  const latestResult=get('discovery').filter(x=>!x.planned&&!x.needsReview).at(-1);
- if(['C10','C10E','C02','C34B','C35','C60','C61','C62','C64'].includes(node)){
+ const focus=entries(s).find(x=>x.id===s?.completion?.nextFromEntryId&&done(x))||
+  (done(active)?active:entries(s).filter(done).at(-1));
+ const focusId=focus?.id||'',activeId=active?.id||'';
+ if(['C35','C35H','C35B','C35P'].includes(node))
+  return compact(['result:'+focusId,'direction:'+focusId,'limitation-note:'+focusId,'aim']).slice(0,3);
+ if(['C30','C32','C33','C34','C34A','C34B','C40','C50','C40T','C40L'].includes(node)){
+  const prior=active?.fromEntryId?'result:'+active.fromEntryId:'';
+  const refs=[...related('accuracy'),...related('source')];
+  const choose=items=>[...new Map(items.filter(Boolean).map(x=>[x.id,x])).values()].slice(0,3);
+  if(node==='C30')return choose(compact(['result:'+activeId,'method:'+activeId,'aim']));
+  if(['C32','C33'].includes(node))
+   return choose([...compact(['method:'+activeId,prior]),...refs,...compact(['aim'])]);
+  if(node==='C34A')
+   return choose([...compact(['result:'+activeId]),...refs,...compact(['limitation-note:'+activeId,'aim'])]);
+  if(node==='C34B')return choose(compact(['result:'+activeId,'limitation-note:'+activeId,'aim']));
+  if(['C40','C50','C40T','C40L'].includes(node))
+   return choose([...compact([prior,'method:'+activeId,'result:'+activeId]),...refs,...compact(['aim'])]);
+  return choose([...compact(['result:'+activeId,'limitation-note:'+activeId,prior]),...refs,...compact(['aim'])]);
+ }
+ if(['C10','C10E','C02','C60','C61','C62','C64'].includes(node)){
   const prep=['C10','C10E'].includes(node)?compact(['aim','motivation','prediction']):
    compact(['aim','motivation']);
   if(['C34B','C35','C60','C61','C62','C64'].includes(node)&&latestResult)prep.push(latestResult);
@@ -310,6 +329,11 @@ export function insightMeaning(s,node,x){
  if(x.type==='reflection'&&/^C6/.test(node)){
   return 'You confirmed this limitation earlier. State how its mathematical consequence restricts the answer to your aim, rather than adding an unrelated generic weakness.';
  }
+ if(x.type==='method')return x.planned?
+  'You recorded why you are considering this approach. It is still a plan, not performed mathematics.':
+  'This is your recorded justification for a mathematical choice. Check it against the earlier finding and your aim.';
+ if(x.type==='direction')return 'You recorded this possible question and its reason. It is not completed mathematics: develop it, revise it or conclude instead.';
+ if(x.id.startsWith('limitation-note:'))return 'This is your own note about a limitation. Explain how it restricts the mathematical conclusion, rather than treating it as independently verified.';
  if(x.type==='learning'){
   return 'You recorded independently developed understanding of this mathematical method. If it lies outside your course, explain the mathematics accurately in your own words; familiar syllabus techniques normally just need clear use.';
  }
@@ -367,14 +391,36 @@ export function featuredSparkItems(s,node){
  else if(['C20','C21M','C21T','C22','C23','C25','C26'].includes(node)){
   recent(x=>x.id.startsWith('source:'));id('planned-evidence');id('sampling-plan');id('investigative-route');
  }
- else if(['C30','C31'].includes(node)){id('planned-maths');id('investigative-route');id('aim');}
- else if(['C32','C33','C34','C34A','C35','C35H','C35B','C35P','C40','C50','C40T','C40L'].includes(node)){
-  if(active?.fromEntryId)id('result:'+active.fromEntryId);
-  if(active)for(const x of linked)if(x.id.startsWith('accuracy:')||x.id.startsWith('source:'))id(x.id);
-  if(['C35','C35H','C35B','C35P','C40','C50'].includes(node)&&latestResult)id(latestResult.id);
-  // Confirmed source/accuracy sparks are highlighted here only if the
-  // student explicitly linked them to this mathematics. Otherwise use aim.
-  id('aim');id('investigative-route');
+ else if(node==='C30'){
+  if(active)id('result:'+active.id);
+  id('aim');if(active)id('method:'+active.id);
+  id('planned-maths');id('investigative-route');
+ }
+ else if(node==='C31'){id('planned-maths');id('investigative-route');id('aim');}
+ else if(['C32','C33','C34','C34A','C34B','C35','C35H','C35B','C35P','C40','C50','C40T','C40L'].includes(node)){
+  const focus=entries(s).find(x=>x.id===s?.completion?.nextFromEntryId&&done(x))||
+   (done(active)?active:entries(s).filter(done).at(-1));
+  if(['C35','C35H','C35B','C35P'].includes(node)){
+   if(focus)id('result:'+focus.id);
+   if(focus)id('direction:'+focus.id);
+   id('aim');
+  }else if(['C32','C33'].includes(node)){
+   if(active)id('method:'+active.id);
+   if(active?.fromEntryId)id('result:'+active.fromEntryId);
+   for(const x of linked)if(x.id.startsWith('source:')||x.id.startsWith('accuracy:'))id(x.id);
+   id('aim');
+  }else if(['C40','C50','C40T','C40L'].includes(node)){
+   if(active?.fromEntryId)id('result:'+active.fromEntryId);
+   if(active)id('method:'+active.id);
+   if(active&&done(active))id('result:'+active.id);
+   for(const x of linked)if(x.id.startsWith('accuracy:')||x.id.startsWith('source:'))id(x.id);
+   id('aim');
+  }else{
+   if(active)id('result:'+active.id);
+   if(node==='C34B'&&active)id('limitation-note:'+active.id);
+   if(active)for(const x of linked)if(x.id.startsWith('accuracy:')||x.id.startsWith('source:'))id(x.id);
+   id('aim');
+  }
  }
  else if(/^C6/.test(node)){id('aim');if(latestResult)id(latestResult.id);id('motivation');}
  // Unknown screens still get relevant existing insights, then a useful fallback.
