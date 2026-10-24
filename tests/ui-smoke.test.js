@@ -370,7 +370,16 @@ test("Set up welcomes students, recommends Planning and captures missing provisi
  assert(h.html.includes('Write your introduction'));
  assert(h.html.includes('Turn your sparks into an opening'));
  assert(h.html.includes('data-writing-stage-flow'));
- for(const part of ['advice','sparks','task','examples'])assert(h.html.includes('data-writing-stage-part="'+part+'"'));
+ const writingParts=[...h.html.matchAll(/data-writing-stage-part="([^"]+)"/g)].map(m=>m[1]);
+ assert.deepEqual(writingParts,['advice','sparks','task','examples'],
+  'Introduction guidance must precede the saved prompts and the actual writing task');
+ assert.equal((h.html.match(/data-citation-moment="introduction"/g)||[]).length,1,
+  'Keep one contextual referencing reminder');
+ assert(h.html.indexOf('data-writing-stage-part="advice"')<
+        h.html.indexOf('data-citation-moment="introduction"'));
+ assert(h.html.indexOf('data-citation-moment="introduction"')<
+        h.html.indexOf('data-writing-stage-part="sparks"'),
+  'Source guidance belongs before writing, not after the examples');
  assert(h.html.includes('criterion-writing-bubbles'));
  assert(!h.html.includes('intro-criteria-mini'));
  assert(!h.html.includes('spark-shelf-featured'));
