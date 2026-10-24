@@ -13,6 +13,7 @@ import {renderIdeaLabWritingCue} from "../planning/idea-lab-bridge.js";
 import {renderShowingMathsContext} from "./showing-first-maths.js";
 import {MATHEMATICAL_LINK_HINT,renderConsequentialChoice,renderStorySynthesis} from "./mathematical-story-guidance.js";
 import {renderResultInterpretationAid} from './result-interpretation.js';
+import {renderMathematicalDecisionThread,renderPriorDecisionLink,recordedDecisionNotes} from './reasoning-thread.js';
 import {renderGraphStudio} from "../diagrams/graph-view.js";
 import {renderGraphSvg} from "../diagrams/graph-core.js";
 import {renderImageTracer} from "../diagrams/image-tracer-view.js";
@@ -211,6 +212,8 @@ export function createCompletingViews(ctx){
   if(!prior)return "";
   const ctx=link.advice,route=ctx?.route||selectedInvestigativeRoute(state);
   const choice=ctx?.directions.find(x=>x.id===prior.journeyDirection)||ctx?.directions[0];
+  const studentLink=recordedDecisionNotes(state,prior);
+  const hasStudentLink=!!(studentLink.question||studentLink.reason);
   const warning=link.needsReview||ctx?.status==="stale"||!actualMathematics(prior);
   return '<section class="journey-stage-link" data-journey-stage-link data-link-state="'+
     (warning?"review":ctx?.status||"unknown")+'">'+
@@ -220,8 +223,9 @@ export function createCompletingViews(ctx){
     (route?'<span>'+e(route.title)+'</span>':"")+
    '</div></div>'+
    (link.finding?'<blockquote>'+e(link.finding)+'</blockquote>':"")+
+   renderPriorDecisionLink(state,entry,{icon,e})+
    (warning?'<p class="journey-stage-link-warning"><strong>Review this connection.</strong> The prior result, route or interpretation has changed, or is no longer confirmed. Re-check the mathematical reasoning before accepting this stage as justified. Your existing writing has been preserved.</p>':"")+
-   (!warning&&ctx?.status==="ready"&&choice?
+   (!warning&&!hasStudentLink&&ctx?.status==="ready"&&choice?
     '<div class="journey-stage-link-advice"><strong>Mathematically sensible next question</strong>'+
      '<p>'+e(choice.question)+'</p><p>'+e(choice.why)+'</p>'+
      '<small>'+e(choice.check)+'</small></div>':
@@ -903,6 +907,7 @@ export function createCompletingViews(ctx){
      '<p class="show-first-draft-note">'+icon("info")+
      ' The next step must follow from <strong>real findings</strong>. You can leave these boxes blank until you have interpreted your result.</p>')+
     journeyNextDirections(entry)+
+    renderMathematicalDecisionThread(s,entry,{icon,e,reduced})+
     '<div class="show-first-writing-field" data-show-first-writing-box="next">'+
     criteriaField(F("nextQuestion","What mathematical question remains unanswered? (if any)",
      "Identify a meaningful question raised by the result, or note that you have enough evidence to conclude.",{type:"textarea",rows:3}),"completing:C30:nextC")+
@@ -1024,6 +1029,7 @@ export function createCompletingViews(ctx){
   };
   case "C35":return{intro:"One logical bridge from your last actual result to the next mathematics—or recognise that you have enough to conclude.",
    html:bridgeFromPrior()+coachBlock(sourceResultForNext(s),{showDepth:false})+nextCoachQuestions()+
+    renderMathematicalDecisionThread(s,sourceResultForNext(s),{icon,e,reduced:isAdviceReduced(s)})+
     (sourceResultForNext(s)?.phase==="first"&&filled(f.nextQuestion)?
       smallSummary("Your next question from Show your mathematics",f.nextQuestion):
       criteriaField(F("nextQuestion","What worthwhile mathematical question remains unanswered?","It should arise from the previous local takeaway",{type:"textarea",rows:3}),"completing:C35:nextQuestion"))+
@@ -1180,6 +1186,7 @@ export function createCompletingViews(ctx){
      '<p class="show-first-draft-note">'+icon("info")+
        ' Your next stage should follow a real result, not a prediction or a planned calculation.</p>')+
     journeyNextDirections(substantial)+
+    renderMathematicalDecisionThread(state,substantial,{icon,e,reduced:isAdviceReduced(state)})+
     '<div class="show-first-writing-field">'+
       criterionMarkedWritingBox(entryField("nextQuestion","What mathematical question remains unanswered? (optional)",
        "A worthwhile question that follows from your finding",{type:"textarea",rows:3}),
