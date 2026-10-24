@@ -20,7 +20,8 @@ const NOTICE_TEMPLATES=Object.freeze([
  ["src/ui/investigative-routes-view.js","p","journey-course-switch-note",1],
  ["src/ui/planning-views.js","span","math-route-caution",1],
  ["src/ui/planning-views.js","p","math-review-note",1],
- ["src/diagrams/representation-hub.js","p","representation-workspace-guidance",1]
+ ["src/diagrams/representation-hub.js","p","representation-workspace-guidance",1],
+ ["src/diagrams/representation-hub.js","p","representation-writing-reminder",1]
 ]);
 
 test("every icon-led flex note keeps its complete message in one text child",()=>{
