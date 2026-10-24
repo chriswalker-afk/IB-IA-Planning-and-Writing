@@ -31,13 +31,13 @@ export function workshopList(session){
  const {terms,lessons,routeId}=filtered(session);
  const selected=routeId?routeById(routeId):null;
  const parts=[
- '<p class="workshop-count" role="status">'+lessons.length+' pilot lesson'+(lessons.length===1?"":"s")+
+ '<p class="workshop-count" role="status">'+lessons.length+' guided lesson'+(lessons.length===1?"":"s")+
  ' · '+terms.length+' definition'+(terms.length===1?"":"s")+
  (selected?' for '+e(selected.title):' in the starter library')+'.</p>',
  '<section class="workshop-section"><h3>Guided mathematics</h3>'+
  '<p>Show me → Help me → My turn. Practice values are invented, not evidence for your IA.</p>'+
  (lessons.length?'<div class="workshop-grid">'+lessons.map(lessonCard).join("")+'</div>':
- '<p class="workshop-empty">No pilot lessons match this selection yet. Later batches will add more methods. Try All pathways to explore the current pilots.</p>')+'</section>',
+ '<p class="workshop-empty">No guided lessons match this selection yet. Later batches will add more methods. Try All pathways to explore the current pilots.</p>')+'</section>',
  '<section class="workshop-section"><h3>Quick mathematical definitions</h3>'+
  '<p>Short explanations you can use to understand notation and decide what to learn next.</p>'+
  (terms.length?'<div class="workshop-grid workshop-definitions">'+terms.map(definitionCard).join("")+'</div>':
@@ -58,21 +58,24 @@ function renderLesson(session,l){
  let activity="";
  if(step==="show"){
   activity='<div class="workshop-example"><h4>Show me · Worked example</h4>'+
-   '<p>'+e(l.worked.context)+'</p><ol class="workshop-steps">'+l.worked.steps.map(t=>'<li>'+e(t)+'</li>').join("")+'</ol>'+
+   '<p>'+e(l.worked.context)+'</p>'+(l.worked.table?'<div class="workshop-table-wrap"><table class="workshop-data-table"><caption>'+e(l.worked.table.caption)+'</caption><thead><tr>'+l.worked.table.headers.map(h=>'<th scope="col">'+e(h)+'</th>').join("")+'</tr></thead><tbody>'+l.worked.table.rows.map(row=>'<tr>'+row.map(v=>'<td>'+e(v)+'</td>').join("")+'</tr>').join("")+'</tbody></table></div>':"")+'<ol class="workshop-steps">'+l.worked.steps.map(t=>'<li>'+e(t)+'</li>').join("")+'</ol>'+
    '<p class="workshop-answer"><strong>Result:</strong> '+e(l.worked.answer)+'</p>'+
    '<p><strong>What it tells us:</strong> '+e(l.worked.interpretation)+'</p></div>'+
    action("step","Try this with help",'data-workshop-step="help"',true);
  }else if(step==="help"){
-  const selected=session.workshopChoice,known=l.guided.options.some(([id])=>id===selected);
-  const right=known&&selected===l.guided.correct;
+  const checkpoints=l.guided.parts||[l.guided];
+  const current=Math.min(Math.max(Number(session.workshopCheckpoint)||0,0),checkpoints.length-1);
+  const exercise=checkpoints[current];
+  const selected=session.workshopChoice,known=exercise.options.some(([id])=>id===selected);
+  const right=known&&selected===exercise.correct;
   activity='<div class="workshop-example"><h4>Help me · One step at a time</h4>'+
-   '<p>'+e(l.guided.question)+'</p><p class="workshop-hint"><strong>Hint:</strong> '+e(l.guided.hint)+'</p>'+
+   '<p class="workshop-checkpoint-count">Checkpoint '+(current+1)+' of '+checkpoints.length+'</p>'+'<p>'+e(exercise.question)+'</p><p class="workshop-hint"><strong>Hint:</strong> '+e(exercise.hint)+'</p>'+
    '<div class="workshop-choice-list" role="group" aria-label="Choose an answer">'+
-    l.guided.options.map(([id,label])=>'<button type="button" class="workshop-choice'+(selected===id?' selected':'')+
+    exercise.options.map(([id,label])=>'<button type="button" class="workshop-choice'+(selected===id?' selected':'')+
       '" id="workshop-choice-'+e(id)+'" data-action="resource-workshop-choice" data-workshop-choice="'+e(id)+'" aria-pressed="'+(selected===id)+'">'+e(label)+'</button>').join("")+
     '</div>'+(known?'<p role="status" class="workshop-feedback '+(right?'correct':'retry')+'"><strong>'+
-     (right?"That's right. ":"Not quite. ")+'</strong>'+e(right?l.guided.feedback:l.guided.hint)+'</p>':"")+
-    '</div>'+action("step","Try independently",'data-workshop-step="turn"',true);
+     (right?"That's right. ":"Not quite. ")+'</strong>'+e(right?exercise.feedback:exercise.hint)+'</p>':"")+
+    '</div>'+(current>0?action("checkpoint","Previous checkpoint",'data-workshop-direction="-1"'):"")+(current<checkpoints.length-1?action("checkpoint","Next checkpoint",'data-workshop-direction="1"',true):action("step","Try independently",'data-workshop-step="turn"',true));
  }else{
   activity='<div class="workshop-example"><h4>My turn · Independent practice</h4>'+
    '<p>'+e(l.independent.question)+'</p>'+
@@ -115,9 +118,9 @@ export function renderWorkshop(state,session){
  const selected=routeIds.has(session.workshopRoute)?session.workshopRoute:"";
  const l=lessonById(session.workshopId),d=definitionById(session.workshopTerm);
  const intro='<div class="workshop-intro">'+
-  '<p class="workshop-eyebrow">MATHS WORKSHOP · BATCH 0</p>'+
+  '<p class="workshop-eyebrow">MATHS WORKSHOP</p>'+
   '<h3>Understand it. Try it. Use it thoughtfully.</h3>'+
-  '<p>Find mathematical definitions, practise three common IA methods, and learn when software can do the arithmetic. This is an optional learning library.</p>'+
+  '<p>Find mathematical definitions, practise common IA methods, and learn when software can do the arithmetic. This is an optional learning library.</p>'+
   '<p class="workshop-caution">Course: '+e(course||'not selected')+'. A method appearing here is not a course recommendation or permission to use it. Check syllabus scope with your teacher when necessary.</p></div>';
  const navigation='<div class="workshop-top-actions">'+action("tools","← Tools & tutorials")+
   (l||d?action("home","Browse Workshop"):"")+'</div>';
