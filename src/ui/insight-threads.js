@@ -7,6 +7,7 @@ import {linkedAccuracy,linkedSources} from '../completing/evidence-links.js';
 import {routeById} from '../planning/investigative-routes.js';
 import {samplingMethod,samplingSparkValue,plannedAccuracyText} from '../planning/data-decisions.js';
 import {resultInterpretationGuidance} from '../completing/result-interpretation.js';
+import {renderDiscoveryValidityRecall} from '../completing/mathematical-validity.js';
 
 const has=v=>typeof v==='string'&&!!v.trim();
 const short=(v,n=160)=>{const t=String(v??'').trim();return t.length>n?t.slice(0,n-1)+'…':t;};
@@ -503,6 +504,8 @@ const sparkFullBody=(s,node,x,{featured=false}={})=>
  (x.details?.length?'<dl class="spark-reasoning-details">'+x.details.map(d=>
   '<div><dt>'+e(d.label)+'</dt><dd>'+e(d.value)+'</dd></div>').join('')+'</dl>':'')+
  discoveryInterpretation(s,x)+
+ (x.type==='discovery'&&x.entryId?
+  renderDiscoveryValidityRecall(s,entries(s).find(v=>v.id===x.entryId),{e}):'')+
  '<p class="spark-shelf-guidance">'+e(insightMeaning(s,node,x))+'</p>'+
  '<div class="spark-shelf-source">'+(x.planned?'Provisional · ':'')+
   e(x.needsReview?'Needs review · '+x.where:x.where)+'</div>'+
