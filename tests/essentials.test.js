@@ -24,7 +24,7 @@ test('course level is explicit; unknown or speculative text is not assumed SL',(
 });
 test('formatting distinguishes recommendations, bibliography exclusion and school advice without invented font rules',()=>{
  const t=formatView();assert(t.includes('12–20'));assert(t.includes('excluding the bibliography'));assert(t.includes('not a page-count pass/fail'));
- assert(t.includes('JIS recommendation'));assert(t.includes('Practical formatting advice'));assert(!t.includes('Times New Roman'));assert(!t.includes('must be 12'));
+ assert(t.includes('Pathfinder referencing convention'));assert(t.includes('Practical formatting advice'));assert(!t.includes('Times New Roman'));assert(!t.includes('must be 12'));
  for(const x of [...FORMAT_ITEMS,...PROCESS_ITEMS])assert(x.source&&x.label);
  assert(FORMAT_ITEMS.find(x=>x.id==='visuals').text.includes('Appendices can hold large datasets'));
  assert(PROCESS_ITEMS.find(x=>x.title==='Teacher advice on a draft').text.includes('orally or in writing'));
