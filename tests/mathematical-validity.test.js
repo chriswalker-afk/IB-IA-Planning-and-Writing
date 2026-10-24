@@ -187,13 +187,13 @@ test("syllabus and unfamiliar mathematics get appropriately different explanatio
  assert.equal(c.hasExplanation,false);
  let html=renderCourseUnderstandingAid(s,entry,{e,icon});
  assert(html.includes("first recorded use"));
- assert(html.includes("have not yet recorded an explanation"));
+ assert(html.includes("No explanation or worked step"));
  entry.knowledgeNotes="Use a constraint multiplier to find constrained stationary candidates.";
  entry.understandingExample="Solve grad f = λ grad g";
  html=renderCourseUnderstandingAid(s,entry,{e,icon});
  assert(html.includes("Use a constraint multiplier"));
  assert(html.includes("Solve grad f"));
- assert(!html.includes("have not yet recorded an explanation"));
+ assert(!html.includes("No explanation or worked step"));
  s.entries.push({id:"math2",phase:"substantial",status:"completed",
   methodId:"optimisation",unfamiliarComponent:"Lagrange multipliers",
   knowledge:"outside",result:"A second constrained candidate"});
@@ -201,6 +201,15 @@ test("syllabus and unfamiliar mathematics get appropriately different explanatio
  assert.equal(c.firstUse,false);
  assert.match(c.text,/earlier completed use/);
  assert(!c.text.includes("fully explained"));
+ assert.equal(c.earlierExplanation,true);
+ const laterHtml=renderCourseUnderstandingAid(s,s.entries[1],{e,icon});
+ assert(laterHtml.includes("explanation or worked example is recorded"));
+ assert(!laterHtml.includes("No explanation or worked step"));
+ s.entries[0].knowledgeNotes="";
+ s.entries[0].understandingExample="";
+ c=mathematicalCourseContext(s,s.entries[1]);
+ assert.equal(c.earlierExplanation,false);
+ assert.equal(c.hasExplanation,false,"a mathematical reflection alone must not count as an explanation");
 });
 
 test("unknown course scope remains uncertain; a student's selection is not verified by Pathfinder",()=>{
