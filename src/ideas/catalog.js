@@ -1,5 +1,5 @@
 /** Optional editorial starting directions, not IA titles, data or course approval.
- * Principles: JIS SL Maths IA Guide 2025, pp. 8-11, 24 and 45.
+ * Principles: accessible starting points, a workable mathematical question and authentic student choices.
  * The categories, directions and interactions are new Pathfinder editorial work.
  */
 export const IDEA_TOPICS = [
