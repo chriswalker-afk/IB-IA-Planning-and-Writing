@@ -13,6 +13,7 @@ import {renderIdeaLabWritingCue} from "../planning/idea-lab-bridge.js";
 import {renderShowingMathsContext} from "./showing-first-maths.js";
 import {MATHEMATICAL_LINK_HINT,renderConsequentialChoice,renderStorySynthesis} from "./mathematical-story-guidance.js";
 import {renderResultInterpretationAid} from './result-interpretation.js';
+import {renderMathematicalValidityAid,renderCourseUnderstandingAid} from './mathematical-validity.js';
 import {renderMathematicalDecisionThread,renderPriorDecisionLink,recordedDecisionNotes} from './reasoning-thread.js';
 import {renderGraphStudio} from "../diagrams/graph-view.js";
 import {renderGraphSvg} from "../diagrams/graph-core.js";
@@ -892,6 +893,8 @@ export function createCompletingViews(ctx){
        ' <strong>Interpret real results.</strong> You can prepare your explanation, but Section 2 must contain a genuine mathematical output confirmed as produced before it becomes evidence for later guidance. A prediction or saved draft is not a finding.</p>')+
     journeyOutcomePicker(entry)+
     renderResultInterpretationAid(s,entry,{icon,e,reduced})+
+    renderMathematicalValidityAid(s,entry,{icon,e,reduced})+
+    (entry&&entry.knowledge&&entry.knowledge!=='unsure'?renderCourseUnderstandingAid(s,entry,{icon,e,reduced}):'')+
     '<div class="show-first-writing-field" data-show-first-writing-box="reflect">'+
     criterionMarkedWritingBox(
       (entry?entryField("interpretation","My reflection on what this result means",
@@ -1000,6 +1003,7 @@ export function createCompletingViews(ctx){
   case "C34A":return{intro:"Accuracy matters here only if it affects what this particular result can responsibly mean.",
    html:actualRecord()+accuracyNote()+
     accuracySelector()+
+    renderMathematicalValidityAid(s,st,{icon,e,reduced:isAdviceReduced(s)})+
     criteriaField(F("accuracyForResult","Is the display defensible?","A context-based explanation, not arbitrary decimal places",{type:"textarea",rows:3}),"completing:C34A:accuracyForResult")+
     info("Avoid repeated precision essays","Once justified, apply the decision again only where relevant. Revisit C24 if the underlying source changes.")
   };
@@ -1131,6 +1135,7 @@ export function createCompletingViews(ctx){
         entryField("researchSource","Original resource consulted (if relevant)","Link or source"):"")+
       entryField("methodChangeReason","Has a limitation of the earlier work led me to change method? (optional)",
        "Explain an actual adjustment, not an imagined one",{type:"textarea",rows:2})+
+      renderCourseUnderstandingAid(state,substantial,{icon,e,reduced:isAdviceReduced(state)})+
     '</details>');
    const second=card("show","2","Showing your tables, diagrams and calculations",
     "Present genuinely performed mathematics with legible notation, meaningful scales, units and precision as appropriate.",
@@ -1170,6 +1175,7 @@ export function createCompletingViews(ctx){
       ' Write conclusions from actual work only. Section 2 must be completed and confirmed before later stages treat this as a finding.</p>')+
     coachBlock(substantial,{allowChoices:false})+journeyOutcomePicker(substantial)+
     renderResultInterpretationAid(state,substantial,{icon,e,reduced:isAdviceReduced(state)})+
+    renderMathematicalValidityAid(state,substantial,{icon,e,reduced:isAdviceReduced(state)})+
     '<div class="show-first-writing-field">'+
      criterionMarkedWritingBox(entryField("interpretation","What does this result mean for my aim?",
       "What has the mathematics established, and what can I responsibly infer?",{type:"textarea",rows:5}),
@@ -1210,6 +1216,7 @@ export function createCompletingViews(ctx){
   };
   case "C40D":return{intro:"Check whether the mathematics you ACTUALLY use is appropriate and understood.",
    html:actualRecord()+
+    renderCourseUnderstandingAid(s,st,{icon,e,reduced:isAdviceReduced(s)})+
     (f.courseLevel&&st?.knowledge==="unsure"?smallSummary("Earlier broad course check to review",f.courseLevel):"")+
     (st?entryChoice("knowledge",[
       {value:"syllabus",title:"Verified within my own IB course",icon:"check-circle"},
@@ -1226,7 +1233,8 @@ export function createCompletingViews(ctx){
     info("Advanced ≠ better","Explain independently researched mathematics you understand when necessary; routine syllabus methods do not need textbook-style tutorials.")
   };
   case "C40L":return{intro:"Explain newly researched mathematics only when first genuinely needed, in your own understanding.",
-   html:(st&&st.knowledge==="syllabus"?info("Routine syllabus mathematics","Apply the technique and interpret it; detailed exposition is unnecessary."):"")+
+   html:renderCourseUnderstandingAid(s,st,{icon,e,reduced:isAdviceReduced(s)})+
+    (st&&st.knowledge==="syllabus"?info("Routine syllabus mathematics","Apply the technique and interpret it; detailed exposition is unnecessary."):"")+
     (st?entryField("researchSource","Mathematics source I actually used (if any)","Reference to a book/article or teacher-approved resource")+entryField("unfamiliarComponent","Exactly what part was new/outside my course?","Do not label routine course techniques advanced without checking")+entryField("understandingExample","A real mathematical explanation or step showing my own understanding","Relevant only if this idea is genuinely unfamiliar",{type:"textarea",rows:3}):"")+
     F("researchedMethod","Which new mathematical idea did I use?","Technique or theorem, and how you found it")+
     renderCitationReminder(s,"unfamiliar-maths",icon,e,{entry:st})+
