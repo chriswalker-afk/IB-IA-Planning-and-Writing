@@ -238,12 +238,17 @@ export function setCompletionField(state,key,value){
    }
   }
  }
- // The first four-part page writes its next question in shared Completing
- // fields. Mirror it onto the canonical first entry so provenance and later
- // review can detect edits made AFTER a new stage has already been created.
- if(c.current==="C30"&&(key==="nextQuestion"||key==="nextReason")){
-  const index=state.entries[c.activeEntryIndex]?.phase==="first"?
-    c.activeEntryIndex:state.entries.findLastIndex(x=>x?.phase==="first");
+ // Both the first four-part page and its dedicated "What next?" follow-up
+ // write to shared Completing fields. Keep their canonical source mathematical
+ // entry in sync. This is essential when a student revises a question on C35,
+ // or after a later stage has already been created.
+ if(["nextQuestion","nextReason"].includes(key)&&
+    ["C30","C35","C35H","C35P"].includes(c.current)){
+  const chosen=c.current==="C30"?
+   (state.entries[c.activeEntryIndex]?.phase==="first"?state.entries[c.activeEntryIndex]:
+    state.entries.findLast(x=>x?.phase==="first")):
+   sourceResultForNext(state);
+  const index=state.entries.findIndex(x=>x?.id===chosen?.id);
   if(index>=0){
    const parent=state.entries[index],property=key==="nextQuestion"?"nextQuestion":"nextWhy";
    const earlier=parent[property]||"",now=c.fields[key];
@@ -324,19 +329,42 @@ export function setCompletionNode(state,id,{history=true,reason="revisit"}={}){
   c.activeEntryIndex=index;c.nextFromEntryId=c.writingOrigin.nextFromEntryId;
  }
  if(id==="C35"){
+  const original=sourceResultForNext(state)?.id||"";
   if(["C34","C34A","C34B","C34U"].includes(previous)){
    const active=completeEntry(state);
    if(genuinelyDone(active))c.nextFromEntryId=active.id;
   }else if(!["C35","C35H","C35B","C35P"].includes(previous)){
    c.nextFromEntryId=latestRealResult(state)?.id||"";
   }
+  // These are legacy shared fields, not a second source of mathematical truth.
+  // When "What next?" switches between different confirmed results, show
+  // that result's own recorded question/justification, not the last stage's.
+  const current=sourceResultForNext(state);
+  const returningFromDifferentFirstPage=previous==="C30"&&
+   state.entries[c.activeEntryIndex]?.id!==current?.id;
+  if(current&&(original!==current.id||returningFromDifferentFirstPage)){
+   c.fields.nextQuestion=str(current.nextQuestion);
+   c.fields.nextReason=str(current.nextWhy);
+   c.fields.nextMethod="";
+  }
  }
  if(c.current!==id&&history)c.history.push(c.current);
  c.history=c.history.slice(-350);
  c.current=id;
- if(id==="C30"&&state.entries[c.activeEntryIndex]?.phase!=="first"){
-  const firstIndex=state.entries.findLastIndex(x=>x.phase==="first");
-  if(firstIndex>=0)c.activeEntryIndex=firstIndex;
+ if(id==="C30"){
+  if(state.entries[c.activeEntryIndex]?.phase!=="first"){
+   const firstIndex=state.entries.findLastIndex(x=>x.phase==="first");
+   if(firstIndex>=0)c.activeEntryIndex=firstIndex;
+  }
+  // Returning from a later mathematical stage should reopen the FIRST
+  // stage's own follow-up notes, not the later source's shared C35 fields.
+  const first=state.entries[c.activeEntryIndex];
+  if(previous!=="C30"&&first?.phase==="first"&&
+    state.entries.some(x=>x?.phase==="substantial")){
+   c.fields.nextQuestion=str(first.nextQuestion);
+   c.fields.nextReason=str(first.nextWhy);
+   c.fields.nextMethod="";
+  }
  }
  if(previous!==id&&c.guidanceUi&&!helperHop){
   c.guidanceUi.quietNode="";

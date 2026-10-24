@@ -5,6 +5,7 @@
 import {methodFamilies} from "./method-identity.js";
 import {adaptiveNextDirections} from "./adaptive-journey.js";
 import {renderSparkShelf} from "../ui/insight-threads.js";
+import {renderConclusionReasoningThread,recordedDecisionNotes} from "./reasoning-thread.js";
 
 const has=value=>typeof value==="string"&&!!value.trim();
 const short=(s,max=215)=>{
@@ -123,7 +124,7 @@ function potentialQuestions(state,e,icon){
  if(!last)return"";
  const advice=adaptiveNextDirections(state,last),fromResult=advice?.status==="ready"?
   (advice.directions||[]).slice(0,2).map(x=>x.question):[];
- const original=has(last.nextQuestion)?[last.nextQuestion]:[];
+ const original=has(recordedDecisionNotes(state,last).question)?[recordedDecisionNotes(state,last).question]:[];
  const questions=[...new Set([...original,...fromResult])].slice(0,2);
  if(!questions.length)return"";
  return '<details class="conclusion-next-help"><summary>'+icon("sparkles")+
@@ -153,6 +154,7 @@ export function renderConclusionWorkspace({state,e,icon,field,F,criterionMarkedW
  return '<div class="conclusion-workspace" data-conclusion-workspace>'+
   '<p class="conclusion-workspace-lead">Three ideas: <strong>answer</strong> your aim, explain its <strong>meaning and limits</strong>, then consider <strong>potential next steps</strong>. Write only what your mathematics supports.</p>'+
   context+
+  renderConclusionReasoningThread(state,{icon,e,reduced:state.ui?.adviceMode==="reduced"})+
   '<section class="conclusion-writing-part" data-conclusion-part="answer">'+
    '<div class="conclusion-part-title"><span class="conclusion-part-number">1</span><div>'+
      '<h3>What is your best-supported mathematical answer?</h3>'+
