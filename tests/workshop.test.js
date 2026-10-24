@@ -241,7 +241,7 @@ test('workshop: two guided checkpoints accept only current answers and never mut
  assert(resourceDrawer(s,u).includes('Checkpoint 2 of 2'));
  assert(!resourceAction(s,u,'resource-workshop-choice',{workshopChoice:'row'}).ok);
  assert(resourceAction(s,u,'resource-workshop-choice',{workshopChoice:'69'}).ok);
- assert(resourceDrawer(s,u).includes('That's right'));
+ assert(resourceDrawer(s,u).includes("That's right"));
  assert(!resourceAction(s,u,'resource-workshop-checkpoint',{workshopDirection:'1'}).ok);
  assert(resourceAction(s,u,'resource-workshop-checkpoint',{workshopDirection:'-1'}).ok);
  assert.equal(u.workshopChoice,'');
