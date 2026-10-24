@@ -194,7 +194,7 @@ export function insightForCurrent(s,node){
   return compact(['result:'+focusId,'direction:'+focusId,'limitation-note:'+focusId,'aim']).slice(0,3);
  if(['C30','C32','C33','C34','C34A','C34B','C40','C50','C40T','C40L'].includes(node)){
   const prior=active?.fromEntryId?'result:'+active.fromEntryId:'';
-  const refs=[...related('accuracy'),...related('source')];
+  const refs=[...related('source'),...related('accuracy')];
   const choose=items=>[...new Map(items.filter(Boolean).map(x=>[x.id,x])).values()].slice(0,3);
   if(node==='C30')return choose(compact(['result:'+activeId,'method:'+activeId,'aim']));
   if(['C32','C33'].includes(node))
@@ -203,8 +203,9 @@ export function insightForCurrent(s,node){
    return choose([...compact(['result:'+activeId]),...refs,...compact(['limitation-note:'+activeId,'aim'])]);
   if(node==='C34B')return choose(compact(['result:'+activeId,'limitation-note:'+activeId,'aim']));
   if(['C40','C50','C40T','C40L'].includes(node))
-   return choose([...compact([prior,'method:'+activeId,'result:'+activeId]),...refs,...compact(['aim'])]);
-  return choose([...compact(['result:'+activeId,'limitation-note:'+activeId,prior]),...refs,...compact(['aim'])]);
+   return choose([...compact([prior,'method:'+activeId]),...refs,...compact(['aim'])]);
+  const planned=related('accuracy').length?[]:all.filter(x=>x.id.startsWith('planned-accuracy:')).slice(0,1);
+  return choose([...compact(['result:'+activeId,'limitation-note:'+activeId,prior]),...refs,...planned,...compact(['aim'])]);
  }
  if(['C10','C10E','C02','C60','C61','C62','C64'].includes(node)){
   const prep=['C10','C10E'].includes(node)?compact(['aim','motivation','prediction']):
@@ -412,7 +413,6 @@ export function featuredSparkItems(s,node){
   }else if(['C40','C50','C40T','C40L'].includes(node)){
    if(active?.fromEntryId)id('result:'+active.fromEntryId);
    if(active)id('method:'+active.id);
-   if(active&&done(active))id('result:'+active.id);
    for(const x of linked)if(x.id.startsWith('accuracy:')||x.id.startsWith('source:'))id(x.id);
    id('aim');
   }else{
