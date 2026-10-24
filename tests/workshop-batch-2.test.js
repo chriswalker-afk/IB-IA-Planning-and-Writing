@@ -25,6 +25,7 @@ test('batch 2: new glossary, lessons and existing guides have complete schemas',
   assert(resourceIds.has(l.existingGuide),l.id);
   assert(l.technology.length>=1&&l.technology.every(t=>t.name&&t.command&&t.why),l.id);
   assert(l.avoid&&l.ia&&l.formula,l.id);
+  if(l.id==='linear-regression')assert(l.technology.some(t=>t.command==='y_1 ~ a + b x_1'), 'The Desmos equation must use the same intercept a and slope b as the lesson');
  }
 });
 test('batch 2: Spearman untied example, independent task and tied ranks are correct',()=>{
