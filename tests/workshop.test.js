@@ -19,8 +19,8 @@ const snapshot=s=>JSON.stringify({entries:s.entries,planning:s.planning,completi
 const approx=(a,b,eps=1e-9)=>assert(Math.abs(a-b)<eps,String(a)+' differs from '+String(b));
 
 test('workshop: canonical glossary and pilot IDs are unique and never blank',()=>{
- assert.equal(WORKSHOP_DEFINITIONS.length,26);
- assert.equal(WORKSHOP_LESSONS.length,3);
+ assert.equal(WORKSHOP_DEFINITIONS.length,57);
+ assert.equal(WORKSHOP_LESSONS.length,7);
  assert.equal(new Set(WORKSHOP_DEFINITIONS.map(d=>d.id)).size,WORKSHOP_DEFINITIONS.length);
  assert.equal(new Set(WORKSHOP_LESSONS.map(l=>l.id)).size,WORKSHOP_LESSONS.length);
  for(const d of WORKSHOP_DEFINITIONS){
@@ -42,13 +42,15 @@ test('workshop: all sixteen routes map only to real shared definitions and optio
  }
 });
 test('workshop: complete pilot schema supports definitions, full worked methods and standalone practice',()=>{
- const expected=['descriptive','pearson','optimisation'];
+ const expected=['descriptive','pearson','optimisation','sampling','distributions','two-way-proportions','measurement'];
  assert.deepEqual(WORKSHOP_LESSONS.map(l=>l.id),expected);
  for(const l of WORKSHOP_LESSONS){
   assert(l.when&&l.avoid&&l.formula&&l.skill&&l.ia,l.id);
   assert(l.definitionIds.length>1&&l.definitionIds.every(definitionById),l.id);
   assert(l.worked.context&&l.worked.steps.length>=5&&l.worked.answer&&l.worked.interpretation,l.id);
-  assert(l.guided.options.length>=3&&l.guided.options.some(([id])=>id===l.guided.correct)&&l.guided.hint&&l.guided.feedback,l.id);
+  const checkpoints=l.guided.parts||[l.guided];
+  assert(checkpoints.length>=1,l.id);
+  for(const part of checkpoints)assert(part.options.length>=3&&part.options.some(([id])=>id===part.correct)&&part.hint&&part.feedback,l.id);
   assert(l.independent.question&&l.independent.answer&&l.independent.reasoning,l.id);
   assert(l.technology.length>=1&&l.technology.every(t=>t.name&&t.command&&t.why),l.id);
   assert(l.existingGuide,l.id);
@@ -118,7 +120,7 @@ test('workshop: pathway browsing filters exact route terms and available lessons
  const html=resourceDrawer(s,session);
  assert(html.includes('Voronoi cell'));
  assert(!html.includes('Pearson&#39;s correlation coefficient</h4>'));
- assert(html.includes('No pilot lessons match this selection'));
+ assert(html.includes('No guided lessons match this selection'));
  assert(!resourceFilter(session,'workshopRoute','invalid-route'));
  assert(resourceFilter(session,'workshopRoute','relationships'));
  assert(workshopList(session).includes('Pearson'));
@@ -181,5 +183,77 @@ test('workshop: no fake student results, remote embeds or automatic course selec
  assert(!html.includes('Your IA has been updated'));
  assert(html.includes('not your results'));
  assert(html.includes('not a course recommendation'));
+ assert.equal(snapshot(s),before);
+});
+
+test('workshop: data-essentials lessons are complete and linked to existing tutorials',()=>{
+ const expected={sampling:'forms',distributions:'distribution-graphs','two-way-proportions':'two-way',measurement:'reporting-precision'};
+ for(const [id,guide] of Object.entries(expected)){
+  const l=lessonById(id);assert(l,id);
+  assert.equal(l.existingGuide,guide);
+  assert.equal(l.guided.parts.length,2);
+  assert(l.worked.table&&l.worked.table.rows.length>=1);
+  assert.equal(l.worked.table.headers.length,l.worked.table.rows[0].length);
+  assert(l.avoid&&l.ia&&l.worked.interpretation);
+ }
+});
+test('workshop: sampling and bias calculations are checked',()=>{
+ assert.equal(20*60/100,12);
+ assert.equal(20*40/100,8);
+ assert.equal(30*90/150,18);
+ assert.equal(30*60/150,12);
+ assert.equal(20*75/100,15);
+});
+test('workshop: median of halves, quartile spread and frequency density are checked',()=>{
+ const median=a=>(a[(a.length/2)-1]+a[a.length/2])/2;
+ const lower=[2,3,3,4],upper=[5,5,7,11];
+ assert.equal(median(lower),3);assert.equal(median(upper),6);
+ assert.equal(6-3,3);assert.equal(6+1.5*3,10.5);
+ assert.equal(6/2,3);assert.equal(8/4,2);
+ const independent=[1,2,2,3,4,6,7,17];
+ assert.equal(median(independent),3.5);
+ assert.equal(median(independent.slice(0,4)),2);
+ assert.equal(median(independent.slice(4)),6.5);
+ assert.equal(6.5+1.5*(6.5-2),13.25);
+});
+test('workshop: conditional denominators and percentage points are checked',()=>{
+ assert.equal(18/30,0.6);assert.equal(8/20,0.4);
+ assert.equal((18/30-8/20)*100,20);
+ assert(Math.abs(18/26-0.6923076923)<1e-9);
+ assert.equal(14/20,0.7);assert.equal(10/40,0.25);
+ assert(Math.abs((14/20-10/40)*100-45)<1e-10);
+});
+test('workshop: rounding-only area bounds are not sold as total uncertainty',()=>{
+ assert.equal(9.95**2,99.0025);assert.equal(10.05**2,101.0025000000001);
+ assert.equal(7.95**2,63.2025);assert.equal(8.05**2,64.80250000000001);
+ const lesson=lessonById('measurement');
+ assert.match(lesson.avoid,/NOT a complete measurement/);
+ assert.match(lesson.worked.interpretation,/Other sources of uncertainty/);
+});
+test('workshop: two guided checkpoints accept only current answers and never mutate student work',()=>{
+ const s=student(),u=newResourceSession(),before=snapshot(s);
+ resourceAction(s,u,'resource-workshop-lesson',{workshopId:'two-way-proportions'});
+ resourceAction(s,u,'resource-workshop-step',{workshopStep:'help'});
+ assert(resourceDrawer(s,u).includes('Checkpoint 1 of 2'));
+ assert(resourceAction(s,u,'resource-workshop-choice',{workshopChoice:'row'}).ok);
+ assert(!resourceAction(s,u,'resource-workshop-choice',{workshopChoice:'69'}).ok);
+ assert(resourceAction(s,u,'resource-workshop-checkpoint',{workshopDirection:'1'}).ok);
+ assert(resourceDrawer(s,u).includes('Checkpoint 2 of 2'));
+ assert(!resourceAction(s,u,'resource-workshop-choice',{workshopChoice:'row'}).ok);
+ assert(resourceAction(s,u,'resource-workshop-choice',{workshopChoice:'69'}).ok);
+ assert(resourceDrawer(s,u).includes('That's right'));
+ assert(!resourceAction(s,u,'resource-workshop-checkpoint',{workshopDirection:'1'}).ok);
+ assert(resourceAction(s,u,'resource-workshop-checkpoint',{workshopDirection:'-1'}).ok);
+ assert.equal(u.workshopChoice,'');
+ assert.equal(snapshot(s),before);
+});
+test('workshop: course and student evidence remain separate with Batch 1 tables',()=>{
+ const s=student(),u=newResourceSession(),before=snapshot(s);
+ resourceAction(s,u,'resource-workshop-lesson',{workshopId:'sampling'});
+ const html=resourceDrawer(s,u);
+ assert(html.includes('workshop-data-table'));
+ assert(html.includes('Population and proposed sample allocation'));
+ assert(html.includes('not a course recommendation'));
+ assert(!html.includes('<script'));
  assert.equal(snapshot(s),before);
 });
