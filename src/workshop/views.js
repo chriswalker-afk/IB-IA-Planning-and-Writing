@@ -15,11 +15,13 @@ const subjectLabels={Data:"Data",Models:"Models",Calculus:"Calculus",Decisions:"
 const filtered=(session)=>{
  const routeId=routeIds.has(session.workshopRoute)?session.workshopRoute:"";
  const scope=routeId?PATHWAY_LEARNING[routeId]:null;
- const q=safe(session.workshopQuery).trim().toLowerCase();
+ const normalise=text=>String(text).toLowerCase().replace(/[-_]+/g," ").replace(/\s+/g," ").trim();
+ const q=normalise(safe(session.workshopQuery));
+ const matches=fields=>!q||normalise(fields.join(" ")).includes(q);
  const terms=WORKSHOP_DEFINITIONS.filter(x=>(!scope||scope.terms.includes(x.id))&&
-  (!q||[x.id,x.title,x.meaning,x.example,x.category,x.notation].join(" ").toLowerCase().includes(q)));
+  matches([x.id,x.title,x.meaning,x.example,x.category,x.notation]));
  const lessons=WORKSHOP_LESSONS.filter(x=>(!scope||scope.lessons.includes(x.id))&&
-  (!q||[x.id,x.title,x.when,x.avoid,x.category,...x.definitionIds].join(" ").toLowerCase().includes(q)));
+  matches([x.id,x.title,x.when,x.avoid,x.category,...x.definitionIds]));
  return {terms,lessons,routeId};
 };
 const definitionCard=d=>'<article class="workshop-term-card">'+
