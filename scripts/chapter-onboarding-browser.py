@@ -909,6 +909,7 @@ def resource_diagram_creators(browser,width):
    drawer=page.locator(".resource-drawer")
    assert drawer.is_visible()
    assert drawer.locator('.resource-creator-card').count()==7
+   drawer.locator('.resource-creators-compact > summary').click()
    assert "matching guides" in drawer.inner_text(),("Resource list should report available guides",width)
    assert drawer.evaluate('el=>el.scrollWidth<=el.clientWidth+1')
    if creator=="graph":

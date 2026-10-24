@@ -214,5 +214,26 @@ with sync_playwright() as pw:
   for id in ('D09','D12'):
    s['completion']['review']['records'][mode+'-'+id].update(status='unchecked',location='',note='')
  run('checking-mla-final-authorship',s,citation_final,False)
+ def check_order(p):
+  first=p.locator('[data-checking-item]').first
+  detail=first.locator('.checking-item-details')
+  assert not first.locator('.checking-item-actions').is_visible()
+  detail.locator('summary').click()
+  assert first.locator('.checking-item-actions').is_visible()
+  assert first.evaluate("""e=>{
+   let p=['.checking-look-for','.checking-evidence-reminder','.field-group','.checking-item-actions'].map(x=>e.querySelector(x));
+   return p.every(Boolean)&&p.every((x,i)=>i===0||p[i-1].compareDocumentPosition(x)&Node.DOCUMENT_POSITION_FOLLOWING);
+  }""")
+  if saved(p)['ui']['checkingMode']=='feedback':
+   ys=[p.locator(x).first.bounding_box()['y'] for x in ('.checking-feedback-form','.checking-document-section','.checking-feedback-revisions')]
+   assert ys==sorted(ys)
+ for mode,mobile in [('draft',True),('feedback',False),('final',True)]:
+  s=state('C80D');s['route']='checking';s['ui']['checkingMode']=mode
+  run('checking-order-'+mode,s,check_order,mobile)
+ def dashboard_order(p):
+  assert p.locator('.completion-stage-grid').bounding_box()['y']<p.locator('.writer-guide-overview-card').bounding_box()['y']
+ for mobile in (True,False):
+  s=state('C04')
+  run('dashboard-order-'+('phone' if mobile else 'desktop'),s,dashboard_order,mobile)
  browser.close()
 (OUT/'results.json').write_text(json.dumps({'results':results,'browser_errors':errors},indent=2));print(json.dumps(results,indent=2));assert all(x['status']=='passed' for x in results)
