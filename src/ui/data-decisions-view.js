@@ -49,9 +49,9 @@ export function samplingPlanner(state,{F,select,e,icon}){
  ['not-applicable','Not applicable to this investigation']])+
  (f.primarySamplingFrame?F('primarySamplingFrameDetails',
  'What is the frame, or what is the difficulty? (optional)','e.g. A current class list, a directory, or no complete list of observations'): '')+
+ guide(e,icon)+
  select('primarySamplingMethod','How will you select units or obtain observations?',SAMPLING_METHODS.map(m=>[m.id,m.label]))+
  samplingSpotlight(f,e,icon)+
- guide(e,icon)+
  select('primaryRepeatable','Could you start quickly and collect follow-up observations if useful?',[
  ['yes','Yes — I can start soon and return for more data'],
  ['maybe','Possibly — I would need to check access or timing'],
