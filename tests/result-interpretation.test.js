@@ -53,6 +53,10 @@ test('all 16 investigative pathways give route-specific questions only after rea
   assert(ui.includes('planned route'));
   assert(!ui.includes('was used to calculate'));
  }
+ s.planning.fields.kind='theoretical';
+ s.planning.routeExplorer.selectedRoute='relationships';
+ assert.equal(resultInterpretationGuidance(s,s.entries[0]).key,'general',
+  'an incompatible old planning route must not decide the current interpretation');
  s.entries[0].status='planned';
  assert.equal(resultInterpretationGuidance(s,s.entries[0]),null);
  assert.equal(renderResultInterpretationAid(s,s.entries[0],{icon,e}),'');
@@ -159,6 +163,9 @@ test('interpretation Insights appear at the first and later mathematical reflect
  assert(html.includes('stationary point as a candidate'));
  assert(html.includes('How does travel time relate to distance?'));
  assert(!html.includes('data-result-interpretation="pmcc"'));
+ setCompletionNode(state,'C50');html=views.viewCompleting();
+ assert(html.includes('data-result-interpretation="optimisation"'),
+  'a later mathematical stage must retain the same focused interpretation');
  state.ui.adviceMode='reduced';
  html=views.viewCompleting();
  assert(html.includes('data-result-interpretation="optimisation"'));
