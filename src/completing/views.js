@@ -40,6 +40,7 @@ import {examplePrompt,exampleInline} from "../examples/views.js";
 import {criteriaPanel,essentialsNudge} from "../essentials/views.js";
 import {criterionPageHeading,criterionMarkedField,criterionMarkedWritingBox as baseCriterionMarkedWritingBox} from "../essentials/criteria-badges.js";
 import {resourcePrompt} from "../resources/views.js";
+const methodWorkshopLink='<div class="maths-workshop-method-link"><button type="button" class="btn btn-secondary btn-sm" data-action="resource-workshop">Need help with the mathematics? Open Maths Workshop</button></div>';
 import {renderCitationReminder} from "../resources/citation-prompts.js";
 import {createStuckViews} from '../help/stuck-views.js';
 import {isStuckNode} from '../help/stuck-state.js';
@@ -834,6 +835,7 @@ export function createCompletingViews(ctx){
     (entry?'<details class="math-first-course-choice"><summary>'+icon("book")+
      ' Identify this mathematics and its course scope (optional) '+icon("chevron-right")+'</summary><div>'+
       entryField("methodId","Technique actually used, or being considered","",{type:"select",options:METHOD_OPTIONS})+
+      (!reduced?methodWorkshopLink:"")+
       entryChoice("knowledge",[
        {value:"syllabus",title:"Within my own IB course",icon:"check-circle"},
        {value:"mixed",title:"Mostly familiar, with an unfamiliar extension",icon:"book"},
@@ -981,6 +983,7 @@ export function createCompletingViews(ctx){
     '</details>'+
     entryField("technique","Mathematical technique being used","e.g. plot observed paired values")+
     entryField("methodId","Identify an actual method for relevant help (optional)","",{type:"select",options:METHOD_OPTIONS})+
+     (!isAdviceReduced(s)?methodWorkshopLink:"")+
     F("firstDefinitions","Variables, units or assumptions the reader needs here","Only what is not already defined",{type:"textarea",rows:2})+
     preflight(st)+
     graphEntryPanel()+traceEntryPanel()+statEntryPanel()+tableEntryPanel()+voronoiEntryPanel()+geometryEntryPanel()+probabilityEntryPanel()+
@@ -1128,6 +1131,7 @@ export function createCompletingViews(ctx){
      ' The mathematical approach for THIS stage</strong>'+
      '<p>Choose the method you are using or have actually used. This changes the possible outcomes you can select in Section 3; it does not claim that the calculation has been completed.</p>'+
      entryField("methodId","Mathematical method","",{type:"select",options:METHOD_OPTIONS})+
+      (!isAdviceReduced(state)?methodWorkshopLink:"")+
     '</div>'+
     '<div class="show-first-writing-field">'+
      criterionMarkedWritingBox(entryField("bridge","My bridge from the previous result",
