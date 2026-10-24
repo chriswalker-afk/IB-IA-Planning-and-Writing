@@ -4,6 +4,8 @@
 import {WORKSHOP_DEFINITIONS,WORKSHOP_LESSONS,PATHWAY_LEARNING,definitionById,lessonById} from "./catalog.js";
 import {INVESTIGATIVE_ROUTES,routeById} from "../planning/investigative-routes.js";
 import {escapeHtml as e,icon} from "../ui/primitives.js";
+import {resourceById} from "../resources/catalog.js";
+import {representationTool} from "../diagrams/representation-registry.js";
 import {workshopProse as mathText,workshopLessonFormula,workshopDefinitionFormula} from "./math-render.js";
 
 const action=(name,label,attrs="",primary=false)=>
@@ -14,11 +16,13 @@ const subjectLabels={Data:"Data",Models:"Models",Calculus:"Calculus",Decisions:"
 const filtered=(session)=>{
  const routeId=routeIds.has(session.workshopRoute)?session.workshopRoute:"";
  const scope=routeId?PATHWAY_LEARNING[routeId]:null;
- const q=safe(session.workshopQuery).trim().toLowerCase();
+ const normalise=text=>String(text).toLowerCase().replace(/[-_]+/g," ").replace(/\s+/g," ").trim();
+ const q=normalise(safe(session.workshopQuery));
+ const matches=fields=>!q||normalise(fields.join(" ")).includes(q);
  const terms=WORKSHOP_DEFINITIONS.filter(x=>(!scope||scope.terms.includes(x.id))&&
-  (!q||[x.id,x.title,x.meaning,x.example,x.category,x.notation].join(" ").toLowerCase().includes(q)));
+  matches([x.id,x.title,x.meaning,x.example,x.category,x.notation]));
  const lessons=WORKSHOP_LESSONS.filter(x=>(!scope||scope.lessons.includes(x.id))&&
-  (!q||[x.id,x.title,x.when,x.avoid,x.category,...x.definitionIds].join(" ").toLowerCase().includes(q)));
+  matches([x.id,x.title,x.when,x.avoid,x.category,...x.definitionIds]));
  return {terms,lessons,routeId};
 };
 const definitionCard=d=>'<article class="workshop-term-card">'+
@@ -54,6 +58,8 @@ function renderLesson(session,l){
  const step=["show","help","turn"].includes(session.workshopStep)?session.workshopStep:"show";
  const trail='<div class="workshop-lesson-top">'+action("home","← Back to Maths Workshop")+
   '<span class="workshop-eyebrow">'+e(l.category)+'</span></div>';
+ const relatedGuides=[...new Set(l.relatedGuides||[])].map(resourceById).filter(Boolean);
+ const nativeCreator=representationTool(l.creator);
  const definitions=l.definitionIds.map(definitionById).filter(Boolean).map(d=>
   '<button class="workshop-define-chip" type="button" data-action="resource-workshop-term" data-workshop-id="'+e(d.id)+'">'+e(d.title)+' '+icon("arrow-right")+'</button>').join("");
  let activity="";
@@ -98,7 +104,13 @@ function renderLesson(session,l){
   l.technology.map(t=>'<div class="workshop-tech-row"><strong>'+e(t.name)+'</strong>'+
    '<code>'+e(t.command)+'</code><p>'+e(t.why)+'</p></div>').join("")+
   '<button type="button" class="btn btn-secondary" data-action="resource-open" data-resource-id="'+e(l.existingGuide)+'">'+
-   'Open existing software instructions '+icon("arrow-right")+'</button></section>'+
+   'Open existing software instructions '+icon("arrow-right")+'</button>'+
+  (relatedGuides.length?'<details class="workshop-more-guides"><summary>Related tutorials ('+relatedGuides.length+')</summary>'+
+   relatedGuides.map(g=>'<button type="button" class="btn btn-secondary" data-action="resource-open" data-resource-id="'+e(g.id)+'">'+e(g.title)+' '+icon("arrow-right")+'</button>').join("")+'</details>':"")+
+  (nativeCreator?'<div class="workshop-native-creator"><strong>Try an optional diagram creator</strong>'+
+   '<p>Open the '+e(nativeCreator.title)+' to create your own labelled '+(nativeCreator.id==="table"?'table':'diagram')+'. This moves to the tool workspace; returning to your work does not copy a practice result into your IA.</p>'+
+   '<button type="button" class="btn btn-secondary" data-action="resource-creator-open" data-resource-creator="'+e(nativeCreator.id)+'">Open '+e(nativeCreator.title)+' '+icon("arrow-right")+'</button></div>':"")+
+  '</section>'+
   '<section class="workshop-section workshop-ia"><h4>In my actual IA</h4><p>'+mathText(l.ia)+'</p>'+
   '<p class="workshop-caution">These are fictional worked calculations, not your results. Reading this guide never writes to your IA, confirms mathematical accuracy or awards marks.</p></section>'+
   action("home","Back to all Maths Workshop resources")+'</article>';

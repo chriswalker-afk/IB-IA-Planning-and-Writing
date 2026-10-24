@@ -17,6 +17,10 @@ IA Pathfinder supports students through the **planning, mathematics, writing and
 
 The optional **Maths Workshop** lives in Tools & Tutorials. It includes **26 quick mathematical definitions**, three worked **Show me → Help me → My turn** lessons (mean and standard deviation, Pearson's correlation coefficient, and optimisation by differentiation), technology shortcuts, and learning links for all **16 investigative pathways**. Students can open it from Help, route details and relevant IA Studio method selectors; Reduce Advice keeps the optional inline prompts quiet. Practice is fictional and read-only, never recorded as student work or assigned an IA grade. See [the Batch 0 release notes](docs/maths-workshop-batch-0-2026-10-24.md) for coverage, safety and the Batch 1 backlog.
 
+### Maths Workshop — Data essentials and model evaluation
+
+**Batch 1** extends the searchable glossary with 31 terms and five additional guided lessons on sampling and bias, descriptive distributions, histogram frequency density, two-way proportions and measurement uncertainty. Each has worked mathematics, two checkpoints, independent practice, and optional links to native Statistical Diagram Studio, Table Studio and existing tutorials. **Batch 2** adds relationships and model evaluation. The combined Workshop now has **80 definitions and 13 lessons**. Practice remains fictional and never changes student IA work. See the [Batch 1 coverage notes](docs/maths-workshop-batch-1-2026-10-24.md) and [Batch 2 notes](docs/maths-workshop-batch-2-2026-10-24.md).
+
 ### Complete illustrative investigations
 
 The sample picker contains **five complete fictional student investigations**: standing reach, paper-helicopter groups, revision-format preferences, coffee-grinder reliability and tray optimisation. Each uses connected first-person writing, checked mathematics, stated constructed data or assumptions, and editable native figures. The same answers appear in the Planning, Writing and Checking fields and in a continuous IA reader with separate PDF and Word downloads. Samples open in an isolated preview; exploring or editing them does not replace the student's own project.

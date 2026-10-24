@@ -252,7 +252,7 @@ with sync_playwright() as pw:
   open_library(p)
   p.locator('.resource-workshop-entry [data-action="resource-workshop"]').click()
   p.locator('[data-action="resource-workshop-home"]').first.click() if not p.locator('[data-workshop-home="true"]').count() else None
-  assert p.locator('#resource-results .workshop-lesson-card').count()==12
+  assert p.locator('#resource-results .workshop-lesson-card').count()==13
   p.locator('[data-action="resource-workshop-lesson"][data-workshop-id="two-way-proportions"]').first.click()
   assert p.locator('[data-workshop-lesson="two-way-proportions"]').count()==1
   assert p.locator('.workshop-data-table').count()==1
@@ -271,7 +271,7 @@ with sync_playwright() as pw:
   assert 'percentage points' in p.locator('.workshop-reveal').inner_text()
   assert overlay(p).evaluate('(el)=>el.scrollWidth<=el.clientWidth+1')
   overlay(p).screenshot(path=str(OUT/'workshop-batch1-guided-phone.png'),animations='disabled')
-  p.locator('.workshop-technology [data-action="resource-open"]').click()
+  p.locator('.workshop-technology [data-action="resource-open"][data-resource-id="two-way"]').click()
   assert p.locator('[data-resource-detail="two-way"]').count()==1
   p.locator('[data-action="resource-workshop"][data-workshop-resume="true"]').click()
   assert p.locator('[data-workshop-lesson="two-way-proportions"]').count()==1
@@ -320,7 +320,7 @@ with sync_playwright() as pw:
   open_library(p)
   p.locator('.resource-workshop-entry [data-action="resource-workshop"]').click()
   if not p.locator('[data-workshop-home="true"]').count():p.locator('[data-action="resource-workshop-home"]').first.click()
-  assert p.locator('#resource-results .workshop-lesson-card').count()==12
+  assert p.locator('#resource-results .workshop-lesson-card').count()==13
   p.locator('#workshop-route').select_option('relationships')
   assert 'Spearman' in p.locator('#resource-results').inner_text()
   p.locator('[data-action="resource-workshop-lesson"][data-workshop-id="spearman"]').first.click()
@@ -376,5 +376,35 @@ with sync_playwright() as pw:
   p.locator('[data-action="close-drawer"]').click()
   assert unchanged_fields(saved(p))==before
  run('workshop-batch2-models-desktop',state(),batch2_models_desktop,1440,1000)
+ def batch1_histogram(p):
+  before=unchanged_fields(saved(p))
+  open_library(p)
+  p.locator('.resource-workshop-entry [data-action="resource-workshop"]').click()
+  if not p.locator('[data-workshop-home="true"]').count():
+   p.locator('[data-action="resource-workshop-home"]').first.click()
+  p.locator('#workshop-route').select_option('variation')
+  assert 'Construct and interpret a histogram' in p.locator('#resource-results').inner_text()
+  p.locator('#workshop-search').fill('frequency density')
+  assert p.locator('[data-action="resource-workshop-lesson"][data-workshop-id="histograms"]').count()==1
+  p.locator('[data-action="resource-workshop-lesson"][data-workshop-id="histograms"]').click()
+  assert p.locator('[data-workshop-lesson="histograms"]').count()==1
+  assert '0.6' in overlay(p).inner_text()
+  p.locator('.workshop-lesson-tabs [data-workshop-step="help"]').click()
+  assert 'Checkpoint 1 of 2' in overlay(p).inner_text()
+  p.locator('[data-action="resource-workshop-choice"][data-workshop-choice="3"]').click()
+  assert "That's right" in p.locator('.workshop-feedback.correct').inner_text()
+  p.locator('[data-action="resource-workshop-checkpoint"][data-workshop-direction="1"]').click()
+  assert 'Checkpoint 2 of 2' in overlay(p).inner_text()
+  p.locator('[data-action="resource-workshop-choice"][data-workshop-choice="lower"]').click()
+  assert "That's right" in p.locator('.workshop-feedback.correct').inner_text()
+  p.locator('.workshop-lesson-tabs [data-workshop-step="turn"]').click()
+  p.locator('.workshop-reveal > summary').click()
+  assert 'Total frequency 23' in overlay(p).inner_text()
+  assert p.locator('.workshop-native-creator [data-resource-creator="stat"]').count()==1
+  assert overlay(p).evaluate('(el)=>el.scrollWidth<=el.clientWidth+1')
+  overlay(p).screenshot(path=str(OUT/'workshop-batch1-histogram-phone.png'),animations='disabled')
+  p.locator('[data-action="close-drawer"]').click()
+  assert unchanged_fields(saved(p))==before
+ run('workshop-batch1-histogram-phone',state(),batch1_histogram,360,740)
  browser.close()
 (OUT/'resources-results.json').write_text(json.dumps(results,indent=2));print(json.dumps(results,indent=2));assert all(r['status']=='passed' for r in results)
