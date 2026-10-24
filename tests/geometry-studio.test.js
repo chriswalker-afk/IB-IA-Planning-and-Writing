@@ -1,8 +1,9 @@
 import test from "node:test";
+import {readFileSync} from "node:fs";
 import assert from "node:assert/strict";
 import {newGeometryDraft,newGeometryStudio,geometryAnalysis,normalizeGeometryStudio,saveGeometryFigure} from "../src/diagrams/geometry-core.js";
 import {renderGeometrySvg} from "../src/diagrams/geometry-render.js";
-import {renderGeometryStudio,geometryOutputHtml} from "../src/diagrams/geometry-view.js";
+import {renderGeometryStudio,geometryQualityHtml,geometryOutputHtml} from "../src/diagrams/geometry-view.js";
 import {geometryTemplate,setGeometryVertex,saveAndLinkGeometry,saveGeometryDraft} from "../src/diagrams/geometry-actions.js";
 import {createProjectState,normalizeProjectState} from "../src/core/project-state.js";
 import {collectProjectFigures} from "../src/handover/figure-report.js";
@@ -135,4 +136,27 @@ test("angle arcs, captions and display-only guidance obey IA figure settings",()
  const restored=normalizeGeometryStudio({draft:d,figures:[],open:true});
  assert.equal(restored.draft.caption,"Survey triangle");
  assert.equal(restored.draft.showTitle,false);
+});
+
+test("geometry confirmation and warnings stay compact while only the mathematical canvas expands",()=>{
+ const studio=newGeometryStudio();
+ const glyph=name=>'<svg class="icon" data-glyph="'+name+'" aria-hidden="true"></svg>';
+ const ready=geometryQualityHtml(studio,glyph,e);
+ assert.match(ready,/class="geometry-quality-status geometry-quality-status--ready"/);
+ assert.match(ready,/data-glyph="check"/);
+ assert.match(ready,/Shape is valid/);
+ assert.doesNotMatch(ready,/check-circle/,"An outlined check is enough for a small status.");
+
+ setGeometryVertex(studio,0,"x","");
+ const blocked=geometryQualityHtml(studio,glyph,e);
+ assert.match(blocked,/class="geometry-quality-status geometry-quality-status--warning"/);
+ assert.match(blocked,/data-glyph="alert-triangle"/);
+ assert.match(blocked,/Check before saving/);
+
+ const css=readFileSync(new URL("../data/geometry-studio.css",import.meta.url),"utf8");
+ assert.match(css,/\.geometry-main \.geometry-preview > svg\{display:block;width:100%;/);
+ assert.match(css,/\.geometry-quality \.geometry-quality-status \.icon\{/);
+ assert.match(css,/width:17px;height:17px/);
+ assert.doesNotMatch(css,/\.geometry-main svg\s*\{/,
+   "SVG layout sizing must never apply to a status or toolbar icon.");
 });
