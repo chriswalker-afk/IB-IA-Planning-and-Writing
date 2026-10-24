@@ -111,7 +111,8 @@ export const WORKSHOP_LESSONS=Object.freeze([
   technology:[{name:"Graphing software",command:"A(x) = x(12 - x) {0 < x < 12}",why:"Use a restricted graph to investigate and check the result, not to replace the derivation."}],
   existingGuide:"derivatives",
   ia:"Define the variables, derive the objective and constraints, show the differentiation and candidate checks, and interpret whether the mathematical optimum is a feasible real design."
- })
+ }),
+ ...BATCH1_LESSONS
 ]);
 export const LESSON_BY_ID=new Map(WORKSHOP_LESSONS.map(l=>[l.id,l]));
 export const lessonById=id=>LESSON_BY_ID.get(id)||null;
