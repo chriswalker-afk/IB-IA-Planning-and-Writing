@@ -272,3 +272,5 @@
 .math-first-course-choice>summary>.icon:last-child{margin-left:auto}
 .math-first-course-choice>div{padding:10px 13px 13px;border-top:1px solid #e0eae2}
 .math-first-course-choice>summary:focus-visible{outline:3px solid #79ad9c;outline-offset:-3px}
+
+.math-course-earlier{border-left:3px solid #a8cbb6;background:#f3f9f4;padding:8px 10px;border-radius:0 8px 8px 0}
