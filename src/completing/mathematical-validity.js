@@ -263,7 +263,7 @@ export function renderConclusionValidityAid(state,{icon=defaultIcon,e=escapeHtml
    const v=mathematicalValidityContext(state,entry);
    return '<div class="math-validity-conclusion-result" data-validity-result="'+e(v.entryId)+'">'+
     '<strong>'+e(v.title||"Mathematical result")+'</strong>'+
-    '<p>'+e(v.rule.question)+'</p>'+
+    '<p><b>Validity focus:</b> '+e(v.rule.title)+'. '+e(v.rule.question)+'</p>'+
     '<p><b>Claim limit:</b> '+e(v.rule.limit)+'</p>'+
     (v.accuracyLinks.length?'<small>'+v.accuracyLinks.length+' linked accuracy decision'+(v.accuracyLinks.length===1?'':'s')+'</small>':'')+
     (v.figures.length?'<small>'+v.figures.length+' linked saved diagram'+(v.figures.length===1?'':'s')+'</small>':'')+
