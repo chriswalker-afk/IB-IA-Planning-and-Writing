@@ -119,14 +119,23 @@ export function mathematicalCourseContext(state,entry){
  const scope=str(entry.knowledge)||"unsure";
  const component=str(entry.unfamiliarComponent),method=str(entry.methodId||entry.technique);
  const use=firstUnfamiliarUse(state,entry);
- const hasExplanation=!!str(entry.knowledgeNotes||entry.understandingExample||entry.mathsInsight);
+ // A reflection about the method is not necessarily an explanation of its
+ // mathematics. Count only a defined explanation or meaningful worked step.
+ const ownExplanation=!!str(entry.knowledgeNotes||entry.understandingExample);
+ const identity=x=>((str(x?.methodId)&&x.methodId!=="other"?str(x.methodId):str(x?.technique))+
+  "|"+str(x?.unfamiliarComponent)).toLowerCase().replace(/\s+/g," ");
+ const earlierIndex=(state?.entries||[]).findIndex(x=>x?.id===entry.id);
+ const earlierExplanation=!use&&earlierIndex>0&&(state.entries||[]).slice(0,earlierIndex).some(x=>
+  x.status==="completed"&&!!str(x.result)&&["outside","mixed"].includes(x.knowledge)&&
+  identity(x)===identity(entry)&&!!str(x.knowledgeNotes||x.understandingExample));
+ const hasExplanation=ownExplanation||earlierExplanation;
  const text=scope==="syllabus"?
   "You marked this method as familiar IB course mathematics. Apply it accurately, define your variables and explain the interpretation; do not reproduce a textbook lesson.":
   scope==="mixed"||scope==="outside"?
    use?"This is the first recorded use of the unfamiliar mathematics. Explain its central idea, required conditions and one meaningful step before applying it.":
    "An earlier completed use of this unfamiliar mathematics is recorded. Refer back to the first explanation if it was sufficient; do not repeat a full tutorial.":
    "Course scope is unconfirmed. Check the actual mathematics against your own AI SL, AA SL or AA HL course (or ask your teacher); do not infer syllabus status from a technique's name.";
- return {scope,component,method,firstUse:use,hasExplanation,text,
+ return {scope,component,method,firstUse:use,hasExplanation,earlierExplanation,text,
   notes:str(entry.knowledgeNotes),example:str(entry.understandingExample),source:str(entry.researchSource)};
 }
 
@@ -225,8 +234,9 @@ export function renderCourseUnderstandingAid(state,entry,{icon=defaultIcon,e=esc
   (c.component?textRow("The component you identified",c.component,e):'')+
   (c.notes?textRow("Your mathematical explanation",short(c.notes,850),e):'')+
   (c.example?textRow("Your worked example / demonstration",short(c.example,700),e):'')+
+  (c.earlierExplanation?'<p class="math-course-earlier">An explanation or worked example is recorded with an earlier use of the same mathematics. Check it was included and clear in your actual IA before referring back instead of repeating it.</p>':'')+
   ((c.scope==="mixed"||c.scope==="outside")&&!c.hasExplanation?
-   '<p class="math-validity-warning">You have not yet recorded an explanation or a relevant worked step. If the idea is genuinely unfamiliar, explain it in your own IA when it first appears.</p>':'')+
+   '<p class="math-validity-warning">No explanation or worked step for this unfamiliar idea was found in the matching mathematical records. If it is genuinely new, explain it in your own IA when first used.</p>':'')+
   (c.source?'<p><strong>Source you noted:</strong> '+e(short(c.source,280))+' — cite the original source appropriately.</p>':'')+
   '<p class="math-validity-honesty">Syllabus status reflects your own selection; Pathfinder cannot verify course coverage or mathematical understanding. Refer to your actual course and ask your teacher when uncertain.</p>'+
   '</div></details></aside>';
