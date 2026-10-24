@@ -156,7 +156,7 @@ export function renderConclusionReasoningThread(state,{icon=defaultIcon,e=escape
    (open?'<p><strong>Previously recorded unanswered question:</strong> '+e(t.question)+'</p>':'')+
    (open&&t.reason?'<p><strong>Why another step might help:</strong> '+e(t.reason)+'</p>':'')+
    (missing.length?'<p class="reasoning-prior-review" role="note">'+missing.length+' selected result(s) are missing, incomplete or require review. No unrelated result has been substituted.</p>':'')+
-   (flagged?'<p class="reasoning-prior-review">'+flagged' mathematical record'+(flagged===1?'':'s')+
+   (flagged?'<p class="reasoning-prior-review">'+flagged+' mathematical record'+(flagged===1?'':'s')+
     ' need review before supporting the final claim.</p>':'')+
    '<div class="reasoning-conclusion-questions"><strong>Before deciding that more mathematics is unnecessary, ask:</strong>'+
     '<ul><li>Which genuine result answers the stated aim, and over what domain or assumptions?</li>'+
