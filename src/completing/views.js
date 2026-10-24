@@ -1149,8 +1149,8 @@ export function createCompletingViews(ctx){
         entryField("researchSource","Original resource consulted (if relevant)","Link or source"):"")+
       entryField("methodChangeReason","Has a limitation of the earlier work led me to change method? (optional)",
        "Explain an actual adjustment, not an imagined one",{type:"textarea",rows:2})+
-      renderCourseUnderstandingAid(state,substantial,{icon,e,reduced:isAdviceReduced(state)})+
-    '</details>');
+    '</details>'+
+    renderCourseUnderstandingAid(state,substantial,{icon,e,reduced:isAdviceReduced(state)}));
    const second=card("show","2","Showing your tables, diagrams and calculations",
     "Present genuinely performed mathematics with legible notation, meaningful scales, units and precision as appropriate.",
     '<details class="show-first-tool-picker" data-show-first-tools>'+
