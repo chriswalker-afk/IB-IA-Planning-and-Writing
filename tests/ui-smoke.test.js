@@ -638,7 +638,7 @@ test("all three writing chapters use the same four-part scaffold and preserve na
    assert(h.html.includes('data-stage-advice="'+group+'"'),node);
    if(node!=='C60')assert(h.html.includes(node==='C20'?'Your mathematical starting points':'Useful now'),node);
    else assert(h.html.includes('data-conclusion-workspace'),node);
-   const positions=(node==='C60'?['task','advice','examples']:['sparks','task','advice','examples']).map(k=>h.html.indexOf('data-writing-stage-part="'+k+'"'));
+   const positions=(node==='C60'?['advice','task','examples']:['advice','sparks','task','examples']).map(k=>h.html.indexOf('data-writing-stage-part="'+k+'"'));
    assert(positions.every(v=>v>0)&&positions.every((v,i)=>i===0||v>positions[i-1]),node);
    assert(h.html.includes('studio-stage-writing-location'),node);
    assert(h.html.includes('data-writing-examples'),node);
