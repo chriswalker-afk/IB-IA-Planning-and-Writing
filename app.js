@@ -1195,7 +1195,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     }else if(panel==="stuck"){
       body=stuckViews.render();
     }
-    const titles={resources:"Tools & tutorials",project:"My project",files:"Save & export",help:"Help & guidance","writer-guide":"Writer's Field Guide","writer-guide-intro":"Your Writer's Field Guide",demos:"Choose a sample","sample-reading":"Complete illustrative IA",stuck:"Find a way forward", "import-preview":"Review planning import","import-manual":"Recover a plan",handover:"Confirm your starting plan"};
+    const titles={resources:resourceSession.mode==="workshop"?"Maths Workshop":"Tools & tutorials",project:"My project",files:"Save & export",help:"Help & guidance","writer-guide":"Writer's Field Guide","writer-guide-intro":"Your Writer's Field Guide",demos:"Choose a sample","sample-reading":"Complete illustrative IA",stuck:"Find a way forward", "import-preview":"Review planning import","import-manual":"Recover a plan",handover:"Confirm your starting plan"};
     layer.hidden=false;document.body.classList.add("dialog-open");
     document.querySelectorAll(".topbar,.app-grid,.mobile-nav").forEach(el=>el.inert=true);
     layer.innerHTML='<aside class="drawer'+(panel==="resources"?" resource-drawer":"")+(panel==="sample-reading"?" sample-reader-drawer":"")+(panel==="writer-guide"?" writer-guide-drawer":panel==="writer-guide-intro"?" writer-guide-drawer writer-guide-welcome-drawer":"")+'" role="dialog" aria-modal="true" aria-labelledby="drawerTitle" tabindex="-1"><div class="drawer-header"><h2 id="drawerTitle">'+titles[panel]+'</h2>'+
