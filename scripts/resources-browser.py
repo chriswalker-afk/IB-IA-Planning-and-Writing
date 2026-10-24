@@ -271,7 +271,7 @@ with sync_playwright() as pw:
   assert 'percentage points' in p.locator('.workshop-reveal').inner_text()
   assert overlay(p).evaluate('(el)=>el.scrollWidth<=el.clientWidth+1')
   overlay(p).screenshot(path=str(OUT/'workshop-batch1-guided-phone.png'),animations='disabled')
-  p.locator('.workshop-technology [data-action="resource-open"]').click()
+  p.locator('.workshop-technology [data-action="resource-open"][data-resource-id="two-way"]').click()
   assert p.locator('[data-resource-detail="two-way"]').count()==1
   p.locator('[data-action="resource-workshop"][data-workshop-resume="true"]').click()
   assert p.locator('[data-workshop-lesson="two-way-proportions"]').count()==1
