@@ -231,7 +231,7 @@ with sync_playwright() as pw:
   s=state('C80D');s['route']='checking';s['ui']['checkingMode']=mode
   run('checking-order-'+mode,s,check_order,mobile)
  def dashboard_order(p):
-  assert p.locator('.completion-stage-grid').bounding_box()['y']<p.locator('.writer-guide-overview-card').bounding_box()['y']
+  assert p.locator('.completion-stage-grid').first.bounding_box()['y']<p.locator('.writer-guide-overview-card').bounding_box()['y']
  for mobile in (True,False):
   s=state('C04')
   run('dashboard-order-'+('phone' if mobile else 'desktop'),s,dashboard_order,mobile)
