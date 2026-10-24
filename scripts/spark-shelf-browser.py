@@ -44,6 +44,8 @@ def check(page,width):
  shelf=page.locator('[data-spark-shelf="planning"]')
  assert shelf.count()==1
  assert shelf.locator(".spark-shelf-featured").count()==2
+ assert shelf.locator("[data-spark-moment]").count()==2
+ assert "Check the actual sample" in shelf.locator('[data-spark-moment="sampling-plan"]').inner_text()
  assert shelf.locator(".spark-library").count()==1
  assert not shelf.locator(".spark-library").evaluate("(el)=>el.open")
  assert shelf.locator('.spark-shelf-featured[data-spark-id="planned-accuracy:pa-primary-2"]').count()==1
@@ -88,12 +90,32 @@ def check(page,width):
  assert studio_shelf.count()==1
  assert studio_shelf.locator('.spark-shelf-featured').count()==2
  assert studio_shelf.locator('.spark-shelf-featured[data-spark-id="accuracy:acc-studio-1"]').count()==1
+ assert studio_shelf.locator('[data-spark-moment="accuracy:acc-studio-1"]').count()==1
+ assert "precision" in studio_shelf.locator('[data-spark-moment="accuracy:acc-studio-1"]').inner_text()
  assert studio_shelf.locator('.spark-library-entry[data-spark-id="aim"]').count()==1
  assert studio_shelf.locator('.spark-library-entry[data-spark-id="result:math-1"]').count()==1
  check_width(page)
  studio_shelf.locator('.spark-library>summary').click()
  page.screenshot(path=str(OUT/f"spark-shelf-studio-{width}.png"),full_page=True,animations="disabled")
  assert not saved(page)["completion"]["accuracyDecisions"][0]["policy"]=="" # don't alter evidence
+ if width<=600:
+  overflow=studio_shelf.locator('.spark-library-panel').evaluate(
+   "(el)=>({overflow:getComputedStyle(el).overflowY,height:el.getBoundingClientRect().height})")
+  assert overflow["overflow"]=="auto",overflow
+ # On My Path, the full Toolkit should be organised and exhaustive.
+ full=saved(page);full["route"]="path"
+ page.evaluate("([k,s])=>localStorage.setItem(k,JSON.stringify(s))",[KEY,full])
+ page.reload(wait_until="networkidle")
+ toolkit=page.locator(".insight-toolkit")
+ assert toolkit.count()==1
+ assert toolkit.locator(".insight-toolkit-group").count()>=2
+ assert toolkit.locator('[data-toolkit-spark-id="aim"]').count()==1
+ assert toolkit.locator('[data-toolkit-spark-id="result:math-1"]').count()==1
+ assert toolkit.locator('[data-toolkit-spark-id="accuracy:acc-studio-1"]').count()==1
+ toolkit.locator('.insight-toolkit-group').nth(1).locator('summary').first.click()
+ assert toolkit.locator('.insight-toolkit-group').nth(1).evaluate("(el)=>el.open")
+ check_width(page)
+ page.screenshot(path=str(OUT/f"spark-toolkit-grouped-{width}.png"),full_page=True,animations="disabled")
 
 with sync_playwright() as pw:
  browser=pw.chromium.launch(headless=True,args=["--no-sandbox"])
