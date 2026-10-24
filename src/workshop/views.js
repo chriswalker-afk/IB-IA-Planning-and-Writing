@@ -34,11 +34,11 @@ export function workshopList(session){
  const parts=[
  '<p class="workshop-count" role="status">'+lessons.length+' guided lesson'+(lessons.length===1?"":"s")+
  ' · '+terms.length+' definition'+(terms.length===1?"":"s")+
- (selected?' for '+e(selected.title):' in the starter library')+'.</p>',
+ (selected?' for '+e(selected.title):' in the Workshop library')+'.</p>',
  '<section class="workshop-section"><h3>Guided mathematics</h3>'+
  '<p>Show me → Help me → My turn. Practice values are invented, not evidence for your IA.</p>'+
  (lessons.length?'<div class="workshop-grid">'+lessons.map(lessonCard).join("")+'</div>':
- '<p class="workshop-empty">No guided lessons match this selection yet. Later batches will add more methods. Try All pathways to explore the current pilots.</p>')+'</section>',
+ '<p class="workshop-empty">No guided lessons match this selection yet. Later batches will add more methods. Choose All pathways to see every available lesson.</p>')+'</section>',
  '<section class="workshop-section"><h3>Quick mathematical definitions</h3>'+
  '<p>Short explanations you can use to understand notation and decide what to learn next.</p>'+
  (terms.length?'<div class="workshop-grid workshop-definitions">'+terms.map(definitionCard).join("")+'</div>':
@@ -121,7 +121,7 @@ export function renderWorkshop(state,session){
  const intro='<div class="workshop-intro">'+
   '<p class="workshop-eyebrow">MATHS WORKSHOP</p>'+
   '<h3>Understand it. Try it. Use it thoughtfully.</h3>'+
-  '<p>Find mathematical definitions, practise common IA methods, and learn when software can do the arithmetic. This is an optional learning library.</p>'+
+  '<p>Find mathematical definitions, practise common IA methods, and learn when software can do the arithmetic. After fitting a model, check residuals and compare its predictions. This is an optional learning library.</p>'+
   '<p class="workshop-caution">Course: '+e(course||'not selected')+'. A method appearing here is not a course recommendation or permission to use it. Check syllabus scope with your teacher when necessary.</p></div>';
  const navigation='<div class="workshop-top-actions">'+action("tools","← Tools & tutorials")+
   (l||d?action("home","Browse Workshop"):"")+'</div>';
