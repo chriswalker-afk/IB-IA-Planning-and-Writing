@@ -1171,13 +1171,10 @@
 @media print{.chapter-onboarding-writing-actions{display:none!important}}
 
 
-/* Pass 5: student task follows only the useful saved context. General writing
-   tips and examples follow the work, while in-task bubbles stay in place. */
+/* Guided IA Studio: brief advice, relevant Sparks, task, optional examples.
+   Keep visual order equal to DOM/keyboard reading order. Reduced mode alone
+   uses its task-first rule and collapses optional saved context. */
 .writing-stage-flow[data-advice-mode="guided"]{gap:13px}
-.writing-stage-flow[data-advice-mode="guided"]>.writing-stage-sparks{order:0}
-.writing-stage-flow[data-advice-mode="guided"]>.writing-stage-task{order:1}
-.writing-stage-flow[data-advice-mode="guided"]>.writing-stage-advice{order:2}
-.writing-stage-flow[data-advice-mode="guided"]>.writing-stage-examples{order:3}
 .writing-stage-flow[data-advice-mode="guided"] .studio-stage-sparks{
  padding:12px 15px;background:#f7fbf8;border-color:#d6e6dc
 }
