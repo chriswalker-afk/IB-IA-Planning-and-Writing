@@ -18,8 +18,8 @@ export function renderInvestigativeRoutes(state,{e,icon,catalogue}){
   '<button type="button" class="journey-mode-tab'+(mode===item.id?' active':'')+'" role="tab" aria-selected="'+(mode===item.id)+'"'+
   ' id="journey-tab-'+item.id+'" aria-controls="journey-mode-panel" data-action="math-mode" data-mode="'+item.id+'">'+
   icon(item.icon)+'<span>'+item.label+'</span></button>').join('')+'</div>';
- const courseNotice=!supported?'<p class="journey-course-note">'+icon('info')+
-  ' These journeys are examples of mathematical thinking, not course recommendations. We only have a detailed topic catalogue for AI SL and AA SL; ask your teacher before choosing specific mathematics for '+e(course||'your course')+'.</p>':'';
+ const courseNotice=!supported?'<p class="journey-course-note">'+icon('info')+'<span class="inline-notice-copy">'+
+  ' These journeys are examples of mathematical thinking, not course recommendations. We only have a detailed topic catalogue for AI SL and AA SL; ask your teacher before choosing specific mathematics for '+e(course||'your course')+'.</span></p>':'';
  const saved=selected?'<aside class="journey-route-spark" aria-label="Your saved investigative route">'+
   icon('sparkles')+'<span><strong>Route spark saved: '+e(selected.title)+'</strong>'+
   '<small>Provisional first step: '+e(selected.first[0])+'. Later branches depend on real results.</small></span>'+
@@ -57,8 +57,8 @@ export function renderInvestigativeRoutes(state,{e,icon,catalogue}){
   '<div class="journey-maths-current"><span>'+icon('calculator')+' '+e(course||'Course not chosen')+'</span>'+
   '<span>'+counts+' technique'+(counts===1?'':'s')+' chosen</span></div>'+
   modeTabs+saved+courseNotice+
-  (foreign?'<p class="journey-course-switch-note">'+icon('info')+' '+foreign+' earlier mathematics selection'+(foreign===1?'':'s')+
-   ' belong'+(foreign===1?'s':'')+' to another course. They are preserved but not included in the current course list. Check with your teacher before relying on them.</p>':'')+
+  (foreign?'<p class="journey-course-switch-note">'+icon('info')+'<span class="inline-notice-copy">'+' '+foreign+' earlier mathematics selection'+(foreign===1?'':'s')+
+   ' belong'+(foreign===1?'s':'')+' to another course. They are preserved but not included in the current course list. Check with your teacher before relying on them.</span></p>':'')+
   '<div class="journey-mode-panel" role="tabpanel" id="journey-mode-panel" aria-labelledby="journey-tab-'+mode+'" data-journey-mode-panel="'+mode+'">'+body+'</div>'+
   '<p class="journey-inquiry-note">Nothing here is a required IA structure. A worthwhile question, genuine mathematics, interpretation and reflection matter more than the number of techniques.</p></section>';
 }
@@ -130,9 +130,9 @@ function renderRouteDetail(route,state,{e,icon}){
    '<div class="journey-flow-node journey-flow-reflect"><span>3 · Return to your question</span>'+
     '<h4>Interpret, evaluate, then decide</h4><p>'+e(route.finish)+'</p></div>'+
    '</div>'+
-   (route.caution?'<p class="journey-route-warning">'+icon('info')+' '+e(route.caution)+'</p>':'')+
-   (route.teacher?'<p class="journey-route-warning">'+icon('message-square')+
-    ' Speak with your teacher before relying on a theoretical or advanced route. A pattern-heavy investigation can become an EE-style topic.</p>':'')+
+   (route.caution?'<p class="journey-route-warning">'+icon('info')+'<span class="inline-notice-copy">'+' '+e(route.caution)+'</span></p>':'')+
+   (route.teacher?'<p class="journey-route-warning">'+icon('message-square')+'<span class="inline-notice-copy">'+
+    ' Speak with your teacher before relying on a theoretical or advanced route. A pattern-heavy investigation can become an EE-style topic.</span></p>':'')+
    creatorShelf+
    '<div class="journey-detail-actions">'+
     '<button type="button" class="btn '+(saved?'btn-secondary':'btn-primary')+'" data-action="'+(saved?'math-remove-route':'math-select-route')+'" data-route-id="'+e(route.id)+'">'+
