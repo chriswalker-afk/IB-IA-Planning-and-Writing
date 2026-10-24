@@ -359,6 +359,34 @@ export function insightMeaning(s,node,x){
  if(x.id==='planned-evidence')return 'This was a proposed starting route. Check whether the material was actually obtained before presenting it as evidence.';
  return x.usage||INSIGHT_FAMILIES[x.type].verb;
 }
+/** A short, moment-specific use for a recorded Spark, never a new mathematical
+ * conclusion. Distinguish a plan, a linked input and a verified result. */
+export function sparkMomentPrompt(s,node,x){
+ if(!x)return "";
+ if(x.needsReview)return "Check the original mathematics before relying on this note.";
+ const maths=/^C(?:30|3[2-5]|40|50|60)/.test(node);
+ const following=["C35","C35H","C35B","C35P"].includes(node);
+ const concluding=/^C6/.test(node);
+ switch(x.type){
+  case "aim":return maths?"Compare this exact question with what the mathematics actually establishes.":"Keep your investigation focused on an answerable mathematical question.";
+  case "title":return "Check that your working title still fits the question you are investigating.";
+  case "motivation":return concluding?"Explain why your actual answer matters without inventing an impact.":"Recall why this question matters when deciding what to investigate.";
+  case "pathway":return "Treat this as an optional route, not a sequence you must complete.";
+  case "sampling":return "Check the actual sample or population before generalising a result.";
+  case "evidence":return x.planned?"Confirm this material was actually obtained before using it as evidence.":"Verify the original values, provenance and assumptions for this stage.";
+  case "accuracy":return x.id.startsWith("planned-")?"Confirm the original resolution before adopting this planned precision.":"Check whether this quantity's actual precision changes the claim you can make.";
+  case "discovery":return following?"Identify the exact gap this finding leaves before choosing another method.":
+   concluding?"Use this genuine result to support a qualified answer to the aim.":
+   node==="C40"||node==="C50"?"Use this earlier finding to explain why the next method is needed.":
+   "Explain what this result establishes in context and what it cannot establish.";
+  case "method":return x.planned?"Say what question this proposed method could answer; it is not performed.":"Explain why this approach resolves a specific mathematical question.";
+  case "direction":return "Use the unanswered question to choose a purposeful next calculation—or conclude.";
+  case "reflection":return "State the mathematical consequence, not just the name of a limitation.";
+  case "learning":return "Explain the unfamiliar mathematical idea at first use, not every time it recurs.";
+  default:return "Revisit the original decision only if it helps your current work.";
+ }
+}
+
 /**
  * A shared spark shelf for Planning and IA Studio.
  * Exactly two *recorded* sparks are featured; the full collection is one
@@ -381,7 +409,10 @@ export function featuredSparkItems(s,node){
  };
  const linked=insightForCurrent(s,node);
  const active=entries(s)[s?.completion?.activeEntryIndex];
- const latestResult=all.filter(x=>x.id.startsWith('result:')&&!x.needsReview).at(-1);
+ const chosenConclusionResult=(s?.completion?.conclusionResultIds||[])
+  .map(id=>all.find(x=>x.id==='result:'+id&&!x.needsReview)).find(Boolean);
+ const latestResult=chosenConclusionResult||
+  all.filter(x=>x.id.startsWith('result:')&&!x.needsReview).at(-1);
  const accuracy=source=>{prefix('accuracy:');prefix('planned-accuracy:',source);};
  if(node==='N01'||node==='N01A'){id('working-title');id('aim');}
  else if(node==='N01V'){id('aim');id('working-title');}
@@ -520,8 +551,11 @@ const sparkFeaturedCard=(s,node,x)=>{
    '" data-spark-id="'+e(x.id)+'">'+
   '<summary><span class="motivation-aim-symbol">'+icon(INSIGHT_FAMILIES[x.type].icon)+'</span>'+
   '<span class="motivation-aim-copy"><strong>'+e(INSIGHT_FAMILIES[x.type].label)+
-   '</strong><small'+path+'>'+e(short(x.value,100))+'</small></span>'+
-  '<span class="motivation-aim-toggle">'+icon('chevron-down')+' View</span></summary>'+
+   '</strong><small'+path+'>'+e(short(x.value,94))+'</small>'+
+   '<span class="spark-context-purpose" data-spark-moment="'+e(x.id)+'">'+
+   e(sparkMomentPrompt(s,node,x))+'</span></span>'+
+  '<span class="motivation-aim-toggle">'+icon('chevron-down')+
+   (x.needsReview?' Review':x.planned?' Planned':' View')+'</span></summary>'+
   '<div class="motivation-aim-details">'+sparkFullBody(s,node,x,{featured:true})+'</div></details>';
 };
 const sparkLibraryEntry=(s,node,x,featuredIds)=>{
@@ -558,27 +592,44 @@ export function renderSparkShelf(s,node,{surface='planning',libraryOnly=false,hi
 }
 /** Backwards-compatible IA Studio entry point, now using the same shelf. */
 export function insightEcho(s,node){return renderSparkShelf(s,node,{surface:'studio'});}
+/** Toolkit is the complete, grouped retrieval view. Compact dashboards keep a
+ * short preview and link to the full collection; no Spark gets discarded. */
 export function insightToolkit(s,{compact=false}={}){
  const all=insightItems(s);
  const forHome=all.filter(x=>!x.planned||x.type==='direction'||x.id==='investigative-route'||x.id==='sampling-plan'||x.id.startsWith('planned-accuracy:'));
  const pinned=forHome.filter(x=>x.id==='working-title'||x.id==='aim'||x.id==='investigative-route'||x.id==='sampling-plan'||
   (x.id.startsWith('planned-accuracy:')&&x.id===forHome.find(y=>y.id.startsWith('planned-accuracy:'))?.id)).slice(0,5);
- const visible=compact?[...pinned,...forHome.filter(x=>!['working-title','aim'].includes(x.id)).slice(-(5-pinned.length))]:all.slice(-10);
- const earlier=compact?[]:all.slice(0,-10);
+ const preview=compact?[...pinned,...forHome.filter(x=>!pinned.includes(x)).slice(-(5-pinned.length))]:[];
+ const uniquePreview=[...new Map(preview.map(x=>[x.id,x])).values()].slice(0,5);
  const card=x=>'<button type="button" class="insight-toolkit-card insight-'+e(x.type)+'"'+jumpAttrs(x)+'>'+
   insightToken(x,{compact:true})+'<strong>'+e(short(x.title,62))+'</strong>'+
-  '<span class="insight-toolkit-value">'+e(short(x.value,105))+'</span>'+
-  '<small>'+e(x.needsReview?'Needs review · '+x.where:x.planned?'Planned · not performed':x.where)+'</small>'+ (x.linked?.length?'<small class="insight-toolkit-used">Connected to '+x.linked.length+' mathematical '+(x.linked.length===1?'step':'steps')+'</small>':'')+
+  '<span class="insight-toolkit-value">'+e(short(x.value,115))+'</span>'+
+  '<span class="insight-toolkit-card-footer"><small>'+
+   e(x.needsReview?'Needs review':x.planned?'Planned · not performed':'Saved from your work')+
+   '</small>'+(x.linked?.length?'<small class="insight-toolkit-used">'+x.linked.length+
+    ' linked '+(x.linked.length===1?'step':'steps')+'</small>':'')+'</span>'+
+  '<small class="insight-toolkit-origin">'+e(x.where)+'</small>'+
   '</button>';
+ const groups=sparkLibraryGroups.map(g=>({label:g.label,items:all.filter(g.test)})).filter(g=>g.items.length);
+ const full=groups.length?'<div class="insight-toolkit-categories">'+groups.map((group,i)=>
+   '<details class="insight-toolkit-group" data-toolkit-group="'+i+'"'+(i===0?' open':'')+'>'+
+   '<summary>'+icon('layers')+' <span><strong>'+e(group.label)+'</strong>'+
+   '<small>'+group.items.length+' saved '+(group.items.length===1?'spark':'sparks')+'</small></span>'+
+   icon('chevron-right')+'</summary>'+
+   '<div class="insight-toolkit-grid">'+group.items.map(card).join('')+'</div></details>').join('')+'</div>':'';
  return '<section class="insight-toolkit" aria-label="My Toolkit">'+
   '<div class="insight-toolkit-top"><div><span class="section-eyebrow">'+icon('sparkles')+
-  ' INSIGHT THREADS</span><h3>My Toolkit</h3><p>Your earlier decisions and real findings, ready when they matter again.</p></div>'+
-  '<span class="insight-toolkit-count">'+all.length+' saved</span></div>'+
-  (visible.length?'<div class="insight-toolkit-grid">'+visible.map(card).join('')+'</div>':
-   '<div class="insight-toolkit-empty">'+icon('sparkles')+' Your toolkit grows from your own decisions. Start by recording a provisional title or question.</div>')+
-  (earlier.length?'<details class="insight-toolkit-more"><summary>Explore '+earlier.length+' earlier sparks</summary><div class="insight-toolkit-grid">'+earlier.map(card).join('')+'</div></details>':'')+
-  (compact&&all.length>visible.length?'<button type="button" class="insight-link" data-nav="path">See all '+all.length+' sparks on My Path '+icon('arrow-right')+'</button>':'')+
-  '<p class="insight-toolkit-note">Saved notes and decisions are not grades, verified results or edits to your own IA document.</p></section>';
+  ' INSIGHT THREADS</span><h3>My Toolkit</h3><p>'+
+  (compact?'Your earlier decisions and real findings, ready when they matter again.':
+   'Choose what you need, then open the original decision or mathematical step to review it.')+
+  '</p></div><span class="insight-toolkit-count">'+all.length+' saved</span></div>'+
+  (compact?(uniquePreview.length?'<div class="insight-toolkit-grid">'+uniquePreview.map(card).join('')+'</div>':
+   '<div class="insight-toolkit-empty">'+icon('sparkles')+
+   ' Your toolkit grows from your own decisions. Start by recording a provisional title or question.</div>'):
+   full||'<div class="insight-toolkit-empty">'+icon('sparkles')+
+   ' There are no saved decisions yet. Begin in Planning to collect your first spark.</div>')+
+  (compact&&all.length>uniquePreview.length?'<button type="button" class="insight-link" data-nav="path">Browse all '+all.length+' sparks on My Path '+icon('arrow-right')+'</button>':'')+
+  '<p class="insight-toolkit-note">Planned choices are not performed mathematics. Sparks are student notes, not grades, verified findings or edits to your IA document.</p></section>';
 }
 export function insightThreadMap(s){
  const all=insightItems(s);
