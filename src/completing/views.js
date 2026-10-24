@@ -769,10 +769,13 @@ export function createCompletingViews(ctx){
     F("theoreticalAssumptions","Which assumptions, restrictions or terms matter?","Define as needed",{type:"textarea",rows:2})+
     F("theoreticalQuestion","Anything to discuss about course suitability?","Teacher discussion remains optional but useful",{type:"textarea",rows:2})
   };
-  case "C22":return{intro:"Explain why your actual approach fits the mathematical question better than one realistic alternative.",
+  case "C22":return{intro:"Name your actual method, explain why it suits the aim, then compare an alternative only if you genuinely considered one.",
    html:F("chosenMethod","Which method did you actually choose?","Not simply what you planned",{type:"textarea",rows:2})+
-    F("alternativeMethod","Another genuinely feasible method","A different source, measurement tool or modelling assumption",{type:"textarea",rows:2})+
     criteriaField(F("methodReason","Why is it suitable for this aim?","What makes the resulting mathematics useful, reliable or interpretable?",{type:"textarea",rows:3}),"completing:C22:methodReason")+
+    '<details class="guidance-insight method-alternative-choice" data-method-alternative'+
+    (filled(f.alternativeMethod)?' open':'')+'><summary>Compare another method (optional)</summary>'+
+    F("alternativeMethod","Another genuinely feasible method (optional)","A different source, measurement tool or modelling assumption",{type:"textarea",rows:2})+
+    '<p class="field-hint">Only describe a comparison you really considered. You do not need to invent an alternative just to fill this box.</p></details>'+
     info("No generic methods essay","Compare only relevant approaches; convenience alone is not a mathematical justification.")
   };
   case "C23":return{intro:"Place collection/source limitations beside the corresponding method, not only at the end.",
@@ -787,16 +790,16 @@ export function createCompletingViews(ctx){
     F("accuracySymbol","Symbol (optional)","e.g. t")+
     F("accuracyUnit","Unit","e.g. seconds")+
     F("accuracyResolution","Instrument/source resolution and uncertainty, if known","Nearest 0.1 s, not automatically ±0.1 s")+
+    info("No fixed decimal-place rule","Keep guard digits during working, then report outputs to defensible precision. Don't round an exact symbolic answer unnecessarily.")+
     F("accuracyPolicy","Reasonable display accuracy for calculated results","A justified rounding or exact-vs-approximate convention")+
     criteriaField(F("accuracyReason","Why does that accuracy make sense?","Related input uncertainty, measurement quality or model sensitivity",{type:"textarea",rows:2}),"completing:C24:accuracyReason")+
     button("Record this quantity","completion-record-accuracy","btn-secondary")+
-    accuracyRecords()+
-    info("No fixed decimal-place rule","Keep guard digits during working, then report outputs to defensible precision. Don't round an exact symbolic answer unnecessarily.")
+    accuracyRecords()
   };
   case "C25":return{intro:"Introduce a symbol or term when first needed; use meaningful names and consistent units.",
-   html:criteriaField(F("variableDefinitions","Important symbols with meanings and units","e.g. h = height in m; t = time in seconds",{type:"textarea",rows:4}),"completing:C25:variableDefinitions")+
-    F("specialistTerms","Any important non-mathematical specialist words","Explain only those needed to understand the investigation",{type:"textarea",rows:2})+
-    info("Just in time","Define new mathematical symbols before their first use, including those introduced in later sections.")
+   html:info("Just in time","Define new mathematical symbols before their first use, including those introduced in later sections.")+
+    criteriaField(F("variableDefinitions","Important symbols with meanings and units","e.g. h = height in m; t = time in seconds",{type:"textarea",rows:4}),"completing:C25:variableDefinitions")+
+    F("specialistTerms","Any important non-mathematical specialist words","Explain only those needed to understand the investigation",{type:"textarea",rows:2})
   };
   case "C26":return{intro:"Check that your first piece of mathematics has a clear purpose, then begin. There is no need to repeat material already introduced in the IA.",
     html:smallSummary("Actual source",f.actualSource||f.theoreticalObject)+
@@ -1018,8 +1021,8 @@ export function createCompletingViews(ctx){
    html:actualRecord()+accuracyNote()+
     accuracySelector()+
     renderMathematicalValidityAid(s,st,{icon,e,reduced:isAdviceReduced(s)})+
-    criteriaField(F("accuracyForResult","Is the display defensible?","A context-based explanation, not arbitrary decimal places",{type:"textarea",rows:3}),"completing:C34A:accuracyForResult")+
-    info("Avoid repeated precision essays","Once justified, apply the decision again only where relevant. Revisit C24 if the underlying source changes.")
+    info("Avoid repeated precision essays","Once justified, apply the decision again only where relevant. Revisit C24 if the underlying source changes.")+
+    criteriaField(F("accuracyForResult","Is the display defensible?","A context-based explanation, not arbitrary decimal places",{type:"textarea",rows:3}),"completing:C34A:accuracyForResult")
   };
   case "C34B":return{intro:"Relate this actual result to your aim, your earlier prediction and its intended benefit.",
    html:entryReviewAlert()+actualRecord()+coachBlock(st,{allowChoices:false})+
@@ -1048,6 +1051,7 @@ export function createCompletingViews(ctx){
   case "C35":return{intro:"One logical bridge from your last actual result to the next mathematics—or recognise that you have enough to conclude.",
    html:bridgeFromPrior()+coachBlock(sourceResultForNext(s),{showDepth:false})+nextCoachQuestions()+
     renderMathematicalDecisionThread(s,sourceResultForNext(s),{icon,e,reduced:isAdviceReduced(s)})+
+    info("No prescribed number of mathematical sections","Another technique is useful only if it answers a genuine next question. An honest conclusion may be the best next step.")+
     (sourceResultForNext(s)?.phase==="first"&&filled(f.nextQuestion)?
       smallSummary("Your next question from Show your mathematics",f.nextQuestion):
       criteriaField(F("nextQuestion","What worthwhile mathematical question remains unanswered?","It should arise from the previous local takeaway",{type:"textarea",rows:3}),"completing:C35:nextQuestion"))+
@@ -1057,7 +1061,6 @@ export function createCompletingViews(ctx){
       '<p class="field-hint">This bridge is already saved on the four-part first-mathematics screen. There is no need to rewrite it.</p>':
       criteriaField(F("nextReason","Why would this next technique follow from the previous result?",MATHEMATICAL_LINK_HINT,{type:"textarea",rows:3}),"completing:C35:nextReason"))+
     renderStorySynthesis(s,icon,e,{entry:sourceResultForNext(s),phase:"later",reduced:isAdviceReduced(s)})+
-    info("No prescribed number of mathematical sections","Another technique is useful only if it answers a genuine next question. An honest conclusion may be the best next step.")+
     '<div class="button-row">'+sourceAction("Show me relevant NEXT mathematical ideas","Help me think of a next step")+
     (canViewScatterFollowup(s)?sourceAction("Show bivariate options for actual scatter pattern","Interpret my scatter pattern"):"")+
     (canViewPmccFollowup(s)?sourceAction("Pearson r was ACTUALLY calculated: contextual next-step ideas","After actual PMCC"):"")+
@@ -1070,14 +1073,14 @@ export function createCompletingViews(ctx){
   };
   case "C35B":return{intro:"Confirm what the actual scatter graph shows before deciding on correlation or fitting a model.",
    html:smallSummary("Last actual scatter result",scatterForNext(s)?.result)+
+    coachBlock(scatterForNext(s),{allowChoices:false})+
+    info("Pearson's r has a specific purpose","It measures linear association between paired numerical variables. A small r does not establish that there is no relationship of any form.")+
     writerGuideOnly(choice("scatterPattern",[
      ["linear","Clearly or approximately straight"],
      ["curved","Clearly curved or nonlinear"],
      ["unclear","No clear association"],
      ["unexpected","An unusual point or cluster"],
      ["unsure","Not sure — inspect the graph again"]]),"completing:C35B:scatterPattern")+
-    coachBlock(scatterForNext(s),{allowChoices:false})+
-    info("Pearson's r has a specific purpose","It measures linear association between paired numerical variables. A small r does not establish that there is no relationship of any form.")+
     guides.bivariateHelp(n,{reduced:isAdviceReduced(s)})
   };
   case "C35P":return{intro:"Use this only after you have actually calculated Pearson's correlation coefficient.",
