@@ -26,4 +26,4 @@ export function setResourcePreference(state,scope,key,value){
  state.resources=normalizeResourceState(state.resources);
  return true;
 }
-export function newResourceSession(){return {id:'',query:'',tool:'',category:'',limit:8,help:false,parent:'',contextMode:'current'};}
+export function newResourceSession(){return {id:'',query:'',tool:'',category:'',limit:8,help:false,parent:'',contextMode:'current',mode:'tools',workshopId:'',workshopTerm:'',workshopQuery:'',workshopRoute:'',workshopStep:'show',workshopChoice:'',workshopReturn:false};}
