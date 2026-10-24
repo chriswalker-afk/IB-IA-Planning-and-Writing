@@ -69,7 +69,7 @@ function renderLesson(session,l){
    '<p>'+e(l.guided.question)+'</p><p class="workshop-hint"><strong>Hint:</strong> '+e(l.guided.hint)+'</p>'+
    '<div class="workshop-choice-list" role="group" aria-label="Choose an answer">'+
     l.guided.options.map(([id,label])=>'<button type="button" class="workshop-choice'+(selected===id?' selected':'')+
-      '" data-action="resource-workshop-choice" data-workshop-choice="'+e(id)+'" aria-pressed="'+(selected===id)+'">'+e(label)+'</button>').join("")+
+      '" id="workshop-choice-'+e(id)+'" data-action="resource-workshop-choice" data-workshop-choice="'+e(id)+'" aria-pressed="'+(selected===id)+'">'+e(label)+'</button>').join("")+
     '</div>'+(known?'<p role="status" class="workshop-feedback '+(right?'correct':'retry')+'"><strong>'+
      (right?"That's right. ":"Not quite. ")+'</strong>'+e(right?l.guided.feedback:l.guided.hint)+'</p>':"")+
     '</div>'+action("step","Try independently",'data-workshop-step="turn"',true);
