@@ -898,4 +898,4 @@ export const BATCH2_LESSONS=Object.freeze([
     }
   }
 
-]);
+].map(l=>guide(l.id,l.category,l.title,l.definitionIds,l.details)));
