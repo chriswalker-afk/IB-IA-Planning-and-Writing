@@ -1405,8 +1405,8 @@ export function createCompletingViews(ctx){
     (writingIntro||node==="C04"?"":chapterRibbon(s))+
     (writingIntro?"":topWarnings)+
     (!writingIntro&&c.conclusionWarningOpen&&node!=="C60"?conclusionReadiness(s):"")+
-    (!writingIntro&&node!=="C00"&&node!=="C04"&&node!=="C10"&&!studioWriting&&!isStuckNode(node)?'<p class="studio-ia-writing-reminder">'+icon("pencil")+
-      ' WRITE IN YOUR IA · Use these prompts to develop your own document; nothing is inserted automatically.</p>':'')+
+    (!writingIntro&&node!=="C00"&&node!=="C04"&&node!=="C10"&&!studioWriting&&!isStuckNode(node)?'<p class="studio-ia-writing-reminder">'+icon("pencil")+'<span class="inline-notice-copy">'+
+      ' WRITE IN YOUR IA · Use these prompts to develop your own document; nothing is inserted automatically.</span></p>':'')+
     '<div class="task-shell'+(writingIntro||node==="C00"?' chapter-onboarding-shell':'')+'" data-source-node="'+e(node)+'">'+
     '<div class="stuck-page-header">'+
     criterionPageHeading(writingIntro?"Welcome to Writing.":label,"completing",writingIntro?"":(fieldBadgeInsteadOfTitle?"":node))+
