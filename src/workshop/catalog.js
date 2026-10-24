@@ -138,6 +138,6 @@ export const workshopLessonForEntry=entry=>{
  if(!entry)return "";
  if(entry.methodId==="pmcc")return "pearson";
  if(entry.methodId==="optimisation")return "optimisation";
- if(entry.kind==="distribution")return "descriptive";
+ if(!entry.methodId&&entry.kind==="distribution")return "descriptive";
  return "";
 };
