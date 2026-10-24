@@ -244,5 +244,51 @@ with sync_playwright() as pw:
   p.locator('[data-action="close-drawer"]').click()
   assert unchanged_fields(saved(p))==before
  run('workshop-guided-calculation-desktop',state(),workshop_lesson,1440,1000)
+ def batch1_guided(p):
+  before=unchanged_fields(saved(p))
+  open_library(p)
+  p.locator('.resource-workshop-entry [data-action="resource-workshop"]').click()
+  p.locator('[data-action="resource-workshop-home"]').first.click() if not p.locator('[data-workshop-home="true"]').count() else None
+  assert p.locator('#resource-results .workshop-lesson-card').count()==7
+  p.locator('[data-action="resource-workshop-lesson"][data-workshop-id="two-way-proportions"]').first.click()
+  assert p.locator('[data-workshop-lesson="two-way-proportions"]').count()==1
+  assert p.locator('.workshop-data-table').count()==1
+  assert '18' in p.locator('.workshop-data-table').inner_text()
+  p.locator('.workshop-lesson-tabs [data-workshop-step="help"]').click()
+  assert 'Checkpoint 1 of 2' in overlay(p).inner_text()
+  p.locator('[data-action="resource-workshop-choice"][data-workshop-choice="row"]').click()
+  assert "That's right" in overlay(p).inner_text()
+  p.locator('[data-action="resource-workshop-checkpoint"][data-workshop-direction="1"]').click()
+  assert 'Checkpoint 2 of 2' in overlay(p).inner_text()
+  p.locator('[data-action="resource-workshop-choice"][data-workshop-choice="69"]').click()
+  assert "That's right" in overlay(p).inner_text()
+  p.locator('.workshop-lesson-tabs [data-workshop-step="turn"]').click()
+  p.locator('.workshop-reveal > summary').click()
+  assert '45 percentage points' in overlay(p).inner_text()
+  assert overlay(p).evaluate('(el)=>el.scrollWidth<=el.clientWidth+1')
+  overlay(p).screenshot(path=str(OUT/'workshop-batch1-guided-phone.png'),animations='disabled')
+  p.locator('.workshop-technology [data-action="resource-open"]').click()
+  assert p.locator('[data-resource-detail="two-way"]').count()==1
+  p.locator('[data-action="resource-workshop"][data-workshop-resume="true"]').click()
+  assert p.locator('[data-workshop-lesson="two-way-proportions"]').count()==1
+  p.locator('[data-action="close-drawer"]').click()
+  assert unchanged_fields(saved(p))==before
+ run('workshop-batch1-guided-phone',state(),batch1_guided,360,740)
+ def batch1_pathway(p):
+  before=unchanged_fields(saved(p))
+  open_library(p)
+  p.locator('.resource-workshop-entry [data-action="resource-workshop"]').click()
+  if not p.locator('[data-workshop-home="true"]').count():p.locator('[data-action="resource-workshop-home"]').first.click()
+  p.locator('#workshop-route').select_option('categorical')
+  assert 'Two-way tables and conditional percentages' in p.locator('#resource-results').inner_text()
+  assert 'Conditional proportion' in p.locator('#resource-results').inner_text()
+  p.locator('#workshop-route').select_option('variation')
+  assert 'Measurement resolution and sensible uncertainty checks' in p.locator('#resource-results').inner_text()
+  p.locator('[data-action="resource-workshop-lesson"][data-workshop-id="measurement"]').first.click()
+  assert 'not a complete measurement-uncertainty estimate' in overlay(p).inner_text()
+  assert p.locator('.workshop-data-table').count()==1
+  p.locator('[data-action="close-drawer"]').click()
+  assert unchanged_fields(saved(p))==before
+ run('workshop-batch1-pathway-desktop',state(route='planning'),batch1_pathway,1440,1000)
  browser.close()
 (OUT/'resources-results.json').write_text(json.dumps(results,indent=2));print(json.dumps(results,indent=2));assert all(r['status']=='passed' for r in results)
