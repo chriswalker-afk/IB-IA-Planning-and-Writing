@@ -1139,7 +1139,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         '<div class="export-recovery" data-export-recovery role="alert"'+(fullExportFailure?'':' hidden')+'>'+
         '<strong data-export-recovery-title>'+e(fullExportFailure?.title||'')+'</strong>'+
         '<p data-export-recovery-message>'+e(fullExportFailure?.message||'')+'</p>'+
-        button("Download full JSON backup","export-json","btn-secondary","", "download")+'</div>'+
+        button("Download full JSON backup","export-json","btn-secondary",'data-backup-recovery="true"', "download")+'</div>'+
         '<p>Download a readable record of your Planning, mathematical steps, results, interpretations, sources, accuracy decisions, limitations, reflections and review notes. These are working records, not your finished IA.</p>'+
         '<div class="panel-list">'+button("Download full project PDF","export-full-pdf","btn-primary","", "download")+
         button("Download editable full project Word","export-full-docx","btn-secondary","", "download")+
@@ -1153,7 +1153,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         button("View readable working record","go-report","btn-light","", "file")+'</div>'+
         '<p class="field-hint">Edits made later to the visible PDF/Word text do not automatically update the embedded snapshot. Import and review, or update Pathfinder directly.</p></section>'+
       '<section><h3>Full project backup</h3><p>For reliable restoration of your actual mathematics, writing notes and Planning across devices, use the JSON project backup. Browser saving stays local; no cloud sync.</p>'+
-        button("Download entire project (.json)","export-json","btn-secondary","", "download")+
+        button("Download entire project (.json)","export-json","btn-secondary",'data-backup-primary="true"', "download")+
         button("Restore entire project backup","import-json","btn-secondary","", "upload")+'</section>'+
       '<section><h3>Start fresh</h3><p>Starting a new project replaces the local workspace. Export a full backup first if needed.</p>'+
         button("Start a new project","new-project","btn-danger","", "refresh")+'</section>';
