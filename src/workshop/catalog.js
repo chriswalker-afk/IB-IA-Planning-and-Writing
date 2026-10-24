@@ -5,6 +5,7 @@
 import {BATCH1_DEFINITIONS,BATCH1_LESSONS} from './batch-1.js';
 import {BATCH2_DEFINITIONS,BATCH2_LESSONS} from './batch-2.js';
 import {HISTOGRAM_LESSON} from './histogram-lesson.js';
+import {BATCH3_DEFINITIONS,BATCH3_LESSONS} from './batch-3.js';
 const define=(id,category,title,meaning,example,notation="")=>
  Object.freeze({id,category,title,meaning,example,notation});
 export const WORKSHOP_DEFINITIONS=Object.freeze([
@@ -36,7 +37,8 @@ export const WORKSHOP_DEFINITIONS=Object.freeze([
  define("convergence","Reasoning","Convergence","A sequence approaches a finite limit as the term number increases.","Values appearing to settle numerically suggest, but do not prove, convergence.")
 ,
  ...BATCH1_DEFINITIONS,
- ...BATCH2_DEFINITIONS
+ ...BATCH2_DEFINITIONS,
+ ...BATCH3_DEFINITIONS
 ]);
 export const DEFINITION_BY_ID=new Map(WORKSHOP_DEFINITIONS.map(d=>[d.id,d]));
 export const definitionById=id=>DEFINITION_BY_ID.get(id)||null;
@@ -117,7 +119,8 @@ export const WORKSHOP_LESSONS=Object.freeze([
  }),
  ...BATCH1_LESSONS,
  ...BATCH2_LESSONS,
- HISTOGRAM_LESSON
+ HISTOGRAM_LESSON,
+ ...BATCH3_LESSONS
 ]);
 export const LESSON_BY_ID=new Map(WORKSHOP_LESSONS.map(l=>[l.id,l]));
 export const lessonById=id=>LESSON_BY_ID.get(id)||null;
@@ -130,15 +133,15 @@ export const PATHWAY_LEARNING=Object.freeze({
  groups:{terms:["population","sample","mean","median","standard-deviation","stratified-sample","sampling-frame","selection-bias","quartile","interquartile-range","box-plot"],lessons:["sampling","descriptive","distributions"]},
  categorical:{terms:["population","sample","probability","categorical-variable","two-way-table","conditional-proportion","percentage-point","nonresponse-bias"],lessons:["sampling","two-way-proportions"]},
  variation:{terms:["mean","median","standard-deviation","uncertainty","instrument-resolution","repeated-measurement","rounding-interval","random-error","systematic-error","quartile","interquartile-range","histogram","frequency-density"],lessons:["descriptive","distributions","histograms","measurement"]},
- "fitted-models":{terms:["model","parameter","domain","residual","extrapolation","regression-line","least-squares","gradient","intercept","centred-sums","fitted-value","nonlinear-regression","quadratic-model","sum-squared-errors","residual-plot","residual-pattern","rmse","r-squared","holdout-data","overfitting","influential-observation"],lessons:["linear-regression","nonlinear-fitting","residual-diagnostics","model-comparison"]},
- growth:{terms:["model","parameter","domain","extrapolation","exponential-model","log-transformation","transformed-regression","nonlinear-regression","residual-plot","holdout-data","rmse"],lessons:["nonlinear-fitting","residual-diagnostics","model-comparison"]},
- cycles:{terms:["model","parameter","domain","residual-plot","residual-pattern","rmse","holdout-data"],lessons:["residual-diagnostics","model-comparison"]},
- trajectories:{terms:["model","scale-factor","derivative","stationary-point","quadratic-model","residual","residual-plot","domain","rmse"],lessons:["nonlinear-fitting","residual-diagnostics","model-comparison"]},
- optimisation:{terms:["objective-function","constraint","derivative","stationary-point","domain"],lessons:["optimisation"]},
- images:{terms:["scale-factor","model","uncertainty","domain","instrument-resolution","sensitivity-analysis"],lessons:["measurement"]},
+ "fitted-models":{terms:["model","parameter","domain","residual","extrapolation","regression-line","least-squares","gradient","intercept","centred-sums","fitted-value","nonlinear-regression","quadratic-model","sum-squared-errors","residual-plot","residual-pattern","rmse","r-squared","holdout-data","overfitting","influential-observation","vertex-form","quadratic-roots","discriminant","feasible-domain","doubling-time","logarithm"],lessons:["linear-regression","nonlinear-fitting","residual-diagnostics","model-comparison","quadratic-functions","exponential-logarithms"]},
+ growth:{terms:["model","parameter","domain","extrapolation","exponential-model","log-transformation","transformed-regression","nonlinear-regression","residual-plot","holdout-data","rmse","doubling-time","half-life","logarithm"],lessons:["nonlinear-fitting","residual-diagnostics","model-comparison","exponential-logarithms"]},
+ cycles:{terms:["model","parameter","domain","residual-plot","residual-pattern","rmse","holdout-data","amplitude","period","midline","phase-shift","angular-frequency"],lessons:["residual-diagnostics","model-comparison","sinusoidal-functions"]},
+ trajectories:{terms:["model","scale-factor","derivative","stationary-point","quadratic-model","residual","residual-plot","domain","rmse","vertex-form","instantaneous-rate","average-rate","second-derivative"],lessons:["nonlinear-fitting","residual-diagnostics","model-comparison","quadratic-functions","derivatives-motion"]},
+ optimisation:{terms:["objective-function","constraint","derivative","stationary-point","domain","vertex-form","feasible-domain","global-extremum"],lessons:["optimisation","quadratic-functions"]},
+ images:{terms:["scale-factor","model","uncertainty","domain","instrument-resolution","sensitivity-analysis","definite-integral","signed-area"],lessons:["measurement","integrals-accumulation"]},
  triangulation:{terms:["scale-factor","uncertainty","euclidean-distance","rounding-interval","sensitivity-analysis"],lessons:["measurement"]},
  voronoi:{terms:["voronoi-cell","euclidean-distance","model"],lessons:[]},
- finance:{terms:["model","parameter","constraint","extrapolation","sensitivity-analysis","exponential-model","nonlinear-regression","rmse","holdout-data"],lessons:["measurement","nonlinear-fitting","model-comparison"]},
+ finance:{terms:["model","parameter","constraint","extrapolation","sensitivity-analysis","exponential-model","nonlinear-regression","rmse","holdout-data","doubling-time","logarithm"],lessons:["measurement","nonlinear-fitting","model-comparison","exponential-logarithms"]},
  chance:{terms:["probability","expected-value","sample"],lessons:[]},
  proof:{terms:["conjecture","counterexample","domain"],lessons:[]},
  iteration:{terms:["iteration","convergence","parameter","domain"],lessons:[]}
@@ -150,6 +153,8 @@ export const workshopLessonForEntry=entry=>{
  if(entry.methodId==="linear-regression")return "linear-regression";
  if(["quadratic-fit","exponential","power"].includes(entry.methodId))return "nonlinear-fitting";
  if(entry.methodId==="optimisation")return "optimisation";
+ if(entry.methodId==="derivatives")return "derivatives-motion";
+ if(entry.methodId==="integration")return "integrals-accumulation";
  if(!entry.methodId&&entry.kind==="distribution")return "descriptive";
  return "";
 };

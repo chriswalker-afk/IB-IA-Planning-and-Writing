@@ -82,6 +82,26 @@ export const WORKSHOP_LESSON_FORMULAS=Object.freeze({
       "spoken": "Frequency density is the frequency divided by the class width."
     }
   ],
+  "quadratic-functions": [
+    {"label":"Completed-square form","tex":"y=a(x-h)^2+k","spoken":"The quadratic's vertex is h comma k."},
+    {"label":"Vertex of a quadratic","tex":"h=-\\frac{b}{2a}","spoken":"For a x squared plus b x plus c, the vertex input is minus b over two a."}
+  ],
+  "exponential-logarithms": [
+    {"label":"Exponential growth model","tex":"N(t)=a\\,b^t","spoken":"N at time t equals initial amount a times b to power t."},
+    {"label":"Solve for time","tex":"t=\\frac{\\ln(N/a)}{\\ln b}","spoken":"Time is log of the output divided by initial amount, over log of the growth factor."}
+  ],
+  "sinusoidal-functions": [
+    {"label":"Sine model with phase shift","tex":"y=d+A\\sin\\!\\left(\\frac{2\\pi(t-c)}{T}\\right)","spoken":"Midline d plus amplitude A times sine of two pi times shifted time over period T."},
+    {"label":"Period and angular frequency","tex":"\\omega=\\frac{2\\pi}{T}","spoken":"Angular frequency equals two pi divided by period."}
+  ],
+  "derivatives-motion": [
+    {"label":"Instantaneous velocity","tex":"v(t)=\\frac{ds}{dt}","spoken":"Velocity is the derivative of position with respect to time."},
+    {"label":"Acceleration","tex":"a(t)=\\frac{d^2s}{dt^2}","spoken":"Acceleration is the second time derivative of position."}
+  ],
+  "integrals-accumulation": [
+    {"label":"Accumulated change","tex":"\\Delta Q=\\int_{a}^{b}r(t)\\,dt","spoken":"The accumulated change is the definite integral of rate r over the interval."},
+    {"label":"Fundamental theorem of calculus","tex":"\\int_{a}^{b}r(t)\\,dt=F(b)-F(a)","spoken":"If F is an antiderivative of r, evaluate F at the upper bound minus lower bound."}
+  ],
   "histograms": [
     {
       "label": "Frequency density for any class",
@@ -315,6 +335,15 @@ export const WORKSHOP_DEFINITION_FORMULAS=Object.freeze({
     "tex": "R^2=1-\\frac{\\mathrm{SSE}}{\\sum_{i=1}^{n}(y_i-\\bar{y})^2}",
     "spoken": "R squared equals one minus SSE divided by the observed response total sum of squares on the same scale, when the denominator is positive."
   },
+  "vertex-form": {"tex":"y=a(x-h)^2+k","spoken":"A quadratic in vertex form has turning point h comma k."},
+  "discriminant": {"tex":"\\Delta=b^2-4ac","spoken":"The discriminant is b squared minus four a c."},
+  "doubling-time": {"tex":"T=\\frac{\\ln 2}{\\ln b}","spoken":"Doubling time equals natural log of two divided by natural log of b, for b greater than one."},
+  "logarithm": {"tex":"\\ln(e^x)=x","spoken":"Natural log and the exponential function are inverses."},
+  "period": {"tex":"T=\\frac{2\\pi}{\\lvert b\\rvert}","spoken":"A sine or cosine function with coefficient b on the input has period two pi over the absolute value of b."},
+  "angular-frequency": {"tex":"\\omega=\\frac{2\\pi}{T}","spoken":"Angular frequency is two pi over the period."},
+  "average-rate": {"tex":"\\frac{\\Delta y}{\\Delta x}","spoken":"Average rate is change in output divided by nonzero change in input."},
+  "definite-integral": {"tex":"\\int_a^b f(x)\\,dx","spoken":"The definite integral of f from a to b gives signed accumulation."},
+  "antiderivative": {"tex":"F'(x)=f(x)","spoken":"The derivative of an antiderivative F is the original function f."},
   "rmse": {
     "tex": "\\mathrm{RMSE}=\\sqrt{\\frac{1}{n}\\sum_{i=1}^{n}(y_i-\\hat{y}_i)^2}",
     "spoken": "Root mean squared error is the square root of mean squared prediction error on the evaluation dataset."
