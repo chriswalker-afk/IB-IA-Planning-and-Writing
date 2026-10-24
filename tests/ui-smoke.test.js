@@ -1448,8 +1448,8 @@ test("Pass 2: IA method choice, readiness and PMCC cautions appear before depend
  const chosen=c22.indexOf("Which method did you actually choose?");
  const alternative=c22.indexOf("Another genuinely feasible method");
  const reason=c22.indexOf("Why is it suitable for this aim?");
- assert(chosen>=0&&alternative>chosen&&reason>alternative,
-  "Compare alternatives only after identifying the actual chosen method");
+ assert(chosen>=0&&reason>chosen&&alternative>reason,
+  "Name and justify the real method before optionally comparing a genuinely considered alternative");
  const c20=view("C20").h.html;
  const source=c20.indexOf('class="first-maths-optional-source"');
  const proceed=c20.indexOf('class="first-maths-continue"');
