@@ -90,6 +90,24 @@ test('the first four-part screen and the What next pages write to the same canon
  assert(insightCapture(s,'C35').includes('Your possible next mathematical question'));
 });
 
+test('a genuine C35 question and reason seed the correct subsequent mathematical stage',()=>{
+ const s=make(),parent=s.entries[0];
+ // No route selected: a student's own mathematical connection is still valid.
+ parent.methodId='';
+ s.completion.current='C35';s.completion.nextFromEntryId=parent.id;
+ setCompletionField(s,'nextQuestion','Check the feasible boundary candidates');
+ setCompletionField(s,'nextReason','The stationary point alone cannot establish the global optimum.');
+ const created=addMathematicalStage(s);
+ assert.equal(created.ok,true);
+ const child=s.entries.at(-1);
+ assert.equal(child.fromEntryId,parent.id);
+ assert.equal(child.title,'Check the feasible boundary candidates');
+ assert.equal(child.purpose,'The stationary point alone cannot establish the global optimum.');
+ assert.equal(child.status,'planned','no new stage may start as a confirmed result');
+ assert.equal(parent.nextQuestion,'Check the feasible boundary candidates');
+ assert.equal(parent.nextWhy,'The stationary point alone cannot establish the global optimum.');
+});
+
 test('shared follow-up notes are rehydrated when C35 moves to a different completed source',()=>{
  const s=make(),original=s.entries[0];
  const later={id:'step-two',phase:'substantial',fromEntryId:'step-one',status:'completed',
