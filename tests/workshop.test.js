@@ -218,7 +218,7 @@ test('workshop: median of halves, quartile spread and frequency density are chec
 });
 test('workshop: conditional denominators and percentage points are checked',()=>{
  assert.equal(18/30,0.6);assert.equal(8/20,0.4);
- assert.equal((18/30-8/20)*100,20);
+ approx((18/30-8/20)*100,20);
  assert(Math.abs(18/26-0.6923076923)<1e-9);
  assert.equal(14/20,0.7);assert.equal(10/40,0.25);
  assert(Math.abs((14/20-10/40)*100-45)<1e-10);
