@@ -8,6 +8,7 @@
  */
 import {methodFamilies} from './method-identity.js';
 import {selectedInvestigativeRoute,selectedJourneyOutcome} from './adaptive-journey.js';
+import {routeAdvice} from './route-coach.js';
 import {escapeHtml,icon as defaultIcon} from '../ui/primitives.js';
 
 const str=value=>typeof value==='string'?value.trim():'';
@@ -209,12 +210,19 @@ export function resultInterpretationGuidance(state,entry){
  guide=guide||GENERAL;
  const needsReview=entry.reviewNeeded==='yes';
  const chosen=!needsReview?selectedJourneyOutcome(state,entry):null;
+ // Legacy projects may have a confirmed method signal or scatter observation
+ // without a newer journey outcome. Reuse the existing result-led coach rather
+ // than silently losing the student's earlier decision.
+ const legacy=!needsReview&&!chosen&&
+  (str(entry.resultSignal)||(entry.kind==='scatter'&&str(entry.observation)))?
+   routeAdvice(state,entry):null;
  return {
   ...guide,key:key||'general',origin:origin||'general',
   entryId:str(entry.id),result:str(entry.result),titleOfWork:str(entry.title),
   aim:str(state?.planning?.fields?.aim||state?.project?.aim),
   purpose:str(entry.purpose||entry.bridge),needsReview,
-  selected:chosen?{title:chosen.title,check:chosen.check}:null
+  selected:chosen?{title:chosen.title,check:chosen.check}:
+   legacy?{title:legacy.heading,check:legacy.detail||legacy.essential}:null
  };
 }
 
