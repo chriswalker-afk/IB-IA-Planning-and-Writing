@@ -49,7 +49,7 @@ export function workshopList(session){
 const lessonNav=step=>'<div class="workshop-lesson-tabs" role="group" aria-label="Choose how much mathematical help you need">'+
  [["show","Show me"],["help","Help me"],["turn","My turn"]].map(([id,label])=>
   '<button type="button" data-action="resource-workshop-step" data-workshop-step="'+id+
-  '" class="workshop-tab'+(step===id?' active':'')+'" aria-pressed="'+(step===id)+'">'+mathText(label)+'</button>').join("")+'</div>';
+  '" class="workshop-tab'+(step===id?' active':'')+'" aria-pressed="'+(step===id)+'">'+e(label)+'</button>').join("")+'</div>';
 function renderLesson(session,l){
  const step=["show","help","turn"].includes(session.workshopStep)?session.workshopStep:"show";
  const trail='<div class="workshop-lesson-top">'+action("home","← Back to Maths Workshop")+
@@ -73,7 +73,7 @@ function renderLesson(session,l){
    '<p class="workshop-checkpoint-count">Checkpoint '+(current+1)+' of '+checkpoints.length+'</p>'+'<p>'+mathText(exercise.question)+'</p><p class="workshop-hint"><strong>Hint:</strong> '+mathText(exercise.hint)+'</p>'+
    '<div class="workshop-choice-list" role="group" aria-label="Choose an answer">'+
     exercise.options.map(([id,label])=>'<button type="button" class="workshop-choice'+(selected===id?' selected':'')+
-      '" id="workshop-choice-'+e(id)+'" data-action="resource-workshop-choice" data-workshop-choice="'+e(id)+'" aria-pressed="'+(selected===id)+'">'+e(label)+'</button>').join("")+
+      '" id="workshop-choice-'+e(id)+'" data-action="resource-workshop-choice" data-workshop-choice="'+e(id)+'" aria-pressed="'+(selected===id)+'">'+mathText(label)+'</button>').join("")+
     '</div>'+(known?'<p role="status" class="workshop-feedback '+(right?'correct':'retry')+'"><strong>'+
      (right?"That's right. ":"Not quite. ")+'</strong>'+mathText(right?exercise.feedback:exercise.hint)+'</p>':"")+
     '</div>'+(current>0?action("checkpoint","Previous checkpoint",'data-workshop-direction="-1"'):"")+(current<checkpoints.length-1?action("checkpoint","Next checkpoint",'data-workshop-direction="1"',true):action("step","Try independently",'data-workshop-step="turn"',true));
