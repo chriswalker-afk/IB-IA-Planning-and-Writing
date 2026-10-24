@@ -154,6 +154,38 @@ def check_story_method_switch(page,width):
  assert page.evaluate("k=>JSON.parse(localStorage.getItem(k)).planning.routeExplorer.selectedRoute",KEY)=="relationships"
  assert page.evaluate("k=>JSON.parse(localStorage.getItem(k)).entries[1].technique",KEY)=="Straight-line regression"
 
+def check_inline_notice_layout(page,node,width):
+ # An icon plus ungrouped prose/emphasis would form separate flex columns.
+ split=page.evaluate("""() => [...document.querySelectorAll('#main p, #main span')]
+  .filter(el => ['flex','inline-flex'].includes(getComputedStyle(el).display)
+   && [...el.children].some(child => child.matches('.icon,svg'))
+   && [...el.children].some(child => child.matches('strong,b,em,a'))
+   && [...el.childNodes].some(child => child.nodeType === Node.TEXT_NODE && child.textContent.trim()))
+  .map(el => ({tag:el.tagName, cls:el.className?.baseVal||el.className, text:el.textContent.slice(0,140)}))""")
+ assert not split,(width,node,"icon notes split styled words into separate flex columns",split)
+ selector={"C10":".intro-prediction-note","C60":".conclusion-specific-tip"}.get(node)
+ if not selector:return
+ note=page.locator("#main "+selector).first
+ assert note.count()==1,(width,node,"expected a single contextual note")
+ if not note.is_visible():
+  note.evaluate("(el)=>{const panel=el.closest('details');if(panel)panel.open=true;}")
+ assert note.is_visible(),(width,node,"note was not accessible")
+ measures=note.evaluate("""el=>{
+  const copy=el.querySelector(':scope > .inline-notice-copy');
+  const icon=el.querySelector(':scope > .icon');
+  const emphasis=el.querySelector('strong');
+  const box=el.getBoundingClientRect(),text=copy?.getBoundingClientRect();
+  return {hasCopy:!!copy,hasIcon:!!icon,emphasisInCopy:!!copy?.contains(emphasis),
+   display:getComputedStyle(el).display,copyFlex:copy&&getComputedStyle(copy).flexGrow,
+   width:box.width,textWidth:text?.width,
+   overflow:el.scrollWidth>el.clientWidth+1};
+ }""")
+ assert measures["hasCopy"] and measures["hasIcon"] and measures["emphasisInCopy"],(width,node,measures)
+ assert measures["display"]=="flex" and measures["copyFlex"]!="0",(width,node,measures)
+ assert measures["textWidth"]>=0.68*measures["width"],(width,node,"copy was squeezed into a narrow column",measures)
+ assert not measures["overflow"],(width,node,"notice overflowed its card",measures)
+ note.screenshot(path=str(OUT/f"notice-{node}-{width}.png"),animations="disabled")
+
 def run_case(browser,node,group,count,width):
  context=browser.new_context(viewport={"width":width,"height":850})
  page=context.new_page()
@@ -164,6 +196,7 @@ def run_case(browser,node,group,count,width):
  try:
   page.goto(URL,wait_until="networkidle",timeout=60000)
   assert page.locator('[data-source-node="'+node+'"]').count()==1,(width,node,"missing writing stage",page.url)
+  check_inline_notice_layout(page,node,width)
   if node in STORY_CASES:
    check_story_guidance(page,node,width)
   if group is None:
