@@ -295,6 +295,8 @@ test("real writing screens and saved project round trips keep validity checks wi
   const html=view(s);
   assert(html.includes("data-math-validity=\"math1\""),node);
   assert(html.includes("Input quality"),node);
+  if(node==="C30")assert(html.includes('</div></details><aside class="math-course-aid'),
+   "First-stage course guidance must remain a sibling, not a nested disclosure");
  }
  s.entries.push({id:"math2",phase:"substantial",fromEntryId:entry.id,status:"completed",
   methodId:"proof",knowledge:"outside",result:"A proof by induction",
