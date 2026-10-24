@@ -102,7 +102,13 @@ with sync_playwright() as pw:
   assert sky.locator('.constellation-sky-wrap').evaluate("(el)=>el.getBoundingClientRect().height")<=112,"the constellation should be compact rather than stretching to desktop width"
   assert p.locator('.journey-record-heading').count()==0,"the old mathematical record list should not duplicate the journey"
   assert "1 actual result" in sky.inner_text()
-  assert "Only a narrow range was measured" in p.locator(".insight-toolkit").inner_text()
+  toolkit=p.locator(".insight-toolkit")
+  assert toolkit.locator('.insight-toolkit-group').count()>=2
+  review=toolkit.locator('.insight-toolkit-group').filter(has_text="Reflections and limitations")
+  assert review.count()==1
+  assert review.locator('[data-toolkit-spark-id]').count()>=1
+  review.locator('summary').first.click()
+  assert "Only a narrow range was measured" in review.inner_text()
   p.screenshot(path=str(OUT/("living-journey-"+str(p.viewport_size["width"])+".png")),full_page=True,animations="disabled")
   p.locator('.insight-toolkit-card[data-insight-type="planning"][data-node="N01"]').click()
   assert p.locator('[data-source-node="N01"]').count()==1
