@@ -20,7 +20,7 @@ const approx=(a,b,eps=1e-9)=>assert(Math.abs(a-b)<eps,String(a)+' differs from '
 
 test('workshop: canonical glossary and pilot IDs are unique and never blank',()=>{
  assert.equal(WORKSHOP_DEFINITIONS.length,57);
- assert.equal(WORKSHOP_LESSONS.length,7);
+ assert.equal(WORKSHOP_LESSONS.length,8);
  assert.equal(new Set(WORKSHOP_DEFINITIONS.map(d=>d.id)).size,WORKSHOP_DEFINITIONS.length);
  assert.equal(new Set(WORKSHOP_LESSONS.map(l=>l.id)).size,WORKSHOP_LESSONS.length);
  for(const d of WORKSHOP_DEFINITIONS){
@@ -42,7 +42,7 @@ test('workshop: all sixteen routes map only to real shared definitions and optio
  }
 });
 test('workshop: complete pilot schema supports definitions, full worked methods and standalone practice',()=>{
- const expected=['descriptive','pearson','optimisation','sampling','distributions','two-way-proportions','measurement'];
+ const expected=['descriptive','pearson','optimisation','sampling','distributions','two-way-proportions','measurement','histograms'];
  assert.deepEqual(WORKSHOP_LESSONS.map(l=>l.id),expected);
  for(const l of WORKSHOP_LESSONS){
   assert(l.when&&l.avoid&&l.formula&&l.skill&&l.ia,l.id);
