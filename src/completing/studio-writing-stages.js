@@ -33,15 +33,10 @@ function renderAdvice(state,node,icon,e,reduced=false){
 }
 
 function renderSparks(state,node,icon,e){
- const kind=groupOf(node),lead=kind==='data'?
-  'Use planned source, sampling or accuracy sparks only after checking what you actually collected. A plan is not a finding.':
-  kind==='maths'?
-  'Bring forward the aim, a relevant real result or linked accuracy decision. A planned technique is not a performed calculation.':
-  'Revisit your aim, actual mathematical results, original prediction and meaningful limitations. Findings may challenge your hope.';
  const shelf=renderSparkShelf(state,node,{surface:"studio",hideHeading:true});
  return '<section class="studio-stage-sparks" aria-label="Relevant saved sparks"><div class="studio-stage-sparks-head">'+
-  icon("sparkles")+' <div><span class="intro-writing-guide-eyebrow">YOUR SAVED IDEAS</span>'+
-  '<h2>Use your relevant sparks</h2><p>'+e(lead)+'</p></div></div>'+
+  icon("sparkles")+' <div><span class="intro-writing-guide-eyebrow">FROM YOUR WORK</span>'+
+  '<h2>Useful now</h2><p>These are your own notes. Open one to check why it matters here.</p></div></div>'+
   (shelf||'<p class="studio-stage-empty-sparks">No saved sparks yet. You can still work from real mathematics; review Planning if you need to clarify an earlier decision.</p>')+
  '</section>';
 }
@@ -78,6 +73,11 @@ export function renderStudioWritingStage(state,node,{icon,e,taskHtml="",taskIntr
   '<div class="studio-stage-writing-task-head"><span class="intro-writing-task-symbol">'+icon("pencil")+'</span>'+
   '<div><span class="intro-writing-task-eyebrow">YOUR '+e(stageName.toUpperCase())+' TASK</span>'+
   '<h2>'+e(taskTitle)+'</h2><p>'+e(taskIntro)+'</p></div></div>'+
+  (!reduced?'<div class="studio-stage-quick-help" aria-label="Help with this step">'+
+   '<button type="button" class="studio-stage-quick-guide" data-action="writer-guide-open" data-guide-scope="stage" data-guide-node="'+e(node)+'">'+
+    icon("book")+' Writing tips '+icon("arrow-up-right")+'</button>'+
+   '<button type="button" class="studio-stage-quick-stuck" data-action="open-stuck">'+
+    icon("lightbulb")+' I am stuck</button></div>':'')+
   (reduced&&(first||showFirst)&&reducedAim?'<p class="writing-stage-compact-aim"><strong>Your saved aim</strong> '+e(reducedAim)+'</p>':"")+
   (reduced&&showFirst?'<p class="studio-stage-essential-check" role="note">Show real mathematics, label figures and units clearly, and avoid long raw-data tables.</p>':"")+
   '<div class="studio-stage-writing-location" role="note" aria-label="Where to write your IA">'+
