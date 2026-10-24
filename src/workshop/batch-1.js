@@ -84,7 +84,7 @@ export const BATCH1_LESSONS=Object.freeze([
    {name:"Google Sheets",command:"=RAND()",why:"Give each eligible ID a temporary random value, freeze the generated values, sort separately within each stratum, then choose the required number. This does not construct a fair frame."},
    {name:"Google Forms",command:"Design and distribute a survey",why:"Useful for gathering answers once selection and permissions are decided; sharing a link publicly is not a random-sampling method."}
   ],
-  existingGuide:"forms",
+  existingGuide:"forms",relatedGuides:["organise"],
   ia:"Explain the population, sampling unit, frame, group allocations, actual selection and nonresponse. Justify the inference scope. Avoid claiming that a planned random sample guarantees representativeness."
  }),
  guide("distributions","Data & statistics","Describe distributions and choose the right diagram",
@@ -127,7 +127,7 @@ export const BATCH1_LESSONS=Object.freeze([
    {name:"Desmos",command:"histogram(L, 1)",why:"Try a chosen class width of 1 for a small list, then review whether another bin width changes the story."},
    {name:"Google Sheets",command:"=MEDIAN(A2:A9)",why:"Use technology for larger numerical datasets after checking units, missing values and definitions."}
   ],
-  existingGuide:"distribution-graphs",
+  existingGuide:"distribution-graphs",relatedGuides:["summary-stats"],creator:"stat",
   ia:"State the quartile convention and diagram choices only where they affect your interpretation. Compare centre, spread, distribution shape and genuine anomalies, not just a collection of plots."
  }),
  guide("two-way-proportions","Data & statistics","Two-way tables and conditional percentages",
@@ -169,7 +169,7 @@ export const BATCH1_LESSONS=Object.freeze([
    {name:"Google Sheets",command:"=B2/SUM(B2:C2)",why:"For a table with Group 1 in row 2 and Yes/No counts in B2:C2, format as a percentage to obtain the within-row Yes percentage."},
    {name:"Google Sheets",command:"Pivot table → Rows: group; Columns: choice; Values: count of observation ID",why:"Efficient for a larger dataset; check that IDs are counted once and row, column and grand totals reconcile."}
   ],
-  existingGuide:"two-way",
+  existingGuide:"two-way",relatedGuides:["forms"],creator:"table",
   ia:"Include a labelled table only if it makes the comparison clearer. State the conditioning group, sample size, denominators and percentage-point interpretation; distinguish descriptive association from a claim of statistical significance."
  }),
  guide("measurement","Measurement & reliability","Measurement resolution and sensible uncertainty checks",
@@ -211,7 +211,7 @@ export const BATCH1_LESSONS=Object.freeze([
    {name:"Google Sheets",command:"=(A2-0.05)^2 and =(A2+0.05)^2",why:"If A2 holds a positive side length correctly rounded to 0.1 cm, evaluate its rounding-only area edges; adapt the half-step only when justified."},
    {name:"Spreadsheet or calculator",command:"Recalculate the result for a justified range of input values",why:"Useful sensitivity check for a derived formula. Vary one assumption deliberately and record which result or conclusion changes."}
   ],
-  existingGuide:"reporting-precision",
+  existingGuide:"reporting-precision",relatedGuides:["image-scale"],
   ia:"Describe the measuring device and procedure, actual precision and any defensible bounds or repeated-measurement evidence. Make clear which uncertainties are assessed and which remain unknown. Interpret how sensitive the conclusion is."
  })
 ]);
