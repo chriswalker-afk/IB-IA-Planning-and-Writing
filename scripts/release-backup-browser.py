@@ -144,7 +144,7 @@ def modern_roundtrip(browser,width):
   assert saved(p)["project"]["aim"]=="Temporary different project"
   p.once("dialog",lambda dialog:dialog.accept())
   p.locator("#importFile").set_input_files(str(source))
-  p.wait_for_function("(key)=>JSON.parse(localStorage.getItem(key)).project.aim==='How might our measurements be compared?'",KEY)
+  p.wait_for_function("(key)=>JSON.parse(localStorage.getItem(key)).project.aim==='How might our measurements be compared?'",arg=KEY)
   assert_preserved(p,backup)
   assert not errors,errors
   print("PASS full JSON roundtrip and rejected/cancelled restore",width,flush=True)
@@ -175,7 +175,7 @@ def legacy_roundtrip(browser):
   original=saved(p)
   p.once("dialog",lambda dialog:dialog.accept())
   p.locator("#importFile").set_input_files(str(path))
-  p.wait_for_function("(key)=>JSON.parse(localStorage.getItem(key)).project.aim==='Would the old investigation hold?'",KEY)
+  p.wait_for_function("(key)=>JSON.parse(localStorage.getItem(key)).project.aim==='Would the old investigation hold?'",arg=KEY)
   restored=saved(p)
   for field in ("project","scratch","entries","cueNotes","journey","teacher"):
    assert restored[field]==backup[field],field
