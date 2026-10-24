@@ -83,6 +83,7 @@ function renderLesson(session,l){
  }
  return '<article class="workshop-lesson" data-workshop-lesson="'+e(l.id)+'">'+trail+
   '<h3 tabindex="-1">'+e(l.title)+'</h3>'+
+  '<p class="workshop-caution">This is a worked learning example, not a course recommendation. Check that this method is appropriate to your own syllabus and aim.</p>'+ 
   '<div class="workshop-guide-notes"><p><strong>Use this when:</strong> '+e(l.when)+'</p>'+
    '<p><strong>Check first:</strong> '+e(l.avoid)+'</p></div>'+
   '<section class="workshop-section"><h4>Definitions to know</h4><div class="workshop-chip-list">'+definitions+'</div></section>'+
