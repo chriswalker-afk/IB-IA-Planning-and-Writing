@@ -40,7 +40,6 @@ import {examplePrompt,exampleInline} from "../examples/views.js";
 import {criteriaPanel,essentialsNudge} from "../essentials/views.js";
 import {criterionPageHeading,criterionMarkedField,criterionMarkedWritingBox as baseCriterionMarkedWritingBox} from "../essentials/criteria-badges.js";
 import {resourcePrompt} from "../resources/views.js";
-const methodWorkshopLink='<div class="maths-workshop-method-link"><button type="button" class="btn btn-secondary btn-sm" data-action="resource-workshop">Need help with the mathematics? Open Maths Workshop</button></div>';
 import {renderCitationReminder} from "../resources/citation-prompts.js";
 import {createStuckViews} from '../help/stuck-views.js';
 import {isStuckNode} from '../help/stuck-state.js';
@@ -60,6 +59,7 @@ import {
  C_MAJOR_STAGES,C_STAGE_STATUS,routesAt,completionStage,completionFlags,
  completeEntry,latestRealResult,sourceResultForNext,scatterForNext,canViewPmccFollowup,canViewScatterFollowup,completionSuggestions
 } from "./engine.js";
+const methodWorkshopLink='<div class="maths-workshop-method-link"><button type="button" class="btn btn-secondary btn-sm" data-action="resource-workshop">Need help with the mathematics? Open Maths Workshop</button></div>';
 
 export function createCompletingViews(ctx){
  const {getState,e,icon,field,choose,button,summary,sheetTitle,tabletNav,filled}=ctx;
