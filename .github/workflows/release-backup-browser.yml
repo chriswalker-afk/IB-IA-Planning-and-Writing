@@ -1,0 +1,57 @@
+name: Release backup and legacy restore gate
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'app.js'
+      - 'index.html'
+      - 'src/core/project-state.js'
+      - 'src/completing/entry-record.js'
+      - 'src/handover/**'
+      - 'src/diagrams/*-core.js'
+      - 'src/resources/state.js'
+      - 'scripts/release-backup-browser.py'
+      - 'scripts/resources-browser.py'
+      - 'scripts/essentials-browser.py'
+      - 'tests/release-backup-readiness.test.js'
+      - '.github/workflows/release-backup-browser.yml'
+      - '.github/actions/setup-ci-node/action.yml'
+      - '.github/actions/setup-ci-browser/action.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'app.js'
+      - 'src/core/project-state.js'
+      - 'src/handover/**'
+      - 'scripts/release-backup-browser.py'
+      - '.github/workflows/release-backup-browser.yml'
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-ci-node
+      - name: Build real release assets
+        run: npm run build
+      - uses: ./.github/actions/setup-ci-browser
+      - name: Verify backup, safety and legacy migration on desktop and mobile
+        run: |
+          mkdir -p qa-output/release-backup
+          python -m http.server 8765 --directory dist > qa-output/release-backup/server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID"' EXIT
+          curl --fail --silent --show-error --retry 10 --retry-connrefused --retry-delay 1 --max-time 2 --retry-max-time 15 http://127.0.0.1:8765/ -o /dev/null
+          IA_QA_OUTPUT=qa-output/release-backup python scripts/release-backup-browser.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: release-backup-browser-results
+          path: qa-output/release-backup
+          retention-days: 7

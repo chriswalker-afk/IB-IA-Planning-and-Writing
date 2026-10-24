@@ -20,6 +20,7 @@ The root [README](../README.md) describes the current student-facing website. Th
 - [Pass 3: guidance and content consistency](release-polish-pass3-2026-10-23.md): shared pop-in shell and distinguishable help destinations, Checking-specific wording, accurate full-project export guidance.
 - [Pass 4: seven diagram creators](release-polish-pass4-2026-10-24.md): consistent figure workflow, save/link/export separation, accurate return destinations and live readiness.
 - [Pass 5: responsive and accessibility audit](release-polish-pass5-2026-10-24.md): skip link and screen-change focus, mobile and zoom reflow, touch targets, reduced motion, hidden upload focus, and five-viewport browser acceptance.
+- [Pass 6: release verification (in progress)](release-pass6-2026-10-24.md): conformance repair, safe full-project JSON backup/restore and legacy-project migration gate, followed by deployment and manual sign-off.
 
 ## Cleanup and production maintenance
 
