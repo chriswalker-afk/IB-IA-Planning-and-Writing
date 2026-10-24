@@ -181,7 +181,7 @@ test('canonical mathematical reasoning is recalled without storing duplicate not
 
 test('draft methods are plans; unrelated stages never inherit reasoning or limitations',()=>{
  const s=sample();
- s.entries.push({id:'draft2',phase:'substantial',status:'planned',title:'Possible new technique',
+ s.entries.push({id:'draft2',phase:'substantial',status:'planned',fromEntryId:'math1',title:'Possible new technique',
   purpose:'I might test an alternative model.',limitations:'The proposal could be inaccurate',
   nextQuestion:'Could another model work?',nextWhy:'It may describe the shape.'});
  s.completion.activeEntryIndex=1;
