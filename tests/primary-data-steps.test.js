@@ -218,3 +218,43 @@ test('Sampling frame is checked before choosing a sampling method, in both plann
  assert(alternate.includes('Your chosen method normally needs a suitable frame'));
  assert.equal(JSON.stringify(state),before);
 });
+
+
+test('Pass 2: frame and quick sampling recap precede the method choice, with no duplicated help',()=>{
+ const state=s();state.planning.current='N03P2';
+ state.planning.fields.primaryHow='Measure distances';
+ const before=JSON.stringify(state),h=view(state);
+ const frame=h.indexOf('data-path="planning.fields.primarySamplingFrame"');
+ const recap=h.indexOf('Sampling and census: quick recap, pros and cons');
+ const method=h.indexOf('data-path="planning.fields.primarySamplingMethod"');
+ assert(frame>=0&&recap>frame&&method>recap,
+  'Students should check frame feasibility and the optional explanation before choosing a sampling method');
+ assert.equal((h.match(/class="sampling-recap"/g)||[]).length,1);
+ assert(h.includes('data-path="planning.fields.primaryStatus"'));
+ assert.equal(JSON.stringify(state),before,'Rendering must not change the existing sampling Spark');
+ const actual=samplingPlanner(state,{
+  F:(key)=>'<input data-field="'+key+'">',
+  select:(key)=>'<select data-field="'+key+'"></select>',
+  e:x=>String(x??''),icon:()=>''
+ });
+ const frame2=actual.indexOf('data-field="primarySamplingFrame"');
+ const recap2=actual.indexOf('Sampling and census: quick recap, pros and cons');
+ const method2=actual.indexOf('data-field="primarySamplingMethod"');
+ assert(frame2>=0&&recap2>frame2&&method2>recap2,'Both sampling interfaces must follow the same order');
+});
+test('Pass 2: prediction reassurance arrives before choice and refinement stays afterwards',()=>{
+ const state=s();state.planning.current='N01P';
+ state.planning.fields.aim='Can I compare two growth patterns?';
+ state.planning.fields.prediction='Perhaps one grows faster';
+ state.planning.fields.predictionId='X01';
+ const before=JSON.stringify(state),h=view(state);
+ const reassurance=h.indexOf('Your result might surprise you');
+ const answer=h.indexOf('data-path="planning.fields.prediction"');
+ const why=h.indexOf('data-path="planning.fields.predictionWhy"');
+ const refine=h.indexOf('planning-prediction-refine-toggle');
+ assert(reassurance>=0&&answer>reassurance&&why>answer&&refine>why,
+  'Predict, explain, THEN optionally refine the plan');
+ assert.equal((h.match(/Your result might surprise you/g)||[]).length,1);
+ assert(h.includes('data-bind="planning.fields.prediction"')||h.includes('data-path="planning.fields.prediction"'));
+ assert.equal(JSON.stringify(state),before);
+});
