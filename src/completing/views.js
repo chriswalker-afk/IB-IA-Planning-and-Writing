@@ -828,6 +828,21 @@ export function createCompletingViews(ctx){
     context("introduce")+priorNotes+
     (f.methodReason?smallSummary("Method justified on the previous screen",f.methodReason):"")+
     (f.firstPurpose?smallSummary("Your starting mathematical question",f.firstPurpose):"")+
+    (entry?'<details class="math-first-course-choice"><summary>'+icon("book-open")+
+     ' Identify this mathematics and its course scope (optional) '+icon("chevron-right")+'</summary><div>'+
+      entryField("methodId","Technique actually used, or being considered","",{type:"select",options:METHOD_OPTIONS})+
+      entryChoice("knowledge",[
+       {value:"syllabus",title:"Within my own IB course",icon:"check-circle"},
+       {value:"mixed",title:"Mostly familiar, with an unfamiliar extension",icon:"book"},
+       {value:"outside",title:"Genuinely outside my own course",icon:"book"},
+       {value:"unsure",title:"Not yet sure — check with my teacher",icon:"lightbulb"}])+
+      (["mixed","outside"].includes(entry.knowledge)?
+       entryField("unfamiliarComponent","Which particular idea is unfamiliar?","Identify the new mathematical part, not the whole topic")+
+       entryField("knowledgeNotes","My explanation of how that idea works","Definition, conditions and the step that matters here",{type:"textarea",rows:3})+
+       entryField("understandingExample","A real worked step demonstrating understanding (optional)","Only if useful",{type:"textarea",rows:2})+
+       entryField("researchSource","Original mathematics source (if relevant)","A resource to cite in the IA"):"")+
+      renderCourseUnderstandingAid(s,entry,{icon,e,reduced})+
+     '</div></details>':'')+
     '<div class="show-first-writing-field" data-show-first-writing-box="introduce">'+
     criterionMarkedWritingBox(
       (entry?entryField("purpose","My words to introduce this figure, table or calculation",
@@ -894,7 +909,6 @@ export function createCompletingViews(ctx){
     journeyOutcomePicker(entry)+
     renderResultInterpretationAid(s,entry,{icon,e,reduced})+
     renderMathematicalValidityAid(s,entry,{icon,e,reduced})+
-    (entry&&entry.knowledge&&entry.knowledge!=='unsure'?renderCourseUnderstandingAid(s,entry,{icon,e,reduced}):'')+
     '<div class="show-first-writing-field" data-show-first-writing-box="reflect">'+
     criterionMarkedWritingBox(
       (entry?entryField("interpretation","My reflection on what this result means",
