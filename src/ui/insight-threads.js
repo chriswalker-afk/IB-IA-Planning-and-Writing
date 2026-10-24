@@ -364,6 +364,10 @@ export function insightMeaning(s,node,x){
 export function sparkMomentPrompt(s,node,x){
  if(!x)return "";
  if(x.needsReview)return "Check the original mathematics before relying on this note.";
+ if(x.id==='prediction')return "Compare this earlier expectation honestly with the actual mathematical result.";
+ if(x.id==='planned-maths')return "A possible first move, not a result: decide from the evidence whether it is worth doing.";
+ if(x.id==='planned-evidence')return "Check that this proposed material was actually obtained before citing it as evidence.";
+ if(x.id==='source-current')return "This is a current source note, not an independently verified or linked source.";
  const maths=/^C(?:30|3[2-5]|40|50|60)/.test(node);
  const following=["C35","C35H","C35B","C35P"].includes(node);
  const concluding=/^C6/.test(node);
@@ -375,7 +379,9 @@ export function sparkMomentPrompt(s,node,x){
   case "sampling":return "Check the actual sample or population before generalising a result.";
   case "evidence":return x.planned?"Confirm this material was actually obtained before using it as evidence.":"Verify the original values, provenance and assumptions for this stage.";
   case "accuracy":return x.id.startsWith("planned-")?"Confirm the original resolution before adopting this planned precision.":"Check whether this quantity's actual precision changes the claim you can make.";
-  case "discovery":return following?"Identify the exact gap this finding leaves before choosing another method.":
+  case "discovery":return x.planned?
+   "This is an intended calculation, not a finding to use as evidence.":
+   following?"Identify the exact gap this finding leaves before choosing another method.":
    concluding?"Use this genuine result to support a qualified answer to the aim.":
    node==="C40"||node==="C50"?"Use this earlier finding to explain why the next method is needed.":
    "Explain what this result establishes in context and what it cannot establish.";
@@ -555,9 +561,10 @@ const sparkFeaturedCard=(s,node,x)=>{
    '<span class="spark-context-purpose" data-spark-moment="'+e(x.id)+'">'+
    e(sparkMomentPrompt(s,node,x))+'</span></span>'+
   '<span class="motivation-aim-toggle">'+icon('chevron-down')+
-   (x.needsReview?' Review':x.planned?' Planned':' View')+'</span></summary>'+
+   (x.needsReview?' Review':provisionalSpark(x)?' Planned':' View')+'</span></summary>'+
   '<div class="motivation-aim-details">'+sparkFullBody(s,node,x,{featured:true})+'</div></details>';
 };
+const provisionalSpark=x=>x?.planned||['prediction','planned-evidence','planned-maths','source-current','working-title'].includes(x?.id);
 const sparkLibraryEntry=(s,node,x,featuredIds)=>{
  const isFeatured=featuredIds.has(x.id),key=inlineSparkKey(s,x);
  return '<details class="spark-library-entry insight-'+e(x.type)+'" data-spark-id="'+e(x.id)+'">'+
@@ -565,7 +572,7 @@ const sparkLibraryEntry=(s,node,x,featuredIds)=>{
   '<span class="spark-library-entry-title"><strong>'+e(x.title)+'</strong>'+
   '<small'+(key?' data-spark-preview-path="planning.fields.'+e(key)+'"':'')+'>'+
    e(short(x.value,128))+'</small></span>'+
-  '<span class="spark-library-entry-status">'+(isFeatured?'On this screen':x.needsReview?'Review':x.planned?'Planned':'Saved')+'</span>'+
+  '<span class="spark-library-entry-status">'+(x.needsReview?'Review':provisionalSpark(x)?'Planned':isFeatured?'On this screen':'Saved')+'</span>'+
   icon('chevron-down')+'</summary>'+
   '<div class="spark-library-entry-body">'+sparkFullBody(s,node,x,{featured:!isFeatured})+'</div></details>';
 };
@@ -606,7 +613,7 @@ export function insightToolkit(s,{compact=false}={}){
   insightToken(x,{compact:true})+'<strong>'+e(short(x.title,62))+'</strong>'+
   '<span class="insight-toolkit-value">'+e(short(x.value,115))+'</span>'+
   '<span class="insight-toolkit-card-footer"><small>'+
-   e(x.needsReview?'Needs review':x.planned?'Planned · not performed':'Saved from your work')+
+   e(x.needsReview?'Needs review':provisionalSpark(x)?'Provisional · not verified':'Saved from your work')+
    '</small>'+(x.linked?.length?'<small class="insight-toolkit-used">'+x.linked.length+
     ' linked '+(x.linked.length===1?'step':'steps')+'</small>':'')+'</span>'+
   '<small class="insight-toolkit-origin">'+e(x.where)+'</small>'+
