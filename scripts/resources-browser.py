@@ -212,7 +212,7 @@ with sync_playwright() as pw:
   assert p.locator('#workshop-route option').count()==17
   p.locator('#workshop-route').select_option('voronoi')
   assert 'Voronoi cell' in p.locator('#resource-results').inner_text()
-  assert 'No pilot lessons match this selection' in p.locator('#resource-results').inner_text()
+  assert 'No guided lessons match this selection' in p.locator('#resource-results').inner_text()
   p.locator('#workshop-search').fill('distance')
   assert 'Euclidean distance' in p.locator('#resource-results').inner_text()
   assert p.locator('#workshop-search').input_value()=='distance'
@@ -285,7 +285,7 @@ with sync_playwright() as pw:
   p.locator('#workshop-route').select_option('variation')
   assert 'Measurement resolution and sensible uncertainty checks' in p.locator('#resource-results').inner_text()
   p.locator('[data-action="resource-workshop-lesson"][data-workshop-id="measurement"]').first.click()
-  assert 'not a complete measurement-uncertainty estimate' in overlay(p).inner_text()
+  assert 'not a complete measurement-uncertainty estimate' in overlay(p).inner_text().lower()
   assert p.locator('.workshop-data-table').count()==1
   p.locator('[data-action="close-drawer"]').click()
   assert unchanged_fields(saved(p))==before
