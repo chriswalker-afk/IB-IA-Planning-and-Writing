@@ -27,6 +27,19 @@ def no_overflow(p):
  sizes=p.evaluate("({screen:innerWidth,width:document.documentElement.scrollWidth})")
  assert sizes["width"]<=sizes["screen"]+1,sizes
 
+def assert_notice_copy(p,selector,width):
+ notice=p.locator(selector).first
+ assert notice.count()==1 and notice.is_visible(),(width,selector,"notice is missing")
+ metric=notice.evaluate("""el=>{
+  const copy=el.querySelector(':scope > .inline-notice-copy');
+  const bounds=el.getBoundingClientRect(),text=copy?.getBoundingClientRect();
+  return {hasCopy:!!copy,display:getComputedStyle(el).display,
+   width:bounds.width,copyWidth:text?.width,overflow:el.scrollWidth>el.clientWidth+1}
+ }""")
+ assert metric["hasCopy"] and metric["display"]=="flex",(width,selector,metric)
+ assert metric["copyWidth"]>=0.68*metric["width"],(width,selector,"message split into narrow column",metric)
+ assert not metric["overflow"],(width,selector,"notice overflows",metric)
+
 def run_primary(p,width):
  assert "What will I collect, and how?" in p.locator(".task-heading").inner_text()
  assert "Step 1 of 2" in p.locator(".primary-mini-progress").inner_text()
@@ -46,6 +59,7 @@ def run_primary(p,width):
   assert field(p,"primaryAccuracyUnit").count()==0
   assert quantity in p.locator(".primary-accuracy-target").inner_text()
   field(p,"primaryAccuracyBasis").select_option(basis)
+  assert_notice_copy(p,".data-quality-basis-note",width)
   field(p,"primaryAccuracyResolution").fill(resolution)
   p.locator('[data-action="plan-save-accuracy"][data-source="primary"]').click()
  assert len(saved(p)["planning"]["primaryQuantities"])==2
@@ -63,6 +77,9 @@ def run_primary(p,width):
  field(p,"primarySamplingUnit").fill("One pupil")
  field(p,"primarySamplingMethod").select_option("convenience")
  field(p,"primarySamplingFrame").select_option("no")
+ field(p,"primarySamplingMethod").select_option("simple-random")
+ assert_notice_copy(p,".data-quality-warning",width)
+ field(p,"primarySamplingMethod").select_option("convenience")
  field(p,"primaryRepeatable").select_option("yes")
  field(p,"primaryStatus").select_option("ready")
  p.locator(".sampling-recap summary").click()
@@ -158,6 +175,7 @@ def run_secondary(p,width):
  field(p,"secondaryAccuracyQuantity").fill("Reaction time")
  field(p,"secondaryAccuracyUnit").fill("s")
  field(p,"secondaryAccuracyBasis").select_option("rounded")
+ assert_notice_copy(p,".data-quality-basis-note",width)
  assert "not proof of measurement accuracy" in p.locator(".data-quality-basis-note").inner_text()
  field(p,"secondaryAccuracyResolution").fill("shown to nearest 0.01 s")
  p.locator('[data-action="plan-save-accuracy"][data-source="secondary"]').click()
