@@ -104,7 +104,7 @@ test('workshop: guided options transition without authoring or marking student m
  assert.equal(resourceAction(s,session,'resource-workshop-choice',{workshopChoice:'positive'}).open,true);
  assert.match(resourceDrawer(s,session),/Not quite/);
  assert.equal(resourceAction(s,session,'resource-workshop-choice',{workshopChoice:'negative'}).open,true);
- assert.match(resourceDrawer(s,session),/That&#39;s right/);
+ assert.match(resourceDrawer(s,session),/That's right/);
  assert(!resourceAction(s,session,'resource-workshop-choice',{workshopChoice:'made-up'}).ok);
  assert.equal(resourceAction(s,session,'resource-workshop-step',{workshopStep:'turn'}).open,true);
  assert.match(resourceDrawer(s,session),/Reveal answer and reasoning/);
