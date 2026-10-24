@@ -57,19 +57,19 @@ export const BATCH1_LESSONS=Object.freeze([
    steps:[
     "Define the question and target population first: all 100 eligible students, not just people who see a survey link.",
     "Make a complete, permitted sampling frame; identify the 60 and 40 distinct eligible members in the two non-overlapping groups.",
-    "Calculate the proportional allocation for A: 20 × 60/100 = 12; for B: 20 × 40/100 = 8. The allocations add to 20.",
+    "Calculate the allocations: Group A, \\(20\\times\\frac{60}{100}=12\\); Group B, \\(20\\times\\frac{40}{100}=8\\). Check \\(12+8=20\\).",
     "Randomly select 12 different eligible IDs from A and 8 from B using a defined method; do not substitute the quickest respondents.",
     "Record whether people declined or did not respond. If replacements are needed, follow and disclose a pre-agreed rule.",
     "Describe whose views could still be absent and restrict the conclusion to the population your method can reasonably support."
    ],
-   answer:"Planned allocation: 12 from Group A and 8 from Group B. A fair selection still depends on the frame, actual random choice and responses.",
+   answer:"Planned allocation: \\(n_A=12\\), \\(n_B=8\\), with \\(n=20\\). Fair selection still depends on the frame, actual random choice and responses.",
    interpretation:"The allocation is a design calculation, not a guarantee of an unbiased or representative final dataset."
   },
   guided:{parts:[
    {question:"A population contains 75 in A and 25 in B. You plan a proportional stratified sample of 20. How many are chosen from A?",
     options:[["15","15 students"],["10","10 students"],["75","75 students"]],correct:"15",
     hint:"Multiply the 20 places by the fraction of the population in Group A.",
-    feedback:"20 × (75/100) = 15 for A; the remaining five are for B."},
+    feedback:"\\(20\\times\\frac{75}{100}=15\\) from A, leaving five places for B."},
    {question:"You invite only the first 20 students walking past one room. Which concern should you report?",
     options:[["convenience","It is a convenience sample with possible selection bias"],["random","It is a simple random sample of the whole year"],["census","It is a census of every student"]],
     correct:"convenience",hint:"Ask whether everyone in the target population had a stated, equal chance to be invited.",
@@ -78,7 +78,7 @@ export const BATCH1_LESSONS=Object.freeze([
   independent:{
    question:"A fictional population has 90 eligible students in A and 60 in B. Plan a proportional stratified sample of 30. Explain one way to select members within each group and one possible source of bias.",
    answer:"Select 18 from A and 12 from B, chosen randomly within separate complete eligible lists.",
-   reasoning:"30 × 90/150 = 18 and 30 × 60/150 = 12. A missing sampling-frame group or nonrespondents could still bias the actual observations."
+   reasoning:"\\(30\\times\\frac{90}{150}=18\\) and \\(30\\times\\frac{60}{150}=12\\). Missing eligible members or nonresponse could still bias the data."
   },
   technology:[
    {name:"Google Sheets",command:"=RAND()",why:"Give each eligible ID a temporary random value, freeze the generated values, sort separately within each stratum, then choose the required number. This does not construct a fair frame."},
@@ -97,12 +97,12 @@ export const BATCH1_LESSONS=Object.freeze([
    context:"Ordered fictional measurements (units): 2, 3, 3, 4, 5, 5, 7, 11. Use the median-of-halves quartile convention, then consider a histogram.",
    table:{caption:"Splitting the ordered observations into halves",headers:["Lower half","Upper half"],rows:[["2, 3, 3, 4","5, 5, 7, 11"]]},
    steps:[
-    "Keep the numerical values ordered. For eight observations, the median is (4 + 5)/2 = 4.5 units.",
-    "Find the median of the lower four: Q1 = (3 + 3)/2 = 3. Find the median of the upper four: Q3 = (5 + 7)/2 = 6.",
-    "Calculate IQR = 6 − 3 = 3 units. The upper potential-outlier fence is 6 + 1.5 × 3 = 10.5; 11 is flagged for checking, not automatically deleted.",
+    "Keep the values ordered. For eight observations, the median is \\(\\frac{4+5}{2}=4.5\\) units.",
+    "For the lower half, \\(Q_1=\\frac{3+3}{2}=3\\). For the upper half, \\(Q_3=\\frac{5+7}{2}=6\\).",
+    "The spread is \\(\\mathrm{IQR}=6-3=3\\) units. The upper fence is \\(Q_3+1.5\\,\\mathrm{IQR}=10.5\\), so \\(11\\) is flagged for checking, not automatically removed.",
     "A box plot can display the median and IQR. If comparing groups, put them on a common axis and inspect both typical value and spread.",
-    "For grouped numerical measurements, a histogram uses bar area for frequency. For example, a width-2 class containing four observations has density 4/2 = 2.",
-    "A width-4 class containing eight observations also has density 8/4 = 2: twice the count but the same bar height. Explain class-width choices and look for skew."
+    "For grouped numerical data, histogram bar area represents frequency. A class of width \\(2\\) with frequency \\(4\\) has density \\(\\frac42=2\\).",
+    "A class of width \\(4\\) with frequency \\(8\\) also has density \\(\\frac84=2\\): twice the count, but the same height. Explain class-width choices."
    ],
    answer:"Median 4.5; Q1 3; Q3 6; IQR 3; 11 is above the 10.5 upper fence under this convention.",
    interpretation:"The flag prompts an investigation of context, not automatic exclusion. A box plot summarises spread; a histogram shows distribution shape."
@@ -140,11 +140,11 @@ export const BATCH1_LESSONS=Object.freeze([
    context:"Fictional survey counts of 50 observations. Group X and Group Y choose between A and B.",
    table:{caption:"Fictional two-way frequency table (counts)",headers:["Group","Choice A","Choice B","Row total"],rows:[["X","18","12","30"],["Y","8","12","20"],["Column total","26","24","50"]]},
    steps:[
-    "Identify the two categorical variables and check there is one counted response per sampling unit. Group X's row contains 18 + 12 = 30 responses.",
-    "Confirm all counts and totals: Group Y has 8 + 12 = 20, Choice A has 18 + 8 = 26, and the grand total is 50.",
-    "To compare preference for A within the groups, use each group's row total. X: 18/30 = 0.60 = 60%. Y: 8/20 = 0.40 = 40%.",
-    "The gap is 60% − 40% = 20 percentage points. This is not a 20% relative increase.",
-    "If instead asking for Group X among those who chose A, the denominator is the Choice A column total: 18/26 ≈ 69.2%.",
+    "Identify the categories and count one response per sampling unit. Group X has \\(18+12=30\\) responses.",
+    "Check totals: Group Y has \\(8+12=20\\), Choice A has \\(18+8=26\\), and the grand total is \\(50\\).",
+    "To compare Choice A within each group, use its row total: \\(P(A\\mid X)=\\frac{18}{30}=60\\%\\) and \\(P(A\\mid Y)=\\frac8{20}=40\\%\\).",
+    "The gap is \\(60\\%-40\\%=20\\) percentage points, not a \\(20\\%\\) relative increase.",
+    "If asking for Group X among those choosing A, use the A-column total: \\(P(X\\mid A)=\\frac{18}{26}\\approx69.2\\%\\).",
     "Explain the exact comparison made and who was sampled. These sample proportions do not prove a causal connection."
    ],
    answer:"Within-group Choice A: X 60%, Y 40%; gap 20 percentage points. X given Choice A: 18/26 ≈ 69.2%.",
@@ -182,11 +182,11 @@ export const BATCH1_LESSONS=Object.freeze([
    context:"A fictional square has its side displayed as 10.0 cm to the nearest 0.1 cm. First consider rounding alone; do not assume the instrument or method is perfectly accurate in a real investigation.",
    table:{caption:"Rounding-only sensitivity calculation for the square",headers:["Case","Side (cm)","Area (cm²)"],rows:[["Lower rounding edge","9.95","99.0025"],["Reported value","10.00","100.0000"],["Upper rounding edge (excluded)","10.05","101.0025"]]},
    steps:[
-    "Record the input and its meaning: side length reported as 10.0 cm, with a rounding step of 0.1 cm.",
-    "Under correct nearest-step rounding alone, the underlying side would be in [9.95, 10.05) cm because half the step is 0.05 cm.",
-    "For a square the derived area is A = s². At the reported side length, A = 10.0² = 100 cm².",
-    "Recalculate at the interval edges: 9.95² = 99.0025 cm²; 10.05² = 101.0025 cm². With positive sides, area increases with side length.",
-    "The rounding-only half-step relative to 10.0 cm is 0.05/10.0 × 100% = 0.5%. The area changes by roughly 1% near this value, not exactly the same percentage.",
+    "Record the reported side \\(s_{\\mathrm{r}}=10.0\\,\\mathrm{cm}\\) and its rounding step \\(h=0.1\\,\\mathrm{cm}\\).",
+    "Under correct nearest-step rounding alone, the side lies in \\([9.95,10.05)\\,\\mathrm{cm}\\), because \\(\\frac h2=0.05\\,\\mathrm{cm}\\).",
+    "For a square, \\(A=s^2\\). At the reported length, \\(A=10.0^2=100\\,\\mathrm{cm}^2\\).",
+    "At the rounding edges: \\(9.95^2=99.0025\\,\\mathrm{cm}^2\\) and \\(10.05^2=101.0025\\,\\mathrm{cm}^2\\). For positive sides, area increases with side length.",
+    "The rounding-only relative half-step is \\(\\frac{0.05}{10.0}\\times100\\%=0.5\\%\\). The area changes by roughly \\(1\\%\\) near this value, not exactly the same percentage.",
     "Check instrument calibration, repeated readings and method limitations separately. Do not label the rounding edges as a proven total uncertainty interval."
    ],
    answer:"Nominal area 100 cm²; under the stated rounding-only model, area lies in [99.0025, 101.0025) cm².",
