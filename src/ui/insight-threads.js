@@ -6,6 +6,7 @@ import {escapeHtml as e,icon} from './primitives.js';
 import {linkedAccuracy,linkedSources} from '../completing/evidence-links.js';
 import {routeById} from '../planning/investigative-routes.js';
 import {samplingMethod,samplingSparkValue,plannedAccuracyText} from '../planning/data-decisions.js';
+import {resultInterpretationGuidance} from '../completing/result-interpretation.js';
 
 const has=v=>typeof v==='string'&&!!v.trim();
 const short=(v,n=160)=>{const t=String(v??'').trim();return t.length>n?t.slice(0,n-1)+'…':t;};
@@ -467,10 +468,25 @@ const sparkEditor=(s,x,{preview=false}={})=>{
   (isTitle?' value="'+e(value)+'">':'>'+e(value)+'</textarea>')+
  '<small>Saved on this device. Changes update your original Planning decision, not a copy.</small></div>';
 };
+/** The same technique-specific mathematical reading remains available when
+ * a student opens a saved Discovery Spark, with no new student-owned state. */
+const discoveryInterpretation=(s,x)=>{
+ if(x.type!=='discovery'||!x.entryId)return '';
+ const entry=entries(s).find(v=>v.id===x.entryId);
+ const guide=resultInterpretationGuidance(s,entry);
+ if(!guide)return '';
+ return '<div class="spark-math-interpretation" data-spark-reading="'+e(guide.key)+'">'+
+  '<strong>Reading this mathematical finding · '+e(guide.title)+'</strong>'+
+  '<p><b>Meaning to explain:</b> '+e(guide.meaning)+'</p>'+
+  '<p><b>Claim to avoid:</b> '+e(guide.boundary)+'</p>'+
+  (guide.needsReview?'<p class="spark-reading-review">Review the earlier mathematics before relying on this interpretation.</p>':'')+
+  '<small>These are technique-specific questions, not a verification of the result above.</small></div>';
+};
 const sparkFullBody=(s,node,x,{featured=false}={})=>
  '<p class="spark-shelf-full-value">'+e(x.value)+'</p>'+
  (x.details?.length?'<dl class="spark-reasoning-details">'+x.details.map(d=>
   '<div><dt>'+e(d.label)+'</dt><dd>'+e(d.value)+'</dd></div>').join('')+'</dl>':'')+
+ discoveryInterpretation(s,x)+
  '<p class="spark-shelf-guidance">'+e(insightMeaning(s,node,x))+'</p>'+
  '<div class="spark-shelf-source">'+(x.planned?'Provisional · ':'')+
   e(x.needsReview?'Needs review · '+x.where:x.where)+'</div>'+
