@@ -178,9 +178,9 @@ with sync_playwright() as pw:
   open_library(p);choice(p,'tool','desmos');choice(p,'image','points');close(p);p.reload(wait_until='networkidle');assert saved(p)['resources']['preferences']['entry:graph']=={'tool':'desmos','image':'points'}
   p.locator('[data-action="open-panel"][data-panel="files"]').click()
   backup_button=p.locator('.drawer [data-action="export-json"][data-backup-primary="true"]:visible')
-   assert backup_button.count()==1 and backup_button.is_visible(), "Primary project backup is not reachable"
-   assert not p.locator('.drawer [data-backup-recovery="true"]').is_visible(), "Recovery action must remain hidden when exports are healthy"
-   with p.expect_download() as download:backup_button.click()
+  assert backup_button.count()==1 and backup_button.is_visible(), "Primary project backup is not reachable"
+  assert not p.locator('.drawer [data-backup-recovery="true"]').is_visible(), "Recovery action must remain hidden when exports are healthy"
+  with p.expect_download() as download:backup_button.click()
   file=OUT/'resources-backup.json';download.value.save_as(file);j=json.loads(file.read_text());assert j['resources']['preferences']['entry:graph']['image']=='points'
   p.once('dialog',lambda dialog:dialog.accept());p.locator('#importFile').set_input_files(file);p.wait_for_timeout(300);assert saved(p)['resources']==j['resources']
  run('resources-preferences-backup-restore',state(),backup,1440,1000)
