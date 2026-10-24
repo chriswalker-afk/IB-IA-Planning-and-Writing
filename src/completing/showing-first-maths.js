@@ -157,17 +157,13 @@ export function renderShowingMathsAdvice(state,icon,e,{reduced=false}={}){
 }
 
 export function renderShowingMathsSparks(state,icon,e){
- const ctx=firstMathsContext(state),p=state?.planning?.fields||{},f=state?.completion?.fields||{};
- const source=SOURCE_REMINDERS[ctx.sourceKey];
- const pred=p.prediction||state?.project?.prediction||"No earlier prediction recorded — you do not need to invent one.";
- const accuracy=p.firstAccuracy||state?.completion?.accuracyDecisions?.map(x=>[x.quantity,x.resolution,x.policy].filter(Boolean).join(": ")).filter(Boolean).join("; ")||"Check original measurement/source precision when it affects this result.";
- const mini=(name,value)=>'<div class="show-first-spark"><strong>'+e(name)+'</strong><p>'+e(value)+'</p></div>';
+ const ctx=firstMathsContext(state);
  return '<section class="studio-stage-sparks show-first-sparks" aria-label="Relevant saved sparks">'+
-  '<div class="studio-stage-sparks-head">'+icon("sparkles")+' <div><span class="intro-writing-guide-eyebrow">FROM YOUR INVESTIGATION</span><h2>Use your relevant sparks</h2><p>These saved choices guide the writing; check them against the work you actually carried out.</p></div></div>'+
-  '<div class="show-first-spark-grid">'+mini("Your aim",ctx.aim||"Return to Planning to define your aim.")+
-  mini("Original prediction (if any)",pred)+mini("Relevant accuracy",accuracy)+
-  (f.firstPurpose?mini("First mathematical question",f.firstPurpose):"")+'</div>'+
-  '<p class="show-first-source-reminder">'+icon("book")+' '+e(source)+'</p>'+
-  (renderSparkShelf(state,"C30",{surface:"studio",hideHeading:true})||"")+
+  '<div class="studio-stage-sparks-head">'+icon("sparkles")+' <div>'+
+   '<span class="intro-writing-guide-eyebrow">FROM YOUR INVESTIGATION</span><h2>Useful now</h2>'+
+   '<p>Open a Spark to see how an earlier decision can support this mathematical step.</p></div></div>'+
+  (renderSparkShelf(state,"C30",{surface:"studio",hideHeading:true})||
+   '<p class="studio-stage-empty-sparks">No saved Sparks yet. You can still start with your genuine mathematics.</p>')+
+  (ctx.mismatched?'<p class="first-maths-plan-review">Check your earlier route: it belongs to a different investigation type.</p>':'')+
   '</section>';
 }
