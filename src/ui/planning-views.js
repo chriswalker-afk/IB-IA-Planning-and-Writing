@@ -424,6 +424,8 @@ export function createPlanningViews(ctx){
       summary("Your investigation aim",f.aim)+
       ideaCue(state,'first')+
       (f.beneficiary?summary("My motivation — why this matters",f.beneficiary+(f.intendedUse?" — "+f.intendedUse:"")):"")+
+      callout("Your result might surprise you",
+       "A different finding is not failure. Interpret actual evidence rather than trying to confirm an early prediction.")+
       '<div class="field-group"><label class="field-label">Some possible predictions (optional)</label>'+
       choice("predictionId",choices.map(x=>({value:x.id,title:x.question,
        desc:x.id==="X02"?"It is fine to explore before forming a prediction.":""})),{stack:true,tight:true})+'</div>'+
@@ -437,9 +439,7 @@ export function createPlanningViews(ctx){
         "A possibility, not advice supported by results",{type:"textarea",rows:2}):"")+
       (f.predictionId==="X02"?'<p class="primary-hint">No prediction needed yet. Explore some genuine mathematics and decide what questions arise.</p>':"")+
       refinePanel+
-      '<div class="button-row">'+route("Refine my motivation","Edit 'Who is this for?' while predicting")+'</div>'+
-      callout("Your result might surprise you",
-       "A different finding is not failure. Interpret actual evidence rather than trying to confirm an early prediction."),
+      '<div class="button-row">'+route("Refine my motivation","Edit 'Who is this for?' while predicting")+'</div>',
       "<h4>A tentative expectation, not a commitment</h4><p>It is fine to explore first. If you change your expected mathematical direction, open Refine the plan here rather than repeating a second mathematics-choice screen.</p>",
       "Next: can I get started?");
    }
