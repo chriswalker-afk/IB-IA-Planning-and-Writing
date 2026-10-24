@@ -133,6 +133,9 @@ function renderRouteDetail(route,state,{e,icon}){
    (route.caution?'<p class="journey-route-warning">'+icon('info')+'<span class="inline-notice-copy">'+' '+e(route.caution)+'</span></p>':'')+
    (route.teacher?'<p class="journey-route-warning">'+icon('message-square')+'<span class="inline-notice-copy">'+
     ' Speak with your teacher before relying on a theoretical or advanced route. A pattern-heavy investigation can become an EE-style topic.</span></p>':'')+
+   '<div class="journey-route-workshop"><div><strong>'+icon('book')+' Learn the mathematics in this pathway</strong>'+
+   '<p>Explore short definitions and any available worked lessons. These are optional study aids, not required mathematical methods.</p></div>'+
+   '<button type="button" class="btn btn-secondary" data-action="resource-workshop" data-workshop-route="'+e(route.id)+'">Open Maths Workshop '+icon('arrow-right')+'</button></div>'+
    creatorShelf+
    '<div class="journey-detail-actions">'+
     '<button type="button" class="btn '+(saved?'btn-secondary':'btn-primary')+'" data-action="'+(saved?'math-remove-route':'math-select-route')+'" data-route-id="'+e(route.id)+'">'+
