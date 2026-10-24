@@ -148,16 +148,26 @@ export function insightItems(s){
     'IA Studio · Interpreting mathematics',go,
     {entryId:x.id,planned:!real,needsReview:x.reviewNeeded==='yes',
      usage:'This is your own limitation note, not a verified conclusion. Explain the particular mathematical consequence if it changes what the result establishes.'}));
-  if(real&&(has(x.nextQuestion)||has(x.nextWhy))){
-   const possible=x.nextQuestion||x.nextWhy;
+  const linkedStages=math.filter(y=>y.fromEntryId===x.id);
+  if(real&&(has(x.nextQuestion)||has(x.nextWhy)||linkedStages.length)){
+   const question=x.nextQuestion||linkedStages[0]?.title||"";
+   const reason=x.nextWhy||"";
+   const possible=question||reason||"A linked mathematical stage — review the original question";
+   const linkedDescription=linkedStages.map(y=>(y.title||"Linked mathematical stage")+
+    (y.reviewNeeded==="yes"?" (needs review)":done(y)?" (result recorded)":" (planned)")).join(" · ");
    out.push(item('direction','direction:'+x.id,'Question following: '+label,possible,
     'IA Studio · Deciding what follows',go,
     {entryId:x.id,planned:true,needsReview:x.reviewNeeded==='yes',
+     linked:linkedStages.map(y=>y.id),
      details:detailRows([
-      ['Mathematical question I considered',x.nextQuestion],
-      ['Why this question might help',x.nextWhy]
+      ['Mathematical question I considered',question],
+      ['Why this question might help',reason],
+      ['Mathematical stage linked to this finding',linkedDescription]
      ],possible),
-     usage:'A proposed mathematical question, not proof that another calculation was done or required. Recheck the earlier result before using it.'}));
+     usage:linkedStages.length?
+      'This question is linked to '+linkedStages.length+' subsequent mathematical stage'+(linkedStages.length===1?'':'s')+
+       '. A recorded stage is not automatically proof it resolved the question; check the mathematical link.':
+      'A proposed mathematical question, not proof that another calculation was done or required. Recheck the earlier result before using it.'}));
   }
  }
  for(let i=0;i<math.length;i++){
@@ -278,7 +288,13 @@ export function insightCapture(s,node){
  else if(['C34','C40','C50','C40T'].includes(node)){
   const x=entries(s)[c.activeEntryIndex];if(x)ids=['result:'+x.id];kind='Your actual mathematical result';
  }
- if(['C35','C60','C61','C62','C64'].includes(node)){
+ if(node==='C35'){
+  const from=entries(s).find(x=>x.id===c.nextFromEntryId)||
+   (done(entries(s)[c.activeEntryIndex])?entries(s)[c.activeEntryIndex]:entries(s).filter(done).at(-1));
+  ids=from?['direction:'+from.id]:[];
+  kind='Your possible next mathematical question';
+ }
+ if(['C60','C61','C62','C64'].includes(node)){
   ids=all.filter(x=>x.type==='reflection'||x.type==='learning').slice(-1).map(x=>x.id);
   kind=ids.length?'Your mathematical reflections':'';
  }
