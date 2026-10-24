@@ -1,0 +1,29 @@
+/** Maths Workshop Batch 4: geometry and measurement.
+ * Definitions, examples and methods are read-only learning resources.
+ * Coordinates are illustrative Cartesian coordinates, never real site data.
+ */
+const term=(id,category,title,meaning,example,notation="")=>Object.freeze({id,category,title,meaning,example,notation});
+export const BATCH4_DEFINITIONS=Object.freeze([
+ term("pixel-coordinate","Geometry","Pixel coordinate","The position of an image point in pixel units, usually measured from a chosen image corner. Image y may increase downwards.","An image point might be recorded as (120,80) pixels."),
+ term("image-origin","Geometry","Coordinate origin","The reference point from which the coordinates are measured. An image origin may differ from a mathematical graph origin.","The top-left of a photograph may be (0,0) pixels."),
+ term("reference-length","Geometry","Reference length","An independently known real-world distance represented in an image, used to find a scale. It should lie in the same plane as the measured objects.","A photographed 2 m marking spans 80 pixels."),
+ term("calibration-factor","Geometry","Image calibration factor","A real length per pixel found by comparing a known reference length with its image length. Validity depends on uniform scale and the measurement plane.","A 2 m reference spanning 80 px gives s=0.025 m/px.","s=L_{ref}/p_{ref}"),
+ term("perspective-distortion","Geometry","Perspective distortion","Apparent lengths and angles depend on depth and camera viewpoint; one global pixels-to-metres factor may then be inappropriate.","The far end of a road looks narrower than the near end."),
+ term("area-scale","Geometry","Area scale factor","If lengths are all multiplied by k under a similarity transformation, areas are multiplied by k squared.","A length scale of 3 produces nine times the area.","A_{new}=k^2A_{old}"),
+ term("baseline","Geometry","Baseline","A known segment joining observation points in triangulation. Its length and the locations of its endpoints must be justified.","Surveyors stand at A and B, 100 m apart."),
+ term("bearing","Geometry","Bearing","An angle measured clockwise from north, conventionally written as three digits from 000° to below 360°.","A bearing of 090° points east."),
+ term("interior-angle","Geometry","Interior angle of a triangle","The angle between two sides meeting at a triangle vertex. Three interior angles sum to 180° in Euclidean plane geometry.","If two angles are 30° and 60°, the third is 90°."),
+ term("sine-rule","Geometry","Sine rule","A relationship between each triangle side and the sine of its opposite angle; useful with an accurately known baseline and angles.","If side c=100, C=90°, and B=60°, then b=100sin60°.","a/sin A=b/sin B"),
+ term("cosine-rule","Geometry","Cosine rule","Calculates a triangle side from two sides and the included angle, or an angle from all three sides.","For sides 3 and 4 enclosing 90°, the third side is 5.","c^2=a^2+b^2-2ab cos C"),
+ term("triangle-area","Geometry","Area of a triangle from two sides and an angle","Half the product of two side lengths and the sine of the angle they enclose. Make sure lengths use the same unit.","A triangle with sides 3 m and 4 m enclosing 90° has area 6 m².","A=(1/2)ab sin C"),
+ term("composite-region","Geometry","Composite shape","A region constructed by joining or removing simple geometric shapes without overlapping area counted twice.","Area of an L-shape can be a large rectangle minus a rectangular corner."),
+ term("cross-section-volume","Geometry","Prism volume from cross-sectional area","For a prism with a constant cross-section perpendicular to its length, volume is that area multiplied by the prism length.","A 68 m² cross-section extended 0.25 m gives volume 17 m³.","V=A h"),
+ term("dimensional-units","Geometry","Dimensional consistency","Quantities in an equation must have compatible units: length, area, and volume differ by their powers of length.","Multiplying square metres by metres gives cubic metres, not square metres."),
+ term("perpendicular-bisector","Geometry","Perpendicular bisector","The line through the midpoint of a segment at right angles to it; every point on the line is equidistant from the endpoints.","For sites (0,0) and (8,0), their perpendicular bisector is x=4."),
+ term("locus","Geometry","Locus","The set of all points satisfying a specified geometric condition.","Points 3 m from A form a circle of radius 3 m about A."),
+ term("voronoi-boundary","Geometry","Voronoi boundary","A portion of a pairwise equidistance locus where those two sites are also no farther away than every other site.","An AB bisector may be cut short by a third site C."),
+ term("voronoi-vertex","Geometry","Voronoi vertex","A point where three or more site cells meet, usually equidistant from at least three sites in a nondegenerate planar construction.","For three non-collinear sites, the circumcentre can be a Voronoi vertex."),
+ term("distance-metric","Geometry","Distance metric","A chosen rule for measuring distance. Straight-line distance, walking distance and drive time can lead to different nearest-site regions.","A river crossing can make the nearest shop by straight line slower to reach by road."),
+ term("worst-case-bounds","Measurement","Worst-case interval bounds","Smallest and largest possible outputs found from justified input ranges and the model's monotonic behaviour; the bounds may be conservative.","Positive lengths in [9.9,10.1] and [3.9,4.1] bound area between 38.61 and 41.41.","A_min=L_min W_min"),
+ term("sensitivity-check","Measurement","Geometric sensitivity check","Recalculating a result after plausible changes to measurements, calibration or modelling assumptions to see which changes matter.","A 1% change in a circle radius produces roughly a 2% change in its area for small changes.")
+]);
