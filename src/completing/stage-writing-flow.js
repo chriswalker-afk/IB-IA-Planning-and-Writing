@@ -16,9 +16,11 @@ export function renderWritingStageFlow({advice="",sparks="",task="",examples="",
   return '<div class="writing-stage-flow is-reduced" data-writing-stage-flow data-advice-mode="reduced">'+
    section("task",task)+section("sparks",references)+'</div>';
  }
- // Existing field-level criteria, stuck and method help remain on the task.
- // Show the relevant saved context first, let students write next, and move
- // supplementary craft/exemplars after the work rather than repeating a wall.
+ // Guided order: give one concise, stage-specific orientation BEFORE asking
+ // students to write; then recall relevant decisions, then do the actual work.
+ // Longer examples and extra help remain optional and follow the task.
+ // Field-level criteria, Stuck and Writer's Guide bubbles stay attached to
+ // their original inputs (no duplication or change to student-owned state).
  return '<div class="writing-stage-flow" data-writing-stage-flow data-advice-mode="guided">'+
-  section("sparks",sparks)+section("task",task)+section("advice",advice)+section("examples",examples)+'</div>';
+  section("advice",advice)+section("sparks",sparks)+section("task",task)+section("examples",examples)+'</div>';
 }
