@@ -76,7 +76,7 @@ export function createCheckingViews(ctx){
   const entries=s.entries.map(x=>[x.id,x.title||'Mathematical stage']).filter(x=>x[0]);
   return '<section class="checking-feedback">'+
    '<div class="checking-section-head"><div><h3>Record the advice you actually received</h3>'+
-   '<p>The JIS guide describes one teacher-written feedback opportunity. You can record verbal suggestions and the permitted written feedback without implying approval.</p></div>'+
+   '<p>Record verbal suggestions and written feedback permitted by your teacher. Check your cohort’s feedback rules; noting advice here does not imply approval.</p></div>'+
     checkingHelpBadge(s,"feedback",e)+'</div>'+
    '<div class="checking-feedback-form">'+
    field(p+'feedbackKind','How was the advice given?','',{type:'select',options:[['written','Written feedback (permitted teacher round)'],['verbal','Verbal advice']]})+
