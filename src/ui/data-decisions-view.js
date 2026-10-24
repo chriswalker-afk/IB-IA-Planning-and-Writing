@@ -59,7 +59,7 @@ export function samplingPlanner(state,{F,select,e,icon}){
  F('primarySampling','Why does your choice suit this particular IA? (optional)',
  'Think about speed, access, how to select units fairly and who may be missed.',{type:'textarea',rows:2})+
  (method&&f.primarySamplingFrame==='no'&&['simple-random','systematic','stratified','cluster'].includes(method.id)?
- '<p class="data-quality-warning">'+icon('info')+' Your chosen method normally needs a suitable frame. Check how you could select the units as described, or consider a more honest feasible approach.</p>':'')+
+ '<p class="data-quality-warning">'+icon('info')+'<span class="inline-notice-copy">'+' Your chosen method normally needs a suitable frame. Check how you could select the units as described, or consider a more honest feasible approach.</span></p>':'')+
  '<p class="data-quality-footnote">The aim is a workable, honest plan—not automatically the most statistically sophisticated method. Samples collected by convenience must not be presented as simple random samples.</p>'+
  '</section>';
 }
@@ -113,7 +113,7 @@ export function accuracyPlanner(state,source,{F,select,e,icon}){
  F(draft[0],'Quantity / column','e.g. reaction time, height, number of goals')+
  F(draft[1],'Unit (if any)','e.g. s, cm, kg')+'</div>'+
  select(draft[3],isPrimary?'How will this be measured?':'What do you know about the published values?',basisOptions[source])+
- (basis?'<p class="data-quality-basis-note">'+icon('info')+' '+e(basisAdvice[basis]||'')+'</p>':'')+
+ (basis?'<p class="data-quality-basis-note">'+icon('info')+'<span class="inline-notice-copy">'+' '+e(basisAdvice[basis]||'')+'</span></p>':'')+
  F(draft[2],isPrimary?'Recording increment / degree of accuracy':'Original resolution or published rounding (if known)',
  isPrimary?'e.g. recorded to nearest 0.1 cm':'e.g. table rounded to nearest 0.01 s')+
  F(draft[4],'Known or possible uncertainty (optional)',
