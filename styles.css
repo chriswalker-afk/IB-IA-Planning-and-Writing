@@ -388,6 +388,18 @@ h1,h2,h3,h4,p {margin-top:0} h1,h2,h3,h4 {font-family:Manrope, 'DM Sans', sans-s
 .resource-library .resource-row p {font-size:12px;margin:0 0 10px}
 .resource-row .btn {margin-top:auto}
 .resource-current .resource-row {margin:8px 0}
+.resource-current{padding:12px 14px;border:1px solid #d5e6df;border-radius:13px;background:#f8fcfa;margin:14px 0}
+.resource-current h3{font-size:14px;margin:0 0 5px;color:var(--ink)}
+.resource-current .resource-small{margin:0 0 7px}
+.resource-library .resource-current .resource-more-relevant{margin:6px 0 0;padding:9px 0 0}
+.resource-quick-tools{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:11px 0 16px}
+.resource-library .resource-quick-tools>details{min-width:0;margin:0;padding:12px 13px;border:1px solid #cce4dd;border-radius:13px;align-self:start}
+.resource-library .resource-quick-tools>.resource-mla-feature{background:#f4faf7}
+.resource-library .resource-quick-tools>.resource-creators-compact{background:#f8fbf9}
+.resource-library .resource-quick-tools>details>summary{min-height:38px;color:var(--teal-dark)}
+.resource-library .resource-quick-tools .resource-creator-grid{grid-template-columns:1fr}
+.resource-library .resource-quick-tools .resource-mla-feature>p{margin:10px 0;font-size:12px}
+@media(max-width:530px){.resource-quick-tools{grid-template-columns:1fr}}
 .resource-library h4 {font-size:15px;margin:25px 0 12px}
 .resource-steps {padding-left:23px;font-size:13px;line-height:1.75;color:var(--ink)}
 .resource-steps li {padding-left:4px;margin:0 0 14px}
