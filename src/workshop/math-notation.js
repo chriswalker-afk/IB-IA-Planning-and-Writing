@@ -82,6 +82,23 @@ export const WORKSHOP_LESSON_FORMULAS=Object.freeze({
       "spoken": "Frequency density is the frequency divided by the class width."
     }
   ],
+  "histograms": [
+    {
+      "label": "Frequency density for any class",
+      "tex": "\\text{frequency density}=\\frac{\\text{class frequency}}{\\text{class width}}",
+      "spoken": "Frequency density equals the number of observations in a class divided by that class's numerical width."
+    },
+    {
+      "label": "A histogram bar's area",
+      "tex": "\\text{bar area}=\\text{class width}\\times\\text{frequency density}=\\text{class frequency}",
+      "spoken": "Each histogram bar's area is its class width multiplied by its frequency density, giving the class frequency."
+    },
+    {
+      "label": "Check total grouped frequency",
+      "tex": "n=\\sum_{i=1}^{k}f_i",
+      "spoken": "The total number of observations equals the sum of the frequencies of the k non-overlapping classes."
+    }
+  ],
   "two-way-proportions": [
     {
       "label": "Conditional proportion",
