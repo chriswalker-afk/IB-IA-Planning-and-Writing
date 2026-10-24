@@ -1479,3 +1479,68 @@ test("Pass 2: IA method choice, readiness and PMCC cautions appear before depend
    node+": no mathematics should be invented by rendering");
  }
 });
+
+
+test("Pass 2 puts stage-specific mathematical cautions and method choices before decisions",()=>{
+ const base=()=>{
+  const s=createProjectState();
+  s.route="completing";s.ui.writingIntroSeen=true;
+  s.planning.fields.aim="What can the observed pattern establish?";
+  s.planning.fields.kind="statistics";
+  s.completion.fields.chosenMethod="Calculate a correlation coefficient";
+  s.completion.fields.alternativeMethod="Examine residuals after a fitted model";
+  s.entries=[
+   {id:"observed",phase:"first",kind:"scatter",methodId:"pmcc",status:"completed",
+    title:"Inspect association",result:"The actual sample gives r = 0.41",
+    localTakeaway:"Only a moderate linear association was established."},
+   {id:"next",phase:"substantial",kind:"model",methodId:"linear-regression",status:"planned",
+    fromEntryId:"observed",title:"Investigate fit",result:""}
+  ];
+  s.completion.activeEntryIndex=0;
+  return s;
+ };
+ const task=(node,mutate=()=>{})=>{
+  const state=base();state.completion.current=node;mutate(state);
+  const html=createHarness(state).html;
+  const pos=html.indexOf('data-writing-stage-part="task"');
+  assert(pos>=0,node+" missing actual task");
+  const end=html.indexOf('data-writing-stage-part="examples"',pos);
+  return {html:html.slice(pos,end>pos?end:undefined),state};
+ };
+ const before=(node,a,b,mutate)=>{
+  const {html}=task(node,mutate);
+  const x=html.indexOf(a),y=html.indexOf(b);
+  assert(x>=0&&y>x,node+": "+a+" must precede "+b+" ("+x+","+y+")");
+  return html;
+ };
+ let html=before("C22",'data-bind="completion.fields.chosenMethod"',
+  'data-bind="completion.fields.methodReason"');
+ assert(html.indexOf('data-bind="completion.fields.methodReason"')<
+        html.indexOf('data-bind="completion.fields.alternativeMethod"'));
+ assert(html.includes('class="guidance-insight method-alternative-choice" data-method-alternative open'),
+  "An earlier genuine alternative must remain visible and editable on return");
+ assert(html.includes("You do not need to invent an alternative"));
+ html=before("C24","No fixed decimal-place rule",'data-bind="completion.fields.accuracyPolicy"');
+ assert.equal((html.match(/No fixed decimal-place rule/g)||[]).length,1);
+ before("C25","Just in time",'data-bind="completion.fields.variableDefinitions"');
+ before("C34A","Avoid repeated precision essays",'data-bind="completion.fields.accuracyForResult"');
+ before("C35","No prescribed number of mathematical sections",'data-bind="completion.fields.nextQuestion"');
+ before("C35B","Pearson&#39;s r has a specific purpose","Clearly or approximately straight");
+ // C35P remains cautious about causality BEFORE students record their interpretation.
+ before("C35P","Association is not causation",'data-bind="completion.fields.pmccInterpretation"');
+ // Existing source/accuracy preparation is still before the first-maths continue control.
+ before("C20","data-first-maths-source-details","Ready to show the mathematics?");
+ // Optional legacy figure page now asks what the work is FOR before a location/output.
+ before("C32",'data-bind="entries.0.purpose"','data-bind="entries.0.resultRef"');
+ const later=task("C40",s=>{s.completion.activeEntryIndex=1;});
+ assert(later.html.includes('data-bind="entries.1.methodId"'),
+  "Later mathematical stage should expose the chosen method");
+ assert(later.html.indexOf('data-bind="entries.1.methodId"')<
+        later.html.indexOf('data-bind="entries.1.purpose"'),
+  "Identify the technique before explaining why that choice answers the question");
+ const original=base(),actual=createHarness({...original,completion:{...original.completion,current:"C22"}}).saved;
+ assert.equal(actual.completion.fields.alternativeMethod,original.completion.fields.alternativeMethod,
+  "Reordering must not clear prior student decisions");
+ assert.equal(actual.entries[0].result,original.entries[0].result,
+  "No additional mathematics may be invented when changing the layout");
+});
