@@ -370,7 +370,16 @@ test("Set up welcomes students, recommends Planning and captures missing provisi
  assert(h.html.includes('Write your introduction'));
  assert(h.html.includes('Turn your sparks into an opening'));
  assert(h.html.includes('data-writing-stage-flow'));
- for(const part of ['advice','sparks','task','examples'])assert(h.html.includes('data-writing-stage-part="'+part+'"'));
+ const writingParts=[...h.html.matchAll(/data-writing-stage-part="([^"]+)"/g)].map(m=>m[1]);
+ assert.deepEqual(writingParts,['advice','sparks','task','examples'],
+  'Introduction guidance must precede the saved prompts and the actual writing task');
+ assert.equal((h.html.match(/data-citation-moment="introduction"/g)||[]).length,1,
+  'Keep one contextual referencing reminder');
+ assert(h.html.indexOf('data-writing-stage-part="advice"')<
+        h.html.indexOf('data-citation-moment="introduction"'));
+ assert(h.html.indexOf('data-citation-moment="introduction"')<
+        h.html.indexOf('data-writing-stage-part="sparks"'),
+  'Source guidance belongs before writing, not after the examples');
  assert(h.html.includes('criterion-writing-bubbles'));
  assert(!h.html.includes('intro-criteria-mini'));
  assert(!h.html.includes('spark-shelf-featured'));
@@ -638,7 +647,7 @@ test("all three writing chapters use the same four-part scaffold and preserve na
    assert(h.html.includes('data-stage-advice="'+group+'"'),node);
    if(node!=='C60')assert(h.html.includes(node==='C20'?'Your mathematical starting points':'Useful now'),node);
    else assert(h.html.includes('data-conclusion-workspace'),node);
-   const positions=(node==='C60'?['task','advice','examples']:['sparks','task','advice','examples']).map(k=>h.html.indexOf('data-writing-stage-part="'+k+'"'));
+   const positions=(node==='C60'?['advice','task','examples']:['advice','sparks','task','examples']).map(k=>h.html.indexOf('data-writing-stage-part="'+k+'"'));
    assert(positions.every(v=>v>0)&&positions.every((v,i)=>i===0||v>positions[i-1]),node);
    assert(h.html.includes('studio-stage-writing-location'),node);
    assert(h.html.includes('data-writing-examples'),node);

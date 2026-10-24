@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
 import {createProjectState} from '../src/core/project-state.js';
 import {applyPlanningField} from '../src/planning/engine.js';
 import {icon,escapeHtml} from '../src/ui/primitives.js';
@@ -150,13 +151,35 @@ test('An updated prediction does not suppress existing true results or reset Pla
  assert.equal(s.planning.completed,false);
 });
 
-test('guided writing puts saved context and the task before optional craft guidance and examples',()=>{
- const html=renderWritingStageFlow({advice:'ADVICE-ONE',sparks:'SPARKS-TWO',task:'WRITE-THREE',examples:'EXAMPLES-FOUR'});
+test('Guided IA writing teaches briefly before recalling Sparks and asking students to write',()=>{
+ const parts={advice:'ADVICE-ONE',sparks:'SPARKS-TWO',task:'WRITE-THREE',examples:'EXAMPLES-FOUR'};
+ const html=renderWritingStageFlow(parts);
+ const names=[...html.matchAll(/data-writing-stage-part="([^"]+)"/g)].map(m=>m[1]);
+ assert.deepEqual(names,['advice','sparks','task','examples']);
+ assert(html.indexOf('ADVICE-ONE')<html.indexOf('SPARKS-TWO'));
  assert(html.indexOf('SPARKS-TWO')<html.indexOf('WRITE-THREE'));
- assert(html.indexOf('WRITE-THREE')<html.indexOf('ADVICE-ONE'));
- assert(html.indexOf('ADVICE-ONE')<html.indexOf('EXAMPLES-FOUR'));
- assert.equal((html.match(/data-writing-stage-part=/g)||[]).length,4);
+ assert(html.indexOf('WRITE-THREE')<html.indexOf('EXAMPLES-FOUR'));
+ assert.equal((html.match(/ADVICE-ONE|SPARKS-TWO|WRITE-THREE|EXAMPLES-FOUR/g)||[]).length,4,
+  'Reordering should not duplicate any stage content');
  assert(renderWritingStageFlow({advice:'ONE'}).includes('ONE'));
+ const css=readFileSync(new URL('../data/chapter-onboarding.css',import.meta.url),'utf8');
+ assert(!/\.writing-stage-flow\[data-advice-mode="guided"\]>\.writing-stage-(?:advice|sparks|task|examples)\s*\{\s*order\s*:/.test(css),
+  'Stale flex ordering must not make the browser disagree with DOM and keyboard reading order');
+});
+test('Reduce advice remains task-first, keeping saved context accessible but not forcing the guide',()=>{
+ const html=renderWritingStageFlow({
+  advice:'OPTIONAL-ADVICE',sparks:'CANONICAL-SPARK',task:'ORIGINAL-INPUT',examples:'OPTIONAL-EXAMPLE',
+  reduced:true
+ });
+ assert.deepEqual([...html.matchAll(/data-writing-stage-part="([^"]+)"/g)].map(m=>m[1]),
+  ['task','sparks']);
+ assert(html.indexOf('ORIGINAL-INPUT')<html.indexOf('CANONICAL-SPARK'));
+ assert(html.includes('<details class="writing-stage-reduced-reference"'));
+ assert(html.includes('Review my saved ideas (optional)'));
+ assert(html.includes('CANONICAL-SPARK'));
+ assert(!html.includes('OPTIONAL-ADVICE'));
+ assert(!html.includes('OPTIONAL-EXAMPLE'));
+ assert(!html.includes(' open>'),'Saved-context disclosure should start closed');
 });
 test('one field can display contextual A/C bubbles without a second criterion panel',()=>{
  const textarea='<div class="field-group"><label>My working notes</label><textarea></textarea></div>';

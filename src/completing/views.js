@@ -621,11 +621,12 @@ export function createCompletingViews(ctx){
    return{intro:"",
     html:renderWritingStageFlow({
      reduced:isAdviceReduced(s),
-     advice:renderIntroductionWritingAdvice(icon,e,{reduced:isAdviceReduced(s),state:s}),
+     advice:renderIntroductionWritingAdvice(icon,e,{reduced:isAdviceReduced(s),state:s})+
+      renderCitationReminder(s,"introduction",icon,e),
      sparks:renderIntroductionSparkPrompt(s,icon,e)+renderSparkShelf(s,"C10",{surface:"studio",libraryOnly:true}),
      task,
      examples:renderIntroductionOptionalExamples(icon)
-    })+renderCitationReminder(s,"introduction",icon,e)+
+    })+
     '<div class="intro-first-maths-next"><div><strong>Ready for the first piece of mathematics?</strong>'+
       '<p>Your Introduction opens the story. Next, connect your first purposeful mathematical step to your aim, using the choices you made in Planning.</p></div>'+
       '<button type="button" class="btn btn-primary" data-action="completion-open" data-node="C20">'+

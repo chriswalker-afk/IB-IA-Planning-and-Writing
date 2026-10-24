@@ -197,7 +197,15 @@ def first_time(browser,width):
   assert "Turn your sparks into an opening" in page.locator('.intro-spark-brief').inner_text()
   assert page.locator('.writing-stage-flow [data-writing-stage-part]').count()==4
   parts=page.locator('.writing-stage-flow [data-writing-stage-part]')
-  assert [parts.nth(i).get_attribute("data-writing-stage-part") for i in range(4)]==["sparks","task","advice","examples"]
+  assert [parts.nth(i).get_attribute("data-writing-stage-part") for i in range(4)]==["advice","sparks","task","examples"]
+  # Check visual placement as well as DOM order: the original error was
+  # "Write your introduction" appearing ABOVE "Before you write".
+  positions=[part.bounding_box() for part in parts.all()]
+  assert all(box and box["width"]>0 for box in positions),(width,positions)
+  assert all(a["y"]+a["height"]<=b["y"]+3 for a,b in zip(positions,positions[1:])),(width,positions)
+  assert parts.nth(0).locator('.intro-writing-guide').is_visible()
+  assert parts.nth(0).locator('[data-citation-moment="introduction"]').count()==1
+  assert parts.nth(2).locator('[data-bind="scratch.introduction"]').count()==1
   assert page.locator('.criterion-marked-writing-box .criterion-writing-bubbles .criterion-badge').count()==2
   assert page.locator('.intro-criteria-mini').count()==0
   assert page.locator('.spark-shelf-featured').count()==0
@@ -342,8 +350,11 @@ def writing_sections(browser,width):
    assert main.count()==1,node
    parts=main.locator('[data-writing-stage-part]')
    names=[parts.nth(i).get_attribute('data-writing-stage-part') for i in range(parts.count())]
-   assert names==(['task','advice','examples'] if node=='C60' else
-    ['sparks','task','advice','examples']),(node,names)
+   assert names==(['advice','task','examples'] if node=='C60' else
+    ['advice','sparks','task','examples']),(node,names)
+   positions=[part.bounding_box() for part in parts.all()]
+   assert all(box and box["width"]>0 for box in positions),(node,width,positions)
+   assert all(a["y"]+a["height"]<=b["y"]+3 for a,b in zip(positions,positions[1:])),(node,width,positions)
    assert main.locator('.studio-stage-examples').count()==1,node
    badge=main.locator('.studio-stage-writing-task .writer-guide-field-bubble:visible')
    assert badge.count()>=1,(node,'Missing field-level book bubble')
