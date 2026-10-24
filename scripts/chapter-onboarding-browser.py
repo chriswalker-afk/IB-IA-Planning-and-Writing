@@ -197,7 +197,7 @@ def first_time(browser,width):
   assert "Turn your sparks into an opening" in page.locator('.intro-spark-brief').inner_text()
   assert page.locator('.writing-stage-flow [data-writing-stage-part]').count()==4
   parts=page.locator('.writing-stage-flow [data-writing-stage-part]')
-  assert [parts.nth(i).get_attribute("data-writing-stage-part") for i in range(4)]==["advice","sparks","task","examples"]
+  assert [parts.nth(i).get_attribute("data-writing-stage-part") for i in range(4)]==["sparks","task","advice","examples"]
   assert page.locator('.criterion-marked-writing-box .criterion-writing-bubbles .criterion-badge').count()==2
   assert page.locator('.intro-criteria-mini').count()==0
   assert page.locator('.spark-shelf-featured').count()==0
