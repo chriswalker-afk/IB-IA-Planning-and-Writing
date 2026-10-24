@@ -569,3 +569,72 @@ h1,h2,h3,h4,p {margin-top:0} h1,h2,h3,h4 {font-family:Manrope, 'DM Sans', sans-s
 .maths-workshop .workshop-example>.btn+.btn{margin-left:7px}
 .maths-workshop .workshop-choice.selected{outline:2px solid var(--teal,#08766e);outline-offset:-2px}
 @media(max-width:480px){.maths-workshop .workshop-table-wrap{margin-inline:-4px}.maths-workshop .workshop-data-table{font-size:12px}.maths-workshop .workshop-data-table th,.maths-workshop .workshop-data-table td{padding:8px 9px}.maths-workshop .workshop-example>.btn+.btn{margin:8px 0 0}}
+
+/* Maths Workshop mathematical typography. The MathJax SVG font is already
+   bundled for the student's optional equation editor, with no remote fonts. */
+.maths-workshop .workshop-formula{
+  margin:18px 0 20px;padding:17px 20px;border:1px solid var(--line);
+  background:var(--surface-soft,#f5f9f7);border-radius:14px;min-width:0
+}
+.maths-workshop .workshop-formula-heading{
+  margin:0 0 13px;font-size:14px;line-height:1.4;font-weight:750;color:var(--ink)
+}
+.maths-workshop .workshop-formula-list{display:grid;min-width:0}
+.maths-workshop .workshop-formula-row{
+  display:grid;grid-template-columns:minmax(145px,32%) minmax(0,1fr);
+  align-items:center;gap:12px;min-width:0;padding:13px 0
+}
+.maths-workshop .workshop-formula-row:first-child{padding-top:5px}
+.maths-workshop .workshop-formula-row:last-child{padding-bottom:3px}
+.maths-workshop .workshop-formula-row+.workshop-formula-row{
+  border-top:1px solid var(--line)
+}
+.maths-workshop .workshop-formula-label{
+  min-width:0;font-size:12px;line-height:1.55;font-weight:750;
+  color:var(--muted,#587077)
+}
+.maths-workshop .workshop-formula-equation{
+  min-width:0;max-width:100%;overflow-x:auto;overflow-y:hidden;
+  padding:8px 2px;font-size:21px;line-height:1.5;
+  scrollbar-width:thin;scrollbar-color:var(--line) transparent;
+  -webkit-overflow-scrolling:touch
+}
+.maths-workshop .workshop-formula-equation:focus-visible{
+  outline:2px solid var(--teal,#17776d);outline-offset:1px;border-radius:5px
+}
+.maths-workshop .workshop-typeset-math.is-display{
+  display:inline-block;max-width:none;white-space:nowrap;vertical-align:middle
+}
+.maths-workshop .workshop-typeset-math.is-inline{
+  display:inline-block;white-space:nowrap;max-width:100%;
+  font-size:1.06em;line-height:1;vertical-align:-.10em
+}
+.maths-workshop .workshop-typeset-math svg{
+  display:inline-block;max-width:none;overflow:visible
+}
+.maths-workshop .workshop-math-fallback{
+  font-family:Georgia,"Times New Roman",serif;font-size:1.05em;
+  overflow-wrap:anywhere
+}
+.maths-workshop .workshop-steps li,
+.maths-workshop .workshop-example p,
+.maths-workshop .workshop-guide-notes p{
+  text-wrap:pretty;overflow-wrap:break-word
+}
+.maths-workshop .workshop-answer{
+  line-height:1.9;overflow-wrap:break-word
+}
+@media(max-width:700px){
+  .maths-workshop .workshop-formula{padding:14px 15px}
+  .maths-workshop .workshop-formula-row{
+    grid-template-columns:minmax(0,1fr);gap:3px;padding:10px 0
+  }
+  .maths-workshop .workshop-formula-label{font-size:12px}
+  .maths-workshop .workshop-formula-equation{
+    font-size:19px;line-height:1.5;max-width:100%;padding:8px 2px
+  }
+}
+@media(max-width:400px){
+  .maths-workshop .workshop-formula{padding:11px 12px}
+  .maths-workshop .workshop-formula-equation{font-size:18px}
+}
