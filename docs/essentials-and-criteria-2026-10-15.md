@@ -1,12 +1,12 @@
 # IA essentials and contextual assessment guidance
 
-## Source-based reference
+## Reference and editorial guidance
 
-The user-supplied `IB DP-Maths Internal Assessment.pdf` (AA guide, printed pp.80–88) and `JIS SL Maths IA Guide 2025` inform the reference. The public site identifies the sources without publishing the files or private Drive links. It distinguishes official descriptor wording, IB guidance, JIS recommendations/workflow and practical advice, and does not claim a live policy lookup.
+The rubric reference uses the supplied IB Mathematics: analysis and approaches guide extract (printed pp.80–88). Official assessment descriptor wording is distinguished from optional Pathfinder practical advice, and the site does not claim a live policy lookup.
 
-The complete A–D descriptors and both Criterion E rubrics retain the supplied wording. A–D are shared; E uses an unambiguous SL/HL course or an explicit reference-level choice. Switching the reference never changes the course. Best-fit judgement is explained. JIS slides 43–47 inform separately labelled opportunities, not compulsory mark-earning checklists.
+The complete A–D descriptors and both Criterion E rubrics retain the supplied wording. A–D are shared; E uses an unambiguous SL/HL course or an explicit reference-level choice. Switching the reference never changes the course. Best-fit judgement is explained. The separate "ways to show it" suggestions are illustrative opportunities, not additional marking requirements.
 
-Formatting preserves the approximate 12–20 double-spaced-page recommendation, inclusion of diagrams/graphs, bibliography exclusion and cover title/page count. It invents no word count, mandatory font, margin, extra page exclusions or identity rule. Familiar versus unfamiliar mathematics, notation, sources, ownership, collaboration, one-draft feedback and school deadlines are explained. JIS's written-feedback workflow remains distinct from the IB one-draft wording. The active appendix review action permits large supporting datasets rather than imposing the former stronger editorial preference; the original source-sheet snapshots are unchanged.
+Formatting guidance covers approximate length, diagrams, bibliography exclusions and cover information without inventing mandatory fonts, margins or extra rules. Familiar versus unfamiliar mathematics, notation, sources, ownership and collaboration are explained. Teacher-feedback and deadline advice directs students to current IB and school requirements rather than presenting one school's arrangements as universal. Appendices can hold necessary supporting material.
 
 ## Discovery and contextual help
 
