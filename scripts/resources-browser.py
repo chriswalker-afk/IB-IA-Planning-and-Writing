@@ -249,7 +249,7 @@ with sync_playwright() as pw:
   open_library(p)
   p.locator('.resource-workshop-entry [data-action="resource-workshop"]').click()
   p.locator('[data-action="resource-workshop-home"]').first.click() if not p.locator('[data-workshop-home="true"]').count() else None
-  assert p.locator('#resource-results .workshop-lesson-card').count()==7
+  assert p.locator('#resource-results .workshop-lesson-card').count()==8
   p.locator('[data-action="resource-workshop-lesson"][data-workshop-id="two-way-proportions"]').first.click()
   assert p.locator('[data-workshop-lesson="two-way-proportions"]').count()==1
   assert p.locator('.workshop-data-table').count()==1
