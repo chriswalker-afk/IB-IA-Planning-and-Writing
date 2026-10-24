@@ -937,7 +937,7 @@ export const MATHS_GUIDANCE=Object.freeze([
   "context": "Use actual observation, current goal and active technique",
   "course": "Both AI SL/AA SL; methods aren't rewarded for complexity alone",
   "avoid": "Don't insert routine maths without purpose or recite how to draw charts",
-  "source": "JIS Guide slides 27–28",
+  "source": "Pathfinder editorial guidance; check current IB and teacher advice",
   "status": "Working draft"
  },
  {
@@ -950,7 +950,7 @@ export const MATHS_GUIDANCE=Object.freeze([
   "context": "Existing variable meanings and mathematical relations",
   "course": "All courses; equation editor is presentation guidance, not an automatic score",
   "avoid": "Avoid raw calculator syntax such as x^2/3 in place of a clearly typeset fraction when clarity matters",
-  "source": "JIS Guide slide 28; Checklist Criterion B",
+  "source": "Pathfinder editorial guidance; check current IB and teacher advice",
   "status": "Working draft"
  },
  {
@@ -976,7 +976,7 @@ export const MATHS_GUIDANCE=Object.freeze([
   "context": "C25 definitions, actual quantity and units",
   "course": "All courses; common x/y not forbidden, but meaningless by default",
   "avoid": "Don't create a glossary of all possible future variables",
-  "source": "JIS Guide slide 27; Checklist B",
+  "source": "Pathfinder editorial guidance; check current IB and teacher advice",
   "status": "Working draft"
  },
  {
@@ -1002,7 +1002,7 @@ export const MATHS_GUIDANCE=Object.freeze([
   "context": "Active tool and mathematical method, actual data type",
   "course": "Use only when technology is ACTUALLY used",
   "avoid": "Do not describe a long sequence of menu clicks or substitute a screenshot for reasoning",
-  "source": "JIS Guide slide 28",
+  "source": "Pathfinder editorial guidance; check current IB and teacher advice",
   "status": "Working draft"
  },
  {
@@ -1028,7 +1028,7 @@ export const MATHS_GUIDANCE=Object.freeze([
   "context": "Active fitted technique, real inputs and limitations",
   "course": "Technique-specific concerns only after technique is active",
   "avoid": "No automated list of PMCC issues while only collecting data",
-  "source": "JIS Guide slides 27–32",
+  "source": "Pathfinder editorial guidance; check current IB and teacher advice",
   "status": "Working draft"
  },
  {
@@ -1041,7 +1041,7 @@ export const MATHS_GUIDANCE=Object.freeze([
   "context": "Student's confirmed course (AA SL, AI SL, etc.), actual selected method, stated novelty, previous result and aim",
   "course": "AI SL / AA SL specific; other/HL = teacher review",
   "avoid": "Independent research does NOT automatically mean beyond syllabus. Don't classify by a generic list or award marks for complexity.",
-  "source": "JIS Guide slide 27; Criterion E",
+  "source": "Pathfinder editorial guidance; check current IB and teacher advice",
   "status": "Working draft"
  },
  {
@@ -1080,7 +1080,7 @@ export const MATHS_GUIDANCE=Object.freeze([
   "context": "Actual mathematics and course topics",
   "course": "Both; suitability determined in context by teacher",
   "avoid": "Don't assume that drawing a chart or evaluating a mean alone forms strong Criterion E work",
-  "source": "JIS Guide slide 27; Criterion E",
+  "source": "Pathfinder editorial guidance; check current IB and teacher advice",
   "status": "Working draft"
  },
  {
@@ -1093,7 +1093,7 @@ export const MATHS_GUIDANCE=Object.freeze([
   "context": "Actual technique, student's verified course, independently studied concept, worked steps/source, aim",
   "course": "Teacher review, not automatic rejection or praise",
   "avoid": "No automatic extra marks for outside maths; don't paste a textbook/tutorial or present advanced mathematics not understood.",
-  "source": "JIS Guide slide 27; Criterion E",
+  "source": "Pathfinder editorial guidance; check current IB and teacher advice",
   "status": "Working draft"
  },
  {
@@ -1106,7 +1106,7 @@ export const MATHS_GUIDANCE=Object.freeze([
   "context": "Student's real alternatives and data",
   "course": "AI/AA course choice and actual context",
   "avoid": "Don't demand arbitrary comparison for every simple equation",
-  "source": "JIS Guide slides 27, 30, 32",
+  "source": "Pathfinder editorial guidance; check current IB and teacher advice",
   "status": "Working draft"
  },
  {
@@ -1132,7 +1132,7 @@ export const MATHS_GUIDANCE=Object.freeze([
   "context": "Observed data and actively used method",
   "course": "AI/AA depending on syllabus; choose suitable interpretation",
   "avoid": "Never infer cause from correlation or claim a hypothesis is proven by a single result",
-  "source": "JIS Guide Criterion E; bivariate mini project",
+  "source": "Pathfinder editorial guidance; check current IB and teacher advice",
   "status": "Working draft"
  },
  {
@@ -1145,7 +1145,7 @@ export const MATHS_GUIDANCE=Object.freeze([
   "context": "Student-confirmed course, actual symbolic work and any new/unfamiliar term",
   "course": "No technology prompt if none used",
   "avoid": "No mandatory method explanation merely because the work is done by hand; preserve mathematical reasoning and interpretation.",
-  "source": "JIS Guide slides 27–28",
+  "source": "Pathfinder editorial guidance; check current IB and teacher advice",
   "status": "Working draft"
  },
  {
@@ -1171,7 +1171,7 @@ export const MATHS_GUIDANCE=Object.freeze([
   "context": "Selected course and syllabus/version; technique ID; prior mathematical question",
   "course": "Private method setup; not automatic IA prose",
   "avoid": "Never decide solely from topic name or claim research automatically makes it beyond syllabus",
-  "source": "JIS IA Guide Criterion E; teacher check",
+  "source": "Pathfinder editorial guidance; check current IB and teacher advice",
   "status": "Working draft"
  },
  {
@@ -1184,7 +1184,7 @@ export const MATHS_GUIDANCE=Object.freeze([
   "context": "Verified course status, active method, prior result, meaningful variable symbols",
   "course": "Purpose before use; normal maths; interpretation after result",
   "avoid": "Do not explain steps for calculating PMCC, drawing routine plots or basic differentiation as if teaching a class",
-  "source": "JIS IA Guide Criterion E/communication",
+  "source": "Pathfinder editorial guidance; check current IB and teacher advice",
   "status": "Working draft"
  },
  {
@@ -1197,7 +1197,7 @@ export const MATHS_GUIDANCE=Object.freeze([
   "context": "Confirmed novelty, actual method/working, teacher suitability, research source, aim",
   "course": "Immediately BEFORE/AT FIRST substantial use, alongside maths",
   "avoid": "No copied tutorial, unexplained equation, or complexity for its own sake",
-  "source": "JIS IA Guide B/E; independent sources",
+  "source": "Pathfinder editorial guidance; check current IB and teacher advice",
   "status": "Working draft"
  },
  {
@@ -1210,7 +1210,7 @@ export const MATHS_GUIDANCE=Object.freeze([
   "context": "Course context, known base technique, actual extension and research source",
   "course": "Immediately before new extension appears",
   "avoid": "Don't re-teach all prerequisite syllabus mathematics",
-  "source": "JIS IA Guide B/E",
+  "source": "Pathfinder editorial guidance; check current IB and teacher advice",
   "status": "Working draft"
  },
  {
@@ -1249,7 +1249,7 @@ export const MATHS_GUIDANCE=Object.freeze([
   "context": "Actual formula/approach, current model, course status and citation",
   "course": "Next to first use of unfamiliar method",
   "avoid": "No full textbook lecture, copied proof or unexplained button-press result",
-  "source": "JIS IA Guide B/E",
+  "source": "Pathfinder editorial guidance; check current IB and teacher advice",
   "status": "Working draft"
  },
  {
@@ -1262,7 +1262,7 @@ export const MATHS_GUIDANCE=Object.freeze([
   "context": "Real tool output, course status, input data, chosen algorithm",
   "course": "At first mathematical use / beside output; no software tutorial",
   "avoid": "No black-box formula, screenshot-only maths or click instructions",
-  "source": "JIS IA Guide B/E; student source",
+  "source": "Pathfinder editorial guidance; check current IB and teacher advice",
   "status": "Working draft"
  },
  {
@@ -1275,7 +1275,7 @@ export const MATHS_GUIDANCE=Object.freeze([
   "context": "Actual resultRef and existing aim-linked explanation; authentic learning and previous understanding",
   "course": "Immediately beside result, AFTER the essential aim-link",
   "avoid": "Do not invent a 'what I learned' paragraph or repeat unrelated generic reflection",
-  "source": "JIS IA Guide reflection/engagement context",
+  "source": "Pathfinder editorial guidance; check current IB and teacher advice",
   "status": "Working draft"
  },
  {
@@ -1288,7 +1288,7 @@ export const MATHS_GUIDANCE=Object.freeze([
   "context": "Real maths and prior course knowledge, observed result and aim",
   "course": "After mathematical result, when relevant",
   "avoid": "Still no tutorial for syllabus method; no artificial claims of discovery",
-  "source": "JIS IA Guide reflection context",
+  "source": "Pathfinder editorial guidance; check current IB and teacher advice",
   "status": "Working draft"
  },
  {
@@ -1301,7 +1301,7 @@ export const MATHS_GUIDANCE=Object.freeze([
   "context": "Proposed/actual technique, current syllabus, evidence, teacher review flag",
   "course": "Private choice before use, not mandatory IA confession",
   "avoid": "Don't reject beyond-course maths categorically or reward complexity without comprehension",
-  "source": "JIS IA Guide Criterion E",
+  "source": "Pathfinder editorial guidance; check current IB and teacher advice",
   "status": "Working draft"
  },
  {
@@ -1314,7 +1314,7 @@ export const MATHS_GUIDANCE=Object.freeze([
   "context": "Actual course classification, explanations, citations, current maths and resultRefs",
   "course": "Edit original passage, not extra conclusion paragraph",
   "avoid": "No automatic rewording of student's IA or stock personal engagement sentences",
-  "source": "JIS IA Guide B/C/D/E; student owns prose",
+  "source": "Pathfinder editorial guidance; check current IB and teacher advice",
   "status": "Working draft"
  }
 ]);
