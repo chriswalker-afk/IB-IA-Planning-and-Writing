@@ -93,9 +93,9 @@ export function tracePreviewHtml(tracer,icon,e){
     '</div>':
    representationEmpty(icon,e,{symbol:"image",title:"Start with a photograph",description:"Upload a JPG, PNG or WebP of the real situation to model.",action:"trace-upload",actionText:"Choose photograph"}))+
   '<p class="trace-scale-status">'+(c?
-   icon("check-circle")+' Reference '+e(d.knownLength)+" "+e(d.unit||"units")+
-    ' = '+Math.round(c.referencePixels)+' working pixels · 1 pixel ≈ '+e(c.unitsPerPixel.toPrecision(3))+' '+e(d.unit||"units"):
-    icon("info")+' Coordinates are not calibrated yet. Do not interpret photo pixels as measured distances.')+'</p></section>';
+   icon("check-circle")+'<span class="inline-notice-copy">Reference '+e(d.knownLength)+" "+e(d.unit||"units")+
+    ' = '+Math.round(c.referencePixels)+' working pixels · 1 pixel ≈ '+e(c.unitsPerPixel.toPrecision(3))+' '+e(d.unit||"units")+'</span>':
+    icon("info")+'<span class="inline-notice-copy">Coordinates are not calibrated yet. Do not interpret photo pixels as measured distances.</span>')+'</p></section>';
 }
 export function traceWorkingHtml(tracer,icon,e){
  const d=tracer.draft,m=tracedMeasurements(d);
