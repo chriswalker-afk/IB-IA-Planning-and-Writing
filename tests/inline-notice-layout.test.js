@@ -11,6 +11,8 @@ const NOTICE_TEMPLATES=Object.freeze([
  ["src/completing/intro-writing-advice.js","p","intro-prediction-note",1],
  ["src/completing/conclusion-workspace.js","p","conclusion-specific-tip",1],
  ["src/completing/views.js","p","math-stage-branch-note",4],
+ ["src/completing/views.js","p","studio-ia-writing-reminder",1],
+ ["src/ui/math-constellation.js","span","math-journey-source-note",3],
  ["src/ui/primary-data-steps.js","p","data-quality-warning",1],
  ["src/ui/primary-data-steps.js","p","data-quality-basis-note",1],
  ["src/ui/data-decisions-view.js","p","data-quality-warning",1],
