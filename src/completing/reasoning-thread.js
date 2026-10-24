@@ -129,11 +129,14 @@ export function renderPriorDecisionLink(state,entry,{icon=defaultIcon,e=escapeHt
  * A saved open question must not be silently treated as solved or mandatory.
  */
 export function renderConclusionReasoningThread(state,{icon=defaultIcon,e=escapeHtml,reduced=false}={}){
- const results=(state?.entries||[]).filter(confirmed),last=results.at(-1);
- if(!last)return"";
+ const results=(state?.entries||[]).filter(confirmed);
+ if(!results.length)return"";
+ const safe=results.filter(x=>x.reviewNeeded!=="yes");
+ // Never echo a flagged recent result as if it were the last usable finding.
+ const last=safe.at(-1)||results.at(-1);
  const t=mathematicalReasoningThread(state,last);
- const open=!!t?.question,flagged=results.filter(x=>x.reviewNeeded==="yes").length;
- const eligible=results.filter(x=>x.reviewNeeded!=="yes").length;
+ const open=!!t?.question,flagged=results.length-safe.length;
+ const eligible=safe.length;
  const summary=open?'An earlier question may remain open — that can be acknowledged':'Decide what your confirmed findings justify';
  return '<section class="conclusion-reasoning'+(reduced?' is-reduced':'')+
   '" data-conclusion-reasoning="'+e(t.entryId)+'">'+
