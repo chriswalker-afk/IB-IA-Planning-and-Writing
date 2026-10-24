@@ -35,7 +35,7 @@
     {
       "row": 5,
       "cells": [
-        "Every figure should fit on ONE printed page. Pathfinder editorial preference: avoid lengthy raw-data tables even in appendices; the JIS guide allows justified appendix data when needed, so this is not an IB prohibition. Don't repeat redundant figures."
+        "Every figure should fit on ONE printed page. Pathfinder editorial preference: avoid lengthy raw-data tables even in appendices; necessary supporting data can be placed in a well-referenced appendix; this is not an IB prohibition. Don't repeat redundant figures."
       ]
     },
     {
@@ -661,7 +661,7 @@
         "Replace rows of raw data with concise summary; cite appropriate accessible source/dataset separately",
         "Data source, privacy constraints",
         "Readable, focused IA",
-        "Not an IB rule: JIS Guide 2025 permits justified large data appendices. Pathfinder discourages clutter, not necessary evidence.",
+        "Not an IB rule: necessary supporting data can appear in a referenced appendix. Pathfinder discourages clutter, not necessary evidence.",
         "Agreed"
       ]
     },
