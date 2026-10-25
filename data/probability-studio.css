@@ -112,3 +112,20 @@
 [data-distribution-studio] .probability-quality ul{margin:9px 0 9px 20px}
 [data-distribution-studio] .probability-main{min-width:0;overflow:hidden}
 @media(max-width:760px){[data-distribution-studio] .probability-workspace{grid-template-columns:minmax(0,1fr)}[data-distribution-studio] .probability-controls{position:static;max-height:none;overflow:visible}}
+
+/* Probability distribution figures — preview is the exact printed geometry. */
+[data-distribution-studio] .distribution-preview{width:100%;min-width:0;overflow:hidden;border:1px solid #dce6eb;border-radius:10px;background:#fff;margin:12px 0}
+[data-distribution-studio] .distribution-preview svg{display:block;width:100%;height:auto;max-width:100%}
+[data-distribution-studio] .distribution-preview-detail{overflow-x:auto;overscroll-behavior-inline:contain;-webkit-overflow-scrolling:touch}
+[data-distribution-studio] .distribution-preview-detail svg{width:max(790px,100%);min-width:790px;max-width:none}
+[data-distribution-studio] .distribution-drag-handle,[data-distribution-studio] .distribution-drag-handle *{touch-action:none;cursor:ew-resize}
+[data-distribution-studio] .distribution-drag-handle:focus{outline:none}
+[data-distribution-studio] .distribution-drag-handle:focus circle{stroke:#0b5987;stroke-width:4;filter:drop-shadow(0 0 2px #508cc4)}
+[data-distribution-studio] .distribution-boundary-control{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:end}
+[data-distribution-studio] .distribution-boundary-control .probability-field{min-width:0}
+[data-distribution-studio] .distribution-nudge{display:flex;gap:5px;margin:11px 0}
+[data-distribution-studio] .distribution-nudge .btn{min-height:42px;min-width:42px;padding:6px 11px;font-size:1.18rem;line-height:1}
+[data-distribution-studio] .distribution-caution{color:var(--text-muted,#4f6772)}
+@media(max-width:760px){[data-distribution-studio] .probability-workspace{grid-template-columns:minmax(0,1fr)}[data-distribution-studio] .probability-controls{max-height:none;overflow:visible;position:static}}
+@media(max-width:380px){[data-distribution-studio] .probability-boundary-control{grid-template-columns:minmax(0,1fr)}[data-distribution-studio] .distribution-preview-detail svg{min-width:720px}}
+@media(prefers-reduced-motion:reduce){[data-distribution-studio] .distribution-preview *{animation:none!important;transition:none!important}}

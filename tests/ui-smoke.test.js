@@ -63,6 +63,7 @@ import {renderGeometrySvg,geometryLayout} from "../src/diagrams/geometry-render.
 import {geometryPreviewHtml,geometryQualityHtml} from "../src/diagrams/geometry-view.js";
 import {setGeometryField,setGeometryVertex,geometryTemplate,geometryAddVertex,geometryRemoveVertex,geometryFresh,loadGeometry,saveGeometryDraft,saveAndLinkGeometry} from "../src/diagrams/geometry-actions.js";
 import {exportGeometry} from "../src/diagrams/geometry-export.js";
+import {distributionLayout,distributionBoundaryForPixel,distributionBoundaryNudge} from "../src/diagrams/distribution-layout.js";
 import {distributionPreviewHtml,distributionFeedbackHtml,distributionOutputHtml} from "../src/diagrams/distribution-view.js";
 import {setDistributionField,freshDistribution,loadDistribution,saveDistributionDraft,saveAndLinkDistribution} from "../src/diagrams/distribution-actions.js";
 import {exportDistribution} from "../src/diagrams/distribution-export.js";
@@ -145,6 +146,7 @@ function createHarness(savedValue,{welcome=false}={}){
     setVoronoiField,setVoronoiSite,addVoronoiSite,removeVoronoiSite,clearVoronoiMap,useVoronoiMap,
     beginVoronoi,loadVoronoi,saveVoronoiDraft,saveAndLinkVoronoi,exportVoronoi,
     geometryAnalysis,renderGeometrySvg,geometryLayout,geometryPreviewHtml,geometryQualityHtml,setGeometryField,setGeometryVertex,geometryTemplate,geometryAddVertex,geometryRemoveVertex,geometryFresh,loadGeometry,saveGeometryDraft,saveAndLinkGeometry,exportGeometry,
+    distributionLayout,distributionBoundaryForPixel,distributionBoundaryNudge,
     distributionPreviewHtml,distributionFeedbackHtml,distributionOutputHtml,setDistributionField,freshDistribution,loadDistribution,saveDistributionDraft,saveAndLinkDistribution,exportDistribution,
     probabilityPreviewHtml,probabilityQualityHtml,probabilityOutputHtml,
     setProbabilityField,setProbabilityStage,setProbabilityBranch,toggleProbabilityLeaf,freshProbability,loadProbability,saveProbabilityDraft,saveAndLinkProbability,exportProbability,
