@@ -45,8 +45,8 @@ export function renderDistributionInverseHtml(studio,e){
  const d=studio.draft,query=studio.inverse||{mode:"left",probability:"0.95"};
  const continuous=["normal","uniform"].includes(d.kind);
  const options=[
-  ["left","Lower-tail boundary: P("+d.symbol+" ≤ x)"],
-  ["right","Upper-tail boundary: P("+d.symbol+" ≥ x)"],
+  ["left","At most / left-tail boundary (≤)"],
+  ["right","At least / right-tail boundary (≥)"],
   ...(continuous?[["central","Central probability (equal tails)"]]:[])
  ];
  return '<details class="distribution-inverse-panel" data-distribution-inverse-panel>'+
