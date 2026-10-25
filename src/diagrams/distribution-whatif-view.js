@@ -124,7 +124,7 @@ const fixedTargetResult=(q,symbol,e)=>{
    change+(unit?' '+e(unit):'')+'</p>'+
   (t.discrete?'<p class="distribution-whatif-target-explainer">Inclusive discrete cut-offs give <strong>at least</strong> the requested coverage. Report the achieved probability for each model; equal cut-offs do not imply the distributions are identical.</p>':
    '<p class="distribution-whatif-target-explainer">Continuous cut-offs are numerical solutions. Their achieved values may differ slightly due to precision.</p>')+
-  (t.sameBoundary?'<p class="distribution-whatif-target-explainer">The boundary does not move at this target, even though the model parameters changed.</p>':'')+
+  (t.sameBoundary?'<p class="distribution-whatif-target-explainer">The boundary does not move at this target. This can happen even when model parameters change.</p>':'')+
   '</section>';
 };
 
