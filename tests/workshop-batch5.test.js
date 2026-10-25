@@ -16,10 +16,10 @@ const snapshot=s=>JSON.stringify({entries:s.entries,planning:s.planning,completi
 test("Batch 5 glossary, six lessons, accessible formulas and real navigation targets",()=>{
  assert.equal(BATCH5_DEFINITIONS.length,34);
  assert.equal(BATCH5_LESSONS.length,6);
- assert.equal(WORKSHOP_DEFINITIONS.length,156);
- assert.equal(WORKSHOP_LESSONS.length,29);
- assert.equal(new Set(WORKSHOP_DEFINITIONS.map(d=>d.id)).size,156);
- assert.equal(new Set(WORKSHOP_LESSONS.map(l=>l.id)).size,29);
+ assert.equal(WORKSHOP_DEFINITIONS.length,190);
+ assert.equal(WORKSHOP_LESSONS.length,35);
+ assert.equal(new Set(WORKSHOP_DEFINITIONS.map(d=>d.id)).size,190);
+ assert.equal(new Set(WORKSHOP_LESSONS.map(l=>l.id)).size,35);
  assert.deepEqual(BATCH5_LESSONS.map(l=>l.id),["conditional-probability-tree","discrete-expected-value","simulation-design","binomial-models","normal-models","inference-evidence"]);
  for(const d of BATCH5_DEFINITIONS){
   assert(definitionById(d.id)===d&&d.title&&d.meaning&&d.example,d.id);
