@@ -337,3 +337,19 @@
  [data-distribution-studio] .distribution-whatif-canvas svg{width:680px;min-width:680px;max-width:none}
  [data-distribution-studio] .distribution-whatif-scroll-note{display:block;color:var(--text-muted,#55707b)}
 }
+
+/* Pass 5.4.1 — concise sensitivity interpretation, outside IA exports. */
+[data-distribution-studio] .distribution-whatif-sensitivity{
+ margin:9px 0;padding:10px 11px;border:1px solid #d9e7e9;
+ border-radius:9px;background:var(--surface-soft,#f7fafb);min-width:0;
+ overflow-wrap:anywhere
+}
+[data-distribution-studio] .distribution-whatif-sensitivity>strong{
+ display:block;font-size:.81rem;line-height:1.4;color:var(--text,#294757)
+}
+[data-distribution-studio] .distribution-whatif-sensitivity p{
+ margin:5px 0;font-size:.82rem;line-height:1.52;color:var(--text,#294757)
+}
+[data-distribution-studio] .distribution-whatif-sensitivity small{
+ display:block;margin:4px 0;font-size:.75rem;line-height:1.5;color:var(--text-muted,#536c78)
+}
