@@ -14,7 +14,7 @@ const authored=state=>JSON.stringify([state.planning,state.entries,state.complet
 const approx=(a,b)=>assert(Math.abs(a-b)<1e-10,String(a)+" vs "+String(b));
 
 test("Batch 1: five new lessons and 31 new definitions have stable, unique IDs",()=>{
- assert.equal(WORKSHOP_DEFINITIONS.length,230);
+ assert.equal(WORKSHOP_DEFINITIONS.length,240);
  assert.equal(WORKSHOP_LESSONS.length,42);
  for(const id of ["sampling","distributions","two-way-proportions","measurement","histograms"]){
   const lesson=lessonById(id);
