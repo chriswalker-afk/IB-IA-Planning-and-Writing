@@ -148,7 +148,7 @@ test("legacy backups restore and comparisons never contaminate existing writing 
  assert.equal(ctx.aim,distributionAim(restored));
  assert.equal(JSON.stringify(restored.entries),before);
  assert.equal(renderDistributionSvg(restored.distributionStudio.draft),beforeExport);
- assert.match(distributionWhatIfSummaryHtml(restored.distributionStudio,esc,ctx.aim,ctx),/existing IA Studio writing/);
+ assert.match(distributionWhatIfSummaryHtml(restored.distributionStudio,esc,ctx.aim,ctx),/Insight Threads reuse your own IA Studio writing/);
  assert.equal(restored.entries[0].interpretation,"My own writing.");
  assert.ok(!JSON.stringify(restored.entries).includes("parameter scenario"));
 });
