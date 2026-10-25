@@ -46,7 +46,7 @@ function normalizeDistributionInverseQuery(raw){
 const WHAT_IF_FIELDS=["mu","sigma","n","p","lambda","a","b","customPoints"];
 export const newDistributionWhatIfState=()=>({
  active:false,status:"idle",kind:"",source:"",values:{},
- comparison:"event",targetMode:"left",targetProbability:"0.95"
+ comparison:"event",targetMode:"left",targetProbability:"0.95",reflectionOpen:false
 });
 function normalizeDistributionWhatIfState(raw){
  const r=plain(raw)?raw:{},w=newDistributionWhatIfState();
@@ -57,6 +57,7 @@ function normalizeDistributionWhatIfState(raw){
  if(["event","target"].includes(r.comparison))w.comparison=r.comparison;
  if(["left","right","central"].includes(r.targetMode))w.targetMode=r.targetMode;
  if(typeof r.targetProbability==="string")w.targetProbability=clean(r.targetProbability,64);
+ if(typeof r.reflectionOpen==="boolean")w.reflectionOpen=r.reflectionOpen;
  if(w.targetMode==="central"&&!["normal","uniform"].includes(w.kind))w.targetMode="left";
  if(plain(r.values))for(const key of WHAT_IF_FIELDS)
   if(typeof r.values[key]==="string")w.values[key]=clean(r.values[key],key==="customPoints"?3200:180);
