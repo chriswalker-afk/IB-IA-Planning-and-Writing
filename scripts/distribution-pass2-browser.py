@@ -611,6 +611,77 @@ def meaningful_reflection(browser,width,kind):
   print("PASS 5.4.3 meaningful reflection",kind,width,flush=True)
  finally:c.close()
 
+
+def reflection_to_ia_writing(browser,width,phase):
+ previous=json.loads(json.dumps(BASE))
+ try:
+  BASE["planning"]["fields"]["aim"]="How might a model probability affect a decision?"
+  BASE["entries"]=[{"id":"distribution-reflection-stage","phase":phase,"title":"My mathematical stage",
+   "status":"completed","result":"I calculated a model probability.",
+   "interpretation":"My existing interpretation must remain intact.",
+   "limitations":"An assumption may affect the result."}]
+  BASE["completion"]["activeEntryIndex"]=0
+  BASE["completion"]["editorReturnNode"]="C30" if phase=="first" else "C40"
+  c,p,errors=setup(browser,width)
+ finally:
+  BASE.clear();BASE.update(previous)
+ try:
+  field(p,"title","Exploring model parameters")
+  field(p,"mu","70");field(p,"sigma","10")
+  p.locator('[data-distribution-field="mode"]').select_option("left")
+  field(p,"lower","70")
+  p.locator('[data-distribution-whatif-panel] summary').click()
+  p.locator('[data-action="distribution-whatif-start"]').click()
+  p.locator('[data-distribution-whatif-field="mu"][data-whatif-control="value"]').fill("75")
+  reflection=p.locator('[data-distribution-whatif-reflection]')
+  reflection.locator("summary").click()
+  bridge=reflection.locator('[data-distribution-writing-bridge]')
+  assert bridge.count()==1
+  assert bridge.locator('[data-action="distribution-whatif-write"]').count()==1
+  assert bridge.locator('[data-workshop-id="normal-models"]').count()==1
+  assert bridge.locator('[data-studio-stuck="C31:whatif"]').count()==1
+  assert "Insight Threads" in bridge.inner_text()
+  bridge.locator('[data-studio-stuck="C31:whatif"]').click()
+  dialog=p.locator('#studioStuckDialog')
+  assert dialog.is_visible()
+  assert dialog.locator('[data-studio-stuck-choice]').count()==3
+  assert "comparison" in dialog.inner_text().lower()
+  dialog.locator('[data-studio-stuck-close]').click()
+  bridge.locator('[data-workshop-id="normal-models"]').click()
+  assert p.locator('[data-workshop-lesson="normal-models"]').is_visible()
+  p.keyboard.press("Escape")
+  assert p.locator('[data-distribution-studio]').is_visible()
+  before=p.evaluate("(key)=>JSON.parse(localStorage.getItem(key))",KEY)
+  assert before["entries"][0]["interpretation"]=="My existing interpretation must remain intact."
+  if width<600:check_width(p)
+  if width==1440:
+   with p.expect_download() as dl:p.locator('[data-action="distribution-svg"]').click()
+   file=OUT/("writing-bridge-original-"+phase+".svg");dl.value.save_as(str(file))
+   for forbidden in ("Continue in IA Studio","Related Maths Workshop","I am stuck"):
+    assert forbidden not in file.read_text()
+  bridge.locator('[data-action="distribution-whatif-write"]').click()
+  writing=p.locator('[data-bind="entries.0.interpretation"]')
+  assert writing.count()==1,phase
+  assert writing.input_value()=="My existing interpretation must remain intact."
+  assert writing.evaluate("el=>document.activeElement===el")
+  after=p.evaluate("(key)=>JSON.parse(localStorage.getItem(key))",KEY)
+  assert after["completion"]["current"]==("C30" if phase=="first" else "C40")
+  assert len(after["entries"])==1
+  assert after["entries"][0]["interpretation"]==before["entries"][0]["interpretation"]
+  assert after["entries"][0]["result"]==before["entries"][0]["result"]
+  assert after["entries"][0]["limitations"]==before["entries"][0]["limitations"]
+  assert after["distributionStudio"]["draft"]==before["distributionStudio"]["draft"]
+  assert after["distributionStudio"]["figures"]==before["distributionStudio"]["figures"]
+  writing.fill("I compared a hypothetical model, not another observation.")
+  latest=p.evaluate("(key)=>JSON.parse(localStorage.getItem(key))",KEY)
+  assert latest["entries"][0]["interpretation"].startswith("I compared a hypothetical")
+  assert latest["entries"][0]["limitations"]==before["entries"][0]["limitations"]
+  assert len(latest["entries"])==1
+  check_width(p)
+  assert not errors,errors
+  print("PASS 5.4.4 writing handoff",phase,width,flush=True)
+ finally:c.close()
+
 if __name__=="__main__":
  with sync_playwright() as playwright:
   browser=playwright.chromium.launch(headless=True)
@@ -634,4 +705,6 @@ if __name__=="__main__":
    meaningful_reflection(browser,1440,kind)
   for width,kind in ((390,"normal"),(390,"binomial"),(320,"normal")):
    meaningful_reflection(browser,width,kind)
+  for width,phase in ((1440,"first"),(390,"substantial"),(320,"first")):
+   reflection_to_ia_writing(browser,width,phase)
   browser.close()
