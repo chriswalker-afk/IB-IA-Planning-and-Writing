@@ -111,7 +111,7 @@ export function distributionBoundaryForPixel(raw,role,pixelX){
 }
 export function distributionBoundaryNudge(raw,role,direction){
  const q=analyzeDistribution(raw),d=q.draft;
- if(!q.ready||![-1,1].includes(direction))return null;
+ if(!q.ready||!Number.isInteger(direction)||Math.abs(direction)>10||direction===0)return null;
  const current=role==="upper"?q.upper:q.lower;
  if(current===null)return null;
  const step=d.kind==="binomial"?1:Math.max(q.sigma/100,1e-12);
