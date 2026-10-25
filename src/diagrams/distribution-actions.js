@@ -1,4 +1,4 @@
-import {newDistributionDraft,newDistributionInverseQuery,normalizeDistributionDraft,analyzeDistribution,DISTRIBUTION_KINDS,
+import {newDistributionDraft,newDistributionInverseQuery,newDistributionWhatIfState,normalizeDistributionDraft,analyzeDistribution,DISTRIBUTION_KINDS,
  distributionSignature,saveDistributionFigure} from "./distribution-core.js";
 import {completeEntry,startFirstRepresentation} from "../completing/engine.js";
 import {linkRepresentationFigure} from "./figure-linking.js";
@@ -22,10 +22,10 @@ export function setDistributionField(studio,key,value){
  }
  d.edited=true;return true;
 }
-export function freshDistribution(studio){studio.activeId="";studio.draft=newDistributionDraft();studio.inverse=newDistributionInverseQuery();studio.open=true;}
+export function freshDistribution(studio){studio.activeId="";studio.draft=newDistributionDraft();studio.inverse=newDistributionInverseQuery();studio.whatIf=newDistributionWhatIfState();studio.open=true;}
 export function loadDistribution(studio,id){
  const fig=studio.figures.find(f=>f.id===id);if(!fig)return false;
- studio.activeId=id;studio.draft=normalizeDistributionDraft(fig.draft);studio.inverse=newDistributionInverseQuery();studio.open=true;return true;
+ studio.activeId=id;studio.draft=normalizeDistributionDraft(fig.draft);studio.inverse=newDistributionInverseQuery();studio.whatIf=newDistributionWhatIfState();studio.open=true;return true;
 }
 function flagReview(state,previous,record){
  if(!previous?.entryId||distributionSignature(previous.draft)===distributionSignature(record.draft))return false;
