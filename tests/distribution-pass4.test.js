@@ -35,7 +35,7 @@ test("all five distribution types have a stable editor and are retained in backu
   const saved=saveDistributionFigure(s.distributionStudio);
   assert(saved.ok,kind);
   const recovered=normalizeDistributionStudio(JSON.parse(JSON.stringify(s.distributionStudio)));
-  assert.equal(recovered.figures[0].draft.kind,kind);
+  assert.equal(recovered.figures.find(fig=>fig.id===saved.record.id)?.draft.kind,kind);
   s.distributionStudio.activeId="";
  }
  assert.equal(s.distributionStudio.figures.length,5);
