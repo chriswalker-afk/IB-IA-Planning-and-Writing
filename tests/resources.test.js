@@ -16,8 +16,8 @@ const ids=(s,o)=>resourceSuggestions(s,o).map(r=>r.id);
 const educational=s=>JSON.stringify([s.entries,s.planning,s.project,s.teacher,s.completion,s.scratch]);
 const view=(s,id)=>resourceDrawer(s,{...newResourceSession(),id});
 test('resources: all task IDs are unique with written steps, checks, valid references and related tasks',()=>{
- assert.equal(RESOURCES.length,34);assert.equal(new Set(RESOURCES.map(r=>r.id)).size,34);
- for(const r of RESOURCES){assert(r.steps.length>=3&&r.check&&r.after&&r.when,r.id);assert(Object.hasOwn(TOOLS,r.tool));assert(r.sources.length);assert(r.related.length<=2);for(const id of r.related)assert(resourceById(id));for(const x of [...r.sources,...r.videos]){assert(safeResourceUrl(x.url),x.url);assert.equal(x.checkedAt,r.id==='mla-citations'?'2026-10-23':r.id.startsWith('finance-')?'2026-10-25':'2026-10-15');}}
+ assert.equal(RESOURCES.length,36);assert.equal(new Set(RESOURCES.map(r=>r.id)).size,36);
+ for(const r of RESOURCES){assert(r.steps.length>=3&&r.check&&r.after&&r.when,r.id);assert(Object.hasOwn(TOOLS,r.tool));assert(r.sources.length);assert(r.related.length<=2);for(const id of r.related)assert(resourceById(id));for(const x of [...r.sources,...r.videos]){assert(safeResourceUrl(x.url),x.url);assert.equal(x.checkedAt,r.id==='mla-citations'?'2026-10-23':(r.id.startsWith('finance-')||['proof-exploration','iteration-sheet'].includes(r.id))?'2026-10-25':'2026-10-15');}}
 });
 test('resources: video listings do not claim teacher approval or full viewing',()=>{
  assert.equal(RESOURCES.filter(r=>r.videos.length).length,19);
@@ -141,7 +141,7 @@ test('resources: native diagram creators are available without hiding or replaci
  const browseResults=html.split('<div id="resource-results">')[1];
  assert(browseResults);
  assert.equal((browseResults.match(/class="resource-row"/g)||[]).length,8);
- assert(html.includes('34 matching guides'));
+ assert(html.includes('36 matching guides'));
  assert(!html.includes('target="_self"'));
  const guide=resourceDrawer(s,{...session,id:'sheets-scatter'});
  assert(guide.includes('Use a Pathfinder diagram creator'));
