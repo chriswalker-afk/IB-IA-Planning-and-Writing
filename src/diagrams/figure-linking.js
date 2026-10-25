@@ -51,7 +51,7 @@ export function linkRepresentationFigure(state,kind,record,entry){
 export function linkedRepresentationEntry(entries,key,figure){
  if(!Array.isArray(entries)||!figure?.id)return {entryIndex:-1,linked:null};
  const direct=entries.findIndex(e=>e?.id===figure.entryId);
- const kind=['graph','trace','stat','table','voronoi','geometry','probability'].find(id=>representationTool(id)?.entryKey===key);
+ const kind=['graph','trace','stat','table','voronoi','geometry','probability','distribution'].find(id=>representationTool(id)?.entryKey===key);
  const matches=entry=>entry?.[key]===figure.id||entry?.figureRefs?.includes(kind+':'+figure.id);
  const referenced=entries.findIndex(matches);
  let index=referenced;
