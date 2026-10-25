@@ -1,4 +1,4 @@
-import {newDistributionDraft,normalizeDistributionDraft,analyzeDistribution,
+import {newDistributionDraft,normalizeDistributionDraft,analyzeDistribution,DISTRIBUTION_KINDS,
  distributionSignature,saveDistributionFigure} from "./distribution-core.js";
 import {completeEntry,startFirstRepresentation} from "../completing/engine.js";
 import {linkRepresentationFigure} from "./figure-linking.js";
@@ -7,12 +7,12 @@ export function setDistributionField(studio,key,value){
  if(!(key in d)||key==="edited")return false;
  if(["showMean","showProbability","showParameters"].includes(key)){if(typeof value!=="boolean")return false;d[key]=value;}
  else if(["kind","mode","size","printStyle","sourceKind"].includes(key)){
-  const allowed={kind:["normal","binomial"],mode:["none","left","right","between","outside","exact"],
+  const allowed={kind:DISTRIBUTION_KINDS,mode:["none","left","right","between","outside","exact"],
    size:["compact","standard","wide"],printStyle:["colour","mono"],
    sourceKind:["theoretical","primary","secondary","unsure"]};
   if(!allowed[key].includes(value))return false;
-  d[key]=value;if(key==="kind"&&value==="normal"&&d.mode==="exact")d.mode="none";
- }else if(typeof value==="string")d[key]=value.slice(0,["note","sourceCredit"].includes(key)?800:180);
+  d[key]=value;if(key==="kind"&&["normal","uniform"].includes(value)&&d.mode==="exact")d.mode="none";
+ }else if(typeof value==="string")d[key]=value.slice(0,key==="customPoints"?3200:["note","sourceCredit"].includes(key)?800:180);
  else return false;
  d.edited=true;return true;
 }
@@ -47,7 +47,7 @@ export function saveAndLinkDistribution(state){
  const reviewNeeded=flagReview(state,previous,saved.record);
  linkRepresentationFigure(state,"distribution",saved.record,entry);
  if(!entry.title?.trim())entry.title=saved.record.draft.title;
- if(!entry.technique?.trim())entry.technique=saved.record.draft.kind==="normal"?"Normal probability model":"Binomial probability model";
+ if(!entry.technique?.trim())entry.technique=({normal:"Normal probability model",binomial:"Binomial probability model",poisson:"Poisson count model",uniform:"Continuous uniform density model",custom:"Custom discrete probability model"})[saved.record.draft.kind];
  entry.kind="diagram";state.completion.activeEntryIndex=index;state.ui.mathIndex=index;
  if(entry.phase==="first")state.completion.fields.firstType="diagram";
  return {...saved,index,reviewNeeded};

@@ -148,3 +148,7 @@
 [data-distribution-studio] .distribution-reused-sparks small{color:var(--text-muted,#637885);font-size:.76rem}
 [data-distribution-studio] .distribution-learning-write .distribution-learning-caution{font-size:.78rem;color:var(--text-muted,#5b737f);border-top:1px solid var(--border,#dae6eb);padding-top:10px}
 @media(max-width:420px){[data-distribution-studio] .distribution-learning{padding:12px}[data-distribution-studio] .distribution-learning-actions>.btn{width:100%;justify-content:center}[data-distribution-studio] .distribution-learning-actions>details{width:100%}}
+
+/* Numerical outcomes stay easy to read and edit without enlarging the IA figure. */
+[data-distribution-studio] .distribution-outcome-entry textarea{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-weight:500;line-height:1.65;min-height:125px;resize:vertical;tab-size:3}
+[data-distribution-studio] .distribution-outcome-entry small{display:block;font-size:.76rem;line-height:1.5;font-weight:400;color:var(--text-muted,#526c79);overflow-wrap:anywhere}

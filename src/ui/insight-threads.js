@@ -194,7 +194,7 @@ export function insightItems(s){
    x.figureRefs?.includes("distribution:"+figure.id));
   if(!linked)continue;
   const index=math.indexOf(linked),d=figure.draft||{};
-  const kind=d.kind==="binomial"?"Binomial":"Normal";
+  const kind=({normal:"Normal",binomial:"Binomial",poisson:"Poisson",uniform:"Continuous uniform",custom:"Custom discrete"})[d.kind]||"Probability";
   const title=short(d.title||kind+" probability model",110),variable=short(d.symbol||"X",8);
   const source=d.sourceKind==="secondary"?"Published parameters (check original citation)":
    d.sourceKind==="primary"?"Estimated from own data (verify sample and method)":

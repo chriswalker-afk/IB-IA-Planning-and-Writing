@@ -16,8 +16,8 @@ const has=(items,id)=>items.some(item=>item.id===id);
 test('unified discovery covers every current item exactly once and changes no source data',()=>{
  assert.equal(DISCOVERY_ITEMS.length,RESOURCES.length+WORKSHOP_DEFINITIONS.length+WORKSHOP_LESSONS.length+REPRESENTATION_TOOLS.length);
  assert.equal(RESOURCES.length,36);
- assert.equal(WORKSHOP_DEFINITIONS.length,240);
- assert.equal(WORKSHOP_LESSONS.length,42);
+ assert.equal(WORKSHOP_DEFINITIONS.length,243);
+ assert.equal(WORKSHOP_LESSONS.length,45);
  assert.equal(REPRESENTATION_TOOLS.length,8);
  assert.equal(new Set(DISCOVERY_ITEMS.map(x=>x.type+':'+x.id)).size,DISCOVERY_ITEMS.length);
  assert(DISCOVERY_ITEMS.every(x=>Object.isFrozen(x)&&x.title&&x.description&&x.area));

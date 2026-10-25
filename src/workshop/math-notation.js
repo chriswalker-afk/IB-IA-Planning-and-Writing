@@ -336,7 +336,20 @@ export const WORKSHOP_LESSON_FORMULAS=Object.freeze({
       "tex": "e_{\\text{holdout}}=y_{\\text{holdout}}-\\hat{y}_{\\text{holdout}}",
       "spoken": "A held-out prediction error is the unseen observed response minus the prediction made without using that observation for fitting."
     }
+  ],
+  "poisson-models":[
+   {"label":"Poisson probability for an exact count","tex":"P(X=k)=\\frac{e^{-\\lambda}\\lambda^k}{k!}","spoken":"The Poisson exact count probability equals e to minus lambda times lambda to power k, divided by k factorial."},
+   {"label":"Poisson mean and variance","tex":"E(X)=\\lambda,\\quad \\mathrm{Var}(X)=\\lambda","spoken":"Both mean and variance equal lambda for a Poisson random variable."}
+  ],
+  "uniform-continuous-models":[
+   {"label":"Density inside the uniform support","tex":"f(x)=\\frac{1}{b-a},\\quad a\\le x\\le b","spoken":"For values between a and b, the uniform density equals one over b minus a."},
+   {"label":"Interval area inside the support","tex":"P(c\\le X\\le d)=\\frac{d-c}{b-a},\\quad a\\le c\\le d\\le b","spoken":"When the event interval lies inside the support, its probability equals its length divided by the entire support width."}
+  ],
+  "custom-discrete-models":[
+   {"label":"Valid discrete probability total","tex":"\\sum_i p_i=1,\\qquad p_i\\ge0","spoken":"All discrete outcome probabilities must be nonnegative and their sum must equal one."},
+   {"label":"Expected value from discrete outcomes","tex":"E(X)=\\sum_i x_i p_i","spoken":"Expected value equals the sum of each outcome multiplied by its probability."}
   ]
+
 });
 export const WORKSHOP_DEFINITION_FORMULAS=Object.freeze({
   "mean": {

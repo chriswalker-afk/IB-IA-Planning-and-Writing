@@ -14,6 +14,7 @@ import {BATCH6_DEFINITIONS} from './batch-6-definitions.js';
 import {BATCH6_LESSONS} from './batch-6-lessons.js';
 import {BATCH7_DEFINITIONS} from './batch-7-definitions.js';
 import {BATCH7_LESSONS} from './batch-7-lessons.js';
+import {DISTRIBUTION_PASS4_DEFINITIONS,DISTRIBUTION_PASS4_LESSONS} from './distribution-pass4.js';
 import {CONNECTED_SAMPLING_DEFINITIONS} from './connected-sampling-definitions.js';
 const define=(id,category,title,meaning,example,notation="")=>
  Object.freeze({id,category,title,meaning,example,notation});
@@ -52,6 +53,7 @@ export const WORKSHOP_DEFINITIONS=Object.freeze([
  ...BATCH5_DEFINITIONS,
  ...BATCH6_DEFINITIONS,
  ...BATCH7_DEFINITIONS,
+ ...DISTRIBUTION_PASS4_DEFINITIONS,
  ...CONNECTED_SAMPLING_DEFINITIONS
 ]);
 export const DEFINITION_BY_ID=new Map(WORKSHOP_DEFINITIONS.map(d=>[d.id,d]));
@@ -138,7 +140,8 @@ export const WORKSHOP_LESSONS=Object.freeze([
  ...BATCH4_LESSONS,
  ...BATCH5_LESSONS,
  ...BATCH6_LESSONS,
- ...BATCH7_LESSONS
+ ...BATCH7_LESSONS,
+ ...DISTRIBUTION_PASS4_LESSONS
 ]);
 export const LESSON_BY_ID=new Map(WORKSHOP_LESSONS.map(l=>[l.id,l]));
 export const lessonById=id=>LESSON_BY_ID.get(id)||null;
@@ -160,7 +163,7 @@ export const PATHWAY_LEARNING=Object.freeze({
  triangulation:{terms:["scale-factor","uncertainty","euclidean-distance","rounding-interval","sensitivity-analysis","baseline","bearing","interior-angle","sine-rule","cosine-rule","triangle-area","calibration-factor","worst-case-bounds"],lessons:["measurement","triangulation","image-calibration","geometry-sensitivity"]},
  voronoi:{terms:["voronoi-cell","euclidean-distance","model","perpendicular-bisector","locus","voronoi-boundary","voronoi-vertex","distance-metric","reference-length","pixel-coordinate"],lessons:["voronoi-regions","image-calibration"]},
  finance:{terms:["model","parameter","constraint","extrapolation","sensitivity-analysis","exponential-model","nonlinear-regression","rmse","holdout-data","doubling-time","logarithm",...BATCH6_DEFINITIONS.map(d=>d.id)],lessons:["measurement","nonlinear-fitting","model-comparison","exponential-logarithms",...BATCH6_LESSONS.map(l=>l.id)]},
- chance:{terms:["probability","expected-value","sample",...BATCH5_DEFINITIONS.map(d=>d.id)],lessons:BATCH5_LESSONS.map(l=>l.id)},
+ chance:{terms:["probability","expected-value","sample",...BATCH5_DEFINITIONS.map(d=>d.id),...DISTRIBUTION_PASS4_DEFINITIONS.map(d=>d.id)],lessons:[...BATCH5_LESSONS.map(l=>l.id),...DISTRIBUTION_PASS4_LESSONS.map(l=>l.id)]},
  proof:{terms:["conjecture","counterexample","domain",...BATCH7_DEFINITIONS.filter(d=>d.category==="Proof").map(d=>d.id)],lessons:BATCH7_LESSONS.filter(l=>l.category==="Proof & reasoning").map(l=>l.id)},
  iteration:{terms:["iteration","convergence","parameter","domain",...BATCH7_DEFINITIONS.filter(d=>d.category==="Iteration").map(d=>d.id)],lessons:BATCH7_LESSONS.filter(l=>l.category==="Sequences & iteration").map(l=>l.id)}
 });
@@ -190,6 +193,9 @@ export const workshopLessonForEntry=entry=>{
  if(entry.methodId==="expected-value")return "discrete-expected-value";
  if(entry.methodId==="binomial")return "binomial-models";
  if(entry.methodId==="normal")return "normal-models";
+ if(entry.methodId==="poisson")return "poisson-models";
+ if(entry.methodId==="uniform")return "uniform-continuous-models";
+ if(entry.methodId==="custom")return "custom-discrete-models";
  if(["two-sample-t","chi-independence","chi-fit"].includes(entry.methodId))return "inference-evidence";
  if(!entry.methodId&&entry.kind==="distribution")return "descriptive";
  return "";

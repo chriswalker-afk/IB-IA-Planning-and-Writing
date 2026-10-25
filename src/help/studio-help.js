@@ -561,7 +561,7 @@ export function studioHelpFor(state,spot){
  const editingDistribution=node==="C31"&&tool?.id==="distribution";
  const savedDistribution=entry?.distributionFigureId?
   state.distributionStudio?.figures?.find(f=>f.id===entry.distributionFigureId):null;
- const methodKind=["normal","binomial"].includes(entry?.methodId)?entry.methodId:"";
+ const methodKind=["normal","binomial","poisson","uniform","custom"].includes(entry?.methodId)?entry.methodId:"";
  const explicitDraft=editingDistribution?state.distributionStudio?.draft:
   savedDistribution?.draft||(methodKind?{...newDistributionDraft(),kind:methodKind}:null);
  if(explicitDraft){

@@ -21,10 +21,10 @@ test("Batch 7: 40 domain-conscious glossary terms, seven complete read-only less
  assert.equal(BATCH7_DEFINITIONS.filter(d=>d.category==="Iteration").length,22);
  assert.equal(BATCH7_DEFINITIONS.filter(d=>d.notation).length,21);
  assert.equal(BATCH7_LESSONS.length,7);
- assert.equal(WORKSHOP_DEFINITIONS.length,240);
- assert.equal(WORKSHOP_LESSONS.length,42);
- assert.equal(new Set(WORKSHOP_DEFINITIONS.map(d=>d.id)).size,240);
- assert.equal(new Set(WORKSHOP_LESSONS.map(l=>l.id)).size,42);
+ assert.equal(WORKSHOP_DEFINITIONS.length,243);
+ assert.equal(WORKSHOP_LESSONS.length,45);
+ assert.equal(new Set(WORKSHOP_DEFINITIONS.map(d=>d.id)).size,243);
+ assert.equal(new Set(WORKSHOP_LESSONS.map(l=>l.id)).size,45);
  assert.deepEqual(BATCH7_LESSONS.map(l=>l.id),[
   "proof-conjectures","proof-direct-reasoning","proof-induction-patterns",
   "iteration-sequences","iteration-fixed-points","iteration-bisection","iteration-newton"

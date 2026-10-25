@@ -2,22 +2,25 @@
  * Probability Distribution Studio — theoretical models, never inferred observations.
  * Pure functions: safe to use in project backups, reports, figure previews and tests.
  */
+import {analyzeExtraModel,extraEventProbability} from "./distribution-extra.js";
 export const MAX_DISTRIBUTION_FIGURES=12;
 const plain=x=>x!==null&&typeof x==="object"&&!Array.isArray(x);
 const clean=(x,max=160)=>typeof x==="string"?x.slice(0,max):"";
 const number=x=>String(x??"").trim()!==""&&Number.isFinite(Number(x))?Number(x):null;
-const kinds=["normal","binomial"],modes=["none","left","right","between","outside","exact"];
+export const DISTRIBUTION_KINDS=Object.freeze(["normal","binomial","poisson","uniform","custom"]);
+const kinds=DISTRIBUTION_KINDS,modes=["none","left","right","between","outside","exact"];
 export function newDistributionDraft(){
- return {kind:"normal",title:"",symbol:"X",unit:"",mu:"0",sigma:"1",n:"10",p:"0.5",
+ return {kind:"normal",title:"",symbol:"X",unit:"",mu:"0",sigma:"1",n:"10",p:"0.5",lambda:"3",a:"0",b:"10",
+  customPoints:"0, 0.25\n1, 0.50\n2, 0.25",
   mode:"none",lower:"",upper:"",size:"standard",printStyle:"colour",showProbability:true,
   showMean:false,showParameters:false,figureNumber:"",caption:"",sourceKind:"theoretical",
   sourceCredit:"",note:"",edited:false};
 }
 export function normalizeDistributionDraft(raw){
  const d=newDistributionDraft(),r=plain(raw)?raw:{};
- for(const key of ["title","symbol","unit","mu","sigma","n","p","lower","upper",
+ for(const key of ["title","symbol","unit","mu","sigma","n","p","lambda","a","b","customPoints","lower","upper",
    "figureNumber","caption","sourceCredit","note"]){
-  if(typeof r[key]==="string")d[key]=clean(r[key],["note","sourceCredit"].includes(key)?800:180);
+  if(typeof r[key]==="string")d[key]=clean(r[key],key==="customPoints"?3200:["note","sourceCredit"].includes(key)?800:180);
  }
  for(const key of ["kind","mode","size","printStyle","sourceKind"]){
   const options={kind:kinds,mode:modes,size:["compact","standard","wide"],
@@ -26,7 +29,7 @@ export function normalizeDistributionDraft(raw){
  }
  for(const key of ["showProbability","showMean","showParameters","edited"])
   if(typeof r[key]==="boolean")d[key]=r[key];
- if(d.kind==="normal"&&d.mode==="exact")d.mode="none";
+ if(["normal","uniform"].includes(d.kind)&&d.mode==="exact")d.mode="none";
  return d;
 }
 export const newDistributionStudio=()=>({open:false,zoomed:false,draft:newDistributionDraft(),figures:[],activeId:""});
@@ -91,7 +94,7 @@ export function analyzeDistribution(raw){
  if(d.sourceKind==="secondary"&&!d.sourceCredit.trim())
   issues.push("Give the original source of your published model parameters.");
  if(d.sourceKind==="unsure")notes.push("Identify whether your parameters are assumed, estimated or published.");
- let mu=null,sigma=null,n=null,p=null,mean=null,variance=null,masses=[];
+ let mu=null,sigma=null,n=null,p=null,mean=null,variance=null,masses=[],extra=null;
  if(d.kind==="normal"){
   mu=number(d.mu);sigma=number(d.sigma);
   if(mu===null||Math.abs(mu)>1e12)issues.push("Enter a finite mean of sensible magnitude.");
@@ -99,7 +102,7 @@ export function analyzeDistribution(raw){
   if(sigma===null||sigma<=0||sigma>1e12||sigma<1e-12)
    issues.push("Standard deviation must be positive and of sensible magnitude.");
   mean=mu;variance=sigma===null?null:sigma*sigma;
- }else{
+ }else if(d.kind==="binomial"){
   n=number(d.n);p=number(d.p);
   if(!Number.isInteger(n)||n<1||n>150)issues.push("Number of trials must be an integer from 1 to 150.");
   if(p===null||p<0||p>1)issues.push("Success probability must be between 0 and 1.");
@@ -107,17 +110,21 @@ export function analyzeDistribution(raw){
    masses=Array.from({length:n+1},(_,k)=>binomialMass(n,p,k));
    mean=n*p;variance=n*p*(1-p);
   }
+ }else{
+  extra=analyzeExtraModel(d);
+  issues.push(...extra.issues);notes.push(...extra.notes);
+  mean=extra.mean;variance=extra.variance;
  }
  const a=d.mode==="none"?null:number(d.lower);
  const b=["between","outside"].includes(d.mode)?number(d.upper):null;
  if(d.mode!=="none"){
   if(a===null)issues.push("Enter the boundary value for your selected event.");
-  else if(d.kind==="binomial"&&!Number.isInteger(a))
-   issues.push("Binomial event bounds must be integers; inequalities are inclusive.");
+  else if(["binomial","poisson"].includes(d.kind)&&!Number.isInteger(a))
+   issues.push("Count-distribution event bounds must be integers; inequalities are inclusive.");
   if(["between","outside"].includes(d.mode)){
    if(b===null)issues.push("Enter the upper boundary value.");
-   else if(d.kind==="binomial"&&!Number.isInteger(b))
-    issues.push("Binomial event bounds must be integers.");
+   else if(["binomial","poisson"].includes(d.kind)&&!Number.isInteger(b))
+    issues.push("Count-distribution event bounds must be integers.");
    if(a!==null&&b!==null&&(d.mode==="outside"?a>=b:a>b))
     issues.push("The lower boundary must not exceed the upper boundary.");
   }
@@ -137,20 +144,23 @@ export function analyzeDistribution(raw){
     compensation=(t-sum)-y;sum=t;
    }
    probability=Math.max(0,Math.min(1,sum));
-  }else{
+  }else if(d.kind==="normal"){
    const z=x=>(x-mu)/sigma;
    probability=d.mode==="left"?normalCdf(z(a)):
     d.mode==="right"?normalUpperTail(z(a)):
     d.mode==="between"?normalInterval(z(a),z(b)):
     1-normalInterval(z(a),z(b));
-  }
+  }else probability=extraEventProbability(d,extra,a,b);
   statement="P("+expr+") = "+formatDistributionProbability(probability);
  }
  if(d.kind==="normal")notes.push("A density curve represents a proposed continuous model; the probability is an area, not the curve height.");
- else notes.push("A binomial model assumes fixed trials, two outcomes, independence and constant success probability.");
+ if(d.kind==="binomial")notes.push("A binomial model assumes fixed trials, two outcomes, independence and constant success probability.");
  notes.push("A theoretical distribution does not by itself show that observed data fit the chosen model.");
  return {ready:issues.length===0,issues,notes,draft:d,probability,statement,
-  mean,variance,mu,sigma,n,p,masses,lower:a,upper:b};
+  mean,variance,mu,sigma,n,p,masses,lower:a,upper:b,
+  lambda:extra?.lambda??null,uniformA:extra?.uniformA??null,uniformB:extra?.uniformB??null,
+  points:extra?.points||(masses.length?masses.map((probability,x)=>({x,probability})):[]),
+  plotMax:extra?.plotMax??null,total:extra?.total??null};
 }
 export const distributionSignature=d=>JSON.stringify(normalizeDistributionDraft(d));
 export function saveDistributionFigure(studio,entryId=""){

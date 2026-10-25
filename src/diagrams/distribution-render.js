@@ -1,6 +1,6 @@
 /**
- * Document-ready probability figure. Preview-only drag handles never enter
- * saved SVG, PNG, the first-figure gallery or report exports.
+ * IA-ready figure. The export is the same calibrated SVG as the preview,
+ * minus slider handles and editor-only guidance.
  */
 import {distributionLayout,formatPlotNumber,clamp} from "./distribution-layout.js";
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -23,27 +23,42 @@ const curvePath=(layout,lo,hi,steps)=>{
   return (i?"L":"M")+coord(x(v))+" "+coord(yPixel(density(v)));
  }).join(" ");
 };
+const shadeFill=layout=>layout.d.printStyle==="mono"?"url(#distribution-hatch)":"#add8e8";
+const shadeOpacity=layout=>layout.d.printStyle==="mono"?"1":".76";
 function shadeNormal(layout,a,b){
  if(!(b>a))return "";
- const {plot,x,yPixel,density}=layout;
+ const {plot,x}=layout;
  const steps=Math.max(2,Math.ceil(480*(b-a)/(2*layout.extent*layout.q.sigma)));
- const fill=layout.d.printStyle==="mono"?"url(#distribution-hatch)":"#add8e8";
  return '<path data-distribution-shading="normal" d="M'+coord(x(a))+" "+coord(plot.bottom)+
   " "+curvePath(layout,a,b,steps).replace(/^M/,"L")+" L"+coord(x(b))+" "+coord(plot.bottom)+
-  ' Z" fill="'+fill+'" fill-opacity="'+(layout.d.printStyle==="mono"?"1":".76")+'"/>';
+  ' Z" fill="'+shadeFill(layout)+'" fill-opacity="'+shadeOpacity(layout)+'"/>';
 }
-function shadeIntervals(layout){
- const {q,d,extent}=layout;
- if(d.mode==="none"||q.lower===null)return "";
- const a=q.mu-extent*q.sigma,b=q.mu+extent*q.sigma,lo=q.lower,hi=q.upper;
- const intervals=d.mode==="left"?[[a,Math.min(b,lo)]]:
-  d.mode==="right"?[[Math.max(a,lo),b]]:
-  d.mode==="between"?[[Math.max(a,lo),Math.min(b,hi)]]:
-  [[a,Math.min(b,lo)],[Math.max(a,hi),b]];
- return intervals.map(([start,end])=>shadeNormal(layout,clamp(start,a,b),clamp(end,a,b))).join("");
+function selectedIntervals(layout){
+ const {q,d}=layout;
+ if(d.mode==="none"||q.lower===null)return [];
+ const min=d.kind==="normal"?layout.domainMin:q.uniformA;
+ const max=d.kind==="normal"?layout.domainMax:q.uniformB;
+ const lo=q.lower,hi=q.upper;
+ return (d.mode==="left"?[[min,Math.min(max,lo)]]:
+  d.mode==="right"?[[Math.max(min,lo),max]]:
+  d.mode==="between"?[[Math.max(min,lo),Math.min(max,hi)]]:
+  [[min,Math.min(max,lo)],[Math.max(min,hi),max]])
+  .map(([a,b])=>[clamp(a,min,max),clamp(b,min,max)]).filter(([a,b])=>b>a);
 }
-const tickGroup=layout=>{
- const {q,d,plot,yTicks,xTicks,yPixel,x}=layout;
+function shading(layout){
+ const {d,q,x,plot,yPixel}=layout;
+ if(!layout.continuous)return "";
+ return selectedIntervals(layout).map(([a,b])=>{
+  if(d.kind==="normal")return shadeNormal(layout,a,b);
+  const y=yPixel(1/(q.uniformB-q.uniformA));
+  return '<path data-distribution-shading="uniform" d="M'+coord(x(a))+" "+coord(plot.bottom)+
+   " L"+coord(x(a))+" "+coord(y)+" L"+coord(x(b))+" "+coord(y)+
+   " L"+coord(x(b))+" "+coord(plot.bottom)+' Z" fill="'+shadeFill(layout)+
+   '" fill-opacity="'+shadeOpacity(layout)+'"/>';
+ }).join("");
+}
+function ticks(layout){
+ const {plot,yTicks,xTicks,yPixel,x}=layout;
  let svg="";
  for(const value of yTicks){
   const y=yPixel(value);
@@ -57,7 +72,7 @@ const tickGroup=layout=>{
   svg+=text(tick.label,xpos,plot.bottom+24,13);
  }
  return svg;
-};
+}
 function boundaryMarks(layout,interactive){
  const {q,d,plot,x,yPixel,density}=layout;
  if(d.mode==="none"||q.lower===null)return "";
@@ -67,39 +82,68 @@ function boundaryMarks(layout,interactive){
  entries.forEach(([role,v],index)=>{
   const xx=x(v);
   if(xx<plot.left-1||xx>plot.right+1)return;
-  const pointY=d.kind==="normal"?yPixel(density(v)):
-    yPixel(q.masses[clamp(v,0,q.n)]||0);
+  const mass=q.points?.find(p=>p.x===v)?.probability||0;
+  const pointY=layout.continuous?yPixel(density(v)):mass?yPixel(mass):plot.top+8;
   const labelY=plot.top+16+((index===1&&Math.abs(x(entries[0][1])-xx)<75)?17:0);
-  // The thin analytical marker is part of the print figure.
   svg+=line(xx,pointY,xx,plot.bottom,d.printStyle==="mono"?"#344c5c":"#267b99",1.45,
    ' stroke-dasharray="5 4" data-distribution-boundary="'+role+'"');
-  if(d.kind==="normal"){
-   svg+=text(formatPlotNumber(v,q.sigma/100),xx,labelY,13,"middle",600,
-     ' stroke="white" stroke-width="4" stroke-linejoin="round" paint-order="stroke"');
-  }
+  if(layout.continuous)
+   svg+=text(formatPlotNumber(v,d.kind==="normal"?q.sigma/100:(q.uniformB-q.uniformA)/100),xx,labelY,13,"middle",600,
+    ' stroke="white" stroke-width="4" stroke-linejoin="round" paint-order="stroke"');
   if(interactive){
-   const aria=role==="lower"?"Lower":"Upper",min=d.kind==="normal"?q.mu-layout.extent*q.sigma:0,
-    max=d.kind==="normal"?q.mu+layout.extent*q.sigma:q.n;
+   const aria=role==="lower"?"Lower":"Upper",
+    min=layout.continuous?layout.domainMin:d.kind==="custom"?q.points[0].x:0,
+    max=layout.continuous?layout.domainMax:d.kind==="custom"?q.points.at(-1).x:layout.discreteStep;
    svg+='<g class="distribution-drag-handle" data-distribution-handle="'+role+
     '" role="slider" tabindex="0" focusable="true" aria-label="'+aria+
     ' probability boundary for '+esc(d.symbol)+'" aria-orientation="horizontal" aria-valuenow="'+
     esc(String(v))+'" aria-valuemin="'+esc(String(min))+'" aria-valuemax="'+esc(String(max))+
     '" aria-valuetext="'+esc(String(v))+'">'+
     line(xx,plot.top,xx,plot.bottom,"transparent",27,' pointer-events="stroke"')+
-    '<circle cx="'+coord(xx)+'" cy="'+coord(d.kind==="normal"?pointY:plot.top+19)+
+    '<circle cx="'+coord(xx)+'" cy="'+coord(layout.continuous?pointY:plot.top+19)+
     '" r="7" fill="#ffffff" stroke="#246a86" stroke-width="2.4" pointer-events="all"/>'+
     '</g>';
   }
  });
  return svg;
 }
+function renderBars(layout,colour){
+ const {q,d,plot,x,yPixel}=layout,points=q.points||[];
+ const spacings=points.slice(1).map((p,i)=>Math.abs(x(p.x)-x(points[i].x)));
+ const gap=spacings.length?Math.min(...spacings):plot.width;
+ const barWidth=Math.min(33,Math.max(1.2,gap*.76));
+ const base="#cad5dc",selectedColour=d.printStyle==="mono"?"#344c5b":"#489fbd";
+ return points.map((p,i)=>{
+  const xx=x(p.x)-barWidth/2,y=yPixel(p.probability),height=plot.bottom-y;
+  const chosen=selected(q,p.x);
+  // The outcome is a true numeric value; data-distribution-bar provides a
+  // stable, escaped identifier while x-position comes from the numeric axis.
+  return '<rect data-distribution-bar="'+esc(String(p.x))+'"'+
+   (chosen?' data-distribution-selected="true"':'')+
+   ' x="'+coord(xx)+'" y="'+coord(y)+'" width="'+coord(barWidth)+
+   '" height="'+coord(Math.max(.01,height))+'" fill="'+(chosen?selectedColour:base)+
+   '" stroke="'+(chosen?"#2b627d":"#90a3ae")+'" stroke-width=".75"/>';
+ }).join("");
+}
+const parameters=q=>{
+ const d=q.draft;
+ switch(d.kind){
+  case "normal":return "μ = "+formatPlotNumber(q.mu,q.sigma)+"; σ = "+formatPlotNumber(q.sigma,q.sigma/10);
+  case "binomial":return "n = "+q.n+"; p = "+formatPlotNumber(q.p,.001);
+  case "poisson":return "λ = "+formatPlotNumber(q.lambda,.001);
+  case "uniform":return "a = "+formatPlotNumber(q.uniformA,(q.uniformB-q.uniformA)/10)+
+   "; b = "+formatPlotNumber(q.uniformB,(q.uniformB-q.uniformA)/10);
+  case "custom":return q.points.length+" outcomes · total probability = "+Number(q.total.toPrecision(10));
+  default:return "";
+ }
+};
 export function renderDistributionSvg(raw,{interactive=false}={}){
- const a=distributionLayout(raw),{q,d,plot,width:W,height:H,titleLines,titleEnd,statementY}=a;
- const colour=d.printStyle==="mono"?"#364a57":"#256f8d",base="#cad5dc";
+ const layout=distributionLayout(raw),{q,d,plot,width:W,height:H,titleLines,statementY}=layout;
+ const colour=d.printStyle==="mono"?"#364a57":"#256f8d";
  const aria=d.title||"Probability distribution";
- let svg=['<svg xmlns="http://www.w3.org/2000/svg" data-distribution-svg="true"'+
-  (interactive?' data-distribution-interactive="true"':"")+' role="'+(interactive?"group":"img")+'" aria-label="'+esc(aria)+
-  '" width="'+W+'" height="'+H+'" viewBox="0 0 '+W+" "+H+
+ const svg=['<svg xmlns="http://www.w3.org/2000/svg" data-distribution-svg="true"'+
+  (interactive?' data-distribution-interactive="true"':"")+' role="'+(interactive?"group":"img")+
+  '" aria-label="'+esc(aria)+'" width="'+W+'" height="'+H+'" viewBox="0 0 '+W+" "+H+
   '"><title>'+esc(aria)+'</title>'+
   (q.statement?'<desc>'+esc(q.statement)+'</desc>':"")+
   '<rect width="'+W+'" height="'+H+'" fill="#fff"/>'+
@@ -112,33 +156,26 @@ export function renderDistributionSvg(raw,{interactive=false}={}){
  }
  if(statementY!==null)svg.push(text(q.statement,W/2,statementY,14,"middle",500));
  const {left,right,top,bottom}=plot;
- svg.push(tickGroup(a));
- svg.push(line(left,top,left,bottom,"#566d7a",1.35));
- svg.push(line(left,bottom,right,bottom,"#566d7a",1.35));
- svg.push(text(d.kind==="normal"?"Probability density":"P("+d.symbol+" = k)",left,top-10,13,"start",500));
- if(d.kind==="normal"){
-  const start=q.mu-a.extent*q.sigma,end=q.mu+a.extent*q.sigma;
-  svg.push(shadeIntervals(a));
-  svg.push('<path data-distribution-curve="normal" d="'+curvePath(a,start,end,560)+
-   '" fill="none" stroke="'+colour+'" stroke-width="2.65" stroke-linejoin="round"/>');
-  if(d.showMean)svg.push(line(a.x(q.mu),top,a.x(q.mu),bottom,"#8b9aa1",1.2,' stroke-dasharray="3 5"'));
- }else{
-  const step=plot.width/(q.n+1),barW=Math.min(33,Math.max(1.2,step*.76));
-  for(let k=0;k<=q.n;k++){
-   const x=a.x(k)-barW/2,y=a.yPixel(q.masses[k]),height=bottom-y;
-   const chosen=selected(q,k);
-   svg.push('<rect data-distribution-bar="'+k+'"'+(chosen?' data-distribution-selected="true"':'')+
-    ' x="'+coord(x)+'" y="'+coord(y)+'" width="'+coord(barW)+'" height="'+coord(Math.max(.01,height))+
-    '" fill="'+(chosen?d.printStyle==="mono"?"#344c5b":"#489fbd":base)+
-    '" stroke="'+(chosen?"#2b627d":"#90a3ae")+'" stroke-width=".75"/>');
+ svg.push(ticks(layout),line(left,top,left,bottom,"#566d7a",1.35),
+  line(left,bottom,right,bottom,"#566d7a",1.35));
+ svg.push(text(layout.continuous?"Probability density":"P("+d.symbol+" = k)",left,top-10,13,"start",500));
+ if(layout.continuous){
+  svg.push(shading(layout));
+  if(d.kind==="normal"){
+   svg.push('<path data-distribution-curve="normal" d="'+curvePath(layout,layout.domainMin,layout.domainMax,560)+
+    '" fill="none" stroke="'+colour+'" stroke-width="2.65" stroke-linejoin="round"/>');
+  }else{
+   const a=x=>(coord(layout.x(x))),y=coord(layout.yPixel(1/(q.uniformB-q.uniformA)));
+   const path="M"+a(layout.domainMin)+" "+coord(bottom)+" L"+a(q.uniformA)+" "+coord(bottom)+
+    " L"+a(q.uniformA)+" "+y+" L"+a(q.uniformB)+" "+y+
+    " L"+a(q.uniformB)+" "+coord(bottom)+" L"+a(layout.domainMax)+" "+coord(bottom);
+   svg.push('<path data-distribution-curve="uniform" d="'+path+'" fill="none" stroke="'+colour+
+    '" stroke-width="2.65" stroke-linejoin="round"/>');
   }
- }
- svg.push(boundaryMarks(a,interactive));
+  if(d.showMean)svg.push(line(layout.x(q.mean),top,layout.x(q.mean),bottom,"#8b9aa1",1.2,' stroke-dasharray="3 5"'));
+ }else svg.push(renderBars(layout,colour));
+ svg.push(boundaryMarks(layout,interactive));
  svg.push(text(d.symbol+(d.unit.trim()?" ("+d.unit.trim()+")":""),W/2,H-23,15,"middle",500));
- if(d.showParameters){
-  const params=d.kind==="normal"?"μ = "+formatPlotNumber(q.mu,q.sigma)+"; σ = "+formatPlotNumber(q.sigma,q.sigma/10):
-   "n = "+q.n+"; p = "+formatPlotNumber(q.p,.001);
-  svg.push(text(params,W/2,bottom+48,13));
- }
+ if(d.showParameters)svg.push(text(parameters(q),W/2,bottom+48,13));
  return svg.join("")+"</svg>";
 }

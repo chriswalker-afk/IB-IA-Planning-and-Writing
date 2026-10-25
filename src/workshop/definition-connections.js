@@ -43,6 +43,9 @@ export const DEFINITION_CONNECTION_GROUPS=Object.freeze([
  group("Probability and simulation","monte-carlo-simulation",["theoretical-probability","simulated-trial","relative-frequency","monte-carlo-simulation","random-number-seed","law-of-large-numbers","sampling-variability"]),
  group("Binomial trials","binomial-distribution",["bernoulli-trial","binomial-distribution","combination-count","cumulative-probability","probability-distribution","independent-events"]),
  group("Normal models","normal-distribution",["normal-distribution","standard-score","probability-density","cumulative-probability","probability-distribution"]),
+ group("Poisson count models","poisson-distribution",["poisson-distribution","binomial-distribution","cumulative-probability","expected-value","independent-events"]),
+ group("Continuous uniform models","continuous-uniform-distribution",["continuous-uniform-distribution","probability-density","normal-distribution","cumulative-probability"]),
+ group("Custom discrete outcomes","custom-discrete-distribution",["custom-discrete-distribution","discrete-random-variable","probability-distribution","expected-value","discrete-variance"]),
  group("Evidence and inference","null-hypothesis",["null-hypothesis","alternative-hypothesis","p-value","significance-level","type-i-error","practical-significance","confidence-interval","sampling-variability"]),
  group("Conjectures and counterexamples","conjecture",["conjecture","counterexample","universal-claim","existential-claim","counterexample-domain","mathematical-proof","deductive-reasoning"]),
  group("Logic and proof methods","mathematical-proof",["implication-converse","necessary-condition","sufficient-condition","direct-proof","proof-by-contradiction","proof-by-cases","mathematical-proof"]),
@@ -96,7 +99,7 @@ export const DEFINITION_CONNECTION_BRIDGES=Object.freeze({
  "quartile":["box-plot","interquartile-range"],
  "financial-threshold":["break-even-point","profit-function"],
  "sample-size":["sampling","sampling-variability"],
- "cumulative-probability":["binomial-distribution","normal-distribution"]
+ "cumulative-probability":["binomial-distribution","normal-distribution","poisson-distribution","continuous-uniform-distribution"]
 });
 
 /** Return sectioned, unique, valid links. No keyword similarity or inferred course. */

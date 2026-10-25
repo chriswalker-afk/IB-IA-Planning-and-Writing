@@ -121,9 +121,64 @@ def binomial(browser):
   assert not errors,errors
   print("PASS binomial",flush=True)
  finally:c.close()
+def new_models(browser,width):
+ for kind in ("poisson","uniform","custom"):
+  c,p,errors=setup(browser,width)
+  try:
+   p.locator('[data-distribution-field="kind"]').select_option(kind)
+   field(p,"title",kind.title()+" model for a proposed IA event")
+   field(p,"symbol","T")
+   if kind=="poisson":
+    field(p,"lambda","3")
+    p.locator('[data-distribution-field="mode"]').select_option("right")
+    field(p,"lower","2")
+    expected="0.8009"
+    assert p.locator('[data-distribution-bar]').count()>10
+   elif kind=="uniform":
+    field(p,"a","-2");field(p,"b","4")
+    p.locator('[data-distribution-field="mode"]').select_option("between")
+    field(p,"lower","0");field(p,"upper","2")
+    expected="0.3333"
+    assert p.locator('[data-distribution-curve="uniform"]').count()==1
+   else:
+    field(p,"customPoints","-2, 0.2\n0, 0.5\n3, 0.3")
+    p.locator('[data-distribution-field="mode"]').select_option("right")
+    field(p,"lower","0")
+    expected="0.8000"
+    assert p.locator('[data-distribution-bar]').count()==3
+    assert p.locator('[data-distribution-selected="true"]').count()==2
+   assert p.locator('[data-representation-ready="true"]').count()==1
+   assert expected in p.locator('[data-distribution-feedback]').inner_text()
+   assert p.locator('[data-distribution-learning]').is_visible()
+   assert p.locator('[data-distribution-learning] [data-workshop-id]').count()==1
+   check_width(p);text_bounds(p)
+   p.screenshot(path=str(OUT/(kind+"-ia-"+str(width)+".png")),full_page=True,animations="disabled")
+   if width==1440:
+    selected=p.locator('[data-distribution-selected="true"]').count()
+    svg_print_check(p,kind+"-ia",selected)
+    p.locator('[data-distribution-learning] [data-studio-stuck]').click()
+    dialog=p.locator('#studioStuckDialog')
+    assert dialog.is_visible()
+    assert dialog.locator('[data-studio-stuck-choice]').count()>=2
+    dialog.locator('[data-studio-stuck-close]').click()
+    p.locator('[data-distribution-learning] [data-workshop-id]').click()
+    assert p.locator('[data-workshop-lesson="'+{
+     "poisson":"poisson-models","uniform":"uniform-continuous-models",
+     "custom":"custom-discrete-models"}[kind]+'"]').is_visible()
+    p.keyboard.press("Escape")
+    assert p.locator('[data-distribution-studio]').is_visible()
+    p.locator('[data-action="distribution-save"]').click()
+    saved=p.evaluate("(key)=>JSON.parse(localStorage.getItem(key))",KEY)
+    assert saved["distributionStudio"]["figures"][-1]["draft"]["kind"]==kind
+    if kind=="custom":
+     assert "-2, 0.2" in saved["distributionStudio"]["figures"][-1]["draft"]["customPoints"]
+   assert not errors,errors
+   print("PASS distribution",kind,width,flush=True)
+  finally:c.close()
 if __name__=="__main__":
  with sync_playwright() as playwright:
   browser=playwright.chromium.launch(headless=True)
   for width in (1440,390,320):normal(browser,width)
   binomial(browser)
+  for width in (1440,390):new_models(browser,width)
   browser.close()
