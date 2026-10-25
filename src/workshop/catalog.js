@@ -12,6 +12,8 @@ import {BATCH5_DEFINITIONS} from './batch-5-definitions.js';
 import {BATCH5_LESSONS} from './batch-5-lessons.js';
 import {BATCH6_DEFINITIONS} from './batch-6-definitions.js';
 import {BATCH6_LESSONS} from './batch-6-lessons.js';
+import {BATCH7_DEFINITIONS} from './batch-7-definitions.js';
+import {BATCH7_LESSONS} from './batch-7-lessons.js';
 const define=(id,category,title,meaning,example,notation="")=>
  Object.freeze({id,category,title,meaning,example,notation});
 export const WORKSHOP_DEFINITIONS=Object.freeze([
@@ -47,7 +49,8 @@ export const WORKSHOP_DEFINITIONS=Object.freeze([
  ...BATCH3_DEFINITIONS,
  ...BATCH4_DEFINITIONS,
  ...BATCH5_DEFINITIONS,
- ...BATCH6_DEFINITIONS
+ ...BATCH6_DEFINITIONS,
+ ...BATCH7_DEFINITIONS
 ]);
 export const DEFINITION_BY_ID=new Map(WORKSHOP_DEFINITIONS.map(d=>[d.id,d]));
 export const definitionById=id=>DEFINITION_BY_ID.get(id)||null;
@@ -132,7 +135,8 @@ export const WORKSHOP_LESSONS=Object.freeze([
  ...BATCH3_LESSONS,
  ...BATCH4_LESSONS,
  ...BATCH5_LESSONS,
- ...BATCH6_LESSONS
+ ...BATCH6_LESSONS,
+ ...BATCH7_LESSONS
 ]);
 export const LESSON_BY_ID=new Map(WORKSHOP_LESSONS.map(l=>[l.id,l]));
 export const lessonById=id=>LESSON_BY_ID.get(id)||null;
@@ -155,8 +159,8 @@ export const PATHWAY_LEARNING=Object.freeze({
  voronoi:{terms:["voronoi-cell","euclidean-distance","model","perpendicular-bisector","locus","voronoi-boundary","voronoi-vertex","distance-metric","reference-length","pixel-coordinate"],lessons:["voronoi-regions","image-calibration"]},
  finance:{terms:["model","parameter","constraint","extrapolation","sensitivity-analysis","exponential-model","nonlinear-regression","rmse","holdout-data","doubling-time","logarithm",...BATCH6_DEFINITIONS.map(d=>d.id)],lessons:["measurement","nonlinear-fitting","model-comparison","exponential-logarithms",...BATCH6_LESSONS.map(l=>l.id)]},
  chance:{terms:["probability","expected-value","sample",...BATCH5_DEFINITIONS.map(d=>d.id)],lessons:BATCH5_LESSONS.map(l=>l.id)},
- proof:{terms:["conjecture","counterexample","domain"],lessons:[]},
- iteration:{terms:["iteration","convergence","parameter","domain"],lessons:[]}
+ proof:{terms:["conjecture","counterexample","domain",...BATCH7_DEFINITIONS.filter(d=>d.category==="Proof").map(d=>d.id)],lessons:BATCH7_LESSONS.filter(l=>l.category==="Proof & reasoning").map(l=>l.id)},
+ iteration:{terms:["iteration","convergence","parameter","domain",...BATCH7_DEFINITIONS.filter(d=>d.category==="Iteration").map(d=>d.id)],lessons:BATCH7_LESSONS.filter(l=>l.category==="Sequences & iteration").map(l=>l.id)}
 });
 export const workshopLessonForEntry=entry=>{
  if(!entry)return "";
@@ -170,6 +174,12 @@ export const workshopLessonForEntry=entry=>{
  if(entry.methodId==="geometric-model")return "geometric-areas";
  if(entry.methodId==="triangulation")return "triangulation";
  if(entry.methodId==="voronoi")return "voronoi-regions";
+ if(entry.methodId==="proof")return "proof-direct-reasoning";
+ if(entry.methodId==="induction")return "proof-induction-patterns";
+ if(entry.methodId==="iteration")return "iteration-fixed-points";
+ if(entry.methodId==="recurrence")return "iteration-sequences";
+ if(entry.methodId==="bisection")return "iteration-bisection";
+ if(entry.methodId==="newton-raphson")return "iteration-newton";
  if(entry.methodId==="finance-compound")return "finance-compound-growth";
  if(entry.methodId==="finance-loan")return "finance-loan-repayments";
  if(entry.methodId==="finance-break-even")return "finance-break-even";
