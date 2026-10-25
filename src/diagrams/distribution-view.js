@@ -2,6 +2,7 @@ import {analyzeDistribution,MAX_DISTRIBUTION_FIGURES} from "./distribution-core.
 import {distributionLayout} from "./distribution-layout.js";
 import {renderDistributionSvg} from "./distribution-render.js";
 import {renderDistributionGuidance} from "./distribution-guidance.js";
+import {renderDistributionInverseHtml} from "./distribution-inverse-view.js";
 import {representationOutputActions} from "./workspace-ui.js";
 const field=(key,label,value,e)=>
  '<label class="probability-field"><span>'+e(label)+'</span><input type="text" data-distribution-field="'+key+'" value="'+e(value)+'"></label>';
@@ -66,6 +67,7 @@ export function renderDistributionStudio(state,icon,e){
  ["outside","Outside two boundaries"]].concat(["binomial","poisson","custom"].includes(d.kind)?[["exact","Exact outcome (=)"]]:[]),e)+
  (d.mode!=="none"?boundaryField("lower",["between","outside"].includes(d.mode)?"Lower boundary":"Value / boundary",d.lower,e):"")+
  (["between","outside"].includes(d.mode)?boundaryField("upper","Upper boundary",d.upper,e):"")+
+ renderDistributionInverseHtml(s,e)+
  '<details class="ia-figure-presentation-settings"><summary>IA figure appearance</summary>'+
  select("size","Figure size",d.size,[["compact","Compact"],["standard","Standard IA"],["wide","Wide"]],e)+
  select("printStyle","Printing",d.printStyle,[["colour","Colour"],["mono","Monochrome"]],e)+
