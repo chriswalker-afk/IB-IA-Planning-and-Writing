@@ -76,7 +76,8 @@ export function binomialMass(n,p,k){
 }
 export function formatDistributionProbability(p){
  if(p===0||p===1)return String(p);
- if(p<0.00005||p>0.99995)return Number(p.toPrecision(6)).toString();
+ if(p<0.00005)return Number(p.toPrecision(6)).toString();
+ if(p>0.99995)return Number(p.toPrecision(15)).toString();
  return p.toFixed(4);
 }
 const selected=(mode,k,a,b)=>mode==="exact"?k===a:
@@ -94,6 +95,7 @@ export function analyzeDistribution(raw){
  if(d.kind==="normal"){
   mu=number(d.mu);sigma=number(d.sigma);
   if(mu===null||Math.abs(mu)>1e12)issues.push("Enter a finite mean of sensible magnitude.");
+  if(mu!==null&&sigma!==null&&sigma>0&&mu+sigma===mu)issues.push("The standard deviation is too small relative to the mean for reliable axis labels.");
   if(sigma===null||sigma<=0||sigma>1e12||sigma<1e-12)
    issues.push("Standard deviation must be positive and of sensible magnitude.");
   mean=mu;variance=sigma===null?null:sigma*sigma;
