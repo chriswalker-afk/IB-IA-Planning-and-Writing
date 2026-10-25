@@ -130,7 +130,7 @@ const fixedTargetResult=(q,symbol,e)=>{
 };
 
 /** Optional questions stay in the editor and never populate an IA response. */
-export function distributionWhatIfReflectionHtml(studio,q,aim,e){
+export function distributionWhatIfReflectionHtml(studio,q,aim,e,writing=null){
  const reflection=distributionWhatIfReflection(q,studio.draft,aim);
  if(!reflection)return "";
  const questions=reflection.prompts.map(({id,title,question})=>
@@ -144,9 +144,20 @@ export function distributionWhatIfReflectionHtml(studio,q,aim,e){
   questions+
   '<p class="distribution-whatif-reflection-caution">'+e(reflection.caution)+
   ' Use these questions to develop your own mathematical judgement, not as text to paste into your IA.</p>'+
+  (writing?'<div class="distribution-whatif-writing-bridge" data-distribution-writing-bridge>'+
+    '<p class="distribution-whatif-writing-note" data-distribution-insight-status>'+
+    (writing.hasInsight?'Your existing Insight Threads already reflect notes you recorded in IA Studio.':
+     'Insight Threads reuse your own IA Studio writing; this comparison is not automatically recorded as a discovery.')+
+    (writing.needsRealResult?' A hypothetical comparison does not count as completed mathematical work.':'')+
+    '</p>'+
+    '<div class="distribution-whatif-writing-actions">'+
+    '<button type="button" class="btn btn-secondary btn-sm" data-action="distribution-whatif-write">Continue in IA Studio</button>'+
+    (writing.lessonId?'<button type="button" class="btn btn-quiet btn-sm" data-action="resource-workshop" data-workshop-id="'+e(writing.lessonId)+'" data-resource-help="true">Related Maths Workshop</button>':'')+
+    '<button type="button" class="btn btn-quiet btn-sm" data-studio-stuck="C31:whatif" aria-haspopup="dialog">I am stuck</button>'+
+    '</div></div>':'')+
   '</div></details>';
 }
-export function distributionWhatIfSummaryHtml(studio,e,aim=""){
+export function distributionWhatIfSummaryHtml(studio,e,aim="",writing=null){
  const q=compareDistributionWhatIf(studio);
  if(q.status==="idle")return "";
  if(q.status==="stale")return '<div class="distribution-whatif-error" role="alert"><strong>Original model changed.</strong>'+
@@ -175,7 +186,7 @@ export function distributionWhatIfSummaryHtml(studio,e,aim=""){
    Math.sqrt(q.alternative.variance)-Math.sqrt(q.original.variance))+'</div>'+
   (sensitivity?.eventValid?'<div class="distribution-whatif-sensitivity" data-distribution-sensitivity><strong>Event-probability change</strong><p>'+e(formatSensitivityPoints(sensitivity.deltaProbability))+' percentage points (alternative minus original)</p><small>Original: '+e(formatSensitivityProbability(q.originalProbability,sensitivity.originalComplement))+' · Alternative: '+e(formatSensitivityProbability(q.alternativeProbability,sensitivity.alternativeComplement))+'</small>'+(sensitivity.tailPrecision?'<p>Rare upper-tail probabilities are shown using their complements to avoid rounding an extremely small tail to zero.</p>':'')+'</div>':'')+
   (sensitivity?'<div class="distribution-whatif-sensitivity" data-distribution-parameter-change><strong>'+e(sensitivity.parameter.title)+'</strong><p>'+e(sensitivity.parameter.detail)+'</p></div>':'')+
-  distributionWhatIfReflectionHtml(studio,q,aim,e)+
+  distributionWhatIfReflectionHtml(studio,q,aim,e,writing)+
   (q.changed&&["primary","secondary"].includes(studio.draft.sourceKind)?'<p class="distribution-whatif-hint" data-distribution-source-warning>Applying this alternative will reclassify these parameters as an assumed theoretical model and clear the original source credit. The existing saved figure will not change until you save it.</p>':'')+
   eventProblems+
   (q.changed&&q.eventIssues.length===0&&(q.comparison!=="target"||q.target?.ok)?
@@ -186,7 +197,7 @@ export function distributionWhatIfSummaryHtml(studio,e,aim=""){
   '<p class="distribution-whatif-hint">The original figure and saved copies remain unchanged until you choose Apply. A model comparison does not establish which model fits observed data.</p>'+
   '</div>';
 }
-export function renderDistributionWhatIfControls(studio,e,aim=""){
+export function renderDistributionWhatIfControls(studio,e,aim="",writing=null){
  const w=studio.whatIf||{},d=studio.draft;
  return '<details class="distribution-whatif-panel" data-distribution-whatif-panel'+
   (w.active||w.status==="applied"?' open':'')+'>'+
@@ -203,7 +214,7 @@ export function renderDistributionWhatIfControls(studio,e,aim=""){
    '<button type="button" class="btn btn-quiet btn-sm" data-action="distribution-whatif-reset">Reset alternative</button>'+
    '<button type="button" class="btn btn-quiet btn-sm" data-action="distribution-whatif-discard">Discard comparison</button></div>'+
    '<div data-distribution-whatif-summary class="distribution-whatif-summary" aria-live="polite">'+
-   distributionWhatIfSummaryHtml(studio,e,aim)+'</div>')+
+   distributionWhatIfSummaryHtml(studio,e,aim,writing)+'</div>')+
   '</div></details>';
 }
 export function distributionWhatIfPreviewHtml(studio,e){

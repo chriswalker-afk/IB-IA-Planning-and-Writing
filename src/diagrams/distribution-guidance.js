@@ -6,6 +6,7 @@
  * All prompts derive from the current editable draft and existing student notes.
  */
 import {analyzeDistribution,distributionSignature} from "./distribution-core.js";
+import {distributionWhatIfReflection} from "./distribution-whatif-reflection.js";
 import {presentationSparks} from "./presentation-coach-core.js";
 import {lessonById,definitionById} from "../workshop/catalog.js";
 
@@ -175,6 +176,39 @@ export function distributionRecoveryCards(raw,spot="page"){
  if(isNext)return [follow,assumptions,event];
  if(isIntroduce)return [method,assumptions,event];
  return [event,assumptions,method];
+}
+/** Result-aware help for an explicitly selected, valid What-if comparison. */
+export function distributionComparisonRecoveryCards(draft,q,aim=""){
+ const guidance=distributionWhatIfReflection(q,draft,aim);
+ if(!guidance)return [];
+ const model=DISTRIBUTION_LEARNING[draft.kind];
+ const fixed=q.comparison==="target";
+ const mk=(id,label,question,action,check,stop,fallback,boundary)=>
+  Object.freeze({id,label,question,action,check,stop,fallback,boundary});
+ return [
+  mk("distribution-whatif-meaning","I cannot explain the comparison",
+   guidance.prompts[1].question,
+   "Compare "+(fixed?"the two cut-offs and their achieved probabilities":"both probabilities for exactly the same event")+
+    ". Keep the random variable and units consistent.",
+   fixed?"Have I distinguished requested and achieved coverage?":"Did the event stay unchanged?",
+   "One checked mathematical interpretation.",
+   "If the difference has no bearing on the aim, explain why and stop.",
+   guidance.caution),
+  mk("distribution-whatif-assumptions","I cannot justify the alternative",
+   guidance.prompts[0].question,
+   model.condition+" Identify a plausible process or original source for the alternative. If several parameters changed, consider isolating them.",
+   "Can I distinguish a hypothetical change from another measured value?",
+   "One justified modelling assumption.",
+   "Check the registered Maths Workshop lesson for the chosen distribution.",
+   "A parameter scenario alone cannot establish model fit."),
+  mk("distribution-whatif-relevance","I do not know whether this belongs in my IA",
+   guidance.prompts[2].question,
+   "Decide whether the comparison matters to the saved investigation aim. If useful, write your own interpretation in the existing IA Studio mathematical stage.",
+   "Would excluding it meaningfully weaken my answer?",
+   "One purposeful reflection or a reason not to include extra mathematics.",
+   "Return to the existing mathematical writing stage rather than creating a new result.",
+   "Do not record this proposed alternative as collected data.")
+ ];
 }
 export function renderDistributionGuidance(state,icon,e){
  const g=distributionGuidance(state,state.distributionStudio?.draft);
