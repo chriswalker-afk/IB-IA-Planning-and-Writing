@@ -4,6 +4,7 @@ import {escapeHtml as e,icon} from '../ui/primitives.js';
 import {REPRESENTATION_TOOLS} from '../diagrams/representation-registry.js';
 import {renderMlaCitationGuide} from './mla-guide.js';
 import {renderWorkshop} from '../workshop/views.js';
+import {discoverResources,DISCOVERY_AREAS,DISCOVERY_TYPES} from './discovery.js';
 const hosts=new Set(['support.google.com','help.desmos.com','www.desmos.com','runestone.academy','www.dataspire.org','www.lehman.cuny.edu','datahelpdesk.worldbank.org','databank.worldbank.org','automeris.io','www.perkins.org','knilt.arcc.albany.edu','mathispower4u.com','www.youtube.com','sheets.google.com','forms.google.com','docs.google.com','style.mla.org','www.ibo.org','data.worldbank.org']);
 export function safeResourceUrl(value){
  try{const u=new URL(value);return u.protocol==='https:'&&hosts.has(u.hostname)&&!u.username&&!u.password?u.href:'';}catch{return '';}
@@ -77,6 +78,53 @@ export function resourceList(session){
   (list.length?groups:'<p>No matching guide. Try a shorter search or clear the filters. Every guide has written steps.</p>')+
   (visible.length<list.length?button('more','Show more guides'):'');
 }
+const discoveryHit=item=>{
+ const attrs=item.type==='guide'?'data-action="resource-open" data-resource-id="'+e(item.id)+'"':
+  ['lesson','definition'].includes(item.type)?'data-action="resource-workshop-'+(item.type==='lesson'?'lesson':'term')+'" data-workshop-id="'+e(item.id)+'"':
+  'data-action="resource-creator-open" data-resource-creator="'+e(item.id)+'"';
+ const cta=item.type==='lesson'?'Start guided lesson':item.type==='definition'?'Read definition':
+  item.type==='guide'?'Open guide':'Open creator';
+ const tool=item.type==='guide'?'<span class="resource-discovery-tool">'+e(item.tool)+'</span>':'';
+ return '<article class="resource-discovery-item" data-discovery-kind="'+e(item.type)+'">'+
+  '<div class="resource-discovery-content"><h4>'+e(item.title)+'</h4><p>'+e(item.description)+'</p>'+tool+'</div>'+
+  '<button type="button" class="btn btn-quiet resource-discovery-open" '+attrs+'>'+cta+' '+icon("arrow-right")+'</button>'+
+  '</article>';
+};
+/** Render a unified result view only after an explicit search, task area, or type choice. */
+export function resourceResults(session){
+ const found=discoverResources(session);
+ if(!found.active)return resourceList(session);
+ const count=found.total;
+ const tabs='<div class="resource-discovery-types" role="group" aria-label="Show results of this kind">'+
+  DISCOVERY_TYPES.map(type=>{
+   const n=type.id==='all'?count:found.counts[type.id];
+   const active=found.type===type.id;
+   return '<button type="button" class="resource-discovery-type'+(active?' is-active':'')+
+    '" data-action="resource-discovery-type" data-resource-type="'+type.id+
+    '" aria-pressed="'+active+'">'+e(type.label)+' <span>'+n+'</span></button>';
+  }).join('')+'</div>';
+ const titles={lesson:'Guided lessons',definition:'Maths definitions',guide:'Software & task tutorials',creator:'Pathfinder figure creators'};
+ const groups=found.type==='all'?DISCOVERY_TYPES.filter(t=>t.id!=='all').map(t=>{
+  const items=found.grouped[t.id],max=t.id==='definition'?5:4,shown=items.slice(0,max);
+  if(!shown.length)return '';
+  return '<section class="resource-discovery-group" data-discovery-group="'+t.id+'">'+
+   '<div class="resource-discovery-group-heading"><h4>'+e(titles[t.id])+'</h4>'+
+    (items.length>max?'<button type="button" class="btn btn-quiet" data-action="resource-discovery-type" data-resource-type="'+t.id+
+     '">See all '+items.length+' '+e(t.label.toLowerCase())+' '+icon("arrow-right")+'</button>':'')+'</div>'+
+   '<div class="resource-discovery-list">'+shown.map(discoveryHit).join('')+'</div></section>';
+ }).join(''):'<section class="resource-discovery-group" data-discovery-group="'+found.type+'">'+
+  '<h4>'+e(titles[found.type])+'</h4>'+
+  '<div class="resource-discovery-list">'+found.grouped[found.type].slice(0,session.discoveryLimit||16).map(discoveryHit).join('')+'</div>'+
+  (found.grouped[found.type].length>(session.discoveryLimit||16)?
+   '<button type="button" class="btn btn-secondary resource-discovery-more" data-action="resource-discovery-more">Show more '+e(titles[found.type].toLowerCase())+'</button>':'')+
+  '</section>';
+ const summary='<p class="resource-small resource-discovery-count" role="status">'+count+' matching '+(count===1?'resource':'resources')+
+  (found.area?' in '+e(DISCOVERY_AREAS.find(a=>a.id===found.area).label):'')+
+  '. Browse for learning, not as a recommendation to use a method.</p>';
+ return '<div class="resource-discovery-results">'+summary+tabs+
+  (count?groups:'<p class="resource-discovery-empty">No matching resources. Try a shorter search, change the topic or clear the filters.</p>')+
+  '</div>';
+}
 export function resourceDrawer(state,session){
  if(session.mode==='workshop')return renderWorkshop(state,session);
  const x=resourceContext(state,{help:session.help}),r=resourceById(session.id);
@@ -132,24 +180,37 @@ export function resourceDrawer(state,session){
  const cats=[...new Set(RESOURCES.map(r=>r.category))];
  const options=(values,selected)=>values.map(([v,t])=>'<option value="'+e(v)+'"'+(v===selected?' selected':'')+'>'+e(t)+'</option>').join('');
  const filterActive=!!(session.tool||session.category);
- const filters='<form id="resource-filter-form" class="resource-filter-form" role="search">'+
-  '<label class="resource-control" for="resource-search"><span>Search tasks (tutorial guides)</span>'+
-   '<input id="resource-search" type="search" maxlength="120" data-resource-filter="query" value="'+e(session.query)+'" placeholder="For example: PMCC in Sheets, graph, integral"></label>'+
-  '<details class="resource-advanced-filters"'+(filterActive?' open':'')+'><summary>Filter by software or topic'+(filterActive?' (active)':'')+'</summary>'+
-  '<div class="resource-filters">'+
-   '<label class="resource-control" for="resource-filter-tool"><span>Software or tool</span><select id="resource-filter-tool" data-resource-filter="tool">'+
-    options([['','All tools'],...Object.entries(TOOLS).map(([k,v])=>[k,v.name])],session.tool)+'</select></label>'+
-   '<label class="resource-control" for="resource-filter-category"><span>Task area</span><select id="resource-filter-category" data-resource-filter="category">'+
-    options([['','All areas'],...cats.map(c=>[c,guideGroupTitle(c)])],session.category)+'</select></label>'+
-  '</div></details><div class="resource-filter-reset">'+button('clear','Clear search and filters')+'</div></form>';
+ const filters='<section class="resource-discovery-search" aria-labelledby="resource-search-heading">'+
+  '<h3 id="resource-search-heading">What do you need help with?</h3>'+
+  '<form id="resource-filter-form" class="resource-filter-form" role="search">'+
+   '<label class="resource-control" for="resource-search"><span>Search tasks, methods and tools</span>'+
+    '<input id="resource-search" type="search" maxlength="120" data-resource-filter="query" value="'+e(session.query)+'" placeholder="Try PMCC, sampling, histogram or MLA"></label>'+
+   '<p class="resource-small resource-search-help">Search across definitions, guided lessons, software tutorials and built-in creators.</p>'+
+   '<details class="resource-advanced-filters"'+(filterActive?' open':'')+'><summary>Software guide filters'+(filterActive?' (active)':'')+'</summary>'+
+    '<p class="resource-small">These extra filters apply to software and task tutorials only.</p>'+
+    '<div class="resource-filters">'+
+     '<label class="resource-control" for="resource-filter-tool"><span>Software or tool</span><select id="resource-filter-tool" data-resource-filter="tool">'+
+      options([['','All tools'],...Object.entries(TOOLS).map(([k,v])=>[k,v.name])],session.tool)+'</select></label>'+
+     '<label class="resource-control" for="resource-filter-category"><span>Tutorial task area</span><select id="resource-filter-category" data-resource-filter="category">'+
+      options([['','All areas'],...cats.map(c=>[c,guideGroupTitle(c)])],session.category)+'</select></label>'+
+    '</div></details><div class="resource-filter-reset">'+button('clear','Clear search and filters')+'</div>'+
+  '</form></section>';
+ const areas='<div class="resource-discovery-areas" role="group" aria-label="Browse help by task">'+
+  '<button type="button" class="resource-discovery-area'+(!session.discoveryArea?' is-active':'')+
+   '" data-action="resource-discovery-area" data-resource-area="" aria-pressed="'+!session.discoveryArea+'">All topics</button>'+
+  DISCOVERY_AREAS.map(area=>'<button type="button" class="resource-discovery-area'+(session.discoveryArea===area.id?' is-active':'')+
+   '" data-action="resource-discovery-area" data-resource-area="'+e(area.id)+'" aria-pressed="'+(session.discoveryArea===area.id)+'">'+e(area.label)+'</button>').join('')+
+  '</div>';
  return '<div class="resource-library resource-library-home">'+
   '<p class="resource-home-intro">Choose the help you need. Learn a method, use software, make a figure or reference your sources.</p>'+
-  relevant+destinations+
+  relevant+filters+destinations+
   '<section class="resource-home-guides" aria-labelledby="resource-home-guides-title">'+
-   '<div class="resource-home-heading"><h3 id="resource-home-guides-title">Browse tutorial guides</h3>'+
-    '<p>Written instructions for particular tasks and software. For definitions and worked mathematics, use the Maths Workshop.</p></div>'+
-   filters+preferences(x)+
-   '<div id="resource-results">'+resourceList(session)+'</div>'+
+   '<div class="resource-home-heading"><h3 id="resource-home-guides-title">Browse by task</h3>'+
+    '<p>Choose a topic to see relevant mathematics, tutorials and creators together. Browsing does not select a method for your IA.</p></div>'+
+   areas+
+   '<div id="resource-results">'+resourceResults(session)+'</div>'+
+   '<details class="resource-preferences-context"><summary>Choose a preferred graphing tool or picture task for this stage</summary>'+
+    preferences(x)+'</details>'+
   '</section><div class="resource-footer">'+close+'</div></div>';
 }
 function isCurrentGuide(state,session,id){return resourceSuggestions(state,{help:session.help}).some(r=>r.id===id);}
