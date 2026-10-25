@@ -10,6 +10,8 @@ import {BATCH4_DEFINITIONS} from './batch-4-definitions.js';
 import {BATCH4_LESSONS} from './batch-4-lessons.js';
 import {BATCH5_DEFINITIONS} from './batch-5-definitions.js';
 import {BATCH5_LESSONS} from './batch-5-lessons.js';
+import {BATCH6_DEFINITIONS} from './batch-6-definitions.js';
+import {BATCH6_LESSONS} from './batch-6-lessons.js';
 const define=(id,category,title,meaning,example,notation="")=>
  Object.freeze({id,category,title,meaning,example,notation});
 export const WORKSHOP_DEFINITIONS=Object.freeze([
@@ -44,7 +46,8 @@ export const WORKSHOP_DEFINITIONS=Object.freeze([
  ...BATCH2_DEFINITIONS,
  ...BATCH3_DEFINITIONS,
  ...BATCH4_DEFINITIONS,
- ...BATCH5_DEFINITIONS
+ ...BATCH5_DEFINITIONS,
+ ...BATCH6_DEFINITIONS
 ]);
 export const DEFINITION_BY_ID=new Map(WORKSHOP_DEFINITIONS.map(d=>[d.id,d]));
 export const definitionById=id=>DEFINITION_BY_ID.get(id)||null;
@@ -128,7 +131,8 @@ export const WORKSHOP_LESSONS=Object.freeze([
  HISTOGRAM_LESSON,
  ...BATCH3_LESSONS,
  ...BATCH4_LESSONS,
- ...BATCH5_LESSONS
+ ...BATCH5_LESSONS,
+ ...BATCH6_LESSONS
 ]);
 export const LESSON_BY_ID=new Map(WORKSHOP_LESSONS.map(l=>[l.id,l]));
 export const lessonById=id=>LESSON_BY_ID.get(id)||null;
@@ -149,7 +153,7 @@ export const PATHWAY_LEARNING=Object.freeze({
  images:{terms:["scale-factor","model","uncertainty","domain","instrument-resolution","sensitivity-analysis","definite-integral","signed-area","pixel-coordinate","image-origin","reference-length","calibration-factor","perspective-distortion","area-scale","composite-region","dimensional-units","sensitivity-check"],lessons:["measurement","integrals-accumulation","image-calibration","geometric-areas","geometry-sensitivity"]},
  triangulation:{terms:["scale-factor","uncertainty","euclidean-distance","rounding-interval","sensitivity-analysis","baseline","bearing","interior-angle","sine-rule","cosine-rule","triangle-area","calibration-factor","worst-case-bounds"],lessons:["measurement","triangulation","image-calibration","geometry-sensitivity"]},
  voronoi:{terms:["voronoi-cell","euclidean-distance","model","perpendicular-bisector","locus","voronoi-boundary","voronoi-vertex","distance-metric","reference-length","pixel-coordinate"],lessons:["voronoi-regions","image-calibration"]},
- finance:{terms:["model","parameter","constraint","extrapolation","sensitivity-analysis","exponential-model","nonlinear-regression","rmse","holdout-data","doubling-time","logarithm"],lessons:["measurement","nonlinear-fitting","model-comparison","exponential-logarithms"]},
+ finance:{terms:["model","parameter","constraint","extrapolation","sensitivity-analysis","exponential-model","nonlinear-regression","rmse","holdout-data","doubling-time","logarithm",...BATCH6_DEFINITIONS.map(d=>d.id)],lessons:["measurement","nonlinear-fitting","model-comparison","exponential-logarithms",...BATCH6_LESSONS.map(l=>l.id)]},
  chance:{terms:["probability","expected-value","sample",...BATCH5_DEFINITIONS.map(d=>d.id)],lessons:BATCH5_LESSONS.map(l=>l.id)},
  proof:{terms:["conjecture","counterexample","domain"],lessons:[]},
  iteration:{terms:["iteration","convergence","parameter","domain"],lessons:[]}
@@ -166,6 +170,10 @@ export const workshopLessonForEntry=entry=>{
  if(entry.methodId==="geometric-model")return "geometric-areas";
  if(entry.methodId==="triangulation")return "triangulation";
  if(entry.methodId==="voronoi")return "voronoi-regions";
+ if(entry.methodId==="finance-compound")return "finance-compound-growth";
+ if(entry.methodId==="finance-loan")return "finance-loan-repayments";
+ if(entry.methodId==="finance-break-even")return "finance-break-even";
+ if(entry.methodId==="finance-cashflow")return "finance-cashflow";
  if(entry.methodId==="probability")return "conditional-probability-tree";
  if(entry.methodId==="expected-value")return "discrete-expected-value";
  if(entry.methodId==="binomial")return "binomial-models";
