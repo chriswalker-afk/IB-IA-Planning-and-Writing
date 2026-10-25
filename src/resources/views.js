@@ -163,7 +163,11 @@ export function resourceDrawer(state,session){
  const helpChoices=contextualLearningChoices(supportView,{spot:supportSpot,issueId:supportIssue});
  const targeted=renderContextualLearningHelp(supportView,e,{spot:supportSpot,issueId:supportIssue,compact:true});
  // Do not repeat the exact tutorial already linked in the focused help card.
- const suggested=resourceSuggestions(state,{help:session.help}).filter(r=>r.id!==helpChoices?.guideId);
+ // A selected I am stuck problem takes priority over broad stage suggestions.
+ // If that problem is about permissions, citations or evidence quality, do
+ // not quietly reintroduce an unrelated calculation as a recommendation.
+ const suggested=session.supportIssue?[]:
+  resourceSuggestions(state,{help:session.help}).filter(r=>r.id!==helpChoices?.guideId);
  const meaningful=!!targeted||suggested.length>0;
  const heading=supportSpot.includes('field:')?'Help for this writing box':
   supportSpot.includes('part:')?'Help for this mathematical step':'Useful for your current stage';
