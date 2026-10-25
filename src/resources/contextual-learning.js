@@ -87,7 +87,8 @@ export function renderContextualLearningHelp(state,escapeHtml,{spot='page',issue
  const original=renderContextualWorkshopHelp(h,e,{compact});
  const button=h.guideId?
   '<button type="button" class="btn btn-secondary" data-action="resource-open" data-resource-id="'+e(h.guideId)+
-   '" data-resource-help="true">Software / task steps: '+e(h.guideTitle)+'</button>':
+   '" data-resource-help="true" data-resource-spot="'+e(string(spot))+
+   '" data-resource-issue="'+e(string(issueId))+'">Software / task steps: '+e(h.guideTitle)+'</button>':
   h.creatorId?'<button type="button" class="btn btn-secondary" data-action="resource-creator-open" data-resource-creator="'+
    e(h.creatorId)+'">Optional creator: '+e(h.creatorTitle)+'</button>':'';
  return '<div class="resource-contextual-learning" data-resource-context-reason="'+e(h.reason)+'">'+original+
