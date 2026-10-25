@@ -30,16 +30,22 @@ export function discardDistributionWhatIf(studio){
  studio.whatIf=newDistributionWhatIfState();
  return true;
 }
-export function applyDistributionWhatIf(studio){
+export function applyDistributionWhatIf(studio,acknowledgeProvenance=false){
  const q=compareDistributionWhatIf(studio);
  if(!q.ready)return {ok:false,error:q.issues[0]||"Restart the comparison and enter valid parameters."};
  if(q.eventIssues.length)return {ok:false,error:"Check the chosen event before applying: "+q.eventIssues[0]};
  if(!q.changed)return {ok:false,error:"Change at least one alternative parameter before applying."};
+ if(["primary","secondary"].includes(studio.draft.sourceKind)&&acknowledgeProvenance!==true)
+  return {ok:false,needsProvenance:true,error:"Confirm that the alternative is hypothetical; applying it will reset the source classification to assumed theoretical and clear the old source credit."};
  // Use the current studio's native editor mutation; this marks the draft
  // as edited without silently saving or linking a figure.
  for(const key of DISTRIBUTION_PARAMETER_KEYS[studio.draft.kind])
   if(studio.draft[key]!==studio.whatIf.values[key])
    setDistributionField(studio,key,studio.whatIf.values[key]);
+ if(["primary","secondary"].includes(studio.draft.sourceKind)){
+  setDistributionField(studio,"sourceKind","theoretical");
+  setDistributionField(studio,"sourceCredit","");
+ }
  studio.whatIf={...newDistributionWhatIfState(),status:"applied"};
  return {ok:true,comparison:q};
 }

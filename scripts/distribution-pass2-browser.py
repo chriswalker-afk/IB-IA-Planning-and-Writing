@@ -315,7 +315,7 @@ def parameter_whatif(browser,width,kind):
   if kind=="normal":
    assert "0.308537" in summary.inner_text()
   if kind=="uniform":
-   assert "Change: -0.1" in summary.inner_text()
+   assert "percentage points" in summary.inner_text() and "−10" in summary.inner_text()
   before=p.evaluate("(key)=>JSON.parse(localStorage.getItem(key))",KEY)
   assert before["distributionStudio"]["draft"]==orig,(kind,"premature model edit")
   assert len(before["distributionStudio"]["figures"])==0
@@ -375,6 +375,45 @@ def parameter_whatif(browser,width,kind):
    assert output.read_bytes()[:8]==bytes([137,80,78,71,13,10,26,10])
   assert not errors,errors
   print("PASS parameter exploration",kind,width,flush=True)
+ finally:c.close()
+
+
+def sensitivity_provenance(browser,width):
+ c,p,errors=setup(browser,width)
+ try:
+  field(p,"title","Source-aware normal sensitivity")
+  field(p,"mu","70");field(p,"sigma","10")
+  p.locator('[data-distribution-field="sourceKind"]').select_option("secondary")
+  field(p,"sourceCredit","Original published source")
+  p.locator('[data-distribution-field="mode"]').select_option("left")
+  field(p,"lower","70")
+  panel=p.locator('[data-distribution-whatif-panel]')
+  panel.locator("summary").click()
+  p.locator('[data-action="distribution-whatif-start"]').click()
+  p.locator('[data-distribution-whatif-field="mu"][data-whatif-control="value"]').fill("75")
+  summary=p.locator('[data-distribution-whatif-summary]')
+  assert "percentage points" in summary.inner_text()
+  assert "Mean shift" in summary.inner_text()
+  assert "reclassify" in summary.inner_text()
+  before=p.evaluate("(key)=>JSON.parse(localStorage.getItem(key))",KEY)
+  with p.expect_event("dialog") as dial:
+   summary.locator('[data-action="distribution-whatif-apply"]').click()
+  dial.value.dismiss()
+  after_cancel=p.evaluate("(key)=>JSON.parse(localStorage.getItem(key))",KEY)
+  assert after_cancel["distributionStudio"]["draft"]==before["distributionStudio"]["draft"]
+  assert after_cancel["distributionStudio"]["whatIf"]["active"]
+  with p.expect_event("dialog") as dial:
+   summary.locator('[data-action="distribution-whatif-apply"]').click()
+  dial.value.accept()
+  after_apply=p.evaluate("(key)=>JSON.parse(localStorage.getItem(key))",KEY)
+  draft=after_apply["distributionStudio"]["draft"]
+  assert draft["mu"]=="75"
+  assert draft["sourceKind"]=="theoretical"
+  assert draft["sourceCredit"]==""
+  assert not after_apply["distributionStudio"]["whatIf"]["active"]
+  check_width(p)
+  assert not errors,errors
+  print("PASS 5.4.1 provenance",width,flush=True)
  finally:c.close()
 
 if __name__=="__main__":

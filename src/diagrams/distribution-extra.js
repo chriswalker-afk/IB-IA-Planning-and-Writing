@@ -3,6 +3,7 @@
  * Values are never inferred from data, silently normalised, or invented.
  */
 const finite=value=>String(value??"").trim()!==""&&Number.isFinite(Number(value))?Number(value):null;
+export const CUSTOM_PROBABILITY_TOLERANCE=1e-12;
 const compensatedSum=values=>{
  let sum=0,correction=0;
  for(const value of values){const y=value-correction,t=sum+y;correction=(t-sum)-y;sum=t;}
@@ -63,7 +64,7 @@ export function parseCustomDiscrete(raw){
  if(points.some((p,i)=>i>0&&p.x===points[i-1].x))
   issues.push("Each outcome value must be distinct; combine repeated outcomes rather than silently adding their probabilities.");
  const total=compensatedSum(points.map(p=>p.probability));
- if(points.length>0&&Math.abs(total-1)>5e-7)
+ if(points.length>0&&Math.abs(total-1)>CUSTOM_PROBABILITY_TOLERANCE)
   issues.push("Probabilities must total 1; the current total is "+Number(total.toPrecision(12))+". Values are never normalised automatically.");
  return {points,total,issues};
 }
@@ -97,7 +98,7 @@ export function analyzeExtraModel(d){
    mean=compensatedSum(points.map(p=>p.x*p.probability));
    variance=compensatedSum(points.map(p=>(p.x-mean)**2*p.probability));
   }
-  if(Math.abs(total-1)>1e-10&&Math.abs(total-1)<=5e-7)
+  if(Math.abs(total-1)>0&&Math.abs(total-1)<=CUSTOM_PROBABILITY_TOLERANCE)
    notes.push("The entered probabilities sum to "+Number(total.toPrecision(12))+" because of rounding. No normalisation has been applied; check whether the rounding is justified.");
   notes.push("These bars show assigned model probabilities, not observed frequencies. State where each probability came from and why these outcomes cover the full sample space.");
  }

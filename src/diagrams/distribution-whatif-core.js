@@ -4,6 +4,7 @@
  * claimed fit is inferred. Original drafts and saved figures are untouched.
  */
 import {analyzeDistribution,normalizeDistributionDraft} from "./distribution-core.js";
+import {distributionSensitivity} from "./distribution-sensitivity.js";
 
 export const DISTRIBUTION_PARAMETER_KEYS=Object.freeze({
  normal:Object.freeze(["mu","sigma"]),binomial:Object.freeze(["n","p"]),
@@ -24,8 +25,7 @@ const displayModel=(draft,caption)=>({
  sourceKind:"theoretical",sourceCredit:"",showMean:false,showParameters:false,
  showProbability:false,figureNumber:"",caption:""
 });
-const extraIssues=(model)=>model.draft.kind==="custom"&&model.total!==null&&Math.abs(model.total-1)>1e-12?
- ["Custom outcome probabilities must total 1 to numerical precision (within 1e-12). The entered values are never normalised automatically. Current total: "+Number(model.total.toPrecision(12))+"."]:[];
+const extraIssues=()=>[]; // Uniform validation in parseCustomDiscrete.
 /**
  * A signature mismatch indicates the main model was edited during a what-if.
  * Do not automatically rebase, or a prior alternative could replace new work.
@@ -37,7 +37,8 @@ export function compareDistributionWhatIf(studio){
  if(source.kind!==w.kind||distributionWhatIfSignature(source)!==w.source)
   return {status:"stale",ready:false,changed:false,issues:["The original model parameters changed. Restart the comparison to use the new model."],eventIssues:[]};
  const fields=params(source);
- const changed=fields.some(key=>w.values?.[key]!==source[key]);
+ const changedKeys=fields.filter(key=>w.values?.[key]!==source[key]);
+ const changed=changedKeys.length>0;
  const alternative=normalizeDistributionDraft({...source,...Object.fromEntries(fields.map(key=>[key,w.values?.[key]??source[key]]))});
  const originalDraft=displayModel(source,"Original model"),alternativeDraft=displayModel(alternative,"Alternative model");
  const original=analyzeDistribution({...originalDraft,mode:"none"});
@@ -47,7 +48,7 @@ export function compareDistributionWhatIf(studio){
  if(issues.length)return {status:"invalid",ready:false,changed,issues,eventIssues:[],
   original,alternative:proposed,originalDraft,alternativeDraft};
  const result={status:"ready",ready:true,changed,issues:[],eventIssues:[],
-  original,alternative:proposed,originalDraft,alternativeDraft,eventMode:source.mode,
+  original,alternative:proposed,originalDraft,alternativeDraft,eventMode:source.mode,changedKeys,
   originalProbability:null,alternativeProbability:null,deltaProbability:null};
  if(source.mode!=="none"){
   const first=analyzeDistribution(originalDraft),second=analyzeDistribution(alternativeDraft);
@@ -60,5 +61,7 @@ export function compareDistributionWhatIf(studio){
   }else result.eventIssues=[...first.issues,...second.issues]
    .filter((s,i,a)=>a.indexOf(s)===i);
  }
+ result.sensitivity=distributionSensitivity(result,changedKeys);
+ if(result.sensitivity?.eventValid)result.deltaProbability=result.sensitivity.deltaProbability;
  return result;
 }

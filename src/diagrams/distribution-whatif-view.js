@@ -4,6 +4,7 @@
  */
 import {compareDistributionWhatIf,DISTRIBUTION_PARAMETER_KEYS} from "./distribution-whatif-core.js";
 import {renderDistributionWhatIfSvg} from "./distribution-whatif-render.js";
+import {formatSensitivityProbability,formatSensitivityPoints} from "./distribution-sensitivity.js";
 
 const labels={mu:"Mean (μ)",sigma:"Standard deviation (σ)",n:"Number of trials (n)",
  p:"Success probability (p)",lambda:"Event rate (λ)",a:"Lower limit (a)",b:"Upper limit (b)",
@@ -65,8 +66,9 @@ export function distributionWhatIfSummaryHtml(studio,e){
   '<div class="distribution-whatif-metric"><span>'+label+'</span><div><strong>'+fmt(original)+
   '</strong><span aria-hidden="true">→</span><strong>'+fmt(alternative)+'</strong></div>'+
   (delta!==null?'<small>Change: '+e(signed(delta))+'</small>':"")+'</div>';
+ const sensitivity=q.sensitivity;
  const event=q.originalProbability!==null?'<p class="distribution-whatif-event">Same fixed event: <strong>'+
-  e(q.eventStatement)+'</strong></p>'+metric("Event probability",q.originalProbability,q.alternativeProbability,q.deltaProbability):
+  e(q.eventStatement)+'</strong></p>'+metric("Event probability",q.originalProbability,q.alternativeProbability):
   '<p class="distribution-whatif-event">Choose an event in “Probability to highlight” to compare its probability under both models. The mean and spread are compared below.</p>';
  const eventProblems=q.eventIssues.length?'<p class="distribution-whatif-error">'+
   e("The event needs correction before its probability can be compared: "+q.eventIssues[0])+'</p>':"";
@@ -76,6 +78,9 @@ export function distributionWhatIfSummaryHtml(studio,e){
   metric("Mean",q.original.mean,q.alternative.mean,q.alternative.mean-q.original.mean)+
   metric("Standard deviation",Math.sqrt(q.original.variance),Math.sqrt(q.alternative.variance),
    Math.sqrt(q.alternative.variance)-Math.sqrt(q.original.variance))+'</div>'+
+  (sensitivity?.eventValid?'<div class="distribution-whatif-sensitivity" data-distribution-sensitivity><strong>Event-probability change</strong><p>'+e(formatSensitivityPoints(sensitivity.deltaProbability))+' percentage points (alternative minus original)</p><small>Original: '+e(formatSensitivityProbability(q.originalProbability,sensitivity.originalComplement))+' · Alternative: '+e(formatSensitivityProbability(q.alternativeProbability,sensitivity.alternativeComplement))+'</small>'+(sensitivity.tailPrecision?'<p>Rare upper-tail probabilities are shown using their complements to avoid rounding an extremely small tail to zero.</p>':'')+'</div>':'')+
+  (sensitivity?'<div class="distribution-whatif-sensitivity" data-distribution-parameter-change><strong>'+e(sensitivity.parameter.title)+'</strong><p>'+e(sensitivity.parameter.detail)+'</p></div>':'')+
+  (q.changed&&["primary","secondary"].includes(studio.draft.sourceKind)?'<p class="distribution-whatif-hint" data-distribution-source-warning>Applying this alternative will reclassify these parameters as an assumed theoretical model and clear the original source credit. The existing saved figure will not change until you save it.</p>':'')+
   eventProblems+
   (q.changed&&q.eventIssues.length===0?
    '<button type="button" class="btn btn-secondary" data-action="distribution-whatif-apply">Apply alternative to figure</button>':
