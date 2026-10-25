@@ -11,6 +11,8 @@ import {
 } from "../completing/adaptive-journey.js";
 import {completeEntry,sourceResultForNext,latestRealResult,scatterForNext,isPearsonResult} from "../completing/engine.js";
 import {INVESTIGATIVE_ROUTES} from "../planning/investigative-routes.js";
+import {distributionRecoveryCards} from "../diagrams/distribution-guidance.js";
+import {newDistributionDraft} from "../diagrams/distribution-core.js";
 import {REPRESENTATION_TOOLS,activeRepresentationTool} from "../diagrams/representation-registry.js";
 
 const item=(id,label,question,action,check,stop,fallback,boundary,extra={})=>
@@ -554,6 +556,21 @@ export function studioHelpFor(state,spot){
    (spot==="page"||spot==="part:introduce"||spot==="part:next"))ids=["result-needs-review",...ids.filter(x=>x!=="result-needs-review")];
  if(node==="C31"&&tool?.id&&TOOL_IDS.has(tool.id))ids=["tool-"+tool.id,...ids];
  let choices=ids.map(id=>id.startsWith("tool-")?TOOL_RECOVERY[id.slice(5)]:asCard(id)).filter(Boolean);
+ // A model explicitly selected in the creator or linked to this stage gives
+ // specific repairs for this mathematical box, without inferring from prose.
+ const editingDistribution=node==="C31"&&tool?.id==="distribution";
+ const savedDistribution=entry?.distributionFigureId?
+  state.distributionStudio?.figures?.find(f=>f.id===entry.distributionFigureId):null;
+ const methodKind=["normal","binomial"].includes(entry?.methodId)?entry.methodId:"";
+ const explicitDraft=editingDistribution?state.distributionStudio?.draft:
+  savedDistribution?.draft||(methodKind?{...newDistributionDraft(),kind:methodKind}:null);
+ if(explicitDraft){
+  const focused=distributionRecoveryCards(explicitDraft,spot);
+  // Protect students from interpreting mathematics not yet recorded.
+  if(!actual&&choices[0]?.id==="not-yet-result")
+   choices=[choices[0],...focused,...choices.slice(1)];
+  else choices=[...focused,...choices.filter(x=>x.id!=="tool-distribution")];
+ }
  if(routeSpot(spot)&&ROUTE_IDS.has(routeId)&&routeSpot(spot)&&
    ["C20","C30","C35","C35B","C40","C50"].includes(node)){
   // A route is an explicitly chosen plan or a technique established by the
