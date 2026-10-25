@@ -375,7 +375,7 @@ export const WORKSHOP_DEFINITION_FORMULAS=Object.freeze({
   "cosine-rule": {"tex":"c^2=a^2+b^2-2ab\\cos C","spoken":"Cosine rule for the side opposite included angle C."},
   "triangle-area": {"tex":"A=\\frac{1}{2}ab\\sin C","spoken":"Triangle area is one half of two side lengths times sine of their included angle."},
   "cross-section-volume": {"tex":"V=Ah","spoken":"For a prism, volume equals constant cross-section area times its perpendicular length."},
-  "worst-case-bounds": {"tex":"A_{\\min}=L_{\\min}W_{\\min}","spoken":"For positive independent length and width ranges, the lower area bound is the product of the lower endpoints."},
+  "worst-case-bounds": {"tex":"A_{\\min}=L_{\\min}W_{\\min}","spoken":"For positive length and width within stated intervals, the product of the lower endpoints gives a conservative area lower bound."},
   "rmse": {
     "tex": "\\mathrm{RMSE}=\\sqrt{\\frac{1}{n}\\sum_{i=1}^{n}(y_i-\\hat{y}_i)^2}",
     "spoken": "Root mean squared error is the square root of mean squared prediction error on the evaluation dataset."
