@@ -66,3 +66,6 @@ Do not record identifiable or restricted participant information without appropr
 
 ### Maths Workshop — Batch 5: Probability and inference
 Batch 5 adds **34 definitions** and **six guided lessons**, bringing the Workshop to **156 definitions and 29 lessons**. Students practise conditional probability trees, discrete expected values, reproducible simulation, binomial probabilities, normal models and careful statistical inference. Mathematical assumptions, independence, tails, sampling and honest interpretation are central. All examples are fictional and read-only. See [Batch 5 notes](docs/maths-workshop-batch-5-2026-10-25.md). **Batch 6** will focus on finance.
+
+### Maths Workshop — Batch 6: Financial modelling
+Batch 6 adds **34 finance definitions**, **six complete guided financial lessons** and **two Google Sheets tutorials**, bringing the Workshop to **190 definitions and 35 lessons**. Topics include compound interest and effective rates, loan repayments, break-even, cash-flow timing, discounted cash flows and sensitivity. Every teaching scenario is fictional, with rate-convention and feasibility checks; practice remains read-only. See [Batch 6 notes](docs/maths-workshop-batch-6-2026-10-25.md). **Batch 7** will cover proof, sequences, iteration and convergence.
