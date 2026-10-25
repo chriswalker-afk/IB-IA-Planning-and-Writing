@@ -11,7 +11,8 @@ import {
 } from "../completing/adaptive-journey.js";
 import {completeEntry,sourceResultForNext,latestRealResult,scatterForNext,isPearsonResult} from "../completing/engine.js";
 import {INVESTIGATIVE_ROUTES} from "../planning/investigative-routes.js";
-import {distributionRecoveryCards} from "../diagrams/distribution-guidance.js";
+import {distributionRecoveryCards,distributionComparisonRecoveryCards,distributionAim} from "../diagrams/distribution-guidance.js";
+import {compareDistributionWhatIf} from "../diagrams/distribution-whatif-core.js";
 import {newDistributionDraft} from "../diagrams/distribution-core.js";
 import {REPRESENTATION_TOOLS,activeRepresentationTool} from "../diagrams/representation-registry.js";
 
@@ -489,6 +490,7 @@ const baseSpots=Object.freeze({
  "C30:part:reflect":["meaning-units","outcome-choice","not-yet-result"],
  "C30:part:next":["next-gap","next-method","not-yet-result"],
  "C31:page":["show-which","tool-source"],
+ "C31:whatif":["tool-distribution","show-which"],
  "C32:page":["real-calculation","show-axis"],
  "C33:page":["not-yet-result","real-calculation"],
  "C34:page":["meaning-units","unexpected-output"],
@@ -529,7 +531,7 @@ const entryFor=(state,node)=>{
  return completeEntry(state);
 };
 const toSpot=(node,spot)=>node+":"+spot;
-const meaningSpot=spot=>spot==="page"||spot.startsWith("part:")||spot.startsWith("field:");
+const meaningSpot=spot=>spot==="page"||spot==="whatif"||spot.startsWith("part:")||spot.startsWith("field:");
 const routeSpot=spot=>["page","part:introduce","part:show","part:reflect","part:next"].includes(spot);
 const resultSpot=spot=>["page","part:reflect","part:next","field:interpretation","field:nextQuestion","field:nextWhy"].includes(spot);
 const bounded=x=>str(x).slice(0,420);
@@ -559,13 +561,18 @@ export function studioHelpFor(state,spot){
  // A model explicitly selected in the creator or linked to this stage gives
  // specific repairs for this mathematical box, without inferring from prose.
  const editingDistribution=node==="C31"&&tool?.id==="distribution";
+ if(spot==="whatif"&&!editingDistribution)return null;
  const savedDistribution=entry?.distributionFigureId?
   state.distributionStudio?.figures?.find(f=>f.id===entry.distributionFigureId):null;
  const methodKind=["normal","binomial","poisson","uniform","custom"].includes(entry?.methodId)?entry.methodId:"";
  const explicitDraft=editingDistribution?state.distributionStudio?.draft:
   savedDistribution?.draft||(methodKind?{...newDistributionDraft(),kind:methodKind}:null);
  if(explicitDraft){
-  const focused=distributionRecoveryCards(explicitDraft,spot);
+  const focused=editingDistribution&&spot==="whatif"?
+   distributionComparisonRecoveryCards(explicitDraft,
+    compareDistributionWhatIf(state.distributionStudio),distributionAim(state)):
+   distributionRecoveryCards(explicitDraft,spot);
+  if(spot==="whatif"&&!focused.length)return null;
   // Protect students from interpreting mathematics not yet recorded.
   if(!actual&&choices[0]?.id==="not-yet-result")
    choices=[choices[0],...focused,...choices.slice(1)];
