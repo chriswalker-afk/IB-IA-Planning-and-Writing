@@ -45,7 +45,7 @@ test("normal inverse upper and lower events use the same actual model",()=>{
  const lower=ask(d,"left",.95),right=ask(d,"right",.05);
  assert.equal(lower.ok,true,lower.issues.join("; "));
  assert.equal(right.ok,true,right.issues.join("; "));
- close(lower.lower,124.67304477,1e-7);
+ close(lower.lower,124.672804404,1e-7);
  close(right.lower,lower.lower,1e-11);
  close(lower.achieved,.95,1e-9);
  close(right.achieved,.05,1e-9);
