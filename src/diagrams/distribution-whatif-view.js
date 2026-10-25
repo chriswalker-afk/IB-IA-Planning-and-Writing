@@ -4,6 +4,7 @@
  */
 import {compareDistributionWhatIf,DISTRIBUTION_PARAMETER_KEYS} from "./distribution-whatif-core.js";
 import {renderDistributionWhatIfSvg} from "./distribution-whatif-render.js";
+import {distributionLayout} from "./distribution-layout.js";
 import {formatSensitivityProbability,formatSensitivityPoints,formatSensitivityNumber,formatSensitivitySigned} from "./distribution-sensitivity.js";
 
 const labels={mu:"Mean (μ)",sigma:"Standard deviation (σ)",n:"Number of trials (n)",
@@ -191,6 +192,13 @@ export function distributionWhatIfPreviewHtml(studio,e){
  if(!w?.active)return "";
  const q=compareDistributionWhatIf(studio);
  const chart=q.ready?renderDistributionWhatIfSvg(q):"";
+ const targetBounds=q.comparison==="target"&&q.target?.ok?
+  [q.target.original.lower,q.target.alternative.lower,
+   ...(q.target.mode==="central"?[q.target.original.upper,q.target.alternative.upper]:[])]:[];
+ const l0=q.ready?distributionLayout(q.original):null,l1=q.ready?distributionLayout(q.alternative):null;
+ const rangeMin=l0&&l1?Math.min(l0.domainMin,l1.domainMin):null;
+ const rangeMax=l0&&l1?Math.max(l0.domainMax,l1.domainMax):null;
+ const outside=targetBounds.some(x=>x<rangeMin||x>rangeMax);
  return '<section class="distribution-whatif-preview" data-distribution-whatif-preview>'+
   '<h3>'+(q.comparison==="target"?"Cut-offs under both models — shared axes":"Original and alternative — shared axes")+'</h3>'+
   (q.ready?'<div class="distribution-whatif-canvas">'+chart+'</div>'+
@@ -201,7 +209,8 @@ export function distributionWhatIfPreviewHtml(studio,e){
        'Enter a valid target to display its cut-offs.'):
       (q.originalProbability!==null?
        'The pale highlighted region and boundary markers indicate the same event in both models.':
-       'Select an event in section 2 to compare the probabilities at a fixed boundary.'))+'</p>':
+       'Select an event in section 2 to compare the probabilities at a fixed boundary.'))+'</p>'+
+   (outside?'<p class="distribution-whatif-hint" data-whatif-marker-note>One or more cut-offs are outside the displayed model window. Use the full numerical values above; the chart does not represent all extreme boundaries.</p>':""):
    '<p class="distribution-whatif-preview-error">'+e(q.status==="stale"?
     "Original parameters changed. Restart the comparison to see updated curves.":"Enter valid model parameters to compare shapes.")+'</p>')+
   '</section>';
