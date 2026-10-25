@@ -467,7 +467,8 @@ def fixed_target_whatif(browser,width,kind):
   markers=p.locator('[data-distribution-whatif-chart] [data-whatif-target-marker]')
   count=2 if inverse_mode=="central" else 1
   assert markers.count()==2*count,(kind,markers.count())
-  assert markers.filter(has=p.locator('[data-whatif-target-marker="original"]')).count()>=0
+  assert p.locator('[data-whatif-target-marker="original"]').count()==count
+  assert p.locator('[data-whatif-target-marker="alternative"]').count()==count
   assert "Cut-offs under both models" in p.locator('[data-distribution-whatif-preview]').inner_text()
   assert p.evaluate("(key)=>JSON.parse(localStorage.getItem(key))",KEY)["distributionStudio"]["draft"]==original
   if kind=="normal":
