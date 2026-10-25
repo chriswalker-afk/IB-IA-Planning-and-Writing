@@ -137,6 +137,7 @@ with sync_playwright() as pw:
   compact=p.locator('.resource-quick-tools .resource-creators-compact')
   assert compact.count()==1 and compact.get_attribute('open') is None
   assert search.bounding_box()['y']<p.locator('#resource-results').bounding_box()['y']
+  assert p.locator('.resource-quick-tools .resource-destination-card').count()==3
   compact.locator('summary').click()
   assert compact.locator('[data-resource-creator="graph"]').is_visible()
   assert unchanged_fields(saved(p))==before
