@@ -396,15 +396,13 @@ def sensitivity_provenance(browser,width):
   assert "Mean shift" in summary.inner_text()
   assert "reclassify" in summary.inner_text()
   before=p.evaluate("(key)=>JSON.parse(localStorage.getItem(key))",KEY)
-  with p.expect_event("dialog") as dial:
-   summary.locator('[data-action="distribution-whatif-apply"]').click()
-  dial.value.dismiss()
+  p.once("dialog",lambda dialog:dialog.dismiss())
+  summary.locator('[data-action="distribution-whatif-apply"]').click()
   after_cancel=p.evaluate("(key)=>JSON.parse(localStorage.getItem(key))",KEY)
   assert after_cancel["distributionStudio"]["draft"]==before["distributionStudio"]["draft"]
   assert after_cancel["distributionStudio"]["whatIf"]["active"]
-  with p.expect_event("dialog") as dial:
-   summary.locator('[data-action="distribution-whatif-apply"]').click()
-  dial.value.accept()
+  p.once("dialog",lambda dialog:dialog.accept())
+  summary.locator('[data-action="distribution-whatif-apply"]').click()
   after_apply=p.evaluate("(key)=>JSON.parse(localStorage.getItem(key))",KEY)
   draft=after_apply["distributionStudio"]["draft"]
   assert draft["mu"]=="75"
