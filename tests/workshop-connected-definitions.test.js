@@ -11,9 +11,9 @@ import {renderWorkshop,workshopList} from "../src/workshop/views.js";
 const authored=s=>JSON.stringify({planning:s.planning,entries:s.entries,project:s.project,completion:s.completion,scratch:s.scratch,resources:s.resources});
 
 test("connected definitions: new sampling terms are accurate, unique and reachable",()=>{
- assert.equal(WORKSHOP_DEFINITIONS.length,240);
- assert.equal(WORKSHOP_LESSONS.length,42);
- assert.equal(new Set(WORKSHOP_DEFINITIONS.map(d=>d.id)).size,240);
+ assert.equal(WORKSHOP_DEFINITIONS.length,243);
+ assert.equal(WORKSHOP_LESSONS.length,45);
+ assert.equal(new Set(WORKSHOP_DEFINITIONS.map(d=>d.id)).size,243);
  assert.equal(CONNECTED_SAMPLING_DEFINITIONS.length,10);
  const expected=["sampling","sampling-unit","observational-unit","probability-sampling","nonprobability-sampling","systematic-sample","sampling-interval","cluster-sample","quota-sample","voluntary-response-sample"];
  assert.deepEqual(CONNECTED_SAMPLING_DEFINITIONS.map(d=>d.id),expected);
