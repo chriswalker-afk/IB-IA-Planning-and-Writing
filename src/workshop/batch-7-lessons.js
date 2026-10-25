@@ -77,7 +77,7 @@ export const BATCH7_LESSONS=Object.freeze([
     why:"Check the algebra and identify interesting cases; explicitly describe this as exploration rather than evidence of a general proof."},
    {name:"Table Studio",command:"Summarise the logical cases: n even; n odd; factor 2",
     why:"Build an accessible short table of the proof-by-cases structure when useful; the written reasoning must still justify exhaustiveness."}],
-  existingGuide:"proof-exploration",relatedGuides:["restrictions","proof-exploration"],creator:"table",
+  existingGuide:"proof-exploration",relatedGuides:["restrictions","reporting-precision"],creator:"table",
   ia:"State the domain and claim, justify each key algebraic transformation, explain the general conclusion and distinguish any implication from its converse. A clear proof should replace, not follow, pages of example checking."
  }),
  guide("proof-induction-patterns","Proof & reasoning","Prove a sequence pattern by induction",
@@ -115,7 +115,7 @@ export const BATCH7_LESSONS=Object.freeze([
     why:"Check early cases and identify the likely claim, but write the actual base and induction step in the IA rather than a long computation."},
    {name:"Table Studio",command:"Use short headings: claim, base, hypothesis, k+1 step, conclusion",
     why:"Structure the narrative and check no indispensable proof link is missing; a formatted table is optional."}],
-  existingGuide:"proof-exploration",relatedGuides:["reporting-precision","proof-exploration"],creator:"table",
+  existingGuide:"proof-exploration",relatedGuides:["reporting-precision","restrictions"],creator:"table",
   ia:"Explain why the conjectured formula matters to your aim, introduce P(n) and its allowed indices, give the base and inductive step with justified algebra, and interpret what has now been established. Do not use formal induction solely to make a simple IA look advanced."
  }),
  guide("iteration-sequences","Sequences & iteration","Move between recurrence, nth term and partial sum",
