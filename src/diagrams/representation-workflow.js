@@ -9,11 +9,12 @@ import {analyzeTable} from "./table-studio-core.js";
 import {imageTraceChecks} from "./image-tracer-core.js";
 import {analyzeVoronoi} from "./voronoi-core.js";
 import {geometryAnalysis} from "./geometry-core.js";
+import {analyzeDistribution} from "./distribution-core.js";
 import {probabilityAnalysis} from "./probability-core.js";
 
 const assess=Object.freeze({
  graph:analyseGraph,stat:statAnalysis,table:analyzeTable,trace:imageTraceChecks,
- voronoi:analyzeVoronoi,geometry:geometryAnalysis,probability:probabilityAnalysis
+ voronoi:analyzeVoronoi,geometry:geometryAnalysis,probability:probabilityAnalysis,distribution:analyzeDistribution
 });
 export function representationWorkflowState(state){
  const tool=activeRepresentationTool(state);
