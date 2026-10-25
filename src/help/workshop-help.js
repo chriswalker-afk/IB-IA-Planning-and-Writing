@@ -33,7 +33,7 @@ const methodRoute=Object.freeze({
  pmcc:"relationships",spearman:"relationships","linear-regression":"fitted-models","quadratic-fit":"fitted-models",
  exponential:"growth",power:"growth",sinusoidal:"cycles",
  optimisation:"optimisation",derivatives:"trajectories",integration:"images","geometric-model":"images",
- triangulation:"triangulation",voronoi:"voronoi",normal:"variation",binomial:"chance",probability:"chance",
+ triangulation:"triangulation",voronoi:"voronoi",normal:"variation",binomial:"chance",poisson:"chance",uniform:"chance",custom:"chance",probability:"chance",
  "expected-value":"chance","two-sample-t":"groups","chi-independence":"categorical","chi-fit":"categorical",
  "finance-compound":"finance","finance-loan":"finance","finance-break-even":"finance","finance-cashflow":"finance",
  proof:"proof",induction:"proof",iteration:"iteration",recurrence:"iteration",bisection:"iteration","newton-raphson":"iteration"
@@ -110,8 +110,9 @@ export function contextualWorkshopHelp(state,{spot="",issueId="",entry=null}={})
  const linkedId=current?.distributionFigureId;
  const linkedDraft=!activeDistribution&&linkedId?
   state.distributionStudio?.figures?.find(fig=>fig.id===linkedId)?.draft:null;
- const chosenKind=["normal","binomial"].includes(activeDistribution)?activeDistribution:
-  ["normal","binomial"].includes(linkedDraft?.kind)?linkedDraft.kind:"";
+ const available=["normal","binomial","poisson","uniform","custom"];
+ const chosenKind=available.includes(activeDistribution)?activeDistribution:
+  available.includes(linkedDraft?.kind)?linkedDraft.kind:"";
  const methodId=chosenKind||safe(current?.methodId),
   methodLesson=methodId&&methodId!=="other"?workshopLessonForEntry({methodId}):"";
  const explicitMethodRoute=methodId&&methodId!=="other"?methodRoute[methodId]:"";
@@ -134,6 +135,9 @@ export function contextualWorkshopHelp(state,{spot="",issueId="",entry=null}={})
  if(methodId==="finance-break-even"&&focus==="calculate")termId="break-even-point";
  if(methodId==="binomial"&&!topic)termId=focus==="interpret"?"cumulative-probability":"binomial-distribution";
  if(methodId==="normal"&&!topic)termId=focus==="interpret"?"probability-density":"normal-distribution";
+ if(methodId==="poisson"&&!topic)termId=focus==="interpret"?"cumulative-probability":"poisson-distribution";
+ if(methodId==="uniform"&&!topic)termId=focus==="interpret"?"probability-density":"continuous-uniform-distribution";
+ if(methodId==="custom"&&!topic)termId=focus==="interpret"?"probability-distribution":"custom-discrete-distribution";
  if(methodId==="pmcc"&&focus==="interpret")termId="correlation";
  if(methodId==="optimisation"&&focus==="interpret")termId="global-extremum";
  if(methodId==="voronoi"&&focus==="interpret")termId="distance-metric";
