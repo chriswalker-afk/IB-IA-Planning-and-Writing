@@ -12,7 +12,7 @@ const action=(name,label,attrs="",primary=false)=>
  '<button type="button" class="btn '+(primary?'btn-primary':'btn-secondary')+'" data-action="resource-workshop-'+name+'" '+attrs+'>'+e(label)+'</button>';
 const safe=(value,n=120)=>String(value||"").slice(0,n);
 const routeIds=new Set(INVESTIGATIVE_ROUTES.map(r=>r.id));
-const subjectLabels={Data:"Data",Models:"Models",Calculus:"Calculus",Decisions:"Decisions",Geometry:"Geometry",Finance:"Finance",Probability:"Probability",Reasoning:"Reasoning"};
+const subjectLabels={Data:"Data",Models:"Models",Calculus:"Calculus",Decisions:"Decisions",Geometry:"Geometry",Finance:"Finance",Probability:"Probability",Proof:"Proof",Iteration:"Iteration",Reasoning:"Reasoning"};
 const filtered=(session)=>{
  const routeId=routeIds.has(session.workshopRoute)?session.workshopRoute:"";
  const scope=routeId?PATHWAY_LEARNING[routeId]:null;
@@ -42,7 +42,7 @@ export function workshopList(session){
  '<section class="workshop-section"><h3>Guided mathematics</h3>'+
  '<p>Show me → Help me → My turn. Practice values are invented, not evidence for your IA.</p>'+
  (lessons.length?'<div class="workshop-grid">'+lessons.map(lessonCard).join("")+'</div>':
- '<p class="workshop-empty">No guided lessons match this selection yet. Later batches will add more methods. Choose All pathways to see every available lesson.</p>')+'</section>',
+ '<p class="workshop-empty">No guided lessons match this selection. Try another search or choose All pathways.</p>')+'</section>',
  '<section class="workshop-section"><h3>Quick mathematical definitions</h3>'+
  '<p>Short explanations you can use to understand notation and decide what to learn next.</p>'+
  (terms.length?'<div class="workshop-grid workshop-definitions">'+terms.map(definitionCard).join("")+'</div>':
