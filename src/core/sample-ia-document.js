@@ -7,7 +7,6 @@
  * Legacy preview backups remain readable through their original adapter.
  */
 import {createPlanningEnvelope} from '../handover/schema.js';
-import {createPdfPlanningReport} from '../handover/formats/pdf.js';
 import {collectProjectFigures,figureForEntry,prepareReportFigures} from '../handover/figure-report.js';
 import {referenceSampleSpec} from './sample-library.js';
 import {referenceIAPagesModel} from './sample-document-model.js';
@@ -67,6 +66,7 @@ export async function createIllustrativeIAExport(state,format='pdf'){
   return{bytes,name:'IA-Pathfinder-Complete-Example-'+state.demo+'.docx',mime:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'};
  }
  if(format!=='pdf')throw new Error('Unsupported illustrative document format.');
+ const {createPdfPlanningReport}=await import('../handover/formats/pdf.js');
  const bytes=await createPdfPlanningReport(createPlanningEnvelope(state),model);
  return{bytes,name:'IA-Pathfinder-Complete-Example-'+state.demo+'.pdf',mime:'application/pdf'};
 }
