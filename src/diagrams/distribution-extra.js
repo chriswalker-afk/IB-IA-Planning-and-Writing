@@ -46,7 +46,7 @@ const rowPattern=/^\s*([+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:e[+-]?\d+)?)\s*[,;\t]\s*([
 export function parseCustomDiscrete(raw){
  const lines=String(raw??"").split(/\r?\n/),points=[],issues=[];
  for(let i=0;i<lines.length;i++){
-  const row=lines[i].trim();if(!row)continue;
+  const row=lines[i].trim().replace(/\u2212/g,"-");if(!row)continue;
   const match=rowPattern.exec(row);
   if(!match){issues.push("Row "+(i+1)+": enter value, probability (for example −2, 0.25).");continue;}
   const x=Number(match[1]),probability=Number(match[2]);
