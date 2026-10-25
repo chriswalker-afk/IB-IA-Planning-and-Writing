@@ -7,6 +7,7 @@
 import {selectedInvestigativeRoute} from "../completing/adaptive-journey.js";
 import {completeEntry,sourceResultForNext} from "../completing/engine.js";
 import {routeById} from "../planning/investigative-routes.js";
+import {activeRepresentationTool} from "../diagrams/representation-registry.js";
 import {lessonById,definitionById,workshopLessonForEntry} from "../workshop/catalog.js";
 
 const profile=(start,calculate,interpret,follow,lesson)=>Object.freeze({start,calculate,interpret,follow,lesson});
@@ -102,7 +103,17 @@ export function contextualWorkshopHelp(state,{spot="",issueId="",entry=null}={})
  // On broad idea/route-selection pages, a selected mathematical route is
  // necessary before providing named mathematical methods.
  const selected=selectedInvestigativeRoute(state),current=entry||methodEntry(state,node);
- const methodId=safe(current?.methodId),methodLesson=methodId&&methodId!=="other"?workshopLessonForEntry({methodId}):"";
+ // Use a student's explicitly selected distribution or a figure actually
+ // linked to this stage; never guess from prose or a broad thematic pathway.
+ const activeDistribution=!planning&&node==="C31"&&
+  activeRepresentationTool(state)?.id==="distribution"?state.distributionStudio?.draft?.kind:"";
+ const linkedId=current?.distributionFigureId;
+ const linkedDraft=!activeDistribution&&linkedId?
+  state.distributionStudio?.figures?.find(fig=>fig.id===linkedId)?.draft:null;
+ const chosenKind=["normal","binomial"].includes(activeDistribution)?activeDistribution:
+  ["normal","binomial"].includes(linkedDraft?.kind)?linkedDraft.kind:"";
+ const methodId=chosenKind||safe(current?.methodId),
+  methodLesson=methodId&&methodId!=="other"?workshopLessonForEntry({methodId}):"";
  const explicitMethodRoute=methodId&&methodId!=="other"?methodRoute[methodId]:"";
  const routeId=explicitMethodRoute||selected?.id||"";
  const route=routeById(routeId);
@@ -121,8 +132,8 @@ export function contextualWorkshopHelp(state,{spot="",issueId="",entry=null}={})
  let termId=topic||(profile?.[focus]||profile?.start||"");
  if(methodId==="finance-loan"&&focus==="calculate")termId="loan-amortisation";
  if(methodId==="finance-break-even"&&focus==="calculate")termId="break-even-point";
- if(methodId==="binomial"&&focus==="calculate")termId="binomial-distribution";
- if(methodId==="normal"&&focus==="calculate")termId="normal-distribution";
+ if(methodId==="binomial"&&!topic)termId=focus==="interpret"?"cumulative-probability":"binomial-distribution";
+ if(methodId==="normal"&&!topic)termId=focus==="interpret"?"probability-density":"normal-distribution";
  if(methodId==="pmcc"&&focus==="interpret")termId="correlation";
  if(methodId==="optimisation"&&focus==="interpret")termId="global-extremum";
  if(methodId==="voronoi"&&focus==="interpret")termId="distance-metric";
