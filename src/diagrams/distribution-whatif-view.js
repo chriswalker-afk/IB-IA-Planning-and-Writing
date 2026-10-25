@@ -112,7 +112,8 @@ export function distributionWhatIfPreviewHtml(studio,e){
  return '<section class="distribution-whatif-preview" data-distribution-whatif-preview>'+
   '<h3>Original and alternative — shared axes</h3>'+
   (q.ready?'<div class="distribution-whatif-canvas">'+chart+'</div>'+
-    '<p>Grey dashed: original. Blue: alternative. Both share the same scales. '+
+    '<p class="distribution-whatif-scroll-note">Swipe sideways to inspect the graph at a readable size.</p>'+
+  '<p>Grey dashed: original. Blue: alternative. Both share the same scales. '+
     (q.originalProbability!==null?
      'The pale highlighted region and boundary markers indicate the same event in both models.':
      'Select an event in section 2 to compare the probabilities at a fixed boundary.')+'</p>':
