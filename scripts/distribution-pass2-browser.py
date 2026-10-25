@@ -550,7 +550,7 @@ def meaningful_reflection(browser,width,kind):
   assert reflection.get_attribute("open") is None
   reflection.locator("summary").click()
   assert reflection.get_attribute("open") is not None
-  p.wait_for_function("(key)=>JSON.parse(localStorage.getItem(key)).distributionStudio.whatIf.reflectionOpen===true",KEY)
+  p.wait_for_function("(key)=>JSON.parse(localStorage.getItem(key)).distributionStudio.whatIf.reflectionOpen===true",arg=KEY)
   assert reflection.locator('[data-reflection-prompt]').count()==3
   assert "Justify the alternative" in reflection.inner_text()
   assert "Interpret the mathematics" in reflection.inner_text()
