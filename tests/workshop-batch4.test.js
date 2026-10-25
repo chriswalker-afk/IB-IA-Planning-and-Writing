@@ -19,8 +19,8 @@ const authored=s=>JSON.stringify({entries:s.entries,planning:s.planning,completi
 test("Batch 4: exactly 22 distinct definitions and five complete geometry lessons",()=>{
  assert.equal(BATCH4_DEFINITIONS.length,22);
  assert.equal(BATCH4_LESSONS.length,5);
- assert.equal(WORKSHOP_DEFINITIONS.length,240);
- assert.equal(WORKSHOP_LESSONS.length,42);
+ assert.equal(WORKSHOP_DEFINITIONS.length,243);
+ assert.equal(WORKSHOP_LESSONS.length,45);
  assert.equal(new Set(BATCH4_DEFINITIONS.map(d=>d.id)).size,22);
  const expected=["image-calibration","triangulation","geometric-areas","voronoi-regions","geometry-sensitivity"];
  assert.deepEqual(BATCH4_LESSONS.map(l=>l.id),expected);
