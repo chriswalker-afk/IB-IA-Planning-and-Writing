@@ -133,7 +133,7 @@ export function resourceDrawer(state,session){
  const options=(values,selected)=>values.map(([v,t])=>'<option value="'+e(v)+'"'+(v===selected?' selected':'')+'>'+e(t)+'</option>').join('');
  const filterActive=!!(session.tool||session.category);
  const filters='<form id="resource-filter-form" class="resource-filter-form" role="search">'+
-  '<label class="resource-control" for="resource-search"><span>Search tutorial guides</span>'+
+  '<label class="resource-control" for="resource-search"><span>Search tasks (tutorial guides)</span>'+
    '<input id="resource-search" type="search" maxlength="120" data-resource-filter="query" value="'+e(session.query)+'" placeholder="For example: PMCC in Sheets, graph, integral"></label>'+
   '<details class="resource-advanced-filters"'+(filterActive?' open':'')+'><summary>Filter by software or topic'+(filterActive?' (active)':'')+'</summary>'+
   '<div class="resource-filters">'+
