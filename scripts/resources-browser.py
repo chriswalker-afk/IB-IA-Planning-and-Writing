@@ -137,6 +137,7 @@ with sync_playwright() as pw:
   compact=p.locator('.resource-quick-tools .resource-creators-compact')
   assert compact.count()==1 and compact.get_attribute('open') is None
   assert search.bounding_box()['y']<p.locator('#resource-results').bounding_box()['y']
+  assert p.locator('.resource-quick-tools .resource-destination-card').count()==3
   compact.locator('summary').click()
   assert compact.locator('[data-resource-creator="graph"]').is_visible()
   assert unchanged_fields(saved(p))==before
@@ -145,7 +146,7 @@ with sync_playwright() as pw:
  def filtering(p):
   open_library(p);assert p.locator('#resource-results .resource-row').count()==8
   p.locator('[data-action="resource-more"]').click();assert p.locator('#resource-results .resource-row').count()==16
-  p.locator('#resource-search').fill('picture');p.locator('#resource-filter-tool').select_option('desmos');assert p.locator('#resource-results .resource-row').count()>0
+  p.locator('#resource-search').fill('picture');p.locator('.resource-advanced-filters > summary').click();p.locator('#resource-filter-tool').select_option('desmos');assert p.locator('#resource-results .resource-row').count()>0
   detail(p,'image-import');p.locator('[data-action="resource-list"]').click();assert p.locator('#resource-search').input_value()=='picture'
   p.locator('#resource-search').fill('zz-nothing-matches');assert 'No matching guide' in overlay(p).inner_text();p.locator('[data-action="resource-clear"]').click();assert p.locator('#resource-search').input_value()==''
   overlay(p).screenshot(path=str(OUT/'resources-library-desktop.png'),animations='disabled')

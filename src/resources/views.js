@@ -32,7 +32,7 @@ function preferences(x){
 /** Native creators are a separate, clearly labelled part of the resource library.
  * The shared registry keeps titles/icons consistent with IA Studio. No source
  * suggestion becomes a claim that a particular diagram is required. */
-export function resourceCreatorHub({compact=false}={}){
+export function resourceCreatorHub({compact=false,featured=false}={}){
  const cards=REPRESENTATION_TOOLS.map(t=>
   '<button type="button" class="resource-creator-card" data-action="resource-creator-open" data-resource-creator="'+e(t.id)+'">'+
    '<span class="resource-creator-card-icon">'+icon(t.icon)+'</span>'+
@@ -41,16 +41,40 @@ export function resourceCreatorHub({compact=false}={}){
  const headline='<div class="resource-creator-heading"><span class="resource-creator-heading-icon">'+icon("layers")+'</span>'+
   '<div><h3>Pathfinder diagram creators</h3><p>Make and refine diagrams here, without switching to another website.</p></div></div>';
  const note='<p class="resource-creator-note">All '+REPRESENTATION_TOOLS.length+' creators are optional. Your drafts stay editable; opening a creator does not add a result to your IA. Use <strong>Back to my work</strong> to return to your previous page.</p>';
- return compact?'<details class="resource-creators resource-creators-compact"><summary>'+icon("layers")+
-   ' Use a Pathfinder diagram creator</summary>'+headline+'<div class="resource-creator-grid">'+cards+'</div>'+note+'</details>':
+ const summary=featured?
+  '<summary class="resource-destination-summary"><span class="resource-destination-icon">'+icon("layers")+'</span>'+
+   '<span class="resource-destination-copy"><strong>Create a figure</strong><span>Make graphs, tables and diagrams in Pathfinder.</span></span>'+
+   '<span class="resource-destination-cta">Choose a creator '+icon("chevron-down")+'</span></summary>':
+  '<summary>'+icon("layers")+' Use a Pathfinder diagram creator</summary>';
+ return compact?'<details class="resource-creators resource-creators-compact"'+(featured?' data-resource-creators-featured="true"':'')+'>'+
+   summary+headline+'<div class="resource-creator-grid">'+cards+'</div>'+note+'</details>':
   '<section class="resource-creators" aria-label="Pathfinder diagram creators">'+headline+
    '<div class="resource-creator-grid">'+cards+'</div>'+note+'</section>';
 }
 function resourceRow(r,help){return '<article class="resource-row">'+badge(r)+'<h3>'+e(r.title)+'</h3><p>'+e(r.when)+'</p>'+guideButton(r.id,'Open guide',help)+'</article>';}
+const GUIDE_GROUPS=[
+ ['Data and graphs','Collect and organise data'],
+ ['Correlation and models','Explore relationships and models'],
+ ['Pictures and curves','Work with pictures and curves'],
+ ['Calculus and probability','Use mathematical methods'],
+ ['Financial models','Investigate financial models'],
+ ['Proof and iteration','Explore proof and iteration'],
+ ['Writing and checking','Reference and check sources'],
+ ['Writing and access','Present and communicate mathematics']
+];
+const guideGroupIndex=category=>{const n=GUIDE_GROUPS.findIndex(([key])=>key===category);return n<0?GUIDE_GROUPS.length:n;};
+const guideGroupTitle=category=>GUIDE_GROUPS.find(([key])=>key===category)?.[1]||category;
 export function resourceList(session){
- const list=filterResources(session),visible=list.slice(0,session.limit);
- return '<p class="resource-small" role="status">'+list.length+' matching guide'+(list.length===1?'':'s')+'. Browse freely; availability is not a recommendation to use a method.</p>'+
-  (list.length?'<div class="resource-grid">'+visible.map(r=>resourceRow(r,session.help)).join('')+'</div>':'<p>No matching guide. Try a shorter search or clear the filters. Every guide has written steps.</p>')+
+ const list=filterResources(session).sort((a,b)=>guideGroupIndex(a.category)-guideGroupIndex(b.category));
+ const visible=list.slice(0,session.limit),categories=[...new Set(visible.map(r=>r.category))];
+ const groups=categories.map(category=>{
+  const rows=visible.filter(r=>r.category===category);
+  return '<section class="resource-result-group" aria-label="'+e(guideGroupTitle(category))+'">'+
+   '<h4>'+e(guideGroupTitle(category))+'</h4><div class="resource-grid">'+
+   rows.map(r=>resourceRow(r,session.help)).join('')+'</div></section>';
+ }).join('');
+ return '<p class="resource-small resource-result-count" role="status">'+list.length+' matching guide'+(list.length===1?'':'s')+'. Browse freely; availability is not a recommendation to use a method.</p>'+
+  (list.length?groups:'<p>No matching guide. Try a shorter search or clear the filters. Every guide has written steps.</p>')+
   (visible.length<list.length?button('more','Show more guides'):'');
 }
 export function resourceDrawer(state,session){
@@ -67,7 +91,7 @@ export function resourceDrawer(state,session){
    '<div class="resource-video"><strong>'+e(v.publisher)+'</strong><p>'+e(v.find)+'</p>'+(v.duration?'<p class="resource-small">'+e(v.duration)+'</p>':'')+
    link(v.url,v.url.includes('youtube.com')?'Open external video':'Open video on publisher page')+(v.note?'<p class="resource-small">'+e(v.note)+'</p>':'')+'</div>').join('')+
    '<p class="resource-small">Publisher listings checked 15 October 2026. Videos have not been watched end to end for this library; captions and school access may vary. The written steps here are the fallback.</p></details>':'<p class="resource-small resource-no-video">Written guide available. No reviewed task-specific video is linked here yet.</p>';
-  return '<div class="resource-library" data-resource-detail="'+e(r.id)+'"><div class="button-row">'+button('list','Back to library')+workshopAction+close+'</div>'+intro+
+  return '<div class="resource-library" data-resource-detail="'+e(r.id)+'"><div class="button-row">'+button('list','Back to library')+workshopAction+'</div>'+intro+
    '<div class="resource-eyebrow">'+e(mode)+' '+badge(r)+'</div><h3 class="resource-heading" tabindex="-1">'+e(r.title)+'</h3>'+
    '<p class="resource-prerequisite"><strong>Use this when:</strong> '+e(r.when)+'</p>'+
    '<p class="resource-small">'+e(TOOLS[r.tool].device)+'</p>'+
@@ -83,26 +107,49 @@ export function resourceDrawer(state,session){
    (r.related.length?'<details class="resource-related"><summary>Related tasks, only when useful</summary>'+r.related.map(id=>guideButton(id,resourceById(id).title,session.help)).join('')+'</details>':'')+
    preferences(x)+'<div class="resource-footer">'+close+'</div></div>';
  }
+ const suggested=resourceSuggestions(state,{help:session.help});
+ const relevant=suggested.length?'<section class="resource-current resource-home-relevant" aria-label="Useful guides for this stage">'+
+  '<div class="resource-home-heading"><h3>Useful for your current stage</h3><span class="resource-relevant-stage">'+e(x.label.slice(0,110))+'</span></div>'+
+  '<p class="resource-small">Optional help based on your current work, not a suggestion to add new mathematics.</p>'+
+  '<div class="resource-relevant-grid">'+suggested.slice(0,2).map(r=>resourceRow(r,session.help)).join('')+'</div>'+
+  (suggested.length>2?'<details class="resource-more-relevant"><summary>One more guide for this stage</summary>'+
+   resourceRow(suggested[2],session.help)+'</details>':'')+'</section>':'';
+ const destination=(title,description,cta,kind,action,attrs='')=>
+  '<button type="button" class="resource-destination-card" data-action="'+action+'" '+attrs+'>'+
+   '<span class="resource-destination-icon">'+icon(kind)+'</span>'+
+   '<span class="resource-destination-copy"><strong>'+e(title)+'</strong><span>'+e(description)+'</span></span>'+
+   '<span class="resource-destination-cta">'+e(cta)+' '+icon("arrow-right")+'</span></button>';
+ const destinations='<section class="resource-home-navigation" aria-labelledby="resource-home-navigation-title">'+
+  '<div class="resource-home-heading"><h3 id="resource-home-navigation-title">What would you like to do?</h3></div>'+
+  '<div class="resource-quick-tools">'+
+   '<div class="resource-workshop-entry resource-destination-wrap">'+
+    destination('Learn the maths','Definitions, worked methods and guided practice.','Open Maths Workshop','book','resource-workshop')+'</div>'+
+   destination('Use software','Step-by-step instructions for Desmos, Sheets and other tools.','Find a software guide','calculator','resource-guides')+
+   '<div class="resource-destination-wrap resource-creators-wrap">'+resourceCreatorHub({compact:true,featured:true})+'</div>'+
+   destination('Reference my sources','MLA citations, what to cite and a Works Cited list.','Open MLA referencing guide','file','resource-open',
+    'data-resource-id="mla-citations" data-resource-help="'+!!session.help+'"')+
+  '</div></section>';
  const cats=[...new Set(RESOURCES.map(r=>r.category))];
  const options=(values,selected)=>values.map(([v,t])=>'<option value="'+e(v)+'"'+(v===selected?' selected':'')+'>'+e(t)+'</option>').join('');
- const suggested=resourceSuggestions(state,{help:session.help});
- const relevant=suggested.length?'<section class="resource-current" aria-label="Contextual tutorials">'+
-  '<h3>Useful for this stage</h3><p class="resource-small">These optional guides relate to the task you chose; they do not require extra mathematics.</p>'+
-  resourceRow(suggested[0],session.help)+
-  (suggested.length>1?'<details class="resource-more-relevant"><summary>Other guides for this stage ('+(suggested.length-1)+')</summary>'+
-   suggested.slice(1).map(r=>resourceRow(r,session.help)).join('')+'</details>':'')+'</section>':'';
- const shortcuts='<div class="resource-quick-tools" aria-label="Quick access to referencing and diagram tools">'+
-  '<details class="resource-mla-feature"><summary>Referencing made easy: MLA</summary>'+
-   '<p>One Google Docs method, a worked Maths IA dataset citation and simple decisions about what to cite.</p>'+
-   guideButton('mla-citations','Open MLA referencing guide',session.help)+'</details>'+
-  '<div class="resource-workshop-entry"><strong>Maths Workshop</strong><p>Need a definition, a worked calculation, or some guided practice? Learn the mathematics here; use the existing guides for software instructions.</p>'+workshopAction+'</div>'+
-  resourceCreatorHub({compact:true})+'</div>';
- return '<div class="resource-library"><p>Find a guide for the next task in your IA. Written steps come first; external videos are optional.</p>'+intro+close+
-  relevant+
-  '<form class="resource-filter-form" role="search"><label class="resource-control" for="resource-search"><span>Search tasks (for example PMCC, picture or integral)</span><input id="resource-search" type="search" maxlength="120" data-resource-filter="query" value="'+e(session.query)+'" placeholder="Find a task"></label><div class="resource-filters">'+
-  '<label class="resource-control" for="resource-filter-tool"><span>Filter by tool</span><select id="resource-filter-tool" data-resource-filter="tool">'+options([['','All tools'],...Object.entries(TOOLS).map(([k,v])=>[k,v.name])],session.tool)+'</select></label>'+
-  '<label class="resource-control" for="resource-filter-category"><span>Topic</span><select id="resource-filter-category" data-resource-filter="category">'+options([['','All topics'],...cats.map(c=>[c,c])],session.category)+'</select></label></div>'+button('clear','Clear filters')+'</form>'+
-  preferences(x)+shortcuts+
-  '<div id="resource-results">'+resourceList(session)+'</div><div class="resource-footer">'+close+'</div></div>';
+ const filterActive=!!(session.tool||session.category);
+ const filters='<form id="resource-filter-form" class="resource-filter-form" role="search">'+
+  '<label class="resource-control" for="resource-search"><span>Search tasks (tutorial guides)</span>'+
+   '<input id="resource-search" type="search" maxlength="120" data-resource-filter="query" value="'+e(session.query)+'" placeholder="For example: PMCC in Sheets, graph, integral"></label>'+
+  '<details class="resource-advanced-filters"'+(filterActive?' open':'')+'><summary>Filter by software or topic'+(filterActive?' (active)':'')+'</summary>'+
+  '<div class="resource-filters">'+
+   '<label class="resource-control" for="resource-filter-tool"><span>Software or tool</span><select id="resource-filter-tool" data-resource-filter="tool">'+
+    options([['','All tools'],...Object.entries(TOOLS).map(([k,v])=>[k,v.name])],session.tool)+'</select></label>'+
+   '<label class="resource-control" for="resource-filter-category"><span>Task area</span><select id="resource-filter-category" data-resource-filter="category">'+
+    options([['','All areas'],...cats.map(c=>[c,guideGroupTitle(c)])],session.category)+'</select></label>'+
+  '</div></details><div class="resource-filter-reset">'+button('clear','Clear search and filters')+'</div></form>';
+ return '<div class="resource-library resource-library-home">'+
+  '<p class="resource-home-intro">Choose the help you need. Learn a method, use software, make a figure or reference your sources.</p>'+
+  relevant+destinations+
+  '<section class="resource-home-guides" aria-labelledby="resource-home-guides-title">'+
+   '<div class="resource-home-heading"><h3 id="resource-home-guides-title">Browse tutorial guides</h3>'+
+    '<p>Written instructions for particular tasks and software. For definitions and worked mathematics, use the Maths Workshop.</p></div>'+
+   filters+preferences(x)+
+   '<div id="resource-results">'+resourceList(session)+'</div>'+
+  '</section><div class="resource-footer">'+close+'</div></div>';
 }
 function isCurrentGuide(state,session,id){return resourceSuggestions(state,{help:session.help}).some(r=>r.id===id);}

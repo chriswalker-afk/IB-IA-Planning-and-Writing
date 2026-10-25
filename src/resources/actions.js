@@ -80,6 +80,7 @@ export function resourceAction(state,session,action,data={},parent=''){
   return {ok:true,creator};
  }
  if(action==='resource-creator-return')return {ok:true,creatorReturn:true};
+ if(action==='resource-guides')return {ok:true,guides:true};
  if(action==='resource-open'||action==='resource-browse'){
   if(action==='resource-open'&&!resourceById(data.resourceId))return {ok:false,error:'That tutorial is not available.'};
   if(parent!=='resources')Object.assign(session,newResourceSession(),{help,parent:parent==='stuck'?'stuck':''});

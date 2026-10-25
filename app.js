@@ -1560,6 +1560,11 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       if(!resources.ok){toast(resources.error);return;}
       if(resources.creator){launchResourceCreator(resources.creator);return;}
       if(resources.creatorReturn){returnFromResourceCreator();return;}
+      if(resources.guides){
+        const search=$("#resource-search",layer);
+        search?.scrollIntoView({block:"center",behavior:"instant"});
+        search?.focus({preventScroll:true});return;
+      }
       if(resources.save)save();
       if(resources.render){render();if(!layer.hidden&&lastDrawer==="stuck")openDrawer("stuck");return;}
       if(resources.open){
