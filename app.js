@@ -85,6 +85,8 @@ import {geometryPreviewHtml,geometryQualityHtml,geometryOutputHtml} from "./src/
 import {setGeometryField,setGeometryVertex,geometryTemplate,geometryAddVertex,geometryRemoveVertex,geometryFresh,loadGeometry,saveGeometryDraft,saveAndLinkGeometry,importGeometryFromTrace, geometryAddAuxPoint,geometryRemoveAuxPoint,setGeometryAuxPoint,geometryAddGuide,geometryRemoveGuide,setGeometryGuide,moveGeometryAuxPoint} from "./src/diagrams/geometry-actions.js";
 import {exportGeometry} from "./src/diagrams/geometry-export.js";
 import {distributionLayout,distributionBoundaryForPixel,distributionBoundaryNudge} from "./src/diagrams/distribution-layout.js";
+import {setDistributionInverseField,calculateDistributionInverse,applyDistributionInverse} from "./src/diagrams/distribution-inverse-actions.js";
+import {distributionInverseResultHtml} from "./src/diagrams/distribution-inverse-view.js";
 import {renderDistributionGuidance} from "./src/diagrams/distribution-guidance.js";
 import {distributionPreviewHtml,distributionFeedbackHtml,distributionOutputHtml} from "./src/diagrams/distribution-view.js";
 import {setDistributionField,freshDistribution,loadDistribution,saveDistributionDraft,saveAndLinkDistribution} from "./src/diagrams/distribution-actions.js";
@@ -719,6 +721,11 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       node.textContent=node.dataset.probEventHeading==="eventLeaves"?d.eventName:d.conditionName);
     refreshPresentation("probability");
   }
+  function refreshDistributionInverseResult(){
+    const node=main.querySelector?.("[data-distribution-inverse-result]");
+    if(node&&state.distributionStudio?.open)
+      node.innerHTML=distributionInverseResultHtml(state.distributionStudio,e);
+  }
   function refreshDistributionPreview(){
     const root=main.querySelector?.("[data-distribution-studio]");
     if(!root||!state.distributionStudio?.open)return;
@@ -734,6 +741,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       if(next&&open)next.open=true;}
     const o=root.querySelector("[data-distribution-output]");
     if(o)o.outerHTML=distributionOutputHtml(state.distributionStudio,icon,e);
+    refreshDistributionInverseResult();
   }
   function navigateDistribution(figureId=""){
     rememberMathEditorOrigin();
@@ -2109,6 +2117,22 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         break;
       }
       case "distribution-open":navigateDistribution();break;
+      case "distribution-inverse-calculate":{
+        calculateDistributionInverse(state.distributionStudio);
+        save();refreshDistributionInverseResult();
+        break;
+      }
+      case "distribution-inverse-apply":{
+        const result=applyDistributionInverse(state.distributionStudio);
+        if(!result.ok){toast("Cannot apply boundary",result.error);refreshDistributionInverseResult();break;}
+        save();render();
+        // The whole editor is re-rendered because one boundary can become two.
+        // Keep the opened calculator visible, including on narrow touch screens.
+        const panel=main.querySelector("[data-distribution-inverse-panel]");
+        if(panel){panel.open=true;panel.querySelector("summary")?.focus({preventScroll:true});}
+        toast("Boundary applied to figure","Check the shaded event. You can still edit its boundaries manually.");
+        break;
+      }
       case "distribution-preview-fit":case "distribution-preview-detail":{
         const zoom=action==="distribution-preview-detail",studio=state.distributionStudio;
         studio.zoomed=zoom;save();
@@ -3358,6 +3382,11 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   });
   document.addEventListener("input",evt=>{
     const target=evt.target;
+    if(target.dataset.distributionInverseField!==undefined){
+      if(setDistributionInverseField(state.distributionStudio,target.dataset.distributionInverseField,target.value)){
+        save();refreshDistributionInverseResult();
+      }return;
+    }
     if(target.dataset.distributionField!==undefined){
       const value=target.type==="checkbox"?target.checked:target.value;
       if(setDistributionField(state.distributionStudio,target.dataset.distributionField,value)){

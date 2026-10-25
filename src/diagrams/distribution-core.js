@@ -32,14 +32,25 @@ export function normalizeDistributionDraft(raw){
  if(["normal","uniform"].includes(d.kind)&&d.mode==="exact")d.mode="none";
  return d;
 }
-export const newDistributionStudio=()=>({open:false,zoomed:false,draft:newDistributionDraft(),figures:[],activeId:""});
+/** Inverse controls belong to the editor, never to saved/printed figure drafts. */
+export const newDistributionInverseQuery=()=>({mode:"left",probability:"0.95",status:"idle",signature:""});
+function normalizeDistributionInverseQuery(raw){
+ const r=plain(raw)?raw:{},query=newDistributionInverseQuery();
+ if(["left","right","central"].includes(r.mode))query.mode=r.mode;
+ if(typeof r.probability==="string")query.probability=clean(r.probability,64);
+ if(["idle","calculated","applied"].includes(r.status))query.status=r.status;
+ if(typeof r.signature==="string")query.signature=clean(r.signature,3600);
+ return query;
+}
+export const newDistributionStudio=()=>({open:false,zoomed:false,draft:newDistributionDraft(),inverse:newDistributionInverseQuery(),figures:[],activeId:""});
 export function normalizeDistributionStudio(raw){
  const r=plain(raw)?raw:{},figures=(Array.isArray(r.figures)?r.figures:[])
   .slice(0,MAX_DISTRIBUTION_FIGURES).filter(plain)
   .map(f=>({id:clean(f.id,72),entryId:clean(f.entryId,80),
    savedAt:clean(f.savedAt,42),draft:normalizeDistributionDraft(f.draft)}))
   .filter(f=>/^distribution-[a-z0-9-]+$/i.test(f.id));
- return {open:r.open===true,zoomed:r.zoomed===true,draft:normalizeDistributionDraft(r.draft),figures,
+ return {open:r.open===true,zoomed:r.zoomed===true,draft:normalizeDistributionDraft(r.draft),
+  inverse:normalizeDistributionInverseQuery(r.inverse),figures,
   activeId:figures.some(f=>f.id===r.activeId)?r.activeId:""};
 }
 const phi=x=>Math.exp(-x*x/2)/Math.sqrt(2*Math.PI);

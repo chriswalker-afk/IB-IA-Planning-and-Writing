@@ -152,3 +152,77 @@
 /* Numerical outcomes stay easy to read and edit without enlarging the IA figure. */
 [data-distribution-studio] .distribution-outcome-entry textarea{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-weight:500;line-height:1.65;min-height:125px;resize:vertical;tab-size:3}
 [data-distribution-studio] .distribution-outcome-entry small{display:block;font-size:.76rem;line-height:1.5;font-weight:400;color:var(--text-muted,#526c79);overflow-wrap:anywhere}
+
+/* Distribution Pass 5.2: inverse probability is an optional calculation,
+   separate from editable event boundaries and from the printable SVG. */
+[data-distribution-studio] .distribution-inverse-panel{
+ margin:15px 0 16px;border:1px solid #ccdee5;border-radius:11px;
+ background:var(--surface-soft,#f7fafb);min-width:0;overflow-wrap:anywhere
+}
+[data-distribution-studio] .distribution-inverse-panel>summary{
+ padding:12px 13px;cursor:pointer;font-size:.9rem;font-weight:700;
+ color:var(--text,#294757);line-height:1.5
+}
+[data-distribution-studio] .distribution-inverse-panel>summary:focus-visible{
+ outline:2px solid #286f90;outline-offset:-3px;border-radius:9px
+}
+[data-distribution-studio] .distribution-inverse-tag{
+ display:inline-block;margin-left:8px;font-size:.71rem;font-weight:600;
+ color:var(--text-muted,#586f7b);vertical-align:middle
+}
+[data-distribution-studio] .distribution-inverse-body{
+ padding:1px 13px 14px;border-top:1px solid #d9e6ea
+}
+[data-distribution-studio] .distribution-inverse-body>p{
+ font-size:.82rem;color:var(--text-muted,#536a75);line-height:1.55;margin:10px 0
+}
+[data-distribution-studio] .distribution-inverse-body .probability-field{margin:10px 0}
+[data-distribution-studio] .distribution-inverse-body .btn{
+ min-height:42px;max-width:100%;white-space:normal;text-align:center
+}
+[data-distribution-studio] .distribution-inverse-result{
+ margin-top:12px;min-width:0;overflow-wrap:anywhere
+}
+[data-distribution-studio] .distribution-inverse-placeholder,
+[data-distribution-studio] .distribution-inverse-small{
+ font-size:.77rem;line-height:1.5;color:var(--text-muted,#556d78);margin:8px 0
+}
+[data-distribution-studio] .distribution-inverse-result-content{
+ padding:11px 12px;border:1px solid #d5e3e8;border-radius:9px;background:var(--surface,#fff)
+}
+[data-distribution-studio] .distribution-inverse-result-content>strong{
+ display:block;font-size:.83rem;color:var(--text,#2f4a59)
+}
+[data-distribution-studio] .distribution-inverse-equation{
+ font-size:1.04rem!important;line-height:1.45;overflow-wrap:anywhere;
+ margin:5px 0 12px!important;font-weight:700;color:var(--text,#203d51)
+}
+[data-distribution-studio] .distribution-inverse-metrics{
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:8px;margin:11px 0
+}
+[data-distribution-studio] .distribution-inverse-metrics>div{
+ min-width:0;padding:9px;border:1px solid #e1e9ed;border-radius:7px;background:#f8fbfc
+}
+[data-distribution-studio] .distribution-inverse-metrics span{
+ display:block;font-size:.74rem;line-height:1.4;color:#526b78
+}
+[data-distribution-studio] .distribution-inverse-metrics strong{
+ display:block;font-size:.95rem;font-variant-numeric:tabular-nums;margin-top:4px;
+ color:#27475a;overflow-wrap:anywhere
+}
+[data-distribution-studio] .distribution-inverse-explainer{
+ font-size:.79rem!important;line-height:1.5;color:var(--text,#465e6b);margin:10px 0
+}
+[data-distribution-studio] .distribution-inverse-applied{
+ font-size:.81rem;font-weight:650;color:#235f58;margin:11px 0 1px
+}
+[data-distribution-studio] .distribution-inverse-warning{
+ font-size:.8rem;line-height:1.55;color:#8b453c;margin:7px 0
+}
+[data-distribution-studio] .distribution-inverse-warning ul{margin:7px 0;padding-left:19px}
+@media(max-width:380px){
+ [data-distribution-studio] .distribution-inverse-metrics{grid-template-columns:1fr}
+ [data-distribution-studio] .distribution-inverse-panel>summary{padding:11px}
+ [data-distribution-studio] .distribution-inverse-body{padding:1px 11px 13px}
+}

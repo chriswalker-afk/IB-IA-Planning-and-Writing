@@ -175,10 +175,107 @@ def new_models(browser,width):
    assert not errors,errors
    print("PASS distribution",kind,width,flush=True)
   finally:c.close()
+def inverse_boundary(browser,width,kind):
+ c,p,errors=setup(browser,width)
+ try:
+  if kind!="normal":p.locator('[data-distribution-field="kind"]').select_option(kind)
+  field(p,"title","Inverse probability for "+kind+" model")
+  field(p,"symbol","T")
+  panel=p.locator('[data-distribution-inverse-panel]')
+  assert panel.count()==1
+  # A details disclosure is operable by keyboard, including on small screens.
+  if kind=="normal":
+   panel.locator("summary").focus()
+   panel.locator("summary").press("Enter")
+  else:
+   panel.locator("summary").click()
+  assert panel.get_attribute("open") is not None
+  assert p.locator('[data-distribution-field="mode"]').input_value()=="none"
+  target="0.8"
+  inverse_mode="central" if kind in ("normal","uniform") else "left"
+  p.locator('[data-distribution-inverse-field="mode"]').select_option(inverse_mode)
+  p.locator('[data-distribution-inverse-field="probability"]').fill(target)
+  assert p.locator('[data-distribution-inverse-result] [data-action="distribution-inverse-apply"]').count()==0
+  # Calculation must not shade or edit the student's figure.
+  calculate=p.locator('[data-action="distribution-inverse-calculate"]')
+  if kind=="normal":
+   calculate.focus();calculate.press("Enter")
+  else:calculate.click()
+  result=p.locator('[data-distribution-inverse-result]')
+  assert "Requested probability" in result.inner_text()
+  assert "Achieved probability" in result.inner_text()
+  assert "0.8" in result.inner_text()
+  assert result.locator('[data-action="distribution-inverse-apply"]').is_visible()
+  before=p.evaluate("(key)=>JSON.parse(localStorage.getItem(key))",KEY)
+  assert before["distributionStudio"]["draft"]["mode"]=="none"
+  assert before["distributionStudio"]["inverse"]["status"]=="calculated"
+  if kind=="binomial":
+   assert "0.828125" in result.inner_text()
+   assert "inclusive cut-off" in result.inner_text()
+  elif kind=="poisson":
+   assert "0.815263" in result.inner_text()
+  elif kind=="custom":
+   assert "Discrete probabilities jump" in result.inner_text()
+  else:
+   assert "equal tails" in result.inner_text()
+  result.locator('[data-action="distribution-inverse-apply"]').click()
+  # Re-render preserves the open, reachable calculator; graph updates separately.
+  assert p.locator('[data-distribution-inverse-panel]').get_attribute("open") is not None
+  assert "Applied to the figure" in p.locator('[data-distribution-inverse-result]').inner_text()
+  event_mode="between" if inverse_mode=="central" else inverse_mode
+  assert p.locator('[data-distribution-field="mode"]').input_value()==event_mode
+  assert p.locator('[data-distribution-field="lower"]').is_visible()
+  if inverse_mode=="central":
+   assert p.locator('[data-distribution-field="upper"]').is_visible()
+   assert float(value(p,"upper"))>float(value(p,"lower"))
+   assert p.locator('[data-distribution-shading]').count()==1
+  else:
+   count=p.locator('[data-distribution-selected="true"]').count()
+   assert count=={"binomial":7,"poisson":5,"custom":3}[kind],(kind,count)
+  saved=p.evaluate("(key)=>JSON.parse(localStorage.getItem(key))",KEY)
+  assert saved["distributionStudio"]["inverse"]["status"]=="applied"
+  assert len(saved["distributionStudio"]["figures"])==0,"Calculate/apply must not silently save or link a figure"
+  check_width(p);text_bounds(p)
+  p.screenshot(path=str(OUT/("inverse-"+kind+"-"+str(width)+".png")),full_page=True,animations="disabled")
+  if width==1440:
+   svg=svg_print_check(p,"inverse-"+kind+"-desktop",0 if inverse_mode=="central" else {"binomial":7,"poisson":5,"custom":3}[kind])
+   contents=svg.read_text()
+   assert "Requested probability" not in contents
+   assert "Achieved probability" not in contents
+   assert "Find a boundary" not in contents
+   assert "inverse-" not in contents
+  if kind=="normal" and width==390:
+   with p.expect_download() as download:p.locator('[data-action="distribution-png"]').click()
+   file=OUT/"inverse-normal-mobile.png"
+   download.value.save_as(str(file))
+   assert file.read_bytes()[:8]==bytes([137,80,78,71,13,10,26,10])
+  if kind=="normal":
+   # Model changes invalidate a calculation; applying the old result is blocked.
+   field(p,"sigma","2")
+   assert "parameters have changed" in p.locator('[data-distribution-inverse-result]').inner_text()
+   assert p.locator('[data-action="distribution-inverse-apply"]').count()==0
+   calculate.click()
+   assert p.locator('[data-action="distribution-inverse-apply"]').is_visible()
+   p.locator('[data-distribution-inverse-field="probability"]').fill("0.7")
+   assert "Enter a target and calculate" in p.locator('[data-distribution-inverse-result]').inner_text()
+  if kind=="binomial":
+   # Editing a manually applied boundary must retire the old "Applied" claim.
+   old=float(value(p,"lower"))
+   p.locator('[data-action="distribution-nudge"][data-distribution-boundary="lower"][data-distribution-direction="1"]').click()
+   assert float(value(p,"lower"))>old
+   assert p.locator('[data-distribution-inverse-result] [data-action="distribution-inverse-apply"]').count()==1
+  assert not errors,errors
+  print("PASS inverse",kind,width,flush=True)
+ finally:c.close()
+
 if __name__=="__main__":
  with sync_playwright() as playwright:
   browser=playwright.chromium.launch(headless=True)
   for width in (1440,390,320):normal(browser,width)
   binomial(browser)
   for width in (1440,390):new_models(browser,width)
+  for width in (1440,390):
+   for kind in ("normal","binomial","poisson","uniform","custom"):
+    inverse_boundary(browser,width,kind)
+  inverse_boundary(browser,320,"normal")
   browser.close()

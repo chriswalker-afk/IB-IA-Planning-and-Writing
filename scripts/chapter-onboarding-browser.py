@@ -9,6 +9,10 @@ URL=os.environ.get("IA_QA_URL","http://127.0.0.1:8765/")
 KEY="ia-pathfinder-prototype-v1"
 BASE=json.loads(subprocess.check_output(["node","--input-type=module","-e",
  "import {createProjectState} from './src/core/project-state.js';console.log(JSON.stringify(createProjectState()));"],text=True))
+# The creator hub is generated from the registered, implemented figure tools.
+# Derive the expected list rather than freezing an obsolete count (seven).
+CREATOR_IDS=json.loads(subprocess.check_output(["node","--input-type=module","-e",
+ "import {REPRESENTATION_TOOLS} from './src/diagrams/representation-registry.js';console.log(JSON.stringify(REPRESENTATION_TOOLS.map(x=>x.id)));"],text=True))
 
 def stored(page):
  return page.evaluate("(k)=>JSON.parse(localStorage.getItem(k))",KEY)
@@ -903,12 +907,14 @@ def resource_diagram_creators(browser,width):
    ("graph","[data-graph-studio]"),("stat","[data-stat-studio]"),
    ("table","[data-table-studio]"),("trace","[data-image-tracer]"),
    ("voronoi","[data-voronoi-studio]"),("geometry","[data-geometry-studio]"),
-   ("probability","[data-probability-studio]")
+   ("distribution","[data-distribution-studio]"),("probability","[data-probability-studio]")
   ):
    page.locator('.chapter-onboarding-plan [data-action="resource-browse"]').click()
    drawer=page.locator(".resource-drawer")
    assert drawer.is_visible()
-   assert drawer.locator('.resource-creator-card').count()==7
+   listed=drawer.locator('.resource-creator-card').evaluate_all(
+    "items=>items.map(item=>item.dataset.resourceCreator)")
+   assert listed==CREATOR_IDS,(listed,CREATOR_IDS)
    drawer.locator('.resource-creators-compact > summary').click()
    assert "matching guides" in drawer.inner_text(),("Resource list should report available guides",width)
    assert drawer.evaluate('el=>el.scrollWidth<=el.clientWidth+1')
