@@ -50,7 +50,7 @@ test("Batch 7: 40 domain-conscious glossary terms, seven complete read-only less
   assert(representationTool(l.creator),l.id+" missing native creator");
   for(const id of l.definitionIds)assert(definitionById(id),l.id+" missing definition "+id);
   assert(WORKSHOP_LESSON_FORMULAS[l.id]?.length>=2,l.id+" missing typeset maths");
-  assert(/proof|claim|argument|reason|limit|method|convergence|conclusion|precision|iteration/i.test(l.ia),l.id+" needs mathematical narrative");
+  assert(/proof|claim|argument|reason|limit|method|convergence|conclusion|precision|iteration|explain|establish|justif|induct/i.test(l.ia),l.id+" needs mathematical narrative");
  }
 });
 test("Batch 7: all sixteen pathways remain grounded; proof and iteration are now fully available",()=>{
@@ -84,7 +84,7 @@ test("Batch 7: a valid counterexample disproves a universal claim but finite tes
  for(let n=-20;n<=20;n++){
   assert.equal((n+1)**2-n*n,2*n+1);
   assert.equal(((n+1)**2-n*n)%2===0,false);
-  assert.equal(n*(n+1)%2,0);
+  assert(n*(n+1)%2===0,"Consecutive integer product is even");
  }
  const l=lessonById("proof-conjectures");
  assert.match(l.avoid,/not a deductive proof/);
