@@ -268,6 +268,102 @@ def inverse_boundary(browser,width,kind):
   print("PASS inverse",kind,width,flush=True)
  finally:c.close()
 
+def parameter_whatif(browser,width,kind):
+ c,p,errors=setup(browser,width)
+ try:
+  if kind!="normal":p.locator('[data-distribution-field="kind"]').select_option(kind)
+  field(p,"title","Comparing "+kind+" theoretical models")
+  field(p,"symbol","T")
+  orig_values={"normal":{"mu":"70","sigma":"10"},
+               "binomial":{"n":"10","p":"0.5"},
+               "poisson":{"lambda":"3"},
+               "uniform":{"a":"0","b":"10"},
+               "custom":{"customPoints":"0, 0.2\n1, 0.5\n2, 0.3"}}
+  for key,v in orig_values[kind].items():field(p,key,v)
+  mode={"normal":"left","binomial":"exact","poisson":"right","uniform":"between","custom":"left"}[kind]
+  lower={"normal":"70","binomial":"4","poisson":"4","uniform":"2","custom":"1"}[kind]
+  p.locator('[data-distribution-field="mode"]').select_option(mode)
+  field(p,"lower",lower)
+  if kind=="uniform":field(p,"upper","4")
+  orig=p.evaluate("(key)=>JSON.parse(localStorage.getItem(key))",KEY)["distributionStudio"]["draft"]
+  panel=p.locator('[data-distribution-whatif-panel]')
+  assert panel.count()==1
+  panel.locator("summary").click()
+  p.locator('[data-action="distribution-whatif-start"]').click()
+  panel=p.locator('[data-distribution-whatif-panel]')
+  assert panel.get_attribute("open") is not None
+  assert p.locator('[data-distribution-whatif-chart]').count()==1
+  assert "Original and alternative" in p.locator('[data-distribution-whatif-preview]').inner_text()
+  settings={"normal":("mu","75"),"binomial":("p","0.7"),"poisson":("lambda","5"),
+            "uniform":("b","20"),"custom":("customPoints","0, 0.1\n1, 0.5\n2, 0.4")}
+  target,new=settings[kind]
+  text=p.locator('[data-distribution-whatif-field="'+target+'"][data-whatif-control="value"]')
+  if kind=="normal":
+   slider=p.locator('[data-distribution-whatif-field="mu"][data-whatif-control="range"]')
+   slider.focus()
+   slider.press("ArrowRight")
+   assert float(text.input_value())>70
+  text.fill(new)
+  summary=p.locator('[data-distribution-whatif-summary]')
+  assert summary.locator('[data-action="distribution-whatif-apply"]').is_visible()
+  assert "Event probability" in summary.inner_text()
+  if kind=="normal":
+   assert "0.308537" in summary.inner_text()
+  if kind=="uniform":
+   assert "Change: -0.1" in summary.inner_text()
+  before=p.evaluate("(key)=>JSON.parse(localStorage.getItem(key))",KEY)
+  assert before["distributionStudio"]["draft"]==orig,(kind,"premature model edit")
+  assert len(before["distributionStudio"]["figures"])==0
+  assert before["distributionStudio"]["whatIf"]["active"] is True
+  assert before["distributionStudio"]["whatIf"]["values"][target]==new
+  if kind=="custom":
+   text.fill("0, 0.15\n1, 0.5\n2, 0.4")
+   assert "Check these parameters" in summary.inner_text()
+   assert "must total 1" in summary.inner_text()
+   assert summary.locator('[data-action="distribution-whatif-apply"]').count()==0
+   assert p.evaluate("(key)=>JSON.parse(localStorage.getItem(key))",KEY)["distributionStudio"]["draft"]==orig
+   text.fill(new)
+   assert summary.locator('[data-action="distribution-whatif-apply"]').is_visible()
+  check_width(p)
+  p.screenshot(path=str(OUT/("whatif-"+kind+"-"+str(width)+".png")),full_page=True,animations="disabled")
+  if width==1440 and kind=="normal":
+   with p.expect_download() as dl:p.locator('[data-action="distribution-svg"]').click()
+   oldfile=OUT/"whatif-original-before-apply.svg";dl.value.save_as(str(oldfile))
+   oldsvg=oldfile.read_text()
+   assert "What if" not in oldsvg and "Alternative model" not in oldsvg
+   assert "70" in oldsvg
+  summary.locator('[data-action="distribution-whatif-apply"]').click()
+  data=p.evaluate("(key)=>JSON.parse(localStorage.getItem(key))",KEY)
+  assert data["distributionStudio"]["draft"][target]==new
+  assert data["distributionStudio"]["draft"]["mode"]==orig["mode"]
+  assert data["distributionStudio"]["draft"]["lower"]==orig["lower"]
+  assert data["distributionStudio"]["draft"]["upper"]==orig["upper"]
+  assert data["distributionStudio"]["whatIf"]["active"] is False
+  assert data["distributionStudio"]["whatIf"]["status"]=="applied"
+  assert len(data["distributionStudio"]["figures"])==0
+  assert p.locator('[data-distribution-whatif-panel]').get_attribute("open") is not None
+  assert "Alternative parameters applied" in p.locator('[data-distribution-whatif-panel]').inner_text()
+  assert p.locator('[data-distribution-whatif-chart]').count()==0
+  assert p.locator('[data-representation-ready="true"]').count()==1
+  check_width(p);text_bounds(p)
+  if width==1440:
+   count=p.locator('[data-distribution-selected="true"]').count()
+   svg=svg_print_check(p,"whatif-applied-"+kind,count)
+   assert "Alternative model" not in svg.read_text()
+   assert "What if" not in svg.read_text()
+   assert "data-distribution-whatif-chart" not in svg.read_text()
+   if kind=="normal":
+    assert svg.read_text()!=oldsvg
+   if kind=="custom":
+    assert data["distributionStudio"]["draft"]["customPoints"]==new
+  if kind=="normal" and width==390:
+   with p.expect_download() as download:p.locator('[data-action="distribution-png"]').click()
+   output=OUT/"whatif-applied-mobile.png";download.value.save_as(str(output))
+   assert output.read_bytes()[:8]==bytes([137,80,78,71,13,10,26,10])
+  assert not errors,errors
+  print("PASS parameter exploration",kind,width,flush=True)
+ finally:c.close()
+
 if __name__=="__main__":
  with sync_playwright() as playwright:
   browser=playwright.chromium.launch(headless=True)
@@ -278,4 +374,8 @@ if __name__=="__main__":
    for kind in ("normal","binomial","poisson","uniform","custom"):
     inverse_boundary(browser,width,kind)
   inverse_boundary(browser,320,"normal")
+  for width in (1440,390):
+   for kind in ("normal","binomial","poisson","uniform","custom"):
+    parameter_whatif(browser,width,kind)
+  parameter_whatif(browser,320,"normal")
   browser.close()
