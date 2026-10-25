@@ -80,7 +80,7 @@ test("all five distribution types receive relevant parameter assumptions without
   const r=distributionWhatIfReflection(q,s.draft);
   assert.ok(r,kind);
   assert.match(r.prompts[0].question,re,kind);
-  assert.match(r.prompts[1].question,/probability of the SAME event/,kind);
+  assert.match(r.prompts[1].question,q.sensitivity.deltaProbability===0?/did not change numerically/:/SAME event/,kind);
   assert.match(r.prompts[2].question,/investigation|IA/,kind);
   assert.equal(r.prompts.length,3);
   assert.ok(r.prompts.every(p=>p.question.endsWith("?")||p.question.includes("?")),kind);
