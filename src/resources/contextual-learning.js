@@ -66,7 +66,8 @@ export function contextualLearningChoices(state,{spot='page',issueId=''}={}){
  // showing mathematics, after a route/method/creator is explicitly chosen.
  let creatorId='';
  const explicit=!!h.routeId&&(!!entry?.methodId&&entry.methodId!=='other'||
-  !!state?.planning?.routeExplorer?.selectedRoute);
+  !!state?.planning?.routeExplorer?.selectedRoute||
+  node==='C31'&&!!activeRepresentationTool(state));
  if(!planning&&['C30','C31','C40','C50'].includes(node)&&
    (node==='C31'||pictureSpot(location))&&explicit&&!teacherCheck&&!needsConsent){
   creatorId=activeRepresentationTool(state)?.id||lesson?.creator||'';
