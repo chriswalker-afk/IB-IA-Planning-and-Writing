@@ -1,0 +1,48 @@
+name: Distribution Studio Pass 2 — IA figure acceptance
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'app.js'
+      - 'src/diagrams/distribution-**'
+      - 'src/core/project-state.js'
+      - 'data/probability-studio.css'
+      - 'tests/distribution-pass2.test.js'
+      - 'scripts/distribution-pass2-browser.py'
+      - '.github/workflows/distribution-pass2-browser.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'app.js'
+      - 'src/diagrams/distribution-**'
+      - 'data/probability-studio.css'
+      - 'scripts/distribution-pass2-browser.py'
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-ci-node
+      - name: Build the IA website
+        run: npm run build
+      - uses: ./.github/actions/setup-ci-browser
+      - name: Verify actual figure exports and drag / keyboard / mobile controls
+        run: |
+          mkdir -p qa-output/distribution-pass2
+          python -m http.server 8765 --directory dist > qa-output/distribution-pass2/server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID"' EXIT
+          IA_QA_OUTPUT=qa-output/distribution-pass2 python scripts/distribution-pass2-browser.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: distribution-pass2-qa
+          path: qa-output/distribution-pass2
+          retention-days: 7
