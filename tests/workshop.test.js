@@ -127,7 +127,7 @@ test('workshop: pathway browsing filters exact route terms and available lessons
  const html=resourceDrawer(s,session);
  assert(html.includes('Voronoi cell'));
  assert(!html.includes('Pearson&#39;s correlation coefficient</h4>'));
- assert(html.includes('No guided lessons match this selection'));
+ assert(html.includes('Build and check a Voronoi nearest-site region'));
  assert(!resourceFilter(session,'workshopRoute','invalid-route'));
  assert(resourceFilter(session,'workshopRoute','relationships'));
  assert(workshopList(session).includes('Pearson'));
