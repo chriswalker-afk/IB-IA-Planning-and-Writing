@@ -146,11 +146,45 @@ with sync_playwright() as pw:
  def filtering(p):
   open_library(p);assert p.locator('#resource-results .resource-row').count()==8
   p.locator('[data-action="resource-more"]').click();assert p.locator('#resource-results .resource-row').count()==16
-  p.locator('#resource-search').fill('picture');p.locator('.resource-advanced-filters > summary').click();p.locator('#resource-filter-tool').select_option('desmos');assert p.locator('#resource-results .resource-row').count()>0
+  p.locator('#resource-search').fill('picture');p.locator('.resource-advanced-filters > summary').click();p.locator('#resource-filter-tool').select_option('desmos');p.locator('[data-action="resource-discovery-type"][data-resource-type="guide"]').first.click();assert p.locator('#resource-results .resource-discovery-item[data-discovery-kind="guide"]').count()>0
   detail(p,'image-import');p.locator('[data-action="resource-list"]').click();assert p.locator('#resource-search').input_value()=='picture'
-  p.locator('#resource-search').fill('zz-nothing-matches');assert 'No matching guide' in overlay(p).inner_text();p.locator('[data-action="resource-clear"]').click();assert p.locator('#resource-search').input_value()==''
+  p.locator('#resource-search').fill('zz-nothing-matches');assert 'No matching resources' in overlay(p).inner_text();p.locator('[data-action="resource-clear"]').click();assert p.locator('#resource-search').input_value()==''
   overlay(p).screenshot(path=str(OUT/'resources-library-desktop.png'),animations='disabled')
  run('resources-filter-pagination-and-back',state(),filtering,1440,1000)
+
+ def unified_discovery(p):
+  before=unchanged_fields(saved(p))
+  open_library(p)
+  p.locator('#resource-search').fill('PMCC')
+  assert p.locator('.resource-discovery-count').is_visible()
+  assert p.locator('#resource-results [data-discovery-kind="lesson"]').count()>0
+  assert p.locator('#resource-results [data-discovery-kind="definition"]').count()>0
+  assert p.locator('#resource-results [data-discovery-kind="guide"]').count()>0
+  p.locator('#resource-results [data-action="resource-workshop-lesson"][data-workshop-id="pearson"]').click()
+  assert 'Show me' in overlay(p).inner_text()
+  p.locator('[data-action="resource-workshop-tools"]').first.click()
+  assert p.locator('#resource-search').input_value()=='PMCC'
+  p.locator('#resource-results [data-action="resource-workshop-term"][data-workshop-id="correlation"]').click()
+  assert 'Correlation' in overlay(p).inner_text()
+  p.locator('[data-action="resource-workshop-tools"]').first.click()
+  assert p.locator('#resource-search').input_value()=='PMCC'
+  p.locator('#resource-search').fill('')
+  p.locator('[data-action="resource-discovery-area"][data-resource-area="geometry"]').click()
+  assert p.locator('[data-action="resource-discovery-area"][data-resource-area="geometry"]').get_attribute('aria-pressed')=='true'
+  p.locator('#resource-results [data-action="resource-discovery-type"][data-resource-type="creator"]').first.click()
+  assert p.locator('#resource-results [data-action="resource-creator-open"][data-resource-creator="trace"]').is_visible()
+  assert overlay(p).evaluate('el=>el.scrollWidth<=el.clientWidth+1')
+  p.locator('[data-action="resource-discovery-area"][data-resource-area=""]').click()
+  p.locator('#resource-search').fill('MLA')
+  p.locator('#resource-results [data-action="resource-open"][data-resource-id="mla-citations"]').click()
+  assert 'Works Cited' in overlay(p).inner_text()
+  p.locator('[data-action="resource-list"]').first.click()
+  assert p.locator('#resource-search').input_value()=='MLA'
+  assert unchanged_fields(saved(p))==before
+  overlay(p).screenshot(path=str(OUT/('resources-discovery-'+str(p.viewport_size['width'])+'.png')),animations='disabled')
+ run('resources-unified-search-desktop',state(route='planning'),unified_discovery,1440,1000)
+ run('resources-unified-search-phone',state(route='planning'),unified_discovery,360,740)
+
  def image(p):
   before=unchanged_fields(saved(p));open_library(p);choice(p,'image','import');close(p);assert p.locator('[data-resource-suggestion="image-import"]').count()==1
   open_suggestion(p,'image-import');p.locator('.resource-related > summary').click();detail(p,'image-scale');assert '25' in overlay(p).inner_text()
@@ -199,7 +233,7 @@ with sync_playwright() as pw:
  run('resources-preferences-backup-restore',state(),backup,1440,1000)
  def keyboard(p):
   open_library(p);p.locator('#resource-search').focus();p.keyboard.type('picture');assert p.evaluate('document.activeElement.id')=='resource-search';p.keyboard.press('Enter');assert overlay(p).count()==1
-  detail(p,'image-scale');p.locator('.resource-footer [data-action="resource-close"]').focus();p.keyboard.press('Tab');assert p.evaluate('document.activeElement.dataset.action')=='close-drawer'
+  p.locator('[data-action="resource-discovery-type"][data-resource-type="guide"]').first.click();detail(p,'image-scale');p.locator('.resource-footer [data-action="resource-close"]').focus();p.keyboard.press('Tab');assert p.evaluate('document.activeElement.dataset.action')=='close-drawer'
   overlay(p).screenshot(path=str(OUT/'resources-image-scale-small-phone.png'),animations='disabled');p.keyboard.press('Escape');assert p.locator('#drawerLayer').is_hidden()
  run('resources-keyboard-small-phone',state(),keyboard,360,740)
  def preview(p):
