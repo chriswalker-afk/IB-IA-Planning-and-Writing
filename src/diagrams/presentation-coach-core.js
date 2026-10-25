@@ -329,7 +329,7 @@ export function handoverQuestions(state,type,draft){
   type==="voronoi"?"nearest-site regions under a straight-line distance assumption":
   type==="geometry"?"a labelled geometric construction":
   type==="probability"?"a conditional probability model of successive outcomes":
-  type==="distribution"?(draft?.kind==="normal"?"a normal probability-density model and shaded area":"a binomial model for a count of successes"):
+  type==="distribution"?({normal:"a normal probability-density model and shaded area",binomial:"a binomial model for a count of successes",poisson:"a Poisson model for an interval count",uniform:"a continuous uniform density model with fixed support",custom:"a numerical discrete distribution with explicitly assigned outcome probabilities"})[draft?.kind]||"a theoretical probability model":
   {compact:"selected numerical results",summary:"summary statistics",frequency:"observed category frequencies"}[draft?.mode]||"mathematical results";
  const limitation=type==="graph"&&draft?.kind==="function"?"Which assumptions and feasible domain restrict this model?":
   type==="stat"&&draft?.kind==="bar"?"How do group sizes and percentage denominators affect the comparison?":
@@ -340,7 +340,7 @@ export function handoverQuestions(state,type,draft){
   type==="voronoi"?"How would roads, obstacles, distance metrics or the choice of sites change nearest-site regions?":
   type==="geometry"?"Which scale assumptions, angle measurements or annotations limit this construction?":
   type==="probability"?"How were conditional probabilities justified? Were events clearly defined, and are independence and sampling assumptions defensible?":
-  type==="distribution"?(draft?.kind==="normal"?"Which evidence or process supports the normality assumption, and how might mean or SD uncertainty affect the probability?":"Are the number of trials fixed, outcomes binary, trials independent and success probability constant?"):
+  type==="distribution"?({normal:"Which evidence or process supports the normality assumption, and how might mean or SD uncertainty affect the probability?",binomial:"Are the number of trials fixed, outcomes binary, trials independent and success probability constant?",poisson:"What supports a constant mean rate and independent events over the stated observation interval?",uniform:"Why is probability density constant throughout [a,b], and what would a nonuniform process change?",custom:"Do the possible outcomes form a complete sample space, and how was every probability justified?"})[draft?.kind]||"What assumptions limit this theoretical model?":
   type==="table"?"Are these the smallest set of results needed, with justified precision?":
   "How could sampling, measurement accuracy, data exclusions or model assumptions change the conclusion?";
  const distribution=type==="distribution"?analyzeDistribution(draft):null;
