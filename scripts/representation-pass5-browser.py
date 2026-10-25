@@ -10,7 +10,7 @@ KEY="ia-pathfinder-prototype-v1"
 BASE=json.loads(subprocess.check_output(["node","--input-type=module","-e",
  "import {createProjectState} from './src/core/project-state.js';console.log(JSON.stringify(createProjectState()));"],text=True))
 GROUPS={"data":{"graph","stat","table"},"geometry":{"trace","geometry","voronoi"}}
-ALL={"graph","stat","table","trace","voronoi","geometry","probability"}
+ALL={"graph","stat","table","trace","voronoi","geometry","probability","distribution"}
 ROUTES={"relationships":"graph","groups":"stat","categorical":"table",
  "variation":"stat","fitted-models":"graph","growth":"graph","cycles":"graph",
  "trajectories":"trace","optimisation":"graph","images":"trace","triangulation":"geometry",
@@ -81,8 +81,8 @@ def chooser(browser,width):
   p.locator('[data-prob-field="title"]').fill("QA unsaved probability tree")
   roots={"graph":"graph-studio","stat":"stat-studio","table":"table-studio",
          "trace":"image-tracer","voronoi":"voronoi-studio",
-         "geometry":"geometry-studio","probability":"probability-studio"}
-  for tool in ("geometry","stat","table","trace","voronoi","graph","probability"):
+         "geometry":"geometry-studio","probability":"probability-studio","distribution":"distribution-studio"}
+  for tool in ("geometry","stat","table","trace","voronoi","graph","distribution","probability"):
    p.locator('[data-representation-tool="'+tool+'"]').click()
    assert p.locator('[data-'+roots[tool]+']').is_visible(),tool
    assert p.locator('[data-representation-switcher] [aria-current="page"]').count()==1
