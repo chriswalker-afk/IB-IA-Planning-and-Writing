@@ -396,15 +396,13 @@ def sensitivity_provenance(browser,width):
   assert "Mean shift" in summary.inner_text()
   assert "reclassify" in summary.inner_text()
   before=p.evaluate("(key)=>JSON.parse(localStorage.getItem(key))",KEY)
-  with p.expect_event("dialog") as dial:
-   summary.locator('[data-action="distribution-whatif-apply"]').click()
-  dial.value.dismiss()
+  p.once("dialog",lambda dialog:dialog.dismiss())
+  summary.locator('[data-action="distribution-whatif-apply"]').click()
   after_cancel=p.evaluate("(key)=>JSON.parse(localStorage.getItem(key))",KEY)
   assert after_cancel["distributionStudio"]["draft"]==before["distributionStudio"]["draft"]
   assert after_cancel["distributionStudio"]["whatIf"]["active"]
-  with p.expect_event("dialog") as dial:
-   summary.locator('[data-action="distribution-whatif-apply"]').click()
-  dial.value.accept()
+  p.once("dialog",lambda dialog:dialog.accept())
+  summary.locator('[data-action="distribution-whatif-apply"]').click()
   after_apply=p.evaluate("(key)=>JSON.parse(localStorage.getItem(key))",KEY)
   draft=after_apply["distributionStudio"]["draft"]
   assert draft["mu"]=="75"
@@ -414,6 +412,104 @@ def sensitivity_provenance(browser,width):
   check_width(p)
   assert not errors,errors
   print("PASS 5.4.1 provenance",width,flush=True)
+ finally:c.close()
+
+
+def fixed_target_whatif(browser,width,kind):
+ c,p,errors=setup(browser,width)
+ try:
+  if kind!="normal":p.locator('[data-distribution-field="kind"]').select_option(kind)
+  field(p,"title","Fixed probability comparison for "+kind)
+  field(p,"symbol","K")
+  parameters={"normal":{"mu":"70","sigma":"10"},
+              "binomial":{"n":"10","p":"0.5"},
+              "poisson":{"lambda":"3"},
+              "uniform":{"a":"0","b":"10"},
+              "custom":{"customPoints":"0, 0.2\n1, 0.5\n2, 0.3"}}
+  for key,v in parameters[kind].items():field(p,key,v)
+  # The original shaded event is deliberately different from the inverse query.
+  p.locator('[data-distribution-field="mode"]').select_option("left")
+  field(p,"lower",{"normal":"70","binomial":"4","poisson":"2","uniform":"3","custom":"1"}[kind])
+  original=p.evaluate("(key)=>JSON.parse(localStorage.getItem(key))",KEY)["distributionStudio"]["draft"]
+  panel=p.locator('[data-distribution-whatif-panel]')
+  panel.locator("summary").click()
+  p.locator('[data-action="distribution-whatif-start"]').click()
+  choice=p.locator('[data-distribution-whatif-option="comparison"][value="target"]')
+  if kind=="normal" and width==1440:
+   event_choice=p.locator('[data-distribution-whatif-option="comparison"][value="event"]')
+   event_choice.focus();event_choice.press("ArrowRight")
+  else:choice.click()
+  assert p.locator('[data-distribution-whatif-option="comparison"][value="target"]').is_checked()
+  assert p.locator('[data-distribution-target-controls]').is_visible()
+  inverse_mode={"normal":"left","binomial":"left","poisson":"right",
+                "uniform":"central","custom":"left"}[kind]
+  probability={"normal":"0.9","binomial":"0.8","poisson":"0.2",
+               "uniform":"0.5","custom":"0.75"}[kind]
+  p.locator('[data-distribution-whatif-option="targetMode"]').select_option(inverse_mode)
+  target=p.locator('[data-distribution-whatif-option="targetProbability"]')
+  target.fill(probability)
+  settings={"normal":("mu","75"),"binomial":("p","0.7"),"poisson":("lambda","5"),
+            "uniform":("b","20"),"custom":("customPoints","0, 0.1\n1, 0.5\n2, 0.4")}
+  key,value_new=settings[kind]
+  p.locator('[data-distribution-whatif-field="'+key+'"][data-whatif-control="value"]').fill(value_new)
+  report=p.locator('[data-distribution-whatif-summary]')
+  assert report.locator('[data-whatif-target-result]').count()==1,report.inner_text()
+  assert "Same target probability" in report.inner_text()
+  assert report.locator('[data-whatif-target-model]').count()==2
+  assert report.inner_text().count("Achieved probability")==2
+  assert "Boundary change" in report.inner_text()
+  assert "Event-probability change" not in report.inner_text()
+  if kind in ("binomial","poisson","custom"):
+   assert "Inclusive discrete cut-offs" in report.inner_text()
+  if kind=="custom":assert "boundary does not move" in report.inner_text()
+  markers=p.locator('[data-distribution-whatif-chart] [data-whatif-target-marker]')
+  count=2 if inverse_mode=="central" else 1
+  assert markers.count()==2*count,(kind,markers.count())
+  assert p.locator('[data-whatif-target-marker="original"]').count()==count
+  assert p.locator('[data-whatif-target-marker="alternative"]').count()==count
+  assert "Cut-offs under both models" in p.locator('[data-distribution-whatif-preview]').inner_text()
+  assert p.evaluate("(key)=>JSON.parse(localStorage.getItem(key))",KEY)["distributionStudio"]["draft"]==original
+  if kind=="normal":
+   target.fill("1")
+   assert report.locator('[data-whatif-target-error]').count()==1
+   assert report.locator('[data-action="distribution-whatif-apply"]').count()==0
+   assert p.evaluate("(key)=>JSON.parse(localStorage.getItem(key))",KEY)["distributionStudio"]["draft"]==original
+   target.fill(probability)
+   assert report.locator('[data-whatif-target-result]').count()==1
+  if width<600:
+   dimensions=p.locator('.distribution-whatif-canvas').evaluate(
+    "e=>({outer:e.clientWidth,total:e.scrollWidth,chart:e.querySelector('svg').getBoundingClientRect().width})")
+   assert dimensions["total"]>dimensions["outer"]+40,dimensions
+   assert dimensions["chart"]>=650,dimensions
+  check_width(p)
+  if width==1440 and kind=="normal":
+   with p.expect_download() as dl:p.locator('[data-action="distribution-svg"]').click()
+   original_svg=OUT/"target-original-before-apply.svg";dl.value.save_as(str(original_svg))
+   assert "data-whatif-target-marker" not in original_svg.read_text()
+   assert "70" in original_svg.read_text()
+  if kind=="normal" and width==390:
+   with p.expect_download() as dl:p.locator('[data-action="distribution-png"]').click()
+   file=OUT/"target-normal-mobile-unapplied.png";dl.value.save_as(str(file))
+   assert file.read_bytes()[:8]==bytes([137,80,78,71,13,10,26,10])
+  report.locator('[data-action="distribution-whatif-apply"]').click()
+  saved=p.evaluate("(key)=>JSON.parse(localStorage.getItem(key))",KEY)["distributionStudio"]
+  assert saved["draft"][key]==value_new
+  assert saved["draft"]["mode"]==original["mode"]
+  assert saved["draft"]["lower"]==original["lower"]
+  assert saved["draft"]["upper"]==original["upper"]
+  assert saved["whatIf"]["active"] is False
+  assert saved["whatIf"]["status"]=="applied"
+  assert saved["figures"]==[]
+  assert p.locator('[data-distribution-whatif-chart]').count()==0
+  assert p.locator('[data-representation-actions="distribution"]').get_attribute("data-representation-ready")=="true"
+  check_width(p)
+  if width==1440:
+   with p.expect_download() as dl:p.locator('[data-action="distribution-svg"]').click()
+   file=OUT/("target-applied-"+kind+".svg");dl.value.save_as(str(file))
+   assert "data-whatif-target-marker" not in file.read_text()
+   assert "targetProbability" not in file.read_text()
+  assert not errors,errors
+  print("PASS fixed-target comparison",kind,width,flush=True)
  finally:c.close()
 
 if __name__=="__main__":
@@ -430,4 +526,9 @@ if __name__=="__main__":
    for kind in ("normal","binomial","poisson","uniform","custom"):
     parameter_whatif(browser,width,kind)
   parameter_whatif(browser,320,"normal")
+  for width in (1440,390,320):sensitivity_provenance(browser,width)
+  for width in (1440,390):
+   for kind in ("normal","binomial","poisson","uniform","custom"):
+    fixed_target_whatif(browser,width,kind)
+  fixed_target_whatif(browser,320,"normal")
   browser.close()

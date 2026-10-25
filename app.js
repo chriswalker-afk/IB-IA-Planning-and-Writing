@@ -87,7 +87,7 @@ import {exportGeometry} from "./src/diagrams/geometry-export.js";
 import {distributionLayout,distributionBoundaryForPixel,distributionBoundaryNudge} from "./src/diagrams/distribution-layout.js";
 import {setDistributionInverseField,calculateDistributionInverse,applyDistributionInverse} from "./src/diagrams/distribution-inverse-actions.js";
 import {distributionInverseResultHtml} from "./src/diagrams/distribution-inverse-view.js";
-import {startDistributionWhatIf,resetDistributionWhatIf,discardDistributionWhatIf,setDistributionWhatIfField,applyDistributionWhatIf} from "./src/diagrams/distribution-whatif-actions.js";
+import {startDistributionWhatIf,resetDistributionWhatIf,discardDistributionWhatIf,setDistributionWhatIfField,setDistributionWhatIfOption,applyDistributionWhatIf} from "./src/diagrams/distribution-whatif-actions.js";
 import {distributionWhatIfSummaryHtml,distributionWhatIfPreviewHtml} from "./src/diagrams/distribution-whatif-view.js";
 import {renderDistributionGuidance} from "./src/diagrams/distribution-guidance.js";
 import {distributionPreviewHtml,distributionFeedbackHtml,distributionOutputHtml} from "./src/diagrams/distribution-view.js";
@@ -3418,6 +3418,19 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   });
   document.addEventListener("input",evt=>{
     const target=evt.target;
+    if(target.dataset.distributionWhatifOption!==undefined){
+      const key=target.dataset.distributionWhatifOption,studio=state.distributionStudio;
+      if(setDistributionWhatIfOption(studio,key,target.value)){
+        save();
+        if(key==="comparison"){
+          // Target controls are conditional; retain keyboard focus on the choice.
+          render();
+          main.querySelector('[data-distribution-whatif-option="comparison"][value="'+target.value+'"]')
+            ?.focus({preventScroll:true});
+        }else refreshDistributionWhatIf();
+      }
+      return;
+    }
     if(target.dataset.distributionWhatifField!==undefined){
       const key=target.dataset.distributionWhatifField,studio=state.distributionStudio;
       if(setDistributionWhatIfField(studio,key,target.value)){

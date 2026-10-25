@@ -44,13 +44,20 @@ function normalizeDistributionInverseQuery(raw){
 }
 /** What-if values are editor-only, not embedded in a saved or exported IA figure. */
 const WHAT_IF_FIELDS=["mu","sigma","n","p","lambda","a","b","customPoints"];
-export const newDistributionWhatIfState=()=>({active:false,status:"idle",kind:"",source:"",values:{}});
+export const newDistributionWhatIfState=()=>({
+ active:false,status:"idle",kind:"",source:"",values:{},
+ comparison:"event",targetMode:"left",targetProbability:"0.95"
+});
 function normalizeDistributionWhatIfState(raw){
  const r=plain(raw)?raw:{},w=newDistributionWhatIfState();
  w.active=r.active===true;
  if(kinds.includes(r.kind))w.kind=r.kind;
  if(["idle","exploring","applied"].includes(r.status))w.status=r.status;
  if(typeof r.source==="string")w.source=clean(r.source,3600);
+ if(["event","target"].includes(r.comparison))w.comparison=r.comparison;
+ if(["left","right","central"].includes(r.targetMode))w.targetMode=r.targetMode;
+ if(typeof r.targetProbability==="string")w.targetProbability=clean(r.targetProbability,64);
+ if(w.targetMode==="central"&&!["normal","uniform"].includes(w.kind))w.targetMode="left";
  if(plain(r.values))for(const key of WHAT_IF_FIELDS)
   if(typeof r.values[key]==="string")w.values[key]=clean(r.values[key],key==="customPoints"?3200:180);
  if(!w.active){w.kind="";w.source="";w.values={};}

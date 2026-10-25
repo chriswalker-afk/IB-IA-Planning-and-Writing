@@ -45,6 +45,7 @@ export function renderDistributionWhatIfSvg(comparison){
  if(!comparison?.ready)return "";
  const a=comparison.original,b=comparison.alternative;
  const eventA=comparison.originalEvent||a,eventB=comparison.alternativeEvent||b;
+ const inverse=comparison.comparison==="target"&&comparison.target?.ok?comparison.target:null;
  const l0=distributionLayout(a),l1=distributionLayout(b);
  const W=960,H=354,left=80,right=932,top=73,bottom=281;
  const min=Math.min(l0.domainMin,l1.domainMin),max=Math.max(l0.domainMax,l1.domainMax);
@@ -56,10 +57,15 @@ export function renderDistributionWhatIfSvg(comparison){
  const variable=a.draft.symbol;
  const svg=['<svg xmlns="http://www.w3.org/2000/svg" data-distribution-whatif-chart="true" role="img"'+
   ' aria-label="Shared-axis comparison of original and alternative '+esc(a.draft.kind)+
-  ' distributions" width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'">'+
-  '<title>Original and alternative model comparison</title>'+
+  ' distributions'+(inverse?' with separate inverse probability cut-offs':'')+'" width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'">'+
+  '<title>'+(inverse?'Fixed-probability boundary comparison':'Original and alternative model comparison')+'</title>'+
   '<desc>The grey original and blue alternative use exactly the same horizontal and vertical axes.'+
-  (comparison.originalProbability!==null?' The selected event boundaries stay fixed.':'')+'</desc>'+
+  (inverse?' Original boundaries: '+esc(String(inverse.original.lower))+
+    (inverse.mode==="central"?' to '+esc(String(inverse.original.upper)):'')+
+    '; alternative boundaries: '+esc(String(inverse.alternative.lower))+
+    (inverse.mode==="central"?' to '+esc(String(inverse.alternative.upper)):'')+
+    '. They are calculated independently at the same requested probability; no common shaded event is implied.':
+   comparison.originalProbability!==null?' The selected event boundaries stay fixed.':'')+'</desc>'+
   '<rect width="'+W+'" height="'+H+'" fill="#fff"/>'+
   txt("Original model",left+48,29,13,"start")+
   line(left+16,25,left+43,25,"#63798a",3,' stroke-dasharray="7 4"')+
@@ -116,6 +122,26 @@ export function renderDistributionWhatIfSvg(comparison){
      '" fill="'+colour[i]+'" opacity="'+(comparison.originalProbability===null||eventChosen(i===0?eventA:eventB,point.x)?"0.85":"0.32")+'"/>');
    }
   });
+ }
+ if(inverse){
+  const first=[inverse.original.lower,...(inverse.mode==="central"?[inverse.original.upper]:[])];
+  const second=[inverse.alternative.lower,...(inverse.mode==="central"?[inverse.alternative.upper]:[])];
+  // Small offsets keep coincident or nearly-coincident discrete cut-offs
+  // individually visible. The numerical values remain exact in the summary.
+  for(const [kind,marks,others,colour,pattern,offsetSign] of [
+   ["original",first,second,"#63798a","3 4",-1],
+   ["alternative",second,first,"#1681a3","7 4",1]
+  ]){
+   for(let i=0;i<marks.length;i++){
+    const value=marks[i];
+    if(!Number.isFinite(value)||value<min||value>max)continue;
+    const other=others[i],near=Number.isFinite(other)&&Math.abs(X(value)-X(other))<6;
+    const markerX=X(value)+(near?offsetSign*2:0);
+    svg.push(line(markerX,top,markerX,bottom,colour,2.2,
+     ' stroke-dasharray="'+pattern+'" data-whatif-target-marker="'+kind+'" data-whatif-target-side="'+(i===0?"lower":"upper")+'"'),
+     '<circle cx="'+num(markerX)+'" cy="'+num(top+4)+'" r="3.2" fill="'+colour+'"/>');
+   }
+  }
  }
  if(comparison.originalProbability!==null){
   const marks=[eventA.lower,...(["between","outside"].includes(eventA.draft.mode)?[eventA.upper]:[])]

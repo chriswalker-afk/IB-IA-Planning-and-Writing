@@ -4,7 +4,8 @@
  */
 import {compareDistributionWhatIf,DISTRIBUTION_PARAMETER_KEYS} from "./distribution-whatif-core.js";
 import {renderDistributionWhatIfSvg} from "./distribution-whatif-render.js";
-import {formatSensitivityProbability,formatSensitivityPoints} from "./distribution-sensitivity.js";
+import {distributionLayout} from "./distribution-layout.js";
+import {formatSensitivityProbability,formatSensitivityPoints,formatSensitivityNumber,formatSensitivitySigned} from "./distribution-sensitivity.js";
 
 const labels={mu:"Mean (μ)",sigma:"Standard deviation (σ)",n:"Number of trials (n)",
  p:"Success probability (p)",lambda:"Event rate (λ)",a:"Lower limit (a)",b:"Upper limit (b)",
@@ -52,6 +53,81 @@ const parameterControl=(d,whatIf,key,e)=>{
   (slider?'<div class="distribution-whatif-slider">'+slider+'</div>':"")+
   '<small>Original: '+e(d[key])+'</small></div>';
 };
+
+/** One question at a time; no new figure or mathematical-stage record is created. */
+const comparisonChoice=(w,e)=>
+ '<fieldset class="distribution-whatif-question" aria-label="What should remain fixed?">'+
+ '<legend>What should stay fixed?</legend>'+
+ [["event","The event boundary","How does its probability change?"],
+  ["target","A probability target","How does the required cut-off change?"]]
+ .map(([value,title,hint])=>
+  '<label class="distribution-whatif-question-option"><input type="radio" name="distribution-whatif-comparison" '+
+  'data-distribution-whatif-option="comparison" value="'+e(value)+'"'+
+  ((w.comparison||"event")===value?' checked':'')+'>'+
+  '<span><strong>'+e(title)+'</strong><small>'+e(hint)+'</small></span></label>').join("")+
+ '</fieldset>';
+const fixedTargetControls=(w,d,e)=>{
+ const continuous=["normal","uniform"].includes(d.kind);
+ const options=[["left","At most (≤) — left tail"],["right","At least (≥) — right tail"],
+  ...(continuous?[["central","Central interval (equal tails)"]]:[])];
+ return '<div class="distribution-whatif-target-controls" data-distribution-target-controls>'+
+  '<label class="probability-field"><span>Which probability?</span><select data-distribution-whatif-option="targetMode">'+
+  options.map(([value,title])=>'<option value="'+e(value)+'"'+(w.targetMode===value?' selected':'')+'>'+e(title)+'</option>').join("")+
+  '</select></label>'+
+  '<label class="probability-field"><span>Target probability (0 to 1)</span>'+
+  '<input type="text" inputmode="decimal" autocomplete="off" data-distribution-whatif-option="targetProbability" '+
+  'value="'+e(w.targetProbability??"0.95")+'" aria-describedby="distribution-whatif-target-help"></label>'+
+  '<p class="distribution-whatif-hint" id="distribution-whatif-target-help">'+
+  (continuous?'Find an event cut-off for the same desired coverage in each continuous model.':
+   'Counts and outcomes are discrete: the smallest left cut-off or largest right cut-off meeting at least the target is used. Achieved coverage may exceed the target.')+
+  '</p></div>';
+};
+const targetNumber=x=>formatSensitivityNumber(x,12);
+const targetProbabilityText=x=>{
+ if(x===null||!Number.isFinite(x))return "—";
+ // Avoid displaying an achieved probability rounded to exactly one or zero.
+ if(x!==0&&x!==1&&(x<1e-6||x>1-1e-6))return String(x);
+ return formatSensitivityNumber(x,11);
+};
+const targetBoundary=(inverse,symbol,e)=>{
+ const value=targetNumber(inverse.lower);
+ if(inverse.mode==="central")
+  return e(targetNumber(inverse.lower))+" ≤ "+e(symbol)+" ≤ "+e(targetNumber(inverse.upper));
+ return e(symbol)+(inverse.mode==="left"?" ≤ ":" ≥ ")+e(value);
+};
+const fixedTargetResult=(q,symbol,e)=>{
+ const t=q.target;
+ if(!t?.ok)
+  return '<section class="distribution-whatif-target-error" data-whatif-target-error role="status">'+
+   '<strong>Check the target probability</strong><ul>'+
+   (t?.issues||["Choose a valid probability and interval type."]).map(issue=>'<li>'+e(issue)+'</li>').join("")+
+   '</ul><p>The original and alternative models are unchanged. No boundary is applied to the figure.</p></section>';
+ const model=(caption,result,kind)=>
+  '<div class="distribution-whatif-target-model" data-whatif-target-model="'+kind+'">'+
+  '<strong>'+caption+'</strong><p class="distribution-whatif-target-equation">'+
+   targetBoundary(result,symbol,e)+'</p>'+
+   '<p>Achieved probability: <strong>'+e(targetProbabilityText(result.achieved))+'</strong></p></div>';
+ const change=t.mode==="central"?
+  'Lower cut-off: '+e(formatSensitivitySigned(t.lowerChange))+
+  '; upper cut-off: '+e(formatSensitivitySigned(t.upperChange)):
+  'Cut-off moves by '+e(formatSensitivitySigned(t.lowerChange));
+ const unit=q.originalDraft.unit.trim();
+ return '<section class="distribution-whatif-target-result" data-whatif-target-result>'+
+  '<strong>Same target probability: '+e(targetProbabilityText(t.requested))+'</strong>'+
+  '<p class="distribution-whatif-target-intro">'+
+   (t.mode==="central"?"Compare equal-tailed central intervals.":"Compare "+(t.mode==="left"?"left-tail":"right-tail")+" cut-offs.")+
+   ' The shaded event in your IA figure is not changed.</p>'+
+  '<div class="distribution-whatif-target-grid">'+
+   model("Original model",t.original,"original")+model("Alternative model",t.alternative,"alternative")+
+  '</div>'+
+  '<p class="distribution-whatif-target-change"><strong>Boundary change (alternative minus original):</strong> '+
+   change+(unit?' '+e(unit):'')+'</p>'+
+  (t.discrete?'<p class="distribution-whatif-target-explainer">Inclusive discrete cut-offs give <strong>at least</strong> the requested coverage. Report the achieved probability for each model; equal cut-offs do not imply the distributions are identical.</p>':
+   '<p class="distribution-whatif-target-explainer">Continuous cut-offs are numerical solutions. Their achieved values may differ slightly due to precision.</p>')+
+  (t.sameBoundary?'<p class="distribution-whatif-target-explainer">The boundary does not move at this target. This can happen even when model parameters change.</p>':'')+
+  '</section>';
+};
+
 export function distributionWhatIfSummaryHtml(studio,e){
  const q=compareDistributionWhatIf(studio);
  if(q.status==="idle")return "";
@@ -67,8 +143,9 @@ export function distributionWhatIfSummaryHtml(studio,e){
   '</strong><span aria-hidden="true">→</span><strong>'+fmt(alternative)+'</strong></div>'+
   (delta!==null?'<small>Change: '+e(signed(delta))+'</small>':"")+'</div>';
  const sensitivity=q.sensitivity;
- const event=q.originalProbability!==null?'<p class="distribution-whatif-event">Same fixed event: <strong>'+
+ const event=q.comparison==="event"&&q.originalProbability!==null?'<p class="distribution-whatif-event">Same fixed event: <strong>'+
   e(q.eventStatement)+'</strong></p>'+metric("Event probability",q.originalProbability,q.alternativeProbability):
+  q.comparison==="target"?fixedTargetResult(q,studio.draft.symbol.trim()||"X",e):
   '<p class="distribution-whatif-event">Choose an event in “Probability to highlight” to compare its probability under both models. The mean and spread are compared below.</p>';
  const eventProblems=q.eventIssues.length?'<p class="distribution-whatif-error">'+
   e("The event needs correction before its probability can be compared: "+q.eventIssues[0])+'</p>':"";
@@ -82,10 +159,10 @@ export function distributionWhatIfSummaryHtml(studio,e){
   (sensitivity?'<div class="distribution-whatif-sensitivity" data-distribution-parameter-change><strong>'+e(sensitivity.parameter.title)+'</strong><p>'+e(sensitivity.parameter.detail)+'</p></div>':'')+
   (q.changed&&["primary","secondary"].includes(studio.draft.sourceKind)?'<p class="distribution-whatif-hint" data-distribution-source-warning>Applying this alternative will reclassify these parameters as an assumed theoretical model and clear the original source credit. The existing saved figure will not change until you save it.</p>':'')+
   eventProblems+
-  (q.changed&&q.eventIssues.length===0?
+  (q.changed&&q.eventIssues.length===0&&(q.comparison!=="target"||q.target?.ok)?
    '<button type="button" class="btn btn-secondary" data-action="distribution-whatif-apply">Apply alternative to figure</button>':
    '<p class="distribution-whatif-hint">'+(q.changed?
-    "Correct the event before applying these parameters.":
+    q.comparison==="target"?"Correct the target probability before applying these parameters.":"Correct the event before applying these parameters.":
     "Change an alternative parameter to explore its effect.")+'</p>')+
   '<p class="distribution-whatif-hint">The original figure and saved copies remain unchanged until you choose Apply. A model comparison does not establish which model fits observed data.</p>'+
   '</div>';
@@ -98,9 +175,10 @@ export function renderDistributionWhatIfControls(studio,e){
   '<div class="distribution-whatif-body">'+
   (!w.active?
    (w.status==="applied"?'<p class="distribution-whatif-applied" role="status">Alternative parameters applied to the editable figure. Review the event before saving or exporting.</p>':"")+
-   '<p>Explore a different model without changing your original figure. Compare the same event, then decide whether to apply your alternative.</p>'+
+   '<p>Explore a different model without changing your original figure. Compare either a fixed event or a fixed target probability, then decide whether to apply your alternative.</p>'+
    '<button type="button" class="btn btn-secondary" data-action="distribution-whatif-start">Start a comparison</button>':
    '<p>Change the <strong>alternative</strong> parameters below. Sliders and number fields update the comparison live; your original remains untouched.</p>'+
+   comparisonChoice(w,e)+(w.comparison==="target"?fixedTargetControls(w,d,e):"")+
    (DISTRIBUTION_PARAMETER_KEYS[w.kind]||[]).map(k=>parameterControl(d,w,k,e)).join("")+
    '<div class="distribution-whatif-actions">'+
    '<button type="button" class="btn btn-quiet btn-sm" data-action="distribution-whatif-reset">Reset alternative</button>'+
@@ -114,14 +192,25 @@ export function distributionWhatIfPreviewHtml(studio,e){
  if(!w?.active)return "";
  const q=compareDistributionWhatIf(studio);
  const chart=q.ready?renderDistributionWhatIfSvg(q):"";
+ const targetBounds=q.comparison==="target"&&q.target?.ok?
+  [q.target.original.lower,q.target.alternative.lower,
+   ...(q.target.mode==="central"?[q.target.original.upper,q.target.alternative.upper]:[])]:[];
+ const l0=q.ready?distributionLayout(q.original):null,l1=q.ready?distributionLayout(q.alternative):null;
+ const rangeMin=l0&&l1?Math.min(l0.domainMin,l1.domainMin):null;
+ const rangeMax=l0&&l1?Math.max(l0.domainMax,l1.domainMax):null;
+ const outside=targetBounds.some(x=>x<rangeMin||x>rangeMax);
  return '<section class="distribution-whatif-preview" data-distribution-whatif-preview>'+
-  '<h3>Original and alternative — shared axes</h3>'+
+  '<h3>'+(q.comparison==="target"?"Cut-offs under both models — shared axes":"Original and alternative — shared axes")+'</h3>'+
   (q.ready?'<div class="distribution-whatif-canvas">'+chart+'</div>'+
     '<p class="distribution-whatif-scroll-note">Swipe sideways to inspect the graph at a readable size.</p>'+
   '<p>Grey dashed: original. Blue: alternative. Both share the same scales. '+
-    (q.originalProbability!==null?
-     'The pale highlighted region and boundary markers indicate the same event in both models.':
-     'Select an event in section 2 to compare the probabilities at a fixed boundary.')+'</p>':
+    (q.comparison==="target"?
+      (q.target?.ok?'Grey and blue vertical markers identify the respective inverse boundaries. Different cut-offs represent different events at the same target; no common region is shaded.':
+       'Enter a valid target to display its cut-offs.'):
+      (q.originalProbability!==null?
+       'The pale highlighted region and boundary markers indicate the same event in both models.':
+       'Select an event in section 2 to compare the probabilities at a fixed boundary.'))+'</p>'+
+   (outside?'<p class="distribution-whatif-hint" data-whatif-marker-note>One or more cut-offs are outside the displayed model window. Use the full numerical values above; the chart does not represent all extreme boundaries.</p>':""):
    '<p class="distribution-whatif-preview-error">'+e(q.status==="stale"?
     "Original parameters changed. Restart the comparison to see updated curves.":"Enter valid model parameters to compare shapes.")+'</p>')+
   '</section>';

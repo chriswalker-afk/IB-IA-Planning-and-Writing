@@ -9,7 +9,7 @@ import {setDistributionField} from "./distribution-actions.js";
 
 export function startDistributionWhatIf(studio){
  if(!studio?.draft)return false;
- studio.whatIf={active:true,status:"exploring",kind:studio.draft.kind,
+ studio.whatIf={...newDistributionWhatIfState(),active:true,status:"exploring",kind:studio.draft.kind,
   source:distributionWhatIfSignature(studio.draft),
   values:distributionWhatIfValues(studio.draft)};
  return true;
@@ -24,7 +24,33 @@ export function setDistributionWhatIfField(studio,key,value){
  w.values[key]=next;
  return true;
 }
-export function resetDistributionWhatIf(studio){return startDistributionWhatIf(studio);}
+/** Comparison choice and target are editor-only. A target never edits the shaded event. */
+export function setDistributionWhatIfOption(studio,key,value){
+ const w=studio?.whatIf;
+ if(!w?.active||typeof value!=="string")return false;
+ if(key==="comparison"){
+  if(!["event","target"].includes(value))return false;
+ }else if(key==="targetMode"){
+  if(!["left","right","central"].includes(value)||
+   value==="central"&&!["normal","uniform"].includes(w.kind))return false;
+ }else if(key==="targetProbability"){
+  value=value.slice(0,64);
+ }else return false;
+ if(w[key]===value)return false;
+ w[key]=value;
+ return true;
+}
+/** Rebase alternative parameters without discarding the question being explored. */
+export function resetDistributionWhatIf(studio){
+ if(!studio?.draft)return false;
+ const w=studio.whatIf||newDistributionWhatIfState();
+ const settings={comparison:w.comparison,targetMode:w.targetMode,targetProbability:w.targetProbability};
+ if(!startDistributionWhatIf(studio))return false;
+ Object.assign(studio.whatIf,settings);
+ if(studio.whatIf.targetMode==="central"&&!["normal","uniform"].includes(studio.draft.kind))
+  studio.whatIf.targetMode="left";
+ return true;
+}
 export function discardDistributionWhatIf(studio){
  if(!studio?.whatIf)return false;
  studio.whatIf=newDistributionWhatIfState();
@@ -34,6 +60,8 @@ export function applyDistributionWhatIf(studio,acknowledgeProvenance=false){
  const q=compareDistributionWhatIf(studio);
  if(!q.ready)return {ok:false,error:q.issues[0]||"Restart the comparison and enter valid parameters."};
  if(q.eventIssues.length)return {ok:false,error:"Check the chosen event before applying: "+q.eventIssues[0]};
+ if(q.comparison==="target"&&!q.target?.ok)
+  return {ok:false,error:q.target?.issues?.[0]||"Choose a valid fixed probability target before applying."};
  if(!q.changed)return {ok:false,error:"Change at least one alternative parameter before applying."};
  if(["primary","secondary"].includes(studio.draft.sourceKind)&&acknowledgeProvenance!==true)
   return {ok:false,needsProvenance:true,error:"Confirm that the alternative is hypothetical; applying it will reset the source classification to assumed theoretical and clear the old source credit."};
