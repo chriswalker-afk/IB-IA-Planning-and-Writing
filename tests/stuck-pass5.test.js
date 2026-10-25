@@ -126,7 +126,7 @@ test("Pass 5: all sixteen mathematical routes produce an accessible, distinctive
  }
 });
 test("Pass 5: seven diagram-generator repairs navigate to registered tools",()=>{
- assert.equal(REPRESENTATION_TOOLS.length,7);
+ assert.equal(REPRESENTATION_TOOLS.length,8);
  const s=state("completing","C31",false);
  for(const tool of REPRESENTATION_TOOLS){
   const x=hubIssueFor(s,"fix:studio:tool-"+tool.id);
