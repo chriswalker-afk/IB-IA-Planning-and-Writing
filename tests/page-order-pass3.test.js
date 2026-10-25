@@ -38,7 +38,7 @@ test('resource search and contextual guides take priority over optional creators
  const s=createProjectState();s.route='completing';s.completion.current='C40';
  s.entries=[{id:'a',methodId:'pmcc',phase:'substantial',status:'planned',result:'',knowledge:'syllabus',sourceRefs:[],accuracyRefs:[]}];s.completion.activeEntryIndex=0;s.completion.nextFromEntryId='a';
  const before=JSON.stringify(s),html=resourceDrawer(s,newResourceSession());
- inOrder(html,['class="resource-current resource-home-relevant"','class="resource-home-navigation"','class="resource-quick-tools"','class="resource-home-guides"','class="resource-filter-form"','id="resource-search"','id="resource-results"']);
+ inOrder(html,['class="resource-current resource-home-relevant"','class="resource-discovery-search"','class="resource-filter-form"','id="resource-search"','class="resource-home-navigation"','class="resource-quick-tools"','class="resource-home-guides"','class="resource-discovery-areas"','id="resource-results"']);
  assert(html.includes('data-resource-id="mla-citations"'));
  assert(html.includes('class="resource-creators resource-creators-compact"'));
  assert(html.includes('data-resource-creator="graph"'));
