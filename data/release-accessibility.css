@@ -196,3 +196,94 @@
  .resource-library-home .resource-home-relevant .resource-row{display:flex}
 }
 @media(prefers-reduced-motion:reduce){.resource-library-home .resource-destination-card,.resource-library-home .resource-creators-wrap>details.resource-creators-compact{transition:none}}
+
+
+/* Tools & tutorials Pass 2: unified, source-labelled discovery.
+ * Scope narrowly to the resource landing page; leave the Workshop lessons
+ * and the seven mathematics editors' existing layouts untouched. */
+.resource-library-home .resource-discovery-search{
+ padding:17px 18px 13px;border:1px solid var(--ui-line-strong);
+ border-radius:var(--ui-radius-card);background:var(--surface-soft);min-width:0
+}
+.resource-library-home .resource-discovery-search>h3{font-size:16px;margin:0 0 10px}
+.resource-library-home .resource-discovery-search .resource-filter-form{margin:0}
+.resource-library-home .resource-discovery-search .resource-filter-form>.resource-control{margin:0}
+.resource-library-home .resource-discovery-search .resource-search-help{margin:6px 0;color:var(--muted)}
+.resource-library-home .resource-discovery-search .resource-advanced-filters{
+ border-top:1px solid var(--ui-line);margin:9px 0 0;padding-top:8px
+}
+.resource-library-home .resource-discovery-search .resource-advanced-filters>summary{
+ min-height:40px;color:var(--teal-dark)
+}
+.resource-library-home .resource-discovery-search .resource-advanced-filters>.resource-small{margin:6px 0}
+.resource-library-home .resource-discovery-areas{
+ display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 16px
+}
+.resource-library-home .resource-discovery-area,.resource-library-home .resource-discovery-type{
+ border:1px solid var(--ui-line-strong);background:var(--surface);
+ color:var(--muted);font:650 12px/1.4 var(--ui-font-body);
+ min-height:42px;padding:10px 12px;border-radius:var(--ui-radius-pill);
+ white-space:normal;text-align:center;cursor:pointer;
+ transition:background .15s,border-color .15s
+}
+.resource-library-home .resource-discovery-area:hover,.resource-library-home .resource-discovery-type:hover{
+ border-color:var(--ui-line-hover);background:var(--surface-soft)
+}
+.resource-library-home .resource-discovery-area.is-active,.resource-library-home .resource-discovery-type.is-active{
+ color:var(--teal-dark);border-color:var(--teal);background:var(--teal-pale)
+}
+.resource-library-home .resource-discovery-results{display:grid;gap:15px}
+.resource-library-home .resource-discovery-count{margin:0}
+.resource-library-home .resource-discovery-types{display:flex;flex-wrap:wrap;gap:7px}
+.resource-library-home .resource-discovery-type{display:inline-flex;gap:6px;align-items:center;justify-content:center}
+.resource-library-home .resource-discovery-type span{font-weight:700;color:inherit;opacity:.8}
+.resource-library-home .resource-discovery-group{margin:0}
+.resource-library-home .resource-discovery-group-heading{
+ display:flex;align-items:center;justify-content:space-between;gap:6px 12px;
+ flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:8px;margin-bottom:7px
+}
+.resource-library-home .resource-discovery-group h4{
+ font-size:13px;letter-spacing:-.01em;color:var(--ink);margin:0
+}
+.resource-library-home .resource-discovery-group-heading .btn{
+ font-size:11px;min-height:36px;padding:6px 9px
+}
+.resource-library-home .resource-discovery-list{display:grid;gap:8px}
+.resource-library-home .resource-discovery-item{
+ display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;
+ padding:13px 14px;border:1px solid var(--line);border-radius:13px;background:var(--surface);
+ min-width:0
+}
+.resource-library-home .resource-discovery-content{min-width:0;display:grid;gap:3px}
+.resource-library-home .resource-discovery-content h4{font-size:13px;line-height:1.4;margin:0}
+.resource-library-home .resource-discovery-content p{
+ color:var(--muted);font-size:11.5px;line-height:1.5;margin:0;display:-webkit-box;
+ -webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden
+}
+.resource-library-home .resource-discovery-tool{font-size:10px;color:var(--teal-dark);font-weight:700}
+.resource-library-home .resource-discovery-open{
+ min-height:40px;padding:7px 9px;font-size:11px;max-width:150px
+}
+.resource-library-home .resource-discovery-open .icon{width:14px;height:14px}
+.resource-library-home .resource-discovery-more{margin-top:11px;font-size:12px}
+.resource-library-home .resource-discovery-empty{
+ padding:17px;border:1px dashed var(--ui-line-strong);border-radius:13px;
+ font-size:13px;color:var(--muted)
+}
+.resource-library-home .resource-discovery-areas button:focus-visible,
+.resource-library-home .resource-discovery-types button:focus-visible,
+.resource-library-home .resource-discovery-item button:focus-visible{
+ outline:3px solid var(--ui-focus);outline-offset:3px
+}
+@media(max-width:530px){
+ .resource-library-home .resource-discovery-search{padding:14px}
+ .resource-library-home .resource-discovery-areas{gap:6px}
+ .resource-library-home .resource-discovery-area,.resource-library-home .resource-discovery-type{
+  font-size:11.5px;padding:9px 10px
+ }
+ .resource-library-home .resource-discovery-item{grid-template-columns:1fr}
+ .resource-library-home .resource-discovery-open{justify-self:start;max-width:none}
+}
+@media(prefers-reduced-motion:reduce){
+ .resource-library-home .resource-discovery-area,.resource-library-home .resource-discovery-type{transition:none}
+}
