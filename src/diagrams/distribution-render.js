@@ -29,7 +29,7 @@ function shadeNormal(layout,a,b){
  const steps=Math.max(2,Math.ceil(480*(b-a)/(2*layout.extent*layout.q.sigma)));
  const fill=layout.d.printStyle==="mono"?"url(#distribution-hatch)":"#add8e8";
  return '<path data-distribution-shading="normal" d="M'+coord(x(a))+" "+coord(plot.bottom)+
-  " "+curvePath(layout,a,b,steps)+" L"+coord(x(b))+" "+coord(plot.bottom)+
+  " "+curvePath(layout,a,b,steps).replace(/^M/,"L")+" L"+coord(x(b))+" "+coord(plot.bottom)+
   ' Z" fill="'+fill+'" fill-opacity="'+(layout.d.printStyle==="mono"?"1":".76")+'"/>';
 }
 function shadeIntervals(layout){
