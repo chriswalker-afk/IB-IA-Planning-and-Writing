@@ -12,8 +12,8 @@ const snapshot=s=>JSON.stringify({entries:s.entries,planning:s.planning,completi
 test('batch 2: new glossary, lessons and existing guides have complete schemas',()=>{
  assert.equal(BATCH2_DEFINITIONS.length,23);
  assert.equal(BATCH2_LESSONS.length,5);
- assert.equal(WORKSHOP_DEFINITIONS.length,240);
- assert.equal(WORKSHOP_LESSONS.length,42);
+ assert.equal(WORKSHOP_DEFINITIONS.length,243);
+ assert.equal(WORKSHOP_LESSONS.length,45);
  assert.deepEqual(BATCH2_LESSONS.map(l=>l.id),['spearman','linear-regression','nonlinear-fitting','residual-diagnostics','model-comparison']);
  const resourceIds=new Set(RESOURCES.map(r=>r.id));
  for(const l of BATCH2_LESSONS){
