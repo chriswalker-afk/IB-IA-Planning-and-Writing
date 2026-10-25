@@ -10,6 +10,8 @@ import {renderTableSvg} from "../diagrams/table-studio-render.js";
 import {renderVoronoiSvg} from "../diagrams/voronoi-render.js";
 import {renderGeometrySvg} from "../diagrams/geometry-render.js";
 import {orthogonalDecomposition,geometrySensitivity} from "../diagrams/geometry-advanced.js";
+import {analyzeDistribution} from "../diagrams/distribution-core.js";
+import {renderDistributionSvg} from "../diagrams/distribution-render.js";
 import {renderProbabilitySvg} from "../diagrams/probability-render.js";
 import {probabilityAnalysis,probabilityParentPaths} from "../diagrams/probability-core.js";
 import {representationTool} from "../diagrams/representation-registry.js";
@@ -20,7 +22,7 @@ const row=(label,value)=>trim(value)?{label,value:trim(value)}:null;
 const joined=rows=>rows.map(r=>Array.isArray(r)?r.join(" | "):String(r)).join("\n");
 const occupied=d=>!!(trim(d?.raw)||trim(d?.expression)||d?.imageSrc||
  (d?.points?.length||0)||(d?.sites?.length||0)||(d?.edited&&d?.vertices?.length||0)||(d?.edited&&d?.branches)||(d?.matrix||[]).some(r=>r.some(x=>trim(x))));
-const titles={graph:"Graph",trace:"Coordinate tracing",stat:"Statistical diagram",table:"Mathematical table",voronoi:"Voronoi diagram",geometry:"Geometric construction",probability:"Probability tree"};
+const titles={graph:"Graph",trace:"Coordinate tracing",stat:"Statistical diagram",table:"Mathematical table",voronoi:"Voronoi diagram",geometry:"Geometric construction",probability:"Probability tree",distribution:"Probability distribution"};
 const registeredFigure=id=>{
  const tool=representationTool(id);
  if(!tool)throw new Error("Unregistered diagram kind: "+id);
@@ -115,6 +117,10 @@ const specs=[
     ].filter(Boolean).join("\n"):""),
    row("Unit",d.unit),row("North orientation",d.northAligned?"x east / y north":""),
    row("Source type",d.sourceKind),row("Original source",d.sourceCredit),row("Figure caption",d.caption),row("Limitations",d.note)]},
+  {...registeredFigure("distribution"),render:d=>renderDistributionSvg(d),details:d=>{
+    const q=analyzeDistribution(d);
+    return [row("Theoretical model",d.kind),row("Random variable",d.symbol),row("Parameters",d.kind==="normal"?"Mean: "+d.mu+"; standard deviation: "+d.sigma:"Trials: "+d.n+"; success probability: "+d.p),row("Event probability",q.statement),row("Parameter source",d.sourceKind),row("Source",d.sourceCredit),row("Assumptions and limitations",d.note)];
+   }},
   {...registeredFigure("probability"),render:d=>renderProbabilitySvg(d),details:d=>{
     const a=probabilityAnalysis(d);
     return [
