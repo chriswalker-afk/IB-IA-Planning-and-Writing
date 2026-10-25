@@ -3,6 +3,7 @@ import {distributionLayout} from "./distribution-layout.js";
 import {renderDistributionSvg} from "./distribution-render.js";
 import {renderDistributionGuidance} from "./distribution-guidance.js";
 import {renderDistributionInverseHtml} from "./distribution-inverse-view.js";
+import {renderDistributionWhatIfControls,distributionWhatIfPreviewHtml} from "./distribution-whatif-view.js";
 import {representationOutputActions} from "./workspace-ui.js";
 const field=(key,label,value,e)=>
  '<label class="probability-field"><span>'+e(label)+'</span><input type="text" data-distribution-field="'+key+'" value="'+e(value)+'"></label>';
@@ -68,6 +69,7 @@ export function renderDistributionStudio(state,icon,e){
  (d.mode!=="none"?boundaryField("lower",["between","outside"].includes(d.mode)?"Lower boundary":"Value / boundary",d.lower,e):"")+
  (["between","outside"].includes(d.mode)?boundaryField("upper","Upper boundary",d.upper,e):"")+
  renderDistributionInverseHtml(s,e)+
+ renderDistributionWhatIfControls(s,e)+
  '<details class="ia-figure-presentation-settings"><summary>IA figure appearance</summary>'+
  select("size","Figure size",d.size,[["compact","Compact"],["standard","Standard IA"],["wide","Wide"]],e)+
  select("printStyle","Printing",d.printStyle,[["colour","Colour"],["mono","Monochrome"]],e)+
@@ -88,6 +90,7 @@ export function renderDistributionStudio(state,icon,e){
  '<button type="button" class="btn btn-secondary btn-sm" data-action="distribution-preview-fit" aria-pressed="'+(!s.zoomed)+'">Fit figure</button>'+
  '<button type="button" class="btn btn-secondary btn-sm" data-action="distribution-preview-detail" aria-pressed="'+(!!s.zoomed)+'">Enlarge to check labels</button></div></div>'+
  distributionPreviewHtml(s)+
+ distributionWhatIfPreviewHtml(s,e)+
  '<p class="probability-canvas-note">Drag a marker or use arrow keys to change a boundary. For exact values, type above (or use −/+ on a phone). Custom discrete markers snap to entered outcomes. Editing controls and help are never printed in the exported IA figure.</p>'+
  distributionFeedbackHtml(s,e)+renderDistributionGuidance(state,icon,e)+'<div data-representation-step="use">'+distributionOutputHtml(s,icon,e)+'</div>'+
  (s.figures.length?'<details class="probability-saved"><summary>Saved distributions ('+s.figures.length+')</summary>'+

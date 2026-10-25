@@ -226,3 +226,114 @@
  [data-distribution-studio] .distribution-inverse-panel>summary{padding:11px}
  [data-distribution-studio] .distribution-inverse-body{padding:1px 11px 13px}
 }
+
+/* Distribution Pass 5.3: reversible parameter exploration. All what-if
+   controls and visual comparison remain editor-only, not exported figures. */
+[data-distribution-studio] .distribution-whatif-panel{
+ margin:14px 0 16px;min-width:0;border:1px solid #d1e3e6;border-radius:11px;
+ background:var(--surface-soft,#f7fafb);overflow-wrap:anywhere
+}
+[data-distribution-studio] .distribution-whatif-panel>summary{
+ padding:12px 13px;cursor:pointer;font-size:.9rem;font-weight:700;
+ line-height:1.5;color:var(--text,#294757)
+}
+[data-distribution-studio] .distribution-whatif-panel>summary:focus-visible{
+ outline:2px solid #286f90;outline-offset:-3px;border-radius:9px
+}
+[data-distribution-studio] .distribution-whatif-tag{
+ display:inline-block;margin-left:8px;font-size:.71rem;font-weight:650;
+ color:var(--text-muted,#57717b)
+}
+[data-distribution-studio] .distribution-whatif-body{
+ border-top:1px solid #d8e6e8;padding:4px 13px 14px;min-width:0
+}
+[data-distribution-studio] .distribution-whatif-body>p{
+ font-size:.82rem;line-height:1.52;color:var(--text-muted,#536c78);margin:10px 0
+}
+[data-distribution-studio] .distribution-whatif-body button{
+ white-space:normal;min-height:40px;max-width:100%
+}
+[data-distribution-studio] .distribution-whatif-field{padding:10px 0;border-bottom:1px solid #e3ebed}
+[data-distribution-studio] .distribution-whatif-field .probability-field{margin:0}
+[data-distribution-studio] .distribution-whatif-field small,
+[data-distribution-studio] .distribution-whatif-custom small{
+ display:block;font-size:.73rem;font-weight:400;line-height:1.45;margin-top:5px;
+ color:var(--text-muted,#56717b);overflow-wrap:anywhere
+}
+[data-distribution-studio] .distribution-whatif-slider{margin:7px 2px 0;min-height:25px}
+[data-distribution-studio] .distribution-whatif-slider input[type="range"]{
+ display:block;width:100%;max-width:100%;accent-color:#287e91;min-height:28px;
+ touch-action:pan-y;cursor:pointer
+}
+[data-distribution-studio] .distribution-whatif-custom textarea{
+ min-height:134px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;
+ font-size:.8rem;font-weight:500;resize:vertical;line-height:1.6
+}
+[data-distribution-studio] .distribution-whatif-actions{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+[data-distribution-studio] .distribution-whatif-actions .btn{flex:1 1 125px}
+[data-distribution-studio] .distribution-whatif-summary{min-width:0;margin-top:12px}
+[data-distribution-studio] .distribution-whatif-legend{
+ display:flex;justify-content:flex-end;gap:20px;margin:0 0 7px!important;
+ font-size:.72rem;color:var(--text-muted,#526873)
+}
+[data-distribution-studio] .distribution-whatif-metrics{
+ display:grid;gap:7px;margin:8px 0 13px
+}
+[data-distribution-studio] .distribution-whatif-metric{
+ min-width:0;display:grid;grid-template-columns:minmax(0,1fr) auto;
+ column-gap:10px;align-items:center;background:#fff;
+ border:1px solid #dfe9eb;border-radius:8px;padding:8px
+}
+[data-distribution-studio] .distribution-whatif-metric>span{font-size:.78rem;color:#395c6b;line-height:1.4}
+[data-distribution-studio] .distribution-whatif-metric>div{display:flex;align-items:center;gap:7px}
+[data-distribution-studio] .distribution-whatif-metric strong{
+ font-size:.85rem;font-variant-numeric:tabular-nums;color:#1d4b61;overflow-wrap:anywhere
+}
+[data-distribution-studio] .distribution-whatif-metric small{
+ grid-column:1 / -1;margin-top:5px;text-align:right;font-size:.74rem;color:#335f6d
+}
+[data-distribution-studio] .distribution-whatif-event,
+[data-distribution-studio] .distribution-whatif-hint{
+ margin:10px 0!important;font-size:.78rem!important;line-height:1.52;overflow-wrap:anywhere
+}
+[data-distribution-studio] .distribution-whatif-event strong{color:var(--text,#203e4b)}
+[data-distribution-studio] .distribution-whatif-error{
+ border-left:3px solid #bc684d;padding:7px 10px;margin:10px 0;
+ background:#fff8f4;color:#78483c;font-size:.8rem;line-height:1.55
+}
+[data-distribution-studio] .distribution-whatif-error p{font-size:.78rem;margin:6px 0}
+[data-distribution-studio] .distribution-whatif-error ul{padding-left:20px;margin:6px 0}
+[data-distribution-studio] .distribution-whatif-applied{
+ color:#246257!important;font-weight:700
+}
+[data-distribution-studio] .distribution-whatif-preview{
+ min-width:0;margin:14px 0;border:1px solid #d7e5e9;
+ border-radius:11px;background:#fff;padding:10px 12px;overflow:hidden
+}
+[data-distribution-studio] .distribution-whatif-preview h3{
+ margin:3px 0 7px;font-size:.9rem;color:var(--text,#284656)
+}
+[data-distribution-studio] .distribution-whatif-preview p{
+ font-size:.77rem;line-height:1.5;color:var(--text-muted,#536a75);margin:7px 0
+}
+[data-distribution-studio] .distribution-whatif-canvas{width:100%;min-width:0;overflow-x:auto}
+[data-distribution-studio] .distribution-whatif-canvas svg{
+ display:block;width:100%;height:auto;min-width:0;max-width:100%
+}
+@media(max-width:390px){
+ [data-distribution-studio] .distribution-whatif-body{padding:4px 10px 12px}
+ [data-distribution-studio] .distribution-whatif-metric{grid-template-columns:1fr;gap:5px}
+ [data-distribution-studio] .distribution-whatif-metric>div{justify-content:space-between}
+ [data-distribution-studio] .distribution-whatif-preview{padding:8px}
+}
+@media(prefers-reduced-motion:reduce){
+ [data-distribution-studio] .distribution-whatif-panel *{transition:none!important;animation:none!important}
+}
+
+/* Preserve legible tick labels on phones: scroll inside the chart, never the page. */
+[data-distribution-studio] .distribution-whatif-scroll-note{display:none}
+@media(max-width:760px){
+ [data-distribution-studio] .distribution-whatif-canvas{overflow-x:auto;overscroll-behavior-inline:contain;-webkit-overflow-scrolling:touch}
+ [data-distribution-studio] .distribution-whatif-canvas svg{width:680px;min-width:680px;max-width:none}
+ [data-distribution-studio] .distribution-whatif-scroll-note{display:block;color:var(--text-muted,#55707b)}
+}

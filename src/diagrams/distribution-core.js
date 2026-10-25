@@ -42,7 +42,22 @@ function normalizeDistributionInverseQuery(raw){
  if(typeof r.signature==="string")query.signature=clean(r.signature,3600);
  return query;
 }
-export const newDistributionStudio=()=>({open:false,zoomed:false,draft:newDistributionDraft(),inverse:newDistributionInverseQuery(),figures:[],activeId:""});
+/** What-if values are editor-only, not embedded in a saved or exported IA figure. */
+const WHAT_IF_FIELDS=["mu","sigma","n","p","lambda","a","b","customPoints"];
+export const newDistributionWhatIfState=()=>({active:false,status:"idle",kind:"",source:"",values:{}});
+function normalizeDistributionWhatIfState(raw){
+ const r=plain(raw)?raw:{},w=newDistributionWhatIfState();
+ w.active=r.active===true;
+ if(kinds.includes(r.kind))w.kind=r.kind;
+ if(["idle","exploring","applied"].includes(r.status))w.status=r.status;
+ if(typeof r.source==="string")w.source=clean(r.source,3600);
+ if(plain(r.values))for(const key of WHAT_IF_FIELDS)
+  if(typeof r.values[key]==="string")w.values[key]=clean(r.values[key],key==="customPoints"?3200:180);
+ if(!w.active){w.kind="";w.source="";w.values={};}
+ return w;
+}
+export const newDistributionStudio=()=>({open:false,zoomed:false,draft:newDistributionDraft(),
+ inverse:newDistributionInverseQuery(),whatIf:newDistributionWhatIfState(),figures:[],activeId:""});
 export function normalizeDistributionStudio(raw){
  const r=plain(raw)?raw:{},figures=(Array.isArray(r.figures)?r.figures:[])
   .slice(0,MAX_DISTRIBUTION_FIGURES).filter(plain)
@@ -50,7 +65,7 @@ export function normalizeDistributionStudio(raw){
    savedAt:clean(f.savedAt,42),draft:normalizeDistributionDraft(f.draft)}))
   .filter(f=>/^distribution-[a-z0-9-]+$/i.test(f.id));
  return {open:r.open===true,zoomed:r.zoomed===true,draft:normalizeDistributionDraft(r.draft),
-  inverse:normalizeDistributionInverseQuery(r.inverse),figures,
+  inverse:normalizeDistributionInverseQuery(r.inverse),whatIf:normalizeDistributionWhatIfState(r.whatIf),figures,
   activeId:figures.some(f=>f.id===r.activeId)?r.activeId:""};
 }
 const phi=x=>Math.exp(-x*x/2)/Math.sqrt(2*Math.PI);
