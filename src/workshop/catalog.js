@@ -14,6 +14,7 @@ import {BATCH6_DEFINITIONS} from './batch-6-definitions.js';
 import {BATCH6_LESSONS} from './batch-6-lessons.js';
 import {BATCH7_DEFINITIONS} from './batch-7-definitions.js';
 import {BATCH7_LESSONS} from './batch-7-lessons.js';
+import {CONNECTED_SAMPLING_DEFINITIONS} from './connected-sampling-definitions.js';
 const define=(id,category,title,meaning,example,notation="")=>
  Object.freeze({id,category,title,meaning,example,notation});
 export const WORKSHOP_DEFINITIONS=Object.freeze([
@@ -50,7 +51,8 @@ export const WORKSHOP_DEFINITIONS=Object.freeze([
  ...BATCH4_DEFINITIONS,
  ...BATCH5_DEFINITIONS,
  ...BATCH6_DEFINITIONS,
- ...BATCH7_DEFINITIONS
+ ...BATCH7_DEFINITIONS,
+ ...CONNECTED_SAMPLING_DEFINITIONS
 ]);
 export const DEFINITION_BY_ID=new Map(WORKSHOP_DEFINITIONS.map(d=>[d.id,d]));
 export const definitionById=id=>DEFINITION_BY_ID.get(id)||null;
@@ -145,9 +147,9 @@ export const lessonById=id=>LESSON_BY_ID.get(id)||null;
  * A pathway with no pilot lesson still has precise definitions and is queued for later batches.
  */
 export const PATHWAY_LEARNING=Object.freeze({
- relationships:{terms:["paired-data","correlation","residual","model","sample","sampling-frame","selection-bias","rank","tied-rank","spearman-rho","monotonic-association","regression-line","residual-plot","rmse"],lessons:["pearson","spearman","linear-regression","residual-diagnostics","model-comparison","sampling"]},
- groups:{terms:["population","sample","mean","median","standard-deviation","stratified-sample","sampling-frame","selection-bias","quartile","interquartile-range","box-plot","null-hypothesis","sampling-variability"],lessons:["sampling","descriptive","distributions","inference-evidence"]},
- categorical:{terms:["population","sample","probability","categorical-variable","two-way-table","conditional-proportion","percentage-point","nonresponse-bias","conditional-probability","joint-probability","practical-significance"],lessons:["sampling","two-way-proportions","conditional-probability-tree"]},
+ relationships:{terms:["sampling","paired-data","correlation","residual","model","sample","sampling-frame","selection-bias","rank","tied-rank","spearman-rho","monotonic-association","regression-line","residual-plot","rmse"],lessons:["pearson","spearman","linear-regression","residual-diagnostics","model-comparison","sampling"]},
+ groups:{terms:["population","sample",...CONNECTED_SAMPLING_DEFINITIONS.map(d=>d.id),"mean","median","standard-deviation","stratified-sample","sampling-frame","selection-bias","quartile","interquartile-range","box-plot","null-hypothesis","sampling-variability"],lessons:["sampling","descriptive","distributions","inference-evidence"]},
+ categorical:{terms:["sampling","population","sample","probability","categorical-variable","two-way-table","conditional-proportion","percentage-point","nonresponse-bias","conditional-probability","joint-probability","practical-significance"],lessons:["sampling","two-way-proportions","conditional-probability-tree"]},
  variation:{terms:["mean","median","standard-deviation","uncertainty","instrument-resolution","repeated-measurement","rounding-interval","random-error","systematic-error","quartile","interquartile-range","histogram","frequency-density","worst-case-bounds","sensitivity-check"],lessons:["descriptive","distributions","histograms","measurement","geometry-sensitivity"]},
  "fitted-models":{terms:["model","parameter","domain","residual","extrapolation","regression-line","least-squares","gradient","intercept","centred-sums","fitted-value","nonlinear-regression","quadratic-model","sum-squared-errors","residual-plot","residual-pattern","rmse","r-squared","holdout-data","overfitting","influential-observation","vertex-form","quadratic-roots","discriminant","feasible-domain","doubling-time","logarithm"],lessons:["linear-regression","nonlinear-fitting","residual-diagnostics","model-comparison","quadratic-functions","exponential-logarithms"]},
  growth:{terms:["model","parameter","domain","extrapolation","exponential-model","log-transformation","transformed-regression","nonlinear-regression","residual-plot","holdout-data","rmse","doubling-time","half-life","logarithm"],lessons:["nonlinear-fitting","residual-diagnostics","model-comparison","exponential-logarithms"]},
