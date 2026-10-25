@@ -145,8 +145,6 @@ export function inverseDistribution(raw,request={}){
  const model=analyzeDistribution({...d,title:"Inverse calculation",symbol:"X",
   sourceKind:"theoretical",mode:"none",lower:"",upper:""});
  issues.push(...model.issues);
- if(kind==="custom"&&model.total!==null&&Math.abs(model.total-1)>1e-12)
-  issues.push("For inverse probabilities, entered custom probabilities must total 1 to numerical precision (within 1e-12). Edit the entered values; they are never normalised automatically.");
  if(issues.length)return fail(kind,mode,requested,issues);
 
  if(kind==="normal"){
