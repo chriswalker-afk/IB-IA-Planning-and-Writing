@@ -5,6 +5,7 @@
 import {compareDistributionWhatIf,DISTRIBUTION_PARAMETER_KEYS} from "./distribution-whatif-core.js";
 import {renderDistributionWhatIfSvg} from "./distribution-whatif-render.js";
 import {distributionLayout} from "./distribution-layout.js";
+import {distributionWhatIfReflection} from "./distribution-whatif-reflection.js";
 import {formatSensitivityProbability,formatSensitivityPoints,formatSensitivityNumber,formatSensitivitySigned} from "./distribution-sensitivity.js";
 
 const labels={mu:"Mean (μ)",sigma:"Standard deviation (σ)",n:"Number of trials (n)",
@@ -128,7 +129,24 @@ const fixedTargetResult=(q,symbol,e)=>{
   '</section>';
 };
 
-export function distributionWhatIfSummaryHtml(studio,e){
+/** Optional questions stay in the editor and never populate an IA response. */
+export function distributionWhatIfReflectionHtml(studio,q,aim,e){
+ const reflection=distributionWhatIfReflection(q,studio.draft,aim);
+ if(!reflection)return "";
+ const questions=reflection.prompts.map(({id,title,question})=>
+  '<div class="distribution-whatif-reflection-item" data-reflection-prompt="'+e(id)+'">'+
+  '<strong>'+e(title)+'</strong><p>'+e(question)+'</p></div>').join("");
+ return '<details class="distribution-whatif-reflection" data-distribution-whatif-reflection'+
+  (studio.whatIf?.reflectionOpen?' open':'')+'>'+
+  '<summary>What does this tell me? <small>Optional reflection</small></summary>'+
+  '<div class="distribution-whatif-reflection-body">'+
+  (reflection.aim?'<p class="distribution-whatif-reflection-aim"><strong>Your saved aim</strong> '+e(reflection.aim)+'</p>':"")+
+  questions+
+  '<p class="distribution-whatif-reflection-caution">'+e(reflection.caution)+
+  ' Use these questions to develop your own mathematical judgement, not as text to paste into your IA.</p>'+
+  '</div></details>';
+}
+export function distributionWhatIfSummaryHtml(studio,e,aim=""){
  const q=compareDistributionWhatIf(studio);
  if(q.status==="idle")return "";
  if(q.status==="stale")return '<div class="distribution-whatif-error" role="alert"><strong>Original model changed.</strong>'+
@@ -157,6 +175,7 @@ export function distributionWhatIfSummaryHtml(studio,e){
    Math.sqrt(q.alternative.variance)-Math.sqrt(q.original.variance))+'</div>'+
   (sensitivity?.eventValid?'<div class="distribution-whatif-sensitivity" data-distribution-sensitivity><strong>Event-probability change</strong><p>'+e(formatSensitivityPoints(sensitivity.deltaProbability))+' percentage points (alternative minus original)</p><small>Original: '+e(formatSensitivityProbability(q.originalProbability,sensitivity.originalComplement))+' · Alternative: '+e(formatSensitivityProbability(q.alternativeProbability,sensitivity.alternativeComplement))+'</small>'+(sensitivity.tailPrecision?'<p>Rare upper-tail probabilities are shown using their complements to avoid rounding an extremely small tail to zero.</p>':'')+'</div>':'')+
   (sensitivity?'<div class="distribution-whatif-sensitivity" data-distribution-parameter-change><strong>'+e(sensitivity.parameter.title)+'</strong><p>'+e(sensitivity.parameter.detail)+'</p></div>':'')+
+  distributionWhatIfReflectionHtml(studio,q,aim,e)+
   (q.changed&&["primary","secondary"].includes(studio.draft.sourceKind)?'<p class="distribution-whatif-hint" data-distribution-source-warning>Applying this alternative will reclassify these parameters as an assumed theoretical model and clear the original source credit. The existing saved figure will not change until you save it.</p>':'')+
   eventProblems+
   (q.changed&&q.eventIssues.length===0&&(q.comparison!=="target"||q.target?.ok)?
@@ -167,7 +186,7 @@ export function distributionWhatIfSummaryHtml(studio,e){
   '<p class="distribution-whatif-hint">The original figure and saved copies remain unchanged until you choose Apply. A model comparison does not establish which model fits observed data.</p>'+
   '</div>';
 }
-export function renderDistributionWhatIfControls(studio,e){
+export function renderDistributionWhatIfControls(studio,e,aim=""){
  const w=studio.whatIf||{},d=studio.draft;
  return '<details class="distribution-whatif-panel" data-distribution-whatif-panel'+
   (w.active||w.status==="applied"?' open':'')+'>'+
@@ -184,7 +203,7 @@ export function renderDistributionWhatIfControls(studio,e){
    '<button type="button" class="btn btn-quiet btn-sm" data-action="distribution-whatif-reset">Reset alternative</button>'+
    '<button type="button" class="btn btn-quiet btn-sm" data-action="distribution-whatif-discard">Discard comparison</button></div>'+
    '<div data-distribution-whatif-summary class="distribution-whatif-summary" aria-live="polite">'+
-   distributionWhatIfSummaryHtml(studio,e)+'</div>')+
+   distributionWhatIfSummaryHtml(studio,e,aim)+'</div>')+
   '</div></details>';
 }
 export function distributionWhatIfPreviewHtml(studio,e){
