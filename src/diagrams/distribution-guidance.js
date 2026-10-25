@@ -114,7 +114,7 @@ export function distributionRecoveryCards(raw,spot="page"){
  const method=mk("distribution-why",
   "I cannot justify choosing or defining this model",
   "What does "+sym+" represent, and where did the model parameters come from?",
-  model.reasoning+" "+(d.sourceKind==="theoretical"?"Explain why an assumed model is useful for this question.":
+  model.reasoning+" "+model.condition+" "+(d.sourceKind==="theoretical"?"Explain why an assumed model is useful for this question.":
   d.sourceKind==="primary"?"Identify the actual observations used to estimate parameters.":
   d.sourceKind==="secondary"?"Locate the original source and population definition.":
   "Identify whether the values are assumptions, estimates or published."),
