@@ -63,3 +63,6 @@ The site retains the published **current A–E IA assessment guidance**, includi
 ### Data and classroom safeguards
 
 Do not record identifiable or restricted participant information without appropriate arrangements. This application does not verify consent, issue teacher approvals, fabricate observations, or provide a substitute for school review. Mathematical limitations should arise from actual evidence and methods—not from a generic checklist.
+
+### Maths Workshop — Batch 5: Probability and inference
+Batch 5 adds **34 definitions** and **six guided lessons**, bringing the Workshop to **156 definitions and 29 lessons**. Students practise conditional probability trees, discrete expected values, reproducible simulation, binomial probabilities, normal models and careful statistical inference. Mathematical assumptions, independence, tails, sampling and honest interpretation are central. All examples are fictional and read-only. See [Batch 5 notes](docs/maths-workshop-batch-5-2026-10-25.md). **Batch 6** will focus on finance.
