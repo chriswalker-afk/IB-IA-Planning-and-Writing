@@ -19,6 +19,7 @@ export function renderDistributionSvg(raw){
  const chartHeight=axis-top-12;
  const xLabel=d.symbol+(d.unit.trim()?" ("+d.unit.trim()+")":"");
  const label=()=>parts.push(txt(xLabel,W/2,H-26,14));
+ parts.push(txt(d.kind==="normal"?"Probability density":"Probability",left+3,top-7,12,"start"));
  if(d.kind==="normal"){
   const {mu,sigma}=q,low=mu-4.1*sigma,high=mu+4.1*sigma;
   const xx=x=>left+(x-low)/(high-low)*graphW,yy=x=>axis-(Math.exp(-.5*((x-mu)/sigma)**2))*chartHeight;
