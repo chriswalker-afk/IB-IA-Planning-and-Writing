@@ -152,6 +152,32 @@ export const WORKSHOP_LESSON_FORMULAS=Object.freeze({
    {label:"One-sided null and alternative",tex:"H_0:p=0.5,\\quad H_1:p>0.5",spoken:"The null probability of success is half; the pre-specified alternative is greater than half."},
    {label:"Inclusive upper-tail probability",tex:"P(X\\ge8\\mid H_0)=\\frac{\\binom{10}{8}+\\binom{10}{9}+\\binom{10}{10}}{2^{10}}",spoken:"Under ten independent fair coin tosses the upper-tail probability for eight or more heads includes counts eight, nine and ten."}
   ],
+  "finance-compound-growth": [
+    {"label":"Periodic rate from nominal annual rate","tex":"i=\\frac{r}{m}","spoken":"Periodic rate i equals nominal annual rate r divided by m compounding periods per year."},
+    {"label":"Compound future value","tex":"FV=P\\left(1+\\frac{r}{m}\\right)^{mt}","spoken":"Future value equals principal times the periodic growth factor over m times t intervals."},
+    {"label":"Effective annual rate","tex":"r_{\\mathrm{eff}}=\\left(1+\\frac{r}{m}\\right)^m-1","spoken":"Effective annual rate is the compounded annual factor minus one."}
+  ],
+  "finance-loan-repayments": [
+    {"label":"Fixed end-of-period payment","tex":"M=\\frac{Pi}{1-(1+i)^{-n}}","spoken":"Payment M equals principal times periodic rate divided by one minus the inverse n-period growth factor, for positive rate and equal end-period payments."},
+    {"label":"Loan-balance recurrence","tex":"B_k=(1+i)B_{k-1}-M","spoken":"The new balance equals the prior balance plus its interest minus the period-end payment."},
+    {"label":"Interest and principal components","tex":"I_k=iB_{k-1},\\quad Q_k=M-I_k","spoken":"Interest is periodic rate times opening balance. Principal reduction is payment minus interest."}
+  ],
+  "finance-break-even": [
+    {"label":"Linear profit function","tex":"\\Pi(q)=(p-v)q-F","spoken":"Profit is selling price minus variable cost per item, times quantity, minus fixed cost."},
+    {"label":"Break-even sales threshold","tex":"q_{\\mathrm{BE}}=\\frac{F}{p-v},\\quad p>v","spoken":"Break-even sales quantity is fixed cost divided by positive contribution per item, if demand and capacity allow."}
+  ],
+  "finance-cashflow": [
+    {"label":"Monthly net cash flow","tex":"C_k=I_k-O_k","spoken":"Net cash flow is cash received minus cash paid in period k."},
+    {"label":"Running cash balance","tex":"B_k=B_{k-1}+C_k","spoken":"Closing cash in one period equals opening cash plus the net cash movement."}
+  ],
+  "finance-present-value": [
+    {"label":"Discount a future cash flow","tex":"PV_t=\\frac{C_t}{(1+d)^t}","spoken":"Present value of a period t cash flow is its signed amount divided by one plus the discount rate to power t."},
+    {"label":"Net present value includes time zero","tex":"NPV=C_0+\\sum_{t=1}^{T}\\frac{C_t}{(1+d)^t}","spoken":"NPV includes the immediate signed cash flow at time zero and discounts each later signed cash flow."}
+  ],
+  "finance-sensitivity": [
+    {"label":"Profit in each scenario","tex":"\\Pi=(p-v)q-F","spoken":"For each financial scenario calculate contribution margin times sales quantity minus fixed cost."},
+    {"label":"Threshold selling price","tex":"p_*=v+\\frac{F}{q},\\qquad q>0","spoken":"At a fixed positive sales quantity, the break-even selling price equals unit cost plus fixed cost per sold item."}
+  ],
   "histograms": [
     {
       "label": "Frequency density for any class",
@@ -414,6 +440,22 @@ export const WORKSHOP_DEFINITION_FORMULAS=Object.freeze({
   "cumulative-probability": {"tex":"P(X\\le k)=\\sum_{j=0}^kP(X=j)","spoken":"Discrete cumulative probability up to and including k sums probabilities from zero through k for a nonnegative count."},
   "normal-distribution": {"tex":"X\\sim N(\\mu,\\sigma^2)","spoken":"A normal distribution has mean mu and variance sigma squared."},
   "standard-score": {"tex":"z=\\frac{x-\\mu}{\\sigma}","spoken":"Standard score is deviation from mean divided by standard deviation."},
+  "simple-interest": {"tex":"A=P(1+rt)","spoken":"Simple-interest amount is principal times one plus annual rate times years, when the rate is constant."},
+  "compound-interest": {"tex":"A=P(1+i)^n","spoken":"Compounded amount is principal times one plus periodic rate to the number of periods."},
+  "periodic-interest-rate": {"tex":"i=\\frac{r}{m}","spoken":"When r is a stated nominal annual rate, periodic i is r divided by m compounding periods per year."},
+  "effective-annual-rate": {"tex":"r_{\\mathrm{eff}}=\\left(1+\\frac{r}{m}\\right)^m-1","spoken":"Effective annual rate equals one-year compound growth factor minus one."},
+  "future-value-finance": {"tex":"FV=P(1+i)^n","spoken":"Future value is present principal multiplied by n periodic growth factors."},
+  "interest-component": {"tex":"I_k=iB_{k-1}","spoken":"Interest in period k is the periodic rate times the preceding balance."},
+  "principal-component": {"tex":"Q_k=M-I_k","spoken":"The principal repaid is the full payment less interest charged during that period."},
+  "revenue-function": {"tex":"R(q)=pq","spoken":"Revenue is price per item multiplied by the number of items sold."},
+  "contribution-margin": {"tex":"c=p-v","spoken":"Contribution per unit is selling price minus variable cost per unit."},
+  "break-even-point": {"tex":"q_{\\mathrm{BE}}=\\frac{F}{p-v}","spoken":"When contribution is positive, break-even quantity equals fixed cost divided by contribution per item."},
+  "profit-function": {"tex":"\\Pi(q)=(p-v)q-F","spoken":"Profit equals total contribution minus fixed cost."},
+  "net-cash-flow": {"tex":"C_k=I_k-O_k","spoken":"Net cash flow is actual cash receipts minus actual cash payments in period k."},
+  "cash-balance": {"tex":"B_k=B_{k-1}+I_k-O_k","spoken":"End-period cash equals start-period cash plus inflows minus outflows."},
+  "present-value-finance": {"tex":"PV=\\frac{FV}{(1+d)^t}","spoken":"A future value is discounted by one plus rate to power time."},
+  "net-present-value": {"tex":"NPV=C_0+\\sum_{t=1}^T\\frac{C_t}{(1+d)^t}","spoken":"Net present value is immediate cash flow plus the discounted values of each future signed cash flow."},
+  "financial-threshold": {"tex":"p_*=v+\\frac{F}{q}","spoken":"At specified positive sales, the zero-profit selling price is unit variable cost plus fixed cost per item."},
   "rmse": {
     "tex": "\\mathrm{RMSE}=\\sqrt{\\frac{1}{n}\\sum_{i=1}^{n}(y_i-\\hat{y}_i)^2}",
     "spoken": "Root mean squared error is the square root of mean squared prediction error on the evaluation dataset."
