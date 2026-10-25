@@ -75,3 +75,6 @@ The final batch adds **40 definitions** and **seven guided lessons** on conjectu
 
 ### Maths Workshop — Connected definitions
 The Workshop now contains **240 definitions and 42 Show Me → Help Me → My Turn lessons**. Every definition opens a curated network of nearby mathematical ideas, with an in-Workshop back button to return to the previous definition or lesson. A new **Sampling** hub connects census, sampling unit and frame, probability and non-probability methods, and sample bias/quality checks. Ten missing sampling terms were added. The network covers all 240 definitions and leaves saved IA work untouched. See [connected-definition guidance](docs/maths-workshop-connected-definitions-2026-10-25.md).
+
+### Maths Workshop — Help where students need it
+In addition to the Help & Tips Workshop library link, students now see optional **contextual mathematical support** within the amber **I am stuck** bubbles and the main stuck hub. Links respond to their **explicitly selected investigative route or method**, the **actual Planning/IA Studio box** (introducing, calculating, interpreting or deciding what follows) and the **difficulty they selected**. Each offers up to one relevant definition and one guided Show me lesson; primary recovery advice and course cautions remain unchanged. [Implementation notes](docs/maths-workshop-contextual-support-2026-10-25.md).

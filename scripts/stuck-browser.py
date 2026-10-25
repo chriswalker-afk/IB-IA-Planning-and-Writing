@@ -292,6 +292,79 @@ with sync_playwright() as pw:
   overflow(p)
  s=project('completing','C30');s['entries'][0].update(status='planned',result='',journeyOutcome='')
  run('pass5-planned-result-does-not-unblock-interpretation',s,pass5_no_phantom_result)
+ def contextual_planning_sampling(p):
+  badge=p.locator('[data-stuck-help="N03P2:page"]')
+  assert badge.count()==1 and badge.is_visible()
+  before=saved(p);badge.click()
+  modal=p.locator('.stuck-context-dialog[open]')
+  assert modal.is_visible()
+  assert modal.locator('[data-workshop-help-focus="sampling"]').count()==1
+  assert modal.locator('[data-workshop-term="sampling"]').count()==1
+  assert modal.locator('[data-workshop-id="sampling"]').count()==1
+  modal.locator('[data-workshop-term="sampling"]').click()
+  assert not modal.is_visible()
+  assert p.locator('.drawer [data-workshop-definition="sampling"]').count()==1
+  assert p.locator('.drawer [data-related-def-id="sampling-frame"]').count()==1
+  assert p.locator('.drawer [data-related-def-id="stratified-sample"]').count()==1
+  assert saved(p)==before
+  p.locator('.drawer [data-action="close-drawer"]').click()
+  node(p,'N03P2');overflow(p)
+  p.screenshot(path=str(OUT/'stuck-workshop-context-sampling-phone.png'),animations='disabled')
+ run('workshop-context-planning-bubble-sampling-phone',project('planning','N03P2'),contextual_planning_sampling,360,740)
+ def contextual_hub_sampling(p):
+  open_help(p)
+  assert p.locator('.drawer .stuck-hub [data-workshop-term="sampling"]').count()==1
+  p.locator('.drawer [data-topic="fix:planning:population-frame"]:visible').first.click()
+  assert p.locator('.drawer .stuck-focused [data-workshop-term="sampling"]').count()==1
+  before=saved(p)
+  p.locator('.drawer .stuck-focused [data-workshop-id="sampling"]').click()
+  assert p.locator('.drawer [data-workshop-lesson="sampling"]').count()==1
+  p.locator('.drawer [data-action="close-drawer"]').click()
+  assert p.locator('.drawer .stuck-focused').count()==1
+  assert saved(p)==before
+ run('workshop-context-stuck-hub-sampling-return',project('planning','N03P2'),contextual_hub_sampling,390,844)
+ def contextual_studio_method(p):
+  badge=p.locator('[data-studio-stuck="C30:part:show"]')
+  assert badge.count()==1 and badge.is_visible()
+  before=saved(p);badge.click()
+  modal=p.locator('#studioStuckDialog[open]')
+  assert modal.is_visible()
+  assert modal.locator('[data-workshop-help-focus="calculate"]').count()==1
+  assert modal.locator('[data-workshop-id="pearson"]').count()==1
+  assert modal.locator('[data-workshop-term="correlation"]').count()==1
+  modal.locator('[data-workshop-id="pearson"]').click()
+  assert not modal.is_visible()
+  assert p.locator('.drawer [data-workshop-lesson="pearson"]').count()==1
+  assert saved(p)==before
+  p.locator('.drawer [data-action="close-drawer"]').click()
+  node(p,'C30')
+ s=project('completing','C30');s['entries'][0].update(methodId='pmcc',status='planned',result='')
+ s['planning'].setdefault('routeExplorer',{})['selectedRoute']='finance'
+ run('workshop-context-studio-method-overrides-route',s,contextual_studio_method,1440,950)
+ def contextual_top_right(p):
+  before=saved(p)
+  action(p,'open-panel','[data-panel="help"]')
+  card=p.locator('.drawer .guidance-help-panel .workshop-contextual-help')
+  assert card.count()==1
+  assert card.locator('[data-workshop-route="fitted-models"]').count()>=1
+  assert card.locator('[data-workshop-term="model"]').count()==1
+  card.locator('[data-workshop-term="model"]').click()
+  assert p.locator('.drawer [data-workshop-definition="model"]').count()==1
+  assert saved(p)==before
+  p.locator('.drawer [data-action="close-drawer"]').click()
+  node(p,'N04S')
+ s=project('planning','N04S');s['planning'].setdefault('routeExplorer',{})['selectedRoute']='fitted-models'
+ run('workshop-context-top-right-selected-route',s,contextual_top_right,1440,950)
+ def contextual_checking_no_maths(p):
+  action(p,'open-panel','[data-panel="help"]')
+  assert p.locator('.drawer .guidance-help-panel .workshop-contextual-help').count()==0
+  assert p.locator('.drawer [data-action="resource-workshop"]').count()>=1
+  p.locator('.drawer [data-action="close-drawer"]').click()
+  badge=p.locator('[data-checking-stuck="D09:check:D09"]')
+  assert badge.count()==1
+  badge.click()
+  assert p.locator('#studioStuckDialog[open] .workshop-contextual-help').count()==0
+ run('workshop-context-no-maths-in-checking',project('checking','D09'),contextual_checking_no_maths)
  browser.close()
 (OUT/'stuck-results.json').write_text(json.dumps(results,indent=2));print(json.dumps(results,indent=2))
 assert all(r['status']=='passed' for r in results)

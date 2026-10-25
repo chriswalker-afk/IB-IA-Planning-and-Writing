@@ -13,6 +13,7 @@ import {editCriterionReview} from "./src/essentials/review.js";
 import {ideaAction,ideaInput,ideaDifficultyInput,chooseTopic} from './src/ideas/engine.js';
 import {attachIdeaMapGraph} from './src/ideas/map-layout.js';
 import {resourceDrawer,resourceList} from './src/resources/views.js';
+import {contextualWorkshopHelp,renderContextualWorkshopHelp} from './src/help/workshop-help.js';
 import {workshopList} from './src/workshop/views.js';
 import {resourceAction,resourceFilter,resourcePreference} from './src/resources/actions.js';
 import {newResourceSession} from './src/resources/state.js';
@@ -1169,6 +1170,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         '<p>Pathfinder helps you think and write; it does not write or grade your IA. Choose the support that matches what you need now.</p>'+
         guidanceChoices(icon,e)+
         '<p class="guidance-help-where">On Planning and IA Studio pages, the amber, purple and green bubbles show these kinds of help at the moment they are useful.</p>'+
+        renderContextualWorkshopHelp(contextualWorkshopHelp(state,{spot:'page'}),e)+
         '<h3>Other useful places</h3><div class="panel-list">'+
         '<button type="button" class="panel-link" data-action="resource-browse">Tools &amp; tutorials '+icon("arrow-right")+'</button>'+
         '<button type="button" class="panel-link" data-action="resource-workshop">Maths Workshop · definitions and guided practice '+icon("arrow-right")+'</button>'+

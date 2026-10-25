@@ -134,3 +134,20 @@
 @media(prefers-reduced-motion:reduce){
   .stuck-support *, .stuck-context-dialog *{scroll-behavior:auto}
 }
+
+
+/* Contextual Maths Workshop: a small optional bridge from one precise problem
+   to a definition or invented guided example. Neutral surface, not another
+   amber diagnostic, assessment badge or Writer's Field Guide. */
+.workshop-contextual-help{border:1px solid var(--line);border-radius:13px;padding:13px 15px;margin:15px 0;background:var(--surface,#fff);min-width:0}
+.workshop-contextual-head{display:grid;gap:4px;min-width:0}
+.workshop-contextual-head strong{font-size:14px;line-height:1.45;font-weight:730}
+.workshop-contextual-head span{font-size:12px;color:var(--muted);line-height:1.5}
+.workshop-contextual-help>p{font-size:13px;line-height:1.58;margin:8px 0 10px}
+.workshop-contextual-help .workshop-contextual-caution{font-size:12px;color:var(--muted);margin-bottom:0}
+.workshop-contextual-actions{display:flex;flex-wrap:wrap;gap:8px;min-width:0}
+.workshop-contextual-actions .btn{font-size:13px;white-space:normal;overflow-wrap:anywhere;min-height:44px;max-width:100%;text-align:left}
+.stuck-context-dialog .workshop-contextual-help{margin:16px 0 4px}
+.stuck-support .workshop-contextual-help{margin:15px 0}
+.guidance-help-panel .workshop-contextual-help{margin:16px 0 10px}
+@media(max-width:700px){.stuck-context-dialog .workshop-contextual-help{padding:12px}.workshop-contextual-actions{display:grid;grid-template-columns:minmax(0,1fr)}.workshop-contextual-actions .btn{width:100%}}
