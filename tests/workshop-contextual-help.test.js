@@ -30,7 +30,7 @@ const project=s=>JSON.stringify({planning:s.planning,completion:s.completion,ent
 test("contextual Workshop: all 16 chosen pathways map to valid canonical terms and lessons",()=>{
  assert.equal(Object.keys(WORKSHOP_HELP_ROUTES).length,16);
  assert.deepEqual(Object.keys(WORKSHOP_HELP_ROUTES).sort(),INVESTIGATIVE_ROUTES.map(r=>r.id).sort());
- assert.equal(WORKSHOP_DEFINITIONS.length,240);assert.equal(WORKSHOP_LESSONS.length,42);
+ assert.equal(WORKSHOP_DEFINITIONS.length,243);assert.equal(WORKSHOP_LESSONS.length,45);
  for(const [routeId,p] of Object.entries(WORKSHOP_HELP_ROUTES)){
   for(const key of ["start","calculate","interpret","follow"])assert(definitionById(p[key]),routeId+" missing "+key);
   assert(lessonById(p.lesson),routeId+" missing lesson "+p.lesson);
