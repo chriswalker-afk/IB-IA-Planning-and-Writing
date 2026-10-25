@@ -252,7 +252,7 @@ with sync_playwright() as pw:
   open_library(p)
   p.locator('.resource-workshop-entry [data-action="resource-workshop"]').click()
   p.locator('[data-action="resource-workshop-home"]').first.click() if not p.locator('[data-workshop-home="true"]').count() else None
-  assert p.locator('#resource-results .workshop-lesson-card').count()==29
+  assert p.locator('#resource-results .workshop-lesson-card').count()==35
   p.locator('[data-action="resource-workshop-lesson"][data-workshop-id="two-way-proportions"]').first.click()
   assert p.locator('[data-workshop-lesson="two-way-proportions"]').count()==1
   assert p.locator('.workshop-data-table').count()==1
@@ -320,7 +320,7 @@ with sync_playwright() as pw:
   open_library(p)
   p.locator('.resource-workshop-entry [data-action="resource-workshop"]').click()
   if not p.locator('[data-workshop-home="true"]').count():p.locator('[data-action="resource-workshop-home"]').first.click()
-  assert p.locator('#resource-results .workshop-lesson-card').count()==29
+  assert p.locator('#resource-results .workshop-lesson-card').count()==35
   p.locator('#workshop-route').select_option('relationships')
   assert 'Spearman' in p.locator('#resource-results').inner_text()
   p.locator('[data-action="resource-workshop-lesson"][data-workshop-id="spearman"]').first.click()
@@ -412,7 +412,7 @@ with sync_playwright() as pw:
   p.locator('.resource-workshop-entry [data-action="resource-workshop"]').click()
   if not p.locator('[data-workshop-home="true"]').count():
    p.locator('[data-action="resource-workshop-home"]').first.click()
-  assert p.locator('#resource-results .workshop-lesson-card').count()==29
+  assert p.locator('#resource-results .workshop-lesson-card').count()==35
   p.locator('#workshop-route').select_option('voronoi')
   assert 'Voronoi nearest-site' in p.locator('#resource-results').inner_text()
   p.locator('[data-workshop-id="voronoi-regions"][data-action="resource-workshop-lesson"]').first.click()
@@ -471,7 +471,7 @@ with sync_playwright() as pw:
   p.locator('.resource-workshop-entry [data-action="resource-workshop"]').click()
   if not p.locator('[data-workshop-home="true"]').count():
    p.locator('[data-action="resource-workshop-home"]').first.click()
-  assert p.locator('#resource-results .workshop-lesson-card').count()==29
+  assert p.locator('#resource-results .workshop-lesson-card').count()==35
   p.locator('#workshop-route').select_option('chance')
   assert 'conditional probability' in p.locator('#resource-results').inner_text().lower()
   p.locator('[data-workshop-id="conditional-probability-tree"][data-action="resource-workshop-lesson"]').first.click()
