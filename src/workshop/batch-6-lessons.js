@@ -116,7 +116,7 @@ export const BATCH6_LESSONS=Object.freeze([
    {name:"Google Sheets",command:"=(11-5)*30-120",
     why:"Verify a profit for one scenario after deriving the general revenue and cost functions."}],
   existingGuide:"finance-model-sheet",relatedGuides:["restrictions","reporting-precision"],creator:"graph",
-  ia:"Define q, units and realistic limits; show both functions and the break-even calculation, challenge whether the resulting quantity can actually be sold, and interpret its usefulness for the investigation's specific decision."
+  ia:"Define q, units, the model's assumptions and feasible sales limits; show both functions and the break-even calculation, challenge whether the resulting quantity can actually be sold, and interpret its usefulness for the investigation's specific decision."
  }),
  guide("finance-cashflow","Finance & decisions","Track cash flow and identify liquidity shortfalls",
   ["cash-inflow","cash-outflow","net-cash-flow","cash-balance","liquidity-shortfall","loan-balance"],{
