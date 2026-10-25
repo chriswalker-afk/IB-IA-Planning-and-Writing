@@ -6,9 +6,12 @@ on:
     paths:
       - 'app.js'
       - 'src/diagrams/distribution-**'
+      - 'src/handover/figure-report.js'
+      - 'src/workshop/distribution-*.js'
+      - 'src/workshop/catalog.js'
       - 'src/core/project-state.js'
       - 'data/probability-studio.css'
-      - 'tests/distribution-pass2.test.js'
+      - 'tests/distribution-*.test.js'
       - 'scripts/distribution-pass2-browser.py'
       - '.github/workflows/distribution-pass2-browser.yml'
   push:
@@ -16,7 +19,11 @@ on:
     paths:
       - 'app.js'
       - 'src/diagrams/distribution-**'
+      - 'src/handover/figure-report.js'
+      - 'src/workshop/distribution-*.js'
+      - 'src/workshop/catalog.js'
       - 'data/probability-studio.css'
+      - 'tests/distribution-*.test.js'
       - 'scripts/distribution-pass2-browser.py'
 permissions:
   contents: read
