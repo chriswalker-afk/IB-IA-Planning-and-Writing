@@ -44,6 +44,7 @@ function densityPath(q,X,Y,lo,hi){
 export function renderDistributionWhatIfSvg(comparison){
  if(!comparison?.ready)return "";
  const a=comparison.original,b=comparison.alternative;
+ const eventA=comparison.originalEvent||a,eventB=comparison.alternativeEvent||b;
  const l0=distributionLayout(a),l1=distributionLayout(b);
  const W=960,H=354,left=80,right=932,top=73,bottom=281;
  const min=Math.min(l0.domainMin,l1.domainMin),max=Math.max(l0.domainMax,l1.domainMax);
@@ -67,7 +68,7 @@ export function renderDistributionWhatIfSvg(comparison){
  // A faint vertical event band represents the SAME fixed event, not the
  // probability size. For discrete models the chosen bars receive stronger ink.
  if(continuous(a.draft.kind)&&comparison.originalProbability!==null)
-  for(const [lo,hi] of selectedAreas(a,min,max))
+  for(const [lo,hi] of selectedAreas(eventA,min,max))
    svg.push('<rect x="'+num(X(lo))+'" y="'+num(top)+'" width="'+num(X(hi)-X(lo))+
     '" height="'+num(bottom-top)+'" fill="#e9f3ee" opacity=".8"/>');
  for(let i=0;i<=4;i++){
@@ -112,12 +113,12 @@ export function renderDistributionWhatIfSvg(comparison){
     const x=X(point.x)+(i===0?-bw:0),py=Y(point.probability);
     svg.push('<rect data-whatif-bar="'+(i===0?"original":"alternative")+
      '" x="'+num(x)+'" y="'+num(py)+'" width="'+num(bw)+'" height="'+num(Math.max(.1,bottom-py))+
-     '" fill="'+colour[i]+'" opacity="'+(comparison.originalProbability===null||eventChosen(q,point.x)?"0.85":"0.32")+'"/>');
+     '" fill="'+colour[i]+'" opacity="'+(comparison.originalProbability===null||eventChosen(i===0?eventA:eventB,point.x)?"0.85":"0.32")+'"/>');
    }
   });
  }
  if(comparison.originalProbability!==null){
-  const marks=[a.lower,...(["between","outside"].includes(a.draft.mode)?[a.upper]:[])]
+  const marks=[eventA.lower,...(["between","outside"].includes(eventA.draft.mode)?[eventA.upper]:[])]
    .filter(x=>Number.isFinite(x));
   for(const v of marks)if(v>=min&&v<=max)
    svg.push(line(X(v),top,X(v),bottom,"#356d57",1.2,' stroke-dasharray="4 4"'));
