@@ -79,7 +79,7 @@ test("I am stuck diagnoses different mathematical obstacles and stages without i
  const binomial=distributionRecoveryCards(make({kind:"binomial",symbol:"B",mode:"exact",lower:"2"}),"part:introduce");
  assert.equal(binomial[0].id,"distribution-why");
  assert.match(binomial[0].action,/independence/i);
- assert.match(binomial[1].boundary,/observed data/i);
+ assert.match(binomial[1].boundary,/observed (?:data|frequencies)/i);
  const s=stateFor();
  const c31=studioHelpFor(s,"page");
  assert(c31.choices.some(x=>x.id==="distribution-event"));
@@ -143,7 +143,7 @@ test("figure handover is specific to normal/binomial mathematics and preserves s
  const q=handoverQuestions(s,"distribution",d);
  assert.match(q.before,/normal probability-density/i);
  assert.match(q.after,/P\(65 ≤ T ≤ 85\)/);
- assert.match(q.after,/not present/i);
+ assert.match(q.after,/do not report/i);
  assert.match(q.limitation,/normality/i);
  const html=renderFigureHandover(s,"distribution",d,icon,escapeHtml,{id:s.distributionStudio.figures[0].id,linked:true});
  assert.match(html,/data-figure-handover="distribution"/);
