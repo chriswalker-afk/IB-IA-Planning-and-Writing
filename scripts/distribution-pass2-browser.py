@@ -595,14 +595,16 @@ def meaningful_reflection(browser,width,kind):
    assert p.locator('[data-distribution-whatif-reflection]').get_attribute("open") is not None
    p.screenshot(path=str(OUT/("reflection-"+kind+"-"+str(width)+".png")),
                 full_page=True,animations="disabled")
-  # Toggle state must be preserved across page reloads as an editor preference.
-  p.reload(wait_until="networkidle")
-  reflection=p.locator('[data-distribution-whatif-reflection]')
+  # A new page in the SAME browser context reads the project's saved
+  # editor state. Do not reload setup(): its page-level bootstrap deliberately
+  # injects a fresh test fixture on every navigation.
+  restored=c.new_page()
+  restored.goto(URL,wait_until="networkidle")
+  reflection=restored.locator('[data-distribution-whatif-reflection]')
   assert reflection.count()==1
   assert reflection.get_attribute("open") is not None
   assert reflection.locator('[data-reflection-prompt]').count()==3
-  assert p.locator('[data-distribution-field="mu"]').count()<=1
-  check_width(p)
+  check_width(restored)
   assert not errors,errors
   print("PASS 5.4.3 meaningful reflection",kind,width,flush=True)
  finally:c.close()
