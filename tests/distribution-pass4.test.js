@@ -122,7 +122,7 @@ test("custom distribution rejects ambiguous, invalid, duplicated or unnormalised
   assert(!q.ready,customPoints.slice(0,60));
   assert(q.issues.length>0);
  }
- const points=parseCustomDiscrete("3, 0.3\n-2, 0.2\n0, 0.5");
+ const points=parseCustomDiscrete("3, 0.3\n−2, 0.2\n0, 0.5");
  assert.deepEqual(points.points.map(p=>p.x),[-2,0,3]);
  assert.equal(points.issues.length,0);
  assert.match(analyzeDistribution(make("custom",{customPoints:"1,0.4\n2,0.4"})).issues.join(" "),/never normalised/);
