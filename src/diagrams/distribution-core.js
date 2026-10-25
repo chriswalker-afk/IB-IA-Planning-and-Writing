@@ -29,14 +29,14 @@ export function normalizeDistributionDraft(raw){
  if(d.kind==="normal"&&d.mode==="exact")d.mode="none";
  return d;
 }
-export const newDistributionStudio=()=>({open:false,draft:newDistributionDraft(),figures:[],activeId:""});
+export const newDistributionStudio=()=>({open:false,zoomed:false,draft:newDistributionDraft(),figures:[],activeId:""});
 export function normalizeDistributionStudio(raw){
  const r=plain(raw)?raw:{},figures=(Array.isArray(r.figures)?r.figures:[])
   .slice(0,MAX_DISTRIBUTION_FIGURES).filter(plain)
   .map(f=>({id:clean(f.id,72),entryId:clean(f.entryId,80),
    savedAt:clean(f.savedAt,42),draft:normalizeDistributionDraft(f.draft)}))
   .filter(f=>/^distribution-[a-z0-9-]+$/i.test(f.id));
- return {open:r.open===true,draft:normalizeDistributionDraft(r.draft),figures,
+ return {open:r.open===true,zoomed:r.zoomed===true,draft:normalizeDistributionDraft(r.draft),figures,
   activeId:figures.some(f=>f.id===r.activeId)?r.activeId:""};
 }
 const phi=x=>Math.exp(-x*x/2)/Math.sqrt(2*Math.PI);
