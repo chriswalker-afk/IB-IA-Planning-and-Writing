@@ -7,6 +7,12 @@ from playwright.sync_api import sync_playwright
 OUT=Path(os.environ.get('IA_QA_OUTPUT','qa-output'));OUT.mkdir(exist_ok=True,parents=True)
 BASE=json.loads((OUT/'project.json').read_text());KEY='ia-pathfinder-prototype-v1'
 URL=os.environ.get('IA_QA_URL','http://127.0.0.1:8765/');results=[]
+# Keep the browser catalogue check in step with the canonical Maths Workshop.
+# A separate unit test verifies the expected lesson catalogue contents.
+WORKSHOP_LESSON_COUNT=int(subprocess.check_output(
+ ['node','--input-type=module','-e',
+  "import {WORKSHOP_LESSONS} from './src/workshop/catalog.js';console.log(WORKSHOP_LESSONS.length)"],
+ text=True).strip())
 def state(node='C40',method='pmcc',status='planned',route='completing'):
  s=copy.deepcopy(BASE);s['route']=route;s['completion']['current']=node;s['completion']['activeEntryIndex']=0;s['completion']['nextFromEntryId']='graph';s['planning']['current']='N01'
  s['entries'][0].update(methodId=method,status=status,result='r = 0.4' if status=='completed' else '',kind='calculation',phase='substantial',knowledge='syllabus')
@@ -288,7 +294,7 @@ with sync_playwright() as pw:
   open_library(p)
   p.locator('.resource-workshop-entry [data-action="resource-workshop"]').click()
   p.locator('[data-action="resource-workshop-home"]').first.click() if not p.locator('[data-workshop-home="true"]').count() else None
-  assert p.locator('#resource-results .workshop-lesson-card').count()==42
+  assert p.locator('#resource-results .workshop-lesson-card').count()==WORKSHOP_LESSON_COUNT
   p.locator('[data-action="resource-workshop-lesson"][data-workshop-id="two-way-proportions"]').first.click()
   assert p.locator('[data-workshop-lesson="two-way-proportions"]').count()==1
   assert p.locator('.workshop-data-table').count()==1
@@ -356,7 +362,7 @@ with sync_playwright() as pw:
   open_library(p)
   p.locator('.resource-workshop-entry [data-action="resource-workshop"]').click()
   if not p.locator('[data-workshop-home="true"]').count():p.locator('[data-action="resource-workshop-home"]').first.click()
-  assert p.locator('#resource-results .workshop-lesson-card').count()==42
+  assert p.locator('#resource-results .workshop-lesson-card').count()==WORKSHOP_LESSON_COUNT
   p.locator('#workshop-route').select_option('relationships')
   assert 'Spearman' in p.locator('#resource-results').inner_text()
   p.locator('[data-action="resource-workshop-lesson"][data-workshop-id="spearman"]').first.click()
@@ -448,7 +454,7 @@ with sync_playwright() as pw:
   p.locator('.resource-workshop-entry [data-action="resource-workshop"]').click()
   if not p.locator('[data-workshop-home="true"]').count():
    p.locator('[data-action="resource-workshop-home"]').first.click()
-  assert p.locator('#resource-results .workshop-lesson-card').count()==42
+  assert p.locator('#resource-results .workshop-lesson-card').count()==WORKSHOP_LESSON_COUNT
   p.locator('#workshop-route').select_option('voronoi')
   assert 'Voronoi nearest-site' in p.locator('#resource-results').inner_text()
   p.locator('[data-workshop-id="voronoi-regions"][data-action="resource-workshop-lesson"]').first.click()
@@ -507,7 +513,7 @@ with sync_playwright() as pw:
   p.locator('.resource-workshop-entry [data-action="resource-workshop"]').click()
   if not p.locator('[data-workshop-home="true"]').count():
    p.locator('[data-action="resource-workshop-home"]').first.click()
-  assert p.locator('#resource-results .workshop-lesson-card').count()==42
+  assert p.locator('#resource-results .workshop-lesson-card').count()==WORKSHOP_LESSON_COUNT
   p.locator('#workshop-route').select_option('chance')
   assert 'conditional probability' in p.locator('#resource-results').inner_text().lower()
   p.locator('[data-workshop-id="conditional-probability-tree"][data-action="resource-workshop-lesson"]').first.click()
@@ -566,7 +572,7 @@ with sync_playwright() as pw:
   p.locator('.resource-workshop-entry [data-action="resource-workshop"]').click()
   if not p.locator('[data-workshop-home="true"]').count():
    p.locator('[data-action="resource-workshop-home"]').first.click()
-  assert p.locator('#resource-results .workshop-lesson-card').count()==42
+  assert p.locator('#resource-results .workshop-lesson-card').count()==WORKSHOP_LESSON_COUNT
   p.locator('#workshop-route').select_option('finance')
   assert 'Track cash flow' in p.locator('#resource-results').inner_text()
   p.locator('[data-action="resource-workshop-lesson"][data-workshop-id="finance-cashflow"]').first.click()
@@ -653,7 +659,7 @@ with sync_playwright() as pw:
   p.locator('.resource-workshop-entry [data-action="resource-workshop"]').click()
   if not p.locator('[data-workshop-home="true"]').count():
    p.locator('[data-action="resource-workshop-home"]').first.click()
-  assert p.locator('#resource-results .workshop-lesson-card').count()==42
+  assert p.locator('#resource-results .workshop-lesson-card').count()==WORKSHOP_LESSON_COUNT
   p.locator('#workshop-route').select_option('proof')
   assert 'Test a conjecture' in p.locator('#resource-results').inner_text()
   assert p.locator('#resource-results .workshop-lesson-card').count()==3
@@ -856,7 +862,8 @@ with sync_playwright() as pw:
   assert card.locator('[data-workshop-term="voronoi-cell"]').count()==1
   assert card.locator('[data-workshop-id="voronoi-regions"]').count()==1
   assert card.locator('[data-resource-id="sheets-pmcc"]').count()==0
-  assert overlay(p).evaluate('(e)=>e.scrollWidth<=e.clientWidth+1')
+  # The Help menu uses .drawer; .resource-drawer exists only after opening the library.
+  assert p.locator('.drawer .guidance-help-panel').evaluate('(e)=>e.scrollWidth<=e.clientWidth+1')
   p.locator('[data-action="close-drawer"]').click()
   assert unchanged_fields(saved(p))==before
  chosen=state(route='planning')

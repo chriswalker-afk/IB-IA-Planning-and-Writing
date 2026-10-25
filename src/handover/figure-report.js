@@ -28,6 +28,22 @@ const registeredFigure=id=>{
  if(!tool)throw new Error("Unregistered diagram kind: "+id);
  return {kind:tool.id,store:tool.studio,entryKey:tool.entryKey};
 };
+/** Report-only metadata must match the saved model, not assume binomial inputs. */
+const distributionModelLabels=Object.freeze({normal:"Normal",binomial:"Binomial",poisson:"Poisson",uniform:"Continuous uniform",custom:"Custom discrete"});
+function distributionModelInputs(q){
+ const d=q.draft;
+ switch(d.kind){
+  case "normal":return [row("Parameters","Mean (μ): "+d.mu+"; standard deviation (σ): "+d.sigma)];
+  case "binomial":return [row("Parameters","Number of trials (n): "+d.n+"; success probability (p): "+d.p)];
+  case "poisson":return [row("Parameters","Mean event count per interval (λ): "+d.lambda)];
+  case "uniform":return [row("Parameters","Lower support limit (a): "+d.a+"; upper support limit (b): "+d.b)];
+  case "custom":return [
+   row("Entered outcome probabilities",d.customPoints),
+   row("Total assigned probability",q.total===null?"":String(q.total))
+  ];
+  default:return [];
+ }
+}
 const specs=[
  {...registeredFigure("graph"),render:d=>renderGraphSvg(d),
   details:d=>[
@@ -119,7 +135,11 @@ const specs=[
    row("Source type",d.sourceKind),row("Original source",d.sourceCredit),row("Figure caption",d.caption),row("Limitations",d.note)]},
   {...registeredFigure("distribution"),render:d=>renderDistributionSvg(d),details:d=>{
     const q=analyzeDistribution(d);
-    return [row("Theoretical model",d.kind),row("Random variable",d.symbol),row("Parameters",d.kind==="normal"?"Mean: "+d.mu+"; standard deviation: "+d.sigma:"Trials: "+d.n+"; success probability: "+d.p),row("Event probability",q.statement),row("Parameter source",d.sourceKind),row("Source",d.sourceCredit),row("Assumptions and limitations",d.note)];
+    return [row("Distribution model",distributionModelLabels[q.draft.kind]),
+     row("Random variable",q.draft.symbol),...distributionModelInputs(q),
+     row("Event probability",q.statement),row("Parameter or probability source",q.draft.sourceKind),
+     row("Source",q.draft.sourceCredit),row("Assumptions and limitations",q.draft.note),
+     row("Validation issues",q.issues.length?q.issues.join("; "):"")];
    }},
   {...registeredFigure("probability"),render:d=>renderProbabilitySvg(d),details:d=>{
     const a=probabilityAnalysis(d);
@@ -180,7 +200,9 @@ export function collectProjectFigures(state){
   }
   // Saving a project can retain edits to a diagram that have not been saved
   // as a named figure. Never silently lose these in a working-record export.
-  if(occupied(studio.draft)){
+  // Distribution drafts store parameters and custom outcome rows, not a generic
+  // raw/matrix field. An edited unsaved distribution must survive report export.
+  if(occupied(studio.draft)||(spec.kind==="distribution"&&studio.draft?.edited)){
    const current=figures.find(x=>x.id===studio.activeId);
    if(!current||JSON.stringify(current.draft)!==JSON.stringify(studio.draft)){
     output.push(buildFigure(spec,{id:spec.kind+"-current-draft",entryId:"",draft:studio.draft},{draft:true}));
