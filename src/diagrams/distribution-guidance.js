@@ -5,7 +5,7 @@
  * fit or marks a mathematical stage complete. No tutorial text enters the SVG.
  * All prompts derive from the current editable draft and existing student notes.
  */
-import {analyzeDistribution} from "./distribution-core.js";
+import {analyzeDistribution,distributionSignature} from "./distribution-core.js";
 import {presentationSparks} from "./presentation-coach-core.js";
 import {lessonById,definitionById} from "../workshop/catalog.js";
 
@@ -34,6 +34,7 @@ export function distributionGuidance(state,raw){
  const activeSaved=state?.distributionStudio?.figures?.find(f=>f.id===state?.distributionStudio?.activeId)||null;
  const linked=!!activeSaved&&!!e&&(e.distributionFigureId===activeSaved.id||
   e.figureRefs?.includes("distribution:"+activeSaved.id));
+ const changedSinceSave=linked&&distributionSignature(activeSaved.draft)!==distributionSignature(d);
  const aim=trim(state?.planning?.fields?.aim||state?.project?.aim,260);
  // These are the real, existing Sparks; no separate student's "source" is invented.
  const sparks=presentationSparks(state,"distribution",d)
@@ -63,7 +64,8 @@ export function distributionGuidance(state,raw){
   d.sourceKind==="theoretical"?
   "You selected an assumed model. Give a mathematical or contextual reason for these assumptions; do not describe model parameters as measured observations.":
   "The parameter source is not yet confirmed. Determine whether you assumed, estimated or obtained the values from a publication before relying on the model.";
- const stage=linked?
+ const stage=changedSinceSave?
+  "The current model inputs differ from the figure linked to this stage. Save your changes and revisit any written probability or interpretation before using it.":linked?
   "An editable figure is explicitly linked to this mathematical stage; your calculations, reasoning and interpretation must still be written by you.":
   activeSaved?"A saved editable figure exists, but it is not linked to the current mathematical stage. You can link it with Save & link below.":
   "Your current figure is not linked to a mathematical stage. Exporting does not automatically place it in your IA.";
