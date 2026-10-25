@@ -212,7 +212,7 @@ with sync_playwright() as pw:
   assert p.locator('#workshop-route option').count()==17
   p.locator('#workshop-route').select_option('voronoi')
   assert 'Voronoi cell' in p.locator('#resource-results').inner_text()
-  assert 'No guided lessons match this selection' in p.locator('#resource-results').inner_text()
+  assert 'Build and check a Voronoi nearest-site region' in p.locator('#resource-results').inner_text()
   p.locator('#workshop-search').fill('distance')
   assert 'Euclidean distance' in p.locator('#resource-results').inner_text()
   assert p.locator('#workshop-search').input_value()=='distance'
@@ -252,7 +252,7 @@ with sync_playwright() as pw:
   open_library(p)
   p.locator('.resource-workshop-entry [data-action="resource-workshop"]').click()
   p.locator('[data-action="resource-workshop-home"]').first.click() if not p.locator('[data-workshop-home="true"]').count() else None
-  assert p.locator('#resource-results .workshop-lesson-card').count()==18
+  assert p.locator('#resource-results .workshop-lesson-card').count()==23
   p.locator('[data-action="resource-workshop-lesson"][data-workshop-id="two-way-proportions"]').first.click()
   assert p.locator('[data-workshop-lesson="two-way-proportions"]').count()==1
   assert p.locator('.workshop-data-table').count()==1
@@ -320,7 +320,7 @@ with sync_playwright() as pw:
   open_library(p)
   p.locator('.resource-workshop-entry [data-action="resource-workshop"]').click()
   if not p.locator('[data-workshop-home="true"]').count():p.locator('[data-action="resource-workshop-home"]').first.click()
-  assert p.locator('#resource-results .workshop-lesson-card').count()==18
+  assert p.locator('#resource-results .workshop-lesson-card').count()==23
   p.locator('#workshop-route').select_option('relationships')
   assert 'Spearman' in p.locator('#resource-results').inner_text()
   p.locator('[data-action="resource-workshop-lesson"][data-workshop-id="spearman"]').first.click()
@@ -406,5 +406,64 @@ with sync_playwright() as pw:
   p.locator('[data-action="close-drawer"]').click()
   assert unchanged_fields(saved(p))==before
  run('workshop-batch1-histogram-phone',state(),batch1_histogram,360,740)
+ def batch4_voronoi_phone(p):
+  before=unchanged_fields(saved(p))
+  open_library(p)
+  p.locator('.resource-workshop-entry [data-action="resource-workshop"]').click()
+  if not p.locator('[data-workshop-home="true"]').count():
+   p.locator('[data-action="resource-workshop-home"]').first.click()
+  assert p.locator('#resource-results .workshop-lesson-card').count()==23
+  p.locator('#workshop-route').select_option('voronoi')
+  assert 'Voronoi nearest-site' in p.locator('#resource-results').inner_text()
+  p.locator('[data-workshop-id="voronoi-regions"][data-action="resource-workshop-lesson"]').first.click()
+  assert p.locator('[data-workshop-lesson="voronoi-regions"]').count()==1
+  assert p.locator('.workshop-formula-equation svg').count()>=2
+  p.locator('.workshop-lesson-tabs [data-workshop-step="help"]').click()
+  assert 'Checkpoint 1 of 2' in overlay(p).inner_text()
+  p.locator('[data-workshop-choice="3"]').click()
+  assert "That's right" in overlay(p).inner_text()
+  p.locator('[data-action="resource-workshop-checkpoint"][data-workshop-direction="1"]').click()
+  assert 'Checkpoint 2 of 2' in overlay(p).inner_text()
+  p.locator('[data-workshop-choice="C"]').click()
+  assert "That's right" in overlay(p).inner_text()
+  p.locator('.workshop-lesson-tabs [data-workshop-step="turn"]').click()
+  p.locator('.workshop-reveal > summary').click()
+  assert '39/16' in overlay(p).inner_text()
+  assert p.locator('.workshop-native-creator [data-resource-creator="voronoi"]').count()==1
+  assert overlay(p).evaluate('(el)=>el.scrollWidth<=el.clientWidth+1')
+  overlay(p).screenshot(path=str(OUT/'workshop-batch4-voronoi-phone.png'),animations='disabled')
+  p.locator('[data-action="close-drawer"]').click()
+  assert unchanged_fields(saved(p))==before
+ run('workshop-batch4-voronoi-phone',state(),batch4_voronoi_phone,360,740)
+ def batch4_geometry_desktop(p):
+  before=unchanged_fields(saved(p))
+  open_library(p)
+  p.locator('.resource-workshop-entry [data-action="resource-workshop"]').click()
+  if not p.locator('[data-workshop-home="true"]').count():
+   p.locator('[data-action="resource-workshop-home"]').first.click()
+  p.locator('#workshop-route').select_option('triangulation')
+  assert 'Triangulate an inaccessible point' in p.locator('#resource-results').inner_text()
+  p.locator('[data-action="resource-workshop-lesson"][data-workshop-id="triangulation"]').first.click()
+  assert p.locator('[data-workshop-lesson="triangulation"]').count()==1
+  assert '86.60' in overlay(p).inner_text()
+  assert p.locator('.workshop-formula-equation svg').count()>=2
+  p.locator('.workshop-lesson-tabs [data-workshop-step="help"]').click()
+  p.locator('[data-workshop-choice="56"]').click()
+  assert "That's right" in overlay(p).inner_text()
+  p.locator('[data-action="resource-workshop-checkpoint"][data-workshop-direction="1"]').click()
+  p.locator('[data-workshop-choice="north"]').click()
+  assert "That's right" in overlay(p).inner_text()
+  assert p.locator('.workshop-native-creator [data-resource-creator="geometry"]').count()==1
+  p.locator('[data-action="resource-workshop-home"]').first.click()
+  p.locator('#workshop-route').select_option('images')
+  assert 'Calibrate an image' in p.locator('#resource-results').inner_text()
+  assert 'Measure composite regions' in p.locator('#resource-results').inner_text()
+  p.locator('[data-action="resource-workshop-lesson"][data-workshop-id="image-calibration"]').first.click()
+  assert p.locator('.workshop-native-creator [data-resource-creator="trace"]').count()==1
+  assert overlay(p).evaluate('(el)=>el.scrollWidth<=el.clientWidth+1')
+  overlay(p).screenshot(path=str(OUT/'workshop-batch4-calibration-desktop.png'),animations='disabled')
+  p.locator('[data-action="close-drawer"]').click()
+  assert unchanged_fields(saved(p))==before
+ run('workshop-batch4-geometry-desktop',state(),batch4_geometry_desktop,1440,1000)
  browser.close()
 (OUT/'resources-results.json').write_text(json.dumps(results,indent=2));print(json.dumps(results,indent=2));assert all(r['status']=='passed' for r in results)

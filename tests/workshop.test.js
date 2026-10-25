@@ -19,8 +19,8 @@ const snapshot=s=>JSON.stringify({entries:s.entries,planning:s.planning,completi
 const approx=(a,b,eps=1e-9)=>assert(Math.abs(a-b)<eps,String(a)+' differs from '+String(b));
 
 test('workshop: canonical glossary and pilot IDs are unique and never blank',()=>{
- assert.equal(WORKSHOP_DEFINITIONS.length,100);
- assert.equal(WORKSHOP_LESSONS.length,18);
+ assert.equal(WORKSHOP_DEFINITIONS.length,122);
+ assert.equal(WORKSHOP_LESSONS.length,23);
  assert.equal(new Set(WORKSHOP_DEFINITIONS.map(d=>d.id)).size,WORKSHOP_DEFINITIONS.length);
  assert.equal(new Set(WORKSHOP_LESSONS.map(l=>l.id)).size,WORKSHOP_LESSONS.length);
  for(const d of WORKSHOP_DEFINITIONS){
@@ -42,7 +42,7 @@ test('workshop: all sixteen routes map only to real shared definitions and optio
  }
 });
 test('workshop: complete pilot schema supports definitions, full worked methods and standalone practice',()=>{
- const expected=['descriptive','pearson','optimisation','sampling','distributions','two-way-proportions','measurement','spearman','linear-regression','nonlinear-fitting','residual-diagnostics','model-comparison','histograms','quadratic-functions','exponential-logarithms','sinusoidal-functions','derivatives-motion','integrals-accumulation'];
+ const expected=['descriptive','pearson','optimisation','sampling','distributions','two-way-proportions','measurement','spearman','linear-regression','nonlinear-fitting','residual-diagnostics','model-comparison','histograms','quadratic-functions','exponential-logarithms','sinusoidal-functions','derivatives-motion','integrals-accumulation','image-calibration','triangulation','geometric-areas','voronoi-regions','geometry-sensitivity'];
  assert.deepEqual(WORKSHOP_LESSONS.map(l=>l.id),expected);
  for(const l of WORKSHOP_LESSONS){
   assert(l.when&&l.avoid&&l.formula&&l.skill&&l.ia,l.id);
@@ -127,7 +127,7 @@ test('workshop: pathway browsing filters exact route terms and available lessons
  const html=resourceDrawer(s,session);
  assert(html.includes('Voronoi cell'));
  assert(!html.includes('Pearson&#39;s correlation coefficient</h4>'));
- assert(html.includes('No guided lessons match this selection'));
+ assert(html.includes('Build and check a Voronoi nearest-site region'));
  assert(!resourceFilter(session,'workshopRoute','invalid-route'));
  assert(resourceFilter(session,'workshopRoute','relationships'));
  assert(workshopList(session).includes('Pearson'));

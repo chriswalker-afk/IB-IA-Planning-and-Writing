@@ -102,6 +102,31 @@ export const WORKSHOP_LESSON_FORMULAS=Object.freeze({
     {"label":"Accumulated change","tex":"\\Delta Q=\\int_{a}^{b}r(t)\\,dt","spoken":"The accumulated change is the definite integral of rate r over the interval."},
     {"label":"Fundamental theorem of calculus","tex":"\\int_{a}^{b}r(t)\\,dt=F(b)-F(a)","spoken":"If F is an antiderivative of r, evaluate F at the upper bound minus lower bound."}
   ],
+  "image-calibration": [
+    {"label":"Length per image pixel","tex":"s=\\frac{L_{\\mathrm{ref}}}{p_{\\mathrm{ref}}}","spoken":"Real reference length divided by the corresponding pixel length gives length per pixel."},
+    {"label":"Calibrated distance","tex":"d=s\\sqrt{(x_2-x_1)^2+(y_2-y_1)^2}","spoken":"Calibrated length equals the metres per pixel factor times the pixel coordinate distance."},
+    {"label":"Area scaling","tex":"A_{\\mathrm{real}}=s^2A_{\\mathrm{pixels}}","spoken":"Area in real square units equals square of the length scale times the image pixel area."}
+  ],
+  "triangulation": [
+    {"label":"Triangle angle sum","tex":"A+B+C=180^\\circ","spoken":"The three interior angles of a plane triangle total one hundred and eighty degrees."},
+    {"label":"Sine rule","tex":"\\frac{AB}{\\sin C}=\\frac{AC}{\\sin B}=\\frac{BC}{\\sin A}","spoken":"The ratio of each side length to the sine of its opposite angle is the same."},
+    {"label":"Cosine rule","tex":"c^2=a^2+b^2-2ab\\cos C","spoken":"Side c squared equals a squared plus b squared minus twice a b cosine of included angle C."}
+  ],
+  "geometric-areas": [
+    {"label":"Subtract a cut-out","tex":"A_{\\mathrm{region}}=A_{\\mathrm{outer}}-A_{\\mathrm{cutout}}","spoken":"Composite region area equals outer area minus the removed area."},
+    {"label":"Prism volume","tex":"V=A_{\\mathrm{cross\\ section}}\\,h","spoken":"For a prism, volume equals constant cross-sectional area times perpendicular length."},
+    {"label":"Similarity area scale","tex":"A_{\\mathrm{new}}=k^2 A_{\\mathrm{old}}","spoken":"When lengths scale by k, area scales by k squared."}
+  ],
+  "voronoi-regions": [
+    {"label":"Equality of squared site distances","tex":"(x-x_A)^2+(y-y_A)^2=(x-x_B)^2+(y-y_B)^2","spoken":"A point is equidistant from sites A and B when the two squared distance expressions are equal."},
+    {"label":"Bisector in the worked example","tex":"x=4","spoken":"The perpendicular bisector of sites zero zero and eight zero is the vertical line x equals four."},
+    {"label":"Triple-site vertex","tex":"V=\\left(4,\\frac{5}{3}\\right)","spoken":"The intersection of the two worked bisectors is four comma five thirds."}
+  ],
+  "geometry-sensitivity": [
+    {"label":"Nominal rectangle area","tex":"A_0=LW","spoken":"Area at reported dimensions equals length times width."},
+    {"label":"Positive-input lower and upper bounds","tex":"L_{\\min}W_{\\min}\\le A\\le L_{\\max}W_{\\max}","spoken":"For positive input intervals, the smallest rectangle area uses both lower endpoints and the largest uses both upper endpoints."},
+    {"label":"Worked example bound","tex":"38.61\\le A\\le41.41\\quad(\\mathrm{m}^2)","spoken":"Under the given plausible input intervals the calculated area is between thirty eight point six one and forty one point four one square metres."}
+  ],
   "histograms": [
     {
       "label": "Frequency density for any class",
@@ -344,6 +369,13 @@ export const WORKSHOP_DEFINITION_FORMULAS=Object.freeze({
   "average-rate": {"tex":"\\frac{\\Delta y}{\\Delta x}","spoken":"Average rate is change in output divided by nonzero change in input."},
   "definite-integral": {"tex":"\\int_a^b f(x)\\,dx","spoken":"The definite integral of f from a to b gives signed accumulation."},
   "antiderivative": {"tex":"F'(x)=f(x)","spoken":"The derivative of an antiderivative F is the original function f."},
+  "calibration-factor": {"tex":"s=\\frac{L_{\\mathrm{ref}}}{p_{\\mathrm{ref}}}","spoken":"Calibration scale is known real reference length divided by corresponding pixel length."},
+  "area-scale": {"tex":"A_{\\mathrm{new}}=k^2 A_{\\mathrm{old}}","spoken":"Area after a uniform linear scale factor k is k squared times original area."},
+  "sine-rule": {"tex":"\\frac{a}{\\sin A}=\\frac{b}{\\sin B}","spoken":"In a plane triangle the side over sine opposite angle ratios agree."},
+  "cosine-rule": {"tex":"c^2=a^2+b^2-2ab\\cos C","spoken":"Cosine rule for the side opposite included angle C."},
+  "triangle-area": {"tex":"A=\\frac{1}{2}ab\\sin C","spoken":"Triangle area is one half of two side lengths times sine of their included angle."},
+  "cross-section-volume": {"tex":"V=Ah","spoken":"For a prism, volume equals constant cross-section area times its perpendicular length."},
+  "worst-case-bounds": {"tex":"A\\ge L_{\\min}W_{\\min}","spoken":"For positive length and width within stated intervals, the product of the lower endpoints gives a conservative area lower bound."},
   "rmse": {
     "tex": "\\mathrm{RMSE}=\\sqrt{\\frac{1}{n}\\sum_{i=1}^{n}(y_i-\\hat{y}_i)^2}",
     "spoken": "Root mean squared error is the square root of mean squared prediction error on the evaluation dataset."
