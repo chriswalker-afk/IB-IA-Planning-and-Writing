@@ -8,7 +8,8 @@ const figureKinds=Object.freeze([
  ["graphStudio","graphFigureId","Graph"],["statStudio","statFigureId","Statistical diagram"],
  ["tableStudio","tableFigureId","Table"],["imageTracer","imageTraceId","Image trace"],
  ["voronoiStudio","voronoiFigureId","Voronoi diagram"],["geometryStudio","geometryFigureId","Geometry figure"],
- ["probabilityStudio","probabilityFigureId","Probability tree"]
+ ["probabilityStudio","probabilityFigureId","Probability tree"],
+ ["distributionStudio","distributionFigureId","Probability distribution"]
 ]);
 /** Hints only: these may not appear in the IA; sources in the IA may be absent here. */
 export function citationAuditPointers(state){
