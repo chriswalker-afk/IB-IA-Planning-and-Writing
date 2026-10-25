@@ -43,8 +43,10 @@ export function normalizeDistributionStudio(raw){
   activeId:figures.some(f=>f.id===r.activeId)?r.activeId:""};
 }
 const phi=x=>Math.exp(-x*x/2)/Math.sqrt(2*Math.PI);
-/* Accurate, cancellation-resistant upper-tail integration (no Math.erf dependency).
-   The discarded normal tail beyond z=12 is below 2e-33. */
+/* Accurate, cancellation-resistant normal upper tail (no Math.erf dependency).
+   Use adaptive quadrature near the centre; the convergent Mills-ratio
+   continued fraction avoids an artificial zero beyond 12 standard deviations.
+   Truncation at z=12 in the central quadrature costs less than 2e-33. */
 function simpson(f,a,b,fa,fc,fb){return (b-a)*(fa+4*fc+fb)/6;}
 function adaptive(f,a,b,fa,fc,fb,whole,tolerance,depth){
  const c=(a+b)/2,l=(a+c)/2,r=(c+b)/2,fl=f(l),fr=f(r);
@@ -57,7 +59,13 @@ function adaptive(f,a,b,fa,fc,fb,whole,tolerance,depth){
 export function normalUpperTail(z){
  if(!Number.isFinite(z))return z>0?0:1;
  if(z<0)return 1-normalUpperTail(-z);
- if(z>=12)return 0;
+ if(z>=5){
+  // Q(z) = phi(z) / (z + 1/(z + 2/(z + 3/(...)))).
+  // The stable backwards continued fraction retains tails far below 1e-33.
+  let tail=0;
+  for(let j=60;j>=1;j--)tail=j/(z+tail);
+  return phi(z)/(z+tail);
+ }
  const a=z,b=12,fa=phi(a),fb=phi(b),c=(a+b)/2,fc=phi(c);
  return Math.max(0,Math.min(.5,adaptive(phi,a,b,fa,fc,fb,
   simpson(phi,a,b,fa,fc,fb),1e-13,22)));
