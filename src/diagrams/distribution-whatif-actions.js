@@ -9,7 +9,7 @@ import {setDistributionField} from "./distribution-actions.js";
 
 export function startDistributionWhatIf(studio){
  if(!studio?.draft)return false;
- studio.whatIf={active:true,status:"exploring",kind:studio.draft.kind,
+ studio.whatIf={...newDistributionWhatIfState(),active:true,status:"exploring",kind:studio.draft.kind,
   source:distributionWhatIfSignature(studio.draft),
   values:distributionWhatIfValues(studio.draft)};
  return true;
