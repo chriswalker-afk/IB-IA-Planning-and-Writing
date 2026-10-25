@@ -10,6 +10,7 @@ import {statAnalysis} from "./stat-studio-core.js";
 import {statMethodNote} from "./stat-reading-guide.js";
 import {analyzeTable} from "./table-studio-core.js";
 import {probabilityAnalysis} from "./probability-core.js";
+import {analyzeDistribution} from "./distribution-core.js";
 
 const words=(v,n=160)=>String(v??"").trim().slice(0,n);
 const label=v=>words(splitHeading(v).label,100).toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
@@ -151,7 +152,7 @@ export function suggestedDiagramMode(state,type,draft){
 export function relevantAccuracySparks(state,draft){
  const cols=unique([
   ...(draft?.columns||[]),draft?.xLabel,draft?.yLabel,draft?.variable,
-  ...(draft?.headings||[])
+  ...(draft?.headings||[]),draft?.symbol,draft?.unit
  ]).map(label).filter(Boolean);
  const plans=state?.planning?.accuracyPlans||[],
   actual=state?.completion?.accuracyDecisions||[];
@@ -174,7 +175,7 @@ export function presentationSparks(state,type,draft){
  else if(plannedSource)result.push(spark("planned","Source from Planning (not yet verified)",
   [p.dataSource&&"Route: "+p.dataSource,p.secondaryPublisher||p.primaryWhat||p.secondaryUrl].filter(Boolean).join(" · ")+
   ". Confirm what was actually used before crediting the figure."));
- const numerical=type==="graph"||type==="stat"||type==="table";
+ const numerical=type==="graph"||type==="stat"||type==="table"||type==="distribution"&&draft?.sourceKind==="primary";
  if(numerical){
   if(a.recorded.length)result.push(spark("confirmed","Recorded accuracy decision",
    a.recorded.map(x=>[x.quantity,x.resolution,x.policy].filter(Boolean).join(": ")).join("; ")+
@@ -185,7 +186,7 @@ export function presentationSparks(state,type,draft){
   else if(p.firstAccuracy)result.push(spark("planned","Earlier accuracy intention",
    p.firstAccuracy+". Recheck this against the measurements actually plotted."));
  }
- if(type==="stat"||type==="table"||type==="graph"&&draft?.kind!=="function"){
+ if(type==="stat"||type==="table"||type==="graph"&&draft?.kind!=="function"||type==="distribution"&&draft?.sourceKind==="primary"){
   const pop=f.statisticalPopulation||p.primaryPopulation,
    sample=f.samplingMethod||p.primarySamplingMethod||p.primarySampling,
    size=f.sampleSize||"",unit=p.primarySamplingUnit||"",
@@ -328,6 +329,7 @@ export function handoverQuestions(state,type,draft){
   type==="voronoi"?"nearest-site regions under a straight-line distance assumption":
   type==="geometry"?"a labelled geometric construction":
   type==="probability"?"a conditional probability model of successive outcomes":
+  type==="distribution"?(draft?.kind==="normal"?"a normal probability-density model and shaded area":"a binomial model for a count of successes"):
   {compact:"selected numerical results",summary:"summary statistics",frequency:"observed category frequencies"}[draft?.mode]||"mathematical results";
  const limitation=type==="graph"&&draft?.kind==="function"?"Which assumptions and feasible domain restrict this model?":
   type==="stat"&&draft?.kind==="bar"?"How do group sizes and percentage denominators affect the comparison?":
@@ -338,13 +340,18 @@ export function handoverQuestions(state,type,draft){
   type==="voronoi"?"How would roads, obstacles, distance metrics or the choice of sites change nearest-site regions?":
   type==="geometry"?"Which scale assumptions, angle measurements or annotations limit this construction?":
   type==="probability"?"How were conditional probabilities justified? Were events clearly defined, and are independence and sampling assumptions defensible?":
+  type==="distribution"?(draft?.kind==="normal"?"Which evidence or process supports the normality assumption, and how might mean or SD uncertainty affect the probability?":"Are the number of trials fixed, outcomes binary, trials independent and success probability constant?"):
   type==="table"?"Are these the smallest set of results needed, with justified precision?":
   "How could sampling, measurement accuracy, data exclusions or model assumptions change the conclusion?";
+ const distribution=type==="distribution"?analyzeDistribution(draft):null;
  return {
   before:"Before "+subject+", explain why "+method+" helps address "+(aim?"your aim (“"+aim+"”)":"your stated aim")+
    (purpose?". Link this to your saved starting question: "+words(purpose,170):"."),
-  after:"After the figure or table, identify a specific feature actually visible in your own values; quantify it where appropriate, then explain what it contributes to your aim.",
+  after:distribution?(distribution.statement?"For "+distribution.statement+", define this event and explain what the model probability would mean in your own context. ":"Explain what the theoretical distribution shows and how it is relevant to your stated question. ")+
+   "Do not report a model probability as an observed relative frequency or as evidence that the model fits. ":
+   "After the figure or table, identify a specific feature actually visible in your own values; quantify it where appropriate, then explain what it contributes to your aim.",
   limitation,
-  next:"What further calculation, comparison or model would logically follow from the actual result — or is this evidence enough? Do not invent a finding or a next step."
+  next:distribution?"Would a reasonable parameter change or defensible alternative model materially change what the probability implies for your aim? Compare only when purposeful; do not invent extra observations.":
+   "What further calculation, comparison or model would logically follow from the actual result — or is this evidence enough? Do not invent a finding or a next step."
  };
 }

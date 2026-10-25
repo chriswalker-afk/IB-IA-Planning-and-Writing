@@ -129,3 +129,22 @@
 @media(max-width:760px){[data-distribution-studio] .probability-workspace{grid-template-columns:minmax(0,1fr)}[data-distribution-studio] .probability-controls{max-height:none;overflow:visible;position:static}}
 @media(max-width:380px){[data-distribution-studio] .probability-boundary-control{grid-template-columns:minmax(0,1fr)}[data-distribution-studio] .distribution-preview-detail svg{min-width:720px}}
 @media(prefers-reduced-motion:reduce){[data-distribution-studio] .distribution-preview *{animation:none!important;transition:none!important}}
+
+/* Distribution Pass 3: contextual learning belongs in the editor, never the SVG. */
+[data-distribution-studio] .distribution-learning{margin:16px 0;padding:14px 16px;border:1px solid var(--border,#dce7eb);border-radius:12px;background:var(--surface,#fff);color:var(--text,#243a45);min-width:0}
+[data-distribution-studio] .distribution-learning-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+[data-distribution-studio] .distribution-learning-head>strong{font-size:.94rem;line-height:1.4;display:inline-flex;align-items:center;gap:7px}
+[data-distribution-studio] .distribution-learning-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:12px 0 4px}
+[data-distribution-studio] .distribution-learning-actions>details{min-width:0}
+[data-distribution-studio] .distribution-learning summary{cursor:pointer;color:var(--text,#284352);font-weight:650;line-height:1.5}
+[data-distribution-studio] .distribution-definition-links{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+[data-distribution-studio] .distribution-learning-write{border-top:1px solid var(--border,#dce7eb);margin-top:13px;padding-top:12px}
+[data-distribution-studio] .distribution-learning-write>p{margin:11px 0;line-height:1.55;font-size:.84rem}
+[data-distribution-studio] .distribution-learning-write>p strong{display:block;margin:0 0 3px;color:var(--text,#263d4c);font-size:.83rem}
+[data-distribution-studio] .distribution-reused-sparks{margin:11px 0;padding:10px 12px;background:var(--surface-soft,#f6fafb);border-radius:9px}
+[data-distribution-studio] .distribution-reused-sparks strong{font-size:.84rem}
+[data-distribution-studio] .distribution-reused-sparks ul{list-style:none;margin:8px 0;padding:0;display:grid;gap:8px}
+[data-distribution-studio] .distribution-reused-sparks li{font-size:.8rem;overflow-wrap:anywhere;line-height:1.45}
+[data-distribution-studio] .distribution-reused-sparks small{color:var(--text-muted,#637885);font-size:.76rem}
+[data-distribution-studio] .distribution-learning-write .distribution-learning-caution{font-size:.78rem;color:var(--text-muted,#5b737f);border-top:1px solid var(--border,#dae6eb);padding-top:10px}
+@media(max-width:420px){[data-distribution-studio] .distribution-learning{padding:12px}[data-distribution-studio] .distribution-learning-actions>.btn{width:100%;justify-content:center}[data-distribution-studio] .distribution-learning-actions>details{width:100%}}

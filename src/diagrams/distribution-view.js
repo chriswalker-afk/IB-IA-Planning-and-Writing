@@ -1,6 +1,7 @@
 import {analyzeDistribution,MAX_DISTRIBUTION_FIGURES} from "./distribution-core.js";
 import {distributionLayout} from "./distribution-layout.js";
 import {renderDistributionSvg} from "./distribution-render.js";
+import {renderDistributionGuidance} from "./distribution-guidance.js";
 import {representationOutputActions} from "./workspace-ui.js";
 const field=(key,label,value,e)=>
  '<label class="probability-field"><span>'+e(label)+'</span><input type="text" data-distribution-field="'+key+'" value="'+e(value)+'"></label>';
@@ -78,7 +79,7 @@ export function renderDistributionStudio(state,icon,e){
  '<button type="button" class="btn btn-secondary btn-sm" data-action="distribution-preview-detail" aria-pressed="'+(!!s.zoomed)+'">Enlarge to check labels</button></div></div>'+
  distributionPreviewHtml(s)+
  '<p class="probability-canvas-note">Drag a marker or use its arrow keys to change a boundary. Use the numeric fields above for exact values (or −/+ on a phone). Handles and this help text never appear in the exported IA figure.</p>'+
- distributionFeedbackHtml(s,e)+'<div data-representation-step="use">'+distributionOutputHtml(s,icon,e)+'</div>'+
+ distributionFeedbackHtml(s,e)+renderDistributionGuidance(state,icon,e)+'<div data-representation-step="use">'+distributionOutputHtml(s,icon,e)+'</div>'+
  (s.figures.length?'<details class="probability-saved"><summary>Saved distributions ('+s.figures.length+')</summary>'+
  s.figures.map(f=>'<div class="probability-saved-row"><strong>'+e(f.draft.title||"Distribution")+'</strong>'+
  '<button type="button" class="btn btn-secondary btn-sm" data-action="distribution-load" data-distribution-id="'+e(f.id)+'">Edit figure</button></div>').join("")+

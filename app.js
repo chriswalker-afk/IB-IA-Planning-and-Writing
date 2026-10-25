@@ -85,6 +85,7 @@ import {geometryPreviewHtml,geometryQualityHtml,geometryOutputHtml} from "./src/
 import {setGeometryField,setGeometryVertex,geometryTemplate,geometryAddVertex,geometryRemoveVertex,geometryFresh,loadGeometry,saveGeometryDraft,saveAndLinkGeometry,importGeometryFromTrace, geometryAddAuxPoint,geometryRemoveAuxPoint,setGeometryAuxPoint,geometryAddGuide,geometryRemoveGuide,setGeometryGuide,moveGeometryAuxPoint} from "./src/diagrams/geometry-actions.js";
 import {exportGeometry} from "./src/diagrams/geometry-export.js";
 import {distributionLayout,distributionBoundaryForPixel,distributionBoundaryNudge} from "./src/diagrams/distribution-layout.js";
+import {renderDistributionGuidance} from "./src/diagrams/distribution-guidance.js";
 import {distributionPreviewHtml,distributionFeedbackHtml,distributionOutputHtml} from "./src/diagrams/distribution-view.js";
 import {setDistributionField,freshDistribution,loadDistribution,saveDistributionDraft,saveAndLinkDistribution} from "./src/diagrams/distribution-actions.js";
 import {exportDistribution} from "./src/diagrams/distribution-export.js";
@@ -726,6 +727,11 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       root.querySelector("[data-distribution-preview]").scrollLeft=scroll;}
     const f=root.querySelector("[data-distribution-feedback]");
     if(f)f.outerHTML=distributionFeedbackHtml(state.distributionStudio,e);
+    const help=root.querySelector("[data-distribution-learning]");
+    if(help){const open=help.querySelector(".distribution-learning-write")?.open;
+      help.outerHTML=renderDistributionGuidance(state,icon,e);
+      const next=root.querySelector(".distribution-learning-write");
+      if(next&&open)next.open=true;}
     const o=root.querySelector("[data-distribution-output]");
     if(o)o.outerHTML=distributionOutputHtml(state.distributionStudio,icon,e);
   }
