@@ -161,6 +161,8 @@ test('Pass 3: a specific source or permission obstacle suppresses generic method
  assert(resourceAction(s,u,'resource-browse',{resourceHelp:'true'},'stuck').open);
  const html=resourceDrawer(s,u);
  assert(!html.includes('class="resource-current resource-home-relevant"'));
- assert(!html.includes('data-resource-id="forms"'));
+ const recommendationRegion=html.split('class="resource-home-navigation"')[0];
+ assert(!recommendationRegion.includes('data-resource-id="forms"'),
+  'A guide may remain in the searchable catalogue without being recommended');
  assert.equal(intact(s),before);
 });
