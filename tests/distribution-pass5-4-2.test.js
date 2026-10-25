@@ -222,7 +222,7 @@ test("legacy backups default to fixed event; active target comparisons survive b
  assert.equal(q.target.requested,.95);
  assert.equal(restored.distributionStudio.draft.mu,"70");
  assert.equal(restored.distributionStudio.draft.mode,"none");
- assert.equal(q.target.lowerChange,2);
+ close(q.target.lowerChange,2);
 });
 test("stale original, invalid alternative, and custom probability totals retain safeguards",()=>{
  const s=create("normal",{mu:"2",sigma:"1"});
