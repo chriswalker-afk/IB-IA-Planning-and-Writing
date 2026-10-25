@@ -2,7 +2,7 @@ import {examplePrompt,exampleButton} from "../examples/views.js";
 import {resourcePrompt} from "../resources/views.js";
 import {suggestedTopics,availableTopics,adviceFor,stuckContext} from "./stuck.js";
 import {topicById} from "./stuck-catalog.js";
-import {contextualWorkshopHelp,renderContextualWorkshopHelp} from "./workshop-help.js";
+import {renderContextualLearningHelp} from "../resources/contextual-learning.js";
 import {HUB_GROUPS,hubOriginalView,suggestedHubIssues,hubFilteredIssues,hubIssueFor,hubLegacyTopics} from "./hub-issues.js";
 
 /** Filter only the visible hub DOM, not the student project. A filter is never an IA result. */
@@ -62,9 +62,9 @@ export function createStuckViews({getState,e,icon,field}){
    a=hubIssueFor(state,s.selected)||adviceFor(state,s.selected),origin=hubOriginalView(state),
    suggestions=suggestedHubIssues(state),all=hubFilteredIssues(state),legacy=hubLegacyTopics(state);
   const route=origin.route,mode=origin.ui?.checkingMode||"draft";
-  const contextualMaths=renderContextualWorkshopHelp(contextualWorkshopHelp(origin,{
-   spot:origin.helpSpot||"page",issueId:a?.cardId||a?.id||""
-  }),e,{compact:true});
+  const contextualMaths=renderContextualLearningHelp(origin,e,{
+   spot:origin.helpSpot||"page",issueId:a?.cardId||a?.id||"",compact:true
+  });
   const workKey=[route,route==="planning"?origin.planning.current:route==="checking"?mode:origin.completion.current,
    route==="completing"?origin.completion.activeEntryIndex:""].join("|");
   if(lastWorkKey&&lastWorkKey!==workKey){
