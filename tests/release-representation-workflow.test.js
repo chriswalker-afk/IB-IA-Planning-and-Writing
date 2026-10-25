@@ -13,6 +13,7 @@ import {tableOutputHtml} from "../src/diagrams/table-studio-view.js";
 import {traceOutputHtml} from "../src/diagrams/image-tracer-view.js";
 import {voronoiOutputHtml} from "../src/diagrams/voronoi-view.js";
 import {geometryOutputHtml} from "../src/diagrams/geometry-view.js";
+import {distributionOutputHtml} from "../src/diagrams/distribution-view.js";
 import {probabilityOutputHtml} from "../src/diagrams/probability-view.js";
 import {stylePaths} from "../scripts/build-styles.mjs";
 const read=path=>readFileSync(new URL("../"+path,import.meta.url),"utf8");
@@ -24,6 +25,7 @@ const ACTIONS=Object.freeze({
  trace:{save:"trace-save",link:"trace-use",export:["trace-copy","trace-png","trace-svg","trace-csv"]},
  voronoi:{save:"voronoi-save",link:"voronoi-use",export:["voronoi-svg","voronoi-png","voronoi-csv","voronoi-copy"]},
  geometry:{save:"geometry-save",link:"geometry-use",export:["geometry-svg","geometry-png"]},
+ distribution:{save:"distribution-save",link:"distribution-use",export:["distribution-svg","distribution-png"]},
  probability:{save:"probability-save",link:"probability-use",export:["probability-svg","probability-png"]}
 });
 const render=(state)=>({
@@ -33,12 +35,13 @@ const render=(state)=>({
  trace:traceOutputHtml(state.imageTracer,icon,escapeHtml),
  voronoi:voronoiOutputHtml(state.voronoiStudio,icon),
  geometry:geometryOutputHtml(state.geometryStudio,icon),
+ distribution:distributionOutputHtml(state.distributionStudio,icon,escapeHtml),
  probability:probabilityOutputHtml(state.probabilityStudio,icon)
 });
 
-test("one shared output hierarchy preserves all seven specialist save/link/export handlers",()=>{
+test("one shared output hierarchy preserves all eight specialist save/link/export handlers",()=>{
  const state=createProjectState(),html=render(state);
- assert.equal(REPRESENTATION_TOOLS.length,7);
+ assert.equal(REPRESENTATION_TOOLS.length,8);
  assert.deepEqual(REPRESENTATION_TOOLS.map(x=>x.id).sort(),Object.keys(ACTIONS).sort());
  for(const [type,{save,link,export:outputs}] of Object.entries(ACTIONS)){
   const source=html[type];
@@ -105,11 +108,11 @@ test("saved-copy status distinguishes a stored figure from a stage link without 
  assert.equal(status.label==="Saved copy linked to this stage"||status.label==="Needs checks",true);
 });
 
-test("switcher gives truthful return context and preserves the seven-tool chooser",()=>{
+test("switcher gives truthful return context and preserves the eight-tool chooser",()=>{
  const s=createProjectState();s.route="completing";s.completion.current="C31";
  activateRepresentationTool(s,"probability");
  let html=renderRepresentationSwitcher(s,icon,escapeHtml);
- assert.equal((html.match(/data-action="representation-switch"/g)||[]).length,7);
+ assert.equal((html.match(/data-action="representation-switch"/g)||[]).length,8);
  assert.equal((html.match(/aria-current="page"/g)||[]).length,1);
  assert.match(html,/Back to first mathematics/);
  assert.match(html,/data-action="representation-return"/);
