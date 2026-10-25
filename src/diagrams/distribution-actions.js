@@ -1,4 +1,4 @@
-import {newDistributionDraft,normalizeDistributionDraft,analyzeDistribution,DISTRIBUTION_KINDS,
+import {newDistributionDraft,newDistributionInverseQuery,normalizeDistributionDraft,analyzeDistribution,DISTRIBUTION_KINDS,
  distributionSignature,saveDistributionFigure} from "./distribution-core.js";
 import {completeEntry,startFirstRepresentation} from "../completing/engine.js";
 import {linkRepresentationFigure} from "./figure-linking.js";
@@ -14,12 +14,18 @@ export function setDistributionField(studio,key,value){
   d[key]=value;if(key==="kind"&&["normal","uniform"].includes(value)&&d.mode==="exact")d.mode="none";
  }else if(typeof value==="string")d[key]=value.slice(0,key==="customPoints"?3200:["note","sourceCredit"].includes(key)?800:180);
  else return false;
+ // Editing an applied event must not leave an outdated "Applied" result.
+ if(studio.inverse?.status==="applied"&&["mode","lower","upper"].includes(key))
+  studio.inverse.status="calculated";
+ if(key==="kind"&&studio.inverse?.mode==="central"&&["binomial","poisson","custom"].includes(value)){
+  studio.inverse.mode="left";studio.inverse.status="idle";studio.inverse.signature="";
+ }
  d.edited=true;return true;
 }
-export function freshDistribution(studio){studio.activeId="";studio.draft=newDistributionDraft();studio.open=true;}
+export function freshDistribution(studio){studio.activeId="";studio.draft=newDistributionDraft();studio.inverse=newDistributionInverseQuery();studio.open=true;}
 export function loadDistribution(studio,id){
  const fig=studio.figures.find(f=>f.id===id);if(!fig)return false;
- studio.activeId=id;studio.draft=normalizeDistributionDraft(fig.draft);studio.open=true;return true;
+ studio.activeId=id;studio.draft=normalizeDistributionDraft(fig.draft);studio.inverse=newDistributionInverseQuery();studio.open=true;return true;
 }
 function flagReview(state,previous,record){
  if(!previous?.entryId||distributionSignature(previous.draft)===distributionSignature(record.draft))return false;
