@@ -19,7 +19,7 @@ export function insightConnections(s){
     used:used.map(record=>({index:record.index,id:record.id,
      title:record.title||'Mathematical step '+(record.index+1),
      status:record.reviewNeeded==='yes'?'Needs review':record.status==='completed'&&record.result?.trim()?'Result recorded':'Planned step'})),
-    label:exact?'Explicitly linked as an input to':'Explicitly followed by',
+    label:x.type==='figure'?'Editable figure explicitly linked to':exact?'Explicitly linked as an input to':'Explicitly followed by',
     status:'linked'};
   }).filter(Boolean).slice(-36);
 }
