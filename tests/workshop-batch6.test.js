@@ -17,10 +17,10 @@ const saved=s=>JSON.stringify({entries:s.entries,planning:s.planning,completion:
 test("Batch 6: 34 complete finance definitions, six guides, real resource targets and all accessible equations",()=>{
  assert.equal(BATCH6_DEFINITIONS.length,34);
  assert.equal(BATCH6_LESSONS.length,6);
- assert.equal(WORKSHOP_DEFINITIONS.length,190);
- assert.equal(WORKSHOP_LESSONS.length,35);
- assert.equal(new Set(WORKSHOP_DEFINITIONS.map(d=>d.id)).size,190);
- assert.equal(new Set(WORKSHOP_LESSONS.map(l=>l.id)).size,35);
+ assert.equal(WORKSHOP_DEFINITIONS.length,230);
+ assert.equal(WORKSHOP_LESSONS.length,42);
+ assert.equal(new Set(WORKSHOP_DEFINITIONS.map(d=>d.id)).size,230);
+ assert.equal(new Set(WORKSHOP_LESSONS.map(l=>l.id)).size,42);
  const expected=["finance-compound-growth","finance-loan-repayments","finance-break-even","finance-cashflow","finance-present-value","finance-sensitivity"];
  assert.deepEqual(BATCH6_LESSONS.map(l=>l.id),expected);
  for(const d of BATCH6_DEFINITIONS){
@@ -133,7 +133,7 @@ test("Batch 6: discounting handles time-zero flows and annual periods correctly"
  assert.match(lessonById("finance-present-value").technology[0].command,/-1000\+NPV/);
 });
 test("Batch 6: verified finance tutorials remain optional, searchable and read-only",()=>{
- assert.equal(RESOURCES.length,34);
+ assert.equal(RESOURCES.length,36);
  for(const id of ["finance-model-sheet","finance-loan-sheet"]){
   const r=resourceById(id);
   assert(r?.tool==="sheets"&&r.category==="Financial models");

@@ -252,7 +252,7 @@ with sync_playwright() as pw:
   open_library(p)
   p.locator('.resource-workshop-entry [data-action="resource-workshop"]').click()
   p.locator('[data-action="resource-workshop-home"]').first.click() if not p.locator('[data-workshop-home="true"]').count() else None
-  assert p.locator('#resource-results .workshop-lesson-card').count()==35
+  assert p.locator('#resource-results .workshop-lesson-card').count()==42
   p.locator('[data-action="resource-workshop-lesson"][data-workshop-id="two-way-proportions"]').first.click()
   assert p.locator('[data-workshop-lesson="two-way-proportions"]').count()==1
   assert p.locator('.workshop-data-table').count()==1
@@ -320,7 +320,7 @@ with sync_playwright() as pw:
   open_library(p)
   p.locator('.resource-workshop-entry [data-action="resource-workshop"]').click()
   if not p.locator('[data-workshop-home="true"]').count():p.locator('[data-action="resource-workshop-home"]').first.click()
-  assert p.locator('#resource-results .workshop-lesson-card').count()==35
+  assert p.locator('#resource-results .workshop-lesson-card').count()==42
   p.locator('#workshop-route').select_option('relationships')
   assert 'Spearman' in p.locator('#resource-results').inner_text()
   p.locator('[data-action="resource-workshop-lesson"][data-workshop-id="spearman"]').first.click()
@@ -412,7 +412,7 @@ with sync_playwright() as pw:
   p.locator('.resource-workshop-entry [data-action="resource-workshop"]').click()
   if not p.locator('[data-workshop-home="true"]').count():
    p.locator('[data-action="resource-workshop-home"]').first.click()
-  assert p.locator('#resource-results .workshop-lesson-card').count()==35
+  assert p.locator('#resource-results .workshop-lesson-card').count()==42
   p.locator('#workshop-route').select_option('voronoi')
   assert 'Voronoi nearest-site' in p.locator('#resource-results').inner_text()
   p.locator('[data-workshop-id="voronoi-regions"][data-action="resource-workshop-lesson"]').first.click()
@@ -471,7 +471,7 @@ with sync_playwright() as pw:
   p.locator('.resource-workshop-entry [data-action="resource-workshop"]').click()
   if not p.locator('[data-workshop-home="true"]').count():
    p.locator('[data-action="resource-workshop-home"]').first.click()
-  assert p.locator('#resource-results .workshop-lesson-card').count()==35
+  assert p.locator('#resource-results .workshop-lesson-card').count()==42
   p.locator('#workshop-route').select_option('chance')
   assert 'conditional probability' in p.locator('#resource-results').inner_text().lower()
   p.locator('[data-workshop-id="conditional-probability-tree"][data-action="resource-workshop-lesson"]').first.click()
@@ -530,7 +530,7 @@ with sync_playwright() as pw:
   p.locator('.resource-workshop-entry [data-action="resource-workshop"]').click()
   if not p.locator('[data-workshop-home="true"]').count():
    p.locator('[data-action="resource-workshop-home"]').first.click()
-  assert p.locator('#resource-results .workshop-lesson-card').count()==35
+  assert p.locator('#resource-results .workshop-lesson-card').count()==42
   p.locator('#workshop-route').select_option('finance')
   assert 'Track cash flow' in p.locator('#resource-results').inner_text()
   p.locator('[data-action="resource-workshop-lesson"][data-workshop-id="finance-cashflow"]').first.click()
@@ -611,5 +611,95 @@ with sync_playwright() as pw:
   p.locator('[data-action="close-drawer"]').click()
   assert unchanged_fields(saved(p))==before
  run('workshop-batch6-finance-desktop',state(),batch6_finance_desktop,1440,1000)
+ def batch7_proof_phone(p):
+  before=unchanged_fields(saved(p))
+  open_library(p)
+  p.locator('.resource-workshop-entry [data-action="resource-workshop"]').click()
+  if not p.locator('[data-workshop-home="true"]').count():
+   p.locator('[data-action="resource-workshop-home"]').first.click()
+  assert p.locator('#resource-results .workshop-lesson-card').count()==42
+  p.locator('#workshop-route').select_option('proof')
+  assert 'Test a conjecture' in p.locator('#resource-results').inner_text()
+  assert p.locator('#resource-results .workshop-lesson-card').count()==3
+  p.locator('[data-workshop-id="proof-conjectures"][data-action="resource-workshop-lesson"]').first.click()
+  assert p.locator('[data-workshop-lesson="proof-conjectures"]').count()==1
+  assert p.locator('.workshop-formula-equation svg').count()>=2
+  p.locator('.workshop-lesson-tabs [data-workshop-step="help"]').click()
+  p.locator('[data-workshop-choice="refute"]').click()
+  assert "That's right" in p.locator('.workshop-feedback.correct').inner_text()
+  p.locator('[data-action="resource-workshop-checkpoint"][data-workshop-direction="1"]').click()
+  p.locator('[data-workshop-choice="notproved"]').click()
+  assert "That's right" in p.locator('.workshop-feedback.correct').inner_text()
+  p.locator('.workshop-lesson-tabs [data-workshop-step="turn"]').click()
+  p.locator('.workshop-reveal > summary').click()
+  assert p.locator('.workshop-reveal[open]').count()==1
+  assert p.locator('.workshop-native-creator [data-resource-creator="table"]').count()==1
+  p.locator('[data-action="resource-workshop-home"]').first.click()
+  p.locator('#workshop-route').select_option('proof')
+  p.locator('[data-workshop-id="proof-induction-patterns"][data-action="resource-workshop-lesson"]').first.click()
+  p.locator('.workshop-lesson-tabs [data-workshop-step="help"]').click()
+  p.locator('[data-workshop-choice="base1"]').click()
+  assert "That's right" in p.locator('.workshop-feedback.correct').inner_text()
+  p.locator('[data-action="resource-workshop-checkpoint"][data-workshop-direction="1"]').click()
+  p.locator('[data-workshop-choice="2k1"]').click()
+  assert "That's right" in p.locator('.workshop-feedback.correct').inner_text()
+  assert overlay(p).evaluate('(e)=>e.scrollWidth<=e.clientWidth+1')
+  overlay(p).screenshot(path=str(OUT/'workshop-batch7-proof-phone.png'),animations='disabled')
+  p.locator('[data-action="close-drawer"]').click()
+  assert unchanged_fields(saved(p))==before
+ run('workshop-batch7-proof-phone',state(),batch7_proof_phone,360,740)
+ def batch7_iteration_desktop(p):
+  before=unchanged_fields(saved(p))
+  open_library(p)
+  p.locator('.resource-workshop-entry [data-action="resource-workshop"]').click()
+  if not p.locator('[data-workshop-home="true"]').count():
+   p.locator('[data-action="resource-workshop-home"]').first.click()
+  p.locator('#workshop-route').select_option('iteration')
+  assert p.locator('#resource-results .workshop-lesson-card').count()==4
+  p.locator('[data-workshop-id="iteration-sequences"][data-action="resource-workshop-lesson"]').first.click()
+  assert p.locator('[data-workshop-lesson="iteration-sequences"]').count()==1
+  assert p.locator('.workshop-formula-equation svg').count()>=2
+  p.locator('.workshop-lesson-tabs [data-workshop-step="help"]').click()
+  p.locator('[data-workshop-choice="15"]').click()
+  assert "That's right" in p.locator('.workshop-feedback.correct').inner_text()
+  p.locator('[data-action="resource-workshop-checkpoint"][data-workshop-direction="1"]').click()
+  p.locator('[data-workshop-choice="21"]').click()
+  assert "That's right" in p.locator('.workshop-feedback.correct').inner_text()
+  p.locator('[data-action="resource-workshop-home"]').first.click()
+  p.locator('#workshop-route').select_option('iteration')
+  p.locator('[data-workshop-id="iteration-fixed-points"][data-action="resource-workshop-lesson"]').first.click()
+  p.locator('.workshop-lesson-tabs [data-workshop-step="help"]').click()
+  p.locator('[data-workshop-choice="8over9"]').click()
+  assert "That's right" in p.locator('.workshop-feedback.correct').inner_text()
+  p.locator('[data-action="resource-workshop-checkpoint"][data-workshop-direction="1"]').click()
+  p.locator('[data-workshop-choice="cycles"]').click()
+  assert "That's right" in p.locator('.workshop-feedback.correct').inner_text()
+  p.locator('[data-action="resource-workshop-home"]').first.click()
+  p.locator('#workshop-route').select_option('iteration')
+  p.locator('[data-workshop-id="iteration-bisection"][data-action="resource-workshop-lesson"]').first.click()
+  p.locator('.workshop-lesson-tabs [data-workshop-step="help"]').click()
+  p.locator('[data-workshop-choice="left"]').click()
+  assert "That's right" in p.locator('.workshop-feedback.correct').inner_text()
+  p.locator('[data-action="resource-workshop-checkpoint"][data-workshop-direction="1"]').click()
+  p.locator('[data-workshop-choice="new"]').click()
+  assert "That's right" in p.locator('.workshop-feedback.correct').inner_text()
+  p.locator('[data-action="resource-workshop-home"]').first.click()
+  p.locator('#workshop-route').select_option('iteration')
+  p.locator('[data-workshop-id="iteration-newton"][data-action="resource-workshop-lesson"]').first.click()
+  p.locator('.workshop-lesson-tabs [data-workshop-step="help"]').click()
+  p.locator('[data-workshop-choice="seventeen"]').click()
+  assert "That's right" in p.locator('.workshop-feedback.correct').inner_text()
+  p.locator('[data-action="resource-workshop-checkpoint"][data-workshop-direction="1"]').click()
+  p.locator('[data-workshop-choice="division"]').click()
+  assert "That's right" in p.locator('.workshop-feedback.correct').inner_text()
+  p.locator('.workshop-lesson-tabs [data-workshop-step="turn"]').click()
+  p.locator('.workshop-reveal > summary').click()
+  assert p.locator('.workshop-reveal[open]').count()==1
+  assert p.locator('.workshop-native-creator [data-resource-creator="graph"]').count()==1
+  assert overlay(p).evaluate('(e)=>e.scrollWidth<=e.clientWidth+1')
+  overlay(p).screenshot(path=str(OUT/'workshop-batch7-iteration-desktop.png'),animations='disabled')
+  p.locator('[data-action="close-drawer"]').click()
+  assert unchanged_fields(saved(p))==before
+ run('workshop-batch7-iteration-desktop',state(),batch7_iteration_desktop,1440,1000)
  browser.close()
 (OUT/'resources-results.json').write_text(json.dumps(results,indent=2));print(json.dumps(results,indent=2));assert all(r['status']=='passed' for r in results)

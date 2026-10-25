@@ -19,8 +19,8 @@ const snapshot=s=>JSON.stringify({entries:s.entries,planning:s.planning,completi
 const approx=(a,b,eps=1e-9)=>assert(Math.abs(a-b)<eps,String(a)+' differs from '+String(b));
 
 test('workshop: canonical glossary and pilot IDs are unique and never blank',()=>{
- assert.equal(WORKSHOP_DEFINITIONS.length,190);
- assert.equal(WORKSHOP_LESSONS.length,35);
+ assert.equal(WORKSHOP_DEFINITIONS.length,230);
+ assert.equal(WORKSHOP_LESSONS.length,42);
  assert.equal(new Set(WORKSHOP_DEFINITIONS.map(d=>d.id)).size,WORKSHOP_DEFINITIONS.length);
  assert.equal(new Set(WORKSHOP_LESSONS.map(l=>l.id)).size,WORKSHOP_LESSONS.length);
  for(const d of WORKSHOP_DEFINITIONS){
@@ -42,7 +42,7 @@ test('workshop: all sixteen routes map only to real shared definitions and optio
  }
 });
 test('workshop: complete pilot schema supports definitions, full worked methods and standalone practice',()=>{
- const expected=['descriptive','pearson','optimisation','sampling','distributions','two-way-proportions','measurement','spearman','linear-regression','nonlinear-fitting','residual-diagnostics','model-comparison','histograms','quadratic-functions','exponential-logarithms','sinusoidal-functions','derivatives-motion','integrals-accumulation','image-calibration','triangulation','geometric-areas','voronoi-regions','geometry-sensitivity','conditional-probability-tree','discrete-expected-value','simulation-design','binomial-models','normal-models','inference-evidence','finance-compound-growth','finance-loan-repayments','finance-break-even','finance-cashflow','finance-present-value','finance-sensitivity'];
+ const expected=['descriptive','pearson','optimisation','sampling','distributions','two-way-proportions','measurement','spearman','linear-regression','nonlinear-fitting','residual-diagnostics','model-comparison','histograms','quadratic-functions','exponential-logarithms','sinusoidal-functions','derivatives-motion','integrals-accumulation','image-calibration','triangulation','geometric-areas','voronoi-regions','geometry-sensitivity','conditional-probability-tree','discrete-expected-value','simulation-design','binomial-models','normal-models','inference-evidence','finance-compound-growth','finance-loan-repayments','finance-break-even','finance-cashflow','finance-present-value','finance-sensitivity','proof-conjectures','proof-direct-reasoning','proof-induction-patterns','iteration-sequences','iteration-fixed-points','iteration-bisection','iteration-newton'];
  assert.deepEqual(WORKSHOP_LESSONS.map(l=>l.id),expected);
  for(const l of WORKSHOP_LESSONS){
   assert(l.when&&l.avoid&&l.formula&&l.skill&&l.ia,l.id);
@@ -91,7 +91,7 @@ test('workshop: selected method lookup is explicit, never inferred from title or
 test('workshop: browsing all definitions and lessons preserves existing tool library',()=>{
  const s=student(),session=newResourceSession(),before=snapshot(s);
  const tools=resourceDrawer(s,session);
- assert(tools.includes('34 matching guides'));
+ assert(tools.includes('36 matching guides'));
  assert(tools.includes('Maths Workshop'));
  const result=resourceAction(s,session,'resource-workshop',{});
  assert(result.ok&&result.open);
