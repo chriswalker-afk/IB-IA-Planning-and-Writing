@@ -102,7 +102,7 @@ test("a full local JSON backup retains all seven linked figures, writing notes, 
  for(const tool of REPRESENTATION_TOOLS){
   const studio=state[tool.studio],prefix={
    graph:"figure",stat:"stat",table:"table",trace:"trace",
-   voronoi:"voronoi",geometry:"geometry",probability:"probability"
+   voronoi:"voronoi",geometry:"geometry",probability:"probability",distribution:"distribution"
   }[tool.id];
   const id=prefix+"-saved-"+tool.id;
   const draft=JSON.parse(JSON.stringify(studio.draft));
