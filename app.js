@@ -87,6 +87,8 @@ import {exportGeometry} from "./src/diagrams/geometry-export.js";
 import {distributionLayout,distributionBoundaryForPixel,distributionBoundaryNudge} from "./src/diagrams/distribution-layout.js";
 import {setDistributionInverseField,calculateDistributionInverse,applyDistributionInverse} from "./src/diagrams/distribution-inverse-actions.js";
 import {distributionInverseResultHtml} from "./src/diagrams/distribution-inverse-view.js";
+import {startDistributionWhatIf,resetDistributionWhatIf,discardDistributionWhatIf,setDistributionWhatIfField,applyDistributionWhatIf} from "./src/diagrams/distribution-whatif-actions.js";
+import {distributionWhatIfSummaryHtml,distributionWhatIfPreviewHtml} from "./src/diagrams/distribution-whatif-view.js";
 import {renderDistributionGuidance} from "./src/diagrams/distribution-guidance.js";
 import {distributionPreviewHtml,distributionFeedbackHtml,distributionOutputHtml} from "./src/diagrams/distribution-view.js";
 import {setDistributionField,freshDistribution,loadDistribution,saveDistributionDraft,saveAndLinkDistribution} from "./src/diagrams/distribution-actions.js";
@@ -726,6 +728,13 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     if(node&&state.distributionStudio?.open)
       node.innerHTML=distributionInverseResultHtml(state.distributionStudio,e);
   }
+  function refreshDistributionWhatIf(){
+    if(!state.distributionStudio?.open)return;
+    const summary=main.querySelector?.("[data-distribution-whatif-summary]");
+    if(summary)summary.innerHTML=distributionWhatIfSummaryHtml(state.distributionStudio,e);
+    const chart=main.querySelector?.("[data-distribution-whatif-preview]");
+    if(chart)chart.outerHTML=distributionWhatIfPreviewHtml(state.distributionStudio,e);
+  }
   function refreshDistributionPreview(){
     const root=main.querySelector?.("[data-distribution-studio]");
     if(!root||!state.distributionStudio?.open)return;
@@ -742,6 +751,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     const o=root.querySelector("[data-distribution-output]");
     if(o)o.outerHTML=distributionOutputHtml(state.distributionStudio,icon,e);
     refreshDistributionInverseResult();
+    refreshDistributionWhatIf();
   }
   function navigateDistribution(figureId=""){
     rememberMathEditorOrigin();
@@ -2117,6 +2127,29 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         break;
       }
       case "distribution-open":navigateDistribution();break;
+      case "distribution-whatif-start":case "distribution-whatif-reset":{
+        const studio=state.distributionStudio;
+        if(action==="distribution-whatif-start")startDistributionWhatIf(studio);
+        else resetDistributionWhatIf(studio);
+        save();render();
+        const panel=main.querySelector("[data-distribution-whatif-panel]");
+        if(panel)panel.open=true;
+        break;
+      }
+      case "distribution-whatif-discard":{
+        discardDistributionWhatIf(state.distributionStudio);
+        save();render();
+        break;
+      }
+      case "distribution-whatif-apply":{
+        const result=applyDistributionWhatIf(state.distributionStudio);
+        if(!result.ok){toast("Cannot apply alternative",result.error);refreshDistributionWhatIf();break;}
+        save();render();
+        const panel=main.querySelector("[data-distribution-whatif-panel]");
+        if(panel){panel.open=true;panel.querySelector("summary")?.focus({preventScroll:true});}
+        toast("Alternative parameters applied","Review the probability and model assumptions before saving or exporting.");
+        break;
+      }
       case "distribution-inverse-calculate":{
         calculateDistributionInverse(state.distributionStudio);
         save();refreshDistributionInverseResult();
@@ -3382,6 +3415,22 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   });
   document.addEventListener("input",evt=>{
     const target=evt.target;
+    if(target.dataset.distributionWhatifField!==undefined){
+      const key=target.dataset.distributionWhatifField,studio=state.distributionStudio;
+      if(setDistributionWhatIfField(studio,key,target.value)){
+        const wrapper=target.closest(".distribution-whatif-field");
+        const paired=wrapper?.querySelector('[data-distribution-whatif-field="'+key+'"][data-whatif-control="'+
+          (target.dataset.whatifControl==="range"?"value":"range")+'"]');
+        if(paired){
+          if(target.dataset.whatifControl==="range")paired.value=target.value;
+          else if(target.value.trim()!==""&&Number.isFinite(Number(target.value))){
+            const n=Number(target.value);
+            if(n>=Number(paired.min)&&n<=Number(paired.max))paired.value=target.value;
+          }
+        }
+        save();refreshDistributionWhatIf();
+      }return;
+    }
     if(target.dataset.distributionInverseField!==undefined){
       if(setDistributionInverseField(state.distributionStudio,target.dataset.distributionInverseField,target.value)){
         save();refreshDistributionInverseResult();
