@@ -84,7 +84,7 @@ test("C61–C64 old view cases are retired without losing student conclusion wri
 
 test("Pass 2 protects seven generators, retained writing advice, and both assessment cohorts",()=>{
  assert.deepEqual(REPRESENTATION_TOOLS.map(t=>t.id),
-  ["graph","stat","table","trace","voronoi","geometry","probability"]);
+  ["graph","stat","table","trace","voronoi","geometry","distribution","probability"]);
  assert(code("src/ui/planning-views.js").includes("revised2029"));
  assert(code("src/completing/views.js").includes("renderConclusionWorkspace"));
  assert(code("src/essentials/assessment-cohorts.js").includes("revised2029"));
