@@ -3,6 +3,7 @@ import {resourceContext} from './context.js';
 import {newResourceSession,setResourcePreference,normalizeResourceState} from './state.js';
 import {REPRESENTATION_TOOLS} from '../diagrams/representation-registry.js';
 import {PATHWAY_LEARNING,lessonById,definitionById,workshopLessonForEntry} from '../workshop/catalog.js';
+import {DISCOVERY_AREAS,DISCOVERY_TYPES,DISCOVERY_ITEMS} from './discovery.js';
 /** Returns UI intents; never updates an entry, source, approval or mathematical stage. */
 export function resourceAction(state,session,action,data={},parent=''){
  if(!action.startsWith('resource-'))return null;
@@ -80,7 +81,7 @@ export function resourceAction(state,session,action,data={},parent=''){
   return {ok:true,creator};
  }
  if(action==='resource-creator-return')return {ok:true,creatorReturn:true};
- if(action==='resource-guides')return {ok:true,guides:true};
+ if(action==='resource-guides'){session.mode='tools';session.id='';session.discoveryType='guide';session.discoveryLimit=16;return {ok:true,list:true,focus:'results'};}
  if(action==='resource-open'||action==='resource-browse'){
   if(action==='resource-open'&&!resourceById(data.resourceId))return {ok:false,error:'That tutorial is not available.'};
   if(parent!=='resources')Object.assign(session,newResourceSession(),{help,parent:parent==='stuck'?'stuck':''});
@@ -96,9 +97,24 @@ export function resourceAction(state,session,action,data={},parent=''){
   state.resources=normalizeResourceState(state.resources);
   return {ok:true,save:true,render:true};
  }
+ if(action==='resource-discovery-area'){
+  const area=String(data.resourceArea||'');
+  if(area&&!DISCOVERY_AREAS.some(x=>x.id===area))return {ok:false,error:'That help topic is not available.'};
+  if(session.discoveryArea===area)return {ok:true,list:true};
+  session.discoveryArea=area;session.discoveryLimit=16;return {ok:true,list:true};
+ }
+ if(action==='resource-discovery-type'){
+  const type=String(data.resourceType||'');
+  if(!DISCOVERY_TYPES.some(x=>x.id===type))return {ok:false,error:'That resource category is not available.'};
+  session.discoveryType=type;session.discoveryLimit=16;return {ok:true,list:true};
+ }
+ if(action==='resource-discovery-more'){
+  session.discoveryLimit=Math.min(DISCOVERY_ITEMS.length,(session.discoveryLimit||16)+16);
+  return {ok:true,list:true};
+ }
  if(action==='resource-close')return {ok:true,close:true};
  if(action==='resource-list'){session.id='';return {ok:true,open:true};}
- if(action==='resource-clear'){session.query='';session.tool='';session.category='';session.limit=8;return {ok:true,open:true};}
+ if(action==='resource-clear'){session.query='';session.tool='';session.category='';session.limit=8;session.discoveryArea='';session.discoveryType='all';session.discoveryLimit=16;return {ok:true,open:true};}
  if(action==='resource-more'){session.limit=Math.min(RESOURCES.length,session.limit+8);return {ok:true,list:true};}
  if(action==='resource-copy')return {ok:true,copy:true};
  return {ok:false,error:'That tutorial action is not available.'};
@@ -117,6 +133,6 @@ export function resourceFilter(session,key,value){
  // The browser emits change again on blur after input. Do not replace the
  // result button under the pointer and swallow its first click.
  if(session[key]===next)return false;
- session[key]=next;session.limit=8;return true;
+ session[key]=next;session.limit=8;session.discoveryLimit=16;return true;
 }
 export function resourcePreference(state,session,key,value){return setResourcePreference(state,resourceContext(state,{help:session.help}).scope,key,value);}
