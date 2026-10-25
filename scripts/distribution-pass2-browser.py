@@ -71,10 +71,20 @@ def normal(browser,width):
    handle.focus();handle.press("ArrowRight")
    assert float(value(p,"lower"))>65,value(p,"lower")
    before=float(value(p,"lower"))
-   circle=p.locator('[data-distribution-handle="lower"] circle').bounding_box()
+   p.evaluate("""() => {
+    window.__distributionEvents=[];
+    document.addEventListener('pointerdown',e=>window.__distributionEvents.push('down:'+(e.target.closest('[data-distribution-handle]')?.dataset.distributionHandle||e.target.tagName)),true);
+    document.addEventListener('pointermove',e=>{if(e.buttons)window.__distributionEvents.push('move:'+e.clientX)},true);
+   }""")
+   circle_element=p.locator('[data-distribution-handle="lower"] circle')
+   circle_element.scroll_into_view_if_needed()
+   circle_element.hover()
+   circle=circle_element.bounding_box()
    x=circle["x"]+circle["width"]/2;y=circle["y"]+circle["height"]/2
    p.mouse.move(x,y);p.mouse.down();p.mouse.move(x+45,y,steps=6);p.mouse.up()
-   assert float(value(p,"lower"))>before,(value(p,"lower"),before)
+   moved=float(value(p,"lower"))
+   if moved<=before:print("DRAG DEBUG",json.dumps({"before":before,"after":moved,"events":p.evaluate("window.__distributionEvents"),"circle":circle,"viewport":p.viewport_size}),flush=True)
+   assert moved>before,(moved,before)
   else:
    before=float(value(p,"lower"))
    p.locator('[data-action="distribution-nudge"][data-distribution-boundary="lower"][data-distribution-direction="1"]').click()
