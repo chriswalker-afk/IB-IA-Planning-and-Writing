@@ -209,8 +209,7 @@ export function resourceDrawer(state,session){
     '<p>Choose a topic to see relevant mathematics, tutorials and creators together. Browsing does not select a method for your IA.</p></div>'+
    areas+
    '<div id="resource-results">'+resourceResults(session)+'</div>'+
-   '<details class="resource-preferences-context"><summary>Choose a preferred graphing tool or picture task for this stage</summary>'+
-    preferences(x)+'</details>'+
+   preferences(x)+
   '</section><div class="resource-footer">'+close+'</div></div>';
 }
 function isCurrentGuide(state,session,id){return resourceSuggestions(state,{help:session.help}).some(r=>r.id===id);}
