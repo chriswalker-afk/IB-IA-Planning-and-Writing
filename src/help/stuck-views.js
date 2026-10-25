@@ -2,6 +2,7 @@ import {examplePrompt,exampleButton} from "../examples/views.js";
 import {resourcePrompt} from "../resources/views.js";
 import {suggestedTopics,availableTopics,adviceFor,stuckContext} from "./stuck.js";
 import {topicById} from "./stuck-catalog.js";
+import {contextualWorkshopHelp,renderContextualWorkshopHelp} from "./workshop-help.js";
 import {HUB_GROUPS,hubOriginalView,suggestedHubIssues,hubFilteredIssues,hubIssueFor,hubLegacyTopics} from "./hub-issues.js";
 
 /** Filter only the visible hub DOM, not the student project. A filter is never an IA result. */
@@ -61,6 +62,9 @@ export function createStuckViews({getState,e,icon,field}){
    a=hubIssueFor(state,s.selected)||adviceFor(state,s.selected),origin=hubOriginalView(state),
    suggestions=suggestedHubIssues(state),all=hubFilteredIssues(state),legacy=hubLegacyTopics(state);
   const route=origin.route,mode=origin.ui?.checkingMode||"draft";
+  const contextualMaths=renderContextualWorkshopHelp(contextualWorkshopHelp(origin,{
+   spot:origin.helpSpot||"page",issueId:a?.cardId||a?.id||""
+  }),e,{compact:true});
   const workKey=[route,route==="planning"?origin.planning.current:route==="checking"?mode:origin.completion.current,
    route==="completing"?origin.completion.activeEntryIndex:""].join("|");
   if(lastWorkKey&&lastWorkKey!==workKey){
@@ -110,6 +114,7 @@ export function createStuckViews({getState,e,icon,field}){
     '<p class="stuck-caption">These are optional starting points from your recorded stage—not assumptions that something is wrong.</p>'+
     '<div class="stuck-topics">'+(suggestions.length?suggestions.map(item=>pick(item)).join(""):
      suggestedTopics(state).slice(0,3).map(basicPick).join(""))+'</div></section>'+
+    contextualMaths+
     '<details class="stuck-browse"'+(browseOpened||s.browse?' open':'')+'><summary>'+icon("search")+
      ' Find another problem · browse or search</summary>'+
     '<div class="stuck-browse-inner">'+
@@ -154,7 +159,7 @@ export function createStuckViews({getState,e,icon,field}){
   return '<div class="stuck-support stuck-focused">'+
    action("menu","Back to problems")+
    '<h3 class="stuck-heading" tabindex="-1">'+e(cardTitle)+'</h3>'+
-   '<p class="stuck-context">'+e(context.slice(0,220))+'</p>'+specific+
+   '<p class="stuck-context">'+e(context.slice(0,220))+'</p>'+specific+contextualMaths+
    '<details id="stuck-alternatives"'+(s.more?' open':'')+'><summary>That did not help / try another route</summary>'+
     '<p>Choose only what fits your difficulty. A teacher can help with a precise unresolved mathematical question.</p>'+
     '<div class="stuck-topics">'+alternatives.map(item=>legacyIssue?basicPick(item):pick(item,{compact:true})).join("")+'</div>'+
