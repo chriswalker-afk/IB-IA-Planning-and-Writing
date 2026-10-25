@@ -529,7 +529,7 @@ def meaningful_reflection(browser,width,kind):
            "binomial":{"n":"10","p":"0.5"},
            "poisson":{"lambda":"3"},
            "uniform":{"a":"0","b":"10"},
-           "custom":{"customPoints":"0, 0.2\\n1, 0.5\\n2, 0.3"}}
+           "custom":{"customPoints":"0, 0.2\n1, 0.5\n2, 0.3"}}
   for key,v in options[kind].items():field(p,key,v)
   p.locator('[data-distribution-field="mode"]').select_option("left")
   field(p,"lower",{"normal":"70","binomial":"4","poisson":"2","uniform":"4","custom":"1"}[kind])
@@ -541,7 +541,7 @@ def meaningful_reflection(browser,width,kind):
   assert p.locator('[data-distribution-whatif-reflection]').count()==0
   change={"normal":("mu","75"),"binomial":("n","12"),
           "poisson":("lambda","5"),"uniform":("b","12"),
-          "custom":("customPoints","0, 0.1\\n1, 0.5\\n2, 0.4")}
+          "custom":("customPoints","0, 0.1\n1, 0.5\n2, 0.4")}
   k,v=change[kind]
   field_alt=p.locator('[data-distribution-whatif-field="'+k+'"][data-whatif-control="value"]')
   field_alt.fill(v)
