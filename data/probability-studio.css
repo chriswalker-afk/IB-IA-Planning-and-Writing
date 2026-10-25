@@ -103,3 +103,12 @@
  .probability-order-actions .btn{font-size:.76rem}
  .probability-label-nudge-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
+
+/* Distribution Studio: preserve a compact, legible printable figure at every viewport. */
+.distribution-preview{width:100%;min-width:0;overflow:hidden;border:1px solid #d9e6eb;border-radius:10px;background:#fff;margin:12px 0}
+.distribution-preview svg{display:block;width:100%;height:auto;max-width:100%;background:#fff}
+[data-distribution-studio] .probability-workspace{align-items:start}
+[data-distribution-studio] .probability-quality{overflow-wrap:anywhere}
+[data-distribution-studio] .probability-quality ul{margin:9px 0 9px 20px}
+[data-distribution-studio] .probability-main{min-width:0;overflow:hidden}
+@media(max-width:760px){[data-distribution-studio] .probability-workspace{grid-template-columns:minmax(0,1fr)}[data-distribution-studio] .probability-controls{position:static;max-height:none;overflow:visible}}
