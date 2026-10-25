@@ -84,6 +84,7 @@ import {renderGeometrySvg,geometryLayout} from "./src/diagrams/geometry-render.j
 import {geometryPreviewHtml,geometryQualityHtml,geometryOutputHtml} from "./src/diagrams/geometry-view.js";
 import {setGeometryField,setGeometryVertex,geometryTemplate,geometryAddVertex,geometryRemoveVertex,geometryFresh,loadGeometry,saveGeometryDraft,saveAndLinkGeometry,importGeometryFromTrace, geometryAddAuxPoint,geometryRemoveAuxPoint,setGeometryAuxPoint,geometryAddGuide,geometryRemoveGuide,setGeometryGuide,moveGeometryAuxPoint} from "./src/diagrams/geometry-actions.js";
 import {exportGeometry} from "./src/diagrams/geometry-export.js";
+import {distributionLayout,distributionBoundaryForPixel,distributionBoundaryNudge} from "./src/diagrams/distribution-layout.js";
 import {distributionPreviewHtml,distributionFeedbackHtml,distributionOutputHtml} from "./src/diagrams/distribution-view.js";
 import {setDistributionField,freshDistribution,loadDistribution,saveDistributionDraft,saveAndLinkDistribution} from "./src/diagrams/distribution-actions.js";
 import {exportDistribution} from "./src/diagrams/distribution-export.js";
@@ -721,7 +722,8 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     const root=main.querySelector?.("[data-distribution-studio]");
     if(!root||!state.distributionStudio?.open)return;
     const p=root.querySelector("[data-distribution-preview]");
-    if(p)p.outerHTML=distributionPreviewHtml(state.distributionStudio);
+    if(p){const scroll=p.scrollLeft;p.outerHTML=distributionPreviewHtml(state.distributionStudio);
+      root.querySelector("[data-distribution-preview]").scrollLeft=scroll;}
     const f=root.querySelector("[data-distribution-feedback]");
     if(f)f.outerHTML=distributionFeedbackHtml(state.distributionStudio,e);
     const o=root.querySelector("[data-distribution-output]");
@@ -2101,6 +2103,29 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         break;
       }
       case "distribution-open":navigateDistribution();break;
+      case "distribution-preview-fit":case "distribution-preview-detail":{
+        const zoom=action==="distribution-preview-detail",studio=state.distributionStudio;
+        studio.zoomed=zoom;save();
+        const root=main.querySelector("[data-distribution-studio]"),preview=root?.querySelector("[data-distribution-preview]");
+        if(preview){
+          preview.classList.toggle("distribution-preview-detail",zoom);
+          preview.scrollLeft=zoom?(preview.scrollWidth-preview.clientWidth)/2:0;
+        }
+        root?.querySelectorAll('[data-action="distribution-preview-fit"],[data-action="distribution-preview-detail"]')
+          .forEach(button=>button.setAttribute("aria-pressed",String(button.dataset.action===action)));
+        break;
+      }
+      case "distribution-nudge":{
+        const role=el.dataset.distributionBoundary,direction=Number(el.dataset.distributionDirection);
+        const value=distributionBoundaryNudge(state.distributionStudio.draft,role,direction);
+        if(value===null){toast("Enter valid parameters and event boundaries first.");break;}
+        if(setDistributionField(state.distributionStudio,role,String(value))){
+          const input=main.querySelector('[data-distribution-field="'+role+'"]');
+          if(input)input.value=String(value);
+          save();refreshDistributionPreview();
+        }
+        break;
+      }
       case "distribution-new":{
         if(state.distributionStudio.draft.edited&&!window.confirm("Start another distribution? Save the current figure first if needed."))break;
         freshDistribution(state.distributionStudio);save();render();break;
@@ -3209,6 +3234,60 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     if(!voronoiPointer||evt.pointerId!==voronoiPointer.id)return;
     const before=voronoiPointer.before;voronoiPointer=null;
     applyVoronoiFrame(state.voronoiStudio.draft,before);redrawVoronoiAtScroll();
+  });
+  let distributionPointer=null;
+  function applyDistributionBoundary(role,value){
+    if(value===null||!state.distributionStudio?.open)return false;
+    const draft=state.distributionStudio.draft;
+    if(String(draft[role])===String(value))return false;
+    if(!setDistributionField(state.distributionStudio,role,String(value)))return false;
+    const field=main.querySelector('[data-distribution-field="'+role+'"]');
+    if(field)field.value=String(value);
+    refreshDistributionPreview();
+    return true;
+  }
+  document.addEventListener("pointerdown",evt=>{
+    const handle=evt.target.closest?.("[data-distribution-handle]");
+    if(!handle||!state.distributionStudio?.open||evt.button>0)return;
+    const svg=handle.closest("[data-distribution-svg]"),rect=svg?.getBoundingClientRect();
+    if(!rect?.width)return;
+    distributionPointer={id:evt.pointerId,role:handle.dataset.distributionHandle,
+      left:rect.left,width:rect.width,startX:evt.clientX,changed:false};
+    evt.preventDefault();
+  });
+  document.addEventListener("pointermove",evt=>{
+    const session=distributionPointer;
+    if(!session||evt.pointerId!==session.id||!state.distributionStudio?.open)return;
+    if(Math.abs(evt.clientX-session.startX)<2&&!session.changed)return;
+    const layout=distributionLayout(state.distributionStudio.draft);
+    const pixelX=(evt.clientX-session.left)/session.width*layout.width;
+    const next=distributionBoundaryForPixel(state.distributionStudio.draft,session.role,pixelX);
+    if(applyDistributionBoundary(session.role,next))session.changed=true;
+    evt.preventDefault();
+  });
+  const finishDistributionPointer=evt=>{
+    if(!distributionPointer||evt.pointerId!==distributionPointer.id)return;
+    const changed=distributionPointer.changed;distributionPointer=null;
+    if(changed)save();
+  };
+  document.addEventListener("pointerup",finishDistributionPointer);
+  document.addEventListener("pointercancel",finishDistributionPointer);
+  document.addEventListener("keydown",evt=>{
+    const handle=evt.target.closest?.("[data-distribution-handle]");
+    if(!handle||!state.distributionStudio?.open)return;
+    if(!["ArrowLeft","ArrowRight","Home","End"].includes(evt.key))return;
+    evt.preventDefault();
+    const role=handle.dataset.distributionHandle,draft=state.distributionStudio.draft;
+    const direction=evt.key==="ArrowRight"?1:-1;
+    let next;
+    if(evt.key==="Home"||evt.key==="End"){
+      const layout=distributionLayout(draft);
+      next=distributionBoundaryForPixel(draft,role,
+        evt.key==="Home"?layout.plot.left:layout.plot.right);
+    }else next=distributionBoundaryNudge(draft,role,direction*(evt.shiftKey?10:1));
+    if(applyDistributionBoundary(role,next)){
+      save();main.querySelector('[data-distribution-handle="'+role+'"]')?.focus?.({preventScroll:true});
+    }
   });
   document.addEventListener("click",evt=>{
     if(!guidePopinHost.hidden&&!evt.target.closest?.("#writerGuidePopinLayer,[data-action='writer-guide-open']"))closeGuidePopin(false);
