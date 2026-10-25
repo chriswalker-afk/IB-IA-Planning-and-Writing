@@ -23,7 +23,8 @@ export const INSIGHT_FAMILIES=Object.freeze({
  method:{label:'My mathematical choice',icon:'compass',verb:'Why I chose or considered an approach'},
  direction:{label:'My next question',icon:'git-branch',verb:'A possible direction grounded in earlier mathematics'},
  reflection:{label:'My reflections',icon:'lightbulb',verb:'Something to consider later'},
- learning:{label:'My mathematical learning',icon:'book',verb:'Mathematics independently understood'}
+ learning:{label:'My mathematical learning',icon:'book',verb:'Mathematics independently understood'},
+ figure:{label:'My linked mathematical figure',icon:'chart',verb:'A saved, editable model figure explicitly linked to a mathematical stage, not a confirmed result'}
 });
 const item=(type,id,title,value,where,go,extras={})=>({
  type,id,title,value:String(value).trim(),where,go,...extras
@@ -185,6 +186,30 @@ export function insightItems(s){
    'IA Studio · Limitation and consequence',index>=0?{type:'entry',index}:{type:'completion',node:x.stage||'C20'},
    {usage:'Mathematical consequence: '+short(x.consequence,250),entryId:x.entryId||'',consequence:x.consequence}));
  }
+ // Expose only figures explicitly linked to a mathematical stage.
+ // Their source remains the original editable figure record; this read-only
+ // Spark does not claim a completed calculation, verified model or IA grade.
+ for(const figure of s?.distributionStudio?.figures||[]){
+  const linked=math.find(x=>x.distributionFigureId===figure.id||
+   x.figureRefs?.includes("distribution:"+figure.id));
+  if(!linked)continue;
+  const index=math.indexOf(linked),d=figure.draft||{};
+  const kind=d.kind==="binomial"?"Binomial":"Normal";
+  const title=short(d.title||kind+" probability model",110),variable=short(d.symbol||"X",8);
+  const source=d.sourceKind==="secondary"?"Published parameters (check original citation)":
+   d.sourceKind==="primary"?"Estimated from own data (verify sample and method)":
+   d.sourceKind==="theoretical"?"Assumed theoretical parameters":"Parameter source unconfirmed";
+  out.push(item('figure','figure:distribution:'+figure.id,
+   'Linked '+kind.toLowerCase()+' model · '+title,variable+' · '+title,
+   'IA Studio · Saved distribution figure',{type:'entry',index},{
+    entryId:linked.id,linked:[linked.id],needsReview:linked.reviewNeeded==="yes",planned:!done(linked),
+    details:detailRows([
+     ['Random variable',variable],['Model',kind+' distribution'],
+     ['Parameter origin',source],['Event mode',d.mode||'none']
+    ]),
+    usage:'An editable model figure is explicitly linked to this stage, but its assumptions, probability and relevance still require student interpretation.'
+   }));
+ }
  return out; // Every saved spark remains discoverable; visible highlights are capped separately.
 }
 export function insightForCurrent(s,node){
@@ -195,6 +220,7 @@ export function insightForCurrent(s,node){
  if(node==='N01V')return compact(['aim','working-title']);
  if(/^N(?:02|03|04|05|06)/.test(node))return compact(['aim','motivation','working-title']).slice(0,2);
  const result=active?.fromEntryId?all.filter(x=>x.id==='result:'+active.fromEntryId):[];
+ const linkedFigure=active?.distributionFigureId?all.filter(x=>x.id==='figure:distribution:'+active.distributionFigureId):[];
  const related=kind=>all.filter(x=>x.id.startsWith(kind+':')&&active&&(
   kind==='accuracy'?linkedAccuracy(s,active).some(a=>'accuracy:'+a.id===x.id):
   linkedSources(s,active).some(a=>'source:'+a.id===x.id)));
@@ -214,9 +240,9 @@ export function insightForCurrent(s,node){
   const choose=items=>[...new Map(items.filter(Boolean).map(x=>[x.id,x])).values()].slice(0,3);
   if(node==='C30')return choose(compact(['result:'+activeId,'method:'+activeId,'aim']));
   if(['C32','C33'].includes(node))
-   return choose([...compact(['method:'+activeId,prior]),...refs,...compact(['aim'])]);
+   return choose([...linkedFigure,...compact(['method:'+activeId,prior]),...refs,...compact(['aim'])]);
   if(node==='C34A')
-   return choose([...compact(['result:'+activeId]),...refs,...compact(['limitation-note:'+activeId,'aim'])]);
+   return choose([...compact(['result:'+activeId]),...linkedFigure,...refs,...compact(['limitation-note:'+activeId,'aim'])]);
   if(node==='C34B')return choose(compact(['result:'+activeId,'limitation-note:'+activeId,'aim']));
   if(['C40','C50','C40T','C40L'].includes(node))
    return choose([...compact([prior,'method:'+activeId]),...refs,...compact(['aim'])]);
@@ -245,7 +271,7 @@ export function insightForCurrent(s,node){
   return standard.slice(0,3);
  }
  if(['C32','C33','C34','C34A','C40','C50','C40T','C40L','C35H','C35B','C35P'].includes(node)){
-  const contextual=[...result,...related('accuracy'),...related('source')];
+  const contextual=[...linkedFigure,...result,...related('accuracy'),...related('source')];
   if(['C34','C34A','C40','C50'].includes(node)&&!related('accuracy').length&&contextual.length<2)
    contextual.push(...all.filter(x=>x.id.startsWith('planned-accuracy:')).slice(0,1));
   if(['C35H','C35B','C35P'].includes(node)&&latestResult)contextual.push(latestResult);
@@ -357,6 +383,11 @@ export function insightMeaning(s,node,x){
   'This is your recorded justification for a mathematical choice. Check it against the earlier finding and your aim.';
  if(x.type==='direction')return 'You recorded this possible question and its reason. It is not completed mathematics: develop it, revise it or conclude instead.';
  if(x.id.startsWith('limitation-note:'))return 'This is your own note about a limitation. Explain how it restricts the mathematical conclusion, rather than treating it as independently verified.';
+ if(x.type==='figure'){
+  return x.planned?
+   'This editable model figure is explicitly linked to your selected stage, but no completed mathematical result is recorded. State the assumptions and justify the selected probability before interpreting it.':
+   'This figure is linked to your recorded mathematics. Check that your IA explains the variable, probability event, parameter source, model conditions and limitations.';
+ }
  if(x.type==='learning'){
   return 'You recorded independently developed understanding of this mathematical method. If it lies outside your course, explain the mathematics accurately in your own words; familiar syllabus techniques normally just need clear use.';
  }
@@ -458,7 +489,7 @@ export function featuredSparkItems(s,node){
   id('aim');if(active)id('method:'+active.id);
   id('planned-maths');id('investigative-route');
  }
- else if(node==='C31'){id('planned-maths');id('investigative-route');id('aim');}
+ else if(node==='C31'){if(active?.distributionFigureId)id('figure:distribution:'+active.distributionFigureId);id('planned-maths');id('investigative-route');id('aim');}
  else if(['C32','C33','C34','C34A','C34B','C35','C35H','C35B','C35P','C40','C50','C40T','C40L'].includes(node)){
   const focus=entries(s).find(x=>x.id===s?.completion?.nextFromEntryId&&done(x))||
    (done(active)?active:entries(s).filter(done).at(-1));
