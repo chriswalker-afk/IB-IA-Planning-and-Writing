@@ -1402,6 +1402,56 @@ export const RESOURCES = [
     "videos": [],
     "snippets": [],
     "related": []
+  },
+  {
+    "id": "finance-model-sheet",
+    "title": "Build and check a financial scenario in Google Sheets",
+    "category": "Financial models",
+    "tool": "sheets",
+    "when": "When comparing justified compound growth, sales profit, cash flows, discounted values or financial sensitivity scenarios.",
+    "steps": [
+      "Make a separate practice or working-copy sheet. Label each input with meaning, units, time period and the original source; keep assumed teaching values distinct from real evidence.",
+      "Create an input block for starting amount, rate type and period, price, cost, quantity or cash flows as relevant. Write one short mathematical model alongside the sheet before using functions.",
+      "For a quoted nominal annual rate compounded monthly, use the monthly rate divided by 12 only when that convention is explicitly given. For example =1200*(1+6%/12)^12. Do not treat an effective annual rate as nominal.",
+      "For a project with cash paid now and year-end receipts, enter =-1000+NPV(10%,600,600). Sheets NPV() discounts its first cash-flow argument by one period, so add time-zero cash separately.",
+      "Copy the model for clearly named scenarios or build a small table of input changes. Check formula references, signs, dates, units, feasible ranges and the effect of simultaneous assumptions.",
+      "Retain a short, labelled calculation or diagram and the explanation of why inputs are reasonable in your IA. Keep the full spreadsheet as supporting working rather than pasting many routine rows."
+    ],
+    "check": "Can you explain the mathematical formula, the sign and timing of each amount, and what decision would change if a chosen input changes? Software does not validate your assumptions.",
+    "after": "Interpret the numerical result against the actual aim, including at least one consequential limitation. These illustrative amounts are not a prediction or real market offer.",
+    "sources": [
+      {"publisher":"Google Docs Editors Help","url":"https://support.google.com/docs/answer/46977?hl=en","title":"Add formulas and functions in Sheets","checkedAt":"2026-10-25","verification":"Official Google Sheets help; usage examples checked"},
+      {"publisher":"Google Docs Editors Help","url":"https://support.google.com/docs/answer/3093184?hl=en","title":"NPV function","checkedAt":"2026-10-25","verification":"Official function syntax and time-period convention checked"},
+      {"publisher":"Google Docs Editors Help","url":"https://support.google.com/docs/table/25273?hl=en","title":"Google Sheets function list","checkedAt":"2026-10-25","verification":"Official function list checked"}
+    ],
+    "videos": [],
+    "snippets": [["Fictional compound example","=1200*(1+6%/12)^12"],["Time-zero cash outflow plus future receipts","=-1000+NPV(10%,600,600)"]],
+    "related": ["finance-loan-sheet","reporting-precision"]
+  },
+  {
+    "id": "finance-loan-sheet",
+    "title": "Create and verify a loan repayment table in Sheets",
+    "category": "Financial models",
+    "tool": "sheets",
+    "when": "When a constant-periodic-rate loan with equal end-of-period payments is genuinely suitable for the investigation.",
+    "steps": [
+      "Record loan principal, interest rate PER PAYMENT PERIOD, number of payments, payment timing, fees and any known changes. Convert a nominal annual rate to periods only when the quotation defines that convention.",
+      "Calculate a positive scheduled end-of-period payment using =-PMT(1%,12,1200). For a positive loan present value, Sheets gives a negative signed cash flow, so the minus sign displays the amount paid.",
+      "Create columns period, opening balance, periodic interest, payment, principal repaid, and closing balance. For each row, interest = opening balance * periodic rate; principal repaid = payment - interest.",
+      "For payments at period end, closing balance = opening balance + interest - payment. Use that new closing balance as the next period's opening balance, never the original principal again.",
+      "Check whether the idealised final balance is approximately zero using unrounded calculations. Displaying cents can leave a small residual; an actual lender may adjust the last payment.",
+      "Compare total payments with the initial principal and identify fees or early-payment changes separately. Do not treat a nominal model without fees as a quoted real APR or an actual repayment schedule."
+    ],
+    "check": "Does month one give interest = opening balance times periodic rate, principal repaid = payment minus interest, and next balance = old balance plus interest minus payment? Verify rate and payment timing.",
+    "after": "Show a few mathematically informative rows and a clear explanation of total costs. An affordability judgement needs cash-flow timing and source-verified terms, not only the payment amount.",
+    "sources": [
+      {"publisher":"Google Docs Editors Help","url":"https://support.google.com/docs/answer/3093185?hl=en","title":"PMT function","checkedAt":"2026-10-25","verification":"Official rate, period, present-value and payment-timing syntax checked"},
+      {"publisher":"Google Docs Editors Help","url":"https://support.google.com/docs/answer/3093175?hl=en","title":"IPMT function","checkedAt":"2026-10-25","verification":"Official interest-component syntax checked"},
+      {"publisher":"Google Docs Editors Help","url":"https://support.google.com/docs/answer/3093187?hl=en","title":"PPMT function","checkedAt":"2026-10-25","verification":"Official principal-component syntax checked"}
+    ],
+    "videos": [],
+    "snippets": [["Fictional level-payment check","=-PMT(1%,12,1200)"],["Loan recurrence (model, not an actual offer)","=opening_balance*(1+periodic_rate)-payment"]],
+    "related": ["finance-model-sheet","reporting-precision"]
   }
 ];
 

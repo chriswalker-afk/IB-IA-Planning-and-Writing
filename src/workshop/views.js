@@ -12,7 +12,7 @@ const action=(name,label,attrs="",primary=false)=>
  '<button type="button" class="btn '+(primary?'btn-primary':'btn-secondary')+'" data-action="resource-workshop-'+name+'" '+attrs+'>'+e(label)+'</button>';
 const safe=(value,n=120)=>String(value||"").slice(0,n);
 const routeIds=new Set(INVESTIGATIVE_ROUTES.map(r=>r.id));
-const subjectLabels={Data:"Data",Models:"Models",Calculus:"Calculus",Decisions:"Decisions",Geometry:"Geometry",Probability:"Probability",Reasoning:"Reasoning"};
+const subjectLabels={Data:"Data",Models:"Models",Calculus:"Calculus",Decisions:"Decisions",Geometry:"Geometry",Finance:"Finance",Probability:"Probability",Reasoning:"Reasoning"};
 const filtered=(session)=>{
  const routeId=routeIds.has(session.workshopRoute)?session.workshopRoute:"";
  const scope=routeId?PATHWAY_LEARNING[routeId]:null;
