@@ -162,7 +162,8 @@ test("all seven registered mathematical generators offer one actionable tool-spe
   const help=studioHelpFor(s,"page");
   assert(help,tool.id);
   assert(help.title.includes(tool.title),tool.id);
-  assert.equal(help.choices[0].id,"tool-"+tool.id,tool.id);
+  assert.equal(help.choices[0].id,tool.id==="distribution"?"distribution-event":"tool-"+tool.id,tool.id);
+  if(tool.id==="distribution")assert(help.choices.some(x=>x.id==="distribution-assumptions"));
   assert(help.choices[0].action.length>65,tool.id);
  }
 });
