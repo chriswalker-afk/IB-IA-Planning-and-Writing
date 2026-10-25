@@ -46,16 +46,21 @@ export function renderDistributionStudio(state,icon,e){
  '<h2>Illustrate a probability model</h2><p>Choose a theoretical distribution and shade an optional event. Only the title, mathematical graph and chosen labels appear in your exported IA figure.</p></div>'+
  '<div class="probability-workspace"><div class="probability-controls" data-representation-step="create">'+
  '<h3>1. Figure and model</h3>'+
- select("kind","Distribution",d.kind,[["normal","Normal"],["binomial","Binomial"]],e)+
+ select("kind","Distribution",d.kind,[["normal","Normal"],["binomial","Binomial"],["poisson","Poisson"],["uniform","Continuous uniform"],["custom","Custom discrete"]],e)+
  field("title","Figure title (required)",d.title,e)+
  field("symbol","Random variable letter (e.g. X, T or Y)",d.symbol,e)+
  field("unit","Units (optional)",d.unit,e)+
  (d.kind==="normal"?field("mu","Mean (μ)",d.mu,e)+field("sigma","Standard deviation (σ)",d.sigma,e):
- field("n","Number of trials (n)",d.n,e)+field("p","Probability of success (p)",d.p,e))+
+ d.kind==="binomial"?field("n","Number of trials (n)",d.n,e)+field("p","Probability of success (p)",d.p,e):
+ d.kind==="poisson"?field("lambda","Mean event count per interval (λ)",d.lambda,e):
+ d.kind==="uniform"?field("a","Lower limit (a)",d.a,e)+field("b","Upper limit (b)",d.b,e):
+ '<label class="probability-field distribution-outcome-entry"><span>Outcome, probability — one pair per line</span>'+
+ '<textarea rows="6" spellcheck="false" data-distribution-field="customPoints" aria-describedby="distribution-outcomes-tip">'+e(d.customPoints)+'</textarea>'+
+ '<small id="distribution-outcomes-tip">For example: −2, 0.2 then 0, 0.5 then 3, 0.3. Use a comma or tab between each numeric outcome and its probability. No automatic normalisation.</small></label>')+
  '<h3>2. Probability to highlight</h3>'+
  select("mode","Highlight",d.mode,[["none","No probability"],["left","At most / left tail (≤)"],
  ["right","At least / right tail (≥)"],["between","Between two inclusive boundaries"],
- ["outside","Outside two boundaries"]].concat(d.kind==="binomial"?[["exact","Exact value (=)"]]:[]),e)+
+ ["outside","Outside two boundaries"]].concat(["binomial","poisson","custom"].includes(d.kind)?[["exact","Exact outcome (=)"]]:[]),e)+
  (d.mode!=="none"?boundaryField("lower",["between","outside"].includes(d.mode)?"Lower boundary":"Value / boundary",d.lower,e):"")+
  (["between","outside"].includes(d.mode)?boundaryField("upper","Upper boundary",d.upper,e):"")+
  '<details class="ia-figure-presentation-settings"><summary>IA figure appearance</summary>'+
@@ -63,11 +68,11 @@ export function renderDistributionStudio(state,icon,e){
  select("printStyle","Printing",d.printStyle,[["colour","Colour"],["mono","Monochrome"]],e)+
  toggle("showProbability","Print probability statement inside figure",d.showProbability)+
  toggle("showParameters","Show model parameters in figure",d.showParameters)+
- (d.kind==="normal"?toggle("showMean","Show mean marker",d.showMean):"")+
+ (["normal","uniform"].includes(d.kind)?toggle("showMean","Show mean marker",d.showMean):"")+
  field("figureNumber","Figure number (optional)",d.figureNumber,e)+
  field("caption","Figure caption (optional)",d.caption,e)+
  '</details><h3>3. Model provenance</h3>'+
- select("sourceKind","Where did your parameters come from?",d.sourceKind,
+ select("sourceKind","Where did your model parameters or probabilities come from?",d.sourceKind,
  [["theoretical","Assumed theoretical model"],["primary","Estimated from my data"],
  ["secondary","Published data"],["unsure","Not yet confirmed"]],e)+
  (d.sourceKind==="secondary"?field("sourceCredit","Source reference",d.sourceCredit,e):"")+
@@ -78,7 +83,7 @@ export function renderDistributionStudio(state,icon,e){
  '<button type="button" class="btn btn-secondary btn-sm" data-action="distribution-preview-fit" aria-pressed="'+(!s.zoomed)+'">Fit figure</button>'+
  '<button type="button" class="btn btn-secondary btn-sm" data-action="distribution-preview-detail" aria-pressed="'+(!!s.zoomed)+'">Enlarge to check labels</button></div></div>'+
  distributionPreviewHtml(s)+
- '<p class="probability-canvas-note">Drag a marker or use its arrow keys to change a boundary. Use the numeric fields above for exact values (or −/+ on a phone). Handles and this help text never appear in the exported IA figure.</p>'+
+ '<p class="probability-canvas-note">Drag a marker or use arrow keys to change a boundary. For exact values, type above (or use −/+ on a phone). Custom discrete markers snap to entered outcomes. Editing controls and help are never printed in the exported IA figure.</p>'+
  distributionFeedbackHtml(s,e)+renderDistributionGuidance(state,icon,e)+'<div data-representation-step="use">'+distributionOutputHtml(s,icon,e)+'</div>'+
  (s.figures.length?'<details class="probability-saved"><summary>Saved distributions ('+s.figures.length+')</summary>'+
  s.figures.map(f=>'<div class="probability-saved-row"><strong>'+e(f.draft.title||"Distribution")+'</strong>'+
