@@ -1,3 +1,4 @@
+import {contextualWorkshopHelp,renderContextualWorkshopHelp} from "./workshop-help.js";
 /**
  * Pass 2: student-selectable, blocker-first Planning recovery paths.
  * No automatic diagnosis, rewriting of IA prose, assessment judgement or
@@ -304,6 +305,7 @@ export function createPlanningHelpController({getState,escapeHtml,onHub,onNaviga
    if(choice){selected=Number(choice.dataset.stuckContextChoice)||0;render();dialog.querySelector("#stuckContextAction")?.focus({preventScroll:true});return;}
    if(event.target.closest("[data-stuck-context-close]")){close();return;}
    if(event.target.closest("[data-stuck-context-hub]")){const trigger=origin;close(false);onHub?.(trigger);return;}
+   if(event.target.closest("[data-action='resource-workshop']")){close(false);return;}
    if(event.target.closest("[data-stuck-context-go]")){
     const picked=active?.choices[selected];if(!picked)return;
     const target=picked.targetNode,buttonOrigin=origin;
@@ -341,6 +343,7 @@ export function createPlanningHelpController({getState,escapeHtml,onHub,onNaviga
    (card.id==="consent-waiting"?'<p class="stuck-context-boundary" role="note">'+e(card.boundary)+'</p>':'')+
    '<details><summary>If I am still stuck</summary><p>'+e(card.fallback)+'</p>'+
    '<p class="stuck-context-boundary">'+e(card.boundary)+'</p></details></section>'+
+   renderContextualWorkshopHelp(contextualWorkshopHelp(getState(),{spot:active.spot,issueId:card.id}),e,{compact:true})+
    '<div class="stuck-context-actions guidance-surface-actions"><button type="button" class="btn btn-primary" data-stuck-context-go>'+
      e(card.targetNode?card.targetLabel||"Go to this Planning step":card.focusField?"Return to that question":"Return to my task")+'</button>'+
    '<button type="button" class="btn btn-quiet" data-stuck-context-hub>More problems in I am stuck</button>'+
