@@ -22,12 +22,15 @@ export function distributionPreviewHtml(studio){
 }
 export function distributionFeedbackHtml(studio,e){
  const q=analyzeDistribution(studio.draft),layout=distributionLayout(q);
- const clipped=q.ready&&q.draft.kind==="normal"&&[q.lower,q.upper].some(v=>v!==null&&
-  (layout.x(v)<layout.plot.left||layout.x(v)>layout.plot.right));
+ const clipped=q.ready&&q.draft.mode!=="none"&&[q.lower,q.upper].some(v=>v!==null&&
+  (layout.x(v)<layout.plot.left-1||layout.x(v)>layout.plot.right+1));
+ const crowded=q.ready&&q.draft.kind==="custom"&&q.points.length>1&&
+  q.points.slice(1).some((p,i)=>Math.abs(layout.x(p.x)-layout.x(q.points[i].x))<6);
  return '<section class="probability-quality" data-distribution-feedback aria-live="polite">'+
  (q.issues.length?'<strong>Before saving or exporting</strong><ul>'+q.issues.map(t=>'<li>'+e(t)+'</li>').join("")+'</ul>':
   '<strong>Figure ready for export</strong>'+(q.statement?'<p>'+e(q.statement)+'</p>':""))+
- (clipped?'<p class="distribution-caution"><strong>Boundary outside the displayed window:</strong> the probability uses the exact input, but this boundary cannot be seen on the plot. Consider whether a figure helps at this scale.</p>':"")+
+ (clipped?'<p class="distribution-caution"><strong>Boundary outside the displayed window:</strong> the model probability still uses the full event, but this boundary is not visible. Consider whether the current figure explains the event clearly enough.</p>':"")+
+ (crowded?'<p class="distribution-caution"><strong>Very close numerical outcomes:</strong> some custom bars may overlap or become difficult to distinguish at this size. Consider a compact probability table instead.</p>':"")+
  '<details><summary>Model assumptions and interpretation</summary><ul>'+q.notes.map(t=>'<li>'+e(t)+'</li>').join("")+'</ul></details></section>';
 }
 export function distributionOutputHtml(studio,icon,e){
