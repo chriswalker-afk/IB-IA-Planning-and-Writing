@@ -571,7 +571,9 @@ def meaningful_reflection(browser,width,kind):
   reflection=p.locator('[data-distribution-whatif-reflection]')
   assert reflection.get_attribute("open") is not None
   assert reflection.locator('[data-reflection-prompt="meaning"]').count()==1
-  assert "target" in reflection.locator('[data-reflection-prompt="meaning"]').inner_text().lower() or "coverage" in reflection.inner_text().lower()
+  interpretation=reflection.locator('[data-reflection-prompt="meaning"]').inner_text().lower()
+  assert ("target" in interpretation or "coverage" in interpretation or
+          "integer cut-off stayed the same" in interpretation),(kind,interpretation)
   target=p.locator('[data-distribution-whatif-option="targetProbability"]')
   target.fill("not-a-probability")
   assert reflection.count()==0
