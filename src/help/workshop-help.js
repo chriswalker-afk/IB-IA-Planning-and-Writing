@@ -37,7 +37,7 @@ const methodRoute=Object.freeze({
  "finance-compound":"finance","finance-loan":"finance","finance-break-even":"finance","finance-cashflow":"finance",
  proof:"proof",induction:"proof",iteration:"iteration",recurrence:"iteration",bisection:"iteration","newton-raphson":"iteration"
 });
-const noSupportIssue=/^(?:consent-waiting|permission|no-data|source-real|source-kind|published-origin|published-comparison|data-not-verifiable|availability|restore|overwhelmed|feedback|teacher-specific|timeline-stuck|course-choice|intro-no-start|intro-unsupported|conclusion-|mla-|writing|story|motivation-|aim-|interest-)/;
+const noSupportIssue=/^(?:consent-waiting|permission|no-data|source-real|result-needs-review|source-kind|published-origin|published-comparison|data-not-verifiable|availability|restore|overwhelmed|feedback|teacher-specific|timeline-stuck|course-choice|intro-no-start|intro-unsupported|conclusion-|mla-|writing|story|motivation-|aim-|interest-)/;
 const samplingIssue=/(?:sample-choice|population-frame|sample-relevance|sampling|partial|bias)/;
 const proofIssue=/(?:proof|theory-first|counterexample)/;
 const focusForSpot=(spot,node)=>{
@@ -59,6 +59,7 @@ export const workshopHelpFocus=(spot="",issue="",node="")=>{
  if(/(?:precision|accuracy|resolution|scale)/.test(id))return "precision";
  if(/(?:meaning|interpret|outcome|pmcc-curved|unexpected)/.test(id))return "interpret";
  if(/(?:residual|next-|stages-dont-link|method-alternative)/.test(id))return "follow";
+ if(id==="not-yet-result")return "calculate";
  if(/(?:real-calculation|tool-|technology-input|table-long|show-axis)/.test(id))return "calculate";
  if(/(?:first-purpose|first-choice|method-conditions|out-of-course|method-choice|course-depth)/.test(id))return "start";
  return focusForSpot(spot,node);
