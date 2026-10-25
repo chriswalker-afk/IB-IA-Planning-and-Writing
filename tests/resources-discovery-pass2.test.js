@@ -18,7 +18,7 @@ test('unified discovery covers every current item exactly once and changes no so
  assert.equal(RESOURCES.length,36);
  assert.equal(WORKSHOP_DEFINITIONS.length,240);
  assert.equal(WORKSHOP_LESSONS.length,42);
- assert.equal(REPRESENTATION_TOOLS.length,7);
+ assert.equal(REPRESENTATION_TOOLS.length,8);
  assert.equal(new Set(DISCOVERY_ITEMS.map(x=>x.type+':'+x.id)).size,DISCOVERY_ITEMS.length);
  assert(DISCOVERY_ITEMS.every(x=>Object.isFrozen(x)&&x.title&&x.description&&x.area));
  assert.equal(DISCOVERY_AREAS.length,8);
