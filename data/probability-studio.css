@@ -353,3 +353,86 @@
 [data-distribution-studio] .distribution-whatif-sensitivity small{
  display:block;margin:4px 0;font-size:.75rem;line-height:1.5;color:var(--text-muted,#536c78)
 }
+
+/* Pass 5.4.2: one comparison question, with an optional inverse-target editor. */
+[data-distribution-studio] .distribution-whatif-question{
+ border:1px solid #d2e2e6;border-radius:9px;padding:9px 10px 10px;
+ margin:13px 0 8px;display:grid;gap:7px;min-width:0
+}
+[data-distribution-studio] .distribution-whatif-question legend{
+ font-size:.8rem;font-weight:700;color:var(--text,#294757);padding:0 5px
+}
+[data-distribution-studio] .distribution-whatif-question-option{
+ display:flex;gap:9px;align-items:flex-start;padding:9px 8px;min-width:0;
+ border:1px solid #d9e5e9;border-radius:8px;cursor:pointer;background:#fff
+}
+[data-distribution-studio] .distribution-whatif-question-option:has(input:checked){
+ background:#eff7f6;border-color:#90bec1
+}
+[data-distribution-studio] .distribution-whatif-question-option:focus-within{
+ outline:2px solid #286f90;outline-offset:1px
+}
+[data-distribution-studio] .distribution-whatif-question-option input{
+ flex:none;accent-color:#287e91;margin:2px 0 0;width:17px;height:17px
+}
+[data-distribution-studio] .distribution-whatif-question-option span{min-width:0}
+[data-distribution-studio] .distribution-whatif-question-option strong{
+ display:block;font-size:.79rem;line-height:1.35
+}
+[data-distribution-studio] .distribution-whatif-question-option small{
+ display:block;margin:4px 0 0;font-size:.73rem;font-weight:400;
+ line-height:1.4;color:var(--text-muted,#56717b)
+}
+[data-distribution-studio] .distribution-whatif-target-controls{
+ padding:7px 10px 10px;margin:9px 0 13px;border-radius:9px;
+ background:#fff;border:1px solid #dbe7ea;min-width:0
+}
+[data-distribution-studio] .distribution-whatif-target-controls .probability-field{
+ margin:8px 0 9px
+}
+[data-distribution-studio] .distribution-whatif-target-result{
+ border:1px solid #d9e7e9;border-radius:9px;padding:11px 10px;
+ background:#f7fafb;overflow-wrap:anywhere
+}
+[data-distribution-studio] .distribution-whatif-target-result>strong{
+ font-size:.84rem;line-height:1.5;color:var(--text,#294757)
+}
+[data-distribution-studio] .distribution-whatif-target-intro,
+[data-distribution-studio] .distribution-whatif-target-explainer{
+ font-size:.76rem!important;line-height:1.55!important;margin:8px 0!important;
+ color:var(--text-muted,#516b77)
+}
+[data-distribution-studio] .distribution-whatif-target-grid{
+ display:grid;grid-template-columns:minmax(0,1fr);gap:7px;margin:10px 0
+}
+[data-distribution-studio] .distribution-whatif-target-model{
+ background:#fff;border:1px solid #dce8eb;border-radius:8px;padding:9px;
+ min-width:0;overflow-wrap:anywhere
+}
+[data-distribution-studio] .distribution-whatif-target-model>strong{font-size:.79rem;color:#30566a}
+[data-distribution-studio] .distribution-whatif-target-model .distribution-whatif-target-equation{
+ font-weight:700;font-variant-numeric:tabular-nums;font-size:.9rem!important;
+ line-height:1.5;margin:6px 0!important;overflow-wrap:anywhere;color:#184c62
+}
+[data-distribution-studio] .distribution-whatif-target-model>p:not(.distribution-whatif-target-equation){
+ font-size:.77rem!important;margin:4px 0!important;overflow-wrap:anywhere
+}
+[data-distribution-studio] .distribution-whatif-target-change{
+ font-size:.8rem!important;line-height:1.55!important;margin:11px 0!important;
+ overflow-wrap:anywhere
+}
+[data-distribution-studio] .distribution-whatif-target-error{
+ background:#fff8f4;border-left:3px solid #bc684d;padding:10px;margin:8px 0
+}
+[data-distribution-studio] .distribution-whatif-target-error strong{font-size:.82rem}
+[data-distribution-studio] .distribution-whatif-target-error ul{
+ margin:7px 0 9px;padding-left:19px;font-size:.77rem;line-height:1.5
+}
+[data-distribution-studio] .distribution-whatif-target-error p{
+ margin:6px 0;font-size:.76rem;line-height:1.5
+}
+@media(max-width:390px){
+ [data-distribution-studio] .distribution-whatif-question{padding:8px}
+ [data-distribution-studio] .distribution-whatif-target-result{padding:9px 8px}
+ [data-distribution-studio] .distribution-whatif-target-controls{padding:7px 8px}
+}
