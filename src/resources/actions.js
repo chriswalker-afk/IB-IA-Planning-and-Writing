@@ -15,9 +15,11 @@ export function resourceAction(state,session,action,data={},parent=''){
   if(!returning){
    session.workshopRoute=id&&Object.hasOwn(PATHWAY_LEARNING,id)?id:'';
    const chosen=String(data.workshopId||'');
+   const chosenTerm=String(data.workshopTerm||'');
    const ctx=resourceContext(state,{help:session.help});
-   session.workshopId=lessonById(chosen)?chosen:(id?'':workshopLessonForEntry(ctx.entry));
-   session.workshopTerm='';session.workshopTrail=[];
+   session.workshopTerm=definitionById(chosenTerm)?chosenTerm:'';
+   session.workshopId=session.workshopTerm?'':lessonById(chosen)?chosen:(id?'':workshopLessonForEntry(ctx.entry));
+   session.workshopTrail=[];
    session.workshopStep='show';session.workshopCheckpoint=0;session.workshopChoice='';
   }
   // Resuming from a software tutorial returns to the current learning checkpoint.
