@@ -212,7 +212,7 @@ with sync_playwright() as pw:
   assert p.locator('#workshop-route option').count()==17
   p.locator('#workshop-route').select_option('voronoi')
   assert 'Voronoi cell' in p.locator('#resource-results').inner_text()
-  assert 'No guided lessons match this selection' in p.locator('#resource-results').inner_text()
+  assert 'Build and check a Voronoi nearest-site region' in p.locator('#resource-results').inner_text()
   p.locator('#workshop-search').fill('distance')
   assert 'Euclidean distance' in p.locator('#resource-results').inner_text()
   assert p.locator('#workshop-search').input_value()=='distance'
