@@ -2142,7 +2142,10 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         break;
       }
       case "distribution-whatif-apply":{
-        const result=applyDistributionWhatIf(state.distributionStudio);
+        const needsSource=["primary","secondary"].includes(state.distributionStudio.draft.sourceKind);
+         const confirmed=!needsSource||window.confirm("The alternative parameters are hypothetical unless separately verified. Apply as an assumed theoretical model and clear the original source credit? Cancel to leave this draft unchanged.");
+         if(!confirmed)break;
+         const result=applyDistributionWhatIf(state.distributionStudio,confirmed);
         if(!result.ok){toast("Cannot apply alternative",result.error);refreshDistributionWhatIf();break;}
         save();render();
         const panel=main.querySelector("[data-distribution-whatif-panel]");
