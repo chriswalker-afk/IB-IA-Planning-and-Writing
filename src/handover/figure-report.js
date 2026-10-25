@@ -200,7 +200,9 @@ export function collectProjectFigures(state){
   }
   // Saving a project can retain edits to a diagram that have not been saved
   // as a named figure. Never silently lose these in a working-record export.
-  if(occupied(studio.draft)){
+  // Distribution drafts store parameters and custom outcome rows, not a generic
+  // raw/matrix field. An edited unsaved distribution must survive report export.
+  if(occupied(studio.draft)||(spec.kind==="distribution"&&studio.draft?.edited)){
    const current=figures.find(x=>x.id===studio.activeId);
    if(!current||JSON.stringify(current.draft)!==JSON.stringify(studio.draft)){
     output.push(buildFigure(spec,{id:spec.kind+"-current-draft",entryId:"",draft:studio.draft},{draft:true}));
