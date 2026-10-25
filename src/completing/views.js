@@ -27,6 +27,7 @@ import {renderVoronoiStudio} from "../diagrams/voronoi-view.js";
 import {renderVoronoiSvg} from "../diagrams/voronoi-render.js";
 import {renderGeometryStudio} from "../diagrams/geometry-view.js";
 import {renderGeometrySvg} from "../diagrams/geometry-render.js";
+import {renderDistributionStudio} from "../diagrams/distribution-view.js";
 import {renderProbabilityStudio} from "../diagrams/probability-view.js";
 import {renderProbabilitySvg} from "../diagrams/probability-render.js";
 import {renderRepresentationHub,renderRepresentationSwitcher} from "../diagrams/representation-hub.js";
@@ -948,7 +949,8 @@ export function createCompletingViews(ctx){
    const toolOpen=Boolean(activeRepresentationTool(s));
    const toolHtml=toolOpen?
      renderRepresentationSwitcher(s,icon,e)+
-      (s.probabilityStudio?.open?renderProbabilityStudio(s,icon,e):
+      (s.distributionStudio?.open?renderDistributionStudio(s,icon,e):
+       s.probabilityStudio?.open?renderProbabilityStudio(s,icon,e):
        s.geometryStudio?.open?renderGeometryStudio(s,icon,e):
        s.voronoiStudio?.open?renderVoronoiStudio(s,icon,e):
        s.tableStudio?.open?renderTableStudio(s,icon,e):
