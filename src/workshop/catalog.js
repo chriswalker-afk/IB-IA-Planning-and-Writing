@@ -8,6 +8,8 @@ import {HISTOGRAM_LESSON} from './histogram-lesson.js';
 import {BATCH3_DEFINITIONS,BATCH3_LESSONS} from './batch-3.js';
 import {BATCH4_DEFINITIONS} from './batch-4-definitions.js';
 import {BATCH4_LESSONS} from './batch-4-lessons.js';
+import {BATCH5_DEFINITIONS} from './batch-5-definitions.js';
+import {BATCH5_LESSONS} from './batch-5-lessons.js';
 const define=(id,category,title,meaning,example,notation="")=>
  Object.freeze({id,category,title,meaning,example,notation});
 export const WORKSHOP_DEFINITIONS=Object.freeze([
@@ -41,7 +43,8 @@ export const WORKSHOP_DEFINITIONS=Object.freeze([
  ...BATCH1_DEFINITIONS,
  ...BATCH2_DEFINITIONS,
  ...BATCH3_DEFINITIONS,
- ...BATCH4_DEFINITIONS
+ ...BATCH4_DEFINITIONS,
+ ...BATCH5_DEFINITIONS
 ]);
 export const DEFINITION_BY_ID=new Map(WORKSHOP_DEFINITIONS.map(d=>[d.id,d]));
 export const definitionById=id=>DEFINITION_BY_ID.get(id)||null;
@@ -124,7 +127,8 @@ export const WORKSHOP_LESSONS=Object.freeze([
  ...BATCH2_LESSONS,
  HISTOGRAM_LESSON,
  ...BATCH3_LESSONS,
- ...BATCH4_LESSONS
+ ...BATCH4_LESSONS,
+ ...BATCH5_LESSONS
 ]);
 export const LESSON_BY_ID=new Map(WORKSHOP_LESSONS.map(l=>[l.id,l]));
 export const lessonById=id=>LESSON_BY_ID.get(id)||null;
@@ -134,8 +138,8 @@ export const lessonById=id=>LESSON_BY_ID.get(id)||null;
  */
 export const PATHWAY_LEARNING=Object.freeze({
  relationships:{terms:["paired-data","correlation","residual","model","sample","sampling-frame","selection-bias","rank","tied-rank","spearman-rho","monotonic-association","regression-line","residual-plot","rmse"],lessons:["pearson","spearman","linear-regression","residual-diagnostics","model-comparison","sampling"]},
- groups:{terms:["population","sample","mean","median","standard-deviation","stratified-sample","sampling-frame","selection-bias","quartile","interquartile-range","box-plot"],lessons:["sampling","descriptive","distributions"]},
- categorical:{terms:["population","sample","probability","categorical-variable","two-way-table","conditional-proportion","percentage-point","nonresponse-bias"],lessons:["sampling","two-way-proportions"]},
+ groups:{terms:["population","sample","mean","median","standard-deviation","stratified-sample","sampling-frame","selection-bias","quartile","interquartile-range","box-plot","null-hypothesis","sampling-variability"],lessons:["sampling","descriptive","distributions","inference-evidence"]},
+ categorical:{terms:["population","sample","probability","categorical-variable","two-way-table","conditional-proportion","percentage-point","nonresponse-bias","conditional-probability","joint-probability","practical-significance"],lessons:["sampling","two-way-proportions","conditional-probability-tree"]},
  variation:{terms:["mean","median","standard-deviation","uncertainty","instrument-resolution","repeated-measurement","rounding-interval","random-error","systematic-error","quartile","interquartile-range","histogram","frequency-density","worst-case-bounds","sensitivity-check"],lessons:["descriptive","distributions","histograms","measurement","geometry-sensitivity"]},
  "fitted-models":{terms:["model","parameter","domain","residual","extrapolation","regression-line","least-squares","gradient","intercept","centred-sums","fitted-value","nonlinear-regression","quadratic-model","sum-squared-errors","residual-plot","residual-pattern","rmse","r-squared","holdout-data","overfitting","influential-observation","vertex-form","quadratic-roots","discriminant","feasible-domain","doubling-time","logarithm"],lessons:["linear-regression","nonlinear-fitting","residual-diagnostics","model-comparison","quadratic-functions","exponential-logarithms"]},
  growth:{terms:["model","parameter","domain","extrapolation","exponential-model","log-transformation","transformed-regression","nonlinear-regression","residual-plot","holdout-data","rmse","doubling-time","half-life","logarithm"],lessons:["nonlinear-fitting","residual-diagnostics","model-comparison","exponential-logarithms"]},
@@ -146,7 +150,7 @@ export const PATHWAY_LEARNING=Object.freeze({
  triangulation:{terms:["scale-factor","uncertainty","euclidean-distance","rounding-interval","sensitivity-analysis","baseline","bearing","interior-angle","sine-rule","cosine-rule","triangle-area","calibration-factor","worst-case-bounds"],lessons:["measurement","triangulation","image-calibration","geometry-sensitivity"]},
  voronoi:{terms:["voronoi-cell","euclidean-distance","model","perpendicular-bisector","locus","voronoi-boundary","voronoi-vertex","distance-metric","reference-length","pixel-coordinate"],lessons:["voronoi-regions","image-calibration"]},
  finance:{terms:["model","parameter","constraint","extrapolation","sensitivity-analysis","exponential-model","nonlinear-regression","rmse","holdout-data","doubling-time","logarithm"],lessons:["measurement","nonlinear-fitting","model-comparison","exponential-logarithms"]},
- chance:{terms:["probability","expected-value","sample"],lessons:[]},
+ chance:{terms:["probability","expected-value","sample",...BATCH5_DEFINITIONS.map(d=>d.id)],lessons:BATCH5_LESSONS.map(l=>l.id)},
  proof:{terms:["conjecture","counterexample","domain"],lessons:[]},
  iteration:{terms:["iteration","convergence","parameter","domain"],lessons:[]}
 });
@@ -162,6 +166,11 @@ export const workshopLessonForEntry=entry=>{
  if(entry.methodId==="geometric-model")return "geometric-areas";
  if(entry.methodId==="triangulation")return "triangulation";
  if(entry.methodId==="voronoi")return "voronoi-regions";
+ if(entry.methodId==="probability")return "conditional-probability-tree";
+ if(entry.methodId==="expected-value")return "discrete-expected-value";
+ if(entry.methodId==="binomial")return "binomial-models";
+ if(entry.methodId==="normal")return "normal-models";
+ if(["two-sample-t","chi-independence","chi-fit"].includes(entry.methodId))return "inference-evidence";
  if(!entry.methodId&&entry.kind==="distribution")return "descriptive";
  return "";
 };

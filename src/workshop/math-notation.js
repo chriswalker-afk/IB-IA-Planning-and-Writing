@@ -127,6 +127,31 @@ export const WORKSHOP_LESSON_FORMULAS=Object.freeze({
     {"label":"Positive-input lower and upper bounds","tex":"L_{\\min}W_{\\min}\\le A\\le L_{\\max}W_{\\max}","spoken":"For positive input intervals, the smallest rectangle area uses both lower endpoints and the largest uses both upper endpoints."},
     {"label":"Worked example bound","tex":"38.61\\le A\\le41.41\\quad(\\mathrm{m}^2)","spoken":"Under the given plausible input intervals the calculated area is between thirty eight point six one and forty one point four one square metres."}
   ],
+
+  "conditional-probability-tree":[
+   {label:"Multiply along a path",tex:"P(A\\cap B)=P(A)P(B\\mid A)",spoken:"Joint probability is first-event probability times the second conditional probability."},
+   {label:"Condition on the observed event",tex:"P(A\\mid B)=\\frac{P(A\\cap B)}{P(B)}",spoken:"Conditional probability of A given B is the probability of both divided by probability of B, which must be positive."}
+  ],
+  "discrete-expected-value":[
+   {label:"Expected net outcome",tex:"E(X)=\\sum_x xP(X=x)",spoken:"Expected net outcome is the weighted sum of possible net values."},
+   {label:"Spread of the net outcome",tex:"\\operatorname{Var}(X)=E(X^2)-[E(X)]^2",spoken:"Variance is the expected square minus the square of the expected value."}
+  ],
+  "simulation-design":[
+   {label:"Estimated event probability",tex:"\\hat p=\\frac{k}{n}",spoken:"Simulated relative frequency is successes k divided by complete simulated trials n."},
+   {label:"Theoretical two-head event",tex:"P(X=2)=\\binom32\\left(\\frac12\\right)^3=\\frac38",spoken:"Exactly two heads in three independent fair tosses has probability three eighths."}
+  ],
+  "binomial-models":[
+   {label:"Binomial probability mass",tex:"P(X=k)=\\binom nk p^k(1-p)^{n-k}",spoken:"For n independent trials with constant success probability p, exactly k successes has a binomial probability."},
+   {label:"Complementary upper tail",tex:"P(X\\ge1)=1-P(X=0)",spoken:"At least one success equals one minus the probability of zero successes."}
+  ],
+  "normal-models":[
+   {label:"Normal distribution parameters",tex:"X\\sim N(\\mu,\\sigma^2)",spoken:"A normal model is specified by mean mu and variance sigma squared."},
+   {label:"Standard score",tex:"z=\\frac{x-\\mu}{\\sigma}",spoken:"A standard score is observed value minus model mean divided by model standard deviation."}
+  ],
+  "inference-evidence":[
+   {label:"One-sided null and alternative",tex:"H_0:p=0.5,\\quad H_1:p>0.5",spoken:"The null probability of success is half; the pre-specified alternative is greater than half."},
+   {label:"Inclusive upper-tail probability",tex:"P(X\\ge8\\mid H_0)=\\frac{\\binom{10}{8}+\\binom{10}{9}+\\binom{10}{10}}{2^{10}}",spoken:"Under ten independent fair coin tosses the upper-tail probability for eight or more heads includes counts eight, nine and ten."}
+  ],
   "histograms": [
     {
       "label": "Frequency density for any class",
@@ -376,6 +401,19 @@ export const WORKSHOP_DEFINITION_FORMULAS=Object.freeze({
   "triangle-area": {"tex":"A=\\frac{1}{2}ab\\sin C","spoken":"Triangle area is one half of two side lengths times sine of their included angle."},
   "cross-section-volume": {"tex":"V=Ah","spoken":"For a prism, volume equals constant cross-section area times its perpendicular length."},
   "worst-case-bounds": {"tex":"A\\ge L_{\\min}W_{\\min}","spoken":"For positive length and width within stated intervals, the product of the lower endpoints gives a conservative area lower bound."},
+  "complement-event": {"tex":"P(A^c)=1-P(A)","spoken":"Complement probability equals one minus event probability."},
+  "intersection-event": {"tex":"P(A\\cap B)","spoken":"Intersection means both A and B occur."},
+  "conditional-probability": {"tex":"P(A\\mid B)=\\frac{P(A\\cap B)}{P(B)}","spoken":"Probability of A given B is probability of both divided by probability of B, when B has positive probability."},
+  "independent-events": {"tex":"P(A\\cap B)=P(A)P(B)","spoken":"For independent events, the probability of both is the product of their probabilities."},
+  "joint-probability": {"tex":"P(A\\cap B)=P(A)P(B\\mid A)","spoken":"Joint probability is first-event probability times the other conditional probability."},
+  "probability-distribution": {"tex":"\\sum_x P(X=x)=1","spoken":"The probabilities of all discrete outcomes add to one."},
+  "discrete-variance": {"tex":"\\operatorname{Var}(X)=E(X^2)-[E(X)]^2","spoken":"Variance equals expected squared value minus squared expectation."},
+  "relative-frequency": {"tex":"\\hat p=\\frac{k}{n}","spoken":"Relative frequency is successes over trials."},
+  "binomial-distribution": {"tex":"P(X=k)=\\binom nk p^k(1-p)^{n-k}","spoken":"Probability of k successes in a binomial model with n trials and probability p."},
+  "combination-count": {"tex":"\\binom nk=\\frac{n!}{k!(n-k)!}","spoken":"n choose k is n factorial divided by k factorial times n minus k factorial."},
+  "cumulative-probability": {"tex":"P(X\\le k)=\\sum_{j=0}^kP(X=j)","spoken":"Discrete cumulative probability up to and including k sums probabilities from zero through k for a nonnegative count."},
+  "normal-distribution": {"tex":"X\\sim N(\\mu,\\sigma^2)","spoken":"A normal distribution has mean mu and variance sigma squared."},
+  "standard-score": {"tex":"z=\\frac{x-\\mu}{\\sigma}","spoken":"Standard score is deviation from mean divided by standard deviation."},
   "rmse": {
     "tex": "\\mathrm{RMSE}=\\sqrt{\\frac{1}{n}\\sum_{i=1}^{n}(y_i-\\hat{y}_i)^2}",
     "spoken": "Root mean squared error is the square root of mean squared prediction error on the evaluation dataset."
