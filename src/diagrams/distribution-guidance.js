@@ -6,6 +6,7 @@
  * All prompts derive from the current editable draft and existing student notes.
  */
 import {analyzeDistribution,distributionSignature} from "./distribution-core.js";
+import {distributionWhatIfReflection} from "./distribution-whatif-reflection.js";
 import {presentationSparks} from "./presentation-coach-core.js";
 import {lessonById,definitionById} from "../workshop/catalog.js";
 
