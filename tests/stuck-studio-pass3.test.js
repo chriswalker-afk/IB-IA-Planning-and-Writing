@@ -153,7 +153,7 @@ test("a changed earlier result triggers dependency repair rather than automatica
  assert.equal(later.bridge,"Earlier student-authored reasoning");
 });
 test("all seven registered mathematical generators offer one actionable tool-specific repair",()=>{
- assert.equal(REPRESENTATION_TOOLS.length,7);
+ assert.equal(REPRESENTATION_TOOLS.length,8);
  assert.deepEqual(new Set(Object.keys(TOOL_RECOVERY)),new Set(REPRESENTATION_TOOLS.map(t=>t.id)));
  for(const tool of REPRESENTATION_TOOLS){
   const s=fixture("images","C31",false);
