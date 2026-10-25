@@ -1452,6 +1452,54 @@ export const RESOURCES = [
     "videos": [],
     "snippets": [["Fictional level-payment check","=-PMT(1%,12,1200)"],["Loan recurrence (model, not an actual offer)","=opening_balance*(1+periodic_rate)-payment"]],
     "related": ["finance-model-sheet","reporting-precision"]
+  },
+  {
+    "id": "proof-exploration",
+    "title": "Explore a conjecture, then write a genuine proof",
+    "category": "Proof and iteration",
+    "tool": "desmos",
+    "when": "When a plotted pattern or a list of tested integer cases suggests a general mathematical claim, but you need to distinguish exploration from proof.",
+    "steps": [
+      "Write your exact claim in words and mathematical notation, including the domain (positive integers, all integers, real x in a named interval, and so on). Be explicit about 'all' versus 'there exists'.",
+      "Explore several typical and boundary cases using a small table or Desmos function table. For a discrete claim, choose legitimate discrete inputs rather than assuming a continuous graph proves anything about all integers.",
+      "Search purposefully for a counterexample inside the domain. A single valid case refutes a universal claim, while any finite list of successful cases does not prove it.",
+      "If the claim appears true, identify the mathematical reason: algebraic identity, even/odd form, factorisation, exhaustive cases or a justified induction structure. Show the steps that apply to EVERY permitted value.",
+      "Check all transformations, restrictions and hidden divisions by zero. If a converse is suggested, test and prove that reverse implication separately.",
+      "Write the conclusion at the justified level: 'disproved by n=...', 'proved for every integer...', or 'observed for these cases but not yet proved'. Explain why this affects the IA aim instead of pasting an enormous test table."
+    ],
+    "check": "Does the written reasoning cover the full claimed domain? A graph, Desmos value, spreadsheet output or high test count cannot silently become a general proof.",
+    "after": "Use a compact illustration if it helps readers see the idea, then give the actual proof or counterexample and reflect on what changed in the investigation. Confirm whether the proof technique is appropriate to your IB course with your teacher.",
+    "sources": [
+      {"publisher":"Desmos Help Center","url":"https://help.desmos.com/hc/en-us/articles/4406040715149-Getting-Started-Desmos-Graphing-Calculator","title":"Getting Started: Desmos Graphing Calculator","checkedAt":"2026-10-25","verification":"Official current graph/function table guidance checked; exploration is not proof"},
+      {"publisher":"Desmos Help Center","url":"https://help.desmos.com/hc/en-us/articles/4405489674381-Tables","title":"Tables","checkedAt":"2026-10-25","verification":"Official function-table guidance checked"}
+    ],
+    "videos": [],
+    "snippets": [["An invented prime claim to investigate","n^2+n+1 (positive integers n)"],["A general identity to justify by algebra","(n+1)^2-n^2=2n+1"]],
+    "related": ["iteration-sheet","restrictions"]
+  },
+  {
+    "id": "iteration-sheet",
+    "title": "Make a transparent numerical iteration table in Google Sheets",
+    "category": "Proof and iteration",
+    "tool": "sheets",
+    "when": "When exploring a recurrence, Newton iteration or bisection algorithm and you need to document assumptions, starting values, stopping rules and mathematical reliability.",
+    "steps": [
+      "Make a separate labelled practice sheet, recording the mathematical update rule, index convention, permitted domain, starting value(s) and what one iteration represents. Do not paste practice numbers into real IA results.",
+      "For a recurrence x_(n+1)=(x_n+2)/3, enter n=0 and x_0=0 in row 2. In row 3 use index =A2+1 and next value =(B2+2)/3; drag down to continue.",
+      "For Newton–Raphson on f(x)=x^2-2, after a justified nonzero start use =(B2+2/B2)/2 for the next estimate. In a separate column calculate =B3^2-2 to report an equation residual, not a guaranteed root error.",
+      "For bisection, create columns left endpoint a, right endpoint b, midpoint =(a+b)/2, function value at midpoint, retained interval, and its half-width. Keep a sign-changing pair ONLY when continuity and endpoint signs justify the bracketing.",
+      "Before accepting results, test starts or parameters where appropriate, set a maximum iteration count, and define a suitable stopping rule. Use a proven bracket-width bound when a guaranteed root accuracy claim is required.",
+      "Show only representative rows and a concise mathematical explanation in your IA. State whether the sequence is proved to converge, numerically appears to settle, oscillates, diverges, or needs further justification."
+    ],
+    "check": "Can you reproduce the first two updates by hand, explain each column and show exactly why any claimed limit or error bound follows? A small difference between successive rounded numbers can be misleading.",
+    "after": "Connect the computed output to the IA's mathematical question, discuss sensitivity and failure conditions, and avoid confusing plotted values, equation residuals and certified error.",
+    "sources": [
+      {"publisher":"Google Docs Editors Help","url":"https://support.google.com/docs/answer/46977?hl=en","title":"Add formulas and functions","checkedAt":"2026-10-25","verification":"Official Sheets formula guidance checked"},
+      {"publisher":"Google Docs Editors Help","url":"https://support.google.com/docs/answer/75509?hl=en","title":"Automatically create a series or list","checkedAt":"2026-10-25","verification":"Official Sheets autofill guidance checked"}
+    ],
+    "videos": [],
+    "snippets": [["Simple contraction from the previous iterate","=(B2+2)/3"],["Newton update (not valid when B2=0)","=(B2+2/B2)/2"],["Equation residual at a computed root candidate","=B3^2-2"]],
+    "related": ["proof-exploration","reporting-precision"]
   }
 ];
 
