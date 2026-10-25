@@ -89,6 +89,8 @@ import {setDistributionInverseField,calculateDistributionInverse,applyDistributi
 import {distributionInverseResultHtml} from "./src/diagrams/distribution-inverse-view.js";
 import {startDistributionWhatIf,resetDistributionWhatIf,discardDistributionWhatIf,setDistributionWhatIfField,setDistributionWhatIfOption,setDistributionWhatIfReflectionOpen,applyDistributionWhatIf} from "./src/diagrams/distribution-whatif-actions.js";
 import {distributionWhatIfSummaryHtml,distributionWhatIfPreviewHtml} from "./src/diagrams/distribution-whatif-view.js";
+import {distributionWhatIfWritingContext} from "./src/diagrams/distribution-whatif-writing.js";
+import {compareDistributionWhatIf} from "./src/diagrams/distribution-whatif-core.js";
 import {renderDistributionGuidance,distributionAim} from "./src/diagrams/distribution-guidance.js";
 import {distributionPreviewHtml,distributionFeedbackHtml,distributionOutputHtml} from "./src/diagrams/distribution-view.js";
 import {setDistributionField,freshDistribution,loadDistribution,saveDistributionDraft,saveAndLinkDistribution} from "./src/diagrams/distribution-actions.js";
@@ -731,7 +733,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   function refreshDistributionWhatIf(){
     if(!state.distributionStudio?.open)return;
     const summary=main.querySelector?.("[data-distribution-whatif-summary]");
-    if(summary)summary.innerHTML=distributionWhatIfSummaryHtml(state.distributionStudio,e,distributionAim(state));
+    if(summary)summary.innerHTML=distributionWhatIfSummaryHtml(state.distributionStudio,e,distributionAim(state),distributionWhatIfWritingContext(state));
     const chart=main.querySelector?.("[data-distribution-whatif-preview]");
     if(chart)chart.outerHTML=distributionWhatIfPreviewHtml(state.distributionStudio,e);
   }
@@ -2139,6 +2141,32 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       case "distribution-whatif-discard":{
         discardDistributionWhatIf(state.distributionStudio);
         save();render();
+        break;
+      }
+      case "distribution-whatif-write":{
+        // Use the generator's existing return route and one canonical
+        // interpretation field. No auto-written result, copied Spark or
+        // standalone reflection record is created.
+        const q=compareDistributionWhatIf(state.distributionStudio);
+        if(!q.ready||!q.changed||q.comparison==="target"&&!q.target?.ok||
+           q.comparison==="event"&&!q.sensitivity?.eventValid){
+          toast("Check your comparison before reflecting",
+            "Enter one valid alternative and confirm the chosen event or probability target.");
+          break;
+        }
+        const context=distributionWhatIfWritingContext(state);
+        returnToShowingFirstMaths("distribution-reflection-writing");
+        let box=main.querySelector('[data-bind="'+context.focusPath+'"]');
+        if(!box)box=main.querySelector('[data-show-first-writing-box="reflect"] textarea,[data-show-first-part="reflect"] textarea');
+        if(box){
+          for(let ancestor=box.parentElement;ancestor&&ancestor!==main;ancestor=ancestor.parentElement)
+            if(ancestor.tagName==="DETAILS")ancestor.open=true;
+          box.scrollIntoView?.({block:"center",behavior:"auto"});
+          box.focus?.({preventScroll:true});
+        }else main.querySelector('[data-show-first-part="reflect"]')?.scrollIntoView?.({block:"start",behavior:"auto"});
+        toast("Continue your own mathematical interpretation",
+          context.needsRealResult?"Record and check genuine mathematical work before treating a comparison as evidence.":
+          "Your words belong in this existing mathematical stage, not a separate comparison note.");
         break;
       }
       case "distribution-whatif-apply":{
