@@ -329,3 +329,11 @@
 @media(prefers-reduced-motion:reduce){
  [data-distribution-studio] .distribution-whatif-panel *{transition:none!important;animation:none!important}
 }
+
+/* Preserve legible tick labels on phones: scroll inside the chart, never the page. */
+[data-distribution-studio] .distribution-whatif-scroll-note{display:none}
+@media(max-width:760px){
+ [data-distribution-studio] .distribution-whatif-canvas{overflow-x:auto;overscroll-behavior-inline:contain;-webkit-overflow-scrolling:touch}
+ [data-distribution-studio] .distribution-whatif-canvas svg{width:680px;min-width:680px;max-width:none}
+ [data-distribution-studio] .distribution-whatif-scroll-note{display:block;color:var(--text-muted,#55707b)}
+}
