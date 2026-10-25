@@ -35,7 +35,7 @@ const aliasesFor=(id,title,type)=>{
  if(/\bspearman\b|\brank\b/.test(text))a.push('rank correlation spearman rho');
  if(/\bscatter\b|\bgraph\b|\bchart\b|\bplot\b/.test(text))a.push('plot graph chart visualise visualize diagram');
  if(/\bimage\b|\bpicture\b|\btrace\b|\bphoto\b|\bcalibrat\b|\bcurve\b/.test(text))a.push('photo picture image coordinate trace photograph');
- if(/\bderivativ\b|\bdifferenti\b/.test(text))a.push('differentiate differentiation gradient rate of change');
+ if(/\bderivativ|\bdifferenti/.test(text))a.push('differentiate differentiation gradient rate of change');
  if(/\bintegral\b|\bintegrat\b/.test(text))a.push('integrate integration area under curve accumulation');
  if(/\breferenc\b|\bmla\b|\bcit\b/.test(text))a.push('cite citation bibliography works cited referencing mla');
  if(/\bsampl\b/.test(text))a.push('sampling sample selection survey');
