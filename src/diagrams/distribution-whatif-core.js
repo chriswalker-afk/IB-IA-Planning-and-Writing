@@ -5,6 +5,7 @@
  */
 import {analyzeDistribution,normalizeDistributionDraft} from "./distribution-core.js";
 import {distributionSensitivity} from "./distribution-sensitivity.js";
+import {inverseDistribution} from "./distribution-inverse.js";
 
 export const DISTRIBUTION_PARAMETER_KEYS=Object.freeze({
  normal:Object.freeze(["mu","sigma"]),binomial:Object.freeze(["n","p"]),
@@ -47,10 +48,28 @@ export function compareDistributionWhatIf(studio){
   ...extraIssues(original).map(s=>"Original: "+s),...extraIssues(proposed).map(s=>"Alternative: "+s)];
  if(issues.length)return {status:"invalid",ready:false,changed,issues,eventIssues:[],
   original,alternative:proposed,originalDraft,alternativeDraft};
- const result={status:"ready",ready:true,changed,issues:[],eventIssues:[],
+ const comparison=w.comparison==="target"?"target":"event";
+ const result={status:"ready",ready:true,changed,comparison,issues:[],eventIssues:[],
   original,alternative:proposed,originalDraft,alternativeDraft,eventMode:source.mode,changedKeys,
-  originalProbability:null,alternativeProbability:null,deltaProbability:null};
- if(source.mode!=="none"){
+  originalProbability:null,alternativeProbability:null,deltaProbability:null,target:null};
+ if(comparison==="target"){
+  const request={mode:w.targetMode,probability:w.targetProbability};
+  // This is the same pure engine used by "Find a boundary"; it never updates
+  // the selected event, saved figure or primary parameter provenance.
+  const first=inverseDistribution(originalDraft,request);
+  const second=inverseDistribution(alternativeDraft,request);
+  const targetIssues=[...first.issues.map(issue=>"Original: "+issue),
+   ...second.issues.map(issue=>"Alternative: "+issue)];
+  const valid=first.ok&&second.ok;
+  result.target={
+   ok:valid,mode:request.mode,requested:valid?first.requested:null,
+   original:first,alternative:second,issues:[...new Set(targetIssues)],
+   discrete:!["normal","uniform"].includes(source.kind),
+   lowerChange:valid?second.lower-first.lower:null,
+   upperChange:valid&&request.mode==="central"?second.upper-first.upper:null,
+   sameBoundary:valid&&first.lower===second.lower&&first.upper===second.upper
+  };
+ }else if(source.mode!=="none"){
   const first=analyzeDistribution(originalDraft),second=analyzeDistribution(alternativeDraft);
   if(first.ready&&second.ready){
    result.originalEvent=first;result.alternativeEvent=second;
