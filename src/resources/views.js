@@ -5,6 +5,8 @@ import {REPRESENTATION_TOOLS} from '../diagrams/representation-registry.js';
 import {renderMlaCitationGuide} from './mla-guide.js';
 import {renderWorkshop} from '../workshop/views.js';
 import {discoverResources,DISCOVERY_AREAS,DISCOVERY_TYPES} from './discovery.js';
+import {hubOriginalView} from '../help/hub-issues.js';
+import {contextualLearningChoices,renderContextualLearningHelp} from './contextual-learning.js';
 const hosts=new Set(['support.google.com','help.desmos.com','www.desmos.com','runestone.academy','www.dataspire.org','www.lehman.cuny.edu','datahelpdesk.worldbank.org','databank.worldbank.org','automeris.io','www.perkins.org','knilt.arcc.albany.edu','mathispower4u.com','www.youtube.com','sheets.google.com','forms.google.com','docs.google.com','style.mla.org','www.ibo.org','data.worldbank.org']);
 export function safeResourceUrl(value){
  try{const u=new URL(value);return u.protocol==='https:'&&hosts.has(u.hostname)&&!u.username&&!u.password?u.href:'';}catch{return '';}
@@ -155,13 +157,24 @@ export function resourceDrawer(state,session){
    (r.related.length?'<details class="resource-related"><summary>Related tasks, only when useful</summary>'+r.related.map(id=>guideButton(id,resourceById(id).title,session.help)).join('')+'</details>':'')+
    preferences(x)+'<div class="resource-footer">'+close+'</div></div>';
  }
- const suggested=resourceSuggestions(state,{help:session.help});
- const relevant=suggested.length?'<section class="resource-current resource-home-relevant" aria-label="Useful guides for this stage">'+
-  '<div class="resource-home-heading"><h3>Useful for your current stage</h3><span class="resource-relevant-stage">'+e(x.label.slice(0,110))+'</span></div>'+
-  '<p class="resource-small">Optional help based on your current work, not a suggestion to add new mathematics.</p>'+
-  '<div class="resource-relevant-grid">'+suggested.slice(0,2).map(r=>resourceRow(r,session.help)).join('')+'</div>'+
-  (suggested.length>2?'<details class="resource-more-relevant"><summary>One more guide for this stage</summary>'+
-   resourceRow(suggested[2],session.help)+'</details>':'')+'</section>':'';
+ const supportView=session.parent==='stuck'?hubOriginalView(state):state;
+ const supportSpot=session.supportSpot||supportView.helpSpot||'page';
+ const supportIssue=session.supportIssue||'';
+ const helpChoices=contextualLearningChoices(supportView,{spot:supportSpot,issueId:supportIssue});
+ const targeted=renderContextualLearningHelp(supportView,e,{spot:supportSpot,issueId:supportIssue,compact:true});
+ // Do not repeat the exact tutorial already linked in the focused help card.
+ const suggested=resourceSuggestions(state,{help:session.help}).filter(r=>r.id!==helpChoices?.guideId);
+ const meaningful=!!targeted||suggested.length>0;
+ const heading=supportSpot.includes('field:')?'Help for this writing box':
+  supportSpot.includes('part:')?'Help for this mathematical step':'Useful for your current stage';
+ const relevant=meaningful?'<section class="resource-current resource-home-relevant" aria-label="Useful guides for this stage">'+
+  '<div class="resource-home-heading"><h3>'+heading+'</h3><span class="resource-relevant-stage">'+e(x.label.slice(0,110))+'</span></div>'+
+  '<p class="resource-small">Optional learning support based on your recorded stage and chosen mathematics, not an instruction to add another method.</p>'+
+  targeted+
+  (suggested.length?'<details class="resource-relevant-guides"'+(targeted?'':' open')+'><summary>'+
+   'Other tutorial guidance for this stage ('+suggested.length+')</summary>'+
+   '<div class="resource-relevant-grid">'+suggested.map(r=>resourceRow(r,session.help)).join('')+'</div></details>':'')+
+  '</section>':'';
  const destination=(title,description,cta,kind,action,attrs='')=>
   '<button type="button" class="resource-destination-card" data-action="'+action+'" '+attrs+'>'+
    '<span class="resource-destination-icon">'+icon(kind)+'</span>'+
