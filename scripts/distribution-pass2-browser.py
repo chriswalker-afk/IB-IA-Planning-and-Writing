@@ -294,6 +294,11 @@ def parameter_whatif(browser,width,kind):
   assert panel.get_attribute("open") is not None
   assert p.locator('[data-distribution-whatif-chart]').count()==1
   assert "Original and alternative" in p.locator('[data-distribution-whatif-preview]').inner_text()
+  if width<600:
+   dimensions=p.locator('[data-distribution-whatif-canvas]').evaluate(
+    "e=>({outer:e.clientWidth,total:e.scrollWidth,chart:e.querySelector('svg').getBoundingClientRect().width})")
+   assert dimensions["total"]>dimensions["outer"]+40,dimensions
+   assert dimensions["chart"]>=650,dimensions
   settings={"normal":("mu","75"),"binomial":("p","0.7"),"poisson":("lambda","5"),
             "uniform":("b","20"),"custom":("customPoints","0, 0.1\n1, 0.5\n2, 0.4")}
   target,new=settings[kind]
