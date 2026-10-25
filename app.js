@@ -1591,7 +1591,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
           const active=item.dataset.resourceArea===resourceSession.discoveryArea;
           item.setAttribute("aria-pressed",String(active));item.classList.toggle("is-active",active);
         }
-        if(resources.focus==="results"){target?.scrollIntoView({block:"start",behavior:"instant"});target?.focus({preventScroll:true});}
+        if(resources.focus==="results"){target?.setAttribute("tabindex","-1");target?.scrollIntoView({block:"start",behavior:"instant"});target?.focus({preventScroll:true});}
         else if(action==="resource-discovery-type"){
           layer.querySelector('.resource-discovery-type[data-resource-type="'+el.dataset.resourceType+'"]')?.focus({preventScroll:true});
         }
