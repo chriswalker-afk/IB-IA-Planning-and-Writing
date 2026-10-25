@@ -25,6 +25,10 @@ The optional **Maths Workshop** lives in Tools & Tutorials. It includes **26 qui
 
 Batch 3 adds **20 definitions** and **five new Show me → Help me → My turn lessons** on quadratics, exponential/logarithmic functions, periodic sine models, derivatives and rates, and definite integration. The Workshop now includes **100 definitions and 18 lessons**, all read-only teaching examples with contextual course cautions. See [Batch 3 notes](docs/maths-workshop-batch-3-2026-10-24.md); Batch 4 will focus on geometry and measurement.
 
+### Maths Workshop — Batch 4: Geometry and measurement
+
+Batch 4 adds **22 glossary definitions** and **five guided geometry lessons**, bringing the optional Workshop to **122 definitions and 23 lessons**. Students can practise calibrated image coordinates, triangulation, composite area and volume, Voronoi nearest-site regions, and measurement sensitivity, with labelled maths, two guided checkpoints, independent practice, contextual IA interpretation and opt-in links to the Image Tracer, Geometry & Measurement Studio and Voronoi Studio. All values are invented for learning; practice never modifies student work. See [Batch 4 notes](docs/maths-workshop-batch-4-2026-10-25.md). **Batch 5** will cover probability, simulation and statistical inference.
+
 ### Complete illustrative investigations
 
 The sample picker contains **five complete fictional student investigations**: standing reach, paper-helicopter groups, revision-format preferences, coffee-grinder reliability and tray optimisation. Each uses connected first-person writing, checked mathematics, stated constructed data or assumptions, and editable native figures. The same answers appear in the Planning, Writing and Checking fields and in a continuous IA reader with separate PDF and Word downloads. Samples open in an isolated preview; exploring or editing them does not replace the student's own project.
