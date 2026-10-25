@@ -7,6 +7,7 @@ import {escapeHtml as e,icon} from "../ui/primitives.js";
 import {resourceById} from "../resources/catalog.js";
 import {representationTool} from "../diagrams/representation-registry.js";
 import {workshopProse as mathText,workshopLessonFormula,workshopDefinitionFormula} from "./math-render.js";
+import {relatedDefinitionSections} from "./definition-connections.js";
 
 const action=(name,label,attrs="",primary=false)=>
  '<button type="button" class="btn '+(primary?'btn-primary':'btn-secondary')+'" data-action="resource-workshop-'+name+'" '+attrs+'>'+e(label)+'</button>';
@@ -117,11 +118,19 @@ function renderLesson(session,l){
 }
 function renderDefinition(session,d){
  const related=WORKSHOP_LESSONS.filter(l=>l.definitionIds.includes(d.id));
+ const connections=relatedDefinitionSections(d.id);
+ const relatedTerms='<section class="workshop-section workshop-related-definitions" aria-label="Related mathematical definitions" data-workshop-related="'+e(d.id)+'">'+
+  '<h4>Related definitions</h4><p>Follow connected ideas, compare similar methods, or check important limitations.</p>'+
+  connections.map(section=>'<div class="workshop-related-group"><h5>'+e(section.title)+'</h5>'+
+   '<div class="workshop-chip-list">'+section.definitions.map(item=>
+    '<button type="button" class="workshop-define-chip" data-action="resource-workshop-term" data-workshop-id="'+e(item.id)+
+    '" data-related-def-id="'+e(item.id)+'">'+e(item.title)+' '+icon("arrow-right")+'</button>').join("")+
+   '</div></div>').join("")+'</section>';
  return '<article class="workshop-definition-detail" data-workshop-definition="'+e(d.id)+'">'+
   action("home","← Back to Maths Workshop")+'<span class="workshop-eyebrow">'+e(d.category)+'</span>'+
   '<h3 tabindex="-1">'+e(d.title)+'</h3><p class="workshop-lead">'+mathText(d.meaning)+'</p>'+
   workshopDefinitionFormula(d)+
-  '<div class="workshop-example"><h4>Quick example</h4><p>'+mathText(d.example)+'</p></div>'+
+  '<div class="workshop-example"><h4>Quick example</h4><p>'+mathText(d.example)+'</p></div>'+relatedTerms+
   (related.length?'<div class="workshop-section"><h4>Explore this in a worked lesson</h4>'+
    related.map(l=>action("lesson",l.title,'data-workshop-id="'+e(l.id)+'"')).join("")+'</div>':"")+
   '<p class="workshop-caution">Definitions help you understand mathematics; they do not establish that a method suits your question or course.</p></article>';
@@ -135,7 +144,10 @@ export function renderWorkshop(state,session){
   '<h3>Understand it. Try it. Use it thoughtfully.</h3>'+
   '<p>Find mathematical definitions, practise common IA methods, and learn when software can do the arithmetic. After fitting a model, check residuals and compare its predictions. This is an optional learning library.</p>'+
   '<p class="workshop-caution">Course: '+e(course||'not selected')+'. A method appearing here is not a course recommendation or permission to use it. Check syllabus scope with your teacher when necessary.</p></div>';
+ const prior=Array.isArray(session.workshopTrail)?session.workshopTrail.at(-1):null;
+ const previous=prior?.kind==='term'?definitionById(prior.id):prior?.kind==='lesson'?lessonById(prior.id):null;
  const navigation='<div class="workshop-top-actions">'+action("tools","← Tools & tutorials")+
+  (previous?action("back","← Back to "+previous.title):"")+
   (l||d?action("home","Browse Workshop"):"")+'</div>';
  if(l)return '<div class="resource-library maths-workshop">'+navigation+renderLesson(session,l)+'</div>';
  if(d)return '<div class="resource-library maths-workshop">'+navigation+renderDefinition(session,d)+'</div>';
@@ -147,5 +159,5 @@ export function renderWorkshop(state,session){
   '<option value="">All 16 pathways</option>'+options+'</select></label></div>';
  return '<div class="resource-library maths-workshop" data-workshop-home="true">'+navigation+intro+filters+
   '<div id="resource-results">'+workshopList(session)+'</div>'+
-  '<p class="workshop-caution">Pathway links are suggested learning resources, not required calculations. Later batches will add the remaining methods.</p></div>';
+  '<p class="workshop-caution">Pathway links and related definitions are optional learning resources, not required calculations or course approvals.</p></div>';
 }
