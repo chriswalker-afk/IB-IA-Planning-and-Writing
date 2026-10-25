@@ -312,6 +312,52 @@ with sync_playwright() as playwright:
     page.screenshot(path=str(OUT/(kind+"-"+str(width)+"-failure.png")),full_page=True)
    print(json.dumps(results[-1]),flush=True)
    context.close()
+ # Reproduce a lazy PDF chunk disappearing across GitHub Pages deployments.
+ # The continuous reader must remain independent, and the sample must survive
+ # a user-authorised reload without overwriting the private investigation.
+ stale_context=browser.new_context(viewport={"width":390,"height":844},accept_downloads=True,reduced_motion="reduce")
+ stale_page=stale_context.new_page()
+ stale_page.set_default_timeout(15000)
+ stale_page.add_init_script('if(!localStorage.getItem('+json.dumps(KEY)+'))localStorage.setItem('+json.dumps(KEY)+','+json.dumps(json.dumps(OWN))+');')
+ stale_errors=[]
+ stale_page.on("pageerror",lambda error:stale_errors.append(str(error)))
+ try:
+  stale_page.goto(URL,wait_until="networkidle")
+  action(stale_page,"open-demos")
+  stale_page.locator('[data-demo="standing-reach"]').click()
+  personal_before=own(stale_page)
+  assert preview(stale_page)["demo"]=="standing-reach"
+  stale_page.route("**/chunks/*.js",lambda route:route.abort())
+  action(stale_page,"sample-read-ia")
+  assert stale_page.locator(".sample-reader").is_visible(),"Reading must not need lazy PDF/Word chunks"
+  stale_page.locator('.sample-reader [data-action="export-sample-ia-pdf"]').click()
+  notice=stale_page.locator(".sample-reader [data-sample-document-recovery]")
+  notice.wait_for(timeout=15000)
+  assert "latest reading tools" in notice.inner_text()
+  assert notice.locator('[data-action="sample-tools-reload"]').is_visible()
+  assert own(stale_page)==personal_before
+  assert "could not be created" in stale_page.locator("#saveStatus").inner_text()
+  stale_page.unroute("**/chunks/*.js")
+  notice.locator('[data-action="sample-tools-reload"]').click()
+  stale_page.wait_for_function("location.search.includes('ia-tools-refresh=')",timeout=15000)
+  stale_page.locator(".sample-preview-banner").wait_for(timeout=15000)
+  assert preview(stale_page)["demo"]=="standing-reach"
+  assert own(stale_page)==personal_before
+  action(stale_page,"sample-read-ia")
+  assert stale_page.locator(".sample-reader").is_visible()
+  assert not stale_page.locator("[data-sample-document-recovery]").count()
+  recovered_pdf=OUT/"stale-tab-reloaded-sample.pdf"
+  download(stale_page,stale_page.locator('.sample-reader [data-action="export-sample-ia-pdf"]'),recovered_pdf)
+  assert recovered_pdf.read_bytes().startswith(b"%PDF-")
+  assert own(stale_page)==personal_before
+  assert not stale_errors,stale_errors
+  results.append({"scenario":"stale-document-chunk","viewport":390,"status":"passed","sample_restored":True,"pdf_bytes":recovered_pdf.stat().st_size})
+ except Exception as error:
+  traceback.print_exc()
+  results.append({"scenario":"stale-document-chunk","viewport":390,"status":"FAILED","error":str(error),"pageErrors":stale_errors,"toast":stale_page.locator("#toast").inner_text()})
+  stale_page.screenshot(path=str(OUT/"stale-document-chunk-failure.png"),full_page=True)
+ print(json.dumps(results[-1]),flush=True)
+ stale_context.close()
  browser.close()
 (OUT/"illustrative-samples-results.json").write_text(json.dumps(results,indent=2))
 assert all(result["status"]=="passed" for result in results)

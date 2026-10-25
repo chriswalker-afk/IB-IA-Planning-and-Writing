@@ -3,6 +3,7 @@
  * asset disappears. This checks deployed bytes, not student-owned JSON.
  */
 import assert from "node:assert/strict";
+import {createHash} from "node:crypto";
 import {readFile,readdir,stat} from "node:fs/promises";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
@@ -49,6 +50,11 @@ export async function auditPublishedAssets({root=ROOT,out=path.join(root,"dist")
  assert.deepEqual(styles,["./site.css"],"Built HTML must load exactly one ordered CSS bundle");
  assert(!html.includes('<script type="importmap">'),
   "Do not reference unpublished source-only vendor files from a bundled page");
+ const appBytes=await readFile(path.join(out,"app.js"));
+ const release=createHash("sha256").update(appBytes).digest("hex").slice(0,16);
+ assert(html.includes('<script type="module" src="./app.js?v='+release+'"></script>'),
+  "Published HTML must fingerprint app.js so stale tabs can recover after chunk replacement");
+
  const css=await readFile(path.join(out,"site.css"),"utf8");
  assert(css.includes(":root")&&css.includes("@media"),"Base and responsive styles must be included");
  const original=await Promise.all(sourceLinks.map(f=>readFile(path.join(root,f),"utf8")));

@@ -1,4 +1,6 @@
-import {createSamplePreview} from "./src/core/sample-preview.js";
+import {createSamplePreview,PREVIEW_KEY} from "./src/core/sample-preview.js";
+import {illustrativeIAPagesModel,renderIllustrativeIAReading,createIllustrativeIAExport} from "./src/core/sample-ia-document.js";
+import {sampleDocumentRecovery,sampleToolsReloadUrl} from "./src/core/sample-document-recovery.js";
 import {createIllustrativeSample,SAMPLE_CHOICES} from "./src/core/illustrative-samples.js";
 import {captureReturn,restoreReturn} from "./src/ui/return-context.js";
 import {guidanceChoices} from "./src/ui/guidance-interface.js";
@@ -121,6 +123,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   let lastDrawer = "";
   let drawerReturn=null;
   let sampleReadingHtml="";
+  let sampleDocumentFailure=null;
   let pendingImport = null;
   let importSelected = new Set();
   let exportBusy = false;
@@ -856,15 +859,54 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     el.classList.toggle("checkpoint-toast",!!detail);el.classList.add("show");
     clearTimeout(toastHandle);toastHandle=setTimeout(()=>el.classList.remove("show"),detail?6500:3500);
   }
+  function sampleRecoveryHtml(){
+    if(!sampleDocumentFailure)return "";
+    return '<div class="sample-document-recovery" data-sample-document-recovery role="alert">'+
+      '<strong>'+e(sampleDocumentFailure.title)+'</strong>'+
+      '<p>'+e(sampleDocumentFailure.message)+'</p>'+
+      (sampleDocumentFailure.canReload?button("Reload sample tools","sample-tools-reload","btn-secondary btn-sm"):"")+
+      '</div>';
+  }
+  function showSampleDocumentFailure(error,operation){
+    const reason=sampleDocumentRecovery(error,operation);
+    sampleDocumentFailure=reason;
+    render();
+    // Downloads also run inside the continuous reader. Keep recovery visible
+    // inside that open drawer, not just in the banner behind it.
+    const reader=layer.querySelector(".sample-reader");
+    if(reader){
+      reader.querySelector("[data-sample-document-recovery]")?.remove();
+      reader.insertAdjacentHTML("afterbegin",sampleRecoveryHtml());
+    }
+    setSaveStatus(operation==="reader"?"Illustrative reading view unavailable":"Illustrative document could not be created",true);
+    toast(reason.toast);
+  }
+  function reloadSampleTools(){
+    if(!preview.active)return;
+    preview.save(state);
+    // Never reload a sample held in memory only: this browser may have
+    // disabled sessionStorage. Require a readable sandbox snapshot first.
+    let retained=false;
+    try{
+      const saved=JSON.parse(previewStorage?.getItem(PREVIEW_KEY)||"null");
+      retained=!!saved?.personal&&saved?.preview?.demo===state.demo;
+    }catch{/* Sample remains in memory. */}
+    if(!retained){
+      toast("This browser could not preserve the sample for reloading. Download its JSON backup before refreshing.");
+      return;
+    }
+    window.location.replace(sampleToolsReloadUrl(window.location.href,Date.now()));
+  }
   function previewBanner(){
     const figureCount=REPRESENTATION_TOOLS.reduce((total,tool)=>total+(state[tool.studio]?.figures?.length||0),0);
     const completeSample=SAMPLE_CHOICES.some(choice=>choice.id===state.demo);
     const title=completeSample?'Complete fictional investigation':'Earlier illustrative sample';
     const detail=completeSample?'Read a student’s mathematical argument, explore the answers in each field, or edit its saved diagrams. Your own investigation is kept separately.':'This earlier sample is preserved from your preview or backup. Choose Another sample to explore the new complete investigations.';
-    return preview.active?'<aside class="sample-preview-banner" aria-label="Sample preview"><div><strong>'+icon("sparkles")+' '+title+'</strong><p>'+detail+'</p><p class="sample-preview-metrics">'+state.entries.length+' connected mathematical stages · '+figureCount+' editable saved figures</p></div><div class="button-row">'+(completeSample?button("Read complete IA","sample-read-ia","btn-secondary btn-sm"):"")+button(completeSample?"Download IA PDF":"Download earlier sample PDF","export-sample-ia-pdf","btn-secondary btn-sm")+button("See the sample journey","sample-journey","btn-secondary btn-sm")+button("Return to my investigation","leave-preview","btn-primary")+button("Another sample","open-demos","btn-quiet btn-sm")+'</div></aside>':"";
+    return preview.active?'<aside class="sample-preview-banner" aria-label="Sample preview"><div><strong>'+icon("sparkles")+' '+title+'</strong><p>'+detail+'</p><p class="sample-preview-metrics">'+state.entries.length+' connected mathematical stages · '+figureCount+' editable saved figures</p></div><div class="button-row">'+(completeSample?button("Read complete IA","sample-read-ia","btn-secondary btn-sm"):"")+button(completeSample?"Download IA PDF":"Download earlier sample PDF","export-sample-ia-pdf","btn-secondary btn-sm")+button("See the sample journey","sample-journey","btn-secondary btn-sm")+button("Return to my investigation","leave-preview","btn-primary")+button("Another sample","open-demos","btn-quiet btn-sm")+'</div>'+sampleRecoveryHtml()+'</aside>':"";
   }
   function leavePreview(){
     if(!preview.active)return;
+    sampleDocumentFailure=null;sampleReadingHtml="";
     const origin=preview.position;
     let latest=null;try{latest=localStorage.getItem(KEY);}catch{}
     closeDrawer(false);state=preview.leave(latest);drawerReturn=null;
@@ -1108,6 +1150,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     // A labelled, isolated and fully populated fictional investigation.
     // Loading/switching previews NEVER replaces the personal browser project.
     const next=createIllustrativeSample(kind);
+    sampleDocumentFailure=null;sampleReadingHtml="";
     next.ui.adviceMode=state.ui.adviceMode; // Keep each student’s help preference when trying a safe sample.
     const origin=drawerReturn||captureReturn();
     state=preview.begin(state,next,{scroll:origin.scroll,attributes:origin.attributes});
@@ -1262,12 +1305,15 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   async function readIllustrativeIA(){
     if(!preview.active||!state.demo)return;
     try{
-      const {illustrativeIAPagesModel,renderIllustrativeIAReading}=await import("./src/core/sample-ia-document.js");
+      // The reader ships with the app: an unavailable PDF or Word module
+      // cannot prevent students from reading the fictional investigation.
       sampleReadingHtml=renderIllustrativeIAReading(illustrativeIAPagesModel(state));
+      if(sampleDocumentFailure){sampleDocumentFailure=null;render();}
       openDrawer("sample-reading");
+      setSaveStatus("Sample preview only");
     }catch(error){
       console.error("Illustrative IA reader failed",error);
-      toast("The reading view could not be opened. The sample fields are still available.");
+      showSampleDocumentFailure(error,"reader");
     }
   }
 
@@ -1276,15 +1322,15 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     if(exportBusy){toast("Please wait for the current export.");return;}
     exportBusy=true;setSaveStatus("Preparing complete illustrated example…");
     try{
-      const {createIllustrativeIAExport}=await import("./src/core/sample-ia-document.js");
       const result=await createIllustrativeIAExport(state,format);
       downloadFile(result.bytes,result.name,result.mime);
-      setSaveStatus("Saved on this device");
+      if(sampleDocumentFailure){sampleDocumentFailure=null;render();}
+      setSaveStatus("Sample preview only");
+      layer.querySelector("[data-sample-document-recovery]")?.remove();
       toast("Complete fictional investigation downloaded with its mathematical figures.");
     }catch(error){
       console.error("Illustrative IA export failed",error);
-      setSaveStatus("Illustrative document could not be created",true);
-      toast("That example document could not be generated; your original project is safe.");
+      showSampleDocumentFailure(error,"export");
     }finally{exportBusy=false;}
   }
 
@@ -1679,6 +1725,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       case "leave-preview":leavePreview();break;
       case "sample-journey":nav("path");break;
       case "sample-read-ia":void readIllustrativeIA();break;
+      case "sample-tools-reload":reloadSampleTools();break;
       case "insight-focus":{
         const trail=el.closest(".living-trail"),id=el.dataset.threadId;
         if(!trail)break;

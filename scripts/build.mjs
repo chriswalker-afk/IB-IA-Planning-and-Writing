@@ -2,6 +2,7 @@ import {buildBrowserVendor} from "./build-browser-vendor.mjs";
 import {buildSiteStyles} from "./build-styles.mjs";
 import {auditPublishedAssets} from "./audit-deploy-assets.mjs";
 import {build} from "esbuild";
+import {createHash} from "node:crypto";
 import {copyFile,cp,mkdir,rm,stat,readFile,writeFile} from "node:fs/promises";
 import path from "node:path";
 
@@ -50,6 +51,15 @@ await copyFile(
  path.join(cwd,"node_modules/pdfjs-dist/legacy/build/pdf.worker.min.mjs"),
  path.join(out,"pdf.worker.min.mjs")
 );
+// An old, cached app.js can point at an old hashed chunk removed on the next
+// Pages deployment. Fingerprint the ENTRY URL too, not just lazy chunks.
+// The public HTML is the release manifest; source-hosted HTML remains plain.
+const entry=await readFile(path.join(out,"app.js"));
+const release=createHash("sha256").update(entry).digest("hex").slice(0,16);
+const script='<script type="module" src="./app.js"></script>';
+if(!publishedHtml.includes(script))throw new Error("Cannot version the published app entry script");
+await writeFile(path.join(out,"index.html"),
+ publishedHtml.replace(script,'<script type="module" src="./app.js?v='+release+'"></script>'));
 const app=await stat(path.join(out,"app.js"));
 if(!app.size)throw new Error("Bundled website is empty.");
 const summary=await auditPublishedAssets({root:cwd,out});
