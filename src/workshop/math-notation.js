@@ -178,6 +178,34 @@ export const WORKSHOP_LESSON_FORMULAS=Object.freeze({
     {"label":"Profit in each scenario","tex":"\\Pi=(p-v)q-F","spoken":"For each financial scenario calculate contribution margin times sales quantity minus fixed cost."},
     {"label":"Threshold selling price","tex":"p_*=v+\\frac{F}{q},\\qquad q>0","spoken":"At a fixed positive sales quantity, the break-even selling price equals unit cost plus fixed cost per sold item."}
   ],
+  "proof-conjectures": [
+   {"label":"Universal statement and counterexample","tex":"\\forall n\\in D,\\ P(n)","spoken":"A universal claim says P of n holds for every n in the stated domain D."},
+   {"label":"Counterexample refutes the universal claim","tex":"n=4:\\quad 4^2+4+1=21=3\\times7","spoken":"At n equals four, the expression is twenty one, which is three times seven, so it is not prime."}
+  ],
+  "proof-direct-reasoning": [
+   {"label":"Difference of consecutive squares","tex":"(n+1)^2-n^2=2n+1","spoken":"The difference of consecutive squares is two n plus one, which is odd when n is an integer."},
+   {"label":"Algebraic evenness for multiples of four","tex":"n=4k=2(2k),\\quad k\\in\\mathbb Z","spoken":"Every multiple of four has the form two times an integer, so is even."}
+  ],
+  "proof-induction-patterns": [
+   {"label":"Claim about a positive integer index","tex":"\\sum_{j=1}^{n}(2j-1)=n^2,\\quad n\\ge1","spoken":"The sum of the first n positive odd integers equals n squared for any positive integer n."},
+   {"label":"Induction step from k to k plus one","tex":"k^2+(2k+1)=(k+1)^2","spoken":"Using the induction hypothesis for the first k odd terms, adding the next odd term gives k plus one squared."}
+  ],
+  "iteration-sequences": [
+   {"label":"Arithmetic nth term and partial sum","tex":"a_n=a_1+(n-1)d,\\quad S_n=\\frac n2\\left[2a_1+(n-1)d\\right]","spoken":"For an arithmetic sequence indexed from one, the nth term adds n minus one common differences; the sum adds the first n terms."},
+   {"label":"Geometric nth term","tex":"b_n=b_1r^{n-1}","spoken":"The nth geometric term is the first term times the common ratio to the n minus one power."}
+  ],
+  "iteration-fixed-points": [
+   {"label":"Fixed-point condition","tex":"g(L)=L","spoken":"A fixed point L is unchanged by applying the map g."},
+   {"label":"Proven error contraction for the example","tex":"|x_n-1|=3^{-n}\\longrightarrow0","spoken":"For the chosen starting value, absolute error from the fixed point after n steps is three to the minus n, which tends to zero."}
+  ],
+  "iteration-bisection": [
+   {"label":"Retained bracket midpoint","tex":"m=\\frac{a+b}{2}","spoken":"The bisection midpoint is the average of the current lower and upper endpoints."},
+   {"label":"Certified midpoint error","tex":"|m-\\alpha|\\le\\frac{b-a}{2}","spoken":"If a root alpha remains in the bracket from a to b, the midpoint's absolute error is at most half the bracket width."}
+  ],
+  "iteration-newton": [
+   {"label":"General Newton update","tex":"x_{n+1}=x_n-\\frac{f(x_n)}{f'(x_n)}","spoken":"Subtract f of the current estimate divided by its derivative, provided that derivative is nonzero."},
+   {"label":"Newton update for square root of two","tex":"x_{n+1}=\\frac12\\left(x_n+\\frac{2}{x_n}\\right)","spoken":"For f of x equals x squared minus two, average the current nonzero estimate and two divided by that estimate."}
+  ],
   "histograms": [
     {
       "label": "Frequency density for any class",
@@ -456,6 +484,27 @@ export const WORKSHOP_DEFINITION_FORMULAS=Object.freeze({
   "present-value-finance": {"tex":"PV=\\frac{FV}{(1+d)^t}","spoken":"A future value is discounted by one plus rate to power time."},
   "net-present-value": {"tex":"NPV=C_0+\\sum_{t=1}^T\\frac{C_t}{(1+d)^t}","spoken":"Net present value is immediate cash flow plus the discounted values of each future signed cash flow."},
   "financial-threshold": {"tex":"p_*=v+\\frac{F}{q}","spoken":"At specified positive sales, the zero-profit selling price is unit variable cost plus fixed cost per item."},
+  "algebraic-identity": {"tex":"(a+b)^2=a^2+2ab+b^2","spoken":"The square of a sum is the square of the first term plus twice their product plus the square of the second."},
+  "parity": {"tex":"n=2k\\ \\text{or}\\ n=2k+1,\\ k\\in\\mathbb Z","spoken":"An integer is even when twice an integer, or odd when twice an integer plus one."},
+  "integer-divisibility": {"tex":"b\\mid a\\iff a=bk,\\quad k\\in\\mathbb Z","spoken":"b divides a if and only if a equals b times an integer k, for nonzero b."},
+  "base-case": {"tex":"P(n_0)","spoken":"The base case verifies the mathematical statement P at the starting index n nought."},
+  "induction-hypothesis": {"tex":"P(k)","spoken":"The induction hypothesis temporarily assumes the statement at an arbitrary permitted integer k."},
+  "inductive-step": {"tex":"P(k)\\Rightarrow P(k+1)","spoken":"Show that the truth at k implies the truth at the next integer k plus one."},
+  "recurrence-relation": {"tex":"a_{n+1}=f(a_n)","spoken":"A first-order recurrence gives the next term by applying f to the current term."},
+  "arithmetic-sequence": {"tex":"a_n=a_1+(n-1)d","spoken":"For a first term indexed at one and common difference d, the nth term adds n minus one increments."},
+  "common-difference": {"tex":"d=a_{n+1}-a_n","spoken":"The arithmetic common difference is the next term minus the current term."},
+  "geometric-sequence": {"tex":"a_n=a_1r^{n-1}","spoken":"For a geometric sequence with first term indexed at one and ratio r, the nth term multiplies by r to the n minus one power."},
+  "common-ratio": {"tex":"r=\\frac{a_{n+1}}{a_n}","spoken":"The geometric ratio is the next term divided by the previous nonzero term."},
+  "finite-series": {"tex":"S_n=\\sum_{k=1}^n a_k","spoken":"The partial sum of a sequence indexed from one adds terms one through n."},
+  "fixed-point": {"tex":"g(L)=L","spoken":"Fixed point L is unchanged when the iteration function g is applied."},
+  "fixed-point-equation": {"tex":"L=g(L)","spoken":"A candidate limit L satisfies the fixed-point equation."},
+  "contraction-mapping": {"tex":"|g(x)-g(y)|\\le q|x-y|","spoken":"A contraction has distance shrink factor q strictly less than one on the stated region."},
+  "absolute-approximation-error": {"tex":"e=|x_{\\mathrm{approx}}-x_{\\mathrm{exact}}|","spoken":"Absolute approximation error is the magnitude of the difference between approximate and exact values."},
+  "iteration-residual": {"tex":"r=|f(x)|","spoken":"The equation residual is the magnitude of f at an approximate root."},
+  "sign-change-bracket": {"tex":"f(a)f(b)<0","spoken":"A strict sign change means the product of endpoint function values is negative, assuming they are finite."},
+  "bisection-method": {"tex":"m=\\frac{a+b}{2}","spoken":"Bisection tests the midpoint between the two current bracket endpoints."},
+  "bisection-error-bound": {"tex":"|m-\\alpha|\\le\\frac{b-a}{2}","spoken":"For a bracketed root alpha, midpoint absolute error cannot exceed half the bracket width."},
+  "newton-raphson-method": {"tex":"x_{n+1}=x_n-\\frac{f(x_n)}{f'(x_n)}","spoken":"A Newton iterate subtracts f divided by its derivative, when the derivative is nonzero."},
   "rmse": {
     "tex": "\\mathrm{RMSE}=\\sqrt{\\frac{1}{n}\\sum_{i=1}^{n}(y_i-\\hat{y}_i)^2}",
     "spoken": "Root mean squared error is the square root of mean squared prediction error on the evaluation dataset."
