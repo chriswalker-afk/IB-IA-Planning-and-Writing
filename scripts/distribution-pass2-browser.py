@@ -349,7 +349,15 @@ def parameter_whatif(browser,width,kind):
   assert p.locator('[data-distribution-whatif-panel]').get_attribute("open") is not None
   assert "Alternative parameters applied" in p.locator('[data-distribution-whatif-panel]').inner_text()
   assert p.locator('[data-distribution-whatif-chart]').count()==0
-  assert p.locator('[data-representation-ready="true"]').count()==1
+  ready=p.locator('[data-representation-actions="distribution"]').get_attribute("data-representation-ready")
+  if ready!="true":
+   print("WHATIF APPLY DIAGNOSTIC",json.dumps({
+    "kind":kind,"width":width,"draft":data["distributionStudio"]["draft"],
+    "feedback":p.locator("[data-distribution-feedback]").inner_text(),
+    "output":p.locator('[data-representation-actions="distribution"]').count(),
+    "readyMarkers":p.locator('[data-representation-ready="true"]').count()
+   }),flush=True)
+  assert ready=="true",(kind,width,ready)
   check_width(p);text_bounds(p)
   if width==1440:
    count=p.locator('[data-distribution-selected="true"]').count()
