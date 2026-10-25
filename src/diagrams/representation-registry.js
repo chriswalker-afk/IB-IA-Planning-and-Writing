@@ -27,6 +27,8 @@ export const REPRESENTATION_TOOLS=Object.freeze([
  {id:"geometry",navLabel:"Geometry",title:"Geometry & Measurement Studio",figureTitle:"Geometric construction",action:"geometry-open",icon:"ruler",
   detail:"Build triangles or polygons with justified lengths, angles and bearings.",groups:["geometry","models"],
   studio:"geometryStudio",entryKey:"geometryFigureId",root:"geometry-studio",linkedReason:"linked-geometry"},
+ {id:"distribution",navLabel:"Distributions",title:"Probability Distribution Studio",figureTitle:"Probability distribution",action:"distribution-open",icon:"chart",
+  detail:"Normal and binomial models with shaded events and IA-ready figures.",groups:["models","decisions"],studio:"distributionStudio",entryKey:"distributionFigureId",root:"distribution-studio",linkedReason:"linked-distribution"},
  {id:"probability",navLabel:"Probability",title:"Probability Tree Studio",figureTitle:"Probability tree",action:"probability-open",icon:"git-branch",
   detail:"Create 2–3-stage conditional trees, validate branches and explore path/event probabilities.",
   groups:["decisions","models"],studio:"probabilityStudio",entryKey:"probabilityFigureId",

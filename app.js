@@ -84,6 +84,9 @@ import {renderGeometrySvg,geometryLayout} from "./src/diagrams/geometry-render.j
 import {geometryPreviewHtml,geometryQualityHtml,geometryOutputHtml} from "./src/diagrams/geometry-view.js";
 import {setGeometryField,setGeometryVertex,geometryTemplate,geometryAddVertex,geometryRemoveVertex,geometryFresh,loadGeometry,saveGeometryDraft,saveAndLinkGeometry,importGeometryFromTrace, geometryAddAuxPoint,geometryRemoveAuxPoint,setGeometryAuxPoint,geometryAddGuide,geometryRemoveGuide,setGeometryGuide,moveGeometryAuxPoint} from "./src/diagrams/geometry-actions.js";
 import {exportGeometry} from "./src/diagrams/geometry-export.js";
+import {distributionPreviewHtml,distributionFeedbackHtml,distributionOutputHtml} from "./src/diagrams/distribution-view.js";
+import {setDistributionField,freshDistribution,loadDistribution,saveDistributionDraft,saveAndLinkDistribution} from "./src/diagrams/distribution-actions.js";
+import {exportDistribution} from "./src/diagrams/distribution-export.js";
 import {probabilityPreviewHtml,probabilityQualityHtml,probabilityOutputHtml} from "./src/diagrams/probability-view.js";
 import {setProbabilityField,setProbabilityStage,setProbabilityBranch,toggleProbabilityLeaf,freshProbability,loadProbability,saveProbabilityDraft,saveAndLinkProbability} from "./src/diagrams/probability-actions.js";
 import {chooseProbabilityPreset,enableFlexibleProbability,addProbabilityOutcome,removeProbabilityOutcome,moveProbabilityOutcome,setProbabilityLabelOffset,changeProbabilityContinuation} from "./src/diagrams/probability-flexible-actions.js";
@@ -714,6 +717,27 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       node.textContent=node.dataset.probEventHeading==="eventLeaves"?d.eventName:d.conditionName);
     refreshPresentation("probability");
   }
+  function refreshDistributionPreview(){
+    const root=main.querySelector?.("[data-distribution-studio]");
+    if(!root||!state.distributionStudio?.open)return;
+    const p=root.querySelector("[data-distribution-preview]");
+    if(p)p.outerHTML=distributionPreviewHtml(state.distributionStudio);
+    const f=root.querySelector("[data-distribution-feedback]");
+    if(f)f.outerHTML=distributionFeedbackHtml(state.distributionStudio,e);
+    const o=root.querySelector("[data-distribution-output]");
+    if(o)o.outerHTML=distributionOutputHtml(state.distributionStudio,icon,e);
+  }
+  function navigateDistribution(figureId=""){
+    rememberMathEditorOrigin();
+    if(state.completion.current!=="C31")setCompletionNode(state,"C31",{reason:"distribution-editor"});
+    activateRepresentationTool(state,"distribution");
+    const entry=completeEntry(state);
+    if(!figureId)avoidEditingUnrelatedStageFigure(state.distributionStudio,entry,freshDistribution);
+    const id=figureId||entry?.distributionFigureId;
+    if(id&&state.distributionStudio.figures.some(f=>f.id===id))loadDistribution(state.distributionStudio,id);
+    save();render();
+    document.querySelector?.("[data-distribution-studio]")?.scrollIntoView?.({block:"start",behavior:"auto"});
+  }
   function navigateProbability(figureId=""){
     rememberMathEditorOrigin();
     if(state.completion.current!=="C31")setCompletionNode(state,"C31",{reason:"probability-editor"});
@@ -752,7 +776,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   // Checking or a later mathematical stage.
   const diagramNavigators=Object.freeze({
     graph:navigateGraph,stat:navigateStat,table:navigateTable,
-    trace:navigateTrace,voronoi:navigateVoronoi,geometry:navigateGeometry,probability:navigateProbability
+    trace:navigateTrace,voronoi:navigateVoronoi,geometry:navigateGeometry,probability:navigateProbability,distribution:navigateDistribution
   });
   function activeResourceCreator(){
     return activeRepresentationTool(state)?.id||"";
@@ -2076,6 +2100,29 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         returnToShowingFirstMaths("representation-return");
         break;
       }
+      case "distribution-open":navigateDistribution();break;
+      case "distribution-new":{
+        if(state.distributionStudio.draft.edited&&!window.confirm("Start another distribution? Save the current figure first if needed."))break;
+        freshDistribution(state.distributionStudio);save();render();break;
+      }
+      case "distribution-load":{
+        if(!loadDistribution(state.distributionStudio,el.dataset.distributionId)){toast("Saved distribution not found.");break;}
+        save();render();break;
+      }
+      case "distribution-save":{
+        const result=saveDistributionDraft(state);
+        if(!result.ok){toast("Check the distribution",result.error);break;}
+        save();render();toast("Editable distribution saved",result.reviewNeeded?"Review earlier linked conclusions.":"Included in project backup.");break;
+      }
+      case "distribution-use":{
+        const result=saveAndLinkDistribution(state);
+        if(!result.ok){toast("Check the distribution",result.error);break;}
+        returnToShowingFirstMaths("linked-distribution");toast("Distribution linked to this mathematical stage");break;
+      }
+      case "distribution-svg":case "distribution-png":{
+        exportDistribution(state.distributionStudio.draft,action.slice("distribution-".length))
+          .then(message=>toast(message)).catch(err=>toast("Distribution export unavailable",err.message));break;
+      }
       case "probability-open":navigateProbability();break;
       case "probability-preview-fit":case "probability-preview-detail":{
         const zoomed=action==="probability-preview-detail";
@@ -3226,6 +3273,12 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   });
   document.addEventListener("input",evt=>{
     const target=evt.target;
+    if(target.dataset.distributionField!==undefined){
+      const value=target.type==="checkbox"?target.checked:target.value;
+      if(setDistributionField(state.distributionStudio,target.dataset.distributionField,value)){
+        save();if(target.tagName==="SELECT"||target.type==="checkbox")render();else refreshDistributionPreview();
+      }return;
+    }
     if(target.dataset.probBranchParent!==undefined){
       if(setProbabilityBranch(state.probabilityStudio,target.dataset.probBranchParent,
          Number(target.dataset.probBranchIndex),target.dataset.probBranchKey,target.value)){

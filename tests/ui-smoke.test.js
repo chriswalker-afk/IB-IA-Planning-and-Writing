@@ -63,6 +63,9 @@ import {renderGeometrySvg,geometryLayout} from "../src/diagrams/geometry-render.
 import {geometryPreviewHtml,geometryQualityHtml} from "../src/diagrams/geometry-view.js";
 import {setGeometryField,setGeometryVertex,geometryTemplate,geometryAddVertex,geometryRemoveVertex,geometryFresh,loadGeometry,saveGeometryDraft,saveAndLinkGeometry} from "../src/diagrams/geometry-actions.js";
 import {exportGeometry} from "../src/diagrams/geometry-export.js";
+import {distributionPreviewHtml,distributionFeedbackHtml,distributionOutputHtml} from "../src/diagrams/distribution-view.js";
+import {setDistributionField,freshDistribution,loadDistribution,saveDistributionDraft,saveAndLinkDistribution} from "../src/diagrams/distribution-actions.js";
+import {exportDistribution} from "../src/diagrams/distribution-export.js";
 import {probabilityPreviewHtml,probabilityQualityHtml,probabilityOutputHtml} from "../src/diagrams/probability-view.js";
  import {setProbabilityField,setProbabilityStage,setProbabilityBranch,toggleProbabilityLeaf,freshProbability,loadProbability,saveProbabilityDraft,saveAndLinkProbability} from "../src/diagrams/probability-actions.js";
  import {exportProbability} from "../src/diagrams/probability-export.js";
@@ -142,6 +145,7 @@ function createHarness(savedValue,{welcome=false}={}){
     setVoronoiField,setVoronoiSite,addVoronoiSite,removeVoronoiSite,clearVoronoiMap,useVoronoiMap,
     beginVoronoi,loadVoronoi,saveVoronoiDraft,saveAndLinkVoronoi,exportVoronoi,
     geometryAnalysis,renderGeometrySvg,geometryLayout,geometryPreviewHtml,geometryQualityHtml,setGeometryField,setGeometryVertex,geometryTemplate,geometryAddVertex,geometryRemoveVertex,geometryFresh,loadGeometry,saveGeometryDraft,saveAndLinkGeometry,exportGeometry,
+    distributionPreviewHtml,distributionFeedbackHtml,distributionOutputHtml,setDistributionField,freshDistribution,loadDistribution,saveDistributionDraft,saveAndLinkDistribution,exportDistribution,
     probabilityPreviewHtml,probabilityQualityHtml,probabilityOutputHtml,
     setProbabilityField,setProbabilityStage,setProbabilityBranch,toggleProbabilityLeaf,freshProbability,loadProbability,saveProbabilityDraft,saveAndLinkProbability,exportProbability,
     renderRepresentationHub,renderRepresentationSwitcher,representationFocusActive,renderPresentationCoach,renderFigureHandover,figureCaption,

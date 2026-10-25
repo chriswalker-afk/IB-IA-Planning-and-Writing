@@ -136,7 +136,7 @@ export const SUPPORT_PLACEMENTS=freeze([
  p("precision","evidence","completing",["C24","C34A"],"Precision and resolution",["precision"],[],current,["reporting-precision"]),
  p("definitions","writing","completing",["C25"],"Meaningful variable definitions",["writing","figure-repair"]),
  p("first-move","mathematics","completing",["C30","C32"],"Purposeful small representation",["first","first-purpose"],[],current,["chart-choice"],["graph","table","geometry"]),
- p("first-figure","mathematics","completing",["C30","C31","C33"],"Seven representation options",["tool-choice","figure-repair"],[],current,["export-figure"],["graph","stat","table","trace","voronoi","geometry","probability"]),
+ p("first-figure","mathematics","completing",["C30","C31","C33"],"Eight representation options",["tool-choice","figure-repair"],[],current,["export-figure"],["graph","stat","table","trace","voronoi","geometry","probability","distribution"]),
  p("first-result","mathematics","completing",["C30","C34","C34B"],"Actual result interpretation",["interpret","result-validation"],["selected-actual-result"]),
  p("no-result","mathematics","completing",["C30","C34","C35"],"No selected real result yet",["first","result-validation"],["no-selected-actual-result"],stage("completing","C30")),
  p("surprise","mathematics","completing",["C30","C34U"],"Genuine unexpected finding",["unexpected","outcome-dependent"],["selected-actual-result"]),

@@ -1,4 +1,4 @@
-"""Pass 5: actual route, stage, reduced-mode and seven-creator interactions.
+"""Pass 5: actual route, stage, reduced-mode and eight-creator interactions.
 No networked student data and no invented research findings.
 """
 import copy,json,os,subprocess
@@ -10,7 +10,7 @@ KEY="ia-pathfinder-prototype-v1"
 BASE=json.loads(subprocess.check_output(["node","--input-type=module","-e",
  "import {createProjectState} from './src/core/project-state.js';console.log(JSON.stringify(createProjectState()));"],text=True))
 GROUPS={"data":{"graph","stat","table"},"geometry":{"trace","geometry","voronoi"}}
-ALL={"graph","stat","table","trace","voronoi","geometry","probability"}
+ALL={"graph","stat","table","trace","voronoi","geometry","probability","distribution"}
 ROUTES={"relationships":"graph","groups":"stat","categorical":"table",
  "variation":"stat","fitted-models":"graph","growth":"graph","cycles":"graph",
  "trajectories":"trace","optimisation":"graph","images":"trace","triangulation":"geometry",
@@ -38,7 +38,7 @@ def chooser(browser,width):
   def actions(q):
    return [x for x in q.locator("[data-action]").evaluate_all(
     "(nodes)=>nodes.map(n=>n.dataset.action).filter(x=>x.endsWith('-open'))")]
-  assert set(actions(hub))=={"graph-open","stat-open","table-open","trace-open","voronoi-open","geometry-open","probability-open"}
+  assert set(actions(hub))=={"graph-open","stat-open","table-open","trace-open","voronoi-open","geometry-open","probability-open","distribution-open"}
   assert hub.locator("[data-representation-recommended] [data-action='probability-open']").count()==1
   for purpose in ("geometry","models","decisions","all"):
    hub.locator('[data-action="representation-filter"][data-representation-filter="'+purpose+'"]').click()
@@ -48,7 +48,7 @@ def chooser(browser,width):
    if purpose=="geometry":
     assert set(picked)=={"trace-open","geometry-open","voronoi-open"},picked
     assert "No tools in this category" not in hub.inner_text()
-   if purpose=="all":assert len(picked)==7,picked
+   if purpose=="all":assert len(picked)==8,picked
    width_ok(p)
   p.screenshot(path=str(OUT/f"all-generators-{width}.png"),full_page=True,animations="disabled")
   # Reduced advice removes optional prose without removing a tool or help.
@@ -59,7 +59,7 @@ def chooser(browser,width):
   p.reload(wait_until="networkidle")
   hub=p.locator("[data-representation-hub]")
   assert hub.get_attribute("data-representation-advice-mode")=="reduced"
-  assert len(actions(hub))==7
+  assert len(actions(hub))==8
   assert hub.locator(".representation-optional-context").count()==1
   hub.locator(".representation-optional-context summary").click()
   assert "No editable dataset" in hub.locator(".representation-optional-context").inner_text()
@@ -73,7 +73,7 @@ def chooser(browser,width):
   nav=p.locator("[data-representation-switcher]")
   tabs=nav.locator('[data-action="representation-switch"]')
   assert set(tabs.evaluate_all("(nodes)=>nodes.map(x=>x.dataset.representationTool)"))==ALL
-  assert tabs.count()==7
+  assert tabs.count()==8
   assert nav.locator('[data-action="representation-jump"]').count()==0
   assert nav.locator('[aria-current="page"]').count()==1
   assert nav.locator('[data-representation-tool="probability"][aria-current="page"]').count()==1
@@ -81,8 +81,8 @@ def chooser(browser,width):
   p.locator('[data-prob-field="title"]').fill("QA unsaved probability tree")
   roots={"graph":"graph-studio","stat":"stat-studio","table":"table-studio",
          "trace":"image-tracer","voronoi":"voronoi-studio",
-         "geometry":"geometry-studio","probability":"probability-studio"}
-  for tool in ("geometry","stat","table","trace","voronoi","graph","probability"):
+         "geometry":"geometry-studio","probability":"probability-studio","distribution":"distribution-studio"}
+  for tool in ("geometry","stat","table","trace","voronoi","graph","distribution","probability"):
    p.locator('[data-representation-tool="'+tool+'"]').click()
    assert p.locator('[data-'+roots[tool]+']').is_visible(),tool
    assert p.locator('[data-representation-switcher] [aria-current="page"]').count()==1
@@ -175,7 +175,7 @@ def planning_to_creator(browser,width):
  try:
   p.locator(".chapter-onboarding-plan [data-action='resource-browse']").click()
   drawer=p.locator(".resource-drawer");assert drawer.is_visible()
-  assert drawer.locator(".resource-creator-card").count()==7
+  assert drawer.locator(".resource-creator-card").count()==8
   drawer.locator(".resource-creators-compact > summary").click()
   drawer.locator('[data-resource-creator="geometry"]').click()
   assert p.locator("[data-geometry-studio]").is_visible()

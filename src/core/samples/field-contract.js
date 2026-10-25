@@ -347,7 +347,7 @@ const stage = [
       ['journeySourceOutcome', 'Previous outcome informing this choice'], ['journeySourceSignature', 'Signature of preceding evidence'],
       ['journeyRouteId', 'Investigative pathway'], ['graphFigureId', 'Linked graph'], ['imageTraceId', 'Linked calibrated trace'],
       ['statFigureId', 'Linked statistical diagram'], ['tableFigureId', 'Linked table'], ['voronoiFigureId', 'Linked Voronoi diagram'],
-      ['geometryFigureId', 'Linked geometry diagram'], ['probabilityFigureId', 'Linked probability diagram'],
+      ['geometryFigureId', 'Linked geometry diagram'], ['probabilityFigureId', 'Linked probability diagram'], ['distributionFigureId', 'Linked probability distribution'],
       ['figureRefs', 'All figures belonging to this stage'],
       ['accuracyRefs', 'Linked accuracy decisions'], ['sourceRefs', 'Linked actual sources'], ['reviewNeeded', 'Dependent work requiring review'],
       ['reviewReason', 'Reason to revisit the mathematics'], ['reviewCheckedAt', 'Student review date'], ['createdAt', 'Record creation time']
