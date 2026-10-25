@@ -46,7 +46,7 @@ const guide=(id,category,title,definitionIds,details)=>Object.freeze({id,categor
  */
 export const BATCH1_LESSONS=Object.freeze([
  guide("sampling","Data & statistics","Sampling fairly and recognising bias",
- ["population","sample","sampling-frame","stratified-sample","simple-random-sample","selection-bias","nonresponse-bias","representative-sample"],{
+ ["sampling","population","sample","sampling-unit","sampling-frame","stratified-sample","simple-random-sample","selection-bias","nonresponse-bias","representative-sample"],{
   skill:"Plan and justify the selection yourself; technology can randomise a suitable list",
   when:"When a question needs observations from people or other units and the population is larger than your practical data collection.",
   avoid:"A random-number generator cannot repair missing members of a sampling frame, voluntary response, nonresponse or a missing permission process.",
