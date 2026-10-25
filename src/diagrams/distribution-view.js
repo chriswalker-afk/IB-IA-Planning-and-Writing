@@ -1,4 +1,5 @@
 import {analyzeDistribution,MAX_DISTRIBUTION_FIGURES} from "./distribution-core.js";
+import {distributionLayout} from "./distribution-layout.js";
 import {renderDistributionSvg} from "./distribution-render.js";
 import {representationOutputActions} from "./workspace-ui.js";
 const field=(key,label,value,e)=>
@@ -7,14 +8,25 @@ const select=(key,label,value,options,e)=>
  '<label class="probability-field"><span>'+e(label)+'</span><select data-distribution-field="'+key+'">'+
  options.map(([v,t])=>'<option value="'+e(v)+'"'+(value===v?' selected':'')+'>'+e(t)+'</option>').join("")+'</select></label>';
 const toggle=(key,label,checked)=>'<label class="probability-tick"><input type="checkbox" data-distribution-field="'+key+'"'+(checked?" checked":"")+'><span>'+label+'</span></label>';
+const boundaryField=(key,label,value,e)=>'<div class="distribution-boundary-control">'+
+ field(key,label,value,e)+
+ '<div class="distribution-nudge" role="group" aria-label="'+e(label)+' adjustments">'+
+ '<button type="button" class="btn btn-secondary btn-sm" data-action="distribution-nudge" data-distribution-boundary="'+key+
+ '" data-distribution-direction="-1" aria-label="Decrease '+e(label.toLowerCase())+'">−</button>'+
+ '<button type="button" class="btn btn-secondary btn-sm" data-action="distribution-nudge" data-distribution-boundary="'+key+
+ '" data-distribution-direction="1" aria-label="Increase '+e(label.toLowerCase())+'">+</button></div></div>';
 export function distributionPreviewHtml(studio){
- return '<div class="distribution-preview" data-distribution-preview>'+renderDistributionSvg(studio.draft)+'</div>';
+ return '<div class="distribution-preview'+(studio.zoomed?' distribution-preview-detail':'')+
+ '" data-distribution-preview>'+renderDistributionSvg(studio.draft,{interactive:true})+'</div>';
 }
 export function distributionFeedbackHtml(studio,e){
- const q=analyzeDistribution(studio.draft);
+ const q=analyzeDistribution(studio.draft),layout=distributionLayout(q);
+ const clipped=q.ready&&q.draft.kind==="normal"&&[q.lower,q.upper].some(v=>v!==null&&
+  (layout.x(v)<layout.plot.left||layout.x(v)>layout.plot.right));
  return '<section class="probability-quality" data-distribution-feedback aria-live="polite">'+
  (q.issues.length?'<strong>Before saving or exporting</strong><ul>'+q.issues.map(t=>'<li>'+e(t)+'</li>').join("")+'</ul>':
   '<strong>Figure ready for export</strong>'+(q.statement?'<p>'+e(q.statement)+'</p>':""))+
+ (clipped?'<p class="distribution-caution"><strong>Boundary outside the displayed window:</strong> the probability uses the exact input, but this boundary cannot be seen on the plot. Consider whether a figure helps at this scale.</p>':"")+
  '<details><summary>Model assumptions and interpretation</summary><ul>'+q.notes.map(t=>'<li>'+e(t)+'</li>').join("")+'</ul></details></section>';
 }
 export function distributionOutputHtml(studio,icon,e){
@@ -43,8 +55,8 @@ export function renderDistributionStudio(state,icon,e){
  select("mode","Highlight",d.mode,[["none","No probability"],["left","At most / left tail (≤)"],
  ["right","At least / right tail (≥)"],["between","Between two inclusive boundaries"],
  ["outside","Outside two boundaries"]].concat(d.kind==="binomial"?[["exact","Exact value (=)"]]:[]),e)+
- (d.mode!=="none"?field("lower",["between","outside"].includes(d.mode)?"Lower boundary":"Value / boundary",d.lower,e):"")+
- (["between","outside"].includes(d.mode)?field("upper","Upper boundary",d.upper,e):"")+
+ (d.mode!=="none"?boundaryField("lower",["between","outside"].includes(d.mode)?"Lower boundary":"Value / boundary",d.lower,e):"")+
+ (["between","outside"].includes(d.mode)?boundaryField("upper","Upper boundary",d.upper,e):"")+
  '<details class="ia-figure-presentation-settings"><summary>IA figure appearance</summary>'+
  select("size","Figure size",d.size,[["compact","Compact"],["standard","Standard IA"],["wide","Wide"]],e)+
  select("printStyle","Printing",d.printStyle,[["colour","Colour"],["mono","Monochrome"]],e)+
@@ -60,9 +72,12 @@ export function renderDistributionStudio(state,icon,e){
  (d.sourceKind==="secondary"?field("sourceCredit","Source reference",d.sourceCredit,e):"")+
  '<label class="probability-field"><span>Assumptions or limitations (not printed)</span><textarea data-distribution-field="note" rows="3">'+e(d.note)+'</textarea></label>'+
  '<button type="button" class="btn btn-quiet btn-sm" data-action="distribution-new">+ New distribution figure</button>'+
- '</div><div class="probability-main"><div class="probability-preview-header"><h3>Figure preview</h3></div>'+
+ '</div><div class="probability-main"><div class="probability-preview-header"><h3>Figure preview</h3>'+
+ '<div class="probability-preview-controls" role="group" aria-label="Preview magnification">'+
+ '<button type="button" class="btn btn-secondary btn-sm" data-action="distribution-preview-fit" aria-pressed="'+(!s.zoomed)+'">Fit figure</button>'+
+ '<button type="button" class="btn btn-secondary btn-sm" data-action="distribution-preview-detail" aria-pressed="'+(!!s.zoomed)+'">Enlarge to check labels</button></div></div>'+
  distributionPreviewHtml(s)+
- '<p class="probability-canvas-note">White-background vector figure; annotations and warnings below are not exported. Check readability at the intended document size.</p>'+
+ '<p class="probability-canvas-note">Drag a marker or use its arrow keys to change a boundary. Use the numeric fields above for exact values (or −/+ on a phone). Handles and this help text never appear in the exported IA figure.</p>'+
  distributionFeedbackHtml(s,e)+'<div data-representation-step="use">'+distributionOutputHtml(s,icon,e)+'</div>'+
  (s.figures.length?'<details class="probability-saved"><summary>Saved distributions ('+s.figures.length+')</summary>'+
  s.figures.map(f=>'<div class="probability-saved-row"><strong>'+e(f.draft.title||"Distribution")+'</strong>'+
