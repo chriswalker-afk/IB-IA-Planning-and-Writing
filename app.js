@@ -776,7 +776,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   // Checking or a later mathematical stage.
   const diagramNavigators=Object.freeze({
     graph:navigateGraph,stat:navigateStat,table:navigateTable,
-    trace:navigateTrace,voronoi:navigateVoronoi,geometry:navigateGeometry,probability:navigateProbability
+    trace:navigateTrace,voronoi:navigateVoronoi,geometry:navigateGeometry,probability:navigateProbability,distribution:navigateDistribution
   });
   function activeResourceCreator(){
     return activeRepresentationTool(state)?.id||"";
