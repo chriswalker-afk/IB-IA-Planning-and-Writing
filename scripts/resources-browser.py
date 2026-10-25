@@ -175,6 +175,7 @@ with sync_playwright() as pw:
   assert p.locator('#resource-results [data-action="resource-creator-open"][data-resource-creator="trace"]').is_visible()
   assert overlay(p).evaluate('el=>el.scrollWidth<=el.clientWidth+1')
   p.locator('[data-action="resource-discovery-area"][data-resource-area=""]').click()
+  p.locator('#resource-results [data-action="resource-discovery-type"][data-resource-type="all"]').first.click()
   p.locator('#resource-search').fill('MLA')
   p.locator('#resource-results [data-action="resource-open"][data-resource-id="mla-citations"]').click()
   assert 'Works Cited' in overlay(p).inner_text()
