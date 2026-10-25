@@ -805,5 +805,63 @@ with sync_playwright() as pw:
   p.locator('[data-action="close-drawer"]').click()
   assert unchanged_fields(saved(p))==before
  run('workshop-connected-definition-network-desktop',state(),connected_network_desktop,1440,1000)
+ def contextual_box_software(p):
+  before=unchanged_fields(saved(p))
+  badge=p.locator('[data-studio-stuck="C30:part:show"]')
+  assert badge.count()==1 and badge.is_visible()
+  badge.click()
+  modal=p.locator('#studioStuckDialog[open]')
+  assert modal.is_visible()
+  assert modal.locator('[data-workshop-help-focus="calculate"]').count()==1
+  guide=modal.locator('.resource-contextual-practical [data-resource-id="sheets-pmcc"]')
+  assert guide.count()==1 and guide.is_visible()
+  guide.click()
+  assert not modal.is_visible()
+  assert p.locator('.resource-drawer [data-resource-detail="sheets-pmcc"]').count()==1
+  p.locator('[data-action="resource-list"]').first.click()
+  assert p.locator('.resource-home-relevant').count()==1
+  assert 'Help for this mathematical step' in p.locator('.resource-home-relevant').inner_text()
+  assert p.locator('.resource-home-relevant [data-workshop-help-focus="calculate"]').count()==1
+  assert overlay(p).evaluate('(e)=>e.scrollWidth<=e.clientWidth+1')
+  overlay(p).screenshot(path=str(OUT/('resource-box-help-'+str(p.viewport_size['width'])+'.png')),animations='disabled')
+  close(p)
+  assert unchanged_fields(saved(p))==before
+ s=state(node='C30',method='pmcc')
+ s['planning'].setdefault('routeExplorer',{})['selectedRoute']='finance'
+ run('resources-pass3-specific-box-to-tutorial-phone',s,contextual_box_software,360,740)
+ run('resources-pass3-specific-box-to-tutorial-desktop',s,contextual_box_software,1440,950)
+ def contextual_hub_origin(p):
+  before=unchanged_fields(saved(p))
+  badge=p.locator('[data-studio-stuck="C30:part:show"]')
+  assert badge.count()==1
+  badge.click()
+  modal=p.locator('#studioStuckDialog[open]')
+  modal.locator('[data-studio-stuck-hub]').click()
+  assert p.locator('.stuck-hub').count()==1
+  p.locator('.stuck-hub [data-action="resource-browse"]').first.click()
+  relevant=p.locator('.resource-drawer .resource-home-relevant')
+  assert relevant.count()==1
+  assert 'Help for this mathematical step' in relevant.inner_text()
+  assert relevant.locator('[data-workshop-help-focus="calculate"]').count()==1
+  assert overlay(p).evaluate('(e)=>e.scrollWidth<=e.clientWidth+1')
+  p.locator('.resource-drawer [data-action="resource-close"]').first.click()
+  assert p.locator('.drawer .stuck-hub').count()==1
+  assert unchanged_fields(saved(p))==before
+ run('resources-pass3-box-origin-through-stuck',state(node='C30',method='pmcc'),contextual_hub_origin,390,844)
+ def contextual_selected_path(p):
+  before=unchanged_fields(saved(p))
+  action(p,'open-panel','[data-panel="help"]')
+  card=p.locator('.drawer .guidance-help-panel .resource-contextual-learning')
+  assert card.count()==1
+  assert card.locator('[data-workshop-term="voronoi-cell"]').count()==1
+  assert card.locator('[data-workshop-id="voronoi-regions"]').count()==1
+  assert card.locator('[data-resource-id="sheets-pmcc"]').count()==0
+  assert overlay(p).evaluate('(e)=>e.scrollWidth<=e.clientWidth+1')
+  p.locator('[data-action="close-drawer"]').click()
+  assert unchanged_fields(saved(p))==before
+ chosen=state(route='planning')
+ chosen['planning']['current']='N04S'
+ chosen['planning'].setdefault('routeExplorer',{})['selectedRoute']='voronoi'
+ run('resources-pass3-help-menu-pathway-phone',chosen,contextual_selected_path,360,740)
  browser.close()
 (OUT/'resources-results.json').write_text(json.dumps(results,indent=2));print(json.dumps(results,indent=2));assert all(r['status']=='passed' for r in results)

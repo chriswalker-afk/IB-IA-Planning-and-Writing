@@ -8,9 +8,20 @@ import {DISCOVERY_AREAS,DISCOVERY_TYPES,DISCOVERY_ITEMS} from './discovery.js';
 export function resourceAction(state,session,action,data={},parent=''){
  if(!action.startsWith('resource-'))return null;
  const help=data.resourceHelp==='true';
+ const captureSupport=()=>{
+  const origin=parent==='stuck'?state.completion?.support?.origin:null;
+  const spot=String(data.resourceSpot||origin?.helpSpot||'');
+  const issue=String(data.resourceIssue||(
+   parent==='stuck'?state.completion?.support?.selected||'':''));
+  session.supportSpot=/^[A-Za-z0-9:_-]{1,120}$/.test(spot)?spot:'';
+  session.supportIssue=/^[A-Za-z0-9:_-]{1,120}$/.test(issue)?issue:'';
+ };
  if(action==='resource-workshop'){
   const returning=parent==='resources'&&data.workshopResume==='true'&&session.workshopReturn;
-  if(parent!=='resources')Object.assign(session,newResourceSession(),{help,parent:parent==='stuck'?'stuck':''});
+  if(parent!=='resources'){
+   Object.assign(session,newResourceSession(),{help,parent:parent==='stuck'?'stuck':''});
+   captureSupport();
+  }
   session.mode='workshop';session.id='';
   const id=String(data.workshopRoute||'');
   if(!returning){
@@ -84,7 +95,10 @@ export function resourceAction(state,session,action,data={},parent=''){
  if(action==='resource-guides'){session.mode='tools';session.id='';session.discoveryType='guide';session.discoveryLimit=16;return {ok:true,list:true,focus:'results'};}
  if(action==='resource-open'||action==='resource-browse'){
   if(action==='resource-open'&&!resourceById(data.resourceId))return {ok:false,error:'That tutorial is not available.'};
-  if(parent!=='resources')Object.assign(session,newResourceSession(),{help,parent:parent==='stuck'?'stuck':''});
+  if(parent!=='resources'){
+   Object.assign(session,newResourceSession(),{help,parent:parent==='stuck'?'stuck':''});
+   captureSupport();
+  }
   if(action==='resource-open'&&session.mode==='workshop')session.workshopReturn=true;
   session.mode='tools';
   session.id=action==='resource-open'?data.resourceId:'';

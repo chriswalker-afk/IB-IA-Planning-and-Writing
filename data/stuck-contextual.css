@@ -151,3 +151,51 @@
 .stuck-support .workshop-contextual-help{margin:15px 0}
 .guidance-help-panel .workshop-contextual-help{margin:16px 0 10px}
 @media(max-width:700px){.stuck-context-dialog .workshop-contextual-help{padding:12px}.workshop-contextual-actions{display:grid;grid-template-columns:minmax(0,1fr)}.workshop-contextual-actions .btn{width:100%}}
+
+
+/* Tools & tutorials Pass 3 — one contextual learning surface across help,
+   focused problem pop-ins and the resources hub. Keep it visually neutral,
+   distinct from amber recovery, purple writing, and green criteria advice. */
+.resource-contextual-learning{display:grid;gap:0;min-width:0}
+.resource-contextual-learning>.workshop-contextual-help{
+ margin:12px 0 0;border-radius:13px 13px 0 0;min-width:0
+}
+.resource-contextual-learning:not(:has(.resource-contextual-practical))>.workshop-contextual-help{
+ border-radius:13px;margin-bottom:10px
+}
+.resource-contextual-practical{
+ display:flex;align-items:center;justify-content:space-between;
+ flex-wrap:wrap;gap:9px 12px;padding:11px 15px;
+ border:1px solid var(--line);border-top:0;border-radius:0 0 13px 13px;
+ background:var(--surface-soft);min-width:0
+}
+.resource-contextual-practical>span{
+ color:var(--muted);font-size:12px;line-height:1.5;flex:1 1 130px
+}
+.resource-contextual-practical>.btn{
+ flex:0 1 auto;max-width:100%;min-width:0;
+ min-height:44px;padding:9px 12px;font-size:12px;
+ text-align:left;white-space:normal;overflow-wrap:anywhere
+}
+.resource-library-home .resource-home-relevant>.resource-small{margin:6px 0 8px}
+.resource-library-home .resource-home-relevant .resource-contextual-learning>.workshop-contextual-help{
+ background:var(--surface);margin-top:3px
+}
+.resource-library-home .resource-relevant-guides{
+ border:0;margin:10px 0 0;padding:0;background:transparent
+}
+.resource-library-home .resource-relevant-guides>summary{
+ color:var(--teal-dark);font-size:12px;font-weight:700;min-height:38px;
+ cursor:pointer
+}
+.resource-library-home .resource-relevant-guides>.resource-relevant-grid{
+ margin-top:10px
+}
+@media(max-width:560px){
+ .resource-contextual-practical{display:grid;grid-template-columns:minmax(0,1fr)}
+ .resource-contextual-practical>.btn{width:100%;max-width:100%;justify-content:flex-start}
+ .resource-library-home .resource-relevant-guides .resource-relevant-grid{grid-template-columns:minmax(0,1fr)}
+}
+@media(prefers-reduced-motion:reduce){
+ .resource-contextual-practical>.btn{transition:none}
+}
