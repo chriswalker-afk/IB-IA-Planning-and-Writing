@@ -41,7 +41,7 @@ export const REPRESENTATION_ROUTE_GUIDANCE=Object.freeze({
   why:["Construct nearest-site regions from projected Cartesian coordinates.","Calibrate sites from a scale map if their coordinates are not yet available."]},
  finance:{name:"Business and financial decisions",ids:["table","graph"],
   why:["Compare rates, scenarios and useful numerical outcomes.","Plot financially meaningful cost/revenue models and domains."]},
- chance:{name:"Probability and simulation",ids:["probability","distribution","stat"],
+ chance:{name:"Probability and simulation",ids:["probability","stat"],
   why:["Use a tree for genuinely successive or conditional outcomes; justify every branch probability.","Use statistical diagrams for empirical or simulated distributions, not invented observations."]},
  proof:{name:"Conjecture, proof and counterexamples",ids:["graph","table"],
   why:["Explore examples visually while remembering that a graph is not proof.","Show a few selected cases, not a long list of substitutions."]},
