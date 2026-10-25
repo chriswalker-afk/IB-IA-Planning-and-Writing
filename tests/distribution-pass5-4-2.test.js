@@ -23,7 +23,8 @@ const startTarget=(s,{mode="left",probability="0.8"}={})=>{
  assert.ok(startDistributionWhatIf(s));
  assert.ok(setDistributionWhatIfOption(s,"comparison","target"));
  if(mode!=="left")assert.ok(setDistributionWhatIfOption(s,"targetMode",mode));
- assert.ok(setDistributionWhatIfOption(s,"targetProbability",probability));
+ setDistributionWhatIfOption(s,"targetProbability",probability);
+ assert.equal(s.whatIf.targetProbability,probability);
 };
 test("Pass 5.4.2 keeps the existing fixed-event comparison by default",()=>{
  const s=create("normal",{mu:"70",sigma:"10",mode:"left",lower:"70"});
