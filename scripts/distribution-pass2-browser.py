@@ -248,7 +248,7 @@ def inverse_boundary(browser,width,kind):
    with p.expect_download() as download:p.locator('[data-action="distribution-png"]').click()
    file=OUT/"inverse-normal-mobile.png"
    download.value.save_as(str(file))
-   assert file.read_bytes()[:8]==b"\\x89PNG\\r\\n\\x1a\\n"
+   assert file.read_bytes()[:8]==bytes([137,80,78,71,13,10,26,10])
   if kind=="normal":
    # Model changes invalidate a calculation; applying the old result is blocked.
    field(p,"sigma","2")
