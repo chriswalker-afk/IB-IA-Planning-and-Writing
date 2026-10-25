@@ -27,7 +27,7 @@ test("focus is limited to C31 when a studio is open",()=>{
  assert.equal(representationFocusActive({...s,route:"planning"}),false);
  assert.equal(representationFocusActive({...s,graphStudio:{open:false}}),false);
 });
-test("studio toolbar has one Back control and all seven distinct diagram tools",()=>{
+test("studio toolbar has one Back control and all eight distinct diagram tools",()=>{
  const state=createProjectState();
  state.route="completing";state.completion.current="C31";
  state.completion.editorReturnNode="C40";
@@ -36,7 +36,7 @@ test("studio toolbar has one Back control and all seven distinct diagram tools",
  assert.match(html,/data-action="representation-return" data-node="C40"/);
  assert.match(html,/data-action="representation-back"/);
  assert(!html.includes('data-action="representation-jump"'),"Obsolete Create/Refine/Use strip should be removed");
- assert.equal((html.match(/data-action="representation-switch"/g)||[]).length,7);
+ assert.equal((html.match(/data-action="representation-switch"/g)||[]).length,8);
  for(const tool of REPRESENTATION_TOOLS){
   assert.equal((html.match(new RegExp('data-representation-tool="'+tool.id+'"','g'))||[]).length,1);
   assert.match(html,new RegExp('data-icon="'+tool.icon+'"'));
@@ -80,7 +80,7 @@ test("focus CSS requires activation and does not remove the IA writing content",
 });
 
 test("one registry supplies all creator stores, figure link keys, and gallery metadata",()=>{
- assert.equal(REPRESENTATION_TOOLS.length,7,"Every implemented generator should be registered exactly once");
+ assert.equal(REPRESENTATION_TOOLS.length,8,"Every implemented generator should be registered exactly once");
  assert.deepEqual(new Set(REPRESENTATION_TOOLS.map(t=>t.id)).size,REPRESENTATION_TOOLS.length);
  const gallery=new Map(FIRST_FIGURE_TYPES.map(t=>[t.kind,t]));
  for(const tool of REPRESENTATION_TOOLS){
