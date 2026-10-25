@@ -221,6 +221,7 @@ export function insightForCurrent(s,node){
  if(/^N(?:02|03|04|05|06)/.test(node))return compact(['aim','motivation','working-title']).slice(0,2);
  const result=active?.fromEntryId?all.filter(x=>x.id==='result:'+active.fromEntryId):[];
  const linkedFigure=active?.distributionFigureId?all.filter(x=>x.id==='figure:distribution:'+active.distributionFigureId):[];
+ if(node==='C31'&&linkedFigure.length)return [...linkedFigure,...compact(['aim'])].slice(0,3);
  const related=kind=>all.filter(x=>x.id.startsWith(kind+':')&&active&&(
   kind==='accuracy'?linkedAccuracy(s,active).some(a=>'accuracy:'+a.id===x.id):
   linkedSources(s,active).some(a=>'source:'+a.id===x.id)));
@@ -239,7 +240,6 @@ export function insightForCurrent(s,node){
   const refs=[...related('source'),...related('accuracy')];
   const choose=items=>[...new Map(items.filter(Boolean).map(x=>[x.id,x])).values()].slice(0,3);
   if(node==='C30')return choose(compact(['result:'+activeId,'method:'+activeId,'aim']));
-  if(node==='C31'&&linkedFigure.length)return choose([...linkedFigure,...compact(['aim'])]);
   if(['C32','C33'].includes(node))
    return choose([...linkedFigure,...compact(['method:'+activeId,prior]),...refs,...compact(['aim'])]);
   if(node==='C34A')
