@@ -19,7 +19,8 @@ test('Pass 1 resource hub: four consistent destinations with non-duplicated MLA 
 });
 test('Pass 1 resource hub: software destination does not change student state and retains filters',()=>{
  const s=createProjectState(),u=newResourceSession(),before=JSON.stringify(s);
- assert.deepEqual(resourceAction(s,u,'resource-guides'),{ok:true,guides:true});
+ assert.deepEqual(resourceAction(s,u,'resource-guides'),{ok:true,list:true,focus:'results'});
+ assert.equal(u.discoveryType,'guide');
  assert.equal(u.mode,'tools');
  assert(resourceDrawer(s,u).includes('resource-advanced-filters'));
  assert.equal(JSON.stringify(s),before);
@@ -29,7 +30,7 @@ test('Pass 1 resource hub: group guide rows by task, preserve total, filtering a
  const html=resourceDrawer(s,u);
  assert(html.includes('36 matching guides'));
  assert.equal((html.split('<div id="resource-results">')[1].match(/class="resource-row"/g)||[]).length,8);
- assert(html.includes('Browse tutorial guides'));
+ assert(html.includes('Browse by task'));
  u.limit=36;const all=resourceList(u);
  for(const title of ['Collect and organise data','Explore relationships and models'])assert(all.includes(title),title);
  u.query='PMCC';assert(resourceList(u).includes('PMCC'));
