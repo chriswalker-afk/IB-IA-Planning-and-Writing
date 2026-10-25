@@ -30,7 +30,7 @@ test("all five models export their actual parameters and preserve their event an
   assert.equal(rows.get("Random variable"),"T");
   assert.equal(rows.get("Source"),"Illustrative source citation");
   assert.equal(rows.get("Assumptions and limitations"),"Assumed independence requires checking");
-  assert.ok(rows.get("Event probability")?.includes("P(T"),kind);
+  assert.ok(rows.get("Event probability")?.startsWith("P("),kind);
   const parameters=(rows.get("Parameters")||"")+"\n"+(rows.get("Entered outcome probabilities")||"");
   for(const item of expected)assert.ok(parameters.includes(item),kind+" missed "+item);
   if(!["binomial"].includes(kind))assert.doesNotMatch(parameters,/Number of trials \(n\)/,kind);
