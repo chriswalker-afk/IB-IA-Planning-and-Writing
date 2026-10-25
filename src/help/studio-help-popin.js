@@ -1,6 +1,7 @@
 /** Read-only, keyboard-accessible IA Studio troubleshooting pop-in (Pass 3). */
 import {studioHelpFor} from "./studio-help.js";
 import {checkingHelpFor} from "./checking-help.js";
+import {contextualWorkshopHelp,renderContextualWorkshopHelp} from "./workshop-help.js";
 const fieldSelector=key=>'[data-bind="completion.fields.'+key+'"]';
 const within=key=>'[data-bind$=".'+key+'"]';
 const bounded=x=>typeof x==="string"?x.slice(0,250):"";
@@ -34,7 +35,7 @@ export function createStudioHelpController({getState,escapeHtml,onHub,onNavigate
    if(event.target.closest("[data-studio-stuck-hub]")){
     const trigger=origin;close(false);onHub?.(trigger);return;
    }
-   if(event.target.closest("[data-studio-stuck-resource]")){
+   if(event.target.closest("[data-studio-stuck-resource],[data-action='resource-workshop']")){
     // The registered resource action proceeds on the document's delegated
     // click handler. Release the modal first so the guide is usable.
     close(false);return;
@@ -106,6 +107,7 @@ export function createStudioHelpController({getState,escapeHtml,onHub,onNavigate
    '<p class="stuck-context-stop"><strong>A useful stopping point:</strong> '+e(chosen.stop)+'</p>'+
    '<details><summary>If I am still stuck</summary><p>'+e(chosen.fallback)+'</p>'+
    '<p class="stuck-context-boundary">'+e(chosen.boundary)+'</p></details></section>'+
+   (source==="studio"?renderContextualWorkshopHelp(contextualWorkshopHelp(getState(),{spot:active.spot,issueId:chosen.id}),e,{compact:true}):"")+
    '<div class="stuck-context-actions guidance-surface-actions"><button type="button" class="btn btn-primary" data-studio-stuck-go>'+
     e(source==="checking"?"Open this document check":
       chosen.targetNode?chosen.targetLabel||"Go to the relevant mathematical work":
