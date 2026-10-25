@@ -504,6 +504,13 @@ h1,h2,h3,h4,p {margin-top:0} h1,h2,h3,h4 {font-family:Manrope, 'DM Sans', sans-s
 .maths-workshop .workshop-chip-list{display:flex;flex-wrap:wrap;gap:7px}
 .maths-workshop .workshop-define-chip{background:var(--surface-soft,#f5f9f7);border:1px solid var(--line);border-radius:999px;padding:8px 11px;display:inline-flex;align-items:center;gap:6px;cursor:pointer;font:inherit;font-size:13px;color:inherit;min-height:44px}
 .maths-workshop .workshop-define-chip .icon{width:14px;height:14px}
+.maths-workshop .workshop-related-definitions{margin-top:16px}
+.maths-workshop .workshop-related-group{margin-top:13px}
+.maths-workshop .workshop-related-group h5{font-size:13px;font-weight:750;line-height:1.5;margin:0 0 7px;color:var(--muted)}
+.maths-workshop .workshop-related-definitions .workshop-define-chip{text-align:left;white-space:normal;overflow-wrap:anywhere}
+.maths-workshop .workshop-related-definitions .workshop-define-chip:hover{border-color:var(--teal,#17776d);background:var(--surface)}
+.maths-workshop .workshop-top-actions .btn{min-width:0;overflow-wrap:anywhere}
+@media(max-width:640px){.maths-workshop .workshop-top-actions .btn{flex:1 1 auto;text-align:left}}
 .maths-workshop .workshop-formula{padding:15px;border-radius:12px;background:var(--surface-soft,#f5f9f7);border:1px solid var(--line);margin:17px 0;max-width:100%}
 .maths-workshop .workshop-formula strong{font-size:12px}
 .maths-workshop .workshop-formula p{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:14px;line-height:1.8;word-break:normal;overflow-wrap:anywhere;margin:6px 0 0}

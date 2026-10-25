@@ -19,7 +19,7 @@ const snapshot=s=>JSON.stringify({entries:s.entries,planning:s.planning,completi
 const approx=(a,b,eps=1e-9)=>assert(Math.abs(a-b)<eps,String(a)+' differs from '+String(b));
 
 test('workshop: canonical glossary and pilot IDs are unique and never blank',()=>{
- assert.equal(WORKSHOP_DEFINITIONS.length,230);
+ assert.equal(WORKSHOP_DEFINITIONS.length,240);
  assert.equal(WORKSHOP_LESSONS.length,42);
  assert.equal(new Set(WORKSHOP_DEFINITIONS.map(d=>d.id)).size,WORKSHOP_DEFINITIONS.length);
  assert.equal(new Set(WORKSHOP_LESSONS.map(l=>l.id)).size,WORKSHOP_LESSONS.length);

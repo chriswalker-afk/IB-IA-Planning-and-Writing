@@ -17,7 +17,7 @@ export function resourceAction(state,session,action,data={},parent=''){
    const chosen=String(data.workshopId||'');
    const ctx=resourceContext(state,{help:session.help});
    session.workshopId=lessonById(chosen)?chosen:(id?'':workshopLessonForEntry(ctx.entry));
-   session.workshopTerm='';
+   session.workshopTerm='';session.workshopTrail=[];
    session.workshopStep='show';session.workshopCheckpoint=0;session.workshopChoice='';
   }
   // Resuming from a software tutorial returns to the current learning checkpoint.
@@ -25,17 +25,31 @@ export function resourceAction(state,session,action,data={},parent=''){
   return {ok:true,open:true};
  }
  if(action==='resource-workshop-tools'){session.mode='tools';session.id='';return {ok:true,open:true};}
- if(action==='resource-workshop-home'){session.mode='workshop';session.workshopId='';session.workshopTerm='';session.workshopChoice='';return {ok:true,open:true};}
+ if(action==='resource-workshop-home'){session.mode='workshop';session.workshopId='';session.workshopTerm='';session.workshopTrail=[];session.workshopChoice='';return {ok:true,open:true};}
  if(action==='resource-workshop-lesson'){
   const id=String(data.workshopId||'');
   if(!lessonById(id))return {ok:false,error:'That mathematical lesson is not available.'};
+  if(session.workshopTerm)session.workshopTrail=[...(Array.isArray(session.workshopTrail)?session.workshopTrail:[]),{kind:'term',id:session.workshopTerm}].slice(-12);
+  else if(session.workshopId&&session.workshopId!==id)session.workshopTrail=[...(Array.isArray(session.workshopTrail)?session.workshopTrail:[]),{kind:'lesson',id:session.workshopId}].slice(-12);
   session.mode='workshop';session.workshopId=id;session.workshopTerm='';session.workshopStep='show';session.workshopCheckpoint=0;session.workshopChoice='';
   return {ok:true,open:true};
  }
  if(action==='resource-workshop-term'){
   const id=String(data.workshopId||'');
   if(!definitionById(id))return {ok:false,error:'That mathematical definition is not available.'};
+  if(session.workshopTerm&&session.workshopTerm!==id)session.workshopTrail=[...(Array.isArray(session.workshopTrail)?session.workshopTrail:[]),{kind:'term',id:session.workshopTerm}].slice(-12);
+  else if(session.workshopId)session.workshopTrail=[...(Array.isArray(session.workshopTrail)?session.workshopTrail:[]),{kind:'lesson',id:session.workshopId}].slice(-12);
   session.mode='workshop';session.workshopId='';session.workshopTerm=id;
+  return {ok:true,open:true};
+ }
+ if(action==='resource-workshop-back'){
+  const trail=Array.isArray(session.workshopTrail)?session.workshopTrail:[];
+  const previous=trail[trail.length-1];
+  if(!previous||!(previous.kind==='term'?definitionById(previous.id):previous.kind==='lesson'?lessonById(previous.id):false))
+   return {ok:false,error:'There is no previous Workshop item.'};
+  session.workshopTrail=trail.slice(0,-1);
+  session.mode='workshop';session.workshopTerm=previous.kind==='term'?previous.id:'';
+  session.workshopId=previous.kind==='lesson'?previous.id:'';
   return {ok:true,open:true};
  }
  if(action==='resource-workshop-step'){

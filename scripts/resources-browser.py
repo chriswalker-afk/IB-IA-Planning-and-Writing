@@ -701,5 +701,73 @@ with sync_playwright() as pw:
   p.locator('[data-action="close-drawer"]').click()
   assert unchanged_fields(saved(p))==before
  run('workshop-batch7-iteration-desktop',state(),batch7_iteration_desktop,1440,1000)
+ def connected_sampling_phone(p):
+  before=unchanged_fields(saved(p))
+  open_library(p)
+  p.locator('.resource-workshop-entry [data-action="resource-workshop"]').click()
+  if not p.locator('[data-workshop-home="true"]').count():
+   p.locator('[data-action="resource-workshop-home"]').first.click()
+  p.locator('[data-action="resource-workshop-term"][data-workshop-id="sampling"]').first.click()
+  assert p.locator('[data-workshop-definition="sampling"]').count()==1
+  assert p.locator('.workshop-related-group').count()==4
+  for target in ['population','census','sampling-unit','sampling-frame','simple-random-sample',
+                 'stratified-sample','systematic-sample','cluster-sample','convenience-sample',
+                 'quota-sample','voluntary-response-sample','selection-bias','nonresponse-bias']:
+   assert p.locator('[data-workshop-related="sampling"] [data-related-def-id="'+target+'"]').count()==1,target
+  assert p.locator('.workshop-define-chip').first.evaluate('(el)=>el.offsetHeight>=44')
+  assert overlay(p).evaluate('(el)=>el.scrollWidth<=el.clientWidth+1')
+  overlay(p).screenshot(path=str(OUT/'workshop-connected-sampling-hub-phone.png'),animations='disabled')
+  p.locator('[data-related-def-id="stratified-sample"]').click()
+  assert p.locator('[data-workshop-definition="stratified-sample"]').count()==1
+  assert p.locator('[data-action="resource-workshop-back"]').count()==1
+  assert p.locator('[data-related-def-id="sampling-frame"]').count()==1
+  p.locator('[data-related-def-id="sampling-frame"]').click()
+  assert p.locator('[data-workshop-definition="sampling-frame"]').count()==1
+  p.locator('[data-action="resource-workshop-back"]').click()
+  assert p.locator('[data-workshop-definition="stratified-sample"]').count()==1
+  p.locator('[data-action="resource-workshop-back"]').click()
+  assert p.locator('[data-workshop-definition="sampling"]').count()==1
+  assert p.locator('[data-action="resource-workshop-back"]').count()==0
+  p.locator('[data-action="resource-workshop-home"]').first.click()
+  assert p.locator('[data-workshop-home="true"]').count()==1
+  p.locator('[data-action="close-drawer"]').click()
+  assert unchanged_fields(saved(p))==before
+ run('workshop-connected-sampling-phone',state(),connected_sampling_phone,360,740)
+ def connected_network_desktop(p):
+  before=unchanged_fields(saved(p))
+  open_library(p)
+  p.locator('.resource-workshop-entry [data-action="resource-workshop"]').click()
+  if not p.locator('[data-workshop-home="true"]').count():
+   p.locator('[data-action="resource-workshop-home"]').first.click()
+  p.locator('[data-action="resource-workshop-lesson"][data-workshop-id="sampling"]').first.click()
+  assert p.locator('[data-workshop-lesson="sampling"]').count()==1
+  p.locator('[data-action="resource-workshop-term"][data-workshop-id="sampling"]').first.click()
+  assert p.locator('[data-workshop-definition="sampling"]').count()==1
+  assert p.locator('[data-action="resource-workshop-back"]').count()==1
+  p.locator('[data-related-def-id="systematic-sample"]').click()
+  assert p.locator('[data-workshop-definition="systematic-sample"]').count()==1
+  p.locator('[data-action="resource-workshop-back"]').click()
+  assert p.locator('[data-workshop-definition="sampling"]').count()==1
+  p.locator('[data-action="resource-workshop-back"]').click()
+  assert p.locator('[data-workshop-lesson="sampling"]').count()==1
+  p.locator('[data-action="resource-workshop-home"]').first.click()
+  p.locator('[data-action="resource-workshop-term"][data-workshop-id="net-present-value"]').first.click()
+  assert p.locator('[data-workshop-definition="net-present-value"]').count()==1
+  assert p.locator('[data-related-def-id="discount-rate"]').count()==1
+  assert p.locator('[data-related-def-id="present-value-finance"]').count()==1
+  p.locator('[data-related-def-id="discount-rate"]').click()
+  assert p.locator('[data-workshop-definition="discount-rate"]').count()==1
+  p.locator('[data-action="resource-workshop-back"]').click()
+  assert p.locator('[data-workshop-definition="net-present-value"]').count()==1
+  p.locator('[data-action="resource-workshop-home"]').first.click()
+  p.locator('#workshop-route').select_option('proof')
+  p.locator('[data-action="resource-workshop-term"][data-workshop-id="mathematical-induction"]').first.click()
+  assert p.locator('[data-related-def-id="base-case"]').count()==1
+  assert p.locator('[data-related-def-id="induction-hypothesis"]').count()==1
+  assert overlay(p).evaluate('(el)=>el.scrollWidth<=el.clientWidth+1')
+  overlay(p).screenshot(path=str(OUT/'workshop-connected-proofs-desktop.png'),animations='disabled')
+  p.locator('[data-action="close-drawer"]').click()
+  assert unchanged_fields(saved(p))==before
+ run('workshop-connected-definition-network-desktop',state(),connected_network_desktop,1440,1000)
  browser.close()
 (OUT/'resources-results.json').write_text(json.dumps(results,indent=2));print(json.dumps(results,indent=2));assert all(r['status']=='passed' for r in results)
