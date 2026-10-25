@@ -107,8 +107,6 @@ export function resourceDrawer(state,session){
    (r.related.length?'<details class="resource-related"><summary>Related tasks, only when useful</summary>'+r.related.map(id=>guideButton(id,resourceById(id).title,session.help)).join('')+'</details>':'')+
    preferences(x)+'<div class="resource-footer">'+close+'</div></div>';
  }
- const cats=[...new Set(RESOURCES.map(r=>r.category))];
- const options=(values,selected)=>values.map(([v,t])=>'<option value="'+e(v)+'"'+(v===selected?' selected':'')+'>'+e(t)+'</option>').join('');
  const suggested=resourceSuggestions(state,{help:session.help});
  const relevant=suggested.length?'<section class="resource-current resource-home-relevant" aria-label="Useful guides for this stage">'+
   '<div class="resource-home-heading"><h3>Useful for your current stage</h3><span class="resource-relevant-stage">'+e(x.label.slice(0,110))+'</span></div>'+
