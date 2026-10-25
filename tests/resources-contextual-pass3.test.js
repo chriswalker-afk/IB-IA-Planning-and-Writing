@@ -149,3 +149,18 @@ test('Pass 3: a focused pop-in tutorial carries its box without leaking a privat
  assert.equal(u.supportIssue,'real-calculation');
  assert.equal(intact(s),before);
 });
+
+
+test('Pass 3: a specific source or permission obstacle suppresses generic method recommendations',()=>{
+ const s=fixture({route:'planning',node:'N03P2',path:'relationships',method:''});
+ s.planning.fields.dataSource='primary';
+ s.completion.support.origin={route:'planning',planNode:'N03P2',node:'C00',
+  entryId:'',nextFromEntryId:'',helpSpot:'N03P2:page'};
+ s.completion.support.selected='permission';
+ const before=intact(s),u=newResourceSession();
+ assert(resourceAction(s,u,'resource-browse',{resourceHelp:'true'},'stuck').open);
+ const html=resourceDrawer(s,u);
+ assert(!html.includes('class="resource-current resource-home-relevant"'));
+ assert(!html.includes('data-resource-id="forms"'));
+ assert.equal(intact(s),before);
+});
