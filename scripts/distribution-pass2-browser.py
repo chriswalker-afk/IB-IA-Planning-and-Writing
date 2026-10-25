@@ -315,7 +315,7 @@ def parameter_whatif(browser,width,kind):
   if kind=="normal":
    assert "0.308537" in summary.inner_text()
   if kind=="uniform":
-   assert "Change: -0.1" in summary.inner_text()
+   assert "percentage points" in summary.inner_text() and "-10" in summary.inner_text()
   before=p.evaluate("(key)=>JSON.parse(localStorage.getItem(key))",KEY)
   assert before["distributionStudio"]["draft"]==orig,(kind,"premature model edit")
   assert len(before["distributionStudio"]["figures"])==0
