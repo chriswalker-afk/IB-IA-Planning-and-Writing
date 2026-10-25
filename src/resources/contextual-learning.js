@@ -12,7 +12,7 @@ import {lessonById} from '../workshop/catalog.js';
 import {representationTool,activeRepresentationTool} from '../diagrams/representation-registry.js';
 import {completeEntry,sourceResultForNext} from '../completing/engine.js';
 
-const ISSUE_BLOCK=/^(?:fix:(?:planning|studio|checking):)?(?:consent-waiting|permission|no-data|source-real|source-kind|published-origin|published-comparison|availability|course-choice|course-depth|out-of-course|teacher-specific|source-not-verifiable|data-not-verifiable|writing|story|conclusion-|mla-)/;
+const NEEDS_TEACHER=/(?:course-depth|course-choice|out-of-course|method-conditions|teacher-specific)/;
 const otherWork=/^C(?:10|60|61|62|63|64|70|80|90)/;
 const real=e=>e?.status==='completed'&&!!e?.result?.trim();
 const string=v=>typeof v==='string'?v.slice(0,120):'';
@@ -33,7 +33,7 @@ const pictureSpot=spot=>/(?:part:show|field:(?:result|firstWorkResult|figure|dia
  */
 export function contextualLearningChoices(state,{spot='page',issueId=''}={}){
  const issue=string(issueId),location=area(spot),h=contextualWorkshopHelp(state,{spot,issueId:issue});
- if(!h||ISSUE_BLOCK.test(issue))return null;
+ if(!h)return null;
  const planning=state.route==='planning',node=planning?string(state.planning?.current):string(state.completion?.current);
  if(!planning&&otherWork.test(node))return null;
  const entry=recordedEntry(state),method=string(entry?.methodId),actual=real(entry);
@@ -41,18 +41,18 @@ export function contextualLearningChoices(state,{spot='page',issueId=''}={}){
  const needsConsent=state.teacher?.pendingApproval===true||
   ['pending','unsure'].includes(state.completion?.fields?.permissionStatus)||
   ['yes','unsure'].includes(state.planning?.fields?.permissionNeed);
- const lesson=lessonById(h.lessonId);
+ const lesson=lessonById(h.lessonId),teacherCheck=NEEDS_TEACHER.test(issue);
  const preferences=resourceContext(state).tool;
  let guideId='';
  // Reading a path example is not a reason to recommend its calculation.
- if(h.focus==='sampling'){
+ if(!teacherCheck&&h.focus==='sampling'){
   if(!theoretical&&!needsConsent&&state.planning.fields.dataSource==='primary')guideId='forms';
   else if(!theoretical&&state.planning.fields.dataSource==='secondary')guideId='secondary-data';
- }else if(h.focus==='precision'){
+ }else if(!teacherCheck&&h.focus==='precision'){
   if(!theoretical)guideId='reporting-precision';
- }else if(h.focus==='proof'){
+ }else if(!teacherCheck&&h.focus==='proof'){
   if(h.routeId==='proof'&&['C30','C31','C40','C50'].includes(node))guideId='proof-exploration';
- }else if(method&&method!=='other'&&entry&&!planning){
+ }else if(!teacherCheck&&method&&method!=='other'&&entry&&!planning){
   const guides=resourceSuggestions(state).filter(x=>x.id!=='chart-choice'&&x.id!=='export-figure'&&x.id!=='desmos-start');
   if(h.focus==='calculate'&&!actual){
    if(method==='pmcc')guideId=preferences==='desmos'?'desmos-pmcc':'sheets-pmcc';
@@ -68,7 +68,7 @@ export function contextualLearningChoices(state,{spot='page',issueId=''}={}){
  const explicit=!!h.routeId&&(!!entry?.methodId&&entry.methodId!=='other'||
   !!state?.planning?.routeExplorer?.selectedRoute);
  if(!planning&&['C30','C31','C40','C50'].includes(node)&&
-   (node==='C31'||pictureSpot(location))&&explicit){
+   (node==='C31'||pictureSpot(location))&&explicit&&!teacherCheck&&!needsConsent){
   creatorId=activeRepresentationTool(state)?.id||lesson?.creator||'';
   if(!representationTool(creatorId))creatorId='';
  }
