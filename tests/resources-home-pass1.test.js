@@ -29,7 +29,9 @@ test('Pass 1 resource hub: group guide rows by task, preserve total, filtering a
  const html=resourceDrawer(s,u);
  assert(html.includes('36 matching guides'));
  assert.equal((html.split('<div id="resource-results">')[1].match(/class="resource-row"/g)||[]).length,8);
- for(const title of ['Collect and organise data','Explore relationships and models','Browse tutorial guides'])assert(html.includes(title),title);
+ assert(html.includes('Browse tutorial guides'));
+ u.limit=36;const all=resourceList(u);
+ for(const title of ['Collect and organise data','Explore relationships and models'])assert(all.includes(title),title);
  u.query='PMCC';assert(resourceList(u).includes('PMCC'));
  u.category='Correlation and models';assert(resourceList(u).includes('Explore relationships and models'));
 });
