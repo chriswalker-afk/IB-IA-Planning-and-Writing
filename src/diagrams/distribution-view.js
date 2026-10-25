@@ -59,7 +59,7 @@ export function renderDistributionStudio(state,icon,e){
  d.kind==="uniform"?field("a","Lower limit (a)",d.a,e)+field("b","Upper limit (b)",d.b,e):
  '<label class="probability-field distribution-outcome-entry"><span>Outcome, probability — one pair per line</span>'+
  '<textarea rows="6" spellcheck="false" data-distribution-field="customPoints" aria-describedby="distribution-outcomes-tip">'+e(d.customPoints)+'</textarea>'+
- '<small id="distribution-outcomes-tip">For example: −2, 0.2 then 0, 0.5 then 3, 0.3. Use a comma or tab between each numeric outcome and its probability. No automatic normalisation.</small></label>')+
+ '<small id="distribution-outcomes-tip">For example: enter -2, 0.2 on the first line, 0, 0.5 on the second, and 3, 0.3 on the third. Use a comma or tab to separate each outcome from its probability. No automatic normalisation.</small></label>')+
  '<h3>2. Probability to highlight</h3>'+
  select("mode","Highlight",d.mode,[["none","No probability"],["left","At most / left tail (≤)"],
  ["right","At least / right tail (≥)"],["between","Between two inclusive boundaries"],
