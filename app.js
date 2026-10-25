@@ -87,9 +87,9 @@ import {exportGeometry} from "./src/diagrams/geometry-export.js";
 import {distributionLayout,distributionBoundaryForPixel,distributionBoundaryNudge} from "./src/diagrams/distribution-layout.js";
 import {setDistributionInverseField,calculateDistributionInverse,applyDistributionInverse} from "./src/diagrams/distribution-inverse-actions.js";
 import {distributionInverseResultHtml} from "./src/diagrams/distribution-inverse-view.js";
-import {startDistributionWhatIf,resetDistributionWhatIf,discardDistributionWhatIf,setDistributionWhatIfField,setDistributionWhatIfOption,applyDistributionWhatIf} from "./src/diagrams/distribution-whatif-actions.js";
+import {startDistributionWhatIf,resetDistributionWhatIf,discardDistributionWhatIf,setDistributionWhatIfField,setDistributionWhatIfOption,setDistributionWhatIfReflectionOpen,applyDistributionWhatIf} from "./src/diagrams/distribution-whatif-actions.js";
 import {distributionWhatIfSummaryHtml,distributionWhatIfPreviewHtml} from "./src/diagrams/distribution-whatif-view.js";
-import {renderDistributionGuidance} from "./src/diagrams/distribution-guidance.js";
+import {renderDistributionGuidance,distributionAim} from "./src/diagrams/distribution-guidance.js";
 import {distributionPreviewHtml,distributionFeedbackHtml,distributionOutputHtml} from "./src/diagrams/distribution-view.js";
 import {setDistributionField,freshDistribution,loadDistribution,saveDistributionDraft,saveAndLinkDistribution} from "./src/diagrams/distribution-actions.js";
 import {exportDistribution} from "./src/diagrams/distribution-export.js";
@@ -731,7 +731,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   function refreshDistributionWhatIf(){
     if(!state.distributionStudio?.open)return;
     const summary=main.querySelector?.("[data-distribution-whatif-summary]");
-    if(summary)summary.innerHTML=distributionWhatIfSummaryHtml(state.distributionStudio,e);
+    if(summary)summary.innerHTML=distributionWhatIfSummaryHtml(state.distributionStudio,e,distributionAim(state));
     const chart=main.querySelector?.("[data-distribution-whatif-preview]");
     if(chart)chart.outerHTML=distributionWhatIfPreviewHtml(state.distributionStudio,e);
   }
@@ -4160,6 +4160,10 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     finally{event.target.value="";}
   });
   document.addEventListener("toggle",evt=>{
+    if(evt.target.matches?.("[data-distribution-whatif-reflection]")){
+      if(setDistributionWhatIfReflectionOpen(state.distributionStudio,evt.target.open))save();
+      return;
+    }
     if(!evt.target.matches?.(".journey-chapter"))return;
     const control=main.querySelector('[data-action="journey-toggle-all"]');
     if(control){const all=[...main.querySelectorAll('.journey-chapter')].every(x=>x.open);control.setAttribute('aria-expanded',String(all));control.textContent=all?'Collapse full path':'Show full path';}

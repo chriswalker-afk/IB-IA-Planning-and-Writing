@@ -41,10 +41,18 @@ export function setDistributionWhatIfOption(studio,key,value){
  return true;
 }
 /** Rebase alternative parameters without discarding the question being explored. */
+/** Optional educational disclosure only; never marks a stage complete. */
+export function setDistributionWhatIfReflectionOpen(studio,open){
+ const w=studio?.whatIf;
+ if(!w?.active||typeof open!=="boolean"||w.reflectionOpen===open)return false;
+ w.reflectionOpen=open;
+ return true;
+}
 export function resetDistributionWhatIf(studio){
  if(!studio?.draft)return false;
  const w=studio.whatIf||newDistributionWhatIfState();
- const settings={comparison:w.comparison,targetMode:w.targetMode,targetProbability:w.targetProbability};
+ const settings={comparison:w.comparison,targetMode:w.targetMode,targetProbability:w.targetProbability,
+  reflectionOpen:w.reflectionOpen===true};
  if(!startDistributionWhatIf(studio))return false;
  Object.assign(studio.whatIf,settings);
  if(studio.whatIf.targetMode==="central"&&!["normal","uniform"].includes(studio.draft.kind))

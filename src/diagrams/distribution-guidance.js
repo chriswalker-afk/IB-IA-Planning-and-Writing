@@ -12,6 +12,8 @@ import {lessonById,definitionById} from "../workshop/catalog.js";
 const trim=(v,max=230)=>typeof v==="string"?v.trim().slice(0,max):"";
 const truthy=x=>!!trim(x);
 const entryAt=state=>state?.entries?.[state?.completion?.activeEntryIndex]||null;
+/** Single source for the student’s actual saved investigation aim. */
+export const distributionAim=state=>trim(state?.planning?.fields?.aim||state?.project?.aim,260);
 export const DISTRIBUTION_LEARNING=Object.freeze({
  normal:Object.freeze({
   lessonId:"normal-models",definitions:["normal-distribution","standard-score","probability-density","cumulative-probability"],
@@ -56,7 +58,7 @@ export function distributionGuidance(state,raw){
  const linked=!!activeSaved&&!!e&&(e.distributionFigureId===activeSaved.id||
   e.figureRefs?.includes("distribution:"+activeSaved.id));
  const changedSinceSave=linked&&distributionSignature(activeSaved.draft)!==distributionSignature(d);
- const aim=trim(state?.planning?.fields?.aim||state?.project?.aim,260);
+ const aim=distributionAim(state);
  // These are the real, existing Sparks; no separate student's "source" is invented.
  const sparks=presentationSparks(state,"distribution",d)
   .filter(x=>x.kind==="confirmed"||x.kind==="planned").slice(0,3);

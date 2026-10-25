@@ -512,6 +512,105 @@ def fixed_target_whatif(browser,width,kind):
   print("PASS fixed-target comparison",kind,width,flush=True)
  finally:c.close()
 
+
+def meaningful_reflection(browser,width,kind):
+ # A saved aim is presented as context, not used to invent observations.
+ aim="Investigate whether changing a <model> matters to the decision & assumptions"
+ previous=BASE["planning"]["fields"].get("aim","")
+ BASE["planning"]["fields"]["aim"]=aim
+ try:
+  c,p,errors=setup(browser,width)
+ finally:
+  BASE["planning"]["fields"]["aim"]=previous
+ try:
+  if kind!="normal":p.locator('[data-distribution-field="kind"]').select_option(kind)
+  field(p,"title","A mathematical what-if reflection")
+  options={"normal":{"mu":"70","sigma":"10"},
+           "binomial":{"n":"10","p":"0.5"},
+           "poisson":{"lambda":"3"},
+           "uniform":{"a":"0","b":"10"},
+           "custom":{"customPoints":"0, 0.2\n1, 0.5\n2, 0.3"}}
+  for key,v in options[kind].items():field(p,key,v)
+  p.locator('[data-distribution-field="mode"]').select_option("left")
+  field(p,"lower",{"normal":"70","binomial":"4","poisson":"2","uniform":"4","custom":"1"}[kind])
+  before=p.evaluate("(key)=>JSON.parse(localStorage.getItem(key))",KEY)
+  original=before["distributionStudio"]["draft"]
+  panel=p.locator('[data-distribution-whatif-panel]')
+  panel.locator("summary").click()
+  p.locator('[data-action="distribution-whatif-start"]').click()
+  assert p.locator('[data-distribution-whatif-reflection]').count()==0
+  change={"normal":("mu","75"),"binomial":("n","12"),
+          "poisson":("lambda","5"),"uniform":("b","12"),
+          "custom":("customPoints","0, 0.1\n1, 0.5\n2, 0.4")}
+  k,v=change[kind]
+  field_alt=p.locator('[data-distribution-whatif-field="'+k+'"][data-whatif-control="value"]')
+  field_alt.fill(v)
+  reflection=p.locator('[data-distribution-whatif-reflection]')
+  assert reflection.count()==1,(kind,p.locator('[data-distribution-whatif-summary]').inner_text())
+  assert reflection.get_attribute("open") is None
+  reflection.locator("summary").click()
+  assert reflection.get_attribute("open") is not None
+  p.wait_for_function("(key)=>JSON.parse(localStorage.getItem(key)).distributionStudio.whatIf.reflectionOpen===true",arg=KEY)
+  assert reflection.locator('[data-reflection-prompt]').count()==3
+  assert "Justify the alternative" in reflection.inner_text()
+  assert "Interpret the mathematics" in reflection.inner_text()
+  assert "Check relevance and evidence" in reflection.inner_text()
+  assert "Your saved aim" in reflection.inner_text()
+  assert "<model>" in reflection.inner_text()
+  assert "hypothetical sensitivity comparison" in reflection.inner_text()
+  assert "not evidence of model fit" in reflection.inner_text()
+  if kind=="binomial":assert "proportion" in reflection.inner_text()
+  if kind=="poisson":assert "observation intervals" in reflection.inner_text()
+  if kind=="uniform":assert "equal density" in reflection.inner_text()
+  if kind=="custom":assert "assigned probabilities" in reflection.inner_text()
+  if kind=="normal":
+   slider=p.locator('[data-distribution-whatif-field="mu"][data-whatif-control="range"]')
+   slider.focus();slider.press("ArrowRight")
+   assert p.locator('[data-distribution-whatif-reflection]').get_attribute("open") is not None
+  p.locator('[data-distribution-whatif-option="comparison"][value="target"]').click()
+  reflection=p.locator('[data-distribution-whatif-reflection]')
+  assert reflection.get_attribute("open") is not None
+  assert reflection.locator('[data-reflection-prompt="meaning"]').count()==1
+  interpretation=reflection.locator('[data-reflection-prompt="meaning"]').inner_text().lower()
+  assert ("target" in interpretation or "coverage" in interpretation or
+          "integer cut-off stayed the same" in interpretation),(kind,interpretation)
+  target=p.locator('[data-distribution-whatif-option="targetProbability"]')
+  target.fill("not-a-probability")
+  assert reflection.count()==0
+  target.fill("0.8")
+  reflection=p.locator('[data-distribution-whatif-reflection]')
+  assert reflection.count()==1 and reflection.get_attribute("open") is not None
+  assert p.evaluate("(key)=>JSON.parse(localStorage.getItem(key))",KEY)["distributionStudio"]["draft"]==original
+  assert len(p.evaluate("(key)=>JSON.parse(localStorage.getItem(key))",KEY)["distributionStudio"]["figures"])==0
+  check_width(p)
+  if width==1440:
+   with p.expect_download() as dl:p.locator('[data-action="distribution-svg"]').click()
+   file=OUT/("reflection-figure-"+kind+".svg");dl.value.save_as(str(file))
+   svg=file.read_text()
+   assert "What does this tell me" not in svg and "Justify the alternative" not in svg
+   assert "hypothetical sensitivity" not in svg and "<model>" not in svg
+  if width==390 and kind=="normal":
+   with p.expect_download() as dl:p.locator('[data-action="distribution-png"]').click()
+   file=OUT/"reflection-unapplied-mobile.png";dl.value.save_as(str(file))
+   assert file.read_bytes()[:8]==bytes([137,80,78,71,13,10,26,10])
+  if width in (390,320):
+   assert p.locator('[data-distribution-whatif-reflection]').get_attribute("open") is not None
+   p.screenshot(path=str(OUT/("reflection-"+kind+"-"+str(width)+".png")),
+                full_page=True,animations="disabled")
+  # A new page in the SAME browser context reads the project's saved
+  # editor state. Do not reload setup(): its page-level bootstrap deliberately
+  # injects a fresh test fixture on every navigation.
+  restored=c.new_page()
+  restored.goto(URL,wait_until="networkidle")
+  reflection=restored.locator('[data-distribution-whatif-reflection]')
+  assert reflection.count()==1
+  assert reflection.get_attribute("open") is not None
+  assert reflection.locator('[data-reflection-prompt]').count()==3
+  check_width(restored)
+  assert not errors,errors
+  print("PASS 5.4.3 meaningful reflection",kind,width,flush=True)
+ finally:c.close()
+
 if __name__=="__main__":
  with sync_playwright() as playwright:
   browser=playwright.chromium.launch(headless=True)
@@ -531,4 +630,8 @@ if __name__=="__main__":
    for kind in ("normal","binomial","poisson","uniform","custom"):
     fixed_target_whatif(browser,width,kind)
   fixed_target_whatif(browser,320,"normal")
+  for kind in ("normal","binomial","poisson","uniform","custom"):
+   meaningful_reflection(browser,1440,kind)
+  for width,kind in ((390,"normal"),(390,"binomial"),(320,"normal")):
+   meaningful_reflection(browser,width,kind)
   browser.close()
