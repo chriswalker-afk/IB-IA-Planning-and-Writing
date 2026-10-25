@@ -14,7 +14,7 @@ import {assessmentFramework,assessmentBanner} from "./src/essentials/assessment-
 import {editCriterionReview} from "./src/essentials/review.js";
 import {ideaAction,ideaInput,ideaDifficultyInput,chooseTopic} from './src/ideas/engine.js';
 import {attachIdeaMapGraph} from './src/ideas/map-layout.js';
-import {resourceDrawer,resourceList} from './src/resources/views.js';
+import {resourceDrawer,resourceList,resourceResults} from './src/resources/views.js';
 import {contextualWorkshopHelp,renderContextualWorkshopHelp} from './src/help/workshop-help.js';
 import {workshopList} from './src/workshop/views.js';
 import {resourceAction,resourceFilter,resourcePreference} from './src/resources/actions.js';
@@ -1584,7 +1584,19 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         }
         return;
       }
-      if(resources.list){const target=$("#resource-results",layer);if(target)target.innerHTML=resourceList(resourceSession);return;}
+      if(resources.list){
+        const target=$("#resource-results",layer);
+        if(target)target.innerHTML=resourceResults(resourceSession);
+        for(const item of layer.querySelectorAll(".resource-discovery-area")){
+          const active=item.dataset.resourceArea===resourceSession.discoveryArea;
+          item.setAttribute("aria-pressed",String(active));item.classList.toggle("is-active",active);
+        }
+        if(resources.focus==="results"){target?.scrollIntoView({block:"start",behavior:"instant"});target?.focus({preventScroll:true});}
+        else if(action==="resource-discovery-type"){
+          layer.querySelector('.resource-discovery-type[data-resource-type="'+el.dataset.resourceType+'"]')?.focus({preventScroll:true});
+        }
+        return;
+      }
       if(resources.close){
         if(resourceSession.parent==="stuck")openDrawer("stuck");
         else {closeDrawer();if(!lastFocus||!document.contains(lastFocus))main.focus({preventScroll:true});}
@@ -3388,7 +3400,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     }
     if(target.dataset.resourceFilter!==undefined){
       if(resourceFilter(resourceSession,target.dataset.resourceFilter,target.value)){
-        const result=$("#resource-results",layer);if(result)result.innerHTML=resourceSession.mode==='workshop'?workshopList(resourceSession):resourceList(resourceSession);
+        const result=$("#resource-results",layer);if(result)result.innerHTML=resourceSession.mode==='workshop'?workshopList(resourceSession):resourceResults(resourceSession);
       }
       return;
     }
@@ -3636,7 +3648,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     }
     if(target.dataset.resourceFilter!==undefined){
       if(resourceFilter(resourceSession,target.dataset.resourceFilter,target.value)){
-        const result=$("#resource-results",layer);if(result)result.innerHTML=resourceSession.mode==='workshop'?workshopList(resourceSession):resourceList(resourceSession);
+        const result=$("#resource-results",layer);if(result)result.innerHTML=resourceSession.mode==='workshop'?workshopList(resourceSession):resourceResults(resourceSession);
       }
       return;
     }
