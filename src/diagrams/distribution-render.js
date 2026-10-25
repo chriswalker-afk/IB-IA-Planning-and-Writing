@@ -98,7 +98,7 @@ export function renderDistributionSvg(raw,{interactive=false}={}){
  const colour=d.printStyle==="mono"?"#364a57":"#256f8d",base="#cad5dc";
  const aria=d.title||"Probability distribution";
  let svg=['<svg xmlns="http://www.w3.org/2000/svg" data-distribution-svg="true"'+
-  (interactive?' data-distribution-interactive="true"':"")+' role="img" aria-label="'+esc(aria)+
+  (interactive?' data-distribution-interactive="true"':"")+' role="'+(interactive?"group":"img")+'" aria-label="'+esc(aria)+
   '" width="'+W+'" height="'+H+'" viewBox="0 0 '+W+" "+H+
   '"><title>'+esc(aria)+'</title>'+
   (q.statement?'<desc>'+esc(q.statement)+'</desc>':"")+
