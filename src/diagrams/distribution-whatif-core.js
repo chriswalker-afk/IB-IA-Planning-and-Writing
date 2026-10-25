@@ -52,6 +52,7 @@ export function compareDistributionWhatIf(studio){
  if(source.mode!=="none"){
   const first=analyzeDistribution(originalDraft),second=analyzeDistribution(alternativeDraft);
   if(first.ready&&second.ready){
+   result.originalEvent=first;result.alternativeEvent=second;
    result.originalProbability=first.probability;
    result.alternativeProbability=second.probability;
    result.deltaProbability=second.probability-first.probability;
