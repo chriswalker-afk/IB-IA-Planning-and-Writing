@@ -30,15 +30,18 @@ export function poissonCdf(lambda,k){
 export function poissonUpperTail(lambda,k){
  if(!Number.isFinite(lambda)||lambda<0)return NaN;
  if(k<0)return 1;
- if(k>=poissonBeyond(lambda))return 0;
- // Complement small lower tails; add right tails directly to avoid cancellation
- // when a tail probability is much smaller than the machine epsilon.
+ if(lambda===0)return 0;
+ // Subtraction is safe for the broad upper tail, but not for rare events.
  if(k<lambda)return Math.max(0,1-poissonCdf(lambda,k));
- const start=Math.floor(k)+1,end=poissonBeyond(lambda);
- let sum=0,correction=0;
- for(let j=start;j<=end;j++){
-  const term=poissonMass(lambda,j)-correction,next=sum+term;
-  correction=(next-sum)-term;sum=next;
+ // Sum from the FIRST omitted integer; successive terms decrease once k >= λ.
+ // No finite plotted-range cutoff: inverse queries can ask for rare tails.
+ const start=Math.floor(k)+1;
+ let term=poissonMass(lambda,start),sum=0,correction=0;
+ for(let j=start;j<start+2000&&term>0;j++){
+  const y=term-correction,next=sum+y;
+  correction=(next-sum)-y;sum=next;
+  term*=lambda/(j+1);
+  if(term<=sum*1e-16)break;
  }
  return Math.max(0,Math.min(1,sum));
 }
