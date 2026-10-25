@@ -17,7 +17,7 @@ const allText = l=>[
  l.ia,l.skill
 ].filter(v=>typeof v==="string");
 
-test("workshop maths: all twenty-nine methods have labelled accessible display equations",()=>{
+test("workshop maths: all thirty-five methods have labelled accessible display equations",()=>{
  assert.deepEqual(Object.keys(WORKSHOP_LESSON_FORMULAS).sort(),WORKSHOP_LESSONS.map(l=>l.id).sort());
  let n=0;
  for(const lesson of WORKSHOP_LESSONS){
@@ -42,7 +42,7 @@ test("workshop maths: all twenty-nine methods have labelled accessible display e
 });
 test("workshop maths: all glossary definitions with notation have typeset SVG",()=>{
  const withNotation=WORKSHOP_DEFINITIONS.filter(d=>d.notation);
- assert.equal(withNotation.length,55);
+ assert.equal(withNotation.length,71);
  assert.deepEqual(Object.keys(WORKSHOP_DEFINITION_FORMULAS).sort(),withNotation.map(d=>d.id).sort());
  for(const d of withNotation){
   const item=WORKSHOP_DEFINITION_FORMULAS[d.id];
