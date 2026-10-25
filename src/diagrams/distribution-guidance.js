@@ -26,6 +26,27 @@ export const DISTRIBUTION_LEARNING=Object.freeze({
   test:"Check whether successes change later trials, whether p changes across trials or whether drawing without replacement invalidates independence.",
   reasoning:"Explain the number of trials n and how the success probability p was obtained; justify the trial and success definitions before calculating.",
   limit:"The bars give probabilities for a proposed count model, not observed frequencies. A fitted p does not by itself establish independence or an unchanged p."
+ }),
+ poisson:Object.freeze({
+  lessonId:"poisson-models",definitions:["poisson-distribution","cumulative-probability","independent-events","expected-value"],
+  condition:"Specify a fixed observation interval and check that events occur independently at a constant expected rate.",
+  test:"Ask whether events cluster, whether the event rate changes with time or place, and whether any count limit contradicts unbounded Poisson support.",
+  reasoning:"Define an event and its observation interval. Explain whether λ is assumed, estimated from observations or sourced, with its units as events per interval.",
+  limit:"The displayed bars stop at a finite count, but the Poisson model continues indefinitely. The probability calculation includes the full theoretical tail; the chart alone cannot confirm a constant rate."
+ }),
+ uniform:Object.freeze({
+  lessonId:"uniform-continuous-models",definitions:["continuous-uniform-distribution","probability-density","cumulative-probability","probability-distribution"],
+  condition:"Justify the finite support [a,b] and the claim that equally wide subintervals have equal probability.",
+  test:"A bounded measurement does not imply a uniform model. Check for mechanisms or actual observations favouring particular parts of the interval.",
+  reasoning:"Define the continuous random variable and the two bounds with units. Explain why the proposed density is constant over [a,b].",
+  limit:"Continuous uniform probability is area over an interval, not the density height or an exact-point probability; the real process may not distribute values uniformly."
+ }),
+ custom:Object.freeze({
+  lessonId:"custom-discrete-models",definitions:["custom-discrete-distribution","discrete-random-variable","probability-distribution","expected-value"],
+  condition:"Account for every possible numerical outcome, with distinct values, nonnegative probabilities and a total of one.",
+  test:"Check how probabilities were assigned or estimated, whether any cases are missing or duplicated, and whether a small sample makes estimates unreliable.",
+  reasoning:"Define what every numerical outcome represents (including negative or fractional values) and justify the probability entered for each outcome.",
+  limit:"A custom discrete model is not a histogram or a frequency chart. It describes proposed probabilities, which must be justified against the real experiment or theory."
  })
 });
 export function distributionGuidance(state,raw){
@@ -42,6 +63,8 @@ export function distributionGuidance(state,raw){
  const symbol=trim(d.symbol,5)||"X",unit=trim(d.unit,75);
  const variable=d.kind==="binomial"?
   "What does "+symbol+" count as a success across "+(q.n??"n")+" trials?":
+  d.kind==="poisson"?"What events does "+symbol+" count in the chosen fixed interval?":
+  d.kind==="custom"?"What does each possible numerical value of "+symbol+" represent"+(unit?" in "+unit:"")+"?":
   "What continuous quantity does "+symbol+" measure"+(unit?" in "+unit:"")+"?";
  let event;
  if(d.mode==="none")event="No event is selected. Explain which part of the model is useful for your aim; a shaded probability is optional.";
@@ -52,6 +75,15 @@ export function distributionGuidance(state,raw){
   "Both tails are selected; do not interpret the middle interval as the event. For a continuous model, equality at one boundary contributes zero area.":
   d.mode==="none"?"The curve height is a density, not the probability at that exact value.":
   "The probability is the area under the curve, not the curve's height. For a continuous variable, a single exact value has zero probability.";
+ else if(d.kind==="uniform")particular=d.mode==="none"?
+  "Equal probability density is not the same as equal probability at every individual point: a point has zero area.":
+  "The highlighted uniform-model area is its overlap with [a,b], divided by b−a; the density is zero beyond the support.";
+ else if(d.kind==="poisson")particular=d.mode==="none"?
+  "The Poisson count model has infinitely many possible counts; the visible bars cover a finite range.":
+  "The selected model probability includes the complete Poisson tail even when its graph stops displaying extremely small bars. Check inclusive integer bounds.";
+ else if(d.kind==="custom")particular=d.mode==="exact"?
+  "One entered numerical outcome is highlighted. If that value is absent, its model probability is zero.":
+  "The bars are plotted on an actual numerical axis, not as equally spaced categories. Selected outcomes are compared numerically with the event bounds.";
  else particular=d.mode==="outside"?
   "This includes both integer tails and excludes the counts strictly between your boundaries.":
   d.mode==="exact"?"Exactly one integer count is selected; do not mistake that bar for a cumulative probability.":
@@ -80,7 +112,7 @@ export function distributionGuidance(state,raw){
   hasEvent:!!q.statement,statement:q.statement,sourceKind:d.sourceKind,
   figureLinked:linked,ready:q.ready,issues:q.issues,
   claim:"A theoretical model alone cannot validate the distribution of observed data or justify a population-level claim.",
-  next:"What would change if a reasonable model parameter or assumption changed? Consider one relevant comparison, rather than adding mathematics just for length."
+  next:"Would a defensible change in a parameter, event boundary, rate, support limit or assigned probability materially change the answer to your aim? Compare only if the mathematics serves your question."
  });
 }
 /** Recovers a small, specific mathematical obstacle. It is NOT a writing guide. */
@@ -96,7 +128,10 @@ export function distributionRecoveryCards(raw,spot="page"){
  const assumptions=mk("distribution-assumptions",
   "I am not sure this "+d.kind+" model is suitable",
   d.kind==="binomial"?"Does "+sym+" really count successes from repeated trials with a fixed n and p?":
-    "What evidence or process supports an approximately normal model for "+sym+"?",
+  d.kind==="normal"?"What evidence or process supports an approximately normal model for "+sym+"?":
+  d.kind==="poisson"?"Are the events independent with a constant mean rate λ over a defined interval?":
+  d.kind==="uniform"?"Why would every equal-width interval within [a,b] be equally likely?":
+  "Have all distinct outcomes of "+sym+" been listed and assigned justified probabilities totalling one?",
   model.condition+" "+model.test,
   "Could one real feature of your process or dataset undermine a stated assumption?",
   "One assumption tested against your actual method or observed evidence.",
@@ -107,7 +142,9 @@ export function distributionRecoveryCards(raw,spot="page"){
   d.mode==="none"?"What event would help answer your actual mathematical question?":
     "Which outcomes of "+sym+" belong to this event"+(q.statement?" ("+q.statement+")":"")+"?",
   d.mode==="none"?"Name the event and determine whether left, right, between, outside or exact is appropriate.":
-    (d.kind==="binomial"?"List the integer counts included in the event, including each endpoint. ":"Sketch the intended area before calculating; a height is not an area. ")+
+    (["binomial","poisson"].includes(d.kind)?"List the included integer counts and check inclusive endpoints. ":
+    d.kind==="custom"?"List the entered outcome values satisfying the inequality. ":
+    "Sketch the interval area before calculating; density height is not a probability. ")+
     "Compare this with the highlighted bars or region in your diagram.",
   "Does the shaded set correspond to the inequality and the same random variable?",
   "One correctly specified event and a verified calculation.",
@@ -127,7 +164,7 @@ export function distributionRecoveryCards(raw,spot="page"){
  const follow=mk("distribution-follow",
   "I am unsure what to reflect on or investigate next",
   "Which modelling assumption or parameter might materially change the probability relevant to your aim?",
-  "Identify one credible change to n, p, μ, σ or an event boundary. Compare its effect using the same variable and units, and explain why this change is meaningful rather than arbitrary.",
+  "Identify a credible change to the model rate, support, probabilities or event boundary. Compare the effect using the same variable and units, and explain why the change is meaningful.",
   "Could that comparison change what your result supports?",
   "One honest mathematical sensitivity question or a justified decision to stop.",
   "If no meaningful comparison follows, document the limitation and return to your aim; extra mathematics is not compulsory.",
