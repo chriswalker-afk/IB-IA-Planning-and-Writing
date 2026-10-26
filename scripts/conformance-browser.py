@@ -320,5 +320,96 @@ with sync_playwright() as pw:
  s['completion']['conclusionResultIds']=['speed']
  run('pass3-conclusion-coherence',s,pass3_conclusion,True)
 
+ def pass4_aa_hl_planning(p):
+  assert_node(p,'N02M')
+  guide=p.locator('[data-aa-hl-depth="planning"]')
+  assert guide.count()==1 and guide.get_attribute('open') is None
+  assert p.locator('[data-math-id^="AA"]').count()==0,'AA SL menu cannot be relabelled as AA HL'
+  before=saved(p)
+  guide.locator('summary').first.focus()
+  guide.locator('summary').first.press('Enter')
+  assert guide.get_attribute('open') is not None
+  for phrase in ('including one taught at SL','not an official AA HL topic list',
+                 'Check the values at a join'):
+   assert phrase in guide.inner_text(),phrase
+  p.set_viewport_size({'width':320,'height':844})
+  no_overflow(p)
+  assert saved(p)['planning']['fields']['course']==before['planning']['fields']['course']
+  assert saved(p)['planning']['fields']['otherCourseMaths']==before['planning']['fields']['otherCourseMaths']
+  p.screenshot(path=str(OUT/'pass4-aa-hl-planning-320.png'),full_page=True)
+ s=copy.deepcopy(BASE);s['route']='planning';s['planning']['current']='N02M'
+ s['planning']['fields'].update(course='AA HL',kind='modelling',
+   otherCourseMaths='Original authored mathematical idea')
+ s['planning']['routeExplorer']['mode']='all'
+ run('pass4-aa-hl-course-planning',s,pass4_aa_hl_planning,True)
+
+ def pass4_aa_hl_piecewise(p):
+  assert_node(p,'C40')
+  course=p.locator('[data-course-understanding="speed"]')
+  validity=p.locator('[data-math-validity="speed"]')
+  assert course.count()==1 and validity.count()==1
+  assert course.locator('[data-aa-hl-depth="writing"]').count()==1
+  assert course.locator('details').first.get_attribute('open') is None
+  assert validity.locator('details').first.get_attribute('open') is None
+  before=saved(p)
+  course.locator('summary').first.focus();course.locator('summary').first.press('Enter')
+  assert 'continuity or smoothness' in course.inner_text()
+  validity.locator('summary').first.click()
+  assert 'one-sided limits' in validity.inner_text()
+  assert 'one-sided derivatives' in validity.inner_text()
+  assert 'jump or corner may be appropriate' in validity.inner_text()
+  assert validity.locator('[data-consequential-reflection="speed"]').count()==1
+  p.set_viewport_size({'width':320,'height':844})
+  no_overflow(p)
+  after=saved(p)
+  for field in ('methodId','result','interpretation','limitations','status'):
+   assert after['entries'][2][field]==before['entries'][2][field],field
+  assert after['planning']['fields']['course']=='AA HL'
+  p.screenshot(path=str(OUT/'pass4-piecewise-aa-hl-320.png'),full_page=True)
+ s=state('C40',2)
+ s['planning']['fields']['course']='AA HL'
+ s['entries'][2].update(methodId='piecewise-model',
+   result='Actual one-sided limits calculated for the model join',
+   interpretation='The observed threshold changes the meaning of the model',
+   limitations='The chosen join reflects a documented physical threshold',
+   knowledge='syllabus')
+ run('pass4-aa-hl-piecewise-stage',s,pass4_aa_hl_piecewise,True)
+
+ def pass4_cohort_welcome(p):
+  assert_node(p,'N00')
+  text=p.locator('#main').inner_text()
+  assert 'updated four-criterion overview' in text
+  assert 'Earlier A–E criterion bubbles and self-marks are hidden' in text
+  assert 'complete current A–E criteria' not in text
+  assert p.locator('.onboarding-criterion-letter').count()==0
+  p.set_viewport_size({'width':320,'height':844})
+  no_overflow(p)
+ s=copy.deepcopy(BASE);s['route']='planning';s['planning']['current']='N00'
+ s['planning']['fields']['assessmentFramework']='revised2029'
+ run('pass4-2029-planning-welcome',s,pass4_cohort_welcome,True)
+
+ def pass4_cohort_studio(p):
+  assert_node(p,'C00')
+  text=p.locator('#main').inner_text()
+  assert 'updated four-criterion overview' in text
+  assert 'old A–E criterion bubbles and self-marks are hidden' in text
+  assert 'Green A–E criterion bubbles explain the current' not in text
+ s=state('C00');s['planning']['fields']['assessmentFramework']='revised2029'
+ run('pass4-2029-writing-welcome',s,pass4_cohort_studio,True)
+
+ def pass4_cohort_final(p):
+  assert_node(p,'C90F')
+  text=p.locator('#main').inner_text()
+  assert 'revised 2029 four-criterion overview' in text
+  assert 'Earlier A–E notes are saved but are not 2029 marks' in text
+  assert 'Locate genuine evidence for criteria A–E' not in text
+  assert p.locator('[data-bind="completion.fields.finalCriteria"]').count()==1
+  assert saved(p)['completion']['fields']['finalCriteria']=='Preserved notes from the older A-E draft'
+  p.set_viewport_size({'width':320,'height':844})
+  no_overflow(p)
+ s=state('C90F');s['planning']['fields']['assessmentFramework']='revised2029'
+ s['completion']['fields']['finalCriteria']='Preserved notes from the older A-E draft'
+ run('pass4-2029-final-review',s,pass4_cohort_final,True)
+
  browser.close()
 (OUT/'results.json').write_text(json.dumps({'results':results,'browser_errors':errors},indent=2));print(json.dumps(results,indent=2));assert all(x['status']=='passed' for x in results)
