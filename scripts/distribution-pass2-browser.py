@@ -1073,6 +1073,94 @@ def pass553_provenance_and_linked_review(browser,width):
   print("PASS 5.5.3 provenance, linked review and original writing",width,flush=True)
  finally:c.close()
 
+
+def pass554_educational_journey(browser,width,course,kind,comparison,phase,source):
+ """Planning evidence -> actual generator -> Workshop / Stuck -> IA writing.
+ Only a student action may change a result or add an IA interpretation."""
+ previous=json.loads(json.dumps(BASE))
+ model={"normal":("mu","75"),"binomial":("p","0.6"),
+        "poisson":("lambda","5"),"uniform":("b","12"),
+        "custom":("customPoints","0,0.1\n2,0.5\n3,0.4")}
+ try:
+  BASE["planning"]["fields"].update({"course":course,
+   "aim":"How would a justified model change a risk decision?",
+   "motivation":"I want to understand a model's limits.",
+   "dataSource":source if source!="theoretical" else "",
+   "secondaryPublisher":"Example published population" if source=="secondary" else ""})
+  BASE["project"]["course"]=course
+  BASE["planning"]["routeExplorer"]["selectedRoute"]="chance"
+  BASE["scratch"]["introduction"]="My first-person introduction must remain."
+  BASE["scratch"]["conclusion"]="My original conclusion remains a draft."
+  BASE["entries"]=[{"id":"educational-stage","phase":phase,"status":"completed",
+   "title":"Mathematical calculation","result":"I verified the original probability.",
+   "interpretation":"My original student interpretation.",
+   "limitations":"I have not validated the model against observations."}]
+  BASE["completion"]["activeEntryIndex"]=0
+  BASE["completion"]["editorReturnNode"]="C30" if phase=="first" else "C40"
+  c,p,errors=setup(browser,width)
+ finally:
+  BASE.clear();BASE.update(previous)
+ try:
+  if kind!="normal":p.locator('[data-distribution-field="kind"]').select_option(kind)
+  field(p,"title","A contextual probability model")
+  field(p,"symbol","T")
+  p.locator('[data-distribution-field="sourceKind"]').select_option(source)
+  if source=="secondary":field(p,"sourceCredit","Example published model 2026")
+  definitions={"normal":{"mu":"70","sigma":"10"},"binomial":{"n":"10","p":"0.4"},
+   "poisson":{"lambda":"3"},"uniform":{"a":"0","b":"10"},
+   "custom":{"customPoints":"0,0.2\n2,0.5\n3,0.3"}}
+  for key,val in definitions[kind].items():field(p,key,val)
+  if comparison=="event":
+   p.locator('[data-distribution-field="mode"]').select_option("left")
+   field(p,"lower","2")
+  learning=p.locator('[data-distribution-learning]')
+  assert learning.count()==1
+  assert learning.locator('[data-workshop-id]').count()==1
+  learning.locator('.distribution-learning-write summary').click()
+  assert "How would a justified model change a risk decision?" in learning.inner_text()
+  assert "mathematical stage" in learning.inner_text()
+  original=p.evaluate("(key)=>JSON.parse(localStorage.getItem(key))",KEY)
+  p.locator('[data-distribution-whatif-panel] summary').click()
+  p.locator('[data-action="distribution-whatif-start"]').click()
+  if comparison=="target":
+   p.locator('[data-distribution-whatif-option="comparison"][value="target"]').click()
+  key,new_value=model[kind]
+  p.locator('[data-distribution-whatif-field="'+key+'"][data-whatif-control="value"]').fill(new_value)
+  reflection=p.locator('[data-distribution-whatif-reflection]')
+  assert reflection.count()==1,(course,kind,comparison)
+  reflection.locator('summary').click()
+  assert reflection.locator('[data-reflection-prompt]').count()==3
+  if comparison=="target":
+   assert "not applied to or shaded" in p.locator('[data-distribution-learning]').inner_text()
+  bridge=reflection.locator('[data-distribution-writing-bridge]')
+  assert bridge.locator('[data-workshop-id]').count()==1
+  bridge.locator('[data-studio-stuck="C31:whatif"]').click()
+  dialog=p.locator('#studioStuckDialog')
+  assert dialog.is_visible()
+  assert dialog.locator('[data-studio-stuck-choice]').count()==3
+  dialog.locator('[data-studio-stuck-close]').click()
+  bridge.locator('[data-workshop-id]').click()
+  assert p.locator('[data-workshop-lesson]').is_visible()
+  p.keyboard.press("Escape")
+  assert p.locator('[data-distribution-studio]').is_visible()
+  during=p.evaluate("(key)=>JSON.parse(localStorage.getItem(key))",KEY)
+  assert during["entries"]==original["entries"]
+  assert during["scratch"]==original["scratch"]
+  assert during["distributionStudio"]["figures"]==[]
+  assert during["distributionStudio"]["draft"]["sourceKind"]==source
+  bridge=p.locator('[data-distribution-writing-bridge]')
+  bridge.locator('[data-action="distribution-whatif-write"]').click()
+  writing=p.locator('[data-bind="entries.0.interpretation"]')
+  assert writing.count()==1 and writing.input_value()=="My original student interpretation."
+  end=p.evaluate("(key)=>JSON.parse(localStorage.getItem(key))",KEY)
+  assert end["completion"]["current"]==("C30" if phase=="first" else "C40")
+  assert end["entries"]==original["entries"] and end["scratch"]==original["scratch"]
+  assert end["distributionStudio"]["figures"]==[]
+  assert not errors,errors
+  check_width(p)
+  print("PASS 5.5.4 educational",course,kind,comparison,phase,source,width,flush=True)
+ finally:c.close()
+
 if __name__=="__main__":
  with sync_playwright() as playwright:
   browser=playwright.chromium.launch(headless=True)
@@ -1109,4 +1197,11 @@ if __name__=="__main__":
   for width in (1440,390,320):pass553_inverse_precision(browser,width)
   pass553_unrepresentable_uniform(browser)
   for width in (1440,390):pass553_provenance_and_linked_review(browser,width)
+  for width,course,kind,comparison,phase,source in (
+   (1440,"AI SL","binomial","event","first","primary"),
+   (390,"AA SL","normal","target","substantial","secondary"),
+   (320,"AA HL","poisson","target","first","theoretical"),
+   (1440,"AA HL","custom","event","substantial","unsure"),
+   (390,"AI SL","uniform","target","first","theoretical")):
+   pass554_educational_journey(browser,width,course,kind,comparison,phase,source)
   browser.close()
