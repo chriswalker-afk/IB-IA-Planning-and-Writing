@@ -11,6 +11,10 @@ test('Pass 1 resource hub: four consistent destinations with non-duplicated MLA 
  assert.equal((html.match(/class="resource-destination-card"/g)||[]).length,3);
  for(const name of ['Learn the maths','Use software','Create a figure','Reference my sources'])assert(html.includes(name),name);
  assert(html.includes('data-resource-creators-featured="true"'));
+ // Independent columns keep their own card heights when native details expands.
+ assert(html.includes('class="resource-quick-column resource-quick-column-maths"'));
+ assert(html.includes('class="resource-quick-column resource-quick-column-tools"'));
+ assert.equal((html.match(/class="resource-destination-card"/g)||[]).length,3);
  assert(html.includes('data-action="resource-open" data-resource-id="mla-citations"'));
  assert.equal((html.match(/Open MLA referencing guide/g)||[]).length,1);
  assert(!html.includes('Your current stage'));
