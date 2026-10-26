@@ -91,6 +91,7 @@ import {startDistributionWhatIf,resetDistributionWhatIf,discardDistributionWhatI
 import {distributionWhatIfSummaryHtml,distributionWhatIfPreviewHtml} from "./src/diagrams/distribution-whatif-view.js";
 import {distributionWhatIfWritingContext} from "./src/diagrams/distribution-whatif-writing.js";
 import {compareDistributionWhatIf} from "./src/diagrams/distribution-whatif-core.js";
+import {distributionFigureAnnouncement,distributionInverseAnnouncement,distributionWhatIfAnnouncement} from "./src/diagrams/distribution-accessibility.js";
 import {renderDistributionGuidance,distributionAim} from "./src/diagrams/distribution-guidance.js";
 import {distributionPreviewHtml,distributionFeedbackHtml,distributionOutputHtml} from "./src/diagrams/distribution-view.js";
 import {setDistributionField,freshDistribution,loadDistribution,saveDistributionDraft,saveAndLinkDistribution} from "./src/diagrams/distribution-actions.js";
@@ -724,6 +725,11 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     root.querySelectorAll("[data-prob-event-heading]").forEach(node=>
       node.textContent=node.dataset.probEventHeading==="eventLeaves"?d.eventName:d.conditionName);
     refreshPresentation("probability");
+  }
+  function announceDistribution(message){
+    // One stable live region, never the entire changing figure or What-if panel.
+    const status=main.querySelector?.("[data-distribution-a11y-status]");
+    if(status)status.textContent=message;
   }
   function refreshDistributionInverseResult(){
     const node=main.querySelector?.("[data-distribution-inverse-result]");
@@ -2135,12 +2141,20 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         else resetDistributionWhatIf(studio);
         save();render();
         const panel=main.querySelector("[data-distribution-whatif-panel]");
-        if(panel)panel.open=true;
+        if(panel){
+          panel.open=true;
+          (action==="distribution-whatif-start"?
+           panel.querySelector("[data-distribution-whatif-field]"):
+           panel.querySelector('[data-action="distribution-whatif-reset"]'))?.focus({preventScroll:true});
+        }
+        announceDistribution(distributionWhatIfAnnouncement(studio));
         break;
       }
       case "distribution-whatif-discard":{
         discardDistributionWhatIf(state.distributionStudio);
         save();render();
+        main.querySelector("[data-distribution-whatif-panel] summary")?.focus({preventScroll:true});
+        announceDistribution("Comparison discarded. Your original figure is unchanged.");
         break;
       }
       case "distribution-whatif-write":{
@@ -2179,11 +2193,13 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         const panel=main.querySelector("[data-distribution-whatif-panel]");
         if(panel){panel.open=true;panel.querySelector("summary")?.focus({preventScroll:true});}
         toast("Alternative parameters applied","Review the probability and model assumptions before saving or exporting.");
+        announceDistribution("Alternative parameters applied to the editable figure. Review its event and source.");
         break;
       }
       case "distribution-inverse-calculate":{
         calculateDistributionInverse(state.distributionStudio);
         save();refreshDistributionInverseResult();
+        announceDistribution(distributionInverseAnnouncement(state.distributionStudio));
         break;
       }
       case "distribution-inverse-apply":{
@@ -2195,6 +2211,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         const panel=main.querySelector("[data-distribution-inverse-panel]");
         if(panel){panel.open=true;panel.querySelector("summary")?.focus({preventScroll:true});}
         toast("Boundary applied to figure","Check the shaded event. You can still edit its boundaries manually.");
+        announceDistribution(distributionInverseAnnouncement(state.distributionStudio));
         break;
       }
       case "distribution-preview-fit":case "distribution-preview-detail":{
@@ -2203,10 +2220,13 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         const root=main.querySelector("[data-distribution-studio]"),preview=root?.querySelector("[data-distribution-preview]");
         if(preview){
           preview.classList.toggle("distribution-preview-detail",zoom);
+          preview.setAttribute("tabindex",zoom?"0":"-1");
+          preview.setAttribute("aria-label",zoom?"Enlarged probability figure; scroll sideways to inspect labels":"Probability figure preview");
           preview.scrollLeft=zoom?(preview.scrollWidth-preview.clientWidth)/2:0;
         }
         root?.querySelectorAll('[data-action="distribution-preview-fit"],[data-action="distribution-preview-detail"]')
           .forEach(button=>button.setAttribute("aria-pressed",String(button.dataset.action===action)));
+        announceDistribution(zoom?"Figure enlarged. Focus the preview and use arrow keys to inspect labels.":"Figure fitted to the available width.");
         break;
       }
       case "distribution-nudge":{
@@ -2217,6 +2237,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
           const input=main.querySelector('[data-distribution-field="'+role+'"]');
           if(input)input.value=String(value);
           save();refreshDistributionPreview();
+          announceDistribution("Boundary adjusted to "+String(value)+".");
         }
         break;
       }
@@ -3455,6 +3476,7 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
           render();
           main.querySelector('[data-distribution-whatif-option="comparison"][value="'+target.value+'"]')
             ?.focus({preventScroll:true});
+          announceDistribution(distributionWhatIfAnnouncement(studio));
         }else refreshDistributionWhatIf();
       }
       return;
@@ -3483,7 +3505,13 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     if(target.dataset.distributionField!==undefined){
       const value=target.type==="checkbox"?target.checked:target.value;
       if(setDistributionField(state.distributionStudio,target.dataset.distributionField,value)){
-        save();if(target.tagName==="SELECT"||target.type==="checkbox")render();else refreshDistributionPreview();
+        save();
+        if(target.tagName==="SELECT"||target.type==="checkbox"){
+          const key=target.dataset.distributionField;
+          render();
+          main.querySelector('[data-distribution-field="'+key+'"]')?.focus({preventScroll:true});
+          announceDistribution(distributionFigureAnnouncement(state.distributionStudio));
+        }else refreshDistributionPreview();
       }return;
     }
     if(target.dataset.probBranchParent!==undefined){
@@ -3721,6 +3749,23 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
   });
   document.addEventListener("change",evt=>{
     const target=evt.target;
+    // Committed changes speak once. The per-keystroke input handler silently
+    // updates charts and mathematical details without re-announcing them.
+    if(target.closest?.("[data-distribution-studio]")){
+      if(target.dataset.distributionWhatifOption!==undefined||
+         target.dataset.distributionWhatifField!==undefined){
+        announceDistribution(distributionWhatIfAnnouncement(state.distributionStudio));
+        return;
+      }
+      if(target.dataset.distributionInverseField!==undefined){
+        announceDistribution("Inverse target edited. Choose Calculate boundary to check it.");
+        return;
+      }
+      if(target.dataset.distributionField!==undefined){
+        announceDistribution(distributionFigureAnnouncement(state.distributionStudio));
+        return;
+      }
+    }
     if(target.dataset.probBranchParent!==undefined||target.dataset.probStage!==undefined||
        target.dataset.probLeaf!==undefined||target.dataset.probField!==undefined){
       // Already saved on input; a change after blur must not detach an action button.
