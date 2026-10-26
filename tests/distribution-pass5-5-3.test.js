@@ -78,12 +78,12 @@ test("normal quantiles have stable independently known rare probabilities and co
   assert(!inverse("normal",mode,p).ok);
 });
 test("continuous uniform bounds reject sub-resolution inverse targets but preserve genuine endpoints",()=>{
- const tiny=inverse("uniform","left",1e-14,{a:"1000000000000",b:"1000000000001"});
+ const tiny=inverse("uniform","left",1e-14,{a:"100000000000",b:"100000000001"});
  assert(!tiny.ok);
  assert.match(tiny.issues.join(" "),/endpoint|represent|scale|precision/i);
- const right=inverse("uniform","right",1e-14,{a:"1000000000000",b:"1000000000001"});
+ const right=inverse("uniform","right",1e-14,{a:"100000000000",b:"100000000001"});
  assert(!right.ok);
- const wide=inverse("uniform","left",0.125,{a:"1000000000000",b:"1000000000001"});
+ const wide=inverse("uniform","left",0.125,{a:"100000000000",b:"100000000001"});
  assert(wide.ok,wide.issues.join("; "));
  assert(Math.abs(wide.achieved-0.125)<1e-12);
  for(const [mode,p] of [["left",0],["left",1],["right",0],["right",1],["central",0],["central",1]]){
