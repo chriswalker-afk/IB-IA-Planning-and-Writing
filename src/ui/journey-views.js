@@ -1,6 +1,7 @@
 import {escapeHtml as e,icon,button} from './primitives.js';
 import {JOURNEY_GROUPS,STATUS_LABELS,stageStatus,groupStatus,currentGroup,groupTarget,resumeLabel,latestCheckpoint,chapterRole,chapterProgressCopy} from './journey.js';
 import {C_MAJOR_STAGES} from '../completing/engine.js';
+import {isRevisedAssessment} from '../essentials/assessment-cohorts.js';
 import {chapterMini,discoveryTrail,mathConstellation} from './living-journey.js';
 import {insightToolkit,insightThreadMap} from './insight-threads.js';
 export function journeyRail(s){
@@ -31,7 +32,7 @@ export function stageCard(s,stage){
 export function groupedDashboard(s){
  return '<div class="studio-focus-summary"><span class="section-eyebrow">'+icon('sparkles')+' ONE USEFUL STEP</span><p>Choose the stage that helps your investigation now. You can return to any earlier decision.</p></div>'+discoveryTrail(s,{compact:true})+'<div class="dashboard-plan"><span>'+icon('compass')+' 1. Planning <span class="status-tag">'+e(STATUS_LABELS[stageStatus(s,'plan')])+'</span></span>'+button('Revisit planning','go-planning','btn-quiet btn-sm')+'</div>'+JOURNEY_GROUPS.slice(1).map((g,i)=>'<section class="journey-stage-group journey-writing-stage '+(g.id==='check'?'journey-checking-stage':'')+'">'+(i===0?'<p class="journey-writing-phase">'+icon('pencil')+' WRITE YOUR IA</p>':g.id==='check'?'<p class="journey-writing-phase">'+icon('clipboard')+' CHECKING</p>':'')+
  '<h3>'+icon(g.icon)+' '+(i+2)+'. '+e(g.name)+' '+chapterMini(s,g)+'</h3>'+
- '<p class="journey-stage-description">'+e(g.description)+'</p>'+(g.id==='check'?'<div class="button-row">'+button('Open A–E checking checklist','go-checking','btn-primary','','arrow-right')+'</div>':'<div class="completion-stage-grid">'+g.stages.map(id=>stageCard(s,C_MAJOR_STAGES.find(x=>x.id===id))).join('')+'</div>')+'</section>').join('');
+ '<p class="journey-stage-description">'+e(g.description)+'</p>'+(g.id==='check'?'<div class="button-row">'+button(isRevisedAssessment(s)?'Review 2029 assessment criteria':'Open A–E checking checklist','go-checking','btn-primary','','arrow-right')+'</div>':'<div class="completion-stage-grid">'+g.stages.map(id=>stageCard(s,C_MAJOR_STAGES.find(x=>x.id===id))).join('')+'</div>')+'</section>').join('');
 }
 const planningRows=s=>{
  const f=s.planning.fields,complete=new Set(s.planning.completedNodes);
