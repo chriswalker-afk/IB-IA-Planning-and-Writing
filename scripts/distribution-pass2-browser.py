@@ -16,7 +16,7 @@ def setup(browser,width):
   accept_downloads=True)
  page=context.new_page();page.set_default_timeout(16000)
  errors=[];page.on("pageerror",lambda e:errors.append(str(e)))
- page.add_init_script("localStorage.setItem("+json.dumps(KEY)+","+json.dumps(json.dumps(BASE))+");")
+ page.add_init_script("if(!localStorage.getItem("+json.dumps(KEY)+"))localStorage.setItem("+json.dumps(KEY)+","+json.dumps(json.dumps(BASE))+");")
  page.goto(URL,wait_until="networkidle")
  assert page.locator("[data-distribution-studio]").is_visible()
  return context,page,errors
@@ -768,7 +768,7 @@ def pass55_unsafe_count(browser):
   p.locator('[data-distribution-field="kind"]').select_option("poisson")
   field(p,"title","Count threshold requires integer precision")
   p.locator('[data-distribution-field="mode"]').select_option("left")
-  field(p,"lower","100000000000000000000")
+  field(p,"lower","10000000000000000000")
   assert "safely representable integers" in p.locator('[data-distribution-feedback]').inner_text()
   assert p.locator('[data-representation-ready="true"]').count()==0
   field(p,"lower","3")
@@ -925,6 +925,154 @@ def pass552_monochrome(browser,width,kind):
   print("PASS 5.5.2 monochrome",kind,width,flush=True)
  finally:c.close()
 
+
+def pass553_inverse_precision(browser,width):
+ c,p,errors=setup(browser,width)
+ try:
+  field(p,"title","Extreme model coverage, not certainty")
+  field(p,"mu","0");field(p,"sigma","1")
+  p.locator('[data-distribution-field="mode"]').select_option("left")
+  field(p,"lower","50")
+  feedback=p.locator('[data-distribution-feedback]')
+  assert "≈ 1" in feedback.inner_text()
+  assert feedback.locator('[data-distribution-precision-note]').count()==1
+  original=p.evaluate("(key)=>JSON.parse(localStorage.getItem(key)).distributionStudio.draft",KEY)
+  with p.expect_download() as dl:p.locator('[data-action="distribution-svg"]').click()
+  file=OUT/("pass553-precision-"+str(width)+".svg");dl.value.save_as(str(file))
+  content=file.read_text();ET.fromstring(content)
+  assert "≈ 1" in content and "data-distribution-handle" not in content
+  assert "Numerical precision:" not in content
+  p.locator('[data-distribution-inverse-panel] summary').click()
+  inverse=p.locator('[data-distribution-inverse-field="probability"]')
+  inverse.fill("0.9999999999999999")
+  p.locator('[data-action="distribution-inverse-calculate"]').click()
+  result=p.locator('[data-distribution-inverse-result]')
+  assert "1 − " in result.inner_text(),result.inner_text()
+  assert result.locator('[data-action="distribution-inverse-apply"]').count()==1
+  assert p.evaluate("(key)=>JSON.parse(localStorage.getItem(key)).distributionStudio.draft",KEY)==original
+  p.locator('[data-distribution-whatif-panel] summary').click()
+  p.locator('[data-action="distribution-whatif-start"]').click()
+  p.locator('[data-distribution-whatif-option="comparison"][value="target"]').click()
+  p.locator('[data-distribution-whatif-option="targetProbability"]').fill("0.9999999999999999")
+  p.locator('[data-distribution-whatif-field="mu"][data-whatif-control="value"]').fill("0.5")
+  report=p.locator('[data-whatif-target-result]')
+  assert report.count()==1
+  assert "1 − " in report.inner_text(),report.inner_text()
+  assert p.evaluate("(key)=>JSON.parse(localStorage.getItem(key)).distributionStudio.draft",KEY)==original
+  with p.expect_download() as dl:p.locator('[data-action="distribution-svg"]').click()
+  clean=OUT/("pass553-original-"+str(width)+".svg");dl.value.save_as(str(clean))
+  text=clean.read_text()
+  assert "targetProbability" not in text and "Alternative model" not in text
+  check_width(p)
+  assert not errors,errors
+  print("PASS 5.5.3 inverse precision and clean export",width,flush=True)
+ finally:c.close()
+
+def pass553_unrepresentable_uniform(browser):
+ c,p,errors=setup(browser,1440)
+ try:
+  p.locator('[data-distribution-field="kind"]').select_option("uniform")
+  field(p,"title","Fine target at large scale")
+  field(p,"a","100000000000");field(p,"b","100000000001")
+  original=p.evaluate("(key)=>JSON.parse(localStorage.getItem(key)).distributionStudio.draft",KEY)
+  p.locator('[data-distribution-inverse-panel] summary').click()
+  p.locator('[data-distribution-inverse-field="probability"]').fill("0.00000000000001")
+  p.locator('[data-action="distribution-inverse-calculate"]').click()
+  result=p.locator('[data-distribution-inverse-result]')
+  assert "cannot represent" in result.inner_text() or "too close to an endpoint" in result.inner_text(),result.inner_text()
+  assert result.locator('[data-action="distribution-inverse-apply"]').count()==0
+  assert p.evaluate("(key)=>JSON.parse(localStorage.getItem(key)).distributionStudio.draft",KEY)==original
+  check_width(p)
+  assert not errors,errors
+  print("PASS 5.5.3 non-representable uniform inverse refuses to apply",flush=True)
+ finally:c.close()
+
+def pass553_provenance_and_linked_review(browser,width):
+ c,p,errors=setup(browser,width)
+ try:
+  p.evaluate("""key=>{
+   const state=JSON.parse(localStorage.getItem(key));
+   const d=state.distributionStudio.draft;
+   Object.assign(d,{title:"Original sourced distribution",mu:"70",sigma:"10",
+    mode:"left",lower:"70",sourceKind:"secondary",sourceCredit:"Cited published model",
+    note:"My source and reasoning remain",caption:"Original caption",edited:true});
+   state.distributionStudio.figures=[{id:"distribution-linked-review",entryId:"stage-for-review",
+    savedAt:"2026-10-26T00:00:00.000Z",draft:{...d}}];
+   state.distributionStudio.activeId="distribution-linked-review";
+   state.scratch.introduction="My original first-person writing stays untouched";
+   state.scratch.conclusion="My contextual conclusion is still mine";
+   state.entries=[{id:"stage-for-review",title:"Mathematical interpretation",phase:"first",
+    status:"completed",result:"Computed an actual probability",
+    interpretation:"My completed reflection remains mine",
+    limitations:"I considered model validity",distributionFigureId:"distribution-linked-review",
+    figureRefs:["distribution:distribution-linked-review"]}];
+   state.completion.stages.C30="complete";
+   state.completion.current="C31";
+   localStorage.setItem(key,JSON.stringify(state));
+  }""",KEY)
+  p.reload(wait_until="networkidle")
+  # On restoration, load the *saved* linked diagram using the visible editor
+  # control. A completed mathematical stage can carry saved data without the
+  # in-progress editor being pre-populated with that stage's figure.
+  saved_figures=p.locator('.probability-saved')
+  assert saved_figures.count()==1,"The linked figure must remain available for editing"
+  saved_figures.locator('summary').click()
+  saved_figures.locator('[data-action="distribution-load"][data-distribution-id="distribution-linked-review"]').click()
+  assert value(p,"title")=="Original sourced distribution"
+  assert value(p,"mu")=="70"
+  assert p.locator('[data-representation-actions="distribution"]').get_attribute("data-representation-ready")=="true"
+  panel=p.locator(".ia-figure-presentation-settings")
+  panel.locator("summary").click()
+  panel.locator('[data-distribution-field="figureNumber"]').fill("8")
+  panel.locator('[data-distribution-field="caption"]').fill("New label, same mathematics")
+  panel.locator('[data-distribution-field="printStyle"]').select_option("mono")
+  p.locator('[data-action="distribution-save"]').click()
+  after_label=p.evaluate("(key)=>JSON.parse(localStorage.getItem(key))",KEY)
+  assert after_label["entries"][0].get("reviewNeeded","")!="yes",after_label["entries"][0]
+  assert after_label["completion"]["stages"]["C30"]=="complete"
+  assert after_label["distributionStudio"]["figures"][0]["draft"]["caption"]=="New label, same mathematics"
+  assert after_label["entries"][0]["interpretation"]=="My completed reflection remains mine"
+  p.locator('[data-distribution-whatif-panel] summary').click()
+  p.locator('[data-action="distribution-whatif-start"]').click()
+  p.locator('[data-distribution-whatif-field="mu"][data-whatif-control="value"]').fill("75")
+  before_apply=p.evaluate("(key)=>JSON.parse(localStorage.getItem(key))",KEY)
+  p.once("dialog",lambda dialog:dialog.dismiss())
+  p.locator('[data-action="distribution-whatif-apply"]').click()
+  cancelled=p.evaluate("(key)=>JSON.parse(localStorage.getItem(key))",KEY)
+  assert cancelled["distributionStudio"]["draft"]==before_apply["distributionStudio"]["draft"]
+  p.once("dialog",lambda dialog:dialog.accept())
+  p.locator('[data-action="distribution-whatif-apply"]').click()
+  unapplied=p.evaluate("(key)=>JSON.parse(localStorage.getItem(key))",KEY)
+  assert unapplied["distributionStudio"]["draft"]["sourceKind"]=="theoretical"
+  assert unapplied["distributionStudio"]["draft"]["sourceCredit"]==""
+  assert unapplied["distributionStudio"]["draft"]["mu"]=="75"
+  assert unapplied["distributionStudio"]["draft"]["note"]=="My source and reasoning remain"
+  assert unapplied["distributionStudio"]["figures"][0]["draft"]["sourceKind"]=="secondary"
+  assert unapplied["distributionStudio"]["figures"][0]["draft"]["mu"]=="70"
+  assert unapplied["entries"][0].get("reviewNeeded","")!="yes"
+  p.locator('[data-action="distribution-save"]').click()
+  saved=p.evaluate("(key)=>JSON.parse(localStorage.getItem(key))",KEY)
+  assert saved["distributionStudio"]["figures"][0]["draft"]["mu"]=="75"
+  assert saved["distributionStudio"]["figures"][0]["draft"]["sourceKind"]=="theoretical"
+  assert saved["entries"][0]["reviewNeeded"]=="yes"
+  assert saved["completion"]["stages"]["C30"]=="needs-review"
+  assert saved["entries"][0]["result"]=="Computed an actual probability"
+  assert saved["entries"][0]["interpretation"]=="My completed reflection remains mine"
+  assert saved["entries"][0]["limitations"]=="I considered model validity"
+  assert saved["scratch"]["introduction"]=="My original first-person writing stays untouched"
+  assert saved["scratch"]["conclusion"]=="My contextual conclusion is still mine"
+  with p.expect_download() as dl:p.locator('[data-action="distribution-svg"]').click()
+  file=OUT/("pass553-provenance-"+str(width)+".svg")
+  dl.value.save_as(str(file))
+  svg=file.read_text();ET.fromstring(svg)
+  for forbidden in ("Cited published model","My completed reflection remains mine",
+   "Original caption","New label, same mathematics"):
+   assert forbidden not in svg,forbidden
+  check_width(p)
+  assert not errors,errors
+  print("PASS 5.5.3 provenance, linked review and original writing",width,flush=True)
+ finally:c.close()
+
 if __name__=="__main__":
  with sync_playwright() as playwright:
   browser=playwright.chromium.launch(headless=True)
@@ -958,4 +1106,7 @@ if __name__=="__main__":
   for width in (1440,390,320):pass552_accessibility(browser,width)
   for kind in ("binomial","poisson","custom"):pass552_monochrome(browser,1440,kind)
   pass552_monochrome(browser,320,"custom")
+  for width in (1440,390,320):pass553_inverse_precision(browser,width)
+  pass553_unrepresentable_uniform(browser)
+  for width in (1440,390):pass553_provenance_and_linked_review(browser,width)
   browser.close()

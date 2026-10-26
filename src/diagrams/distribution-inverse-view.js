@@ -8,10 +8,15 @@ const numberText=v=>{
  if(v===0||v===1||Number.isInteger(v))return String(v);
  return Number(v.toPrecision(12)).toString();
 };
-const probabilityText=v=>{
+const probabilityText=(v,complement=null)=>{
+ if(v===null||!Number.isFinite(v))return "—";
+ // An achieved probability rounded to 1 is not certainty when a positive
+ // complementary tail can still be measured independently.
+ if(Number.isFinite(complement)&&complement>0&&complement<1e-8&&v>=1-1e-8)
+  return "1 − "+Number(complement.toPrecision(7)).toString();
  if(v===0||v===1)return String(v);
  if(v<0.00001)return Number(v.toPrecision(10)).toString();
- if(v>0.99999)return String(v); // never round an achieved tail up to an exact 1
+ if(v>0.99999)return String(v);
  return Number(v.toPrecision(10)).toString();
 };
 export function distributionInverseResultHtml(studio,e){
@@ -33,7 +38,7 @@ export function distributionInverseResultHtml(studio,e){
  return '<div class="distribution-inverse-result-content">'+
   '<strong>Calculated boundary</strong><p class="distribution-inverse-equation">'+e(bounds)+'</p>'+
   '<div class="distribution-inverse-metrics"><div><span>Requested probability</span><strong>'+e(probabilityText(result.requested))+
-  '</strong></div><div><span>Achieved probability</span><strong>'+e(probabilityText(result.achieved))+'</strong></div></div>'+
+  '</strong></div><div><span>Achieved probability</span><strong>'+e(probabilityText(result.achieved,result.achievedComplement))+'</strong></div></div>'+
   notes+
   (status==="applied"?
    '<p class="distribution-inverse-applied">Applied to the figure. You can still edit the event boundaries above.</p>':

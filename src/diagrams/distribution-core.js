@@ -72,8 +72,13 @@ export function normalizeDistributionStudio(raw){
   .map(f=>({id:clean(f.id,72),entryId:clean(f.entryId,80),
    savedAt:clean(f.savedAt,42),draft:normalizeDistributionDraft(f.draft)}))
   .filter(f=>/^distribution-[a-z0-9-]+$/i.test(f.id));
- return {open:r.open===true,zoomed:r.zoomed===true,draft:normalizeDistributionDraft(r.draft),
-  inverse:normalizeDistributionInverseQuery(r.inverse),whatIf:normalizeDistributionWhatIfState(r.whatIf),figures,
+ const draft=normalizeDistributionDraft(r.draft);
+ const inverse=normalizeDistributionInverseQuery(r.inverse);
+ if(inverse.mode==="central"&&!["normal","uniform"].includes(draft.kind)){
+  inverse.mode="left";inverse.status="idle";inverse.signature="";
+ }
+ return {open:r.open===true,zoomed:r.zoomed===true,draft,
+  inverse,whatIf:normalizeDistributionWhatIfState(r.whatIf),figures,
   activeId:figures.some(f=>f.id===r.activeId)?r.activeId:""};
 }
 const phi=x=>Math.exp(-x*x/2)/Math.sqrt(2*Math.PI);
@@ -133,6 +138,29 @@ export function formatDistributionProbability(p,complement=null){
 const selected=(mode,k,a,b)=>mode==="exact"?k===a:
  mode==="left"?k<=a:mode==="right"?k>=a:
  mode==="between"?k>=a&&k<=b:mode==="outside"?k<=a||k>=b:false;
+/** Whether an event or its complement has strictly positive model mass,
+ * independently of probabilities that may have underflowed to numeric zero.
+ * A return of null means the model's finite-support numerical result suffices. */
+function positiveModelEvent(d,n,p,extra,a,b,inside){
+ if(d.kind==="normal"){
+  if(d.mode==="between"&&inside)return b>a;
+  return true; // Normal density is strictly positive on every nonempty tail.
+ }
+ if(d.kind==="binomial"){
+  if(!Number.isInteger(n)||n<1||n>150)return null;
+  const support=p===0?[0]:p===1?[n]:Array.from({length:n+1},(_,i)=>i);
+  return support.some(k=>selected(d.mode,k,a,b)===inside);
+ }
+ if(d.kind==="poisson"){
+  if(extra.lambda===0)return selected(d.mode,0,a,b)===inside;
+  if(d.mode==="left")return inside?a>=0:true;
+  if(d.mode==="right")return inside?true:a>0;
+  if(d.mode==="exact")return inside?a>=0:true;
+  if(d.mode==="between")return inside?b>=0:true;
+  if(d.mode==="outside")return inside?true:Math.max(0,a+1)<b;
+ }
+ return null; // Uniform/custom can represent exact zero/one at finite bounds.
+}
 export function analyzeDistribution(raw){
  const d=normalizeDistributionDraft(raw),issues=[],notes=[];
  if(!d.title.trim())issues.push("Enter a descriptive figure title before saving or exporting.");
@@ -176,7 +204,7 @@ export function analyzeDistribution(raw){
     issues.push("The lower boundary must not exceed the upper boundary.");
   }
  }
- let probability=null,statement="",complement=null;
+ let probability=null,statement="",complement=null,precisionLimited=false;
  if(!issues.length&&d.mode!=="none"){
   const variable=d.symbol.trim();
   const expr=d.mode==="exact"?variable+" = "+a:
@@ -235,18 +263,41 @@ export function analyzeDistribution(raw){
     complement=total;
    }
   }
-  statement="P("+expr+") = "+formatDistributionProbability(probability,complement);
+  let display=formatDistributionProbability(probability,complement);
+  const positiveSelected=positiveModelEvent(d,n,p,extra,a,b,true);
+  const positiveExcluded=positiveModelEvent(d,n,p,extra,a,b,false);
+  if(probability===0&&positiveSelected===true){
+   display="≈ 0";precisionLimited=true;
+  }else if(probability===1&&complement===0&&positiveExcluded===true){
+   display="≈ 1";precisionLimited=true;
+  }
+  statement="P("+expr+") "+(precisionLimited?display:"= "+display);
+  if(precisionLimited)notes.push("The probability is not exactly zero or one; a positive theoretical tail is smaller than floating-point arithmetic can represent. Use the approximation sign, not a claim of certainty.");
  }
  if(d.kind==="normal")notes.push("A density curve represents a proposed continuous model; the probability is an area, not the curve height.");
  if(d.kind==="binomial")notes.push("A binomial model assumes fixed trials, two outcomes, independence and constant success probability.");
  notes.push("A theoretical distribution does not by itself show that observed data fit the chosen model.");
- return {ready:issues.length===0,issues,notes,draft:d,probability,statement,
+ return {ready:issues.length===0,issues,notes,draft:d,probability,statement,precisionLimited,
   mean,variance,mu,sigma,n,p,masses,lower:a,upper:b,
   lambda:extra?.lambda??null,uniformA:extra?.uniformA??null,uniformB:extra?.uniformB??null,
   points:extra?.points||(masses.length?masses.map((probability,x)=>({x,probability})):[]),
   plotMax:extra?.plotMax??null,total:extra?.total??null};
 }
 export const distributionSignature=d=>JSON.stringify(normalizeDistributionDraft(d));
+/** A saved figure's mathematical interpretation depends on these inputs and
+ * evidence claims, not on its font size, colour, caption or figure number. */
+export function distributionInterpretationSignature(raw){
+ const d=normalizeDistributionDraft(raw);
+ const keys=["kind","symbol","unit","mu","sigma","n","p","lambda","a","b",
+  "customPoints","mode","lower","upper","sourceKind","sourceCredit","note"];
+ // Only active model parameters influence the result: changing a latent
+ // parameter from another distribution must not create a false review flag.
+ const active={normal:["mu","sigma"],binomial:["n","p"],poisson:["lambda"],
+  uniform:["a","b"],custom:["customPoints"]}[d.kind]||[];
+ return JSON.stringify([d.kind,d.symbol,d.unit,...active.map(k=>d[k]),
+  d.mode,...(d.mode==="none"?[]:["lower",...(["between","outside"].includes(d.mode)?["upper"]:[])].map(k=>d[k])),
+  d.sourceKind,d.sourceCredit,d.note]);
+}
 export function saveDistributionFigure(studio,entryId=""){
  const analysis=analyzeDistribution(studio?.draft);
  if(!analysis.ready)return {ok:false,error:analysis.issues[0],checks:analysis};

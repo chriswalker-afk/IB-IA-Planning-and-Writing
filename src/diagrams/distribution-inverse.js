@@ -27,10 +27,10 @@ const readProbability=value=>{
 };
 const fail=(kind,mode,requested,issues)=>({
  ok:false,kind,mode,requested,issues,notes:[],lower:null,upper:null,event:null,
- achieved:null,adjacentProbability:null,comparison:null
+ achieved:null,achievedComplement:null,adjacentProbability:null,comparison:null
 });
-const success=(kind,mode,requested,lower,upper,achieved,notes=[],adjacentProbability=null)=>({
- ok:true,kind,mode,requested,lower,upper,achieved,issues:[],notes,
+const success=(kind,mode,requested,lower,upper,achieved,notes=[],adjacentProbability=null,achievedComplement=null)=>({
+ ok:true,kind,mode,requested,lower,upper,achieved,achievedComplement,issues:[],notes,
  comparison:["normal","uniform"].includes(kind)?"approximately equal":"at least",
  adjacentProbability,
  event:{mode:mode==="central"?"between":mode,lower:String(lower),
@@ -78,8 +78,9 @@ function boundedDiscrete(model,mode,target){
    for(;i<n-1;i++)
     if(target<=0.5?left(i)>=target:right(i+1)<=1-target)break;
   }
-  const achieved=target>0.5?1-right(i+1):left(i);
-  return {boundary:points[i].x,achieved,adjacent:i>0?left(i-1):null};
+  const complement=right(i+1);
+  const achieved=target>0.5?1-complement:left(i);
+  return {boundary:points[i].x,achieved,complement,adjacent:i>0?left(i-1):null};
  }
  let i=n-1;
  if(target===1)i=0;
@@ -87,13 +88,14 @@ function boundedDiscrete(model,mode,target){
   for(;i>0;i--)
    if(target<=0.5?right(i)>=target:left(i-1)<=1-target)break;
  }
- const achieved=target>0.5?1-left(i-1):right(i);
- return {boundary:points[i].x,achieved,adjacent:i<n-1?right(i+1):null};
+ const complement=left(i-1);
+ const achieved=target>0.5?1-complement:right(i);
+ return {boundary:points[i].x,achieved,complement,adjacent:i<n-1?right(i+1):null};
 }
 
 const poissonAtLeast=(lambda,k)=>k<=0?1:poissonUpperTail(lambda,k-1);
 function poissonDiscrete(lambda,mode,target){
- if(lambda===0)return {boundary:0,achieved:1,adjacent:0};
+ if(lambda===0)return {boundary:0,achieved:1,complement:0,adjacent:0};
  if(mode==="left"){
   // The Poisson support has no maximum, even if a browser graph stops at k=250.
   let lo=-1,hi=Math.max(2,Math.ceil(lambda+4*Math.sqrt(lambda+1)+12));
@@ -104,8 +106,9 @@ function poissonDiscrete(lambda,mode,target){
    const mid=Math.floor((lo+hi)/2);
    if(meets(mid))hi=mid;else lo=mid;
   }
-  return {boundary:hi,achieved:target>0.5?1-poissonAtLeast(lambda,hi+1):poissonCdf(lambda,hi),
-   adjacent:hi>0?poissonCdf(lambda,hi-1):null};
+  const complement=poissonAtLeast(lambda,hi+1);
+  return {boundary:hi,achieved:target>0.5?1-complement:poissonCdf(lambda,hi),
+   complement,adjacent:hi>0?poissonCdf(lambda,hi-1):null};
  }
  let lo=0,hi=Math.max(2,Math.ceil(lambda+4*Math.sqrt(lambda+1)+12));
  const meets=k=>target<=0.5?poissonAtLeast(lambda,k)>=target:
@@ -115,8 +118,9 @@ function poissonDiscrete(lambda,mode,target){
   const mid=Math.floor((lo+hi)/2);
   if(meets(mid))lo=mid;else hi=mid;
  }
- return {boundary:lo,achieved:target>0.5?1-poissonCdf(lambda,lo-1):poissonAtLeast(lambda,lo),
-  adjacent:poissonAtLeast(lambda,lo+1)};
+ const complement=poissonCdf(lambda,lo-1);
+ return {boundary:lo,achieved:target>0.5?1-complement:poissonAtLeast(lambda,lo),
+  complement,adjacent:poissonAtLeast(lambda,lo+1)};
 }
 const finite=x=>Number.isFinite(x)&&Math.abs(x)<1e308;
 const quantileNotes=Object.freeze([
@@ -157,26 +161,30 @@ export function inverseDistribution(raw,request={}){
     "A normal distribution is unbounded: a central probability of 1 requires infinite boundaries."
    ]);
   const {mu,sigma}=model;
-  let lower,upper=null,achieved;
+  let lower,upper=null,achieved,achievedComplement;
   if(mode==="central"){
    const z=requested===0?0:positiveNormalSurvivalQuantile((1-requested)/2);
    lower=mu-sigma*z;upper=mu+sigma*z;
    if(!finite(lower)||!finite(upper))
     return fail(kind,mode,requested,["The requested normal interval exceeds finite numerical bounds."]);
    achieved=normalInterval((lower-mu)/sigma,(upper-mu)/sigma);
+   achievedComplement=normalCdf((lower-mu)/sigma)+normalUpperTail((upper-mu)/sigma);
   }else{
    const z=mode==="left"?normalStandardQuantile(requested):normalRightQuantile(requested);
    lower=mu+sigma*z;
    if(!finite(lower))
     return fail(kind,mode,requested,["The requested normal boundary exceeds finite numerical bounds."]);
    achieved=mode==="left"?normalCdf((lower-mu)/sigma):normalUpperTail((lower-mu)/sigma);
+   achievedComplement=mode==="left"?normalUpperTail((lower-mu)/sigma):
+    normalCdf((lower-mu)/sigma);
   }
-  if(achieved===0&&requested>0||achieved===1&&requested<1&&requested<0.5)
+  if(achieved===0&&requested>0||
+    achieved===1&&requested<1&&!(achievedComplement>0))
    return fail(kind,mode,requested,["This extreme normal target cannot be represented reliably with the chosen parameters."]);
   const notes=[...continuousNotes];
   if(Math.abs(achieved-requested)>Math.max(1e-10,requested*1e-8))
    notes.push("Finite-precision arithmetic changes the achieved probability; report the achieved value rather than claiming an exact match.");
-  return success(kind,mode,requested,lower,upper,achieved,notes);
+  return success(kind,mode,requested,lower,upper,achieved,notes,null,achievedComplement);
  }
 
  if(kind==="uniform"){
@@ -188,9 +196,12 @@ export function inverseDistribution(raw,request={}){
   const c=x=>Math.max(0,Math.min(1,(x-a)/span));
   const achieved=mode==="left"?c(lower):mode==="right"?1-c(lower):Math.max(0,c(upper)-c(lower));
   const notes=[...continuousNotes];
-  if(Math.abs(achieved-requested)>1e-10)
-   notes.push("The parameter scale limits the representable boundary; the achieved probability differs from the target.");
-  return success(kind,mode,requested,lower,upper,achieved,notes);
+  if(requested>0&&requested<1&&(achieved===0||achieved===1))
+   return fail(kind,mode,requested,["The requested probability is too close to an endpoint to locate a distinct boundary at this parameter scale."]);
+  if(requested>0&&requested<1&&Math.abs(achieved-requested)>Math.max(1e-14,requested*1e-10))
+   return fail(kind,mode,requested,["The chosen uniform parameter scale cannot represent this probability target accurately."]);
+  return success(kind,mode,requested,lower,upper,achieved,notes,null,
+   Math.max(0,Math.min(1,1-achieved)));
  }
 
  if(kind==="poisson"){
@@ -207,8 +218,12 @@ export function inverseDistribution(raw,request={}){
  const notes=[...quantileNotes];
  if(kind==="poisson")
   notes.push("Poisson inverse calculations use the full count distribution, including counts not displayed in the finite diagram.");
- if(result.achieved+Math.max(5e-15,requested*5e-14)<requested)
+ // A fixed 5e-15 coverage allowance would accept a zero/underflowed tail for
+ // an actual target of 1e-20 or smaller. Scale tolerance to the target;
+ // mathematical coverage must never be silently invented for a rare event.
+ const tolerance=Math.min(5e-15,requested*1e-12);
+ if(result.achieved+tolerance<requested)
   return fail(kind,mode,requested,["The model cannot meet this probability target to numerical precision."]);
  return success(kind,mode,requested,result.boundary,null,result.achieved,
-  notes,result.adjacent);
+  notes,result.adjacent,result.complement);
 }
