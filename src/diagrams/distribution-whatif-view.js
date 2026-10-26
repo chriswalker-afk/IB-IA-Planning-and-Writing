@@ -3,7 +3,7 @@
  * is embedded in the normal figure/export pipeline.
  */
 import {compareDistributionWhatIf,DISTRIBUTION_PARAMETER_KEYS} from "./distribution-whatif-core.js";
-import {renderDistributionWhatIfSvg} from "./distribution-whatif-render.js";
+import {renderDistributionWhatIfSvg,normalComparisonCompression} from "./distribution-whatif-render.js";
 import {distributionLayout} from "./distribution-layout.js";
 import {distributionWhatIfReflection} from "./distribution-whatif-reflection.js";
 import {formatSensitivityProbability,formatSensitivityPoints,formatSensitivityNumber,formatSensitivitySigned} from "./distribution-sensitivity.js";
@@ -240,7 +240,8 @@ export function distributionWhatIfPreviewHtml(studio,e){
       (q.originalProbability!==null?
        'The pale highlighted region and boundary markers indicate the same event in both models.':
        'Select an event in section 2 to compare the probabilities at a fixed boundary.'))+'</p>'+
-   (outside?'<p class="distribution-whatif-hint" data-whatif-marker-note>One or more cut-offs are outside the displayed model window. Use the full numerical values above; the chart does not represent all extreme boundaries.</p>':""):
+   (outside?'<p class="distribution-whatif-hint" data-whatif-marker-note>One or more cut-offs are outside the displayed model window. Use the full numerical values above; the chart does not represent all extreme boundaries.</p>':"")+
+   (normalComparisonCompression(q)?'<p class="distribution-whatif-hint" data-whatif-scale-warning role="note"><strong>Shared-scale limitation:</strong> at least one normal density is narrower than can be represented clearly at this scale. Compare numerical values; do not judge spread or peak shape from the compressed curve.</p>':""):
    '<p class="distribution-whatif-preview-error">'+e(q.status==="stale"?
     "Original parameters changed. Restart the comparison to see updated curves.":"Enter valid model parameters to compare shapes.")+'</p>')+
   '</section>';
