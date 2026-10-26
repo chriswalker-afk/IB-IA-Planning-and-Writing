@@ -139,19 +139,22 @@ test("only explicitly linked saved graphs are recalled as evidence, never an uns
   confirmedLimitations:[],recordedLimitation:""
  });
  assert.equal(linked.linkedGraph,true);
- const html=renderConsequentialReflectionCue({...linked,figures:[{kind:"graph",ready:true}]},{e,icon});
+ const html=renderConsequentialReflectionCue({entryId:"real-stage",result:"Completed model",method:"linear-regression",
+  needsReview:false,figures:[{id:"fig1",kind:"graph",ready:true}],
+  confirmedLimitations:[],recordedLimitation:""},{e,icon});
  assert.match(html,/explicitly linked saved graph/);
  assert(!html.includes("Unlinked draft"));
 });
 
 test("reduced advice retains collapsed consequence guidance without changing other writing",()=>{
  const s=stateFor("normal");s.ui.adviceMode="reduced";
- const before=JSON.stringify(s),html=actualView(s,"C30");
+ setCompletionNode(s,"C30");
+ const before=JSON.stringify(s),html=completionView(s);
  assert.match(html,/data-consequential-reflection="real-stage"/);
  assert.match(html,/consequential-reflection-cue is-reduced/);
  assert.match(html,/Open diagram &amp; table tools/);
- assert.equal(JSON.stringify(s),before.replace('"current":"C00"','"current":"C30"'),
-  "Viewing a node may update navigation, but the renderer must not rewrite data");
+ assert.equal(JSON.stringify(s),before,
+  "Rendering in reduced mode must not rewrite data or notes");
 });
 
 test("consequence prompt remains confined to the real result in the later mathematical stage",()=>{
