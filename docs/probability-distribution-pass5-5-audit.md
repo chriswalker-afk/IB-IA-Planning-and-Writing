@@ -36,3 +36,16 @@ The figure must not visually or verbally establish more than the actual mathemat
 4. **Pass 5.5.4 — Educational integration and final release regression.** Follow representative IA pathways through Planning → Distribution Studio → interpretation → Sparks / Insight Threads / Maths Workshop / I am stuck; refine only repeated or unhelpful advice. Final issue register and stop/go recommendation.
 
 Do not introduce universal sensitivity scores, automated IA paragraphs, inferred empirical support or additional calculators during this audit. A separate PR is appropriate for each correction cluster so failed browser checks can be diagnosed without disturbing completed mathematics or student data.
+
+## Pass 5.5.2 — Accessibility/presentation corrections (PR #145)
+
+The changes address **ACC-01** and **UI-01** without changing distribution mathematics:
+
+- **Short announcements:** the changing validation summary, inverse result and What-if summary are no longer live regions. A single persistent, visually hidden polite status message announces deliberate/committed changes, invalid models or explicit inverse calculations. This avoids re-reading all metrics, reflection prompts and guidance on each slider input.
+- **Keyboard and focus:** changing distribution dropdowns/checkboxes retains focus after the editor redraws; start/reset/discard comparisons and applied inverse results return focus appropriately; enlarged preview and wide comparison region support keyboard horizontal scrolling, with a visible focus outline.
+- **Touch and narrow screens:** boundary nudges and the what-if slider have 44px targets; the SVG boundary has a 44px transparent hit stroke; the 320px boundary-grid typo is corrected. Long numerical equations continue to wrap inside their panels.
+- **Non-colour encoding:** monochrome discrete **exports** use the same hatched selected-probability pattern as continuous shading, with stronger borders. Editor-only discrete comparison graphs distinguish hatched/dashed original bars from solid alternatives. SVG descriptions explain axes and the encoded model rather than relying only on colours.
+- **Figure metadata:** IA figure number and caption fields now explicitly state that they are for the external figure label/source handover, **not** embedded in the SVG/PNG. The existing figure-label generator and original metadata are preserved.
+- **Regression evidence:** pure tests exercise all five models, inverse and fixed-event/fixed-target announcements, source metadata/backup preservation, clean exports and mono patterns. Playwright journeys check desktop/390px/320px focus, scroll, committed announcements, 44px targets and SVG/PNG.
+
+**Remaining manual verification:** keyboard-only walkthroughs and a real screen-reader session (NVDA, VoiceOver or equivalent) are still recommended before declaring WCAG conformance. Automated markup and browser tests do not independently establish screen-reader usability. Keep any further accessibility changes in a targeted follow-up rather than claiming certification.
