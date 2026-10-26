@@ -778,6 +778,150 @@ def pass55_unsafe_count(browser):
   print("PASS 5.5 unsafe count bounds",flush=True)
  finally:c.close()
 
+
+def pass552_accessibility(browser,width):
+ c,p,errors=setup(browser,width)
+ try:
+  status=p.locator('[data-distribution-a11y-status]')
+  assert status.count()==1
+  assert status.get_attribute("role")=="status"
+  assert status.get_attribute("aria-live")=="polite"
+  assert status.inner_text()==""
+  assert p.locator('[data-distribution-feedback]').get_attribute("aria-live") is None
+  assert p.locator('[data-distribution-inverse-result]').get_attribute("aria-live") is None
+  kind=p.locator('[data-distribution-field="kind"]')
+  kind.focus()
+  kind.select_option("binomial")
+  kind=p.locator('[data-distribution-field="kind"]')
+  assert kind.input_value()=="binomial"
+  assert kind.evaluate("e=>document.activeElement===e")
+  kind.select_option("normal")
+  assert p.locator('[data-distribution-field="kind"]').evaluate("e=>document.activeElement===e")
+  field(p,"title","A theoretical normal model")
+  field(p,"mu","70");field(p,"sigma","10")
+  mode=p.locator('[data-distribution-field="mode"]')
+  mode.select_option("between")
+  assert p.locator('[data-distribution-field="mode"]').evaluate("e=>document.activeElement===e")
+  field(p,"lower","60");field(p,"upper","80")
+  assert p.locator('[data-distribution-feedback]').inner_text().find("Figure ready")>=0
+  assert p.locator('[data-distribution-feedback]').get_attribute("aria-live") is None
+  p.locator('[data-distribution-inverse-panel] summary').click()
+  p.locator('[data-action="distribution-inverse-calculate"]').click()
+  assert "Boundary calculated" in status.inner_text()
+  assert len(status.inner_text())<230
+  p.locator('[data-distribution-whatif-panel] summary').click()
+  p.locator('[data-action="distribution-whatif-start"]').click()
+  assert p.locator('[data-distribution-whatif-summary]').get_attribute("aria-live") is None
+  alternative=p.locator('[data-distribution-whatif-field="mu"][data-whatif-control="value"]')
+  alternative.focus();alternative.fill("75")
+  assert "Fixed event" not in status.inner_text()
+  alternative.press("Tab")
+  assert "Fixed event" in status.inner_text()
+  assert len(status.inner_text())<250
+  slider=p.locator('[data-distribution-whatif-field="mu"][data-whatif-control="range"]')
+  slider.focus()
+  slider.press("ArrowRight")
+  assert slider.evaluate("e=>document.activeElement===e")
+  size=slider.evaluate("e=>e.getBoundingClientRect().height")
+  assert size>=43,(width,size)
+  assert len(status.inner_text())<310
+  choice=p.locator('[data-distribution-whatif-option="comparison"][value="target"]')
+  choice.click()
+  choice=p.locator('[data-distribution-whatif-option="comparison"][value="target"]')
+  assert choice.evaluate("e=>document.activeElement===e")
+  assert p.locator('[data-whatif-target-result]').count()==1
+  assert "Fixed probability target" in status.inner_text()
+  assert len(status.inner_text())<310
+  canvas=p.locator('[data-distribution-whatif-canvas]')
+  assert canvas.count()==1
+  assert canvas.get_attribute("tabindex")=="0"
+  assert canvas.get_attribute("role")=="region"
+  assert "scroll horizontally" in canvas.get_attribute("aria-label")
+  if width<=390:
+   layout=canvas.evaluate("el=>({client:el.clientWidth,scroll:el.scrollWidth})")
+   assert layout["scroll"]>layout["client"]+100,layout
+   canvas.focus()
+   canvas.press("ArrowRight")
+   p.wait_for_function("()=>document.querySelector('[data-distribution-whatif-canvas]').scrollLeft>0")
+  panel=p.locator('.ia-figure-presentation-settings')
+  panel.locator("summary").click()
+  panel.locator('[data-distribution-field="printStyle"]').select_option("mono")
+  panel=p.locator('.ia-figure-presentation-settings')
+  assert "not printed inside the SVG or PNG" in panel.inner_text()
+  panel.locator('[data-distribution-field="figureNumber"]').fill("7")
+  panel.locator('[data-distribution-field="caption"]').fill("Caption in the IA, outside the exported diagram")
+  preview=p.locator('[data-distribution-preview]')
+  assert preview.get_attribute("tabindex")=="-1"
+  p.locator('[data-action="distribution-preview-detail"]').click()
+  preview=p.locator('[data-distribution-preview]')
+  assert preview.get_attribute("tabindex")=="0"
+  assert "Enlarged probability figure" in preview.get_attribute("aria-label")
+  if width<=390:
+   preview.focus();preview.press("ArrowRight")
+   p.wait_for_function("()=>document.querySelector('[data-distribution-preview]').scrollLeft>0")
+  p.locator('[data-action="distribution-preview-fit"]').click()
+  assert p.locator('[data-distribution-preview]').get_attribute("tabindex")=="-1"
+  assert "Figure fitted" in status.inner_text()
+  nudge=p.locator('[data-distribution-boundary="lower"][data-distribution-direction="1"]')
+  minsize=nudge.evaluate("el=>({h:el.getBoundingClientRect().height,w:el.getBoundingClientRect().width})")
+  assert minsize["h"]>=44 and minsize["w"]>=44,minsize
+  nudge.focus();nudge.click()
+  assert "Boundary adjusted" in status.inner_text()
+  assert nudge.evaluate("e=>document.activeElement===e")
+  assert p.locator('[data-distribution-preview] [data-distribution-handle]').count()==2
+  figures=p.evaluate("(key)=>JSON.parse(localStorage.getItem(key)).distributionStudio",KEY)
+  assert figures["draft"]["figureNumber"]=="7"
+  assert figures["draft"]["caption"]=="Caption in the IA, outside the exported diagram"
+  assert figures["figures"]==[]
+  with p.expect_download() as dl:p.locator('[data-action="distribution-svg"]').click()
+  file=OUT/("pass552-accessibility-"+str(width)+".svg");dl.value.save_as(str(file))
+  svg=file.read_text();ET.fromstring(svg)
+  assert "distribution-hatch" in svg
+  assert "<desc>" in svg
+  assert "Caption in the IA, outside the exported diagram" not in svg
+  assert "data-distribution-handle" not in svg
+  assert "data-distribution-a11y-status" not in svg
+  if width==390:
+   with p.expect_download() as dl:p.locator('[data-action="distribution-png"]').click()
+   png=OUT/"pass552-mono-mobile.png";dl.value.save_as(str(png))
+   assert png.read_bytes()[:8]==bytes([137,80,78,71,13,10,26,10])
+  check_width(p)
+  assert not errors,errors
+  print("PASS 5.5.2 accessible interaction",width,flush=True)
+ finally:c.close()
+
+def pass552_monochrome(browser,width,kind):
+ c,p,errors=setup(browser,width)
+ try:
+  p.locator('[data-distribution-field="kind"]').select_option(kind)
+  field(p,"title","Monochrome discrete distribution")
+  fields={
+   "binomial":{"n":"10","p":"0.5","lower":"3"},
+   "poisson":{"lambda":"3","lower":"3"},
+   "custom":{"customPoints":"0, 0.2\n1, 0.5\n2, 0.3","lower":"1"}
+  }
+  for k,v in fields[kind].items():
+   if k!="lower":field(p,k,v)
+  p.locator('[data-distribution-field="mode"]').select_option("left")
+  field(p,"lower",fields[kind]["lower"])
+  p.locator('.ia-figure-presentation-settings summary').click()
+  p.locator('[data-distribution-field="printStyle"]').select_option("mono")
+  bars=p.locator('[data-distribution-svg] [data-distribution-selected="true"]')
+  assert bars.count()>=1,kind
+  assert 'url(#distribution-hatch)' in bars.first.get_attribute("fill"),kind
+  assert p.locator('[data-representation-ready="true"]').count()==1
+  with p.expect_download() as dl:p.locator('[data-action="distribution-svg"]').click()
+  file=OUT/("pass552-mono-"+kind+"-"+str(width)+".svg")
+  dl.value.save_as(str(file))
+  svg=file.read_text();ET.fromstring(svg)
+  assert 'fill="url(#distribution-hatch)"' in svg
+  assert 'Selected probabilities use a hatch pattern' in svg
+  assert "data-distribution-handle" not in svg
+  check_width(p)
+  assert not errors,errors
+  print("PASS 5.5.2 monochrome",kind,width,flush=True)
+ finally:c.close()
+
 if __name__=="__main__":
  with sync_playwright() as playwright:
   browser=playwright.chromium.launch(headless=True)
@@ -808,4 +952,7 @@ if __name__=="__main__":
   pass55_precision(browser,390,"normal")
   for width in (1440,390,320):pass55_compressed_normal(browser,width)
   pass55_unsafe_count(browser)
+  for width in (1440,390,320):pass552_accessibility(browser,width)
+  for kind in ("binomial","poisson","custom"):pass552_monochrome(browser,1440,kind)
+  pass552_monochrome(browser,320,"custom")
   browser.close()
