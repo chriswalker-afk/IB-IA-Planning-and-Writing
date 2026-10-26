@@ -6,6 +6,8 @@
  * No parsing of student prose to guess a result, no fabricated sensitivity
  * calculation, no automatic claim that a model or assumption is reliable.
  */
+import {escapeHtml,icon as defaultIcon} from "../ui/primitives.js";
+
 const cue=(change,compare,tool="")=>Object.freeze({change,compare,tool});
 
 export const CONSEQUENCE_CHECKS=Object.freeze({
@@ -123,7 +125,7 @@ export function consequentialReflectionCue(context){
   linkedGraph,hasLimitation});
 }
 
-export function renderConsequentialReflectionCue(context,{icon=()=>"",e=x=>String(x),reduced=false}={}){
+export function renderConsequentialReflectionCue(context,{icon=defaultIcon,e=escapeHtml,reduced=false}={}){
  const check=consequentialReflectionCue(context);
  if(!check)return "";
  return '<div class="math-validity-row consequential-reflection-cue'+(reduced?' is-reduced':'')+
