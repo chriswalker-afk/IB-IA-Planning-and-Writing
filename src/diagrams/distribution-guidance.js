@@ -5,7 +5,8 @@
  * fit or marks a mathematical stage complete. No tutorial text enters the SVG.
  * All prompts derive from the current editable draft and existing student notes.
  */
-import {analyzeDistribution,distributionSignature} from "./distribution-core.js";
+import {analyzeDistribution,distributionInterpretationSignature} from "./distribution-core.js";
+import {compareDistributionWhatIf} from "./distribution-whatif-core.js";
 import {distributionWhatIfReflection} from "./distribution-whatif-reflection.js";
 import {presentationSparks} from "./presentation-coach-core.js";
 import {lessonById,definitionById} from "../workshop/catalog.js";
@@ -58,7 +59,8 @@ export function distributionGuidance(state,raw){
  const activeSaved=state?.distributionStudio?.figures?.find(f=>f.id===state?.distributionStudio?.activeId)||null;
  const linked=!!activeSaved&&!!e&&(e.distributionFigureId===activeSaved.id||
   e.figureRefs?.includes("distribution:"+activeSaved.id));
- const changedSinceSave=linked&&distributionSignature(activeSaved.draft)!==distributionSignature(d);
+ const changedSinceSave=linked&&distributionInterpretationSignature(activeSaved.draft)!==
+  distributionInterpretationSignature(d);
  const aim=distributionAim(state);
  // These are the real, existing Sparks; no separate student's "source" is invented.
  const sparks=presentationSparks(state,"distribution",d)
@@ -69,10 +71,18 @@ export function distributionGuidance(state,raw){
   d.kind==="poisson"?"What events does "+symbol+" count in the chosen fixed interval?":
   d.kind==="custom"?"What does each possible numerical value of "+symbol+" represent"+(unit?" in "+unit:"")+"?":
   "What continuous quantity does "+symbol+" measure"+(unit?" in "+unit:"")+"?";
+ // A fixed-target What-if has its own two hypothetical cut-offs. They are
+ // not the shaded event in the current figure until explicitly applied.
+ const comparison=state?.distributionStudio?.whatIf?.active?
+  compareDistributionWhatIf(state.distributionStudio):null;
+ const exploringTarget=comparison?.ready&&comparison.changed&&comparison.comparison==="target"&&comparison.target?.ok;
  let event;
- if(d.mode==="none")event="No event is selected. Explain which part of the model is useful for your aim; a shaded probability is optional.";
+ if(d.mode==="none")event=exploringTarget?
+  "You are exploring cut-offs for a fixed probability target. Compare requested and achieved coverage under each model. These events have not been applied to or shaded in your IA figure.":
+  "No event is selected. Explain which part of the model is useful for your aim; a shaded probability is optional.";
  else if(!q.ready)event="Check the event and numeric boundaries before interpreting an area or count probability.";
- else event="For "+q.statement+", identify exactly which outcomes or measurements the selected region covers. Explain this probability in context, not just its decimal value.";
+ else event="For "+q.statement+", identify exactly which outcomes or measurements the selected region covers. Explain this probability in context, not just its decimal value."+
+  (exploringTarget?" The What-if target cut-offs describe separate hypothetical events; your figure still shades the original event.":"");
  let particular;
  if(d.kind==="normal")particular=d.mode==="outside"?
   "Both tails are selected; do not interpret the middle interval as the event. For a continuous model, equality at one boundary contributes zero area.":
