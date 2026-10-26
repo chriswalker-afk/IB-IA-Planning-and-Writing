@@ -151,6 +151,7 @@ export function createPlanningViews(ctx){
  }
  /** Informal onboarding: a separate visual screen, not another source-sheet question. */
  function planningWelcome(){
+  const state=ctx.getState();
   const tile=(symbol,title,description,extra="")=>
    '<section class="chapter-onboarding-tile"><span class="chapter-onboarding-tile-icon">'+symbol+'</span>'+
    '<h3>'+title+'</h3><p>'+description+'</p>'+extra+'</section>';
