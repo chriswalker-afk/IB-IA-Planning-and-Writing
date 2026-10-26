@@ -909,7 +909,10 @@ def pass552_monochrome(browser,width,kind):
   bars=p.locator('[data-distribution-svg] [data-distribution-selected="true"]')
   assert bars.count()>=1,kind
   assert 'url(#distribution-hatch)' in bars.first.get_attribute("fill"),kind
-  assert p.locator('[data-representation-ready="true"]').count()==1
+  distribution_actions=p.locator('[data-representation-actions="distribution"]')
+  assert distribution_actions.count()==1
+  assert distribution_actions.get_attribute("data-representation-ready")=="true",(kind,p.locator('[data-distribution-feedback]').inner_text())
+  assert p.locator('[data-action="distribution-svg"]').is_enabled()
   with p.expect_download() as dl:p.locator('[data-action="distribution-svg"]').click()
   file=OUT/("pass552-mono-"+kind+"-"+str(width)+".svg")
   dl.value.save_as(str(file))
