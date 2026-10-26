@@ -682,6 +682,102 @@ def reflection_to_ia_writing(browser,width,phase):
   print("PASS 5.4.4 writing handoff",phase,width,flush=True)
  finally:c.close()
 
+def pass55_precision(browser,width,kind):
+ c,p,errors=setup(browser,width)
+ try:
+  if kind!="normal":p.locator('[data-distribution-field="kind"]').select_option(kind)
+  field(p,"title","Extreme but not certain probability")
+  inputs={
+   "normal":{"mu":"0","sigma":"1","lower":"9"},
+   "binomial":{"n":"150","p":"0.5","lower":"149"},
+   "poisson":{"lambda":"3","lower":"30"},
+   "uniform":{"a":"0","b":"1","lower":"0.9999999999999999"},
+   "custom":{"customPoints":"0, 0.9999999999999999\n1, 0.0000000000000001","lower":"0"}
+  }
+  for key,value in inputs[kind].items():
+   if key!="lower":field(p,key,value)
+  p.locator('[data-distribution-field="mode"]').select_option("left")
+  field(p,"lower",inputs[kind]["lower"])
+  feedback=p.locator('[data-distribution-feedback]')
+  assert p.locator('[data-representation-ready="true"]').count()==1
+  text=feedback.inner_text()
+  assert "P(" in text and " = " in text
+  if kind!="uniform":
+   assert "1 − " in text,(kind,text)
+  else:
+   assert "0.9999999999999999" in text,(kind,text)
+  assert " = 1\n" not in text,(kind,text)
+  check_width(p)
+  with p.expect_download() as dl:p.locator('[data-action="distribution-svg"]').click()
+  file=OUT/("pass55-precision-"+kind+"-"+str(width)+".svg")
+  dl.value.save_as(str(file))
+  svg=file.read_text()
+  assert ET.fromstring(svg).tag.endswith("svg")
+  if kind!="uniform":assert "1 − " in svg
+  else:assert "0.9999999999999999" in svg
+  assert "data-distribution-handle" not in svg
+  assert "What does this tell me?" not in svg
+  assert not errors,errors
+  print("PASS 5.5 precision",kind,width,flush=True)
+ finally:c.close()
+
+def pass55_compressed_normal(browser,width):
+ c,p,errors=setup(browser,width)
+ try:
+  field(p,"title","Two widely separated normal models")
+  field(p,"mu","0");field(p,"sigma","1")
+  p.locator('[data-distribution-field="mode"]').select_option("left")
+  field(p,"lower","0")
+  draft=p.evaluate("(key)=>JSON.parse(localStorage.getItem(key)).distributionStudio.draft",KEY)
+  p.locator('[data-distribution-whatif-panel] summary').click()
+  p.locator('[data-action="distribution-whatif-start"]').click()
+  p.locator('[data-distribution-whatif-field="mu"][data-whatif-control="value"]').fill("1000000")
+  chart=p.locator('[data-distribution-whatif-chart]')
+  assert chart.count()==1
+  assert chart.get_attribute("data-whatif-compressed")=="true"
+  assert p.locator('[data-whatif-scale-warning]').count()==1
+  assert "do not judge spread" in p.locator('[data-whatif-scale-warning]').inner_text()
+  for which in ("original","alternative"):
+   values=chart.locator('[data-whatif-density="'+which+'"]').evaluate("""el=>
+    [...el.getAttribute('d').matchAll(/[ML][-0-9.]+ ([-0-9.]+)/g)].map(m=>Number(m[1]))""")
+   assert len(values)>420,(which,len(values))
+   assert min(values)<155 and max(values)>270,(which,min(values),max(values))
+  saved=p.evaluate("(key)=>JSON.parse(localStorage.getItem(key)).distributionStudio",KEY)
+  assert saved["draft"]==draft and saved["figures"]==[]
+  check_width(p)
+  p.locator('[data-distribution-whatif-option="comparison"][value="target"]').click()
+  assert p.locator('[data-whatif-target-result]').count()==1
+  assert p.locator('[data-whatif-target-marker]').count()==2
+  assert p.locator('[data-whatif-scale-warning]').count()==1
+  with p.expect_download() as dl:p.locator('[data-action="distribution-svg"]').click()
+  file=OUT/("pass55-original-not-comparison-"+str(width)+".svg")
+  dl.value.save_as(str(file))
+  svg=file.read_text()
+  assert "data-whatif" not in svg and "Shared-scale limitation" not in svg
+  after=p.evaluate("(key)=>JSON.parse(localStorage.getItem(key)).distributionStudio",KEY)
+  assert after["draft"]==draft and after["figures"]==[]
+  if width<=390:
+   p.screenshot(path=str(OUT/("pass55-compressed-normal-"+str(width)+".png")),full_page=True,animations="disabled")
+  assert not errors,errors
+  print("PASS 5.5 shared scale",width,flush=True)
+ finally:c.close()
+
+def pass55_unsafe_count(browser):
+ c,p,errors=setup(browser,1440)
+ try:
+  p.locator('[data-distribution-field="kind"]').select_option("poisson")
+  field(p,"title","Count threshold requires integer precision")
+  p.locator('[data-distribution-field="mode"]').select_option("left")
+  field(p,"lower","100000000000000000000")
+  assert "safely representable integers" in p.locator('[data-distribution-feedback]').inner_text()
+  assert p.locator('[data-representation-ready="true"]').count()==0
+  field(p,"lower","3")
+  assert p.locator('[data-representation-ready="true"]').count()==1
+  check_width(p)
+  assert not errors,errors
+  print("PASS 5.5 unsafe count bounds",flush=True)
+ finally:c.close()
+
 if __name__=="__main__":
  with sync_playwright() as playwright:
   browser=playwright.chromium.launch(headless=True)
@@ -707,4 +803,9 @@ if __name__=="__main__":
    meaningful_reflection(browser,width,kind)
   for width,phase in ((1440,"first"),(390,"substantial"),(320,"first")):
    reflection_to_ia_writing(browser,width,phase)
+  for kind in ("normal","binomial","poisson","uniform","custom"):
+   pass55_precision(browser,1440,kind)
+  pass55_precision(browser,390,"normal")
+  for width in (1440,390,320):pass55_compressed_normal(browser,width)
+  pass55_unsafe_count(browser)
   browser.close()
