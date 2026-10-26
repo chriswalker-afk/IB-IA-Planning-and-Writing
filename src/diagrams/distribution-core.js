@@ -166,12 +166,12 @@ export function analyzeDistribution(raw){
  const b=["between","outside"].includes(d.mode)?number(d.upper):null;
  if(d.mode!=="none"){
   if(a===null)issues.push("Enter the boundary value for your selected event.");
-  else if(["binomial","poisson"].includes(d.kind)&&!Number.isInteger(a))
-   issues.push("Count-distribution event bounds must be integers; inequalities are inclusive.");
+  else if(["binomial","poisson"].includes(d.kind)&&!Number.isSafeInteger(a))
+   issues.push("Count-distribution event bounds must be safely representable integers; inequalities are inclusive.");
   if(["between","outside"].includes(d.mode)){
    if(b===null)issues.push("Enter the upper boundary value.");
-   else if(["binomial","poisson"].includes(d.kind)&&!Number.isInteger(b))
-    issues.push("Count-distribution event bounds must be integers.");
+   else if(["binomial","poisson"].includes(d.kind)&&!Number.isSafeInteger(b))
+    issues.push("Count-distribution event bounds must be safely representable integers.");
    if(a!==null&&b!==null&&(d.mode==="outside"?a>=b:a>b))
     issues.push("The lower boundary must not exceed the upper boundary.");
   }
@@ -216,7 +216,7 @@ export function analyzeDistribution(raw){
     else if(d.mode==="exact")complement=a===0?-Math.expm1(-l):1-poissonMass(l,a);
     else if(d.mode==="between")
      complement=poissonCdf(l,a-1)+poissonUpperTail(l,b);
-    else if(d.mode==="outside"&&b-a<2000){
+    else if(d.mode==="outside"&&Number.isSafeInteger(a)&&Number.isSafeInteger(b)&&b-a<2000){
      let total=0,correction=0;
      for(let k=Math.max(0,a+1);k<b;k++){
       const y=poissonMass(l,k)-correction,t=total+y;
