@@ -26,7 +26,7 @@ const ctx=s=>({
  choose:(path,options)=>'<div data-choice-path="'+e(path)+'">'+options.map(x=>e(x.title)).join(",")+'</div>',
  summary:(label,value)=>'<p>'+e(label)+": "+e(value)+'</p>',
  sheetTitle:(_,title)=>'<h1>'+e(title)+'</h1>',
- numberPick:()=>"",note:x=>x,tabletNav:()=>"",
+ numberPick:()=>"",note:x=>x,tabletNav:()=>"",helpButton:()=>"",helpBox:()=>"",
  filled:v=>typeof v==="string"&&!!v.trim()
 });
 const planning=(s,node)=>{s.planning.current=node;s.route="planning";return createPlanningViews(ctx(s)).viewPlanning();};
