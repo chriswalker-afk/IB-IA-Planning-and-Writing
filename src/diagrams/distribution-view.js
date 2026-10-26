@@ -34,6 +34,7 @@ export function distributionFeedbackHtml(studio,e){
  return '<section class="probability-quality" data-distribution-feedback>'+
  (q.issues.length?'<strong>Before saving or exporting</strong><ul>'+q.issues.map(t=>'<li>'+e(t)+'</li>').join("")+'</ul>':
   '<strong>Figure ready for export</strong>'+(q.statement?'<p>'+e(q.statement)+'</p>':""))+
+ (q.precisionLimited?'<p class="distribution-caution" data-distribution-precision-note><strong>Numerical precision:</strong> this event has a positive theoretical probability smaller than the calculator can resolve. The approximation sign does not mean an impossible or certain event.</p>':"")+
  (clipped?'<p class="distribution-caution"><strong>Boundary outside the displayed window:</strong> the model probability still uses the full event, but this boundary is not visible. Consider whether the current figure explains the event clearly enough.</p>':"")+
  (crowded?'<p class="distribution-caution"><strong>Very close numerical outcomes:</strong> some custom bars may overlap or become difficult to distinguish at this size. Consider a compact probability table instead.</p>':"")+
  '<details><summary>Model assumptions and interpretation</summary><ul>'+q.notes.map(t=>'<li>'+e(t)+'</li>').join("")+'</ul></details></section>';
