@@ -14,6 +14,7 @@ import {renderShowingMathsContext} from "./showing-first-maths.js";
 import {MATHEMATICAL_LINK_HINT,renderConsequentialChoice,renderStorySynthesis} from "./mathematical-story-guidance.js";
 import {renderResultInterpretationAid} from './result-interpretation.js';
 import {renderMathematicalValidityAid,renderCourseUnderstandingAid} from './mathematical-validity.js';
+import {renderStatisticalTestReadiness} from './statistical-readiness.js';
 import {renderMathematicalDecisionThread,renderPriorDecisionLink,recordedDecisionNotes} from './reasoning-thread.js';
 import {renderGraphStudio} from "../diagrams/graph-view.js";
 import {renderGraphSvg} from "../diagrams/graph-core.js";
@@ -750,9 +751,27 @@ export function createCompletingViews(ctx){
    html:F("statisticalPopulation","Population or group the analysis could describe","The true target population, not every person in general")+
     choice("sampleOrCensus",[["sample","Sample"],["census","Attempted census"],["secondary","Existing published observations"],["unsure","Not sure yet"]])+
     F("samplingMethod","How observations were actually selected","Random, stratified, systematic, convenience, already published, etc.")+
-    criteriaField(F("samplingRationale","Why is this design relevant to the aim?","One mathematically meaningful reason",{type:"textarea",rows:2}),"completing:C21S:samplingRationale")+
     F("sampleSize","Sample size or relevant counts","Only genuine counts")+
+    '<details class="guidance-insight sample-size-rationale" data-sample-rationale'+(filled(f.samplingRationale)?' open':'')+'>'+
+    '<summary>Explain the sampling design and number of observations (optional)</summary>'+
+    '<p class="field-hint">'+e(f.sampleOrCensus==="census"?
+     "For an attempted census, how complete was coverage? Consider missed units or nonresponse before making population-wide claims.":
+     f.sampleOrCensus==="secondary"?
+     "For published data, are the source population, sample size and selection method suitable for your question? Record what remains unknown.":
+     f.sampleOrCensus==="sample"?
+     "Consider variation, group sizes and what you hope to infer. A convenient number of observations is not automatically representative or sufficient.":
+     "Check what the observations actually represent before judging whether the number and selection method support your aim.")+'</p>'+
+    criteriaField(F("samplingRationale",f.sampleOrCensus==="census"?
+     "Why does the attempted census and its coverage suit your aim?":
+     "Why are this selection method and number of observations suitable for your aim?",
+     "A short mathematical reason, or a genuine limitation if the sample is too small or biased",
+     {type:"textarea",rows:2}),"completing:C21S:samplingRationale")+
+    '</details>'+
     F("pairing","For paired data, were measurements genuinely matched? (if applicable)","Variables/units from the same observation")+
+    (filled(f.pairing)||f.pairedDataType==="paired-numerical"?
+     '<details class="guidance-insight paired-observation-check" data-paired-outlier-check>'+
+     '<summary>For paired data: checking unusual observations (optional)</summary>'+
+     '<p class="field-hint">Inspect each complete (x, y) pair in the scatter, not just whether one x or y value is extreme. Check the original matching and recording, then compare any change in your conclusion with and without a verified influential pair. Only exclude a value with a defensible reason; keep genuine data visible and document any decision.</p></details>':"")+
     criteriaField(F("responseBias","Potential selection, response or group-comparison issue","What could this prevent you generalising?",{type:"textarea",rows:2}),"completing:C21S:responseBias")+
     F("dataCleaning","Missing, filtered or excluded values and why (if applicable)","Do not discard inconvenient data to force a prediction",{type:"textarea",rows:2})
   };
@@ -848,6 +867,7 @@ export function createCompletingViews(ctx){
        entryField("understandingExample","A real worked step demonstrating understanding (optional)","Only if useful",{type:"textarea",rows:2})+
        entryField("researchSource","Original mathematics source (if relevant)","A resource to cite in the IA"):"")+
      '</div></details>'+renderCourseUnderstandingAid(s,entry,{icon,e,reduced}):'')+
+    renderStatisticalTestReadiness(entry,{icon,e,reduced})+
     '<div class="show-first-writing-field" data-show-first-writing-box="introduce">'+
     criterionMarkedWritingBox(
       (entry?entryField("purpose","My words to introduce this figure, table or calculation",
@@ -1135,6 +1155,7 @@ export function createCompletingViews(ctx){
      entryField("methodId","Mathematical method","",{type:"select",options:METHOD_OPTIONS})+
       (!isAdviceReduced(state)?methodWorkshopLink:"")+
     '</div>'+
+    renderStatisticalTestReadiness(substantial,{icon,e,reduced:isAdviceReduced(state)})+
     '<div class="show-first-writing-field">'+
      criterionMarkedWritingBox(entryField("bridge","My bridge from the previous result",
       MATHEMATICAL_LINK_HINT,{type:"textarea",rows:3}),["completing:"+n+":bridgeA"])+'</div>'+
