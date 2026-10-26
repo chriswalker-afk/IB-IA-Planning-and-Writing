@@ -22,7 +22,7 @@ import {activateRepresentationTool} from "../src/diagrams/representation-registr
 import {studioHelpFor} from "../src/help/studio-help.js";
 import {lessonById} from "../src/workshop/catalog.js";
 import {insightItems} from "../src/ui/insight-threads.js";
-const e=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;',"\'":"&#39;"}[c]));
+const e=s=>String(s??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
 const kinds={
  normal:{fields:{mu:"70",sigma:"10"},key:"mu",alternative:"75"},
  binomial:{fields:{n:"10",p:"0.4"},key:"p",alternative:"0.6"},
