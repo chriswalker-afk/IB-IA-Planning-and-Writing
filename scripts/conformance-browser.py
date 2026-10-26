@@ -235,5 +235,76 @@ with sync_playwright() as pw:
  for mobile in (True,False):
   s=state('C04')
   run('dashboard-order-'+('phone' if mobile else 'desktop'),s,dashboard_order,mobile)
+ def pass3_consequence(p):
+  assert_node(p,'C40')
+  panel=p.locator('[data-math-validity="speed"] > details')
+  assert panel.count()==1 and panel.get_attribute('open') is None,'Expected one closed validity disclosure'
+  original=saved(p)
+  summary=panel.locator('summary').first
+  summary.focus();summary.press('Enter')
+  assert panel.get_attribute('open') is not None,'Keyboard could not open consequence help'
+  cue=panel.locator('[data-consequential-reflection="speed"]')
+  assert cue.count()==1 and cue.is_visible(),'Method-specific reflection missing'
+  assert 'one justified change' in cue.inner_text().lower()
+  assert cue.locator('[data-action="completion-open"][data-node="C31"]').count()==1
+  p.set_viewport_size({'width':320,'height':844})
+  no_overflow(p)
+  cue.locator('[data-action="completion-open"][data-node="C31"]').click()
+  assert_node(p,'C31')
+  after=saved(p)
+  assert after['entries']==original['entries'],'Opening tools must not modify actual mathematics or writing'
+  assert after['planning']['fields']==original['planning']['fields']
+  p.screenshot(path=str(OUT/'pass3-reflection-tools-320.png'),full_page=True)
+ run('pass3-consequence-tool-return',state('C40',2),pass3_consequence,True)
+
+ def pass3_reduced_review(p):
+  assert_node(p,'C40')
+  aid=p.locator('[data-math-validity="speed"]')
+  assert aid.count()==1
+  assert aid.get_attribute('class').find('is-reduced')!=-1
+  assert aid.locator('details').first.get_attribute('open') is None
+  aid.locator('summary').first.click()
+  assert aid.locator('[data-consequential-reflection="speed"]').count()==1
+  assert 'Genuine' not in aid.locator('[data-consequential-reflection="speed"]').inner_text(),(
+   'A cue must not claim to verify the student\'s result')
+ s=state('C40',2);s['ui']['adviceMode']='reduced'
+ run('pass3-reduced-reflection',s,pass3_reduced_review,True)
+
+ def pass3_unreviewed(p):
+  assert_node(p,'C40')
+  panel=p.locator('[data-math-validity="speed"] > details')
+  panel.locator('summary').first.click()
+  assert panel.locator('[data-consequential-reflection]').count()==0
+  assert 'flagged for review' in panel.inner_text()
+ s=state('C40',2);s['entries'][2]['reviewNeeded']='yes'
+ run('pass3-reviewed-result-gate',s,pass3_unreviewed)
+
+ def pass3_conclusion(p):
+  assert_node(p,'C60')
+  details=p.locator('[data-conclusion-coherence]')
+  assert details.count()==1 and details.get_attribute('open') is None
+  original=saved(p)
+  assert details.locator('textarea').count()==0,'A read-only comparison must not create a writing field'
+  details.locator('summary').focus()
+  details.locator('summary').press('Enter')
+  assert details.get_attribute('open') is not None
+  text=details.inner_text()
+  for phrase in ['Working draft: Distance and time','How does measured distance relate to time?',
+                 'The actual calculated rate changed within the observed interval',
+                 'Only this interval has been checked']:
+   assert phrase in text,(phrase,text[:450])
+  assert p.locator('[data-bind="completion.fields.mainConclusion"]').input_value()==original['completion']['fields']['mainConclusion']
+  p.set_viewport_size({'width':320,'height':844})
+  no_overflow(p)
+  assert saved(p)['completion']['fields']==original['completion']['fields']
+  assert saved(p)['entries']==original['entries']
+  p.screenshot(path=str(OUT/'pass3-conclusion-coherence-320.png'),full_page=True)
+ s=state('C60',2)
+ s['planning']['fields']['provisionalTitle']='Working draft: Distance and time'
+ s['completion']['fields']['mainConclusion']='The actual calculated rate changed within the observed interval.'
+ s['completion']['fields']['conclusionBenefit']='Only this interval has been checked.'
+ s['completion']['conclusionResultIds']=['speed']
+ run('pass3-conclusion-coherence',s,pass3_conclusion,True)
+
  browser.close()
 (OUT/'results.json').write_text(json.dumps({'results':results,'browser_errors':errors},indent=2));print(json.dumps(results,indent=2));assert all(x['status']=='passed' for x in results)
