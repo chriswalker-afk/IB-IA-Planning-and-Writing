@@ -61,3 +61,27 @@ The changes address **ACC-01** and **UI-01** without changing distribution mathe
 5. **Evidence:** a pure test grid checks rare normal/Poisson/binomial/uniform/custom cut-offs, complementary coverage, all four provenance types, linked review flags, version 1 and 2 backups and clean SVG separation. Playwright runs at 1440/390/320px inspect saved/source parameters, inverse and What-if display, actual SVG export, cancelled source changes and JSON import failure/restore; existing PNG/browser export checks remain enabled.
 
 **Follow-up:** Very small normal/Poisson tails below double-precision resolution are *not* claimed as exact measurements or proof of model fit; descriptions remain approximate. Actual NVDA/VoiceOver checks remain a manual accessibility task after 5.5.2. Pass 5.5.4 should review realistic IB AA/AI IA writing journeys and the usefulness and relevance of contextual support, then prepare the final quality register.
+
+
+## Pass 5.5.4 — educational integration and final regression
+
+**Issue EDU-01: addressed in the final audit PR.** The goal is a defensible *student journey*, not a machine-generated IA, a predicted grade or a declaration that a distribution is suitable for every course.
+
+### Evidence and corrections
+
+1. **Student pathway checks.** A new \`tests/distribution-pass5-5-4.test.js\` exercises the complete cross-product of AI SL, AA SL and AA HL; normal, binomial, Poisson, uniform and custom discrete models; fixed-event and fixed-target comparisons; primary, secondary, assumed and uncertain provenance; and first/later mathematics. These are realistic illustrative scenarios, *not* syllabus-membership or likely-grade claims. A Playwright journey checks chosen Planning question, model editing, contextual guidance, What-if, help, Maths Workshop and return to the existing student's interpretation at 1440, 390 and 320 pixels.
+2. **Repair guidance drift.** The guidance previously used the *entire figure presentation signature* to warn that a linked model had changed, despite Pass 5.5.3 only flagging changed mathematical meaning. It now uses the exact same \`distributionInterpretationSignature\` as the saved-stage review rule: captions, colour and figure numbers no longer trigger a false mathematical revision warning; changed model parameters, event, assumptions, source or units still do.
+3. **Fixed-target explanatory accuracy.** When comparing two hypothetical inverse cut-offs with no shaded original event, the writing guidance now explicitly distinguishes the requested/achieved target from a region actually applied to the IA figure. Existing fixed-event wording is maintained. Both comparisons remain optional and do not auto-write student text.
+4. **Non-duplication and authenticity.** The optional three-question reflection remains collapsed until wanted, without a second notes store. The writing bridge returns to the existing first or later mathematical stage and focuses the real interpretation box. Sparks and Insight Threads read existing evidence, Maths Workshop uses registered lessons, and I am stuck offers exactly three targeted recovery choices only for a valid comparison. A proposed alternative never becomes a verified source, completed result, recorded observation or an additional saved figure.
+5. **Regression gate.** Run the full repository Node test suite and the existing browser workflows, including distribution exports and mobile checks. Existing backups retain all source details and first-person writing. The clean SVG/PNG figures must exclude editor help, source explanation, hypothetical comparison and auto-generated prose.
+
+### Final issue register and stop/go assessment
+
+| Issue | Disposition | Remaining qualification |
+| --- | --- | --- |
+| MATH-01, VIS-01, MATH-02 | Addressed in 5.5.1 | Students still need to justify the modelling assumptions and chart domain. |
+| ACC-01, UI-01 | Addressed in 5.5.2 | Manual keyboard-only and NVDA/VoiceOver usability verification remains; automated tests are not WCAG certification. |
+| NUM-01, PROV-01, DATA-01 | Addressed in 5.5.3 | Ultra-small tails remain limited by floating-point arithmetic; an export is not scientific validation. |
+| EDU-01 | Addressed in 5.5.4 | Real student/teacher usability trials and actual course-level mathematical judgement remain essential. |
+
+**Release recommendation:** *Conditional go* after every applicable GitHub Actions check succeeds and the branch merges. No blocking automated audit issue is known within the stated test scope; do not describe this as an independently validated scientific model, guaranteed IB outcome or certified accessibility. In a supervised classroom pilot, confirm that learners can justify a source, choose and interpret an event, identify an honest limitation, and find the existing writing stage without being led to paste generated prose. Any genuine pilot issue should be a separate tracked fix, rather than expanding this final audit indefinitely.
