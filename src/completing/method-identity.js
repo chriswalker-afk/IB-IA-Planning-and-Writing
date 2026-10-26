@@ -14,6 +14,7 @@ export function methodFamilies(entry,{allowPlanned=false}={}){
  add(/\b(spearman|rank correlation)\b/,"spearman");
  add(/linear.regression|line.of.best.fit|least.squares|\bfitted.line\b|\bstraight.line\b/,"linear-regression");
  add(/quadratic.fit|polynomial|cubic.fit|quadratic.regression/,"quadratic-fit");
+ add(/piecewise|piece.wise/,"piecewise-model");
  add(/exponential|growth.and.decay|compound.growth/,"exponential");
  add(/sinusoidal|sinusoid|periodic|sine.fit|cosine.fit/,"sinusoidal");
  add(/optimis|optimiz|stationary.point|maximum.minimum|critical.point/,"optimisation");

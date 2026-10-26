@@ -40,6 +40,7 @@ import {STATUS_LABELS,currentGroup,JOURNEY_GROUPS} from "../ui/journey.js";
 import {groupedDashboard} from "../ui/journey-views.js";
 import {examplePrompt,exampleInline} from "../examples/views.js";
 import {criteriaPanel,essentialsNudge} from "../essentials/views.js";
+import {isRevisedAssessment} from "../essentials/assessment-cohorts.js";
 import {criterionPageHeading,criterionMarkedField,criterionMarkedWritingBox as baseCriterionMarkedWritingBox} from "../essentials/criteria-badges.js";
 import {resourcePrompt} from "../resources/views.js";
 import {renderCitationReminder} from "../resources/citation-prompts.js";
@@ -531,7 +532,11 @@ export function createCompletingViews(ctx){
     '<section class="chapter-onboarding-tile"><span class="chapter-onboarding-tile-icon">'+icon("pencil")+'</span><h3>Write in meaningful stages</h3><p>Develop a focused introduction, explain why your first mathematical method follows, show and interpret your real calculations, then add another purposeful stage or move to a concise conclusion.</p></section>'+
     '<section class="chapter-onboarding-tile"><span class="chapter-onboarding-tile-icon">'+icon("route")+'</span><h3>Let the mathematical journey adapt</h3><p>Record what your results actually show. Pathfinder suggests different next steps depending on your investigation, method and findings—for example testing a linear association, considering another model, or explaining an unexpected pattern. Suggestions are not fabricated results.</p></section>'+
     '<section class="chapter-onboarding-tile"><span class="chapter-onboarding-tile-icon">'+icon("chart")+'</span><h3>Make clear, purposeful figures</h3><p>Choose a purposeful tool from our '+REPRESENTATION_TOOLS.length+' creators: '+REPRESENTATION_TOOLS.map(t=>e(t.title)).join(', ')+'. Recommendations adapt to the mathematics you are working on; check titles, labels, units, scales, captions and sources before moving useful outputs into your IA.</p></section>'+
-    '<section class="chapter-onboarding-tile"><span class="chapter-onboarding-tile-icon">'+icon("book")+'</span><h3>Two kinds of advice, right beside your writing</h3><p>Green A–E criterion bubbles explain the current IB expectations. Purple Writer’s Field Guide bubbles help you express thinking, limitations and reflection. Choose <strong>Reduce advice</strong> for shorter on-page prompts without losing those help bubbles or the complete guide.</p>'+
+    '<section class="chapter-onboarding-tile"><span class="chapter-onboarding-tile-icon">'+icon("book")+'</span><h3>Two kinds of advice, right beside your writing</h3><p>'+
+    (isRevisedAssessment(getState())?
+     'For the 2029 assessment cohort, the updated four-criterion overview is in IA essentials; old A–E criterion bubbles and self-marks are hidden. ':
+     'For the through-2028 cohort, green A–E criterion bubbles offer relevant assessment guidance. ')+
+    'Purple Writer’s Field Guide bubbles help you express thinking, limitations and reflection. Choose <strong>Reduce advice</strong> to shorten on-page prompts while keeping the optional help available.</p>'+
     '<button class="onboarding-inline-action" type="button" data-action="writer-guide-open">Explore the Writer’s Field Guide '+icon("arrow-right")+'</button></section>'+
     '<section class="chapter-onboarding-tile"><span class="chapter-onboarding-tile-icon">'+icon("download")+'</span><h3>Check, revisit and keep your work safe</h3><p>Use the Discovery Trail and My stages to return to work; use Checking to review evidence for the criteria, not predict marks. Progress saves on this device. Export a complete JSON project backup, especially before moving devices; a Planning PDF/Word report is not a full IA Studio backup.</p></section>'+
    '</div>'+
@@ -1296,13 +1301,13 @@ export function createCompletingViews(ctx){
   case "C70":return{intro:"Review clarity across the actual document, repairing explanations where they originally appear.",
     html:writerGuideOnly(F("presentationIssue","One issue with labels, graphs, flow or layout","What would make it easier for a mathematical reader?",{type:"textarea",rows:3}),"completing:C70:presentationIssue")+
       F("referencesIssue","Are data sources, technology and borrowed techniques referenced?","What needs checking?",{type:"textarea",rows:2})+
-      '<p class="field-hint">Source attribution is an academic-integrity requirement, not an extra mark for Criterion A.</p>'+
+      '<p class="field-hint">Source attribution is an academic-integrity responsibility, not a substitute for a coherent mathematical investigation.</p>'+
       info("Write in the right place","A notation mistake in Figure 2 should be fixed at Figure 2, not explained in the conclusion.")
   };
   case "C70N":return{intro:"Check symbols, units, equations, graphs, exactness and justified approximations in the original locations.",
    html:writerGuideOnly(F("notationIssue","Notation or mathematical presentation to repair","Define new variables, distinguish = and ≈, label units",{type:"textarea",rows:4}),"completing:C70N:notationIssue")+
     accuracyNote()+F("referencesIssue","Citation or source issue to repair","Original data and technology acknowledged",{type:"textarea",rows:2})+
-    '<p class="field-hint">Citation integrity matters, but it is not a Criterion B marking point.</p>'
+    '<p class="field-hint">Citation integrity matters, but it does not replace accurate mathematical notation, reasoning or source verification.</p>'
   };
   case "C80":return{intro:"Keep the written draft process separate from final submission. Follow the feedback rules actually set by your school.",
    html:choice("draftComplete",[["not-yet","My full IA draft is not ready"],["ready","I have a complete working draft"],
@@ -1323,7 +1328,9 @@ export function createCompletingViews(ctx){
      field("scratch.finalReview","Existing revision notes (editable)","The details I was already checking",{type:"textarea",rows:3})+
      writerGuideOnly(F("finalRequirements","Which school requirements do I need to confirm?","Deadline, identifying details, citation style, length or spacing",{type:"textarea",rows:2}),"completing:C90:finalRequirements")
   };
-  case "C90F":return{intro:"Locate genuine evidence for criteria A–E and check the finished document's mathematical accuracy and readability.",
+  case "C90F":return{intro:isRevisedAssessment(s)?
+    "Review the actual document using the revised 2029 four-criterion overview, and check mathematical accuracy, interpretation, sources and readability. Earlier A–E notes are saved but are not 2029 marks.":
+    "Locate genuine evidence for criteria A–E and check the finished document's mathematical accuracy and readability.",
    html:field("scratch.finalReview","My earlier review notes (editable)","Revisit what still needs correcting",{type:"textarea",rows:3})+
     (filled(f.finalCriteria)?'<details class="completion-help criterion-legacy-notes"><summary>Earlier general A–E final notes (optional)</summary>'+
       F("finalCriteria","Earlier A–E final notes","You can still edit these saved notes",{type:"textarea",rows:3})+'</details>':"")+

@@ -3,6 +3,8 @@ import {workspaceHeader} from './workspace-navigation.js';
 import {renderCitationReminder} from '../resources/citation-prompts.js';
 import {planningScreenTitle} from '../planning/screen-labels.js';
 import {earlyMathRecommendations} from '../planning/math-recommendations.js';
+import {renderAaHlPlanningAdvice} from '../planning/aa-hl-depth-guidance.js';
+import {isRevisedAssessment} from '../essentials/assessment-cohorts.js';
 import {renderInvestigativeRoutes} from './investigative-routes-view.js';
 import {renderIdeaLabPlanningCue} from '../planning/idea-lab-bridge.js';
 
@@ -103,7 +105,9 @@ export function createPlanningViews(ctx){
  }
  function mathChoices(state,suggested=false,collapsed=false){
   const f=state.planning.fields,course=f.course;
-  if(!["AI SL","AA SL"].includes(course))return callout("Course review needed","Only AI SL and AA SL are supported by the current detailed menu. No automatic match to HL or another syllabus is claimed.",true)+
+  if(!["AI SL","AA SL"].includes(course))return callout("Course review needed",course==="AA HL"?
+   "Only AI SL and AA SL have a selectable detailed topic menu. The optional AA HL prompts are not a syllabus list or teacher approval.":
+   "Only AI SL and AA SL have a selectable detailed topic menu. No automatic match to another syllabus is claimed.",true)+
    F("otherCourseMaths","Mathematics I might explore (optional)","A tentative technique or 'Not sure yet'",{type:"textarea",rows:2});
   const chosen=selectedMaths(state),foreign=chosen.filter(x=>x.course!==course),local=chosen.filter(x=>x.course===course);
   const selectedSummary='<p class="math-selection-summary">Selected: <strong data-math-selected-count>'+local.length+'</strong>'+
@@ -147,6 +151,7 @@ export function createPlanningViews(ctx){
  }
  /** Informal onboarding: a separate visual screen, not another source-sheet question. */
  function planningWelcome(){
+  const state=ctx.getState();
   const tile=(symbol,title,description,extra="")=>
    '<section class="chapter-onboarding-tile"><span class="chapter-onboarding-tile-icon">'+symbol+'</span>'+
    '<h3>'+title+'</h3><p>'+description+'</p>'+extra+'</section>';
@@ -162,8 +167,10 @@ export function createPlanningViews(ctx){
       "Explore mathematics based on your aim, browse typical investigative routes or view the course list. Decide whether to use primary or secondary data, or theoretical work; consider sources, sampling, accuracy, permissions, timelines and an optional prediction.")+
      tile(icon("sparkles"),"Sparks remember your ideas",
       "When you save a useful decision, it becomes a <strong>spark</strong>. Later pages bring back the two most relevant sparks. Select <strong>View all sparks</strong> to find or edit the rest. These are revisable planning notes, not verified findings.")+
-     tile('<span class="onboarding-criterion-letter" aria-hidden="true">C</span>',"Criteria appear where they matter",
-      "Tap a small letter badge beside a question or heading for specific IB assessment advice. The complete current A–E criteria live in <strong>IA essentials</strong>.",
+     tile(isRevisedAssessment(state)?icon("book-open"):'<span class="onboarding-criterion-letter" aria-hidden="true">C</span>',"Criteria appear where they matter",
+      isRevisedAssessment(state)?
+       "For first assessment 2029 onwards, the updated four-criterion overview is in <strong>IA essentials</strong>. Earlier A–E criterion bubbles and self-marks are hidden, but your mathematical planning and writing support remains available.":
+       "Tap a small letter badge beside a question or heading for relevant IB assessment advice. The five A–E criteria for the through-2028 cohort live in <strong>IA essentials</strong>.",
       '<button class="onboarding-inline-action" type="button" data-action="essentials-open">'+icon("book")+' Explore the IB criteria '+icon("arrow-right")+'</button>')+
      tile(icon("lightbulb"),"Help is always nearby",
       "Use <strong>Compare examples</strong>, <strong>Tools &amp; tutorials</strong> or <strong>I am stuck</strong> when useful. The Discovery Trail lets you revisit earlier choices.",
@@ -247,6 +254,7 @@ export function createPlanningViews(ctx){
        ["revised2029","First assessment from May 2029 · updated A–D criteria"]])+
       '<p class="field-hint">Earlier Pathfinder projects stay on the existing A–E system unless you explicitly choose the revised 2029 criteria. Confirm your assessment cohort with your teacher. The revised option provides a published overview, not invented detailed descriptors or an A–E mark conversion.</p></div>'+
      ideaCue(state,'maths')+
+     (f.course==="AA HL"?renderAaHlPlanningAdvice(state,{e,icon,reduced:state.ui?.adviceMode==="reduced"}):"")+
      (eligible?renderInvestigativeRoutes(state,{e,icon,catalogue:()=>mathChoices(state)})+
       '<p class="math-scope-honesty">'+icon('info')+' This catalogue is a planning reference, not formal syllabus verification. Your teacher should confirm mathematical depth and suitability.</p>':
       hasCourse?renderInvestigativeRoutes(state,{e,icon,catalogue:()=>mathChoices(state)})+
@@ -379,6 +387,7 @@ export function createPlanningViews(ctx){
     "<h4>Mathematical depth matters</h4><p>Use an appropriate technique to investigate a genuine question. More advanced mathematics is not automatically a better IA.</p>");
    case "N04T":return stepBody("Record mathematics for your teacher to review.","The AI SL/AA SL menu should not be used as if it were an official menu for your course.",
     ideaCue(state,'maths')+
+    (f.course==="AA HL"?renderAaHlPlanningAdvice(state,{e,icon,reduced:state.ui?.adviceMode==="reduced"}):"")+
     F("otherCourseMaths","Mathematics I'm considering","A tentative technique, question or Not sure yet",{type:"textarea",rows:3})+
     F("teacherQuestion","What would you like to confirm with your teacher?","Suitability, mathematical depth or practical first steps",{type:"textarea",rows:2})+
     callout("Provisional plan","You can still develop your aim, mathematics and safe first step. Teacher validation remains outstanding.",true),
