@@ -84,8 +84,10 @@ const fixedTargetControls=(w,d,e)=>{
   '</p></div>';
 };
 const targetNumber=x=>formatSensitivityNumber(x,12);
-const targetProbabilityText=x=>{
+const targetProbabilityText=(x,complement=null)=>{
  if(x===null||!Number.isFinite(x))return "—";
+ if(Number.isFinite(complement)&&complement>0&&complement<1e-8&&x>=1-1e-8)
+  return "1 − "+Number(complement.toPrecision(7)).toString();
  // Avoid displaying an achieved probability rounded to exactly one or zero.
  if(x!==0&&x!==1&&(x<1e-6||x>1-1e-6))return String(x);
  return formatSensitivityNumber(x,11);
@@ -107,7 +109,7 @@ const fixedTargetResult=(q,symbol,e)=>{
   '<div class="distribution-whatif-target-model" data-whatif-target-model="'+kind+'">'+
   '<strong>'+caption+'</strong><p class="distribution-whatif-target-equation">'+
    targetBoundary(result,symbol,e)+'</p>'+
-   '<p>Achieved probability: <strong>'+e(targetProbabilityText(result.achieved))+'</strong></p></div>';
+   '<p>Achieved probability: <strong>'+e(targetProbabilityText(result.achieved,result.achievedComplement))+'</strong></p></div>';
  const change=t.mode==="central"?
   'Lower cut-off: '+e(formatSensitivitySigned(t.lowerChange))+
   '; upper cut-off: '+e(formatSensitivitySigned(t.upperChange)):
