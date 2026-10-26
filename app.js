@@ -736,23 +736,12 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
     if(node&&state.distributionStudio?.open)
       node.innerHTML=distributionInverseResultHtml(state.distributionStudio,e);
   }
-  function refreshDistributionLearning(){
-    const help=main.querySelector?.("[data-distribution-learning]");
-    if(!help||!state.distributionStudio?.open)return;
-    // Preserve the student's optional writing-advice disclosure while
-    // updating event/target guidance as a What-if control changes.
-    const open=help.querySelector(".distribution-learning-write")?.open;
-    help.outerHTML=renderDistributionGuidance(state,icon,e);
-    const next=main.querySelector(".distribution-learning-write");
-    if(next&&open)next.open=true;
-  }
   function refreshDistributionWhatIf(){
     if(!state.distributionStudio?.open)return;
     const summary=main.querySelector?.("[data-distribution-whatif-summary]");
     if(summary)summary.innerHTML=distributionWhatIfSummaryHtml(state.distributionStudio,e,distributionAim(state),distributionWhatIfWritingContext(state));
     const chart=main.querySelector?.("[data-distribution-whatif-preview]");
     if(chart)chart.outerHTML=distributionWhatIfPreviewHtml(state.distributionStudio,e);
-    refreshDistributionLearning();
   }
   function refreshDistributionPreview(){
     const root=main.querySelector?.("[data-distribution-studio]");
@@ -762,6 +751,11 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       root.querySelector("[data-distribution-preview]").scrollLeft=scroll;}
     const f=root.querySelector("[data-distribution-feedback]");
     if(f)f.outerHTML=distributionFeedbackHtml(state.distributionStudio,e);
+    const help=root.querySelector("[data-distribution-learning]");
+    if(help){const open=help.querySelector(".distribution-learning-write")?.open;
+      help.outerHTML=renderDistributionGuidance(state,icon,e);
+      const next=root.querySelector(".distribution-learning-write");
+      if(next&&open)next.open=true;}
     const o=root.querySelector("[data-distribution-output]");
     if(o)o.outerHTML=distributionOutputHtml(state.distributionStudio,icon,e);
     refreshDistributionInverseResult();
