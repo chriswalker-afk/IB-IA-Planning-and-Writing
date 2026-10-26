@@ -12,6 +12,7 @@ import {REPRESENTATION_TOOLS} from "../diagrams/representation-registry.js";
 import {analyseGraph} from "../diagrams/graph-core.js";
 import {metricText} from "../diagrams/graph-diagnostics-view.js";
 import {renderConsequentialReflectionCue} from "./consequential-reflection.js";
+import {renderAaHlStagePrompt} from "../planning/aa-hl-depth-guidance.js";
 import {escapeHtml,icon as defaultIcon} from "../ui/primitives.js";
 
 const str=x=>typeof x==="string"?x.trim():"";
@@ -26,6 +27,7 @@ export const VALIDITY_CHECKS=Object.freeze({
  spearman:check("Monotonic association","Check ranks, ties and unusual (x, y) pairs, including their joint position in the original scatter. A large value of one variable alone does not justify excluding its pair.","Rank correlation cannot establish a straight-line prediction or cause."),
  "linear-regression":check("Prediction within a model","Inspect residual size and structure, influential (x, y) pairs, coefficient units and the prediction range. Check any proposed exclusion against the full paired observation and record its effect on the fitted result.","In-sample R² and RMSE alone do not establish out-of-sample accuracy or extrapolation validity."),
  "quadratic-fit":check("Curvature and model complexity","Test relevant parameter/turning-point meaning, residual patterns and whether a simpler form answers the same question.","A higher-degree polynomial may overfit and behave implausibly outside the observed domain."),
+ "piecewise-model":check("Piecewise domain and join conditions","State every branch, interval and endpoint definition. At each join, check the function value and the one-sided limits if continuity is required by the context. Compare one-sided derivatives only if a smooth transition is needed and both derivatives exist.","A piecewise definition does not automatically imply continuity or differentiability. A real jump or corner may be appropriate; do not impose smoothness without a mathematical or contextual reason."),
  exponential:check("Proportional change","Check whether the observed ratios support a stable growth factor across the relevant intervals.","A fitted exponential does not prove that its factor stays constant indefinitely."),
  sinusoidal:check("Period and repeated cycles","Check whether several actual cycles support the estimated amplitude, period and baseline.","A single rise and fall cannot verify periodicity or reliable future cycles."),
  power:check("Scaling and transformed error","Check model positivity conditions, original-scale residuals and the meaning of the exponent.","Good agreement after logarithmic transformation may not imply small errors on the original scale."),
@@ -243,6 +245,7 @@ export function renderCourseUnderstandingAid(state,entry,{icon=defaultIcon,e=esc
   ((c.scope==="mixed"||c.scope==="outside")&&!c.hasExplanation?
    '<p class="math-validity-warning">No explanation or worked step for this unfamiliar idea was found in the matching mathematical records. If it is genuinely new, explain it in your own IA when first used.</p>':'')+
   (c.source?'<p><strong>Source you noted:</strong> '+e(short(c.source,280))+' — cite the original source appropriately.</p>':'')+
+  renderAaHlStagePrompt(state,entry,{e})+
   '<p class="math-validity-honesty">Syllabus status reflects your own selection; Pathfinder cannot verify course coverage or mathematical understanding. Refer to your actual course and ask your teacher when uncertain.</p>'+
   '</div></details></aside>';
 }
