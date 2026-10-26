@@ -2,7 +2,7 @@
  * Probability Distribution Studio — theoretical models, never inferred observations.
  * Pure functions: safe to use in project backups, reports, figure previews and tests.
  */
-import {analyzeExtraModel,extraEventProbability} from "./distribution-extra.js";
+import {analyzeExtraModel,extraEventProbability,poissonMass,poissonCdf,poissonUpperTail} from "./distribution-extra.js";
 export const MAX_DISTRIBUTION_FIGURES=12;
 const plain=x=>x!==null&&typeof x==="object"&&!Array.isArray(x);
 const clean=(x,max=160)=>typeof x==="string"?x.slice(0,max):"";
@@ -119,10 +119,15 @@ export function binomialMass(n,p,k){
  for(let j=1;j<=Math.min(k,n-k);j++)log+=Math.log(n-j+1)-Math.log(j);
  return Math.exp(log+k*Math.log(p)+(n-k)*Math.log1p(-p));
 }
-export function formatDistributionProbability(p){
+/** Never print near-certainty as certainty. Double precision can yield p=1
+ * for a genuine nonzero omitted tail, so an independently calculated
+ * complement is preferable to 1-p where it is numerically available. */
+export function formatDistributionProbability(p,complement=null){
+ if(Number.isFinite(complement)&&complement>0&&complement<1e-8&&p>=1-1e-8)
+  return "1 − "+Number(complement.toPrecision(7)).toString();
  if(p===0||p===1)return String(p);
  if(p<0.00005)return Number(p.toPrecision(6)).toString();
- if(p>0.99995)return Number(p.toPrecision(15)).toString();
+ if(p>0.99995)return String(p);
  return p.toFixed(4);
 }
 const selected=(mode,k,a,b)=>mode==="exact"?k===a:
@@ -171,7 +176,7 @@ export function analyzeDistribution(raw){
     issues.push("The lower boundary must not exceed the upper boundary.");
   }
  }
- let probability=null,statement="";
+ let probability=null,statement="",complement=null;
  if(!issues.length&&d.mode!=="none"){
   const variable=d.symbol.trim();
   const expr=d.mode==="exact"?variable+" = "+a:
@@ -180,20 +185,57 @@ export function analyzeDistribution(raw){
    d.mode==="between"?a+" \u2264 "+variable+" \u2264 "+b:
    variable+" \u2264 "+a+" or "+variable+" \u2265 "+b;
   if(d.kind==="binomial"){
-   let sum=0,compensation=0;
-   for(let k=0;k<=n;k++)if(selected(d.mode,k,a,b)){
-    const y=masses[k]-compensation,t=sum+y;
-    compensation=(t-sum)-y;sum=t;
+   let sum=0,compensation=0,rest=0,restCorrection=0;
+   for(let k=0;k<=n;k++){
+    if(selected(d.mode,k,a,b)){
+     const y=masses[k]-compensation,t=sum+y;
+     compensation=(t-sum)-y;sum=t;
+    }else{
+     const y=masses[k]-restCorrection,t=rest+y;
+     restCorrection=(t-rest)-y;rest=t;
+    }
    }
-   probability=Math.max(0,Math.min(1,sum));
+   probability=Math.max(0,Math.min(1,sum));complement=Math.max(0,rest);
   }else if(d.kind==="normal"){
    const z=x=>(x-mu)/sigma;
    probability=d.mode==="left"?normalCdf(z(a)):
     d.mode==="right"?normalUpperTail(z(a)):
     d.mode==="between"?normalInterval(z(a),z(b)):
     1-normalInterval(z(a),z(b));
-  }else probability=extraEventProbability(d,extra,a,b);
-  statement="P("+expr+") = "+formatDistributionProbability(probability);
+   if(probability>0.99995)
+    complement=d.mode==="left"?normalUpperTail(z(a)):
+     d.mode==="right"?normalCdf(z(a)):
+     d.mode==="between"?normalCdf(z(a))+normalUpperTail(z(b)):
+     normalInterval(z(a),z(b));
+  }else{
+   probability=extraEventProbability(d,extra,a,b);
+   if(probability>0.99995&&d.kind==="poisson"){
+    const l=extra.lambda;
+    if(d.mode==="left")complement=poissonUpperTail(l,a);
+    else if(d.mode==="right")complement=poissonCdf(l,a-1);
+    else if(d.mode==="exact")complement=a===0?-Math.expm1(-l):1-poissonMass(l,a);
+    else if(d.mode==="between")
+     complement=poissonCdf(l,a-1)+poissonUpperTail(l,b);
+    else if(d.mode==="outside"&&b-a<2000){
+     let total=0,correction=0;
+     for(let k=Math.max(0,a+1);k<b;k++){
+      const y=poissonMass(l,k)-correction,t=total+y;
+      correction=(t-total)-y;total=t;
+     }
+     complement=total;
+    }
+   }else if(probability>0.99995&&d.kind==="custom"){
+    // Do not silently normalise: work from the entered unselected masses.
+    // If the total is only approximately 1, retain that provenance in notes.
+    let total=0,correction=0;
+    for(const point of extra.points)if(!selected(d.mode,point.x,a,b)){
+     const y=point.probability-correction,t=total+y;
+     correction=(t-total)-y;total=t;
+    }
+    complement=total;
+   }
+  }
+  statement="P("+expr+") = "+formatDistributionProbability(probability,complement);
  }
  if(d.kind==="normal")notes.push("A density curve represents a proposed continuous model; the probability is an area, not the curve height.");
  if(d.kind==="binomial")notes.push("A binomial model assumes fixed trials, two outcomes, independence and constant success probability.");
