@@ -16,7 +16,7 @@ def setup(browser,width):
   accept_downloads=True)
  page=context.new_page();page.set_default_timeout(16000)
  errors=[];page.on("pageerror",lambda e:errors.append(str(e)))
- page.add_init_script("localStorage.setItem("+json.dumps(KEY)+","+json.dumps(json.dumps(BASE))+");")
+ page.add_init_script("if(!localStorage.getItem("+json.dumps(KEY)+"))localStorage.setItem("+json.dumps(KEY)+","+json.dumps(json.dumps(BASE))+");")
  page.goto(URL,wait_until="networkidle")
  assert page.locator("[data-distribution-studio]").is_visible()
  return context,page,errors
