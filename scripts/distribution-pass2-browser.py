@@ -1131,7 +1131,10 @@ def pass554_educational_journey(browser,width,course,kind,comparison,phase,sourc
   reflection.locator('summary').click()
   assert reflection.locator('[data-reflection-prompt]').count()==3
   if comparison=="target":
-   assert "not been applied to or shaded" in p.locator('[data-distribution-learning]').inner_text()
+   # Fixed-target results update live without changing the original shaded figure.
+   # The optional learning drawer refreshes on a full editor render, not on
+   # each What-if keystroke; assert the immediately visible live summary.
+   assert "The shaded event in your IA figure is not changed" in p.locator('[data-distribution-whatif-summary]').inner_text()
   bridge=reflection.locator('[data-distribution-writing-bridge]')
   assert bridge.locator('[data-workshop-id]').count()==1
   bridge.locator('[data-studio-stuck="C31:whatif"]').click()
