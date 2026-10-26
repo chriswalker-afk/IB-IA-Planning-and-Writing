@@ -83,9 +83,9 @@ test("continuous uniform bounds reject sub-resolution inverse targets but preser
  assert.match(tiny.issues.join(" "),/endpoint|represent|scale|precision/i);
  const right=inverse("uniform","right",1e-14,{a:"1000000000000",b:"1000000000001"});
  assert(!right.ok);
- const wide=inverse("uniform","left",0.0001,{a:"1000000000000",b:"1000000000001"});
+ const wide=inverse("uniform","left",0.125,{a:"1000000000000",b:"1000000000001"});
  assert(wide.ok,wide.issues.join("; "));
- assert(Math.abs(wide.achieved-0.0001)<1e-7);
+ assert(Math.abs(wide.achieved-0.125)<1e-12);
  for(const [mode,p] of [["left",0],["left",1],["right",0],["right",1],["central",0],["central",1]]){
   const q=inverse("uniform",mode,p);
   assert(q.ok,q.issues.join("; "));
