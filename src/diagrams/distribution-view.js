@@ -21,7 +21,9 @@ const boundaryField=(key,label,value,e)=>'<div class="distribution-boundary-cont
  '" data-distribution-direction="1" aria-label="Increase '+e(label.toLowerCase())+'">+</button></div></div>';
 export function distributionPreviewHtml(studio){
  return '<div class="distribution-preview'+(studio.zoomed?' distribution-preview-detail':'')+
- '" data-distribution-preview>'+renderDistributionSvg(studio.draft,{interactive:true})+'</div>';
+ '" data-distribution-preview role="region" tabindex="'+(studio.zoomed?'0':'-1')+
+ '" aria-label="'+(studio.zoomed?'Enlarged probability figure; scroll sideways to inspect labels':'Probability figure preview')+'">'+
+ renderDistributionSvg(studio.draft,{interactive:true})+'</div>';
 }
 export function distributionFeedbackHtml(studio,e){
  const q=analyzeDistribution(studio.draft),layout=distributionLayout(q);
@@ -29,7 +31,7 @@ export function distributionFeedbackHtml(studio,e){
   (layout.x(v)<layout.plot.left-1||layout.x(v)>layout.plot.right+1));
  const crowded=q.ready&&q.draft.kind==="custom"&&q.points.length>1&&
   q.points.slice(1).some((p,i)=>Math.abs(layout.x(p.x)-layout.x(q.points[i].x))<6);
- return '<section class="probability-quality" data-distribution-feedback aria-live="polite">'+
+ return '<section class="probability-quality" data-distribution-feedback>'+
  (q.issues.length?'<strong>Before saving or exporting</strong><ul>'+q.issues.map(t=>'<li>'+e(t)+'</li>').join("")+'</ul>':
   '<strong>Figure ready for export</strong>'+(q.statement?'<p>'+e(q.statement)+'</p>':""))+
  (clipped?'<p class="distribution-caution"><strong>Boundary outside the displayed window:</strong> the model probability still uses the full event, but this boundary is not visible. Consider whether the current figure explains the event clearly enough.</p>':"")+
@@ -49,7 +51,8 @@ export function renderDistributionStudio(state,icon,e){
  const s=state.distributionStudio,d=s.draft;
  return '<section class="probability-studio representation-studio" data-distribution-studio aria-label="Probability Distribution Studio">'+
  '<div class="representation-studio-intro"><span class="intro-writing-guide-eyebrow">PROBABILITY DISTRIBUTION STUDIO</span>'+
- '<h2>Illustrate a probability model</h2><p>Choose a theoretical distribution and shade an optional event. Only the title, mathematical graph and chosen labels appear in your exported IA figure.</p></div>'+
+ '<h2>Illustrate a probability model</h2><p>Choose a theoretical distribution and shade an optional event. Only the title, mathematical graph and chosen labels appear in your exported IA figure.</p>'+
+ '<p class="distribution-accessible-status" data-distribution-a11y-status role="status" aria-live="polite" aria-atomic="true"></p></div>'+
  '<div class="probability-workspace"><div class="probability-controls" data-representation-step="create">'+
  '<h3>1. Figure and model</h3>'+
  select("kind","Distribution",d.kind,[["normal","Normal"],["binomial","Binomial"],["poisson","Poisson"],["uniform","Continuous uniform"],["custom","Custom discrete"]],e)+
@@ -77,8 +80,9 @@ export function renderDistributionStudio(state,icon,e){
  toggle("showProbability","Print probability statement inside figure",d.showProbability)+
  toggle("showParameters","Show model parameters in figure",d.showParameters)+
  (["normal","uniform"].includes(d.kind)?toggle("showMean","Show mean marker",d.showMean):"")+
- field("figureNumber","Figure number (optional)",d.figureNumber,e)+
- field("caption","Figure caption (optional)",d.caption,e)+
+ field("figureNumber","Figure number for IA label (optional)",d.figureNumber,e)+
+ field("caption","Caption for IA label (optional)",d.caption,e)+
+ '<p class="distribution-caption-help" data-distribution-caption-help>These are kept for the <strong>IA figure label and source</strong> in the writing handover, not printed inside the SVG or PNG. Place the label beneath the figure in your final IA; use the figure title above the graph.</p>'+
  '</details><h3>3. Model provenance</h3>'+
  select("sourceKind","Where did your model parameters or probabilities come from?",d.sourceKind,
  [["theoretical","Assumed theoretical model"],["primary","Estimated from my data"],
