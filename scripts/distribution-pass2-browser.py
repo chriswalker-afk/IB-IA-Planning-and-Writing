@@ -692,7 +692,7 @@ def pass55_precision(browser,width,kind):
    "binomial":{"n":"150","p":"0.5","lower":"149"},
    "poisson":{"lambda":"3","lower":"30"},
    "uniform":{"a":"0","b":"1","lower":"0.9999999999999999"},
-   "custom":{"customPoints":"0, 0.9999999999999999\\n1, 0.0000000000000001","lower":"0"}
+   "custom":{"customPoints":"0, 0.9999999999999999\n1, 0.0000000000000001","lower":"0"}
   }
   for key,value in inputs[kind].items():
    if key!="lower":field(p,key,value)
