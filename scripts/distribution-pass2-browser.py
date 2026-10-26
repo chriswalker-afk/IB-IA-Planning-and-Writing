@@ -1131,7 +1131,7 @@ def pass554_educational_journey(browser,width,course,kind,comparison,phase,sourc
   reflection.locator('summary').click()
   assert reflection.locator('[data-reflection-prompt]').count()==3
   if comparison=="target":
-   assert "not applied to or shaded" in p.locator('[data-distribution-learning]').inner_text()
+   assert "not been applied to or shaded" in p.locator('[data-distribution-learning]').inner_text()
   bridge=reflection.locator('[data-distribution-writing-bridge]')
   assert bridge.locator('[data-workshop-id]').count()==1
   bridge.locator('[data-studio-stuck="C31:whatif"]').click()
