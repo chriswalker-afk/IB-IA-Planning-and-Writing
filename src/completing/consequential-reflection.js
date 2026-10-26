@@ -27,6 +27,10 @@ export const CONSEQUENCE_CHECKS=Object.freeze({
   "Compare one justified alternative functional form, fit or constraint, using the same observed points and input domain.",
   "Compare original-scale residuals and the model's meaningful parameters or turning point, not R² alone.",
   "Graph Studio"),
+ "piecewise-model":cue(
+  "Test a justified change to one branch boundary, join value or modelling assumption, while preserving the original piecewise definition.",
+  "Re-evaluate the left and right behaviour at the affected join. If the context calls for continuity or matching derivatives, show the calculations; otherwise explain why a jump or corner is meaningful.",
+  "Graph Studio"),
  exponential:cue(
   "Investigate whether a plausible change in the assumed growth factor or time interval changes your fitted or theoretical prediction.",
   "Compare predictions at the same time point and check whether the new value remains supported by the observations.",
