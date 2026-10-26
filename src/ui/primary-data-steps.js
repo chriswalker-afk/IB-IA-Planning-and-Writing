@@ -142,7 +142,8 @@ export function primaryDataSampling(state,{F,select,e,icon}){
  '<details class="primary-step-extra"><summary>'+icon('pencil')+' Explain or refine my sampling decision (optional) '+icon('chevron-down')+'</summary>'+
  '<div class="primary-step-extra-content">'+
  F('primarySamplingFrameDetails','Describe the frame or difficulty','e.g. a class list, or no complete list')+
- F('primarySampling','Why might this method work?','Consider access, speed, bias and follow-up observations',{type:'textarea',rows:2})+
+ F('primarySampling','Why might this method work?','Consider access, bias, likely group sizes and what the observations could support',{type:'textarea',rows:2})+
+ '<p class="field-hint">You do not need a fixed sample count in your plan. Once you have actual observations, record the number and explain what it is sufficient to investigate, including any limitations on wider conclusions.</p>'+
  F('alternativeMethod','Another method or source considered (optional)','One realistic alternative, if you considered one',{type:'textarea',rows:2})+
  '</div></details></section>'+
  '<section class="primary-focus-block primary-readiness">'+
