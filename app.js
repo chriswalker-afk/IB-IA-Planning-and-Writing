@@ -3508,7 +3508,15 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
         save();
         if(target.tagName==="SELECT"||target.type==="checkbox"){
           const key=target.dataset.distributionField;
+          // A select inside a disclosure must not cause its focused
+          // replacement to be hidden when the editor re-renders.
+          const openPanels=[".ia-figure-presentation-settings","[data-distribution-inverse-panel]"]
+            .filter(selector=>main.querySelector("[data-distribution-studio] "+selector)?.open);
           render();
+          for(const selector of openPanels){
+            const panel=main.querySelector("[data-distribution-studio] "+selector);
+            if(panel)panel.open=true;
+          }
           main.querySelector('[data-distribution-field="'+key+'"]')?.focus({preventScroll:true});
           announceDistribution(distributionFigureAnnouncement(state.distributionStudio));
         }else refreshDistributionPreview();
