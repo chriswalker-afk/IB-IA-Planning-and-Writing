@@ -27,6 +27,7 @@ const configure=(kind,fields={})=>{
 test("one stable, empty status region replaces per-keystroke live feedback",()=>{
  const s=createProjectState();
  s.distributionStudio=configure("normal");
+ startDistributionWhatIf(s.distributionStudio);
  const html=renderDistributionStudio(s,()=>"",esc);
  assert.match(html,/data-distribution-a11y-status role="status" aria-live="polite" aria-atomic="true"/);
  assert.equal((html.match(/data-distribution-a11y-status/g)||[]).length,1);
