@@ -377,6 +377,11 @@ with sync_playwright() as pw:
 
  def pass4_cohort_welcome(p):
   assert_node(p,'N00')
+  # A project with existing planning work intentionally skips the first-time
+  # tour. Reopen it using the real student-facing "How this works" action.
+  if p.locator('[data-planning-intro="true"]').count()==0:
+   action(p,'planning-intro-open')
+  assert p.locator('[data-planning-intro="true"]').count()==1
   text=p.locator('#main').inner_text()
   assert 'updated four-criterion overview' in text
   assert 'Earlier A–E criterion bubbles and self-marks are hidden' in text
