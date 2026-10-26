@@ -9,6 +9,7 @@ export const METHOD_OPTIONS=Object.freeze([
  ["linear-regression","Straight-line regression / line of best fit"],
  ["spearman","Spearman's rank correlation"],
  ["quadratic-fit","Fitted quadratic, cubic or polynomial model"],
+ ["piecewise-model","Piecewise functions / models and their joins"],
  ["exponential","Exponential growth/decay model"],
  ["sinusoidal","Trigonometric / periodic model"],
  ["optimisation","Differentiation / optimisation"],
