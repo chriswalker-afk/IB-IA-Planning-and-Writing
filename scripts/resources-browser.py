@@ -169,7 +169,10 @@ with sync_playwright() as pw:
    }""")
   original={k:rect(loc) for k,loc in [('learn',learn),('software',software),('creator',creator),('mla',mla)]}
   summary=creator.locator(':scope > summary')
-  summary.focus();summary.press('Enter')
+  # Do not visually reorder focusable cards with CSS order on a phone.
+  learn.focus();learn.press('Tab')
+  assert summary.evaluate('(el)=>document.activeElement===el')
+  summary.press('Enter')
   assert creator.get_attribute('open') is not None
   assert creator.locator('.resource-creator-card').count()==8
   expanded={k:rect(loc) for k,loc in [('learn',learn),('software',software),('creator',creator),('mla',mla)]}
@@ -186,8 +189,8 @@ with sync_playwright() as pw:
    assert abs(expanded['mla']['x']-expanded['software']['x'])<3,expanded
    assert expanded['creator']['x']+expanded['creator']['w']<=expanded['mla']['x']+2,expanded
   else:
-   # One-column phone layout preserves familiar visual order.
-   assert expanded['learn']['y']<expanded['software']['y']<expanded['creator']['y']<expanded['mla']['y'],expanded
+   # One-column phone keeps visual and keyboard sequence aligned.
+   assert expanded['learn']['y']<expanded['creator']['y']<expanded['software']['y']<expanded['mla']['y'],expanded
    assert expanded['mla']['y']>original['mla']['y']+150,expanded
    assert abs(expanded['creator']['w']-expanded['mla']['w'])<3,expanded
   assert overlay(p).evaluate('(el)=>el.scrollWidth<=el.clientWidth+1')
