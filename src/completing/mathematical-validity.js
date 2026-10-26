@@ -11,6 +11,7 @@ import {linkedSources,linkedAccuracy} from "./evidence-links.js";
 import {REPRESENTATION_TOOLS} from "../diagrams/representation-registry.js";
 import {analyseGraph} from "../diagrams/graph-core.js";
 import {metricText} from "../diagrams/graph-diagnostics-view.js";
+import {renderConsequentialReflectionCue} from "./consequential-reflection.js";
 import {escapeHtml,icon as defaultIcon} from "../ui/primitives.js";
 
 const str=x=>typeof x==="string"?x.trim():"";
@@ -216,6 +217,10 @@ export function renderMathematicalValidityAid(state,entry,{icon=defaultIcon,e=es
   (v.recordedLimitation?textRow("Your limitation note",v.recordedLimitation,e):'')+
   (v.confirmedLimitations.length?'<div class="math-validity-confirmed"><strong>Limitations and consequences you recorded</strong><ul>'+
     v.confirmedLimitations.map(x=>'<li>'+e(x.explanation)+' — '+e(x.consequence)+'</li>').join("")+'</ul></div>':'')+
+  // Pass 3 adds one mathematical challenge INSIDE this existing optional
+  // disclosure, after source/figure context. Review-needed results keep their
+  // warning but are not promoted as trusted evidence for sensitivity advice.
+  renderConsequentialReflectionCue(v,{icon,e,reduced})+
   '<p class="math-validity-honesty">These are prompts and your saved inputs, not an independently checked error bound, verified model, or automatic IA paragraph. Only use claims you can justify from your own work.</p>'+
   '</div></details></aside>';
 }
