@@ -39,7 +39,7 @@ export const STATISTICAL_TEST_READINESS=Object.freeze({
 
 export function statisticalTestReadiness(entry){
  const method=str(entry?.methodId);
- const advice=STATISTICAL_TEST_READINESS[method];
+ const advice=Object.hasOwn(STATISTICAL_TEST_READINESS,method)?STATISTICAL_TEST_READINESS[method]:null;
  return advice?Object.freeze({method,...advice,needsReview:entry?.reviewNeeded==="yes",
   previouslyCompleted:entry?.status==="completed"}):null;
 }
