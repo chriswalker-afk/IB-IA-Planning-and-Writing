@@ -127,7 +127,7 @@
 [data-distribution-studio] .distribution-nudge .btn{min-height:42px;min-width:42px;padding:6px 11px;font-size:1.18rem;line-height:1}
 [data-distribution-studio] .distribution-caution{color:var(--text-muted,#4f6772)}
 @media(max-width:760px){[data-distribution-studio] .probability-workspace{grid-template-columns:minmax(0,1fr)}[data-distribution-studio] .probability-controls{max-height:none;overflow:visible;position:static}}
-@media(max-width:380px){[data-distribution-studio] .probability-boundary-control{grid-template-columns:minmax(0,1fr)}[data-distribution-studio] .distribution-preview-detail svg{min-width:720px}}
+@media(max-width:380px){[data-distribution-studio] .distribution-boundary-control{grid-template-columns:minmax(0,1fr)}[data-distribution-studio] .distribution-preview-detail svg{min-width:720px}}
 @media(prefers-reduced-motion:reduce){[data-distribution-studio] .distribution-preview *{animation:none!important;transition:none!important}}
 
 /* Distribution Pass 3: contextual learning belongs in the editor, never the SVG. */
@@ -510,5 +510,56 @@
  }
  [data-distribution-studio] .distribution-whatif-writing-actions .btn{
   width:100%;justify-content:flex-start
+ }
+}
+
+/* Pass 5.5.2 — accessible distribution editor without extra figure text.
+   The one persistent status region is visually clipped, NOT display:none. */
+[data-distribution-studio] .distribution-accessible-status{
+ position:absolute!important;width:1px!important;height:1px!important;
+ padding:0!important;margin:-1px!important;border:0!important;
+ overflow:hidden!important;white-space:nowrap!important;
+ clip:rect(0,0,0,0)!important;clip-path:inset(50%)!important;
+}
+[data-distribution-studio] .distribution-caption-help{
+ color:var(--text-muted,#526b77);font-size:.78rem;line-height:1.5;
+ margin:7px 0 12px;overflow-wrap:anywhere;
+}
+[data-distribution-studio] .distribution-caption-help strong{
+ color:var(--text,#2c4754);
+}
+[data-distribution-studio] .distribution-preview:focus-visible,
+[data-distribution-studio] .distribution-whatif-canvas:focus-visible{
+ outline:3px solid #286f90;outline-offset:2px;border-radius:5px;
+}
+[data-distribution-studio] .distribution-preview-detail,
+[data-distribution-studio] .distribution-whatif-canvas{
+ overscroll-behavior-inline:contain;-webkit-overflow-scrolling:touch;
+}
+[data-distribution-studio] .distribution-nudge .btn{
+ min-width:44px;min-height:44px;
+}
+[data-distribution-studio] .distribution-whatif-slider input[type="range"]{
+ min-height:44px;touch-action:pan-y;
+}
+[data-distribution-studio] .distribution-whatif-actions .btn,
+[data-distribution-studio] .distribution-whatif-writing-actions .btn{
+ min-height:44px;
+}
+[data-distribution-studio] .probability-controls input:focus-visible,
+[data-distribution-studio] .probability-controls textarea:focus-visible,
+[data-distribution-studio] .probability-controls select:focus-visible,
+[data-distribution-studio] .probability-controls button:focus-visible,
+[data-distribution-studio] .probability-main button:focus-visible{
+ outline:2px solid #286f90;outline-offset:2px;
+}
+@media(max-width:390px){
+ [data-distribution-studio] .distribution-whatif-summary,
+ [data-distribution-studio] .distribution-whatif-metrics,
+ [data-distribution-studio] .distribution-whatif-preview{
+  min-width:0;max-width:100%;
+ }
+ [data-distribution-studio] .distribution-whatif-target-equation{
+  overflow-wrap:anywhere;word-break:normal;
  }
 }
