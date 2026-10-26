@@ -82,7 +82,7 @@ export function renderDistributionWhatIfSvg(comparison){
   ' aria-label="Shared-axis comparison of original and alternative '+esc(a.draft.kind)+
   ' distributions'+(inverse?' with separate inverse probability cut-offs':'')+'" width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'">'+
   '<title>'+(inverse?'Fixed-probability boundary comparison':'Original and alternative model comparison')+'</title>'+
-  '<desc>The grey original and blue alternative use exactly the same horizontal and vertical axes.'+
+  '<desc>The grey dashed or hatched original and blue solid alternative use exactly the same horizontal and vertical axes.'+
   (compressed?' One or both normal densities are too narrow for their widths to be read accurately on this shared scale.':'')+
   (inverse?' Original boundaries: '+esc(String(inverse.original.lower))+
     (inverse.mode==="central"?' to '+esc(String(inverse.original.upper)):'')+
@@ -90,6 +90,8 @@ export function renderDistributionWhatIfSvg(comparison){
     (inverse.mode==="central"?' to '+esc(String(inverse.alternative.upper)):'')+
     '. They are calculated independently at the same requested probability; no common shaded event is implied.':
    comparison.originalProbability!==null?' The selected event boundaries stay fixed.':'')+'</desc>'+
+  '<defs><pattern id="distribution-whatif-hatch" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">'+
+  '<rect width="7" height="7" fill="#eff2f4"/><line x1="0" y1="0" x2="0" y2="7" stroke="#657786" stroke-width="2"/></pattern></defs>'+
   '<rect width="'+W+'" height="'+H+'" fill="#fff"/>'+
   txt("Original model",left+48,29,13,"start")+
   line(left+16,25,left+43,25,"#63798a",3,' stroke-dasharray="7 4"')+
@@ -137,13 +139,15 @@ export function renderDistributionWhatIfSvg(comparison){
   const union=[...new Set([...a.points,...b.points].map(p=>p.x))].sort((x,y)=>x-y);
   const near=union.length>1?Math.min(...union.slice(1).map((x,i)=>X(x)-X(union[i]))):50;
   const bw=Math.max(1,Math.min(12,near*.36));
-  const colour=["#63798a","#1681a3"];
+  const colour=["url(#distribution-whatif-hatch)","#1681a3"];
   [a,b].forEach((q,i)=>{
    for(const point of q.points){
     const x=X(point.x)+(i===0?-bw:0),py=Y(point.probability);
     svg.push('<rect data-whatif-bar="'+(i===0?"original":"alternative")+
      '" x="'+num(x)+'" y="'+num(py)+'" width="'+num(bw)+'" height="'+num(Math.max(.1,bottom-py))+
-     '" fill="'+colour[i]+'" opacity="'+(comparison.originalProbability===null||eventChosen(i===0?eventA:eventB,point.x)?"0.85":"0.32")+'"/>');
+     '" fill="'+colour[i]+'" stroke="'+(i===0?"#657786":"#156780")+
+     '" stroke-width="1"'+(i===0?' stroke-dasharray="3 2"':'')+
+     ' opacity="'+(comparison.originalProbability===null||eventChosen(i===0?eventA:eventB,point.x)?"0.9":"0.42")+'"/>');
    }
   });
  }
