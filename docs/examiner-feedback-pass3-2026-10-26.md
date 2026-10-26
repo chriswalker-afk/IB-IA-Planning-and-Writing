@@ -41,7 +41,7 @@ A previously selected result that has become planned, missing or review-flagged 
 
 ## Verification
 
-New `tests/examiner-feedback-pass3.test.js` covers stage and review gating, planned vs actual results, explicit technique selection, meaningful method-specific challenges, no unlinked figure evidence, reduced advice, initial and subsequent stages (C30/C40/C50), original data-state immutability, linked tool action, title/aim/answer comparison placement, missing-title fallbacks, stale conclusion-evidence flags, HTML escaping and backup restoration. Existing project test and browser-acceptance workflows must all pass before merging.
+New `tests/examiner-feedback-pass3.test.js` covers stage and review gating, planned vs actual results, explicit technique selection, meaningful method-specific challenges, no unlinked figure evidence, reduced advice, initial and subsequent stages (C30/C40/C50), original data-state immutability, linked tool action, title/aim/answer comparison placement, missing-title fallbacks, stale conclusion-evidence flags, HTML escaping and backup restoration. The existing Playwright conformance journey now additionally tests these new controls on 390 px and 320 px viewports: keyboard-opening the single validity disclosure, following its existing C31 tool action without modifying real mathematical records, access in Reduce advice mode, review-flag gating, and opening the read-only title–aim–conclusion comparison without altering saved writing. Existing project and browser-acceptance workflows must all pass before merging.
 
 ## Next: Pass 4
 
