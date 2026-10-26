@@ -768,7 +768,7 @@ def pass55_unsafe_count(browser):
   p.locator('[data-distribution-field="kind"]').select_option("poisson")
   field(p,"title","Count threshold requires integer precision")
   p.locator('[data-distribution-field="mode"]').select_option("left")
-  field(p,"lower","100000000000000000000")
+  field(p,"lower","10000000000000000000")
   assert "safely representable integers" in p.locator('[data-distribution-feedback]').inner_text()
   assert p.locator('[data-representation-ready="true"]').count()==0
   field(p,"lower","3")
@@ -973,7 +973,7 @@ def pass553_unrepresentable_uniform(browser):
  try:
   p.locator('[data-distribution-field="kind"]').select_option("uniform")
   field(p,"title","Fine target at large scale")
-  field(p,"a","1000000000000");field(p,"b","1000000000001")
+  field(p,"a","100000000000");field(p,"b","100000000001")
   original=p.evaluate("(key)=>JSON.parse(localStorage.getItem(key)).distributionStudio.draft",KEY)
   p.locator('[data-distribution-inverse-panel] summary').click()
   p.locator('[data-distribution-inverse-field="probability"]').fill("0.00000000000001")
