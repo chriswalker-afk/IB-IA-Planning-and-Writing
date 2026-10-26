@@ -137,6 +137,47 @@ function potentialQuestions(state,e,icon){
    '<div>'+questions.map(q=>'<p>'+e(q)+'</p>').join("")+'</div>'+
    '<p>Choose only one that genuinely adds value, explain why, or leave the extension out.</p></details>';
 }
+/** Student-owned snapshots only: this compares no meanings and awards no marks.
+ * Show only after there is an actual saved conclusion answer. */
+export function conclusionCoherenceSnapshot(state,aim=""){
+ const p=state?.planning?.fields||{},f=state?.completion?.fields||{};
+ if(!has(f.mainConclusion))return null;
+ const ids=selectedResultIds(state);
+ const entries=Array.isArray(state?.entries)?state.entries:[];
+ const unresolved=ids.filter(id=>!entries.some(x=>x?.id===id&&validResult(x)&&!review(x)));
+ return {
+  title:has(p.provisionalTitle)?p.provisionalTitle:"",
+  aim:has(aim)?aim:has(p.aim)?p.aim:state?.project?.aim||"",
+  answer:f.mainConclusion,
+  meaning:has(f.conclusionBenefit)?f.conclusionBenefit:"",
+  unresolvedCount:unresolved.length
+ };
+}
+
+export function renderConclusionCoherenceCheck(state,aim,{e,icon,reduced=false}={}){
+ const c=conclusionCoherenceSnapshot(state,aim);
+ if(!c)return "";
+ const row=(label,value,empty)=>'<p><strong>'+e(label)+':</strong> '+
+  e(short(value,620)||empty)+'</p>';
+ return '<details class="conclusion-original-context conclusion-coherence-check'+(reduced?' is-reduced':'')+
+  '" data-conclusion-coherence><summary>'+icon("target")+
+  ' Does my ending still answer my original question? (optional) '+icon("chevron-right")+'</summary>'+
+  '<div class="conclusion-coherence-body">'+
+   '<p>Compare your saved words, not an automatic similarity score:</p>'+
+   row("Working title from Planning",c.title,
+     "No provisional title saved — check the actual title in your IA.")+
+   row("Mathematical aim",c.aim,"No aim saved — clarify it in your actual IA.")+
+   row("Your answer so far",c.answer,"")+
+   (c.meaning?row("Your meaning and limits",c.meaning,""):"")+
+   (c.unresolvedCount?
+    '<p class="math-validity-warning" role="note">'+c.unresolvedCount+
+    ' selected mathematical result'+(c.unresolvedCount===1?' is':'s are')+
+    ' no longer confirmed for use in the conclusion. Recheck the work or change the selection above; no substitute result has been chosen.</p>':"")+
+   '<p><strong>One consistency question:</strong> Do the title, aim and answer refer to the same mathematical question, variables, group and valid range? Does the actual mathematics justify the scope of the answer? If the investigation changed, revise the wording where it belongs rather than claiming your earlier plan was fulfilled.</p>'+
+   '<p class="field-hint">These are read-only excerpts of your Pathfinder notes, not a judgement about your finished IA. Check the real document, including any later edits to its title or introduction. No extra writing box is required here.</p>'+
+  '</div></details>';
+}
+
 export function renderConclusionWorkspace({state,e,icon,field,F,criterionMarkedWritingBox,
  criteriaField,currentAim,plannedPrediction,currentBenefit,stuckBubble=()=>"",savedLimitations=()=>""}){
  const p=state.planning?.fields||{},f=state.completion?.fields||{};
@@ -178,6 +219,7 @@ export function renderConclusionWorkspace({state,e,icon,field,F,criterionMarkedW
     "What can I responsibly conclude, and what does the mathematics NOT establish?",
     {type:"textarea",rows:5}),["completing:C60:meaningAndLimits"])+
   '</section>'+
+  renderConclusionCoherenceCheck(state,aim,{e,icon,reduced:state.ui?.adviceMode==="reduced"})+
   '<section class="conclusion-writing-part conclusion-potential" data-conclusion-part="next">'+
    '<div class="conclusion-part-title"><span class="conclusion-part-number">3</span><div>'+
     '<h3>Potential next steps</h3><span class="conclusion-part-optional">OPTIONAL</span>'+
