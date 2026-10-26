@@ -149,6 +149,60 @@ with sync_playwright() as pw:
   assert unchanged_fields(saved(p))==before
  run('resources-order-desktop',state(),ordering,1440,1000)
  run('resources-order-phone',state(),ordering,390,844)
+ def creator_columns(p):
+  """Expanding the left creator stack must NOT inflate the MLA card.
+  Check geometry in the real browser, including 320px and keyboard use."""
+  before=unchanged_fields(saved(p))
+  open_library(p)
+  left=p.locator('.resource-quick-column-maths')
+  right=p.locator('.resource-quick-column-tools')
+  learn=left.locator('.resource-workshop-entry .resource-destination-card')
+  software=right.locator('.resource-destination-card').first
+  creator=left.locator('.resource-creators-compact')
+  mla=right.locator('[data-resource-id="mla-citations"]')
+  assert all(loc.count()==1 for loc in (learn,software,creator,mla))
+  def rect(loc):
+   return loc.evaluate("""el=>{
+    const parent=el.closest('.resource-quick-tools').getBoundingClientRect();
+    const box=el.getBoundingClientRect();
+    return {x:box.left-parent.left,y:box.top-parent.top,w:box.width,h:box.height};
+   }""")
+  original={k:rect(loc) for k,loc in [('learn',learn),('software',software),('creator',creator),('mla',mla)]}
+  summary=creator.locator(':scope > summary')
+  # Do not visually reorder focusable cards with CSS order on a phone.
+  learn.focus();learn.press('Tab')
+  assert summary.evaluate('(el)=>document.activeElement===el')
+  summary.press('Enter')
+  assert creator.get_attribute('open') is not None
+  assert creator.locator('.resource-creator-card').count()==8
+  expanded={k:rect(loc) for k,loc in [('learn',learn),('software',software),('creator',creator),('mla',mla)]}
+  for key in ('learn','software','mla'):
+   assert abs(expanded[key]['h']-original[key]['h'])<3,(key,original[key],expanded[key])
+   assert expanded[key]['h']<240,(key,expanded[key])
+  assert expanded['creator']['h']>expanded['mla']['h']*2,expanded
+  if p.viewport_size['width']>530:
+   # Right column stands on its own: the reference card stays immediately
+   # under the software tile, even as the left creator list grows.
+   assert abs(expanded['mla']['y']-original['mla']['y'])<3,expanded
+   assert abs(expanded['mla']['y']-(expanded['software']['y']+expanded['software']['h']+12))<3,expanded
+   assert abs(expanded['creator']['x']-expanded['learn']['x'])<3,expanded
+   assert abs(expanded['mla']['x']-expanded['software']['x'])<3,expanded
+   assert expanded['creator']['x']+expanded['creator']['w']<=expanded['mla']['x']+2,expanded
+  else:
+   # One-column phone keeps visual and keyboard sequence aligned.
+   assert expanded['learn']['y']<expanded['creator']['y']<expanded['software']['y']<expanded['mla']['y'],expanded
+   assert expanded['mla']['y']>original['mla']['y']+150,expanded
+   assert abs(expanded['creator']['w']-expanded['mla']['w'])<3,expanded
+  assert overlay(p).evaluate('(el)=>el.scrollWidth<=el.clientWidth+1')
+  overlay(p).screenshot(path=str(OUT/('resource-creator-layout-'+str(p.viewport_size['width'])+'.png')),animations='disabled')
+  # The MLA action must still be independently reachable beneath the open
+  # list; opening an accordion must not change anything in the IA project.
+  mla.click()
+  assert 'Works Cited' in overlay(p).inner_text()
+  assert unchanged_fields(saved(p))==before
+ run('resources-creator-columns-desktop',state(),creator_columns,1440,1000)
+ run('resources-creator-columns-phone',state(),creator_columns,390,844)
+ run('resources-creator-columns-small-phone',state(),creator_columns,320,720)
  def filtering(p):
   open_library(p);assert p.locator('#resource-results .resource-row').count()==8
   p.locator('[data-action="resource-more"]').click();assert p.locator('#resource-results .resource-row').count()==16
