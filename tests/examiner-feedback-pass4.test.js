@@ -291,6 +291,10 @@ test("no AA HL or piecewise help modifies original writing, links, accuracy or b
  const s=withEntry();
  s.planning.fields.provisionalTitle="My own mathematical title";
  s.completion.fields.mainConclusion="My own conclusion, not a generated judgement";
+ s.completion.accuracyDecisions.push({id:"original-accuracy",quantity:"Distance",unit:"m",
+  resolution:"0.1 m",policy:"Report justified precision",reason:"Recorded method"});
+ s.completion.sourceRecords.push({id:"original-source",
+  fields:{actualSource:"Original ruler measurements",dataStatus:"ready"},legacy:false});
  s.entries[0].accuracyRefs=["original-accuracy"];
  s.entries[0].sourceRefs=["original-source"];
  s.entries[0].reviewNeeded="yes";
