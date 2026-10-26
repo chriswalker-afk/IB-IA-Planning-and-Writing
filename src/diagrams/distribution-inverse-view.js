@@ -17,8 +17,8 @@ const probabilityText=v=>{
 export function distributionInverseResultHtml(studio,e){
  const {status,result}=currentDistributionInverse(studio);
  if(status==="idle")return '<p class="distribution-inverse-placeholder">Enter a target and calculate first. Your diagram remains unchanged until you apply the result.</p>';
- if(status==="stale")return '<p class="distribution-inverse-warning" role="alert">The model parameters have changed. Calculate again before applying a boundary.</p>';
- if(!result?.ok)return '<div class="distribution-inverse-warning" role="alert"><strong>Check the inverse calculation</strong><ul>'+
+ if(status==="stale")return '<p class="distribution-inverse-warning">The model parameters have changed. Calculate again before applying a boundary.</p>';
+ if(!result?.ok)return '<div class="distribution-inverse-warning"><strong>Check the inverse calculation</strong><ul>'+
   (result?.issues||["Unable to calculate a boundary."]).map(issue=>'<li>'+e(issue)+'</li>').join("")+'</ul></div>';
  const d=studio.draft,symbol=d.symbol.trim()||"X",discrete=!["normal","uniform"].includes(d.kind);
  const bounds=result.mode==="central"?
@@ -63,6 +63,6 @@ export function renderDistributionInverseHtml(studio,e){
    "For example, enter 0.8 to find a cut-off covering at least 80% of the model probability.")+
   '</p>'+
   '<button type="button" class="btn btn-primary" data-action="distribution-inverse-calculate">Calculate boundary</button>'+
-  '<div class="distribution-inverse-result" data-distribution-inverse-result role="status" aria-live="polite" aria-atomic="true">'+
+  '<div class="distribution-inverse-result" data-distribution-inverse-result>'+
   distributionInverseResultHtml(studio,e)+'</div></div></details>';
 }
