@@ -213,7 +213,7 @@ export function renderDistributionWhatIfControls(studio,e,aim="",writing=null){
    '<div class="distribution-whatif-actions">'+
    '<button type="button" class="btn btn-quiet btn-sm" data-action="distribution-whatif-reset">Reset alternative</button>'+
    '<button type="button" class="btn btn-quiet btn-sm" data-action="distribution-whatif-discard">Discard comparison</button></div>'+
-   '<div data-distribution-whatif-summary class="distribution-whatif-summary" aria-live="polite">'+
+   '<div data-distribution-whatif-summary class="distribution-whatif-summary">'+
    distributionWhatIfSummaryHtml(studio,e,aim,writing)+'</div>')+
   '</div></details>';
 }
@@ -231,9 +231,9 @@ export function distributionWhatIfPreviewHtml(studio,e){
  const outside=targetBounds.some(x=>x<rangeMin||x>rangeMax);
  return '<section class="distribution-whatif-preview" data-distribution-whatif-preview>'+
   '<h3>'+(q.comparison==="target"?"Cut-offs under both models — shared axes":"Original and alternative — shared axes")+'</h3>'+
-  (q.ready?'<div class="distribution-whatif-canvas">'+chart+'</div>'+
-    '<p class="distribution-whatif-scroll-note">Swipe sideways to inspect the graph at a readable size.</p>'+
-  '<p>Grey dashed: original. Blue: alternative. Both share the same scales. '+
+  (q.ready?'<div class="distribution-whatif-canvas" data-distribution-whatif-canvas tabindex="0" role="region" aria-label="Original and alternative probability distributions; scroll horizontally to inspect the graph" aria-describedby="distribution-whatif-scroll-note">'+chart+'</div>'+
+    '<p class="distribution-whatif-scroll-note" id="distribution-whatif-scroll-note">Swipe sideways, or focus the graph and use arrow keys, to inspect its labels at a readable size.</p>'+
+  '<p>Grey dashed line (or hatched bars): original. Blue solid line or bars: alternative. Both share the same scales. '+
     (q.comparison==="target"?
       (q.target?.ok?'Grey and blue vertical markers identify the respective inverse boundaries. Different cut-offs represent different events at the same target; no common region is shaded.':
        'Enter a valid target to display its cut-offs.'):
