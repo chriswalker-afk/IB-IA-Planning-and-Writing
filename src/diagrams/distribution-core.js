@@ -72,8 +72,13 @@ export function normalizeDistributionStudio(raw){
   .map(f=>({id:clean(f.id,72),entryId:clean(f.entryId,80),
    savedAt:clean(f.savedAt,42),draft:normalizeDistributionDraft(f.draft)}))
   .filter(f=>/^distribution-[a-z0-9-]+$/i.test(f.id));
- return {open:r.open===true,zoomed:r.zoomed===true,draft:normalizeDistributionDraft(r.draft),
-  inverse:normalizeDistributionInverseQuery(r.inverse),whatIf:normalizeDistributionWhatIfState(r.whatIf),figures,
+ const draft=normalizeDistributionDraft(r.draft);
+ const inverse=normalizeDistributionInverseQuery(r.inverse);
+ if(inverse.mode==="central"&&!["normal","uniform"].includes(draft.kind)){
+  inverse.mode="left";inverse.status="idle";inverse.signature="";
+ }
+ return {open:r.open===true,zoomed:r.zoomed===true,draft,
+  inverse,whatIf:normalizeDistributionWhatIfState(r.whatIf),figures,
   activeId:figures.some(f=>f.id===r.activeId)?r.activeId:""};
 }
 const phi=x=>Math.exp(-x*x/2)/Math.sqrt(2*Math.PI);
