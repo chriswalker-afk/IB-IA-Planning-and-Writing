@@ -29,6 +29,9 @@ function selectedAreas(q,lo,hi){
 const density=(q,t)=>q.draft.kind==="normal"?
  Math.exp(-.5*((t-q.mu)/q.sigma)**2)/(q.sigma*Math.sqrt(2*Math.PI)):
  t>=q.uniformA&&t<=q.uniformB?1/(q.uniformB-q.uniformA):0;
+/** Sampling only a common 420-point grid can entirely miss a narrow normal
+ * peak when the alternatives are far apart. Always sample around EACH mean,
+ * while retaining the common global grid and common plot coordinates. */
 function densityPath(q,X,Y,lo,hi){
  if(q.draft.kind==="uniform"){
   const {uniformA:a,uniformB:b}=q,peak=1/(b-a);
@@ -36,10 +39,28 @@ function densityPath(q,X,Y,lo,hi){
    ' L'+num(X(a))+' '+num(Y(peak))+' L'+num(X(b))+' '+num(Y(peak))+
    ' L'+num(X(b))+' '+num(Y(0))+' L'+num(X(hi))+' '+num(Y(0));
  }
- return Array.from({length:420},(_,i)=>{
-  const v=lo+(hi-lo)*i/419;
-  return (i?"L":"M")+num(X(v))+' '+num(Y(density(q,v)));
- }).join(" ");
+ const samples=Array.from({length:420},(_,i)=>lo+(hi-lo)*i/419);
+ // Exact centre and shoulder samples retain the density even when 420 global
+ // steps miss both peaks by many standard deviations.
+ for(let i=-84;i<=84;i++){
+  const x=q.mu+q.sigma*i/12;
+  if(x>=lo&&x<=hi&&Number.isFinite(x))samples.push(x);
+ }
+ samples.sort((a,b)=>a-b);
+ let prev=-Infinity;
+ return samples.filter(x=>{
+  if(x<=prev)return false;prev=x;return true;
+ }).map((v,i)=>(i?"L":"M")+num(X(v))+' '+num(Y(density(q,v)))).join(" ");
+}
+/** A shared-axis comparison may make a genuinely narrow density visually
+ * unresolved. This flag is descriptive, never a reason to alter axes or data. */
+export function normalComparisonCompression(comparison){
+ if(!comparison?.ready||comparison.original?.draft?.kind!=="normal")return false;
+ const a=comparison.original,b=comparison.alternative;
+ const l0=distributionLayout(a),l1=distributionLayout(b);
+ const width=Math.max(l0.domainMax,l1.domainMax)-Math.min(l0.domainMin,l1.domainMin);
+ return Number.isFinite(width)&&width>0&&
+  [a,b].some(q=>6*q.sigma*852/width<9);
 }
 export function renderDistributionWhatIfSvg(comparison){
  if(!comparison?.ready)return "";
@@ -55,11 +76,14 @@ export function renderDistributionWhatIfSvg(comparison){
  const X=x=>left+(x-min)/span*(right-left);
  const Y=y=>bottom-Math.max(0,Math.min(1,y/yMax))*(bottom-top);
  const variable=a.draft.symbol;
+ const compressed=normalComparisonCompression(comparison);
  const svg=['<svg xmlns="http://www.w3.org/2000/svg" data-distribution-whatif-chart="true" role="img"'+
+  (compressed?' data-whatif-compressed="true"':'')+
   ' aria-label="Shared-axis comparison of original and alternative '+esc(a.draft.kind)+
   ' distributions'+(inverse?' with separate inverse probability cut-offs':'')+'" width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'">'+
   '<title>'+(inverse?'Fixed-probability boundary comparison':'Original and alternative model comparison')+'</title>'+
   '<desc>The grey original and blue alternative use exactly the same horizontal and vertical axes.'+
+  (compressed?' One or both normal densities are too narrow for their widths to be read accurately on this shared scale.':'')+
   (inverse?' Original boundaries: '+esc(String(inverse.original.lower))+
     (inverse.mode==="central"?' to '+esc(String(inverse.original.upper)):'')+
     '; alternative boundaries: '+esc(String(inverse.alternative.lower))+
@@ -106,9 +130,9 @@ export function renderDistributionWhatIfSvg(comparison){
  }
  if(continuous(a.draft.kind)){
   svg.push('<path d="'+densityPath(a,X,Y,min,max)+
-   '" fill="none" stroke="#63798a" stroke-width="3" stroke-dasharray="9 5" stroke-linejoin="round"/>');
+   '" data-whatif-density="original" fill="none" stroke="#63798a" stroke-width="3" stroke-dasharray="9 5" stroke-linejoin="round"/>');
   svg.push('<path d="'+densityPath(b,X,Y,min,max)+
-   '" fill="none" stroke="#1681a3" stroke-width="3" stroke-linejoin="round"/>');
+   '" data-whatif-density="alternative" fill="none" stroke="#1681a3" stroke-width="3" stroke-linejoin="round"/>');
  }else{
   const union=[...new Set([...a.points,...b.points].map(p=>p.x))].sort((x,y)=>x-y);
   const near=union.length>1?Math.min(...union.slice(1).map((x,i)=>X(x)-X(union[i]))):50;
