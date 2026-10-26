@@ -1,5 +1,5 @@
 import {newDistributionDraft,newDistributionInverseQuery,newDistributionWhatIfState,normalizeDistributionDraft,analyzeDistribution,DISTRIBUTION_KINDS,
- distributionSignature,saveDistributionFigure} from "./distribution-core.js";
+ distributionInterpretationSignature,saveDistributionFigure} from "./distribution-core.js";
 import {completeEntry,startFirstRepresentation} from "../completing/engine.js";
 import {linkRepresentationFigure} from "./figure-linking.js";
 export function setDistributionField(studio,key,value){
@@ -28,7 +28,8 @@ export function loadDistribution(studio,id){
  studio.activeId=id;studio.draft=normalizeDistributionDraft(fig.draft);studio.inverse=newDistributionInverseQuery();studio.whatIf=newDistributionWhatIfState();studio.open=true;return true;
 }
 function flagReview(state,previous,record){
- if(!previous?.entryId||distributionSignature(previous.draft)===distributionSignature(record.draft))return false;
+ if(!previous?.entryId||distributionInterpretationSignature(previous.draft)===
+  distributionInterpretationSignature(record.draft))return false;
  const entry=state.entries.find(e=>e.id===previous.entryId);
  if(!entry||entry.status!=="completed"||!entry.result?.trim())return false;
  entry.reviewNeeded="yes";
