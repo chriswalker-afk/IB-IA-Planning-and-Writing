@@ -99,7 +99,7 @@ function boundaryMarks(layout,interactive){
     ' probability boundary for '+esc(d.symbol)+'" aria-orientation="horizontal" aria-valuenow="'+
     esc(String(v))+'" aria-valuemin="'+esc(String(min))+'" aria-valuemax="'+esc(String(max))+
     '" aria-valuetext="'+esc(String(v))+'">'+
-    line(xx,plot.top,xx,plot.bottom,"transparent",27,' pointer-events="stroke"')+
+    line(xx,plot.top,xx,plot.bottom,"transparent",44,' pointer-events="stroke"')+
     '<circle cx="'+coord(xx)+'" cy="'+coord(layout.continuous?pointY:plot.top+19)+
     '" r="7" fill="#ffffff" stroke="#246a86" stroke-width="2.4" pointer-events="all"/>'+
     '</g>';
@@ -112,7 +112,8 @@ function renderBars(layout,colour){
  const spacings=points.slice(1).map((p,i)=>Math.abs(x(p.x)-x(points[i].x)));
  const gap=spacings.length?Math.min(...spacings):plot.width;
  const barWidth=Math.min(33,Math.max(1.2,gap*.76));
- const base="#cad5dc",selectedColour=d.printStyle==="mono"?"#344c5b":"#489fbd";
+ const mono=d.printStyle==="mono",base=mono?"#eef1f3":"#cad5dc";
+ const selectedColour=mono?"url(#distribution-hatch)":"#489fbd";
  return points.map((p,i)=>{
   const xx=x(p.x)-barWidth/2,y=yPixel(p.probability),height=plot.bottom-y;
   const chosen=selected(q,p.x);
@@ -122,7 +123,8 @@ function renderBars(layout,colour){
    (chosen?' data-distribution-selected="true"':'')+
    ' x="'+coord(xx)+'" y="'+coord(y)+'" width="'+coord(barWidth)+
    '" height="'+coord(Math.max(.01,height))+'" fill="'+(chosen?selectedColour:base)+
-   '" stroke="'+(chosen?"#2b627d":"#90a3ae")+'" stroke-width=".75"/>';
+   '" stroke="'+(chosen?(mono?"#293f4c":"#2b627d"):"#90a3ae")+
+   '" stroke-width="'+(chosen&&mono?"1.6":".75")+'"/>';
  }).join("");
 }
 const parameters=q=>{
@@ -145,7 +147,13 @@ export function renderDistributionSvg(raw,{interactive=false}={}){
   (interactive?' data-distribution-interactive="true"':"")+' role="'+(interactive?"group":"img")+
   '" aria-label="'+esc(aria)+'" width="'+W+'" height="'+H+'" viewBox="0 0 '+W+" "+H+
   '"><title>'+esc(aria)+'</title>'+
-  (q.statement?'<desc>'+esc(q.statement)+'</desc>':"")+
+  '<desc>'+esc((q.ready?
+   (d.kind==="normal"?"Normal density":d.kind==="uniform"?"Continuous uniform density":
+    d.kind==="binomial"?"Binomial discrete probability":
+    d.kind==="poisson"?"Poisson discrete probability":"Custom discrete probability")+
+    " of "+d.symbol+(d.unit.trim()?" in "+d.unit.trim():"")+". ":"")+
+   (q.statement||"No probability event selected.")+
+   (d.printStyle==="mono"?" Selected probabilities use a hatch pattern for monochrome clarity.":""))+'</desc>'+
   '<rect width="'+W+'" height="'+H+'" fill="#fff"/>'+
   '<defs><pattern id="distribution-hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">'+
   '<rect width="8" height="8" fill="#e2e8eb"/><line x1="0" y1="0" x2="0" y2="8" stroke="#74838c" stroke-width="2"/></pattern></defs>'];
