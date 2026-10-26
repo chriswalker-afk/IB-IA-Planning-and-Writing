@@ -185,6 +185,75 @@ def legacy_roundtrip(browser):
   print("PASS legacy v1 backup reimports into a new v2 browser project",flush=True)
  finally:clean.close()
 
+
+def distribution_restoration(browser,width):
+ record=contemporary()
+ d=record["distributionStudio"]["draft"]
+ d.update({"kind":"poisson","title":"My referenced Poisson model",
+           "symbol":"T","lambda":"3","mode":"left","lower":"4",
+           "sourceKind":"secondary","sourceCredit":"Original published source",
+           "caption":"IA caption retained separately","note":"My model assumptions stay",
+           "edited":True})
+ record["distributionStudio"]["figures"]=[{
+  "id":"distribution-restored","entryId":"stage-restored",
+  "savedAt":"2026-10-26T00:00:00Z","draft":copy.deepcopy(d)}]
+ record["distributionStudio"]["activeId"]="distribution-restored"
+ record["distributionStudio"]["inverse"]={"mode":"left","probability":"0.95","status":"idle","signature":""}
+ record["entries"].append({"id":"stage-restored","phase":"first","status":"completed",
+  "title":"A numerical interpretation","result":"The original numerical result",
+  "interpretation":"My own explanation of the probability","limitations":"A sourcing limitation",
+  "distributionFigureId":"distribution-restored",
+  "figureRefs":["distribution:distribution-restored"]})
+ record["scratch"]["conclusion"]="My private conclusion before backup"
+ ctx,p,errors=page(browser,width,record)
+ try:
+  file=OUT/("distribution-archive-"+str(width)+".json")
+  backed=download(p,width,file)
+  assert backed["distributionStudio"]["figures"][0]["draft"]["sourceCredit"]=="Original published source"
+  assert backed["distributionStudio"]["figures"][0]["draft"]["caption"]=="IA caption retained separately"
+  baseline=saved(p)
+  # A truncated JSON backup is rejected before the confirmation and cannot
+  # replace current local work (even if the upload dialog is dismissed).
+  broken=OUT/"distribution-truncated.json"
+  broken.write_text('{"version":2,"project":')
+  notices=[]
+  p.once("dialog",lambda dialog:(notices.append(dialog.message),dialog.accept()))
+  p.locator("#importFile").set_input_files(str(broken))
+  p.wait_for_function("()=>document.querySelector('#importFile').value===''")
+  assert any("could not be imported" in m.lower() for m in notices),notices
+  assert saved(p)==baseline
+  wrong=OUT/"distribution-wrong-version.json"
+  wrong.write_text(json.dumps({"version":99,"project":{"aim":"Replace student work"},"distributionStudio":{"figures":[]}}))
+  p.once("dialog",lambda dialog:dialog.accept())
+  p.locator("#importFile").set_input_files(str(wrong))
+  p.wait_for_function("()=>document.querySelector('#importFile').value===''")
+  assert saved(p)==baseline
+  # Deliberately simulate a lost current editor. Restore the complete file and
+  # confirm not just a model but authored text and linked figure identities.
+  p.evaluate("""key=>{
+   const s=JSON.parse(localStorage.getItem(key));
+   s.distributionStudio.figures=[];
+   s.distributionStudio.draft.title="Temporary overwritten title";
+   s.entries=[];s.scratch.conclusion="Temporary note";
+   localStorage.setItem(key,JSON.stringify(s));
+  }""",KEY)
+  p.reload(wait_until="networkidle")
+  p.once("dialog",lambda dialog:dialog.accept())
+  p.locator("#importFile").set_input_files(str(file))
+  p.wait_for_function("(key)=>JSON.parse(localStorage.getItem(key)).distributionStudio.figures.length===1",arg=KEY)
+  restored=saved(p)
+  assert restored["distributionStudio"]["figures"]==backed["distributionStudio"]["figures"]
+  assert restored["distributionStudio"]["draft"]["title"]=="My referenced Poisson model"
+  assert restored["distributionStudio"]["activeId"]=="distribution-restored"
+  assert restored["entries"]==backed["entries"]
+  assert restored["scratch"]==backed["scratch"]
+  assert restored["project"]["aim"]==backed["project"]["aim"]
+  assert restored["entries"][-1]["status"]=="completed"
+  assert restored["entries"][-1]["reviewNeeded"]==backed["entries"][-1]["reviewNeeded"]
+  assert not errors,errors
+  print("PASS 5.5.3 corrupt backup rejected and entire distribution project restored",width,flush=True)
+ finally:ctx.close()
+
 if __name__=="__main__":
  with sync_playwright() as pw:
   browser=pw.chromium.launch(headless=True)
@@ -192,4 +261,5 @@ if __name__=="__main__":
    modern_roundtrip(browser,1440)
    modern_roundtrip(browser,390)
    legacy_roundtrip(browser)
+   for width in (1440,390):distribution_restoration(browser,width)
   finally:browser.close()
