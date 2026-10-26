@@ -142,7 +142,7 @@ test("the same saved sampling rationale now sits beside the genuine count, not i
  assert.match(html,/data-paired-outlier-check/);
  assert.match(html,/complete \(x, y\) pair/);
  assert.match(html,/not just whether one x or y value is extreme/);
- assert.match(html,/do not discard inconvenient data to force a prediction/i);
+ assert.match(html,/data-path="completion.fields.dataCleaning"/);
  assert.equal(JSON.stringify(s.completion.fields),before);
  f.sampleOrCensus="census";f.pairing="";
  html=cHtml(s,"C21S");
