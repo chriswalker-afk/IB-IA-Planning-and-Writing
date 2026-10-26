@@ -23,7 +23,7 @@ export function distributionInverseAnnouncement(studio){
  const d=studio.draft,variable=d.symbol.trim()||"X";
  return "Boundary calculated for "+variable+". Requested probability "+
   formatDistributionProbability(result.requested)+
-  "; achieved probability "+formatDistributionProbability(result.achieved)+
+  "; achieved probability "+formatDistributionProbability(result.achieved,result.achievedComplement)+
   ". Apply boundary to update the figure.";
 }
 export function distributionWhatIfAnnouncement(studio){
@@ -41,7 +41,7 @@ export function distributionWhatIfAnnouncement(studio){
     "cut-off "+number(t.original.lower))+
    "; alternative "+(t.mode==="central"?"interval "+number(t.alternative.lower)+" to "+number(t.alternative.upper):
     "cut-off "+number(t.alternative.lower))+
-   ". Achieved probabilities "+number(t.original.achieved)+" and "+number(t.alternative.achieved)+".";
+   ". Achieved probabilities "+formatDistributionProbability(t.original.achieved,t.original.achievedComplement)+" and "+formatDistributionProbability(t.alternative.achieved,t.alternative.achievedComplement)+".";
  }
  if(!q.sensitivity?.eventValid)return "Choose a valid fixed event before comparing probabilities.";
  return "Fixed event: original probability "+
