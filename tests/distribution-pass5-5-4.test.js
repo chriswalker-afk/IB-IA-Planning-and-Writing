@@ -115,7 +115,7 @@ test("course × model × event/target matrix keeps student-owned work, contextua
   if(comparison==="target"){
    assert.match(cards[0].action,/cut-offs and their achieved probabilities/);
    if(["binomial","poisson","custom"].includes(kind))assert.match(reflection.prompts[1].question,/ACHIEVED|cut-off/i);
-   assert.match(g.event,/not applied|not shaded/i,"The target must not masquerade as a saved event");
+   assert.match(g.event,/not been applied|not been shaded|not shaded/i,"The target must not masquerade as a saved event");
   }else{
    assert.match(cards[0].action,/same event/);
    assert.match(g.event,/selected region/);
