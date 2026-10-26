@@ -1011,6 +1011,16 @@ def pass553_provenance_and_linked_review(browser,width):
    localStorage.setItem(key,JSON.stringify(state));
   }""",KEY)
   p.reload(wait_until="networkidle")
+  # On restoration, load the *saved* linked diagram using the visible editor
+  # control. A completed mathematical stage can carry saved data without the
+  # in-progress editor being pre-populated with that stage's figure.
+  saved_figures=p.locator('.probability-saved')
+  assert saved_figures.count()==1,"The linked figure must remain available for editing"
+  saved_figures.locator('summary').click()
+  saved_figures.locator('[data-action="distribution-load"][data-distribution-id="distribution-linked-review"]').click()
+  assert value(p,"title")=="Original sourced distribution"
+  assert value(p,"mu")=="70"
+  assert p.locator('[data-representation-actions="distribution"]').get_attribute("data-representation-ready")=="true"
   panel=p.locator(".ia-figure-presentation-settings")
   panel.locator("summary").click()
   panel.locator('[data-distribution-field="figureNumber"]').fill("8")
