@@ -191,12 +191,9 @@
 .resource-library-home :is(.resource-destination-card,.resource-creators-compact>summary):focus-visible{outline:3px solid var(--ui-focus);outline-offset:3px}
 @media(max-width:530px){
  .resource-library-home .resource-quick-tools,.resource-library-home .resource-relevant-grid{grid-template-columns:1fr}
- /* Flatten non-semantic column wrappers, retaining familiar phone ordering. */
+ /* Flatten non-semantic wrappers without CSS order: keyboard and visual
+    reading sequence both follow Learn, Create, Software, References. */
  .resource-library-home .resource-quick-column{display:contents}
- .resource-library-home .resource-quick-column-maths>.resource-workshop-entry{order:0}
- .resource-library-home .resource-quick-column-tools>.resource-destination-card:first-child{order:1}
- .resource-library-home .resource-quick-column-maths>.resource-creators-wrap{order:2}
- .resource-library-home .resource-quick-column-tools>.resource-destination-card:last-child{order:3}
  .resource-library-home .resource-destination-card,.resource-library-home .resource-creators-wrap>details.resource-creators-compact{min-height:0}
  .resource-library-home .resource-row{grid-template-columns:minmax(0,1fr)}
  .resource-library-home .resource-row>.btn{grid-column:1;grid-row:auto;justify-self:start;margin-top:3px}
