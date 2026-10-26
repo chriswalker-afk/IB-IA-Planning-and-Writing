@@ -186,13 +186,19 @@ export function resourceDrawer(state,session){
    '<span class="resource-destination-cta">'+e(cta)+' '+icon("arrow-right")+'</span></button>';
  const destinations='<section class="resource-home-navigation" aria-labelledby="resource-home-navigation-title">'+
   '<div class="resource-home-heading"><h3 id="resource-home-navigation-title">What would you like to do?</h3></div>'+
+  // Each column stacks independently. An open creator chooser must not
+  // stretch the adjacent MLA destination into a tall, empty card.
   '<div class="resource-quick-tools">'+
-   '<div class="resource-workshop-entry resource-destination-wrap">'+
-    destination('Learn the maths','Definitions, worked methods and guided practice.','Open Maths Workshop','book','resource-workshop')+'</div>'+
-   destination('Use software','Step-by-step instructions for Desmos, Sheets and other tools.','Find a software guide','calculator','resource-guides')+
-   '<div class="resource-destination-wrap resource-creators-wrap">'+resourceCreatorHub({compact:true,featured:true})+'</div>'+
-   destination('Reference my sources','MLA citations, what to cite and a Works Cited list.','Open MLA referencing guide','file','resource-open',
-    'data-resource-id="mla-citations" data-resource-help="'+!!session.help+'"')+
+   '<div class="resource-quick-column resource-quick-column-maths">'+
+    '<div class="resource-workshop-entry resource-destination-wrap">'+
+     destination('Learn the maths','Definitions, worked methods and guided practice.','Open Maths Workshop','book','resource-workshop')+'</div>'+
+    '<div class="resource-destination-wrap resource-creators-wrap">'+resourceCreatorHub({compact:true,featured:true})+'</div>'+
+   '</div>'+
+   '<div class="resource-quick-column resource-quick-column-tools">'+
+    destination('Use software','Step-by-step instructions for Desmos, Sheets and other tools.','Find a software guide','calculator','resource-guides')+
+    destination('Reference my sources','MLA citations, what to cite and a Works Cited list.','Open MLA referencing guide','file','resource-open',
+     'data-resource-id="mla-citations" data-resource-help="'+!!session.help+'"')+
+   '</div>'+
   '</div></section>';
  const cats=[...new Set(RESOURCES.map(r=>r.category))];
  const options=(values,selected)=>values.map(([v,t])=>'<option value="'+e(v)+'"'+(v===selected?' selected':'')+'>'+e(t)+'</option>').join('');
