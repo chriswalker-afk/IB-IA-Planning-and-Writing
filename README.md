@@ -1,6 +1,16 @@
 # IA Pathfinder — IB Mathematics IA planning and writing companion
 
-**Live website:** https://chriswalker-afk.github.io/IB-IA-Planning-and-Writing/
+**Existing GitHub Pages address:** https://chriswalker-afk.github.io/IB-IA-Planning-and-Writing/
+
+**Custom domain being configured:** https://ia.mrwalkermaths.com/
+
+### Custom domain deployment
+
+The site is deployed using the [Deploy IA Pathfinder](.github/workflows/deploy-pages.yml) GitHub Actions workflow. Its built CSS, JavaScript and PDF worker use relative asset paths, so the existing project URL and the new custom-domain root are both supported. The Cloudflare DNS record is `ia.mrwalkermaths.com` (CNAME) pointing to `chriswalker-afk.github.io`, set to **DNS only**.
+
+**Required one-time GitHub setting:** open [Settings → Pages](https://github.com/chriswalker-afk/IB-IA-Planning-and-Writing/settings/pages), enter `ia.mrwalkermaths.com` in **Custom domain**, and save it. This repository publishes with a custom GitHub Actions workflow, so a `CNAME` file in source or `dist` is ignored and cannot configure that setting. When GitHub has provisioned its certificate, enable **Enforce HTTPS** and confirm the new address loads the app. The usual GitHub Actions deploy remains unchanged.
+
+Student projects are saved in each browser's local storage, which is specific to the domain. Before moving from the GitHub address, export a JSON backup in **Backups & exports** and import it at the new address to preserve existing student work.
 
 IA Pathfinder supports students through the **planning, mathematics, writing and review** of an IB Mathematics Internal Assessment. Students still write their assessed IA in their own Word or Google Docs file. This browser-local companion helps students formulate an authentic aim, identify viable mathematics and evidence, explain mathematical choices, interpret actual findings and reflect appropriately; it never invents results, automatically edits an external document, awards grades or replaces teacher feedback.
 
