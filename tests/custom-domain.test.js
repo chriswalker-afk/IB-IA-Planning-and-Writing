@@ -12,7 +12,7 @@ test("IA Pathfinder static assets work from either GitHub Pages root", () => {
   ];
   const assets = ["styles.css", "data/examples.css", "data/representation-workspace.css", "app.js"];
   for (const asset of assets) {
-    assert.match(html, new RegExp('(?:href|src)="\\./'+asset.replaceAll(".", "\\.")+'"'),
+    assert.ok(html.includes('href="./'+asset+'"') || html.includes('src="./'+asset+'"'),
       "Source HTML must use relative asset paths: "+asset);
     for (const root of roots) {
       const actual = new URL("./"+asset, root);
@@ -21,12 +21,12 @@ test("IA Pathfinder static assets work from either GitHub Pages root", () => {
         asset+" must resolve within "+root);
     }
   }
-  assert.doesNotMatch(html, /<base\\s+href=|(?:src|href)="\\/IB-IA-Planning-and-Writing\\//i,
+  assert.ok(!html.includes('<base ') && !html.includes('src="/IB-IA-Planning-and-Writing/')
+    && !html.includes('href="/IB-IA-Planning-and-Writing/'),
     "Do not hardcode the project-path root into source HTML.");
 });
 
 test("PDF worker address is relative to whichever site is serving the application", () => {
-  assert.match(read("src/handover/read-document.js"),
-    /new URL\\("\\.\\/pdf\\.worker\\.min\\.mjs",document\\.baseURI\\)/,
+  assert.ok(read("src/handover/read-document.js").includes('new URL("./pdf.worker.min.mjs",document.baseURI)'),
     "PDF reading must load its worker from the active site, not an old hostname.");
 });
