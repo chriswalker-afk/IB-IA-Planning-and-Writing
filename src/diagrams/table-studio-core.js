@@ -6,6 +6,7 @@
 import {finiteCell,splitHeading,formatGraphMath} from "./graph-core.js";
 import {parseStatTable,boxStats} from "./stat-studio-core.js";
 import {continuousBins,groupedClassBins} from "./continuous-classes.js";
+import {newContingencyDraft,normalizeContingencyDraft,analyzeContingency} from "./contingency-table.js";
 export const TABLE_MAX_ROWS=500,TABLE_MAX_COLS=8,TABLE_MAX_SAVED=12;
 const trimmed=(x,n=120)=>typeof x==="string"?x.slice(0,n):"";
 const object=x=>x&&typeof x==="object"&&!Array.isArray(x);
@@ -55,7 +56,7 @@ export function tableGraphSnapshotIssue(d){
  return "";
 }
 export const newTableDraft=()=>({
- mode:"compact",raw:"",headers:"auto",columns:[],matrix:[],pendingPaste:false,
+ mode:"compact",contingency:newContingencyDraft(),raw:"",headers:"auto",columns:[],matrix:[],pendingPaste:false,
  columnSelectionMode:"all",displayColumns:[],rowSelection:"",selectionReason:"",
  calcXIndex:0,calcYIndex:1,calcModel:"linear",calcA:"",calcB:"",calcC:"",
  calcShowPrediction:true,calcShowResidual:true,calcShowPercent:false,graphSnapshot:null,
@@ -78,7 +79,7 @@ export function normalizeTableDraft(raw){
   const max=key==="raw"?85000:key==="sourceText"||key==="purpose"||key==="note"?500:key==="selectionReason"||key==="highlightReason"?360:140;
   if(typeof r[key]==="string")d[key]=r[key].slice(0,max);
  }
- if(!["compact","summary","frequency","calculated","grouped"].includes(d.mode))d.mode="compact";
+ if(!["compact","summary","frequency","calculated","grouped","contingency"].includes(d.mode))d.mode="compact";
  if(!["raw","classes"].includes(d.groupInput))d.groupInput="raw";
  if(!["none","selected"].includes(d.highlightMode))d.highlightMode="none";
  if(!["all","custom"].includes(d.columnSelectionMode))d.columnSelectionMode="all";
@@ -89,6 +90,7 @@ export function normalizeTableDraft(raw){
  if(!["0","1","2","3","4"].includes(d.decimals))d.decimals="2";
  if(!["halves","linear"].includes(d.quartileRule))d.quartileRule="halves";
  if(!["center","numeric"].includes(d.cellAlignment))d.cellAlignment="center";
+ d.contingency=normalizeContingencyDraft(r.contingency);
  d.columns=Array.isArray(r.columns)?r.columns.slice(0,TABLE_MAX_COLS).map(x=>trimmed(x,95)):[];
  d.matrix=Array.isArray(r.matrix)?r.matrix.slice(0,TABLE_MAX_ROWS).filter(Array.isArray)
   .map(row=>row.slice(0,TABLE_MAX_COLS).map(x=>trimmed(x,120))):[];
@@ -318,8 +320,8 @@ export function analyzeTable(raw){
  if(d.sourceKind==="unsure")fail("source","Identify whether the table uses your own, published or theoretical data.");
  if(d.sourceKind==="secondary"&&!d.sourceText.trim())fail("credit","Credit the published data source.");
  if(d.note.length>190)fail("note-length","Keep the table note short; explain the fuller reasoning in your IA text.");
- if(!d.matrix.length)fail("data","Enter actual data in the worksheet, or paste and import existing data.");
- if(d.pendingPaste)fail("unparsed","The pasted cells have changed. Read the latest values before exporting.");
+ if(!d.matrix.length&&d.mode!=="contingency")fail("data","Enter actual data in the worksheet, or paste and import existing data.");
+ if(d.pendingPaste&&d.mode!=="contingency")fail("unparsed","The pasted cells have changed. Read the latest values before exporting.");
  const headings=d.headings;
  const chooseRows=["compact","calculated"].includes(d.mode);
  const chosen=chooseRows?tableDisplayRows(d):{ok:true,indices:[],custom:false};
@@ -327,7 +329,7 @@ export function analyzeTable(raw){
   d.mode==="calculated"?[d.calcXIndex,d.calcYIndex]:
   d.mode==="grouped"?d.groupInput==="raw"?[d.groupValueIndex]:
    [d.groupLowIndex,d.groupHighIndex,d.groupFreqIndex]:d.columns.map((_,i)=>i);
- const visibleHeadingIndices=["compact","calculated","grouped"].includes(d.mode)?cols:d.columns.map((_,i)=>i);
+ const visibleHeadingIndices=["compact","calculated","grouped"].includes(d.mode)?cols:d.mode==="contingency"?[]:d.columns.map((_,i)=>i);
  if(visibleHeadingIndices.some(i=>!headings[i]?.trim()))fail("headings","Every displayed source column needs a meaningful heading.");
  if(visibleHeadingIndices.some(i=>!meaningfulLimit(headings[i]||"")))fail("headings-long",
   "Shorten displayed headings and put full explanations into your surrounding writing.");
@@ -377,7 +379,11 @@ export function analyzeTable(raw){
     sourceRowIndices:chosen.indices,sourceColumnIndices:cols};
   }
   if(displayRows.length>5)warn("many-rows","Check each displayed row is necessary to understand the mathematics.");
- }else if(validCalculated){
+ }else if(d.mode==="contingency"){
+   const result=analyzeContingency(d.contingency);
+   problems.push(...result.problems);warnings.push(...result.warnings);
+   if(result.model)model={...result.model,note:d.note||""};
+  }else if(validCalculated){
   const x=d.calcXIndex,y=d.calcYIndex;
   if(d.columns.length<2||x===y)fail("calculated-variables","Choose two different numerical source columns: x and observed y.");
   if(!d.calcShowPrediction&&!d.calcShowResidual&&!d.calcShowPercent)
@@ -560,7 +566,7 @@ export function analyzeTable(raw){
   }
  }
  if(model){
-  const marked=tableHighlightedRows(d,model.rows.length,["frequency","grouped"].includes(model.kind));
+  const marked=tableHighlightedRows(d,model.rows.length,["frequency","grouped","contingency"].includes(model.kind));
   if(!marked.ok)fail("highlight-rows",marked.error);
   else if(marked.indices.length){
    model.highlightIndices=marked.indices;
@@ -580,7 +586,7 @@ export function analyzeTable(raw){
  }
  if(d.numberFormat==="fixed"&&["compact","calculated"].includes(d.mode))
   warn("rounding","Fixed decimal places change only the displayed values. Do not claim greater measurement accuracy or round intermediate calculations.");
- if(d.mode!=="compact")
+ if(d.mode!=="compact"&&d.mode!=="contingency")
   warn("display-precision","Choose sensible decimal places for derived values. Displayed digits are not a statement of measurement uncertainty.");
  if(d.purpose.trim().length===0)warn("purpose",
   "Before the table in your IA, explain which mathematical question it helps answer.");
@@ -593,7 +599,7 @@ export const tableSignature=d=>JSON.stringify([d.mode,d.matrix,d.columns,d.headi
  d.calcA,d.calcB,d.calcC,d.calcShowPrediction,d.calcShowResidual,d.calcShowPercent,d.graphSnapshot,
  d.groupInput,d.groupValueIndex,d.groupLowIndex,d.groupHighIndex,d.groupFreqIndex,d.groupWidth,
  d.groupStart,d.groupLabel,d.groupOrigin,d.groupShowDensity,d.groupShowCumulative,d.groupShowPercent,
- d.highlightMode,d.highlightRows,d.highlightReason]);
+ d.highlightMode,d.highlightRows,d.highlightReason,d.contingency]);
 export function saveTableFigure(studio,entryId=""){
  const q=analyzeTable(studio.draft);
  if(!q.ready)return {ok:false,error:"Resolve the table size, source, units and mathematical quality checks before saving.",checks:q};
