@@ -576,7 +576,7 @@ export function analyzeTable(raw){
    "The resulting headings are too long. Use a shorter label or reduce the number of displayed statistics.");
   if(model.rows.some(row=>row.some(c=>String(c).length>58)))fail("formatted-cells",
    "The resulting table contains a very long cell. Shorten the source label or change the layout.");
-  if(model.headers.length>5)fail("formatted-wide",
+  if(model.headers.length>(d.mode==="contingency"?6:5))fail("formatted-wide",
    "This summary is too wide. Select fewer statistics or groups.");
  }
  if(d.mode==="compact"||d.mode==="calculated"){
