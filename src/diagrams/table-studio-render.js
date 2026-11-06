@@ -211,11 +211,11 @@ export function tableToHtml(raw){
   '<th scope="col" style="'+cellStyle(widths[i],alignment(d,model.numeric[i]),true,d.showColumnLines&&i>0,true)+
   ';background:#e8f3f0;">'+diagramHtmlMath(header)+'</th>').join("");
  const body=model.rows.map((row,i)=>{
-  const subtotal=["frequency","grouped"].includes(model.kind)&&i===model.rows.length-1;
+  const subtotal=["frequency","grouped","contingency"].includes(model.kind)&&i===model.rows.length-1;
   const highlighted=(model.highlightIndices||[]).includes(i);
-  return '<tr'+(highlighted?' data-table-emphasis-row="'+(i+1)+'"':"")+'>'+row.map((value,j)=>'<td style="'+cellStyle(widths[j],alignment(d,model.numeric[j]),subtotal||highlighted,
+  return '<tr'+(highlighted?' data-table-emphasis-row="'+(i+1)+'"':"")+'>'+row.map((value,j)=>(model.kind==="contingency"&&j===0?'<th scope="row" style="':'<td style="')+cellStyle(widths[j],alignment(d,model.numeric[j]),subtotal||highlighted,
     d.showColumnLines&&j>0,d.showRowLines||subtotal)+
-   ';background:'+(subtotal?"#e9f3ef":highlighted?"#e5f2ea":i%2?"#f6faf9":"#ffffff")+';'+(highlighted?"border-left:3px solid #417966;":"")+'">'+diagramHtmlMath(value)+'</td>').join("")+'</tr>';
+   ';background:'+(subtotal?"#e9f3ef":highlighted?"#e5f2ea":i%2?"#f6faf9":"#ffffff")+';'+(highlighted?"border-left:3px solid #417966;":"")+'">'+diagramHtmlMath(value)+(model.kind==="contingency"&&j===0?'</th>':'</td>')).join("")+'</tr>';
  }).join("");
  const foot=[model.metadata,model.highlightNote?"Emphasis: "+model.highlightNote:"",model.note,d.sourceKind==="primary"?"Source: student-collected data":
   d.sourceKind==="theoretical"?"Source: theoretical / student-constructed values (not measurements)":"Source: "+d.sourceText]
