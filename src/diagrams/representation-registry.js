@@ -13,7 +13,7 @@ export const REPRESENTATION_TOOLS=Object.freeze([
   groups:["data"],studio:"statStudio",entryKey:"statFigureId",
   root:"stat-studio",linkedReason:"linked-statistics"},
  {id:"table",navLabel:"Tables",title:"Table Studio",figureTitle:"Formatted table",action:"table-open",icon:"table",
-  detail:"Short labelled tables, summary statistics and frequency tables.",
+  detail:"Short results, summary statistics, frequency tables and two-way contingency tables.",
   groups:["data","decisions"],studio:"tableStudio",entryKey:"tableFigureId",
   root:"table-studio",linkedReason:"linked-table"},
  {id:"trace",navLabel:"Tracer",title:"Image & coordinate tracer",figureTitle:"Coordinate tracing",action:"trace-open",icon:"image",
