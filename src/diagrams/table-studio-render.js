@@ -157,7 +157,7 @@ export function renderTableSvg(raw){
   '" x2="'+(L.tableLeft+L.tableWidth).toFixed(2)+'" y2="'+headingBottom+'" stroke="#bed4ce" stroke-width="1.3"/>');
  let y=headingBottom;
  model.rows.forEach((row,i)=>{
-  const height=L.rowHeights[i],subtotal=["frequency","grouped"].includes(model.kind)&&i===model.rows.length-1;
+  const height=L.rowHeights[i],subtotal=["frequency","grouped","contingency"].includes(model.kind)&&i===model.rows.length-1;
   const highlighted=(model.highlightIndices||[]).includes(i);
   if(subtotal)out.push('<rect x="'+L.tableLeft.toFixed(2)+'" y="'+y+'" width="'+L.tableWidth.toFixed(2)+'" height="'+height+'" fill="#e9f3ef"/>');
   else if(highlighted){
