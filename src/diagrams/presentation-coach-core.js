@@ -281,7 +281,9 @@ export function presentationDiagnostics(state,type,draft){
     "Fixed decimals change how values appear, not the values used for calculations. Check that extra precision is not implied.");
   }else if(d.mode==="summary")add("summary","consider","Make numerical summaries meaningful",
    "Show each group's sample size n and a suitable measure of centre and spread. Do not compare spread measures with incompatible units.");
-  else add("frequency","consider","Name the percentage denominator",
+  else if(d.mode==="contingency")add("contingency-denominator","consider","Explain your conditional proportions",
+    "Both categorical variables, joint frequencies and marginal totals need clear labels. If showing percentages, state whether each denominator is the row, column or whole sample. A table alone does not establish independence.");
+   else add("frequency","consider","Name the percentage denominator",
    "State the sample/population represented by each percentage. Recorded relative frequency is not necessarily a theoretical probability.");
   if(q.warnings.some(x=>x.code==="missing-observations"))
    add("missing","check","Some observations are missing","Describe the reason for missing values and how the reported n was calculated.");
@@ -330,7 +332,7 @@ export function handoverQuestions(state,type,draft){
   type==="geometry"?"a labelled geometric construction":
   type==="probability"?"a conditional probability model of successive outcomes":
   type==="distribution"?({normal:"a normal probability-density model and shaded area",binomial:"a binomial model for a count of successes",poisson:"a Poisson model for an interval count",uniform:"a continuous uniform density model with fixed support",custom:"a numerical discrete distribution with explicitly assigned outcome probabilities"})[draft?.kind]||"a theoretical probability model":
-  {compact:"selected numerical results",summary:"summary statistics",frequency:"observed category frequencies"}[draft?.mode]||"mathematical results";
+  {compact:"selected numerical results",summary:"summary statistics",frequency:"observed category frequencies",contingency:"joint frequencies of two categorical variables"}[draft?.mode]||"mathematical results";
  const limitation=type==="graph"&&draft?.kind==="function"?"Which assumptions and feasible domain restrict this model?":
   type==="stat"&&draft?.kind==="bar"?"How do group sizes and percentage denominators affect the comparison?":
   type==="stat"&&draft?.kind==="histogram"?"How do class widths and measurement resolution affect the apparent shape?":
@@ -341,7 +343,8 @@ export function handoverQuestions(state,type,draft){
   type==="geometry"?"Which scale assumptions, angle measurements or annotations limit this construction?":
   type==="probability"?"How were conditional probabilities justified? Were events clearly defined, and are independence and sampling assumptions defensible?":
   type==="distribution"?({normal:"Which evidence or process supports the normality assumption, and how might mean or SD uncertainty affect the probability?",binomial:"Are the number of trials fixed, outcomes binary, trials independent and success probability constant?",poisson:"What supports a constant mean rate and independent events over the stated observation interval?",uniform:"Why is probability density constant throughout [a,b], and what would a nonuniform process change?",custom:"Do the possible outcomes form a complete sample space, and how was every probability justified?"})[draft?.kind]||"What assumptions limit this theoretical model?":
-  type==="table"?"Are these the smallest set of results needed, with justified precision?":
+  type==="table"&&draft?.mode==="contingency"?"How do row/column denominators, sampling and missing responses affect the apparent association?":
+   type==="table"?"Are these the smallest set of results needed, with justified precision?":
   "How could sampling, measurement accuracy, data exclusions or model assumptions change the conclusion?";
  const distribution=type==="distribution"?analyzeDistribution(draft):null;
  return {
