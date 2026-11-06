@@ -2619,7 +2619,9 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       }
       case "table-upload":document.querySelector("#tableCsvFile")?.click();break;
       case "table-new":{
-        if(state.tableStudio.draft.matrix.length&&state.tableStudio.draft.title.trim()&&!window.confirm(
+        if((state.tableStudio.draft.matrix.length||state.tableStudio.draft.mode==="contingency"&&
+           (state.tableStudio.draft.contingency.rows.some(x=>x.trim())||state.tableStudio.draft.contingency.counts.some(row=>row.some(x=>x.trim()))))&&
+           !window.confirm(
           "Start another table? Save this one first if you want to keep an editable copy."))break;
         freshTable(state.tableStudio);save();render();toast("New table ready");break;
       }
