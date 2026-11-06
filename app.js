@@ -67,7 +67,7 @@ import {exportStat} from "./src/diagrams/stat-studio-export.js";
 import {analyzeTable,importTableData,newTableDraft,tableColumnFormat} from "./src/diagrams/table-studio-core.js";
 import {renderTableSvg} from "./src/diagrams/table-studio-render.js";
 import {renderTableStudio,tableDataChoices,tablePreviewHtml,tableA4PreviewHtml,tableQualityHtml,tableOutputHtml} from "./src/diagrams/table-studio-view.js";
-import {setTableField,setTableColumn,setTableColumnFormat,toggleTableDisplayColumn,chooseTableMode,toggleTableVariable,toggleTableMeasure,loadTable,freshTable,saveTableDraft,saveAndLinkTable} from "./src/diagrams/table-studio-actions.js";
+import {setTableField,setTableColumn,setTableColumnFormat,toggleTableDisplayColumn,chooseTableMode,toggleTableVariable,toggleTableMeasure,loadTable,freshTable,saveTableDraft,saveAndLinkTable,editContingency,resizeContingency,contingencyWouldDiscard} from "./src/diagrams/table-studio-actions.js";
 import {exportTable} from "./src/diagrams/table-studio-export.js";
 import {transferTableHistogram,transferTableCurve,transferStatFrequencyTable} from "./src/diagrams/frequency-handover.js";
 import {copyGraphModelToTable,detachTableGraphModel} from "./src/diagrams/graph-to-table.js";
@@ -2596,7 +2596,14 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
           "All "+result.bins+" source class intervals are retained. The original Table Studio work has not changed.");
         break;
       }
-      case "table-open":navigateTable();break;
+      case "contingency-add":case "contingency-remove":{
+         const dimension=el.dataset.contingencyDimension;
+         if(action==="contingency-remove"&&contingencyWouldDiscard(state.tableStudio,dimension)&&
+           !window.confirm("Remove the last category and its entered frequencies? This cannot be undone."))break;
+         if(resizeContingency(state.tableStudio,dimension,action==="contingency-add"?1:-1)){save();render();}
+         break;
+       }
+       case "table-open":navigateTable();break;
       case "table-close":state.tableStudio.open=false;save();render();break;
       case "table-mode":{
         if(!chooseTableMode(state.tableStudio,el.dataset.tableMode))break;
@@ -3635,7 +3642,12 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       }
       return;
     }
-    if(target.dataset.tableCol!==undefined){
+    if(target.dataset.contingencyKind!==undefined){
+       if(editContingency(state.tableStudio,target.dataset.contingencyKind,target.value,
+           Number(target.dataset.contingencyRow),Number(target.dataset.contingencyCol))){save();refreshTablePreview();}
+       return;
+     }
+     if(target.dataset.tableCol!==undefined){
       const index=Number(target.dataset.tableCol);
       if(setTableColumn(state.tableStudio,index,target.dataset.tablePart,target.value)){
         save();refreshTablePreview();
@@ -3817,7 +3829,15 @@ import { referenceNodeForPrototypeStep } from "./src/core/prototype-bridge.js";
       }
       return;
     }
-    if(target.dataset.tableDisplayColumn!==undefined){
+    if(target.dataset.contingencyKind!==undefined){
+       if(editContingency(state.tableStudio,target.dataset.contingencyKind,target.value,
+           Number(target.dataset.contingencyRow),Number(target.dataset.contingencyCol))){
+         save();if(target.tagName==="SELECT"){const cursor=captureReturn(target);render();restoreReturn(cursor);}
+         else refreshTablePreview();
+       }
+       return;
+     }
+     if(target.dataset.tableDisplayColumn!==undefined){
       if(!toggleTableDisplayColumn(state.tableStudio,Number(target.dataset.tableDisplayColumn),target.checked))
         toast("Choose up to five displayed columns","The original source values have not been changed.");
       save();render();return;
