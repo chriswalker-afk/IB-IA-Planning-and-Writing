@@ -73,8 +73,11 @@ const specs=[
  {...registeredFigure("table"),render:d=>renderTableSvg(d),
   details:d=>[
    row("Why this table was created",d.purpose),
-   row("Displayed columns",(d.headings?.length?d.headings:d.columns||[]).join(" | ")),
-   row("Entered source data",d.raw||joined(d.matrix||[])),
+   row("Displayed columns",d.mode==="contingency"?[d.contingency?.rowVariable,...(d.contingency?.columns||[])].join(" | "):(d.headings?.length?d.headings:d.columns||[]).join(" | ")),
+   row("Entered source data",d.mode==="contingency"?
+    [[d.contingency?.rowVariable+" / "+d.contingency?.columnVariable,...(d.contingency?.columns||[])],
+     ...(d.contingency?.rows||[]).map((name,i)=>[name,...(d.contingency?.counts?.[i]||[])])].map(row=>row.join("\t")).join("\n"):
+    d.raw||joined(d.matrix||[])),
    row("Source or provenance",d.sourceText),row("Table note",d.note)
   ]},
  {...registeredFigure("voronoi"),render:d=>renderVoronoiSvg(d),
