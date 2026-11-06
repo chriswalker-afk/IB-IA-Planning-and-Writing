@@ -7,6 +7,7 @@ import {analyzeTable,tableColumnFormat,tableDisplayColumns,tableDisplayRows,TABL
 import {TABLE_MATH_SYMBOLS,formatTableMath} from "./table-studio-math.js";
 import {diagramNotationControls} from "./diagram-notation.js";
 import {renderTableSvg,assessTableA4} from "./table-studio-render.js";
+import {CONTINGENCY_MAX_ROWS,CONTINGENCY_MAX_COLS} from "./contingency-table.js";
 const routes={
  groups:"A compact comparison of means or medians is usually more useful than several pages of measurements. Keep the raw values in working files.",
  variation:"Summarise n, mean, spread or IQR from unrounded measurements. Show the mathematical method and justify your choice of statistics in your writing.",
@@ -22,7 +23,8 @@ const kinds=[
  ["calculated","Calculated results","Compare original observations with model predictions, residuals and percentage deviations."],
  ["summary","Summary statistics","Use up to 3 measures to condense hundreds of numerical observations."],
  ["frequency","Category frequency","Count up to 8 distinct response categories and optionally show percentages."],
- ["grouped","Continuous frequencies","Choose justified numerical class intervals, frequencies, densities and cumulative totals."]
+ ["grouped","Continuous frequencies","Choose justified numerical class intervals, frequencies, densities and cumulative totals."],
+  ["contingency","Contingency table","Two categorical variables, exact counts, marginal totals and optional percentages."]
 ];
 const metricLabels={mean:"Mean",median:"Median",minmax:"Minimum–maximum",sd:"Sample standard deviation",iqr:"Interquartile range"};
 const label=(title,contents)=>'<label class="ia-table-form-field"><span>'+title+'</span>'+contents+'</label>';
@@ -202,7 +204,7 @@ function groupedControls(d,e){
 }
 function emphasisControls(studio,e){
  const d=studio.draft,rows=analyzeTable(d).model?.rows||[];
- const eligible=rows.slice(0,["frequency","grouped"].includes(d.mode)?-1:rows.length);
+ const eligible=rows.slice(0,["frequency","grouped","contingency"].includes(d.mode)?-1:rows.length);
  return '<details class="ia-table-emphasis"'+(d.highlightMode==="selected"?' open':"")+'>'+
  '<summary>Highlight a mathematically significant result (optional)</summary>'+
  '<p>Use understated emphasis for a maximum of two genuinely meaningful result rows. Do not highlight a Total row or imply that a highlighted result is statistically significant without evidence. SVG, PNG and editable HTML retain the emphasis; CSV only contains values.</p>'+
@@ -218,12 +220,30 @@ function emphasisControls(studio,e){
 }
 export function tableDataChoices(studio,e){
  const d=studio.draft;
+ if(d.mode==="contingency")return contingencyControls(d,e);
  return calculatedControls(d,e)+groupedControls(d,e)+sourceSelectionControls(d,e)+headerEditors(d,e)+selectionControls(d,e)+unitsEditors(d,e)+
   (d.mode==="frequency"?toggle("showPercent","Include percentage of all responses",d.showPercent):"");
 }
 
+function contingencyControls(d,e){
+ const c=d.contingency;
+ const field=(kind,value,title,row=-1,col=-1)=>'<label class="ia-table-form-field"><span>'+e(title)+'</span><input type="text" data-contingency-kind="'+kind+'" data-contingency-row="'+row+'" data-contingency-col="'+col+'" value="'+e(value)+'" autocomplete="off"></label>';
+ const buttons=(dimension,max)=>'<div class="ia-contingency-size"><button type="button" class="btn btn-quiet btn-sm" data-action="contingency-remove" data-contingency-dimension="'+dimension+'"'+(c[dimension].length<=2?' disabled':'')+'>Remove last</button><button type="button" class="btn btn-secondary btn-sm" data-action="contingency-add" data-contingency-dimension="'+dimension+'"'+(c[dimension].length>=max?' disabled':'')+'>Add category</button></div>';
+ const select=(kind,value,options,title)=>label(title,'<select data-contingency-kind="'+kind+'">'+options.map(([key,text])=>'<option value="'+key+'"'+(value===key?' selected':'')+'>'+text+'</option>').join("")+'</select>');
+ return '<div class="ia-contingency-controls" data-contingency-controls><p>Enter observed frequencies for both categorical variables. Zero is a real count; blank is not zero. Totals are calculated automatically.</p>'+
+ '<div class="ia-contingency-variables">'+field("rowVariable",c.rowVariable,"Row variable")+field("columnVariable",c.columnVariable,"Column variable")+'</div>'+
+ '<div class="ia-contingency-size-pair"><div><strong>Row categories ('+c.rows.length+')</strong>'+buttons("rows",CONTINGENCY_MAX_ROWS)+'</div><div><strong>Column categories ('+c.columns.length+')</strong>'+buttons("columns",CONTINGENCY_MAX_COLS)+'</div></div>'+
+ '<div class="ia-contingency-scroll"><table class="ia-contingency-grid" aria-label="Two-way observed frequencies"><thead><tr><th scope="col">Categories</th>'+
+ c.columns.map((name,j)=>'<th scope="col">'+field("column",name,"Column "+(j+1),-1,j)+'</th>').join("")+'</tr></thead><tbody>'+
+ c.rows.map((name,i)=>'<tr><th scope="row">'+field("row",name,"Row "+(i+1),i,-1)+'</th>'+c.columns.map((_,j)=>'<td>'+field("count",c.counts[i][j],"Frequency: row "+(i+1)+", column "+(j+1),i,j)+'</td>').join("")+'</tr>').join("")+
+ '</tbody></table></div>'+
+ select("display",c.display,[["count","Counts only"],["row","Count + row percentage"],["column","Count + column percentage"],["overall","Count + percentage of grand total"]],"Display in each cell")+
+ (c.display==="count"?"":select("percentageDigits",c.percentageDigits,[["0","0"],["1","1"],["2","2"]],"Percentage decimal places"))+
+ '<p>Parenthesised percentages use the selected denominator. Marginal totals stay as exact counts. A contingency table alone does not prove significance or independence.</p></div>';
+}
 function columnPrecisionOptions(d,e){
  const model=analyzeTable(d).model;
+ if(d.mode==="contingency")return '<p class="ia-table-precision-note">Exact frequencies; optional percentage precision is set above.</p>';
  if(!model)return '<p class="ia-table-precision-note">Finish entering a valid table to customise its numerical columns.</p>';
  const options=model.headers.map((header,i)=>({header,index:i})).filter(({index:i})=>
   ["compact","calculated"].includes(d.mode)?!!model.numeric[i]:
@@ -321,17 +341,17 @@ export function renderTableStudio(state,icon,e){
  '<button type="button" data-action="table-mode" data-table-mode="'+key+'" class="ia-table-type'+(d.mode===key?" selected":"")+'" aria-pressed="'+(d.mode===key)+'"><strong>'+e(title)+'</strong><small>'+e(desc)+'</small></button>').join("")+'</div>'+
  '<div class="ia-table-layout"><div class="ia-table-controls">'+
  '<section class="ia-table-control-card" data-representation-step="create"><h3><span>1</span> Start with real information</h3>'+
- '<p>Type source values directly in the worksheet. Finished tables automatically wrap headings and size columns.</p>'+renderNativeDataGrid(state,"table",icon,e)+
-  '<details class="native-import-details"><summary>Or paste / import an existing spreadsheet</summary>'+
+ '<p>Type source values directly in the worksheet. Finished tables automatically wrap headings and size columns.</p>'+(d.mode==="contingency"?"":renderNativeDataGrid(state,"table",icon,e))+
+  (d.mode==="contingency"?"":'<details class="native-import-details"><summary>Or paste / import an existing spreadsheet</summary>'+
  textarea("raw","Paste your table or dataset",d.raw,e,"Paste copied cells from Google Sheets here")+
  '<div class="ia-table-import-actions"><button type="button" class="btn btn-secondary btn-sm" data-action="table-parse">'+icon("clipboard")+' Read pasted table</button>'+
  '<button type="button" class="btn btn-quiet btn-sm" data-action="table-upload">'+icon("upload")+' Import CSV / TSV</button></div>'+
- pick("headers","Does the first row contain headings?",d.headers,[["auto","Detect automatically"],["yes","Yes, headings"],["no","No, first row is data"]],e)+'</details>'+
- (d.matrix.length?'<p class="ia-table-imported">'+icon("check-circle")+' '+d.matrix.length+' source rows, '+d.columns.length+' columns'+
+ pick("headers","Does the first row contain headings?",d.headers,[["auto","Detect automatically"],["yes","Yes, headings"],["no","No, first row is data"]],e)+'</details>')+
+ (d.mode==="contingency"?"":(d.matrix.length?'<p class="ia-table-imported">'+icon("check-circle")+' '+d.matrix.length+' source rows, '+d.columns.length+' columns'+
  (d.pendingPaste?' · Pasted text changed; read it again.':' · imported.')+'</p>':
- '<p class="native-grid-tip">Enter actual source values in the worksheet; none have been invented.</p>')+
- (["compact","calculated"].includes(d.mode)?'<p class="ia-table-strong-rule"><strong>Choose up to eight source rows for display.</strong> The complete dataset remains in your workspace. Justify every subset; do not silently omit unwanted values.</p>':
- '<p class="ia-table-strong-rule"><strong>Full dataset in; short summary out.</strong> The tool calculates from actual input values without silently selecting only the first few rows.</p>')+
+ '<p class="native-grid-tip">Enter actual source values in the worksheet; none have been invented.</p>'))+
+ (d.mode==="contingency"?"":(["compact","calculated"].includes(d.mode)?'<p class="ia-table-strong-rule"><strong>Choose up to eight source rows for display.</strong> The complete dataset remains in your workspace. Justify every subset; do not silently omit unwanted values.</p>':
+ '<p class="ia-table-strong-rule"><strong>Full dataset in; short summary out.</strong> The tool calculates from actual input values without silently selecting only the first few rows.</p>'))+
  '<div data-native-choices="table">'+tableDataChoices(s,e)+'</div>'+
  
  '</section>'+
@@ -362,7 +382,7 @@ export function renderTableStudio(state,icon,e){
  '<p>Choose decimal places or significant figures for each result column. Values remain unrounded in your working data.</p>'+
  columnPrecisionOptions(d,e)+'</details>'+
  '<p class="ia-table-precision-advice">Rounding changes the displayed output, not the original data used in calculations. Explain important uncertainty and degree of accuracy in the surrounding writing.</p>'+
- emphasisControls(s,e)+
+ (d.mode==="contingency"?"":emphasisControls(s,e))+
  '</section></div>'+
  '<div class="ia-table-preview-stack">'+preview(s,e)+a4Preview(s,e)+
  '<section class="ia-table-quality-card" data-table-quality>'+quality(s,icon,e)+'</section>'+
