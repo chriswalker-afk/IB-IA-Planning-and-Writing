@@ -4,6 +4,8 @@ import {
 } from "./table-studio-core.js";
 import {completeEntry,startFirstRepresentation} from "../completing/engine.js";
 import {linkRepresentationFigure} from "./figure-linking.js";
+import {editContingency,resizeContingency,contingencyWouldDiscard} from "./contingency-table.js";
+export {editContingency,resizeContingency,contingencyWouldDiscard};
 const fields=new Set(["raw","headers","title","number","purpose","sourceKind","sourceText","note",
  "decimals","numberFormat","quartileRule","cellAlignment","rowSelection","selectionReason",
  "columnSelectionMode","calcModel","calcA","calcB","calcC","groupInput","groupWidth","groupStart","groupLabel",
@@ -83,7 +85,7 @@ export function setTableColumnFormat(studio,index,part,value){
  return true;
 }
 export function chooseTableMode(studio,mode){
- if(!["compact","summary","frequency","calculated","grouped"].includes(mode))return false;
+ if(!["compact","summary","frequency","calculated","grouped","contingency"].includes(mode))return false;
  const d=studio.draft;if(d.mode===mode)return true;
  d.mode=mode;
  if(mode==="summary"){
@@ -192,6 +194,7 @@ export function saveAndLinkTable(state){
  if(!entry.technique.trim())
   entry.technique=quality.draft.mode==="summary"?"Descriptive summary statistics":
    quality.draft.mode==="frequency"?"Categorical frequency and percentage table":
+   quality.draft.mode==="contingency"?"Two-way categorical contingency frequencies":
    quality.draft.mode==="calculated"?"Model predictions and residual analysis":"Compact results table";
  entry.kind="other";
  state.completion.activeEntryIndex=index;state.ui.mathIndex=index;
